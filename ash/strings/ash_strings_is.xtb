@@ -185,6 +185,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2718395828230677721">Næturljós</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Tengt við afllítið hleðslutæki. Hleðsla rafhlöðunnar kann að vera brigðul.</translation>
+<translation id="2778650143428714839"><ph name="MANAGER" /> hefur umsjón með <ph name="DEVICE_TYPE" /></translation>
 <translation id="2792498699870441125">Alt+leitarhnappur</translation>
 <translation id="2819276065543622893">Þú verður skráð(ur) út núna.</translation>
 <translation id="28232023175184696">Ekki er hægt að tengjast netinu. Smelltu til að reyna aftur.</translation>
@@ -563,6 +564,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6297287540776456956">Notaðu pennann til að velja svæði</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> var snúið í <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Tal</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er stýrð lota sem <ph name="MANAGER" /> hefur umsjón með</translation>
 <translation id="6376931439017688372">Kveikt er á Bluetooth</translation>
 <translation id="6381109794406942707">Til að opna tækið skaltu slá inn PIN-númerið þitt.</translation>
 <translation id="639644700271529076">Slökkt er á HÁSTAFALÁS</translation>

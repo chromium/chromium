@@ -305,6 +305,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2107021941795971877">Supports d'impression</translation>
 <translation id="2108755909498034140">Redémarrez l'ordinateur</translation>
+<translation id="2111166930115883695">Appuyez sur la barre d'espace pour jouer</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Carte</translation>
 <translation id="2114841414352855701">Ignorée parce que remplacée par <ph name="POLICY_NAME" />.</translation>
@@ -519,6 +520,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3010559122411665027">Entrée de la liste "<ph name="ENTRY_INDEX" />" : <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre position</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, appuyez sur Tabulation, puis sur Entrée pour supprimer la suggestion.</translation>
 <translation id="3023071826883856138">You4 (enveloppe)</translation>
 <translation id="3024663005179499861">Type de règle incorrect.</translation>
 <translation id="3037605927509011580">Aïe aïe aïe</translation>
@@ -760,6 +762,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Clé "<ph name="SUBKEY" />" : <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (enveloppe)</translation>
+<translation id="4067669230157909013">La capture d'écran a repris.</translation>
 <translation id="4067947977115446013">Ajouter une adresse valide</translation>
 <translation id="4072486802667267160">Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.</translation>
 <translation id="4075732493274867456">Le client et le serveur ne sont pas compatibles avec une version de protocole ou une méthode de chiffrement SSL commune.</translation>
@@ -843,6 +846,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4297502707443874121">Vignette de la page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Développer</translation>
 <translation id="4300675098767811073">Multiple perforation à droite</translation>
+<translation id="4302514097724775343">Appuyez sur le dinosaure pour jouer</translation>
 <translation id="4302965934281694568">Chou3 (enveloppe)</translation>
 <translation id="4305666528087210886">Impossible d'accéder à votre fichier</translation>
 <translation id="4305817255990598646">Changer</translation>
@@ -1254,6 +1258,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5963413905009737549">Section</translation>
 <translation id="5967592137238574583">Modifier les coordonnées</translation>
 <translation id="5967867314010545767">Supprimer de l'historique</translation>
+<translation id="5968793460449681917">À chaque visite</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1468,6 +1473,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6895330447102777224">Carte validée</translation>
 <translation id="6897140037006041989">Agent utilisateur</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
+<translation id="6907293445143367439">Autoriser le site "<ph name="SITE_NAME" />" à :</translation>
 <translation id="6910240653697687763"><ph name="URL" /> souhaite obtenir le contrôle total de vos appareils MIDI</translation>
 <translation id="6915804003454593391">Utilisateur : </translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>
@@ -1903,6 +1909,7 @@ Informations supplémentaires :
 <translation id="8574899947864779331">Utiliser Touch ID pour confirmer les cartes plus rapidement</translation>
 <translation id="858637041960032120">Saisir num tél</translation>
 <translation id="8589998999637048520">Qualité optimale</translation>
+<translation id="8600271352425265729">Uniquement cette fois-ci</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
 <translation id="8606726445206553943">Utiliser vos appareils MIDI</translation>
 <translation id="8612761427948161954">Bonjour <ph name="USERNAME" />,
@@ -2060,6 +2067,7 @@ Informations supplémentaires :
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="945855313015696284">Vérifiez les informations ci-dessous et supprimez les cartes non valides</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>
+<translation id="951941430552851965">Votre administrateur a suspendu la capture de l'écran en raison du contenu qui y est affiché.</translation>
 <translation id="961663415146723894">Reliure en bas</translation>
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses se faisant passer pour d'autres, ou de collecter des données afin de vous surveiller. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Build officiel</translation>

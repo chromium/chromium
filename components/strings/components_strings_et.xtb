@@ -368,6 +368,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2354430244986887761">Google'i ohutu sirvimine leidis hiljuti saidilt <ph name="SITE" /> <ph name="BEGIN_LINK" />ohtlikke rakendusi<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Ründajad võivad näha pilte, mida sellel saidil vaatate, ja teid neid pilte muutes petta.</translation>
 <translation id="2356070529366658676">Küsi</translation>
+<translation id="2357481397660644965">Teie seadet haldab <ph name="DEVICE_MANAGER" /> ja teie kontot haldab <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Mitu</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2360873523816792727">Kõigis seadmetes kaartide kasutamiseks lülitage sünkroonimine sisse.</translation>
@@ -547,6 +548,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3145945101586104090">Vastuse dekodeerimine ebaõnnestus</translation>
 <translation id="3150653042067488994">Serveris ilmnes ajutine viga</translation>
 <translation id="3154506275960390542">See leht sisaldab vormi, mille esitamine ei pruugi olla turvaline. Teised võivad andmete edastamisel neid vaadata või ründaja võib serverile saadetavaid andmeid muuta.</translation>
+<translation id="315504272643575312">Teie kontot haldab <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Taasta</translation>
 <translation id="3162559335345991374">WiFi-võrk, mida kasutate, võib nõuda sisselogimislehe külastamist.</translation>
 <translation id="3167968892399408617">Inkognito vahelehtedel kuvatavaid lehti ei talletata pärast vahelehtede sulgemist brauseri ajalukku, küpsistefailide salve ega otsinguajalukku. Allalaaditavad failid ja järjehoidjatesse lisatud sisu säilitatakse.</translation>
@@ -1928,6 +1930,7 @@ Lisateave:
 <translation id="8680536109547170164"><ph name="QUERY" />, vastus, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Veebilehte <ph name="PAGE" /> ei saanud laadida järgmisel põhjusel.</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Teie seadet ja kontot haldab <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Saadaval</translation>
 <translation id="868922510921656628">Lehekülgi komplekti kohta</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
@@ -1942,6 +1945,7 @@ Lisateave:
 <translation id="8728672262656704056">Olete inkognito režiimis</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731544501227493793">Nupp Paroolide haldamine, vajutage Chrome'i seadetes paroolide vaatamiseks ja haldamiseks sisestusklahvi</translation>
+<translation id="8734529307927223492">Teie seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage privaatse sirvimise jaoks uue inkognito akna avamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="8738058698779197622">Turvalise ühenduse loomiseks peab kell olema õigesti seadistatud. See on nii, kuna sertifikaadid, mida veebisaidid kasutavad enda tuvastamiseks, kehtivad ainult teatud perioodi jooksul. Kuna teie seadme kell on vale, ei saa Chromium neid sertifikaate kinnitada.</translation>
 <translation id="8740359287975076522">Hosti <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS-aadressi&lt;/abbr&gt; ei leitud. Probleemi diagnoositakse.</translation>
@@ -2031,6 +2035,7 @@ Lisateave:
 <translation id="9101630580131696064">Salv 1</translation>
 <translation id="9103872766612412690">Sait <ph name="SITE" /> kasutab teie teabe kaitsmiseks tavaliselt krüpteerimist. Kui Chromium püüdis seekord saidiga <ph name="SITE" /> ühendust luua, tagastas veebisait ebatavalised ja valed mandaadid. See võib juhtuda siis, kui ründaja proovib teeselda, et on sait <ph name="SITE" />, või WiFi sisselogimisekraan on ühenduse katkestanud. Teie teave on endiselt kaitstud, sest Chromium peatas ühenduse enne andmevahetust.</translation>
 <translation id="9106062320799175032">Arveldusaadressi lisamine</translation>
+<translation id="9107467864910557787">Teie brauserit haldab <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Kaardi kinnitamine …</translation>
 <translation id="9114581008513152754">Seda brauserit ei halda ettevõte ega muu organisatsioon. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Üles laaditud</translation>

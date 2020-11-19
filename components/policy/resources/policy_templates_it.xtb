@@ -3362,7 +3362,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Se viene impostato su Disattivato, gli utenti non possono riscattare tali offerte.</translation>
 <translation id="6048199181629830227">Attiva la gestione della variazione dei picchi energetici</translation>
-<translation id="6053681087509103368">Consenti a WebRTC di usare versioni obsolete del protocollo TLD/DTLS</translation>
+<translation id="6053681087509103368">Consenti a WebRTC di usare versioni obsolete del protocollo TLS/DTLS</translation>
 <translation id="6054485492411959335">Consente di specificare le stampanti utilizzabili dagli utenti.
 
       Questo criterio viene usato soltanto se viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" /> per il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />.

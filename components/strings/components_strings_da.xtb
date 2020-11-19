@@ -369,6 +369,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2354430244986887761">Google Beskyttet browsing har for nylig <ph name="BEGIN_LINK" />fundet skadelige apps<ph name="END_LINK" /> på <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Hackere kan muligvis se de billeder, du kigger på på dette website, og narre dig ved at ændre dem.</translation>
 <translation id="2356070529366658676">Spørg</translation>
+<translation id="2357481397660644965">Din enhed administreres af <ph name="DEVICE_MANAGER" />, og din konto administreres af <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Flere</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2360873523816792727">Aktivér synkronisering for at bruge dine kort på alle enheder.</translation>
@@ -548,6 +549,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3145945101586104090">Svaret kunne ikke afkodes</translation>
 <translation id="3150653042067488994">Midlertidig serverfejl</translation>
 <translation id="3154506275960390542">Denne side indeholder en formular, der muligvis ikke kan indsendes sikkert. Dine indsendte data kan ses af andre eller kan blive ændret af en hacker, så serveren, du sender til, modtager forkerte oplysninger.</translation>
+<translation id="315504272643575312">Din konto administreres af <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3162559335345991374">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til netværkets loginside.</translation>
 <translation id="3167968892399408617">Når du har lukket alle dine inkognitofaner, gemmes der hverken cookies, browser- eller søgehistorik for de sider, du besøger i inkognitotilstand. Dog gemmes alle de filer, du downloader, og bogmærker, du opretter.</translation>
@@ -1930,6 +1932,7 @@ Yderligere oplysninger:
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Websiden på <ph name="PAGE" /> kunne ikke indlæses, fordi:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Din enhed og konto administreres af <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Tilgængelig</translation>
 <translation id="868922510921656628">Sider pr. sæt</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
@@ -1944,6 +1947,7 @@ Yderligere oplysninger:
 <translation id="8728672262656704056">Du er nu i inkognito</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8731544501227493793">Knappen Administrer adgangskoder – tryk på Enter for at se og administrere dine adgangskoder i Chrome-indstillingerne</translation>
+<translation id="8734529307927223492">Din <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at åbne et nyt inkognitovindue, så du kan browse privat</translation>
 <translation id="8738058698779197622">For at kunne oprette en sikker forbindelse skal dit ur være indstillet korrekt. Det er vigtigt, da de certifikater, som websites bruger til at identificere sig selv, kun er gyldige i bestemte tidsperioder. Da uret på din enhed går forkert, kan Chromium ikke bekræfte disse certifikater.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-adressen&lt;/abbr&gt; for <ph name="HOST_NAME" /> blev ikke fundet. Diagnosticerer problemet.</translation>
@@ -2033,6 +2037,7 @@ Yderligere oplysninger:
 <translation id="9101630580131696064">Bakke 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> bruger normalt kryptering til at beskytte dine oplysninger. Da Chromium forsøgte at oprette forbindelse til <ph name="SITE" /> denne gang, returnerede websitet usædvanlige og forkerte loginoplysninger. Dette kan skyldes, at en hacker forsøger at udgive sig for at være <ph name="SITE" />, eller at en Wi-Fi-loginskærm har forstyrret forbindelsen. Dine oplysninger er stadig sikre, idet Chromium afbrød forbindelsen, inden der blev udvekslet data.</translation>
 <translation id="9106062320799175032">Tilføj faktureringsadresse</translation>
+<translation id="9107467864910557787">Din browser administreres af <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Bekræfter kort...</translation>
 <translation id="9114581008513152754">Denne browser administreres ikke af en virksomhed eller en anden organisation. Aktivitet på denne enhed administreres muligvis uden for Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Uploadet</translation>

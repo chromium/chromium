@@ -369,6 +369,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2354430244986887761">Google Varno brskanje je nedavno <ph name="BEGIN_LINK" />našlo škodljive aplikacije<ph name="END_LINK" /> na spletnem mestu <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Napadalci morda vidijo slike, ki si jih ogledujete na tem spletnem mestu, in vas ukanijo, tako da jih spremenijo.</translation>
 <translation id="2356070529366658676">Vprašaj</translation>
+<translation id="2357481397660644965">Vašo napravo upravlja domena <ph name="DEVICE_MANAGER" /> in vaš račun upravlja domena <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Več valut</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2360873523816792727">Če želite uporabljati kartice v vseh napravah, vklopite sinhronizacijo.</translation>
@@ -548,6 +549,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3145945101586104090">Dekodiranje odziva ni uspelo</translation>
 <translation id="3150653042067488994">Začasna napaka strežnika</translation>
 <translation id="3154506275960390542">Na tej strani je tudi obrazec, ki morda ne bo poslan varno. Podatke, ki jih pošljete, si lahko med prenosom ogledujejo drugi, ali pa jih lahko spremeni morebitni napadalec, tako da strežnik prejme spremenjene podatke.</translation>
+<translation id="315504272643575312">Vaš račun upravlja <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
 <translation id="3167968892399408617">Strani, ki si jih ogledujete na zavihkih brez beleženja zgodovine, se ne bodo ohranile v zgodovini brskalnika, hrambi piškotkov ali zgodovini iskanja, ko boste zaprli vse zavihke brez beleženja zgodovine. Datoteke, ki jih prenesete, ali zaznamki, ki jih ustvarite, se bodo ohranili.</translation>
@@ -1929,6 +1931,7 @@ Dodatne podrobnosti:
 <translation id="8680536109547170164"><ph name="QUERY" />, odgovor, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Spletne strani na naslovu <ph name="PAGE" /> ni bilo mogoče naložiti zaradi teh razlogov:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Vašo napravo in račun upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Na voljo</translation>
 <translation id="868922510921656628">Strani na niz</translation>
 <translation id="869891660844655955">Datum izteka</translation>
@@ -1943,6 +1946,7 @@ Dodatne podrobnosti:
 <translation id="8728672262656704056">Uporabljate način brez beleženja zgodovine</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8731544501227493793">Gumb za upravljanje gesel, pritisnite Enter, če si želite ogledati in upravljati gesla v Chromovih nastavitvah</translation>
+<translation id="8734529307927223492">Vašo napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite odpreti novo okno brez beleženja dejavnosti za zasebno brskanje</translation>
 <translation id="8738058698779197622">Če želite vzpostaviti varno povezavo, mora biti ura pravilno nastavljena. Potrdila, ki jih uporabljajo spletna mesta za prepoznavanje, namreč veljajo samo določen čas. Ker je ura sistema nepravilna, Chromium teh potrdil ne more preveriti.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Naslova DNS&lt;/abbr&gt; spletnega mesta <ph name="HOST_NAME" /> ni bilo mogoče najti. Poteka diagnosticiranje težave.</translation>
@@ -2032,6 +2036,7 @@ Dodatne podrobnosti:
 <translation id="9101630580131696064">Pladenj 1</translation>
 <translation id="9103872766612412690">Spletno mesto <ph name="SITE" /> za zaščito vaših podatkov običajno uporablja šifriranje. Ko se je Chromium tokrat poskusil povezati s spletnim mestom <ph name="SITE" />, je to vrnilo nenavadne in nepravilne poverilnice. Do tega lahko pride, če se napadalec lažno predstavlja za spletno mesto <ph name="SITE" /> ali če je povezavo prekinil zaslon za prijavo v omrežje Wi-Fi. Vaši podatki so še vedno varni, saj je Chromium pred izmenjavo podatkov prekinil povezavo.</translation>
 <translation id="9106062320799175032">Dodajanje naslova za izstavitev računa</translation>
+<translation id="9107467864910557787">Vaš brskalnik upravlja domena <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Potrjevanje kartice …</translation>
 <translation id="9114581008513152754">Tega brskalnika ne upravlja podjetje ali druga organizacija. Dejavnost v tej napravi morda upravljajo zunaj Chroma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Naloženo</translation>

@@ -128,7 +128,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2132302418721800944">Opname van volledig scherm maken</translation>
 <translation id="2135456203358955318">Vastgezet vergrootglas</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Opnieuw proberen</translation>
-<translation id="2170530631236737939">Swipe met 3 vingers omlaag om het overzicht af te sluiten</translation>
+<translation id="2170530631236737939">Swipe met 3 vingers omlaag om het overzicht te sluiten</translation>
 <translation id="2208323208084708176">Samengestelde desktopmodus</translation>
 <translation id="2220572644011485463">Pincode of wachtwoord</translation>
 <translation id="2222338659135520253">Inloggen vereist</translation>
@@ -387,7 +387,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4565377596337484307">Wachtwoord verbergen</translation>
 <translation id="4570957409596482333">Knop 'Selecteer om uitgesproken te worden'</translation>
 <translation id="4577274620589681794">De tijd is om · <ph name="LABEL" /></translation>
-<translation id="4577990005084629481">Voorbeelden weergeven</translation>
+<translation id="4577990005084629481">Voorbeelden bekijken</translation>
 <translation id="4585337515783392668">Casten naar een onbekende ontvanger stopzetten</translation>
 <translation id="4596144739579517758">Het donkere thema is uitgeschakeld</translation>
 <translation id="4623167406982293031">Account verifiëren</translation>
@@ -477,7 +477,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5516420770350073386">Je beheerder heeft de schermopname gestopt vanwege de content op je scherm.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> maakt verbinding.</translation>
-<translation id="5532994612895037630">Tik ergens om het volledige scherm op te nemen</translation>
+<translation id="5532994612895037630">Tik ergens om het hele scherm op te nemen</translation>
 <translation id="553675580533261935">Sessie sluiten</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Dicteren in-/uitschakelen</translation>
@@ -544,7 +544,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6059276912018042191">Recente Chrome-tabbladen</translation>
 <translation id="6062360702481658777">Je wordt automatisch uitgelogd over <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Je computer is vindbaar voor Bluetooth-apparaten in de buurt en wordt weergegeven als '<ph name="NAME" />' met adres <ph name="ADDRESS" /></translation>
-<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">De Google Assistent is niet beschikbaar in een gastsessie.</translation>
 <translation id="6137566720514957455">Dialoogvenster 'Account verwijderen' openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Schermtoetsenbord weergeven</translation>
@@ -758,7 +758,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8152092012181020186">Druk op Ctrl + W om te sluiten.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> in gebruik</translation>
-<translation id="8170567869359129153">Mobiel netwerk. Signaalsterkte van <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8170567869359129153">Mobiel netwerk. Signaalsterkte van <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="8192202700944119416">Meldingen zijn verborgen.</translation>
 <translation id="8196787716797768628">Met gebaren kun je snel schakelen tussen apps en je Chromebook gebruiken in de tabletmodus.</translation>
 <translation id="8200772114523450471">Doorgaan</translation>

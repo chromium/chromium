@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Vrlo visoka latencija HTTPS-a</translation>
 <translation id="1413240736185167732">Nije uspjelo – filtar ne radi</translation>
 <translation id="1468664791493211953">Ponude</translation>
+<translation id="1476467821656042872">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj možda može nadzirati vašu aktivnost.</translation>
 <translation id="1478594628797167447">Skener</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i možda može daljinski upravljati postavkama i nadzirati aktivnost korisnika.</translation>
 <translation id="150962533380566081">PUK nije važeći.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (niti: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Ulagač dokumenata (jednostrano)</translation>
 <translation id="1644574205037202324">Povijest</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Skeniraj u</translation>
 <translation id="4483049906298469269">Pinganje pristupnika mreže koja nije zadana nije uspjelo</translation>
 <translation id="4548483925627140043">Signal nije pronađen</translation>
+<translation id="455835558791489930">Baterija od <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Razrješavanje svih hostova nije uspjelo</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
 <translation id="4646949265910132906">Sigurna Wi-Fi veza</translation>
@@ -128,7 +132,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="649050271426829538">Zaustavljeno – zaglavljeni papir</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6527081081771465939">Nepoznat sigurnosni protokol za Wi-Fi</translation>
-<translation id="65587193855025101">Plošno</translation>
+<translation id="65587193855025101">Plošni skener</translation>
 <translation id="6564646048574748301">Nije uspjelo – pisač nije dostupan</translation>
 <translation id="6618744767048954150">U tijeku</translation>
 <translation id="6620487321149975369">Zadaci ispisa prikazivat će se u povijesti ako se ne uklone ručno</translation>
@@ -138,8 +142,10 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6766275201586212568">Neuspješna razrješavanja DNS-a</translation>
 <translation id="6768237774506518020">Visoka stopa neuspješnih razrješavanja DNS-a</translation>
 <translation id="6839141349259399400">Ne možete se povezati sa skenerima?</translation>
+<translation id="7028979494427204405">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj ima pristup svim aktivnostima korisnika, uključujući posjećene web-stranice, zaporke i e-poštu.</translation>
 <translation id="714876143603641390">LAN povezivost</translation>
 <translation id="7162487448488904999">Galerija</translation>
+<translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu konfigurirati uređaj na daljinu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7561454561030345039">Tom radnjom upravlja vaš administrator</translation>
@@ -148,7 +154,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7690294790491645610">Potvrdite novu zaporku</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Skenirane datoteke su spremljene!</translation>
+<translation id="7855434858642800953">Skenirana datoteka je spremljena!</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan poslužitelj naziva</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="808894953321890993">Promjena zaporke</translation>

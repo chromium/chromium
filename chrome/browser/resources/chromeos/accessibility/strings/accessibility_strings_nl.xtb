@@ -382,7 +382,7 @@
 <translation id="3655855170848725876">{COUNT,plural, =1{dollarteken}other{# dollartekens}}</translation>
 <translation id="3659787053479271466">waarschuwing</translation>
 <translation id="366419593095697301">Hint: Druk op Escape als je deze tutorial wilt afsluiten.</translation>
-<translation id="3676062394766691318">Na het instellen van je apparaat kun je terugkeren en meer tutorials bekijken door op Zoeken + O en vervolgens op T te drukken.</translation>
+<translation id="3676062394766691318">Na het instellen van je apparaat kun je terugkeren en meer tutorials bekijken door op Zoeken + O en daarna op T te drukken.</translation>
 <translation id="3681531118904532409">Papayacréme</translation>
 <translation id="3692274950075847560">Z:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">Doorstreping</translation>
@@ -558,7 +558,7 @@
 <translation id="5041394372352067729">Brailleweergave naar bovenkant pagina verplaatsen</translation>
 <translation id="5042770794184672516">Spraakvolume verhogen</translation>
 <translation id="5042992464904238023">Webinhoud</translation>
-<translation id="5045870649377683106">Zoek nu de Shift-toets. Deze zit recht boven de Ctrl-toets. Druk op de linker Shift-toets om door te gaan.</translation>
+<translation id="5045870649377683106">Zoek nu de linker Shift-toets. Deze zit recht boven de Ctrl-toets. Druk op de linker Shift-toets om door te gaan.</translation>
 <translation id="5050015258024679800">Vorige kop voor niveau 4</translation>
 <translation id="5054047268577924192">Vorig item in de lijst</translation>
 <translation id="5085453135206054947">Vaal violetrood</translation>
@@ -618,7 +618,7 @@
 <translation id="5513242761114685513">Contextmenu</translation>
 <translation id="551361796444814639">Middenblauw</translation>
 <translation id="552195134157544755">Keuzerondje</translation>
-<translation id="5522423213731659107">Snelle oriëntatie afgerond.</translation>
+<translation id="5522423213731659107">Snelle oriëntatie afgerond</translation>
 <translation id="5534303576632885660">header</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
 <translation id="5549179427201066174">Geluidsfeedback (earcons) in- of uitschakelen</translation>
@@ -886,7 +886,7 @@
 <translation id="762020119231868829">Hiermee worden alle actieve mediawidgets onderbroken</translation>
 <translation id="7625690649919402823">Volgende tabel</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">Druk op Zoeken + pijl-rechts om naar het oefengedeelte te gaan of druk op de knop Volgende les. Druk vervolgens op Zoeken + de spatiebalk om te activeren.</translation>
+<translation id="7637342083105831460">Druk op Zoeken + pijl-rechts om naar het oefengedeelte te gaan of druk op de knop Volgende les. Druk dan op Zoeken + de spatiebalk om te activeren.</translation>
 <translation id="7639968568612851608">Donkergrijs</translation>
 <translation id="7663318257180412551">Kop 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{uur}other{uur}}</translation>
@@ -956,7 +956,7 @@
 <translation id="812886159861361726">Download van <ph name="FILE_NAME" /> is gestopt</translation>
 <translation id="8129445297241948503">Geen cel hierboven beschikbaar</translation>
 <translation id="8138880386467279117">Touch</translation>
-<translation id="8146613869421949343">Nu kijken we naar de zoektoets. De zoektoets wordt in combinatie met andere toetsen gebruikt voor ChromeVox-opdrachten. De zoektoets bevindt zich recht boven de linker Shift-toets. Druk op de zoektoets om door te gaan.</translation>
+<translation id="8146613869421949343">Nu kijken we naar de zoektoets. De zoektoets wordt in combinatie met andere toetsen gebruikt voor ChromeVox-opdrachten. De zoektoets zit recht boven de linker Shift-toets. Druk op de zoektoets om door te gaan.</translation>
 <translation id="816818801578874684">Dit is de eerste kop. Druk op Zoeken + H om naar de volgende kop te gaan.</translation>
 <translation id="8173092779156526980">Swipe met vier vingers naar links</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
@@ -1013,7 +1013,7 @@
 <translation id="8603071050456974042">ChromeVox-venster</translation>
 <translation id="8606621670302093223">Datumbeheer</translation>
 <translation id="8613709718990529335">Bisque</translation>
-<translation id="8614129468475308349">Dat was alles. Je hebt nu de basis van ChromeVox onder de knie. Je kunt de tutorial nogmaals doornemen of deze afsluiten met een knop hieronder.</translation>
+<translation id="8614129468475308349">Dat was alles. Je hebt nu de basis van ChromeVox onder de knie. Je kunt de tutorial nog een keer doornemen of deze afsluiten met een knop hieronder.</translation>
 <translation id="8625173877182443267">Geen volgende kop van niveau 6</translation>
 <translation id="8628186274519446680">Tomaat</translation>
 <translation id="8638532244051952400">Huidige celcoördinaten bekendmaken</translation>
@@ -1033,7 +1033,7 @@
 <translation id="875769700429317857"><ph name="FILE_NAME" /> is gedownload</translation>
 <translation id="8767968232364267681">Volgende kop voor niveau 4</translation>
 <translation id="8770473310765924354">gestructureerde content verlaten, zoals tabellen</translation>
-<translation id="8775203254697638994">Soms moet je een item selecteren in een dropdownmenu. Vouw hiervoor eerst de lijst uit door op Zoeken + de spatiebalk te drukken. Selecteer daarna een item met de pijl-omhoog en -omlaag. Vouw de lijst tot slot weer samen door op Zoeken + de spatiebalk te drukken.</translation>
+<translation id="8775203254697638994">Soms moet je een item selecteren in een dropdownmenu. Vouw hiervoor eerst de lijst uit door op Zoeken + de spatiebalk te drukken. Selecteer daarna een item met de pijl-omhoog en pijl-omlaag. Vouw de lijst tot slot weer samen door op Zoeken + de spatiebalk te drukken.</translation>
 <translation id="8779057862865475116">Geen vorige link</translation>
 <translation id="8796411681063377102">Volgende kop voor niveau 3</translation>
 <translation id="8823311177246872527">Pagina <ph name="CURRENTPAGE" /> van <ph name="TOTALPAGES" /></translation>

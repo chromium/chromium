@@ -185,6 +185,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2718395828230677721">Aandbeligting</translation>
 <translation id="2727175239389218057">Antwoord</translation>
 <translation id="2727977024730340865">By 'n laekrag-laaier ingeprop. Laai van battery is dalk nie betroubaar nie.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> bestuur deur <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Jy sal nou afgemeld word.</translation>
 <translation id="28232023175184696">Kan nie aan die internet koppel nie. Klik om weer te probeer.</translation>
@@ -564,6 +565,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6297287540776456956">Gebruik die stilus om 'n area te kies</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> is na <ph name="ROTATION" /> gedraai</translation>
 <translation id="6315170314923504164">Stem</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is 'n bestuurde sessie wat deur <ph name="MANAGER" /> bestuur word</translation>
 <translation id="6376931439017688372">Bluetooth is aan</translation>
 <translation id="6381109794406942707">Voer jou PIN in om die toestel te ontsluit.</translation>
 <translation id="639644700271529076">HOOFLETTERSLOT is af</translation>

@@ -70,7 +70,7 @@
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1396114365388024581">liste d'onglets</translation>
 <translation id="1405567553485452995">Vert clair</translation>
-<translation id="1411043317877497323">Zones d'exercice</translation>
+<translation id="1411043317877497323">Zone d'exercice</translation>
 <translation id="141454040365657399">En-tête de page</translation>
 <translation id="1417889266572670458">Marine</translation>
 <translation id="1431911867058218151">Prune</translation>
@@ -115,7 +115,7 @@
 <translation id="1714116687360794776">Outil de mesure</translation>
 <translation id="1722567105086139392">Lien</translation>
 <translation id="1727806147743597030">bas de page</translation>
-<translation id="1730447754326314349">Bienvenue dans le tutoriel de ChromeVox. Pour quitter ce tutoriel, appuyez à tout moment sur la touche Échap située dans le haut de votre clavier, à gauche. Pour désactiver ChromeVox, maintenez les touches Ctrl+Alt enfoncées et appuyez sur Z. Lorsque vous êtes prêt, utilisez la barre d'espacement pour passer à la leçon suivante.</translation>
+<translation id="1730447754326314349">Bienvenue dans le tutoriel de ChromeVox. Pour quitter ce tutoriel, appuyez à tout moment sur la touche Échap. située dans le haut de votre clavier, à gauche. Pour désactiver ChromeVox, maintenez les touches Ctrl+Alt. enfoncées et appuyez sur Z. Lorsque vous êtes prêt, utilisez la barre d'espacement pour passer à la leçon suivante.</translation>
 <translation id="174268867904053074">Élément graphique suivant</translation>
 <translation id="1756785467854861272">Magenta foncé</translation>
 <translation id="1765245556747822181">Faites glisser un doigt vers le haut</translation>
@@ -184,7 +184,7 @@
 <translation id="2318372665160196757">Principal</translation>
 <translation id="2329324941084714723">Panneau d'onglet</translation>
 <translation id="2347456970887948350">Un lien</translation>
-<translation id="2365384324219615024">Vous pouvez également appuyer sur Entrée pour activer des éléments. Par exemple, vous pouvez utiliser Entrée pour envoyer le texte entré dans un formulaire. Pour continuer, appuyez sur Entrée.</translation>
+<translation id="2365384324219615024">Vous pouvez également appuyer sur Entrée pour activer des éléments. Par exemple, vous pouvez utiliser Entrée pour envoyer le texte saisi dans un formulaire. Pour continuer, appuyez sur Entrée.</translation>
 <translation id="2381733276052567791">Activez ou désactivez la reconnaissance vocale</translation>
 <translation id="2390264819538553347">Pour avancer, appuyez sur Entrée; pour retourner à la page précédente, appuyez sur Retour arrière.</translation>
 <translation id="2398579267367951220">Tapez pour rechercher du texte dans la page. Appuyez sur Entrée pour accéder aux résultats, ou sur les flèches vers le haut ou le bas pour passer d'un résultat à l'autre; continuez à écrire pour modifier la recherche; ou appuyez sur Échap pour annuler la recherche.</translation>
@@ -381,7 +381,7 @@
 <translation id="3650317109285159359">case à cocher d'élément de menu</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{symbole de dollar}one{# symbole de dollar}many{# dollar signs}other{# symboles de dollar}}</translation>
 <translation id="3659787053479271466">alerte</translation>
-<translation id="366419593095697301">Astuce: Appuyez sur Échap lorsque vous souhaitez quitter ce tutoriel.</translation>
+<translation id="366419593095697301">Astuce : Appuyez sur Échap. lorsque vous souhaitez quitter ce tutoriel.</translation>
 <translation id="3676062394766691318">Après avoir configuré votre appareil, vous pourrez revenir pour consulter d'autres tutoriels en appuyant sur Recherche+O, puis sur T.</translation>
 <translation id="3681531118904532409">Chair clair</translation>
 <translation id="3692274950075847560">R : <ph name="RESULT" /></translation>
@@ -546,7 +546,7 @@
 <translation id="4973717656530883744">Minimum <ph name="X" /></translation>
 <translation id="4974612477719259470">Aucun bouton précédent</translation>
 <translation id="4979404613699303341">Bouton précédent</translation>
-<translation id="4982917827052020884">Commençons par les touches que vous utiliserez régulièrement. Vous pouvez utiliser la touche Ctrl pour arrêter la diffusion vocale. Cette touche se trouve dans le bas de votre clavier, à gauche. Pour continuer, appuyez sur la touche Ctrl.</translation>
+<translation id="4982917827052020884">Commençons par quelques touches que vous utiliserez régulièrement. Vous pouvez utiliser la touche Ctrl pour arrêter la diffusion vocale. Cette touche se trouve dans le bas de votre clavier, à gauche. Pour continuer, appuyez sur la touche Ctrl.</translation>
 <translation id="4983588134362688868">Aller au haut de la page</translation>
 <translation id="4986606102545753256">Fenêtre <ph name="NAME" /></translation>
 <translation id="4993152509206108683">Vitesse : <ph name="PERCENT" /> %</translation>
@@ -558,7 +558,7 @@
 <translation id="5041394372352067729">Déplacer l'écran de braille dans le haut de la page</translation>
 <translation id="5042770794184672516">Augmenter le volume de la voix</translation>
 <translation id="5042992464904238023">Contenu Web</translation>
-<translation id="5045870649377683106">À présent, recherchez la touche Majuscule. Elle se trouve juste au-dessus de la touche Ctrl. Pour continuer, appuyez sur la touche Majuscule.</translation>
+<translation id="5045870649377683106">À présent, recherchez la touche Majuscule de gauche. Elle se trouve juste au-dessus de la touche Ctrl. Pour continuer, appuyez sur la touche Majuscule de gauche.</translation>
 <translation id="5050015258024679800">En-tête de niveau 4 précédent</translation>
 <translation id="5054047268577924192">Élément précédent de la liste</translation>
 <translation id="5085453135206054947">Rouge-violet pâle</translation>
@@ -849,7 +849,7 @@
 <translation id="7308519659008003150">Aucun champ de formulaire précédent</translation>
 <translation id="731121099745151312">élément d'arborescence</translation>
 <translation id="7317017974771324508">partiellement sélectionné</translation>
-<translation id="7344012264516629579">Vous avez également la possibilité d'accéder directement à un lien, un bouton ou une case à cocher, entre autres. Pour consulter la liste complète des commandes d'accès direct, accédez aux menus ChromeVox en appuyant sur Recherche+Point.</translation>
+<translation id="7344012264516629579">Vous avez également la possibilité d'accéder directement à un lien, à un bouton ou à une case à cocher, entre autres. Pour consulter la liste complète des commandes d'accès direct, accédez aux menus ChromeVox en appuyant sur Recherche+Point.</translation>
 <translation id="7356165926712028380">Passer au braille à huit points</translation>
 <translation id="7356610683936413584">Détail de la liste de descriptions</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{perluète}one{# perluète}many{# ampersands}other{# perluètes}}</translation>

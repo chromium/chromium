@@ -368,6 +368,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2354430244986887761">Google Safe Browsing recently <ph name="BEGIN_LINK" />found harmful apps<ph name="END_LINK" /> on <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Attackers might be able to see the images that you’re looking at on this site and trick you by modifying them.</translation>
 <translation id="2356070529366658676">Ask</translation>
+<translation id="2357481397660644965">Your device is managed by <ph name="DEVICE_MANAGER" /> and your account is managed by <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360873523816792727">To use your cards on all devices, turn on sync.</translation>
@@ -547,6 +548,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3145945101586104090">Failed to decode response</translation>
 <translation id="3150653042067488994">Temporary server error</translation>
 <translation id="3154506275960390542">This page includes a form that may not submit securely. Data that you send can be viewed by others while in transit or could be modified by an attacker to change what the server receives.</translation>
+<translation id="315504272643575312">Your account is managed by <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
 <translation id="3167968892399408617">Pages that you view in incognito tabs won’t stick around in your browser’s history, cookie store or search history after you’ve closed all of your incognito tabs. Any files you download or bookmarks you create will be kept.</translation>
@@ -1928,6 +1930,7 @@ Additional details:
 <translation id="8680536109547170164"><ph name="QUERY" />, answer, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">The web page at <ph name="PAGE" /> could not be loaded because:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Your device and account are managed by <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Available</translation>
 <translation id="868922510921656628">Pages per set</translation>
 <translation id="869891660844655955">Expiry date</translation>
@@ -1942,6 +1945,7 @@ Additional details:
 <translation id="8728672262656704056">You’ve gone incognito</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731544501227493793">Manage passwords button; press enter to view and manage your passwords in Chrome settings</translation>
+<translation id="8734529307927223492">Your <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to open a new incognito window to browse privately</translation>
 <translation id="8738058698779197622">To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Chromium cannot verify these certificates.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt; could not be found. Diagnosing the problem.</translation>
@@ -2031,6 +2035,7 @@ Additional details:
 <translation id="9101630580131696064">Tray 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> normally uses encryption to protect your information. When Chromium tried to connect to <ph name="SITE" /> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE" />, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Chromium stopped the connection before any data was exchanged.</translation>
 <translation id="9106062320799175032">Add Billing Address</translation>
+<translation id="9107467864910557787">Your browser is managed by <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Confirming card...</translation>
 <translation id="9114581008513152754">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Uploaded</translation>

@@ -369,6 +369,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2354430244986887761">Google Veiligblaai het onlangs <ph name="BEGIN_LINK" />skadelike programme<ph name="END_LINK" /> op <ph name="SITE" /> gevind.</translation>
 <translation id="2355395290879513365">Aanvallers sal dalk die prente kan sien waarna jy op hierdie werf kyk en jou mislei deur hulle te wysig.</translation>
 <translation id="2356070529366658676">Vra</translation>
+<translation id="2357481397660644965">Jou toestel word deur <ph name="DEVICE_MANAGER" /> bestuur en jou rekening word deur <ph name="ACCOUNT_MANAGER" /> bestuur.</translation>
 <translation id="2359629602545592467">Veelvuldige</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2360873523816792727">Skakel sinkronisering aan om jou kaarte op al jou toestelle te gebruik.</translation>
@@ -548,6 +549,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3145945101586104090">Kon nie antwoord dekodeer nie</translation>
 <translation id="3150653042067488994">Tydelike bedienerfout</translation>
 <translation id="3154506275960390542">Hierdie bladsy bevat 'n vorm wat dalk nie veilig is om in te dien nie. Data wat jy stuur, kan deur ander bekyk word terwyl dit op pad is of kan dalk deur 'n aanvaller gewysig word om die data te verander wat deur die bediener ontvang word.</translation>
+<translation id="315504272643575312">Jou rekening word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Stel terug</translation>
 <translation id="3162559335345991374">Die Wi-Fi wat jy gebruik, kan vereis dat jy sy aanmeldbladsy besoek.</translation>
 <translation id="3167968892399408617">Bladsye wat jy in incognito-oortjies bekyk, sal nie in jou blaaier se geskiedenis, webkoekiewinkel of soekgeskiedenis wys nadat jy al jou incognito-oortjies toegemaak het nie. Enige lêers wat jy aflaai of boekmerk, sal gehou word.</translation>
@@ -1929,6 +1931,7 @@ Bykomende besonderhede:
 <translation id="8680536109547170164"><ph name="QUERY" />, antwoord, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Die webbladsy by <ph name="PAGE" /> kon nie gelaai word nie, want:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Jou toestel en rekening word deur <ph name="MANAGER" /> bestuur.</translation>
 <translation id="8688672835843460752">Beskikbaar</translation>
 <translation id="868922510921656628">Bladsye per stel</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
@@ -1943,6 +1946,7 @@ Bykomende besonderhede:
 <translation id="8728672262656704056">Jy is nou incognito.</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8731544501227493793">Bestuur Wagwoorde-knoppie; druk Enter om jou wagwoorde in Chrome-instellings te bekyk en te bestuur</translation>
+<translation id="8734529307927223492">Jou <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om 'n nuwe incognitovenster oop te maak om privaat te blaai</translation>
 <translation id="8738058698779197622">Om 'n veilige verbinding te maak, moet jou horlosie reg gestel wees. Die rede hiervoor is omdat sertifikate wat webwerwe gebruik om hulself te identifiseer, net vir sekere tydperke beskikbaar is. Chromium kan nie hierdie sertifikate verifieer nie, omdat jou toestel se horlosie nie reg gestel is nie.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> se &lt;abbr id="dnsDefinition"&gt;DNS-adres&lt;/abbr&gt; kon nie gevind word nie. Diagnoseer tans die probleem.</translation>
@@ -2032,6 +2036,7 @@ Bykomende besonderhede:
 <translation id="9101630580131696064">Laai 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> gebruik gewoonlik enkripsie om jou inligting te beskerm. Toe Chromium hierdie keer aan <ph name="SITE" /> probeer koppel het, het die webwerf ongewone en verkeerde eiebewyse teruggestuur. Dit kan gebeur wanneer 'n aanvaller probeer voorgee om <ph name="SITE" /> te wees, óf wanneer 'n Wi-Fi-aanmeldskerm die verbinding onderbreek het. Jou inligting is steeds veilig, want Chromium het die verbinding gestaak voordat enige data uitgeruil is.</translation>
 <translation id="9106062320799175032">Voeg faktureringadres by</translation>
+<translation id="9107467864910557787">Jou blaaier word bestuur deur <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Bevestig tans kaart …</translation>
 <translation id="9114581008513152754">Hierdie blaaier word nie deur 'n maatskappy of ander organisasie bestuur nie. Aktiwiteit op hierdie toestel kan buite Chrome bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Opgelaai</translation>

@@ -435,6 +435,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1475502736924165259">U arhivi imate certifikate koji ne odgovaraju nijednoj od ostalih kategorija</translation>
 <translation id="1476088332184200792">Kopirajte na svoj uređaj</translation>
 <translation id="1476607407192946488">&amp;Postavke jezika</translation>
+<translation id="1477446329585670721">Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</translation>
 <translation id="1478340334823509079">Detalji: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalacija nije omogućena</translation>
 <translation id="1481537595330271162">Greška pri promjeni veličine diska</translation>
@@ -2035,6 +2036,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3320630259304269485">Sigurno pregledanje (zaštita od opasnih web lokacija) i druge sigurnosne postavke</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{U ovim podacima postoji osjetljiv ili opasan sadržaj. Uklonite taj sadržaj i pokušajte ponovo.}=1{U ovom fajlu postoji osjetljiv ili opasan sadržaj. Uklonite taj sadržaj i pokušajte ponovo.}one{U ovim fajlovima postoji osjetljiv ili opasan sadržaj. Uklonite taj sadržaj i pokušajte ponovo.}few{U ovim fajlovima postoji osjetljiv ili opasan sadržaj. Uklonite taj sadržaj i pokušajte ponovo.}other{U ovim fajlovima postoji osjetljiv ili opasan sadržaj. Uklonite taj sadržaj i pokušajte ponovo.}}</translation>
 <translation id="3323521181261657960">Bonus! Vrijeme korištenja uređaja ti je produženo</translation>
+<translation id="3325804108816646710">Traženje dostupnih profila...</translation>
 <translation id="3325910708063135066">Kamera i mikrofon su isključeni u Postavkama Mac sistema</translation>
 <translation id="3327050066667856415">Chromebook uređaji su dizajnirani da budu sigurni. Vaš uređaj je automatski zaštićen od zlonamjernog softvera i nije potreban dodatni softver.</translation>
 <translation id="3328489342742826322">Vraćanje iz sigurnosne kopije će izbrisati postojeće Linux aplikacije i podatke u vašem folderu s Linux fajlovima.</translation>
@@ -2102,6 +2104,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3412265149091626468">Pređi na Odabir</translation>
 <translation id="3413122095806433232">Izdavači CA potvrda: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Veličina:</translation>
+<translation id="3414966631182382431">Vašim <ph name="BEGIN_LINK" />preglednikom upravlja<ph name="END_LINK" /> <ph name="MANAGER" /></translation>
 <translation id="3416468988018290825">Uvijek prikaži pune URL-ove</translation>
 <translation id="3417835166382867856">Pretraživanje kartica</translation>
 <translation id="3417836307470882032">24-satni format vremena</translation>
@@ -3177,6 +3180,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4651484272688821107">Nije moguće učitati online komponentu pomoću resursa u načinu rada za demonstraciju.</translation>
 <translation id="4652935475563630866">Da promijenite postavku kamere, potrebno je ponovo pokrenuti Parallels Desktop. Ponovo pokrenite Parallels Desktop da nastavite.</translation>
 <translation id="4653405415038586100">Greška prilikom konfiguriranja Linuxa</translation>
+<translation id="4657914796247705218">Brzina TrackPointa</translation>
 <translation id="465878909996028221">Za preusmjeravanja preglednika su podržani samo protokoli http, https i protokoli za fajlove.</translation>
 <translation id="4659077111144409915">Primarni račun</translation>
 <translation id="4659126640776004816">Kada se prijavite na Google račun, ova funkcija se uključuje.</translation>
@@ -3836,6 +3840,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5470735824776589490">Prije vraćanja na zadane vrijednosti pomoću Powerwasha potrebno je ponovo pokrenuti uređaj. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Zdravo! Ja sam vaš glas za pretvaranje teksta u govor.</translation>
 <translation id="5472627187093107397">Sačuvaj lozinke za ovu web lokaciju</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mora sadržavati najmanje jedan znak.}one{PIN mora sadržavati najmanje # znak.}few{PIN mora sadržavati najmanje # znaka.}other{PIN mora sadržavati najmanje # znakova.}}</translation>
 <translation id="5473333559083690127">Ponovo unesite novi PIN</translation>
 <translation id="5481273127572794904">Nije dozvoljeno automatsko preuzimanje više fajlova</translation>
 <translation id="5481941284378890518">Dodaj štampače u blizini</translation>
@@ -4376,6 +4381,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6087960857463881712">Oduševljeno lice</translation>
 <translation id="6091761513005122595">Dijeljenje je uspješno aktivirano.</translation>
 <translation id="6093888419484831006">Otkazivanje ažuriranja...</translation>
+<translation id="6095541101974653012">Odjavili ste se.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Otvori u najvećem prozoru</translation>
 <translation id="6096326118418049043">X.500 naziv</translation>
@@ -4708,6 +4714,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6474884162850599008">Prekini vezu s računom za Google Disk</translation>
 <translation id="6475697075626596525">Aplikacija <ph name="APP_NAME" /> želi dijeliti sadržaje vašeg ekrana. Odaberite šta želite dijeliti.</translation>
 <translation id="6478248366783946499">Zadržati opasan fajl?</translation>
+<translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Otvorite preuzimanje</translation>
 <translation id="6483805311199035658">Otvara se <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">Odaberite jezik</translation>
@@ -4896,6 +4903,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="671928215901716392">Zaključaj zaslon</translation>
 <translation id="6721678857435001674">Vidjeti proizvođača i model vašeg sigurnosnog ključa</translation>
 <translation id="6721972322305477112">&amp;Fajl</translation>
+<translation id="672208878794563299">Ova web lokacija će sljedeći put ponovo pitati.</translation>
 <translation id="672213144943476270">Otključajte profil prije nego što počnete pretraživati kao gost.</translation>
 <translation id="6723661294526996303">Uvoz oznaka i postavki...</translation>
 <translation id="6723839937902243910">Napajanje</translation>
@@ -6296,6 +6304,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8317671367883557781">Dodaj mrežnu vezu</translation>
 <translation id="8319414634934645341">Produžena upotreba ključa</translation>
 <translation id="8320459152843401447">Vaš cijeli ekran</translation>
+<translation id="8321837372750396788">Uređajem <ph name="DEVICE_TYPE" /> će upravljati <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Stranici je zabranjen pristup vašem mikrofonu.</translation>
 <translation id="8323167517179506834">Upišite URL</translation>
 <translation id="8324784016256120271">Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na različitim web lokacijama, naprimjer, radi personaliziranja oglasa</translation>
@@ -6603,6 +6612,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8698269656364382265">Da se vratite na prethodni ekran, prevucite prstom slijeva nadesno.</translation>
 <translation id="869884720829132584">Meni aplikacija</translation>
 <translation id="869891660844655955">Datum isteka</translation>
+<translation id="8702825062053163569">Uređaj <ph name="DEVICE_TYPE" /> je zaključan.</translation>
 <translation id="8703346390800944767">Preskoči oglas</translation>
 <translation id="8705331520020532516">Serijski broj</translation>
 <translation id="8705580154597116082">WiFi je dostupan putem telefona</translation>

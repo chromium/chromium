@@ -185,6 +185,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2718395828230677721">Noční režim</translation>
 <translation id="2727175239389218057">Odpovědět</translation>
 <translation id="2727977024730340865">Byla připojena nabíječka s nízkým výkonem. Nabíjení baterie nemusí probíhat spolehlivě.</translation>
+<translation id="2778650143428714839">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
 <translation id="2819276065543622893">Nyní budete odhlášeni.</translation>
 <translation id="28232023175184696">Nelze se připojit k internetu. Kliknutím to zkuste znovu.</translation>
@@ -563,6 +564,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6297287540776456956">Vyberte pomocí dotykového pera oblast.</translation>
 <translation id="6310121235600822547">Displej <ph name="DISPLAY_NAME" /> byl otočen o <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Hlas</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je spravovaná relace, kterou spravuje doména <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Rozhraní Bluetooth je zapnuté</translation>
 <translation id="6381109794406942707">Chcete-li zařízení odemknout, zadejte PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK je vypnutý</translation>

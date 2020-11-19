@@ -128,7 +128,7 @@
 <translation id="1136712381129578788">A chave de segurança está bloqueada porque o PIN incorreto foi inserido muitas vezes. Remova e insira a chave novamente para desbloqueá-la.</translation>
 <translation id="1137589305610962734">dados temporários</translation>
 <translation id="1137673463384776352">Abrir link no <ph name="APP" /></translation>
-<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}one{# nova notificação}other{# novas notificações}}</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova Notificação}one{# Nova Notificação}other{# Novas Notificações}}</translation>
 <translation id="1139343347646843679">Algo deu errado na configuração do Linux. Entre em contato com seu administrador.</translation>
 <translation id="1140351953533677694">Acessar seus dispositivos de série e Bluetooth</translation>
 <translation id="114036956334641753">Áudio e legendas</translation>

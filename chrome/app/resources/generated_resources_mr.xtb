@@ -266,6 +266,7 @@
 <translation id="1292849930724124745">साइन इन केलेले राहण्यासाठी स्मार्ट कार्ड घाला</translation>
 <translation id="1293264513303784526">USB-C डिव्‍हाइस (डावे पोर्ट)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1294807885394205587">या प्रक्रियेला काही मिनिटे लागू शकतात. कंटेनर व्यवस्थापक सुरू करत आहे.</translation>
 <translation id="1296911687402551044">निवडलेला टॅब पिन करा</translation>
 <translation id="1297175357211070620">गंतव्य</translation>
 <translation id="1300415640239881824">संरक्षित आशयाची अधिक चांगल्या प्लेबॅकसाठी पात्रता निर्धारित करण्यासाठी <ph name="DOMAIN" /> ला तुमच्या डिव्हाइसची Google कडून ओळख पडताळणी करून हवी आहे.</translation>
@@ -934,6 +935,7 @@
 <translation id="2046702855113914483">रामेन</translation>
 <translation id="204706822916043810">व्हर्च्युअल मशीन तपासत आहे</translation>
 <translation id="2048182445208425546">तुमच्या नेटवर्क रहदारी ॲक्सेस करा</translation>
+<translation id="2048554637254265991">कंटेनर व्यवस्थापक सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="2048653237708779538">कृती उपलब्ध नाही</translation>
 <translation id="204914487372604757">शॉर्टकट तयार करा </translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
@@ -1134,6 +1136,7 @@
 <translation id="2276503375879033601">अधिक ॲप्लिकेशन जोडा</translation>
 <translation id="2277255602909579701">सर्व कुकीज आणि साइट डेटा</translation>
 <translation id="2278562042389100163">ब्राउझर विंडो उघडा</translation>
+<translation id="2278668501808246459">कंटेनर व्यवस्थापक सुरू करत आहे</translation>
 <translation id="2280486287150724112">उजवा समास</translation>
 <translation id="2282146716419988068">GPU प्रक्रिया</translation>
 <translation id="2282155092769082568">स्वयंकॉन्फिगरेशन URL:</translation>
@@ -1237,7 +1240,7 @@
 <translation id="2395616325548404795">एंटरप्राइझ व्यवस्‍थापनासाठी आपल्या <ph name="DEVICE_TYPE" /> ची यशस्वीरित्या नोंदणी केली आहे परंतु त्याची मालमत्ता आणि स्थान माहिती पाठविण्यात अयशस्वी झाले. कृपया या डिव्हाइससाठी आपल्या Admin console मधून ही माहिती व्यक्तीचलितरित्या प्रविष्‍ट करा.</translation>
 <translation id="2396387085693598316">तुमच्या अ‍ॅडमिनने "<ph name="EXTENSION_NAME" />" ब्लॉक केले आहे</translation>
 <translation id="2396783860772170191">चार अंकी पिन एंटर करा (००००-९९९९)</translation>
-<translation id="2399699884460174994">सूचना केल्या आहेत</translation>
+<translation id="2399699884460174994">सूचना सुरू केल्या आहेत</translation>
 <translation id="2399939490305346086">सिक्युरिटी की साइन इन डेटा</translation>
 <translation id="2400664245143453337">त्वरित अपडेट आवश्यक आहे</translation>
 <translation id="2408018932941436077">कार्ड सेव्ह करत आहे</translation>
@@ -4310,7 +4313,7 @@
 <translation id="6031600495088157824">टूलबारमध्ये इनपुट पर्याय</translation>
 <translation id="6032715498678347852">या साइटला एक्स्टेंशन अ‍ॅक्सेस देण्यासाठी, त्यावर क्लिक करा.</translation>
 <translation id="6032912588568283682">फाइल सिस्‍टिम</translation>
-<translation id="603539183851330738">पहिल्यासारखे करा ऑटोकरेक्ट बटण. <ph name="TYPED_WORD" /> वर परत जा.  अ‍ॅक्टिव्हेट करण्यासाठी एंटर आणि डिसमिस करण्यासाठी escape दाबा.</translation>
+<translation id="603539183851330738">पहिल्यासारखे करा ऑटोकरेक्ट बटण. <ph name="TYPED_WORD" /> वर परत जा.  अ‍ॅक्टिव्हेट करण्यासाठी एंटर आणि डिसमिस करण्यासाठी एस्केप दाबा.</translation>
 <translation id="6035517790085323771">तुमच्या डिव्हाइससह कोण शेअर करू शकते</translation>
 <translation id="6038929619733116134">साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवत असल्यास ब्लॉक करा</translation>
 <translation id="6039651071822577588">नेटवर्क प्रॉपर्टी शब्दकोश विकृत झाला आहे</translation>
@@ -4413,6 +4416,7 @@
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, कोणतेही नेटवर्क नाही</translation>
 <translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
 <translation id="6143186082490678276">मदत मिळवा</translation>
+<translation id="6143366292569327983">ज्यातून भाषांतर करायचे आहे ती पेज भाषा निवडा</translation>
 <translation id="6144938890088808325">Chromebooks सुधारण्यात आम्हाला मदत करा</translation>
 <translation id="6147020289383635445">प्रिंट पूर्वावलोकन अयशस्वी.</translation>
 <translation id="6148576794665275391">आता उघडा</translation>
@@ -6110,6 +6114,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="810728361871746125">डिस्प्ले रिझोल्युशन</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{कोणत्याही तृतीय पक्ष कुकी नाहीत}=1{१ तृतीय पक्ष कुकी ब्लॉक केली आहे}other{# तृतीय पक्ष कुकी ब्लॉक केल्या आहेत}}</translation>
 <translation id="810875025413331850">कोणतीही जवळपासची डिव्हाइस आढळली नाहीत.</translation>
+<translation id="8109109153262930486">डीफॉल्ट अवतार</translation>
 <translation id="8110489095782891123">संपर्क सूची डाउनलोड करत आहे...</translation>
 <translation id="8113476325385351118">या साइटला MIDI डिव्हाइसचे पूर्ण नियंत्रण असण्यापासून ब्लॉक करणे पुढे सुरू ठेवा</translation>
 <translation id="8114199541033039755">टॅबलेट मोडमध्ये बटणांनी होम, परत जा वर नेव्हिगेट करा आणि अ‍ॅप्स स्विच करा. ChromeVox किंवा ऑटोमॅटिक क्लिक सुरू केले असताना सुरू केले जाते.</translation>

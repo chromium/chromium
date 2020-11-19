@@ -368,6 +368,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2354430244986887761">Google saytlar xavfsizligini tekshirish tizimi yaqinda <ph name="SITE" /> saytida <ph name="BEGIN_LINK" />zararli ilovalarni topdi<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Firibgarlar bu saytda siz ochgan rasmlarni ko‘rishi va bu rasmlarni qalbakilashtirib, o‘zgartirishi mumkin.</translation>
 <translation id="2356070529366658676">So‘ralsin</translation>
+<translation id="2357481397660644965">Qurilma <ph name="DEVICE_MANAGER" /> domenida va hisobingiz <ph name="ACCOUNT_MANAGER" /> tomonidan boshqariladi.</translation>
 <translation id="2359629602545592467">Bir nechta</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2360873523816792727">Kartalaringizni barcha qurilmalarda ishlatish uchun sinxronizatsiyani yoqing.</translation>
@@ -547,6 +548,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3145945101586104090">Javobni dekodlab bo‘lmadi</translation>
 <translation id="3150653042067488994">Server vaqtinchalik xatosi</translation>
 <translation id="3154506275960390542">Bu sahifada himoyalanmagan forma mavjud. Unga to‘ldiriluvchi axborot boshqalarga ko‘rinishi va firibgarlar tomonidan o‘zgartirilishi mumkin.</translation>
+<translation id="315504272643575312">Hisobingiz <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="3157931365184549694">Qayta tiklash</translation>
 <translation id="3162559335345991374">Siz ulangan Wi-Fi tarmog‘i tizimga kirishingizni talab qilishi mumkin.</translation>
 <translation id="3167968892399408617">Inkognito rejimida ochilgan sahifalar brauzer yoki qidiruv tarixida saqlanmaydi. Barcha inkognito sahifalari yopilganda qurilmangizda cookie-fayllar kabi izlar qolmaydi. Siz ko‘chirib olgan fayllar va qo‘shilgan xatcho‘plar saqlanib qoladi.</translation>
@@ -1923,6 +1925,7 @@ Batafsil axborot:
 <translation id="8680536109547170164"><ph name="QUERY" />, javob, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> veb-sahifasi quyidagi sabablarga ko‘ra yuklanmadi:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Qurilmangiz va hisobingiz <ph name="MANAGER" /> domeni tomonidan boshqariladi.</translation>
 <translation id="8688672835843460752">Bo‘sh</translation>
 <translation id="868922510921656628">Majmuadagi sahifalar soni</translation>
 <translation id="869891660844655955">Tugash muddati</translation>
@@ -1937,6 +1940,7 @@ Batafsil axborot:
 <translation id="8728672262656704056">Siz inkognito rejimiga o‘tdingiz</translation>
 <translation id="8730621377337864115">Tayyor</translation>
 <translation id="8731544501227493793">Parollarni boshqarish tugmasi, Chrome sozlamalari orqali parollarni koʻrish va boshqarish uchun Enter tugmasini bosing</translation>
+<translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> qurilmangiz <ph name="MANAGER" /> domenida boshqariladi</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Inkognito oynasini ochib internetni kuzatuvsiz kezish uchun avval Tab, keyin esa Enter tugmasini bosing</translation>
 <translation id="8738058698779197622">Tezkor havfsiz aloqa o‘rnatish uchun tizim soati to‘g‘ri sozlangan bo‘lishi kerak. Chunki sertifikatlar saytlarda haqiqiylik tekshiruvi uchun muddat cheklamalariga ega. Agar qurilmadagi vaqt noto‘g‘ri bo‘lsa, Chromium sertifikatlardan hali ham foydalanish mumkinligini tekshira olmaydi.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> saytining &lt;abbr id="dnsDefinition"&gt;DNS manzili&lt;/abbr&gt; topilmadi. Muammo o‘rganilmoqda.</translation>
@@ -2026,6 +2030,7 @@ Batafsil axborot:
 <translation id="9101630580131696064">Tarnov 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> sayti ma’lumotlaringizni himoyalash uchun shifrlashdan foydalanadi, lekin hozir Chromium <ph name="SITE" /> saytiga ulanish uchun uringanda, ushbu sayt shubhali va noto‘g‘ri tasdiqlash ma’lumotlarini qaytarmoqda. Bunday holat zararli sayt o‘zini <ph name="SITE" /> o‘rnida ko‘rsatayotganda yoki Wi-Fi ulanishi uzilib qolganda yuz berishi mumkin. Shaxsiy ma’lumotlaringizga hech qanday xavf tug‘ilgani yo‘q, chunki Chromium aloqani ma’lumotlar almashinuvidan oldin uzib qo‘ydi.</translation>
 <translation id="9106062320799175032">To‘lov manzilini kiriting</translation>
+<translation id="9107467864910557787">Brauzeringiz <ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="9114524666733003316">Karta tasdiqlanmoqda...</translation>
 <translation id="9114581008513152754">Bu brauzer kompaniya yoki tashkilot boshqaruvida emas. Bu qurilmadagi amallar Chromedan tashqarida boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Yuklangan</translation>

@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">不須離開網頁即可瞭解網站上的主題。「輕觸搜尋」功能可將特定字詞及其上下文內容傳送給 Google 搜尋，並傳回定義、圖片、搜尋結果和其他詳細資料。
 
 輕觸並按住字詞即可進行搜尋，如要修正你所搜尋的內容，請調整選取的字詞數量。如要編輯你所搜尋的內容，請先開啟面板，再輕觸畫面上的圖示以開啟新分頁，然後在搜尋框中進行變更。</translation>
+<translation id="2459390580524506445">強化語音搜尋</translation>
 <translation id="246532703174860178">分享</translation>
 <translation id="2478076885740497414">安裝應用程式</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 儲存資料量</translation>
 <translation id="2942036813789421260">預覽分頁已關閉</translation>
 <translation id="2956410042958133412">這個帳戶受 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀取的網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀取的網頁}}</translation>
 <translation id="2962095958535813455">已切換成無痕式分頁</translation>
 <translation id="2979025552038692506">選取的無痕式分頁</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">允許顯示通知</translation>
 <translation id="3290991969712132877">如要更快速地前往這個網頁，請透過「更多」選項按鈕，將網頁新增到主畫面</translation>
 <translation id="3295530008794733555">瀏覽速度更快，數據用量更少。</translation>
+<translation id="3297344142967351106">語音小幫手</translation>
 <translation id="3298243779924642547">精簡版本</translation>
 <translation id="3303414029551471755">繼續下載這項內容？</translation>
 <translation id="3315103659806849044">你正在自訂同步功能和 Google 服務設定。如要完成開啟同步功能，請輕觸畫面底部附近的 [確認] 按鈕。向上瀏覽</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">已禁止重新導向。</translation>
 <translation id="5527082711130173040">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK1" />更新權限<ph name="END_LINK1" />。此外，<ph name="BEGIN_LINK2" />這個裝置的位置資訊存取權已關閉<ph name="END_LINK2" />。</translation>
 <translation id="5530766185686772672">關閉無痕式分頁</translation>
+<translation id="5530920986376047241">你可以將頁面儲存至閱讀清單，以便再次查看</translation>
 <translation id="5534640966246046842">已複製網站</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5561549206367097665">正在等待網路連線…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">開啟無痕分頁</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6005538289190791541">建議的密碼</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{你有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個網頁}other{你有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個網頁}}</translation>
 <translation id="6014293228235665243">未讀取</translation>
 <translation id="6036057147555329831">其他 ICU</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7577900504646297215">管理興趣喜好</translation>
 <translation id="757855969265046257">{FILES,plural, =1{已下載 <ph name="FILES_DOWNLOADED_ONE" /> 個檔案}other{已下載 <ph name="FILES_DOWNLOADED_MANY" /> 個檔案}}</translation>
+<translation id="7583262514280211622">這裡會顯示你的閱讀清單</translation>
 <translation id="7588219262685291874">在裝置開啟「節約耗電量」後啟用深色主題</translation>
 <translation id="7593557518625677601">如要啟動 Chrome 同步功能，請開啟 Android 設定並重新啟用 Android 系統同步處理設定</translation>
 <translation id="7596558890252710462">作業系統</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092">關閉 <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
 <translation id="7778840695157240389">請稍後再返回查看是否有新的報導</translation>
+<translation id="7786595606756654269">當你搜尋網路以及和已開啟的網站互動時，Google 助理可提供更好的語音體驗。當你在網站上使用 Google 助理時，系統會將網站的網址和內容傳送給 Google 助理。</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">已還原 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">你已停用儲存空間存取權，請前往「設定」頁面啟用這項權限。</translation>
 <translation id="7963646190083259054">供應商：</translation>
 <translation id="7967911570373677897">如要掃描 QR 圖碼，請將設定變更為允許 Chrome 使用你的攝影機</translation>
+<translation id="7968014550143838305">已加入閱讀清單</translation>
 <translation id="7971136598759319605">上次使用時間：1 天前</translation>
 <translation id="7975379999046275268">預覽網頁 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">預先載入網頁，以加快瀏覽及搜尋速度</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" />套件已下載完成。</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8407396331882458341">1. 選擇 <ph name="APP_NAME" />\n2. 輕觸 [一律採用]</translation>
+<translation id="8410695015584479363">追蹤價格</translation>
 <translation id="8413126021676339697">顯示完整記錄</translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8427875596167638501">已在畫面下半部顯示預覽分頁</translation>

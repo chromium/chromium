@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">bardzo duże opóźnienie HTTPS</translation>
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
 <translation id="1468664791493211953">Oferty</translation>
+<translation id="1476467821656042872">Tym urządzeniem zarządza <ph name="MANAGER" />. Może też monitorować Twoją aktywność.</translation>
 <translation id="1478594628797167447">Skanery</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> zarządza tym użytkownikiem i może zdalnie monitorować jego aktywność oraz zarządzać ustawieniami.</translation>
 <translation id="150962533380566081">Nieprawidłowy PUK.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />-wątkowy)</translation>
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Skanuj do</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
 <translation id="4548483925627140043">Nie znaleziono sygnału</translation>
+<translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
 <translation id="4646949265910132906">Bezpieczne połączenie z Wi-Fi</translation>
@@ -116,7 +120,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6048107060512778456">Niepowodzenie – zacięcie papieru</translation>
 <translation id="6050189528197190982">Skala odcieni szarości</translation>
 <translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
-<translation id="6061772781719867950">nieudane żądania HTTP</translation>
+<translation id="6061772781719867950">nieudane żądania HTTPS</translation>
 <translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
 <translation id="6108689792487843350">Brama jest nieosiągalna</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
@@ -136,10 +140,12 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6747215703636344499">Zatrzymano – odbiornik papieru jest pełny</translation>
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
-<translation id="6768237774506518020">duża liczba błędów rozpoznania nazwy DNS</translation>
+<translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
 <translation id="6839141349259399400">Nie możesz połączyć się ze skanerami?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="714876143603641390">Łączność LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
+<translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ pliku</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>

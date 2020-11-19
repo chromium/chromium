@@ -209,6 +209,7 @@
 <translation id="3335337277364016868">År, det blev optaget</translation>
 <translation id="3353984535370177728">Vælg en mappe, der skal uploades</translation>
 <translation id="3356580349448036450">Fuldført</translation>
+<translation id="3369522691271417561">Sorani-kurdisk med arabiskbaseret tastatur</translation>
 <translation id="3414856743105198592">Formatering af de flytbare medier kommer til at slette alle data. Vil du fortsætte?</translation>
 <translation id="3437801641691368414">Oprettelsestidspunkt</translation>
 <translation id="3466147780910026086">Din medieenhed scannes...</translation>
@@ -278,7 +279,7 @@
 <translation id="4299729908419173967">Brasiliansk</translation>
 <translation id="4305486654020746131">Punjabi</translation>
 <translation id="4309915981827077375">Generelle oplysninger</translation>
-<translation id="4315949787858895817">Hollandsk (Belgien)</translation>
+<translation id="4315949787858895817">Nederlandsk (Belgien)</translation>
 <translation id="4326192123064055915">Kaffe</translation>
 <translation id="4336032328163998280">Kopieringen mislykkedes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -515,7 +516,7 @@
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6650726141019353908">Lyserød sommerfugl</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
-<translation id="6680841910911617814">Hollandsk (Holland)</translation>
+<translation id="6680841910911617814">Nederlandsk (Nederlandene)</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6718273304615422081">Komprimerer...</translation>
 <translation id="6751256176799620176">1 mappe er valgt</translation>
@@ -590,7 +591,7 @@
 <translation id="751507702149411736">Hviderussisk</translation>
 <translation id="7544830582642184299">Giv Linux-apps adgang til filer i Google Drev. Ændringer synkroniseres med dine andre enheder.</translation>
 <translation id="7544853251252956727">Bland</translation>
-<translation id="7547811415869834682">Hollandsk</translation>
+<translation id="7547811415869834682">Nederlandsk</translation>
 <translation id="7551643184018910560">Fastgør til hylde</translation>
 <translation id="7553492409867692754">Giv Linux-apps adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
@@ -710,7 +711,7 @@
 <translation id="8714406895390098252">Cykel</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> er valgt.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
-<translation id="8770002329960263418">Hollandsk (Holland) med amerikansk internationalt computertastatur</translation>
+<translation id="8770002329960263418">Nederlandsk (Nederlandene) med amerikansk internationalt computertastatur</translation>
 <translation id="8775404590947523323">Din ændringer gemmes automatisk.<ph name="BREAKS" />Hvis du gemmer en kopi af det oprindelige billede, skal du fjerne markeringen for "Overskriv originalen"</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Komprimering mislykkedes, elementet findes: "<ph name="FILE_NAME" />"</translation>

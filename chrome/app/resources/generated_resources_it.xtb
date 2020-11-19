@@ -266,7 +266,7 @@
 <translation id="1292849930724124745">Inserisci la smart card per mantenere l'accesso</translation>
 <translation id="1293264513303784526">Dispositivo USB-C (porta a sinistra)</translation>
 <translation id="1293556467332435079">File</translation>
-<translation id="1294807885394205587">Questa procedura potrebbe richiedere alcuni minuti. Avvio del gestore di contenitori.</translation>
+<translation id="1294807885394205587">Questa procedura potrebbe richiedere alcuni minuti. Avvio del gestore di container.</translation>
 <translation id="1296911687402551044">Blocca scheda selezionata</translation>
 <translation id="1297175357211070620">Destinazione</translation>
 <translation id="1300415640239881824"><ph name="DOMAIN" /> richiede che Google controlli l'identità del tuo dispositivo per determinarne l'idoneità alla riproduzione avanzata di contenuti protetti.</translation>
@@ -936,7 +936,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Controllo della macchina virtuale</translation>
 <translation id="2048182445208425546">Accesso al traffico di rete</translation>
-<translation id="2048554637254265991">Errore durante l'avvio del gestore di contenitori. Riprova.</translation>
+<translation id="2048554637254265991">Errore durante l'avvio del gestore di container. Riprova.</translation>
 <translation id="2048653237708779538">Azione non disponibile</translation>
 <translation id="204914487372604757">Crea scorciatoia</translation>
 <translation id="2050339315714019657">Verticale</translation>
@@ -1137,7 +1137,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2276503375879033601">Aggiungi altre applicazioni</translation>
 <translation id="2277255602909579701">Tutti i cookie e i dati dei siti</translation>
 <translation id="2278562042389100163">Apri finestra browser</translation>
-<translation id="2278668501808246459">Avvio del gestore di contenitori</translation>
+<translation id="2278668501808246459">Avvio del gestore di container</translation>
 <translation id="2280486287150724112">Margine destro</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
 <translation id="2282155092769082568">URL di configurazione automatica:</translation>
@@ -4948,7 +4948,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6787839852456839824">Scorciatoie da tastiera</translation>
 <translation id="6788210894632713004">Estensione non pacchettizzata</translation>
 <translation id="6789592661892473991">Divisione in orizzontale</translation>
-<translation id="6790428901817661496">Play</translation>
+<translation id="6790428901817661496">Riproduci</translation>
 <translation id="6790497603648687708">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta da remoto</translation>
 <translation id="6790820461102226165">Aggiungi persona...</translation>
 <translation id="6792072150955115067"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo con <ph name="TARGET_NAME" />. Scegli i contenuti che desideri condividere.</translation>

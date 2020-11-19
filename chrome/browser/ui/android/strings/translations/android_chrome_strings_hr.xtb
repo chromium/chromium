@@ -522,7 +522,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 preuzimanje dovršeno.}one{# preuzimanje dovršeno.}few{# preuzimanja dovršena.}other{# preuzimanja dovršeno.}}</translation>
 <translation id="4766678251456904326">Dodajte račun uređaju</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Zakazano je jedno preuzimanje.}one{Zakazano je # preuzimanje.}few{Zakazana su # preuzimanja.}other{Zakazano je # preuzimanja.}}</translation>
-<translation id="4791358705705538979">Pomaže vam s izvršavanjem zadataka, na primjer s naplatom, na webu</translation>
+<translation id="4791358705705538979">Pomaže vam s izvršavanjem zadataka na webu, na primjer s plaćanjem</translation>
 <translation id="4802417911091824046">Enkripcija šifrom ne uključuje načine plaćanja i adrese s Google Paya.
 
 Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizaciju<ph name="END_LINK" /></translation>
@@ -1132,6 +1132,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="8920114477895755567">Čekaju se pojedinosti o nadređenim jedinicama.</translation>
 <translation id="8922289737868596582">Preuzmite stranice za izvanmrežnu upotrebu pomoću gumba Više opcija</translation>
 <translation id="8928626432984354940">Popis mapa oznaka otvoren je na pola visine</translation>
+<translation id="8937267401510745927">Da bi vam pomogao sa zadacima, Google će primati URL-ove i sadržaje web-lokacija na kojima upotrebljavate Asistenta, kao i informacije koje šaljete putem Asistenta. Te se informacije mogu spremati na vaš Google račun. Asistenta možete isključiti u Chromeovim postavkama.</translation>
 <translation id="8937772741022875483">Želite li ukloniti svoju aktivnost u Chromeu iz Digitalne ravnoteže?</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8951232171465285730">Chrome vam je uštedio <ph name="MEGABYTES" /> MB</translation>

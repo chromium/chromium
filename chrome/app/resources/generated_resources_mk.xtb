@@ -434,6 +434,7 @@
 <translation id="1475502736924165259">Имате сертификати што не припаѓаат во ниедна друга категорија</translation>
 <translation id="1476088332184200792">Копирај на уредот</translation>
 <translation id="1476607407192946488">&amp;Поставки за јазик</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.</translation>
 <translation id="1478340334823509079">Детали: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Не е овозможена инсталација</translation>
 <translation id="1481537595330271162">Грешка при менувањето големина на дискот</translation>
@@ -2034,6 +2035,7 @@
 <translation id="3320630259304269485">Безбедно прелистување (заштита од опасни сајтови) и други безбедносни поставки</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Податоциве содржат чувствителни или опасни содржини. Отстранете ги тие содржини и обидете се повторно.}=1{Датотекава содржи чувствителни или опасни содржини. Отстранете ги тие содржини и обидете се повторно.}one{Датотекиве содржат чувствителни или опасни содржини. Отстранете ги тие содржини и обидете се повторно.}other{Датотекиве содржат чувствителни или опасни содржини. Отстранете ги тие содржини и обидете се повторно.}}</translation>
 <translation id="3323521181261657960">Бонус! Доби уште време за користење на уредот</translation>
+<translation id="3325804108816646710">Се бараат достапни профили…</translation>
 <translation id="3325910708063135066">Камерата и микрофонот се исклучени во поставките за системот Mac</translation>
 <translation id="3327050066667856415">Уредите Chromebook се дизајнирани за безбедност. Вашиот уред е заштитен од злонамерен софтвер, нема потреба од дополнителен софтвер.</translation>
 <translation id="3328489342742826322">Враќањето од бекап ќе ги избрише сите постојни апликации на Linux и податоците во папката со датотеки на Linux.</translation>
@@ -2101,6 +2103,7 @@
 <translation id="3412265149091626468">Скокни до Избор</translation>
 <translation id="3413122095806433232">Издавачи на ЦА: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Големина:</translation>
+<translation id="3414966631182382431"><ph name="MANAGER" /> <ph name="BEGIN_LINK" />управува со прелистувачот<ph name="END_LINK" /></translation>
 <translation id="3416468988018290825">Секогаш прикажувај ги целосните URL-адреси</translation>
 <translation id="3417835166382867856">Пребарајте ги картичките</translation>
 <translation id="3417836307470882032">24-часовно време</translation>
@@ -3176,6 +3179,7 @@
 <translation id="4651484272688821107">Не може да се вчита онлајн компонентата со ресурси во демо-режим.</translation>
 <translation id="4652935475563630866">Промената во поставката за камерата бара рестартирање на Parallels Desktop. Рестартирајте ја Parallels Desktop за да продолжите.</translation>
 <translation id="4653405415038586100">Грешка при конфигурирање на Linux</translation>
+<translation id="4657914796247705218">Брзина на TrackPoint</translation>
 <translation id="465878909996028221">Само http, https и протоколите за датотеки се поддржани за пренасочувања на прелистувачот.</translation>
 <translation id="4659077111144409915">Примарна сметка</translation>
 <translation id="4659126640776004816">Функцијава е вклучена кога ќе се најавите на сметката на Google.</translation>
@@ -3835,6 +3839,7 @@
 <translation id="5470735824776589490">Треба да го рестартирате уредот за да може да го ресетирате со Powerwash. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Здраво! Јас сум вашиот глас за функцијата „Од текст до говор“.</translation>
 <translation id="5472627187093107397">Зачувувај лозинки за сајтов</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-кодот мора да содржи најмалку еден знак}one{PIN-кодот мора да содржи најмалку # знак}other{PIN-кодот мора да содржи најмалку # знака}}</translation>
 <translation id="5473333559083690127">Внесете го новиот PIN повторно</translation>
 <translation id="5481273127572794904">Не им е дозволено автоматски да преземаат повеќе датотеки</translation>
 <translation id="5481941284378890518">Додај печатачи во близина</translation>
@@ -4374,6 +4379,7 @@
 <translation id="6087960857463881712">Прекрасно лице</translation>
 <translation id="6091761513005122595">Споделувањето е успешно монтирано.</translation>
 <translation id="6093888419484831006">Се откажува ажурирањето...</translation>
+<translation id="6095541101974653012">Одјавени сте.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Отвори максимизирано</translation>
 <translation id="6096326118418049043">X.500 Име</translation>
@@ -4706,6 +4712,7 @@
 <translation id="6474884162850599008">Исклучете ја сметката на Дискот на Google</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> сака да ги сподели содржините на екранот. Одберете што би сакале да споделите.</translation>
 <translation id="6478248366783946499">Да се задржи опасната датотека?</translation>
+<translation id="6480327114083866287">Управува: <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Отворање преземена датотека</translation>
 <translation id="6483805311199035658">Се отвора <ph name="FILE" />…</translation>
 <translation id="6488384360522318064">Изберете јазик</translation>
@@ -4894,6 +4901,7 @@
 <translation id="671928215901716392">Заклучување на екранот</translation>
 <translation id="6721678857435001674">да ја види марката и моделот на вашиот безбедносен клуч</translation>
 <translation id="6721972322305477112">&amp;Датотека</translation>
+<translation id="672208878794563299">Сајтов повторно ќе побара дозвола следниот пат.</translation>
 <translation id="672213144943476270">Отклучете го профилот пред да прелистувате како гостин.</translation>
 <translation id="6723661294526996303">Увези обележувачи и поставки...</translation>
 <translation id="6723839937902243910">Енергија</translation>
@@ -6296,6 +6304,7 @@
 <translation id="8317671367883557781">Додај мрежна врска</translation>
 <translation id="8319414634934645341">Користење продолжен клуч</translation>
 <translation id="8320459152843401447">Целиот екран</translation>
+<translation id="8321837372750396788"><ph name="MANAGER" /> ќе управува со овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8322814362483282060">Страницата е блокирана да не пристапува кон вашиот микрофон.</translation>
 <translation id="8323167517179506834">Впиши URL</translation>
 <translation id="8324784016256120271">Сајтовите може да користат колачиња за да ја следат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами</translation>
@@ -6603,6 +6612,7 @@
 <translation id="8698269656364382265">За да се вратите на претходниот екран, повлечете од левата страна.</translation>
 <translation id="869884720829132584">Мени со апликации</translation>
 <translation id="869891660844655955">Рок на важност</translation>
+<translation id="8702825062053163569">Вашиот <ph name="DEVICE_TYPE" /> е заклучен.</translation>
 <translation id="8703346390800944767">Прескокни ја рекламата</translation>
 <translation id="8705331520020532516">Сериски број</translation>
 <translation id="8705580154597116082">Wi-Fi е достапно преку телефон</translation>

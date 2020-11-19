@@ -433,6 +433,7 @@
 <translation id="1475502736924165259">Du har en fil med sertifikater som ikke passer inn i noen av de andre kategoriene</translation>
 <translation id="1476088332184200792">Kopiér til enheten din</translation>
 <translation id="1476607407192946488">&amp;Språkinnstillinger</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> krever at smartkortet blir stående i.</translation>
 <translation id="1478340334823509079">Detaljer: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Installasjon er ikke aktivert</translation>
 <translation id="1481537595330271162">Feil ved endring av diskstørrelse</translation>
@@ -2030,6 +2031,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3320630259304269485">Safe Browsing (beskyttelse mot farlige nettsteder) og andre sikkerhetsinnstillinger</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Disse dataene har sensitivt eller farlig innhold. Fjern dette innholdet, og prøv på nytt.}=1{Denne filen har sensitivt eller farlig innhold. Fjern dette innholdet, og prøv på nytt.}other{Disse filene har sensitivt eller farlig innhold. Fjern dette innholdet, og prøv på nytt.}}</translation>
 <translation id="3323521181261657960">Bonus! Du har fått mer skjermtid</translation>
+<translation id="3325804108816646710">Ser etter tilgjengelige profiler …</translation>
 <translation id="3325910708063135066">Kameraet og mikrofonen er slått av i Mac-systemvalgene</translation>
 <translation id="3327050066667856415">Chromebook er designet for sikkerhet. Enheten din er automatisk beskyttet mot skadelig programvare – du trenger ingen tilleggsprogramvare.</translation>
 <translation id="3328489342742826322">Når du gjenoppretter fra en sikkerhetskopi, slettes eksisterende Linux-programmer og -data i mappen for Linux-filer.</translation>
@@ -2097,6 +2099,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3412265149091626468">Gå til utvalg</translation>
 <translation id="3413122095806433232">Sertifiseringsinstanser: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Størrelse:</translation>
+<translation id="3414966631182382431"><ph name="BEGIN_LINK" />Nettleseren administreres<ph name="END_LINK" /> av <ph name="MANAGER" /></translation>
 <translation id="3416468988018290825">Vis alltid fullstendige nettadresser</translation>
 <translation id="3417835166382867856">Søk på faner</translation>
 <translation id="3417836307470882032">24-timersklokke</translation>
@@ -3170,6 +3173,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4651484272688821107">Kunne ikke laste inn nettbasert komponent med ressurser for demomodus.</translation>
 <translation id="4652935475563630866">Endringen i kamerainnstillingen krever omstart av Parallels Desktop. Start Parallels Desktop på nytt for å fortsette.</translation>
 <translation id="4653405415038586100">Feil under konfigureringen av Linux</translation>
+<translation id="4657914796247705218">TrackPoint-hastighet</translation>
 <translation id="465878909996028221">Bare protokollene http, https og file støttes for viderekobling av nettleseren.</translation>
 <translation id="4659077111144409915">Primærkonto</translation>
 <translation id="4659126640776004816">Når du logger på Google-kontoen din, blir denne funksjonen slått på.</translation>
@@ -3829,6 +3833,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5470735824776589490">En omstart er nødvendig før enheten din kan tilbakestilles med Powerwash. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Heisann! Jeg er tekst til tale-stemmen din.</translation>
 <translation id="5472627187093107397">Lagre passord for dette nettstedet</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-koden må bestå av minst ett tegn}other{PIN-koden må bestå av minst # tegn}}</translation>
 <translation id="5473333559083690127">Skriv inn den nye PIN-koden på nytt</translation>
 <translation id="5481273127572794904">Nettsteder som ikke har lov til å laste ned flere filer automatisk</translation>
 <translation id="5481941284378890518">Legg til skrivere i nærheten</translation>
@@ -4369,6 +4374,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6087960857463881712">Fantastisk-fjes</translation>
 <translation id="6091761513005122595">Delingen er aktivert.</translation>
 <translation id="6093888419484831006">Avbryter oppdatering …</translation>
+<translation id="6095541101974653012">Du er nå logget av.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Maksimer ved åpning</translation>
 <translation id="6096326118418049043">X.500 navn</translation>
@@ -4701,6 +4707,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6474884162850599008">Koble fra Google Disk-kontoen.</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> vil dele innholdet på skjermen din. Velg hva du vil dele.</translation>
 <translation id="6478248366783946499">Vil du beholde den farlige filen?</translation>
+<translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Åpne nedlasting</translation>
 <translation id="6483805311199035658">Åpner <ph name="FILE" /> ...</translation>
 <translation id="6488384360522318064">Velg språk</translation>
@@ -4889,6 +4896,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="671928215901716392">Lås skjerm</translation>
 <translation id="6721678857435001674">se merket og modellen til sikkerhetsnøkkelen din</translation>
 <translation id="6721972322305477112">&amp;Fil</translation>
+<translation id="672208878794563299">Dette nettstedet kommer til å spørre på nytt neste gang.</translation>
 <translation id="672213144943476270">Du må låse opp profilen din før du kan surfe som gjest.</translation>
 <translation id="6723661294526996303">Importér bokmerker og innstillinger...</translation>
 <translation id="6723839937902243910">Strøm</translation>
@@ -6289,6 +6297,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8317671367883557781">Legg til nettverkstilkobling</translation>
 <translation id="8319414634934645341">Utvidet bruk av nøkkel</translation>
 <translation id="8320459152843401447">Hele skjermen</translation>
+<translation id="8321837372750396788">Denne <ph name="DEVICE_TYPE" />-enheten kommer til å bli administrert av <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Mikrofonen er blokkert for denne siden.</translation>
 <translation id="8323167517179506834">Skriv inn nettadresse</translation>
 <translation id="8324784016256120271">Nettsteder kan bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser</translation>
@@ -6596,6 +6605,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8698269656364382265">For å gå tilbake til det forrige skjermbildet, sveip fra venstre side.</translation>
 <translation id="869884720829132584">Programmeny</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
+<translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> er nå låst.</translation>
 <translation id="8703346390800944767">Hopp over annonsen</translation>
 <translation id="8705331520020532516">Serienummer</translation>
 <translation id="8705580154597116082">Wi-Fi er tilgjengelig via telefon</translation>

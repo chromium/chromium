@@ -207,6 +207,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2450907520913474542">Tìm hiểu về các chủ đề trên trang web mà không cần rời khỏi trang. Tính năng Chạm để tìm kiếm sẽ gửi một từ và ngữ cảnh xung quanh từ đó tới Google Tìm kiếm, sau đó hiển thị định nghĩa, hình ảnh, kết quả tìm kiếm và các chi tiết khác.
 
 Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung tìm kiếm, hãy chọn nhiều hoặc ít từ hơn. Để chỉnh sửa nội dung tìm kiếm, hãy mở bảng điều khiển, nhấn vào biểu tượng của ứng dụng bất kỳ bạn muốn mở trong một thẻ mới rồi thay đổi nội dung trong hộp tìm kiếm.</translation>
+<translation id="2459390580524506445">Tìm kiếm nâng cao bằng giọng nói</translation>
 <translation id="246532703174860178">Chia sẻ</translation>
 <translation id="2478076885740497414">Cài đặt ứng dụng</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
@@ -275,6 +276,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2932150158123903946">Bộ nhớ Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Thẻ xem trước đang đóng</translation>
 <translation id="2956410042958133412">Tài khoản này do <ph name="PARENT_NAME_1" /> và <ph name="PARENT_NAME_2" /> quản lý.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> trang chưa đọc}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> trang chưa đọc}}</translation>
 <translation id="2962095958535813455">Đã chuyển sang thẻ ẩn danh</translation>
 <translation id="2979025552038692506">Thẻ ẩn danh được chọn</translation>
 <translation id="2987620471460279764">Văn bản được chia sẻ từ thiết bị khác</translation>
@@ -324,6 +326,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="32895400574683172">Cho phép thông báo</translation>
 <translation id="3290991969712132877">Để truy cập nhanh hơn, hãy thêm trang này vào Màn hình chính từ nút Tùy chọn khác</translation>
 <translation id="3295530008794733555">Duyệt web nhanh hơn. Sử dụng ít dữ liệu hơn.</translation>
+<translation id="3297344142967351106">Trợ lý thoại</translation>
 <translation id="3298243779924642547">Phiên bản rút gọn</translation>
 <translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
 <translation id="3315103659806849044">Bạn đang tùy chỉnh các tùy chọn cài đặt Đồng bộ hóa và dịch vụ của Google. Để hoàn tất thao tác bật tính năng đồng bộ hóa, hãy nhấn vào nút Xác nhận ở gần cuối màn hình. Di chuyển lên</translation>
@@ -625,6 +628,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5524843473235508879">Đã chặn chuyển hướng.</translation>
 <translation id="5527082711130173040">Chrome cần có quyền truy cập vị trí để quét tìm thiết bị. <ph name="BEGIN_LINK1" />Cập nhật quyền<ph name="END_LINK1" />. Tính năng truy cập vị trí cũng bị <ph name="BEGIN_LINK2" />tắt cho thiết bị này<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Đóng thẻ ẩn danh</translation>
+<translation id="5530920986376047241">Bạn có thể lưu các trang vào danh sách đọc để tìm lại</translation>
 <translation id="5534640966246046842">Đã sao chép trang web</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5561549206367097665">Đang chờ mạng…</translation>
@@ -704,6 +708,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5982307838673692400">Mở một thẻ Ẩn danh</translation>
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
 <translation id="6005538289190791541">Mật khẩu đề xuất</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Bạn có <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> trang}other{Bạn có <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> trang}}</translation>
 <translation id="6014293228235665243">Chưa đọc</translation>
 <translation id="6036057147555329831">Bộ chuyển đổi giao diện (ICU) bổ sung</translation>
 <translation id="6039379616847168523">Chuyển sang thẻ tiếp theo</translation>
@@ -938,6 +943,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="756809126120519699">Đã xóa dữ liệu Chrome</translation>
 <translation id="7577900504646297215">Quản lý mối quan tâm</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Đã tải <ph name="FILES_DOWNLOADED_ONE" /> tệp xuống}other{Đã tải <ph name="FILES_DOWNLOADED_MANY" /> tệp xuống}}</translation>
+<translation id="7583262514280211622">Bạn sẽ thấy danh sách đọc ở đây</translation>
 <translation id="7588219262685291874">Bật giao diện tối khi Trình tiết kiệm pin trên thiết bị đang bật</translation>
 <translation id="7593557518625677601">Mở c.đặt Android &amp; bật lại đ.bộ hóa hệ thống Android để b.đầu đồng bộ hóa Chrome</translation>
 <translation id="7596558890252710462">Hệ điều hành</translation>
@@ -969,6 +975,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7772375229873196092">Đóng <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}}</translation>
 <translation id="7778840695157240389">Hãy kiểm tra lại sau để xem các tin bài mới</translation>
+<translation id="7786595606756654269">Trợ lý Google giúp cải thiện trải nghiệm nhập liệu bằng giọng nói khi tìm kiếm trên web và tương tác với các trang web mà bạn đang mở. Trợ lý Google sẽ nhận URL và nội dung của những trang web mà bạn sử dụng Trợ lý Google.</translation>
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="7798392620021911922">Đã khôi phục <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
@@ -994,6 +1001,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7961926449547174351">Bạn đã tắt Quyền truy cập bộ nhớ. Vui lòng chuyển đến phần Cài đặt để bật quyền này.</translation>
 <translation id="7963646190083259054">Nhà cung cấp:</translation>
 <translation id="7967911570373677897">Để quét mã QR, hãy thay đổi các tùy chọn cài đặt để Chrome có thể sử dụng máy ảnh của bạn</translation>
+<translation id="7968014550143838305">Đã thêm vào danh sách đọc</translation>
 <translation id="7971136598759319605">Hoạt động 1 ngày trước</translation>
 <translation id="7975379999046275268">Xem trước trang <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Tải trước các trang để tìm kiếm và duyệt web nhanh hơn</translation>
@@ -1055,6 +1063,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8372925856448695381"><ph name="LANG" /> đã sẵn sàng.</translation>
 <translation id="8393700583063109961">Gửi tin nhắn</translation>
 <translation id="8407396331882458341">1. Chọn <ph name="APP_NAME" />\n2. Nhấn vào "Luôn chọn"</translation>
+<translation id="8410695015584479363">Theo dõi giá</translation>
 <translation id="8413126021676339697">Hiển thị toàn bộ lịch sử</translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8427875596167638501">Thẻ xem trước đang mở trên nửa màn hình</translation>

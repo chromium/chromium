@@ -341,7 +341,7 @@
 <translation id="335581015389089642">语音</translation>
 <translation id="3356951775008366684">播报字词的拼音</translation>
 <translation id="3359142382821736686">seprtr</translation>
-<translation id="3363015957057974366">您还可以使用 Tab 键移至屏幕上的下一个互动项。Tab 键位于搜索键的正上方。请按 Tab 键以继续。</translation>
+<translation id="3363015957057974366">您还可以使用 Tab 键移至屏幕上的下一个互动项。Tab 键是搜索键上方第一个键。请按 Tab 键以继续。</translation>
 <translation id="3366946046494222386"><ph name="TOPIC" />教程，<ph name="LESSONS" /> 节课</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{1个加号}other{#个加号}}</translation>
 <translation id="338583716107319301">分隔符</translation>
@@ -558,7 +558,7 @@
 <translation id="5041394372352067729">将盲文显示移动到页首</translation>
 <translation id="5042770794184672516">调大朗读音量</translation>
 <translation id="5042992464904238023">网页内容</translation>
-<translation id="5045870649377683106">现在，找到左侧 Shift 键，它位于 Ctrl 键的正上方。请按左侧 Shift 键以继续。</translation>
+<translation id="5045870649377683106">现在，找到左侧 Shift 键，它是 Ctrl 键上方第一个键。请按左侧 Shift 键以继续。</translation>
 <translation id="5050015258024679800">上一个4级标题</translation>
 <translation id="5054047268577924192">上一个列表项</translation>
 <translation id="5085453135206054947">灰紫红色</translation>
@@ -582,7 +582,7 @@
 <translation id="5263344797180442561">2级标题标记</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5302089807023311274">参考书目</translation>
-<translation id="530391007967514163">请尝试通过标题跳转，以浏览下方文字。</translation>
+<translation id="530391007967514163">请尝试按标题跳转，以浏览下方文字。</translation>
 <translation id="5304943142864553931">切换到名为“<ph name="TITLE" />”的标签页</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5310788376443009632">已移除：</translation>
@@ -783,7 +783,7 @@
 <translation id="6858047746862060282">序言</translation>
 <translation id="6859876496651143278">向左滑动一根手指</translation>
 <translation id="6865519907510167493">拼写错误</translation>
-<translation id="6873188295213080042">提示：在按住搜索键的同时按箭头键可四处浏览。</translation>
+<translation id="6873188295213080042">提示：在按住搜索键的同时按箭头键即可进行导航。</translation>
 <translation id="6894148351896207544">说出当前的日期和时间</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897341342232909480">向左移动</translation>
@@ -887,7 +887,7 @@
 <translation id="762020119231868829">暂停目前正在播放的所有媒体微件</translation>
 <translation id="7625690649919402823">下一个表格</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，等级：<ph name="GRADE" /></translation>
-<translation id="7637342083105831460">按搜索键 + 向右键即可查找“下一课”按钮的练习区。然后，按搜索键 + 空格键以启用该练习区。</translation>
+<translation id="7637342083105831460">按搜索键 + 向右键即可找到练习区或“下一课”按钮。然后，按搜索键 + 空格键以启用该练习区。</translation>
 <translation id="7639968568612851608">深灰色</translation>
 <translation id="7663318257180412551">2级标题标记</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{小时}other{小时}}</translation>
@@ -957,7 +957,7 @@
 <translation id="812886159861361726">“<ph name="FILE_NAME" />”已停止下载</translation>
 <translation id="8129445297241948503">上方没有单元格</translation>
 <translation id="8138880386467279117">触摸</translation>
-<translation id="8146613869421949343">接下来，您将学习搜索键的相关知识。搜索键旨在与其他键结合使用以执行 ChromeVox 命令。它位于左侧 Shift 键的正上方。请按搜索键以继续。</translation>
+<translation id="8146613869421949343">接下来，您将学习搜索键的相关知识。搜索键旨在与其他键结合使用以执行 ChromeVox 命令。它是左侧 Shift 键上方第一个键。请按搜索键以继续。</translation>
 <translation id="816818801578874684">这是第一个标题。按搜索键 + H 键即可转到下一个标题。</translation>
 <translation id="8173092779156526980">四根手指向左滑动</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{1个下划线}other{#个下划线}}</translation>

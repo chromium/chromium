@@ -207,6 +207,7 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="2450907520913474542">Sayfadan ayrılmadan web sitelerindeki konular hakkında bilgi edinin. Dokun ve Ara özelliği, seçilen kelimeyi, çevresindeki içerikle birlikte Google Arama'ya gönderip karşılığında ilgili tanımlar, resimler, arama sonuçları ve diğer ayrıntıları döndürür.
 
 Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı hassaslaştırmak için daha fazla veya daha az kelime seçin. Aramanızı düzenlemek için paneli açın, simgeye dokunarak yeni bir sekmede açın ve arama kutusunda değişikliklerinizi yapın.</translation>
+<translation id="2459390580524506445">Gelişmiş sesli arama</translation>
 <translation id="246532703174860178">Paylaş</translation>
 <translation id="2478076885740497414">Uygulamayı yükle</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
@@ -275,6 +276,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> depolama alanı</translation>
 <translation id="2942036813789421260">Önizleme sekmesi kapalı</translation>
 <translation id="2956410042958133412">Bu hesap <ph name="PARENT_NAME_1" /> ve <ph name="PARENT_NAME_2" /> tarafından yönetiliyor.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Okunmamış <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> sayfa}other{Okunmamış <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> sayfa}}</translation>
 <translation id="2962095958535813455">Gizli mod sekmelerine geçildi</translation>
 <translation id="2979025552038692506">Seçili Gizli Sekme</translation>
 <translation id="2987620471460279764">Başka cihazdan paylaşılan metin</translation>
@@ -324,6 +326,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="32895400574683172">Bildirimlere izin veriliyor</translation>
 <translation id="3290991969712132877">Buraya daha hızlı ulaşmak için bu sayfayı Diğer seçenekler düğmesinden Ana ekranınıza ekleyin</translation>
 <translation id="3295530008794733555">Daha hızlı tarayın. Daha az veri kullanın.</translation>
+<translation id="3297344142967351106">Sesli yardım</translation>
 <translation id="3298243779924642547">Basit</translation>
 <translation id="3303414029551471755">İçeriği indirme işlemine başlansın mı?</translation>
 <translation id="3315103659806849044">Şu anda Senkronizasyon ve Google hizmet ayarlarınızı özelleştiriyorsunuz. Senkronizasyonu etkinleştirme işlemini tamamlamak için ekranın altına yakın bir yerde bulunan Onayla düğmesine dokunun. Yukarı git</translation>
@@ -625,6 +628,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5524843473235508879">Yönlendirme engellendi.</translation>
 <translation id="5527082711130173040">Chrome'un cihazları taraması için konum bilgilerine erişmesi gerekiyor. <ph name="BEGIN_LINK1" />İzinleri güncelleyin<ph name="END_LINK1" />. Ayrıca, konum bilgilerine erişim <ph name="BEGIN_LINK2" />bu cihaz için kapalı<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Gizli sekmeleri kapat</translation>
+<translation id="5530920986376047241">Sayfaları daha sonra kolayca bulmak için okuma listenize kaydedebilirsiniz</translation>
 <translation id="5534640966246046842">Site kopyalandı</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5561549206367097665">Ağ bekleniyor…</translation>
@@ -704,6 +708,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5982307838673692400">Gizli sekme aç</translation>
 <translation id="6000066717592683814">Google kalsın</translation>
 <translation id="6005538289190791541">Önerilen şifre</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> sayfanız var}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sayfanız var}}</translation>
 <translation id="6014293228235665243">Okunmayanlar</translation>
 <translation id="6036057147555329831">Ekstra ICU</translation>
 <translation id="6039379616847168523">Sonraki sekmeye gider</translation>
@@ -938,6 +943,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="756809126120519699">Chrome verileri temizlendi</translation>
 <translation id="7577900504646297215">İlgi alanlarını yönet</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> dosya indirildi}other{<ph name="FILES_DOWNLOADED_MANY" /> dosya indirildi}}</translation>
+<translation id="7583262514280211622">Okuma listenizi burada bulabilirsiniz</translation>
 <translation id="7588219262685291874">Cihazın Pil Tasarrufu özelliği açık olduğunda koyu tema açılır</translation>
 <translation id="7593557518625677601">Chrome Senkronizasyonu'nu başlatmak için Android ayarlarını açın ve Android sistem senkronizasyonunu yeniden etkinleştirin</translation>
 <translation id="7596558890252710462">İşletim sistemi</translation>
@@ -969,6 +975,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="7772375229873196092"><ph name="APP_NAME" /> penceresini kapat</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}}</translation>
 <translation id="7778840695157240389">Yeni hikaye için daha sonra tekrar kontrol edin</translation>
+<translation id="7786595606756654269">Google Asistan hem web'de arama yapmak hem de açtığınız sitelerle etkileşim kurmak için daha iyi ses deneyimi sağlar. Google Asistan, Asistan'ı kullandığınız sitelerin URL'leri ile içeriklerini alır.</translation>
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> sekme geri yüklendi</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
@@ -994,6 +1001,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="7961926449547174351">Depolama alanına erişimi devre dışı bıraktınız. Lütfen etkinleştirmek için Ayarlar'a gidin.</translation>
 <translation id="7963646190083259054">Firma:</translation>
 <translation id="7967911570373677897">QR kodu taramak için ayarlarınızı Chrome'un kameranızı kullanabileceği şekilde değiştirin</translation>
+<translation id="7968014550143838305">Okuma listesine eklendi</translation>
 <translation id="7971136598759319605">1 gün önce etkindi</translation>
 <translation id="7975379999046275268">Sayfanın önizlemesini aç <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Daha hızlı göz atmak ve arama yapmak için sayfaları önceden yükle</translation>
@@ -1055,6 +1063,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="8372925856448695381"><ph name="LANG" /> hazır.</translation>
 <translation id="8393700583063109961">İleti gönder</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" /> uygulamasını seçin\n2. "Her zaman" seçeneğine dokunun</translation>
+<translation id="8410695015584479363">Fiyatları takip et</translation>
 <translation id="8413126021676339697">Tüm geçmişi göster</translation>
 <translation id="8425213833346101688">Değiştir</translation>
 <translation id="8427875596167638501">Önizleme sekmesi yarım açık</translation>

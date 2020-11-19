@@ -435,6 +435,7 @@
 <translation id="1475502736924165259">На датотеци има сертификата који се не уклапају ни у једну другу категорију</translation>
 <translation id="1476088332184200792">Копирајте на свој уређај</translation>
 <translation id="1476607407192946488">&amp;Подешавања језика</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> захтева да паметна картица остане уметнута.</translation>
 <translation id="1478340334823509079">Детаљи: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Инсталација није омогућена</translation>
 <translation id="1481537595330271162">Грешка при мењању величине диска</translation>
@@ -2032,6 +2033,7 @@
 <translation id="3320630259304269485">Безбедно прегледање (заштита од опасних сајтова) и друга безбедносна подешавања</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Ови подаци садрже осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}=1{Ова датотека садржи осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}one{Ове датотеке садрже осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}few{Ове датотеке садрже осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}other{Ове датотеке садрже осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}}</translation>
 <translation id="3323521181261657960">Бонус! Добијаш додатно време испред екрана</translation>
+<translation id="3325804108816646710">Траже се доступни профили...</translation>
 <translation id="3325910708063135066">Камера и микрофон су искључени у подешавањима Mac система</translation>
 <translation id="3327050066667856415">Chromebook-ови су осмишљени за безбедност. Уређај је аутоматски заштићен од малвера – није потребан никакав додатан софтвер.</translation>
 <translation id="3328489342742826322">Враћањем из резервне копије избрисаће се постојеће Linux апликације и подаци у директоријуму са Linux датотекама.</translation>
@@ -2099,6 +2101,7 @@
 <translation id="3412265149091626468">Пређи на избор</translation>
 <translation id="3413122095806433232">CA издаваоци: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Величина:</translation>
+<translation id="3414966631182382431"><ph name="BEGIN_LINK" />Прегледачем управља<ph name="END_LINK" /> <ph name="MANAGER" /></translation>
 <translation id="3416468988018290825">Увек приказуј URL-ове у целости</translation>
 <translation id="3417835166382867856">Претражите картице</translation>
 <translation id="3417836307470882032">24-часовно време</translation>
@@ -3174,6 +3177,7 @@
 <translation id="4651484272688821107">Учитавање онлајн компоненте са ресурсима за режим демонстрације није успело.</translation>
 <translation id="4652935475563630866">Промена подешавања камере захтева поновно покретање Parallels Desktop-а. Поново покрените Parallels Desktop да бисте наставили.</translation>
 <translation id="4653405415038586100">Грешка при конфигурисању Linux-а</translation>
+<translation id="4657914796247705218">Брзина TrackPoint-а</translation>
 <translation id="465878909996028221">За преусмеравања у прегледачу подржани су само протоколи http, https и file.</translation>
 <translation id="4659077111144409915">Примарни налог</translation>
 <translation id="4659126640776004816">Ова функција се укључује када се пријавите на Google налог.</translation>
@@ -3833,6 +3837,7 @@
 <translation id="5470735824776589490">Морате да рестартујете уређај да бисте могли да га ресетујете помоћу Powerwash-а. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Здраво! Ја сам глас за претварање текста у говор.</translation>
 <translation id="5472627187093107397">Чувај лозинке за овај сајт</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN мора да садржи бар један знак}one{PIN мора да садржи бар # знак}few{PIN мора да садржи бар # знака}other{PIN мора да садржи бар # знакова}}</translation>
 <translation id="5473333559083690127">Поново унесите нови PIN</translation>
 <translation id="5481273127572794904">Није им дозвољено да аутоматски преузимају више фајлова</translation>
 <translation id="5481941284378890518">Додај оближње штампаче</translation>
@@ -4374,6 +4379,7 @@
 <translation id="6087960857463881712">Задовољно лице</translation>
 <translation id="6091761513005122595">Дељена датотека је учитана.</translation>
 <translation id="6093888419484831006">Отказивање ажурирања...</translation>
+<translation id="6095541101974653012">Одјављени сте.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Отвори увећано</translation>
 <translation id="6096326118418049043">X.500 име</translation>
@@ -4706,6 +4712,7 @@
 <translation id="6474884162850599008">Прекини везу са налогом Google диска</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> жели да дели садржај екрана. Изаберите шта желите да делите.</translation>
 <translation id="6478248366783946499">Желите ли да задржите опасну датотеку?</translation>
+<translation id="6480327114083866287">Управља <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Отворите преузимање</translation>
 <translation id="6483805311199035658">Отварање датотеке <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">Изаберите језик</translation>
@@ -4894,6 +4901,7 @@
 <translation id="671928215901716392">Закључај екран</translation>
 <translation id="6721678857435001674">да види произвођача и модел безбедносног кључа</translation>
 <translation id="6721972322305477112">&amp;File (Датотека)</translation>
+<translation id="672208878794563299">Овај сајт ће вас поново питати следећи пут.</translation>
 <translation id="672213144943476270">Откључајте профил да бисте прегледали као гост.</translation>
 <translation id="6723661294526996303">Увези обележиваче и подешавања...</translation>
 <translation id="6723839937902243910">Енергија</translation>
@@ -6294,6 +6302,7 @@
 <translation id="8317671367883557781">Додај мрежну везу</translation>
 <translation id="8319414634934645341">Употреба проширеног кључа</translation>
 <translation id="8320459152843401447">Цео екран</translation>
+<translation id="8321837372750396788">Овим <ph name="DEVICE_TYPE" /> ће управљати <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Овој страници је забрањен приступ микрофону.</translation>
 <translation id="8323167517179506834">Унесите URL</translation>
 <translation id="8324784016256120271">Сајтови могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа</translation>
@@ -6601,6 +6610,7 @@
 <translation id="8698269656364382265">Да бисте се вратили на претходни екран, превуците почев од леве стране.</translation>
 <translation id="869884720829132584">Мени апликација</translation>
 <translation id="869891660844655955">Датум истека</translation>
+<translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> је закључан.</translation>
 <translation id="8703346390800944767">Прескочи оглас</translation>
 <translation id="8705331520020532516">Серијски број</translation>
 <translation id="8705580154597116082">Доступан је WiFi преко телефона</translation>

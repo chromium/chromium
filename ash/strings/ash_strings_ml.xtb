@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">നൈറ്റ് ലൈറ്റ്</translation>
 <translation id="2727175239389218057">മറുപടി നൽകുക</translation>
 <translation id="2727977024730340865">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജ്ജറിലേക്ക് പ്ലഗ് ചെയ്‌തിരിക്കുന്നു. ബാറ്ററി ചാർജുചെയ്യൽ വിശ്വസനീയമാകണമെന്നില്ല.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്</translation>
 <translation id="2792498699870441125">Alt+തിരയൽ</translation>
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
 <translation id="28232023175184696">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
@@ -563,6 +564,7 @@
 <translation id="6297287540776456956">ആവശ്യമുള്ള ഏരിയ തിരഞ്ഞെടുക്കാൻ സ്റ്റൈലസ് ഉപയോഗിക്കുക</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> എന്നതിനെ <ph name="ROTATION" /> എന്നതിലേയ്‌ക്ക് തിരിച്ചു</translation>
 <translation id="6315170314923504164">വോയ്സ്</translation>
+<translation id="6338485349199627913"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്ന ഒരു മാനേജ് ചെയ്യപ്പെടുന്ന സെഷനാണ് <ph name="DISPLAY_NAME" /></translation>
 <translation id="6376931439017688372">Bluetooth ഓണാണ്</translation>
 <translation id="6381109794406942707">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ, നിങ്ങളുടെ പിൻ നൽകുക.</translation>
 <translation id="639644700271529076">CAPS LOCK ഓഫാണ്</translation>

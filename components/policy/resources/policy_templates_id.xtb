@@ -478,7 +478,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1715151459541210849">Mengaktifkan fitur aksesibilitas dikte</translation>
 <translation id="172374442286684480">Izinkan semua situs menyetel data lokal</translation>
 <translation id="1736269219679256369">Memungkinkan melanjutkan dari halaman peringatan SSL</translation>
-<translation id="174765717426930019">Izinkan semua pop-up yang dibuka dengan target <ph name="BLANK_PAGE_NAME" /> untuk berinteraksi dengan halaman yang meminta membuka pop-up, kecuali halaman pembuka secara eksplisit memilih untuk melarang interaksi tersebut </translation>
+<translation id="174765717426930019">Izinkan semua pop-up yang dibuka dengan target <ph name="BLANK_PAGE_NAME" /> untuk berinteraksi dengan halaman yang meminta membuka pop-up, kecuali jika halaman pembuka secara eksplisit memilih untuk melarang interaksi tersebut </translation>
 <translation id="1750315445671978749">Blokir semua download</translation>
 <translation id="1760951637494635692">Mengizinkan Serial API di situs ini</translation>
 <translation id="1765512315997108908">Mengontrol printer mana dari <ph name="DEVICE_PRINTERS_POLICY_NAME" /> yang tersedia untuk pengguna.
@@ -701,7 +701,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2145735238144543545">Sertifikat Klien yang diperlukan</translation>
 <translation id="214901426630414675">Batasi mode dupleks pencetakan</translation>
 <translation id="2149330464730004005">Aktifkan pencetakan warna</translation>
-<translation id="2149592087996467903">Cegah WebRTC menggunakan versi TLS/DTLS yang sudah tidak digunakan lagi</translation>
+<translation id="2149592087996467903">Cegah WebRTC menggunakan versi TLS/DTLS yang usang</translation>
 <translation id="2149957154942061013">Khusus Internal</translation>
 <translation id="2151831603578119302">Mengaktifkan pintasan fitur aksesibilitas</translation>
 <translation id="2156132677421487971">Mengonfigurasi kebijakan untuk <ph name="PRODUCT_NAME" />, fitur yang memungkinkan pengguna mengirim konten tab, situs, atau desktop dari browser ke sistem suara dan layar jarak jauh.</translation>
@@ -1494,7 +1494,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
         * 4, firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> akan diupdate setelah pendaftaran, sebelum pengguna login.
 
       Jika kebijakan tidak disetel, update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> tidak akan tersedia.</translation>
-<translation id="3232691106293445015">Koneksi HTTP yang tidak aman dilarang menggunakan autentikasi <ph name="BASIC_AUTH" />; perlu HTTPS</translation>
+<translation id="3232691106293445015">Koneksi HTTP yang tidak aman dilarang menggunakan autentikasi <ph name="BASIC_AUTH" />; HTTPS diwajibkan</translation>
 <translation id="3236046242843493070">Pola URL untuk memungkinkan pemasangan skrip pengguna, aplikasi, dan ekstensi dari</translation>
 <translation id="3240609035816615922">Kebijakan akses konfigurasi untuk printer.</translation>
 <translation id="324062325008698789">Mengonfigurasi daftar printer</translation>
@@ -2085,7 +2085,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Kebijakan ini tidak berlaku untuk aplikasi kios, yang akan otomatis dimigrasikan. Jika kebijakan ini tidak disetel, perangkat akan berperilaku seolah-olah 'DisallowArc' dipilih.</translation>
 <translation id="4020682745012723568">Cookie yang ditransfer ke profil pengguna tidak dapat diakses oleh aplikasi Android.</translation>
-<translation id="4025500273782820766">Izinkan pengguna memilih "Selalu izinkan" untuk melewati perintah konfirmasi di waktu mendatang, jika dialog protokol eksternal ditampilkan</translation>
+<translation id="4025500273782820766">Izinkan pengguna memilih "Selalu izinkan" untuk melewati perintah konfirmasi di waktu mendatang, jika dialog protokol eksternal muncul</translation>
 <translation id="402759845255257575">Jangan izinkan situs apa pun menjalankan JavaScript</translation>
 <translation id="4027608872760987929">Aktifkan penyedia penelusuran default</translation>
 <translation id="4056910949759281379">Nonaktifkan protokol SPDY</translation>
@@ -3381,7 +3381,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menukarkan penawaran ini.</translation>
 <translation id="6048199181629830227">Mengaktifkan fitur manajemen pengaktifan daya baterai</translation>
-<translation id="6053681087509103368">Izinkan WebRTC menggunakan versi protokol TLS/DTLS yang sudah tidak digunakan lagi</translation>
+<translation id="6053681087509103368">Izinkan WebRTC menggunakan versi protokol TLS/DTLS yang usang</translation>
 <translation id="6054485492411959335">Menentukan printer yang dapat digunakan pengguna.
 
       Kebijakan ini hanya digunakan jika <ph name="PRINTERS_ALLOWLIST" /> dipilih untuk <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />.
@@ -3941,7 +3941,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan status tombol dev.</translation>
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
-<translation id="6800181452282128474">Jangan mengkueri Server Quirks</translation>
+<translation id="6800181452282128474">Jangan kueri Server Quirks</translation>
 <translation id="6810445994095397827">Cekal JavaScript di situs ini</translation>
 <translation id="6813263547126514821">Daya dan penonaktifan</translation>
 <translation id="681446116407619279">Skema autentikasi yang didukung</translation>
@@ -4334,7 +4334,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="731208205557053914">Melaporkan info VPD</translation>
 <translation id="7319863628760093590">Jika kebijakan disetel ke Aktif atau tidak disetel, verifikasi autentikasi <ph name="BASIC_AUTH" /> akan diizinkan diterima melalui HTTP yang tidak aman.
 
-      Jika kebijakan disetel ke Nonaktif, permintaan HTTP yang tidak aman akan dilarang menggunakan skema autentikasi <ph name="BASIC_AUTH" />; hanya mengizinkan HTTPS yang aman.</translation>
+      Jika kebijakan disetel ke Nonaktif, permintaan HTTP yang tidak aman akan dilarang menggunakan skema autentikasi <ph name="BASIC_AUTH" />; hanya HTTPS yang diizinkan.</translation>
 <translation id="7323896582714668701">Parameter baris perintah tambahan untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="7326394567531622570">Serupa dengan Wipe (nilai 2), namun mencoba untuk mempertahankan token login sehingga pengguna tidak perlu login lagi.</translation>
 <translation id="7331962793961469250">Bila disetel ke True, promosi untuk apl Chrome Webstore tidak akan muncul pada halaman tab baru. Menyetel opsi ini ke False atau membiarkannya tanpa disetel akan membuat promosi untuk apl Chrome Webstore muncul di halaman tab baru</translation>

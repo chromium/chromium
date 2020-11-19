@@ -185,6 +185,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2718395828230677721">Noćno svjetlo</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Priključeno na niskonaponski punjač. Punjenje baterije može biti nepouzdano.</translation>
+<translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + tipka za pretraživanje</translation>
 <translation id="2819276065543622893">Sada ćete se odjaviti.</translation>
 <translation id="28232023175184696">Nije moguće povezivanje na internet. Kliknite da pokušate ponovo.</translation>
@@ -563,6 +564,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6297287540776456956">Odaberite regiju pisaljkom</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> je zarotiran u orijentaciju <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Glasovno</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana sesija kojom upravlja <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
 <translation id="6381109794406942707">Da otključate uređaj, unesite PIN.</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK je isključena</translation>

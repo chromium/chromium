@@ -369,6 +369,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2354430244986887761">„Google“ saugaus naršymo technologija svetainėje <ph name="SITE" /> neseniai <ph name="BEGIN_LINK" />aptiko kenkėjiškų programų<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Užpuolikai galbūt galės matyti, kuriuos šios svetainės vaizdus peržiūrite, ir juos pakeis siekdami jus suklaidinti.</translation>
 <translation id="2356070529366658676">Paklausti</translation>
+<translation id="2357481397660644965">Jūsų įrenginį valdo <ph name="DEVICE_MANAGER" />, o paskyrą – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Kelios</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2360873523816792727">Norėdami naudoti korteles visuose įrenginiuose, įjunkite sinchronizavimą.</translation>
@@ -548,6 +549,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3145945101586104090">Iššifruojant atsakymą įvyko klaida</translation>
 <translation id="3150653042067488994">Laikina serverio klaida</translation>
 <translation id="3154506275960390542">Šiame puslapyje yra forma, kurios negalima saugiai pateikti. Siunčiamus duomenis gali peržiūrėti kiti asmenys juos perduodant arba juos gali modifikuoti atakuojanti programa, siekianti pakeisti serverio gaunamą informaciją.</translation>
+<translation id="315504272643575312">Jūsų paskyrą tvarko <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Atkurti</translation>
 <translation id="3162559335345991374">Naudojant šį „Wi-Fi“ tinklą gali būti prašoma apsilankyti prisijungimo puslapyje.</translation>
 <translation id="3167968892399408617">Puslapiai, kuriuos peržiūrite inkognito skirtukų lapuose, nebus rodomi naršyklės istorijoje, slapukų saugykloje ar paieškos istorijoje, kai uždarysite visus inkognito skirtukų lapus. Visi atsisiųsti failai ar sukurtos žymės išliks.</translation>
@@ -1931,6 +1933,7 @@ Papildoma išsami informacija:
 <translation id="8680536109547170164"><ph name="QUERY" />, atsakymas, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Tinklalapio adresu <ph name="PAGE" /> nepavyko įkelti, nes:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Jūsų įrenginį ir paskyrą valdo <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Galima</translation>
 <translation id="868922510921656628">Puslapių skaičius rinkinyje</translation>
 <translation id="869891660844655955">Galiojimo data</translation>
@@ -1945,6 +1948,7 @@ Papildoma išsami informacija:
 <translation id="8728672262656704056">Veikia inkognito režimas</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8731544501227493793">Mygtukas „Tvarkyti slaptažodžius“, paspauskite „Enter“, jei norite peržiūrėti ir tvarkyti slaptažodžius „Chrome“ nustatymuose</translation>
+<translation id="8734529307927223492">Jūsų „<ph name="DEVICE_TYPE" />“ tvarko <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad būtų atidarytas naujas privataus naršymo inkognito langas</translation>
 <translation id="8738058698779197622">Jei norite užmegzti saugų ryšį, turėsite tinkamai nustatyti laikrodį. To reikalaujama todėl, kad svetainių tapatybei įrodyti naudojami sertifikatai galioja tik tam tikrą laikotarpį. Kadangi įrenginio laikrodis nustatytas netinkamai, „Chromium“ negali tinkamai patvirtinti sertifikatų.</translation>
 <translation id="8740359287975076522">Nepavyko rasti <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS adreso&lt;/abbr&gt;. Nustatoma problema.</translation>
@@ -2034,6 +2038,7 @@ Papildoma išsami informacija:
 <translation id="9101630580131696064">1 dėklas</translation>
 <translation id="9103872766612412690">Svetainėje <ph name="SITE" /> įprastai naudojama šifruotė informacijai apsaugoti. Šį kartą „Chromium“ bandant prisijungti prie <ph name="SITE" />, ji pateikė neįprastus ir netinkamus prisijungimo duomenis. Gali būti, kad užpuolėjas bando apsimesti svetaine <ph name="SITE" /> arba „Wi-Fi“ prisijungimo ekrane nutrūko ryšys. Jūsų informacija vis tiek liko apsaugota, nes „Chromium“ sustabdė prisijungimą prieš apsikeitimą bet kokiais duomenimis.</translation>
 <translation id="9106062320799175032">Atsiskaitymo adreso pridėjimas</translation>
+<translation id="9107467864910557787">Jūsų naršyklę tvarko <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Kortelė patvirtinama...</translation>
 <translation id="9114581008513152754">Šios naršyklės netvarko įmonė ar kita organizacija. Veiklą šiame įrenginyje galima tvarkyti ne naršyklėje „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Įkelta</translation>

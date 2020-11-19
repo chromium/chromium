@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Πολύ μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="1413240736185167732">Σφάλμα - Πρόβλημα φίλτρου</translation>
 <translation id="1468664791493211953">Προσφορές</translation>
+<translation id="1476467821656042872">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και μπορεί να έχει τη δυνατότητα να παρακολουθεί τη δραστηριότητά σας.</translation>
 <translation id="1478594628797167447">Σαρωτής</translation>
+<translation id="1499900233129743732">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
 <translation id="150962533380566081">Μη έγκυρος κωδικός PUK.</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα)</translation>
 <translation id="1641857168437328880">Τροφοδότης εγγράφων (Μίας όψης)</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1662989795263954667">Διακοπή - Τελείωσε το μελάνι</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Σάρωση σε</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="4548483925627140043">Δεν βρέθηκε σήμα.</translation>
+<translation id="455835558791489930">Μπαταρία <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Αποτυχία επίλυσης όλων των κεντρικών υπολογιστών.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> από <ph name="TOTAL_PAGE_NUMBER" />. Πατήστε enter, για να ακυρώσετε την εργασία εκτύπωσης.</translation>
 <translation id="4646949265910132906">Ασφαλής σύνδεση Wi-Fi</translation>
@@ -138,8 +142,10 @@
 <translation id="6766275201586212568">Αποτυχημένες αναλύσεις DNS</translation>
 <translation id="6768237774506518020">Υψηλό ποσοστό αποτυχίας ανάλυσης DNS</translation>
 <translation id="6839141349259399400">Δεν είναι δυνατή η σύνδεση σε σαρωτές;</translation>
+<translation id="7028979494427204405">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και έχει πρόσβαση σε όλη τη δραστηριότητα των χρηστών, συμπεριλαμβανομένων των ιστοσελίδων που επισκέπτεστε, των κωδικών πρόσβασης και του ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>

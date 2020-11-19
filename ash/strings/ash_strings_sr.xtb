@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">Ноћно светло</translation>
 <translation id="2727175239389218057">Одговори</translation>
 <translation id="2727977024730340865">Уређај је укључен у пуњач мале снаге. Пуњење батерије можда неће бити поуздано.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + тастер за претрагу</translation>
 <translation id="2819276065543622893">Бићете одмах одјављени.</translation>
 <translation id="28232023175184696">Повезивање на интернет није успело. Кликните да бисте пробали поново.</translation>
@@ -563,6 +564,7 @@
 <translation id="6297287540776456956">Користите писаљку да бисте изабрали област</translation>
 <translation id="6310121235600822547">Екран <ph name="DISPLAY_NAME" /> је промењен у <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Глас</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> је сесија којом управља <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth је укључен</translation>
 <translation id="6381109794406942707">Да бисте откључали уређај, унесите PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK је искључен</translation>

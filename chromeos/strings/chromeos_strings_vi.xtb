@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1018656279737460067">Đã hủy</translation>
+<translation id="1071587090247825784">Đã phát hiện thấy tường lửa</translation>
 <translation id="1075811647922107217">Kích thước trang</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1204296502688602597">Độ trễ DNS</translation>
+<translation id="1238612778414822719">Độ trễ HTTPS</translation>
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Vừa với vùng quét</translation>
 <translation id="1397738625398125236">Có thể ping cổng vào</translation>
+<translation id="1398634363027580500">Yêu cầu HTTPS có độ trễ rất cao</translation>
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
 <translation id="1478594628797167447">Máy quét</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
 <translation id="4034824040120875894">Máy in</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
+<translation id="4145784616224233563">Tường lửa HTTP</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Hãy nhấn để hủy lệnh in.</translation>
 <translation id="4646949265910132906">Kết nối Wi-Fi an toàn</translation>
 <translation id="467510802200863975">Mật khẩu không khớp</translation>
+<translation id="467715984478005772">Tin là có tường lửa</translation>
 <translation id="4691278870498629773">Đã dừng – Thiếu khay</translation>
 <translation id="469379815867856270">Cường độ tín hiệu</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
@@ -111,6 +116,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6048107060512778456">Không thành công – Kẹt giấy</translation>
 <translation id="6050189528197190982">Thang độ xám</translation>
 <translation id="6058625436358447366">Để hoàn tất, hãy nhập cả mật khẩu cũ và mật khẩu mới của bạn</translation>
+<translation id="6061772781719867950">Yêu cầu HTTP không thành công</translation>
 <translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
 <translation id="6108689792487843350">Không thể kết nối với cổng</translation>
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
@@ -122,13 +128,15 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="649050271426829538">Đã dừng – Kẹt giấy</translation>
 <translation id="6517239166834772319">Khám phá</translation>
 <translation id="6527081081771465939">Giao thức bảo mật Wi-Fi không xác định</translation>
-<translation id="65587193855025101">Bề mặt phẳng</translation>
+<translation id="65587193855025101">Mặt phẳng</translation>
 <translation id="6564646048574748301">Không thành công – Không thể kết nối với máy in</translation>
 <translation id="6618744767048954150">Đang chạy</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6704062477274546131">Phân giải DNS</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
+<translation id="6766275201586212568">Quá trình phân giải DNS không thành công</translation>
+<translation id="6768237774506518020">Tỷ lệ lỗi cao trong quá trình phân giải DNS</translation>
 <translation id="6839141349259399400">Không thể kết nối với các máy quét?</translation>
 <translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>
 <translation id="7162487448488904999">Thư viện</translation>
@@ -136,6 +144,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7359657277149375382">Loại tệp</translation>
 <translation id="7561454561030345039">Quản trị viên của bạn quản lý thao tác này</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
@@ -148,6 +157,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8208861521865154048">Đặc quyền</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
 <translation id="8294431847097064396">Nguồn</translation>
+<translation id="8302368968391049045">Tường lửa HTTPS</translation>
 <translation id="8347227221149377169">Lệnh in</translation>
 <translation id="8352772353338965963">Thêm một tài khoản để đăng nhập nhiều lần. Tất cả các tài khoản đã đăng nhập đều có thể truy cập được mà không cần mật khẩu, do đó bạn chỉ nên sử dụng tính năng này với các tài khoản đáng tin cậy.</translation>
 <translation id="8364946094152050673">Máy chủ định danh trống</translation>

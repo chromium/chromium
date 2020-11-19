@@ -433,6 +433,7 @@
 <translation id="1475502736924165259">Tem certificados em arquivo que não encaixam em nenhuma das restantes categorias</translation>
 <translation id="1476088332184200792">Copiar para o dispositivo</translation>
 <translation id="1476607407192946488">&amp;Definições de idioma</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.</translation>
 <translation id="1478340334823509079">Detalhes: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">A instalação não está ativada.</translation>
 <translation id="1481537595330271162">Ocorreu um erro ao redimensionar o disco.</translation>
@@ -2033,6 +2034,7 @@ Pretende pará-lo?</translation>
 <translation id="3320630259304269485">Navegação segura (proteção contra sites perigosos) e outras definições de segurança.</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Estes dados têm conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}=1{Este ficheiro tem conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}other{Estes ficheiros têm conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}}</translation>
 <translation id="3323521181261657960">Bónus! Tens mais tempo de utilização</translation>
+<translation id="3325804108816646710">A procurar perfis disponíveis…</translation>
 <translation id="3325910708063135066">A câmara e o microfone estão desativados nas Preferências do Sistema no Mac</translation>
 <translation id="3327050066667856415">Os Chromebooks foram concebidos a pensar na segurança. O seu dispositivo está automaticamente protegido contra software malicioso, sem que seja necessário software adicional.</translation>
 <translation id="3328489342742826322">Se restaurar a partir de uma cópia de segurança, irá eliminar as aplicações e os dados do Linux existentes na pasta Ficheiros Linux.</translation>
@@ -2100,6 +2102,7 @@ Pretende pará-lo?</translation>
 <translation id="3412265149091626468">Passar para a selecção</translation>
 <translation id="3413122095806433232">Emissores de AC: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Tamanho:</translation>
+<translation id="3414966631182382431">O <ph name="BEGIN_LINK" />navegador é gerido<ph name="END_LINK" /> por <ph name="MANAGER" /></translation>
 <translation id="3416468988018290825">Mostrar sempre URLs completos</translation>
 <translation id="3417835166382867856">Pesquisar separadores</translation>
 <translation id="3417836307470882032">Formato de 24 horas</translation>
@@ -3175,6 +3178,7 @@ Pretende pará-lo?</translation>
 <translation id="4651484272688821107">Não foi possível carregar o componente online com os recursos do modo de demonstração.</translation>
 <translation id="4652935475563630866">A alteração na definição da câmara requer que o Parallels Desktop seja reiniciado. Reinicie o Parallels Desktop para continuar.</translation>
 <translation id="4653405415038586100">Ocorreu um erro ao configurar o Linux.</translation>
+<translation id="4657914796247705218">Velocidade do TrackPoint</translation>
 <translation id="465878909996028221">Apenas são suportados os protocolos HTTP, HTTPS e protocolos de ficheiros para redirecionamento do navegador.</translation>
 <translation id="4659077111144409915">Conta principal</translation>
 <translation id="4659126640776004816">Quando inicia sessão na sua Conta Google, esta funcionalidade está ativada.</translation>
@@ -3834,6 +3838,7 @@ Pretende pará-lo?</translation>
 <translation id="5470735824776589490">É necessário reiniciar antes de ser possível repor o dispositivo com o Powerwash. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Olá! Sou a sua voz para a síntese de voz.</translation>
 <translation id="5472627187093107397">Guardar palavras-passe para este site</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN tem de ter, pelo menos, um caráter.}other{O PIN tem de ter, pelo menos, # carateres.}}</translation>
 <translation id="5473333559083690127">Voltar a introduzir o PIN novo</translation>
 <translation id="5481273127572794904">Sem autorização para transferir vários ficheiros automaticamente</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
@@ -4375,6 +4380,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6087960857463881712">Cara de fantástico</translation>
 <translation id="6091761513005122595">A partilha foi montada com êxito.</translation>
 <translation id="6093888419484831006">A cancelar a atualização...</translation>
+<translation id="6095541101974653012">Terminou a sessão</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Abrir maximizada</translation>
 <translation id="6096326118418049043">Nome X.500</translation>
@@ -4707,6 +4713,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6474884162850599008">Desligar a conta do Google Drive</translation>
 <translation id="6475697075626596525">O <ph name="APP_NAME" /> pretende partilhar o conteúdo do seu ecrã. Escolha o que pretende partilhar.</translation>
 <translation id="6478248366783946499">Pretende manter este ficheiro perigoso?</translation>
+<translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Abrir transferência</translation>
 <translation id="6483805311199035658">A abrir <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">Selecionar idioma</translation>
@@ -4895,6 +4902,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="671928215901716392">Bloquear ecrã</translation>
 <translation id="6721678857435001674">Ver a marca e o modelo da sua Chave de segurança</translation>
 <translation id="6721972322305477112">&amp;Ficheiro</translation>
+<translation id="672208878794563299">Este site vai perguntar novamente da próxima vez.</translation>
 <translation id="672213144943476270">Desbloqueie o seu perfil antes de navegar como convidado</translation>
 <translation id="6723661294526996303">Importar marcadores e definições...</translation>
 <translation id="6723839937902243910">Alimentação</translation>
@@ -6294,6 +6302,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8317671367883557781">Adicionar ligação de rede</translation>
 <translation id="8319414634934645341">Utilização alargada da chave</translation>
 <translation id="8320459152843401447">O seu ecrã inteiro</translation>
+<translation id="8321837372750396788">Este <ph name="DEVICE_TYPE" /> vai ser gerido por <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Esta página foi impedida de aceder ao seu microfone.</translation>
 <translation id="8323167517179506834">Escrever o URL</translation>
 <translation id="8324784016256120271">Os sites podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
@@ -6601,6 +6610,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8698269656364382265">Para voltar ao ecrã anterior, deslize rapidamente a partir do lado esquerdo.</translation>
 <translation id="869884720829132584">Menu Apps</translation>
 <translation id="869891660844655955">Data de expiração</translation>
+<translation id="8702825062053163569">O seu <ph name="DEVICE_TYPE" /> foi bloqueado</translation>
 <translation id="8703346390800944767">Ignorar anúncio</translation>
 <translation id="8705331520020532516">Número de série</translation>
 <translation id="8705580154597116082">Wi-Fi disponível através do telemóvel</translation>

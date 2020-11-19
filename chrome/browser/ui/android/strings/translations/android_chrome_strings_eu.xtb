@@ -16,7 +16,7 @@
 <translation id="1105960400813249514">Pantaila-argazkia</translation>
 <translation id="1111673857033749125">Beste gailuetan gordeta dituzun laster-markak hemen agertuko dira.</translation>
 <translation id="1113597929977215864">Erakutsi ikuspegi sinplifikatua</translation>
-<translation id="1118561384561215815">Lortu sareko laguntza zereginak egiteko</translation>
+<translation id="1118561384561215815">Lortu zereginak sarean egiteko laguntza</translation>
 <translation id="1123070903960493543">Chrome-rekin dituzun interakzioak, hautatu dituzun ezarpenak, Chrome-ren hutsegiteen xehetasunak</translation>
 <translation id="1126809382673880764">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Erabilgarri dagoenean, arakatze seguruaren babesa jasotzen jarraituko duzu Google-ren beste zerbitzu batzuetan (Gmail-en eta Bilaketa zerbitzuan, esaterako).</translation>
 <translation id="1129510026454351943">Xehetasunak: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -1132,6 +1132,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8920114477895755567">Gurasoen xehetasunen zain.</translation>
 <translation id="8922289737868596582">Sakatu Aukera gehiago botoia orriak deskargatu eta konexiorik gabe erabiltzeko</translation>
 <translation id="8928626432984354940">Altuera erdian ireki diren laster-marken karpeten zerrenda</translation>
+<translation id="8937267401510745927">Zereginak osatzen laguntzeko, Laguntzailea eginbidearen bidez erabiltzen dituzun webguneen URLak eta edukia jasoko ditu Google-k, baita Laguntzailea erabilita bidaltzen duzun informazioa ere. Baliteke informazio hori Google-n duzun kontuan gordetzea. Laguntzailea desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="8937772741022875483">Chrome-ko jarduerak Ongizate digitala programatik kendu nahi dituzu?</translation>
 <translation id="8942627711005830162">Ireki beste leiho batean</translation>
 <translation id="8951232171465285730"><ph name="MEGABYTES" /> MB aurreztu dituzu Chrome-ri esker</translation>

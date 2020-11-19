@@ -185,6 +185,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2718395828230677721">Gaueko argia</translation>
 <translation id="2727175239389218057">Erantzun</translation>
 <translation id="2727977024730340865">Potentzia txikiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
+<translation id="2778650143428714839"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /></translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
 <translation id="2819276065543622893">Saioa amaituko zaizu.</translation>
 <translation id="28232023175184696">Ezin da konektatu Internetera. Berriro saiatzeko, sakatu hau.</translation>
@@ -564,6 +565,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6297287540776456956">Erabili arkatza eremu bat hautatzeko</translation>
 <translation id="6310121235600822547">Biraketa <ph name="ROTATION" /> ezarri da <ph name="DISPLAY_NAME" /> pantailan</translation>
 <translation id="6315170314923504164">Ahotsa</translation>
+<translation id="6338485349199627913"><ph name="MANAGER" /> domeinuak kudeatutako saio kudeatua da <ph name="DISPLAY_NAME" /></translation>
 <translation id="6376931439017688372">Aktibatuta dago Bluetooth-a</translation>
 <translation id="6381109794406942707">Gailua desblokeatzeko, idatzi PIN kodea.</translation>
 <translation id="639644700271529076">BLOK MAIUS desaktibatuta dago</translation>

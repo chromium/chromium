@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Labai didelė HTTPS delsa</translation>
 <translation id="1413240736185167732">Nepavyko – filtras neveikia tinkamai</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> valdo šį naudotoją ir gali nuotoliniu būdu valdyti nustatymus bei stebėti naudotojo veiklą.</translation>
 <translation id="150962533380566081">Netinkamas PUK.</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (gijų: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Dokumentų tiektuvas (vienpusis)</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Nuskaityti į</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
 <translation id="4548483925627140043">Signalas nerastas</translation>
+<translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh akumuliatorius</translation>
 <translation id="458794348635939462">Nepavyko nustatyti jokių prieglobų pavadinimų</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
 <translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
@@ -138,8 +142,10 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="6839141349259399400">Nepavyko prisijungti prie skaitytuvų?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="714876143603641390">LAN ryšys</translation>
 <translation id="7162487448488904999">Galerija</translation>
+<translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Failo tipas</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>

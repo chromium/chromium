@@ -105,7 +105,7 @@
 <translation id="1116639326869298217">Vaši identitu se nepodařilo ověřit</translation>
 <translation id="1116694919640316211">Informace</translation>
 <translation id="1116779635164066733">Toto nastavení je vynucováno rozšířením <ph name="NAME" />.</translation>
-<translation id="1116811861615819198">Cílové zařízení neopovědělo</translation>
+<translation id="1116811861615819198">Cílové zařízení neodpovědělo</translation>
 <translation id="1118738876271697201">Systému se nepodařilo určit model nebo sériové číslo zařízení</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
 <translation id="1122068467107743258">Práce</translation>
@@ -435,6 +435,7 @@
 <translation id="1475502736924165259">Máte založené certifikáty, které se nehodí do žádné z ostatních kategorií</translation>
 <translation id="1476088332184200792">Kopírovat do zařízení</translation>
 <translation id="1476607407192946488">&amp;Jazyková nastavení</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.</translation>
 <translation id="1478340334823509079">Podrobnosti: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalace není povolena</translation>
 <translation id="1481537595330271162">Při změně velikosti disku došlo k chybě</translation>
@@ -2034,6 +2035,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3320630259304269485">Bezpečné prohlížení (ochrana před nebezpečnými weby) a další nastavení zabezpečení</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Obsah těchto dat je citlivý nebo nebezpečný. Odstraňte tento obsah a zkuste to znovu.}=1{Obsah tohoto souboru je citlivý nebo nebezpečný. Odstraňte tento obsah a zkuste to znovu.}few{Obsah těchto souborů je citlivý nebo nebezpečný. Odstraňte tento obsah a zkuste to znovu.}many{Obsah těchto souborů je citlivý nebo nebezpečný. Odstraňte tento obsah a zkuste to znovu.}other{Obsah těchto souborů je citlivý nebo nebezpečný. Odstraňte tento obsah a zkuste to znovu.}}</translation>
 <translation id="3323521181261657960">Bonus! Získáváš víc času na zařízení</translation>
+<translation id="3325804108816646710">Vyhledávání dostupných profilů…</translation>
 <translation id="3325910708063135066">Kamera a mikrofon jsou vypnuté v předvolbách systému Macu</translation>
 <translation id="3327050066667856415">Chromebooky kladou velký důraz na zabezpečení. Zařízení je automaticky chráněno před malwarem – nepotřebujete žádný další software.</translation>
 <translation id="3328489342742826322">Obnovením ze zálohy smažete existující aplikace pro Linux a data ve své složce souborů systému Linux.</translation>
@@ -2101,6 +2103,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3412265149091626468">Přejít na výběr</translation>
 <translation id="3413122095806433232">Vydavatelé CA: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Velikost:</translation>
+<translation id="3414966631182382431">Váš <ph name="BEGIN_LINK" />prohlížeč je spravován<ph name="END_LINK" /> doménou <ph name="MANAGER" /></translation>
 <translation id="3416468988018290825">Vždy zobrazovat úplné adresy URL</translation>
 <translation id="3417835166382867856">Hledat karty</translation>
 <translation id="3417836307470882032">Armádní čas</translation>
@@ -3175,6 +3178,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4651484272688821107">Online komponentu se zdroji pro ukázkový režim se nepodařilo načíst.</translation>
 <translation id="4652935475563630866">Změna nastavení kamery vyžaduje restart nástroje Parallels Desktop. Pokračujte restartováním nástroje Parallels Desktop.</translation>
 <translation id="4653405415038586100">Chyba konfigurace Linuxu</translation>
+<translation id="4657914796247705218">Rychlost TrackPointu</translation>
 <translation id="465878909996028221">U přesměrování prohlížeče jsou podporovány pouze protokoly http, https a file.</translation>
 <translation id="4659077111144409915">Primární účet</translation>
 <translation id="4659126640776004816">Když se přihlásíte k účtu Google, tato funkce se zapne.</translation>
@@ -3834,6 +3838,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5470735824776589490">Než bude možné zařízení resetovat pomocí funkce Powerwash, je třeba ho restartovat. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Zdravím vás. Jsem váš hlas převodu textu na řeč.</translation>
 <translation id="5472627187093107397">Ukládat hesla pro tento web</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN musí obsahovat nejméně 1 znak}few{PIN musí obsahovat nejméně # znaky}many{PIN musí obsahovat nejméně # znaku}other{PIN musí obsahovat nejméně # znaků}}</translation>
 <translation id="5473333559083690127">Znovu zadejte nový PIN</translation>
 <translation id="5481273127572794904">Zákaz stahovat automaticky několik souborů</translation>
 <translation id="5481941284378890518">Přidat tiskárny v okolí</translation>
@@ -4374,6 +4379,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6087960857463881712">Paráda</translation>
 <translation id="6091761513005122595">Sdílená složka byla úspěšně připojena.</translation>
 <translation id="6093888419484831006">Rušení aktualizace...</translation>
+<translation id="6095541101974653012">Byli jste odhlášeni.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Otevřít maximalizované</translation>
 <translation id="6096326118418049043">Název X.500</translation>
@@ -4706,6 +4712,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6474884162850599008">Odpojit účet Disku Google</translation>
 <translation id="6475697075626596525">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky. Vyberte, co chcete sdílet.</translation>
 <translation id="6478248366783946499">Ponechat nebezpečný soubor?</translation>
+<translation id="6480327114083866287">Spravováno doménou <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Otevřít stažený soubor</translation>
 <translation id="6483805311199035658">Otevírání souboru <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">Vyberte jazyk</translation>
@@ -4894,6 +4901,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="671928215901716392">Zamknout obrazovku</translation>
 <translation id="6721678857435001674">Zobrazení modelu a značky vašeho bezpečnostního klíče</translation>
 <translation id="6721972322305477112">&amp;Soubor</translation>
+<translation id="672208878794563299">Tento web se příště zeptá znovu.</translation>
 <translation id="672213144943476270">Před zahájením procházení v režimu hosta prosím odemkněte svůj profil.</translation>
 <translation id="6723661294526996303">Importovat záložky a nastavení...</translation>
 <translation id="6723839937902243910">Napájení</translation>
@@ -6293,6 +6301,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8317671367883557781">Přidat připojení k síti</translation>
 <translation id="8319414634934645341">Rozšířené použití klíče</translation>
 <translation id="8320459152843401447">Celá vaše obrazovka</translation>
+<translation id="8321837372750396788">Toto zařízení <ph name="DEVICE_TYPE" /> bude spravováno doménou <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Přístup této stránky k vašemu mikrofonu je zablokován.</translation>
 <translation id="8323167517179506834">Zadejte adresu URL.</translation>
 <translation id="8324784016256120271">Weby mohou pomocí souborů cookie sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam</translation>
@@ -6600,6 +6609,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8698269656364382265">Na předchozí obrazovku se vrátíte přejetím prstem z levé strany obrazovky.</translation>
 <translation id="869884720829132584">Nabídka Aplikace</translation>
 <translation id="869891660844655955">Datum vypršení platnosti</translation>
+<translation id="8702825062053163569">Zařízení <ph name="DEVICE_TYPE" /> bylo uzamknuto.</translation>
 <translation id="8703346390800944767">Přeskočit reklamu</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>
 <translation id="8705580154597116082">Je k dispozici síť Wi-Fi prostřednictvím telefonu</translation>
@@ -6952,7 +6962,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9066782832737749352">Převod textu na řeč</translation>
 <translation id="9068849894565669697">Výběr barvy</translation>
 <translation id="9068878141610261315">Nepodporovaný typ souboru</translation>
-<translation id="9070342919388027491">Byla vybrána karta vlevo</translation>
+<translation id="9070342919388027491">Karta se přesunula vlevo</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{1 adresy}few{# adres}many{# adresy}other{# adres}}</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

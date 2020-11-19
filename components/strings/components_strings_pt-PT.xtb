@@ -369,6 +369,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2354430244986887761">A Navegação segura do Google <ph name="BEGIN_LINK" />encontrou aplicações prejudiciais<ph name="END_LINK" /> recentemente em <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Os atacantes podem ver as imagens que está a visualizar neste site e enganá-lo ao modificá-las.</translation>
 <translation id="2356070529366658676">Perguntar</translation>
+<translation id="2357481397660644965">O seu dispositivo é gerido por <ph name="DEVICE_MANAGER" /> e a sua conta é gerida por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360873523816792727">Para utilizar os seus cartões em todos os dispositivos, ative a sincronização.</translation>
@@ -548,6 +549,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3145945101586104090">Falha ao descodificar resposta</translation>
 <translation id="3150653042067488994">Erro temporário do servidor</translation>
 <translation id="3154506275960390542">Esta página inclui um formulário que pode não ser enviado em segurança. Os dados que enviar podem ser vistos por outros utilizadores em trânsito ou podem ser modificados por um utilizador mal intencionado para alterar o que é recebido pelo servidor.</translation>
+<translation id="315504272643575312">A sua conta é gerida por <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3162559335345991374">A rede Wi-Fi que está a utilizar pode exigir que visite a respetiva página de início de sessão.</translation>
 <translation id="3167968892399408617">As páginas que visualizar em separadores de navegação anónima não são memorizadas no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisas depois de fechar todos os separadores de navegação anónima. Todos os ficheiros transferidos ou os marcadores criados são guardados.</translation>
@@ -1929,6 +1931,7 @@ Detalhes adicionais:
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página Web em <ph name="PAGE" /> porque:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">O seu dispositivo e conta são geridos por <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="868922510921656628">Páginas por conjunto</translation>
 <translation id="869891660844655955">Data de expiração</translation>
@@ -1943,6 +1946,7 @@ Detalhes adicionais:
 <translation id="8728672262656704056">Está anónimo</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8731544501227493793">Botão Gerir palavras-passe; prima Enter para ver e gerir as suas palavras-passes nas Definições do Chrome.</translation>
+<translation id="8734529307927223492">O seu <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para abrir uma nova janela de navegação anónima para navegar em privado.</translation>
 <translation id="8738058698779197622">Para estabelecer uma ligação segura, o relógio tem de ser definido corretamente. Isto deve-se ao facto de os certificados que os Sites utilizam para se identificarem serem apenas válidos para períodos de tempo específicos. Uma vez que o relógio do seu dispositivo está incorreto, o Chromium não consegue validar estes certificados.</translation>
 <translation id="8740359287975076522">Não foi possível encontrar o &lt;abbr id="dnsDefinition"&gt;endereço DNS&lt;/abbr&gt; de <ph name="HOST_NAME" />. Estamos a diagnosticar o problema.</translation>
@@ -2032,6 +2036,7 @@ Detalhes adicionais:
 <translation id="9101630580131696064">Tabuleiro 1</translation>
 <translation id="9103872766612412690">Normalmente, o site <ph name="SITE" /> utiliza a encriptação para proteger as suas informações. Quando o Chromium tentou estabelecer ligação a <ph name="SITE" /> desta vez, o Website devolveu credenciais invulgares e incorretas. Isto pode acontecer quando um utilizador mal intencionado tenta simular ser <ph name="SITE" /> ou quando um ecrã de início de sessão Wi-Fi interrompe a ligação. As suas informações continuam seguras porque o Chromium interrompeu a ligação antes de qualquer troca de dados.</translation>
 <translation id="9106062320799175032">Adicionar endereço de faturação</translation>
+<translation id="9107467864910557787">O navegador é gerido por <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">A confirmar o cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Carregado</translation>

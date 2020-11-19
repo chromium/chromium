@@ -76,7 +76,7 @@
 <translation id="1431911867058218151">Màu mận chín</translation>
 <translation id="1439316808600711881">rgn</translation>
 <translation id="146450394670219700">Đối tượng đồ họa</translation>
-<translation id="1465097259579587977">Bắt đầu lại quá trình định hướng nhanh</translation>
+<translation id="1465097259579587977">Bắt đầu lại phần khám phá nhanh</translation>
 <translation id="1480046233931937785">Tín dụng</translation>
 <translation id="1487494366197411587">Trên Chromebook, phím Tìm kiếm ở ngay phía trên phím Shift bên trái.</translation>
 <translation id="1498498210836053409">Tắt chế độ phím dính khi chỉnh sửa văn bản (Chế độ phím dính thông minh)</translation>
@@ -208,7 +208,7 @@
 <translation id="2523609930580546572">Hướng dẫn về ChromeVox</translation>
 <translation id="2525706221823668172">Phím tắt Chromebook</translation>
 <translation id="2553108862507765288">lỗi ngữ pháp</translation>
-<translation id="2556326187583116255">Nhấn bằng 2 ngón tay để dừng mọi giọng nói hiện tại</translation>
+<translation id="2556326187583116255">Nhấn bằng 2 ngón tay để dừng mọi giọng đọc hiện tại</translation>
 <translation id="2573256689920773241">Thao tác cơ bản</translation>
 <translation id="257674075312929031">Nhóm</translation>
 <translation id="2582407057977008361">Loại trừ</translation>
@@ -283,7 +283,7 @@
 <translation id="3060756054951570867">Menu <ph name="TITLE" /> đã được mở</translation>
 <translation id="3060880924447482063">Vuốt sang trái hoặc phải để di chuyển theo mục</translation>
 <translation id="3070245424257836917">Vuốt lên trên bằng ba ngón tay</translation>
-<translation id="307516670110542567">Định hướng nhanh</translation>
+<translation id="307516670110542567">Khám phá nhanh</translation>
 <translation id="3078345202707391975">Tiêu đề cấp 2 tiếp theo</translation>
 <translation id="3078740164268491126">bảng</translation>
 <translation id="3082249673510793544">Cuộn lùi</translation>
@@ -546,7 +546,7 @@
 <translation id="4973717656530883744">Tối thiểu <ph name="X" /></translation>
 <translation id="4974612477719259470">Không có nút nào trước đó</translation>
 <translation id="4979404613699303341">Nút trước</translation>
-<translation id="4982917827052020884">Hãy bắt đầu với một số phím mà bạn thường xuyên sử dụng. Bạn có thể dùng phím Control để dừng mọi giọng nói hiện tại. Tìm phím Control ở góc dưới cùng bên trái bàn phím. Để tiếp tục, hãy nhấn phím Control.</translation>
+<translation id="4982917827052020884">Hãy bắt đầu với một số phím mà bạn thường xuyên sử dụng. Bạn có thể dùng phím Control để dừng mọi giọng đọc hiện tại. Tìm phím Control ở góc dưới cùng bên trái bàn phím. Để tiếp tục, hãy nhấn phím Control.</translation>
 <translation id="4983588134362688868">Chuyển đến đầu trang</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, cửa sổ</translation>
 <translation id="4993152509206108683">Tốc độ <ph name="PERCENT" /> phần trăm</translation>
@@ -582,7 +582,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Kết thúc</translation>
 <translation id="5302089807023311274">Tham chiếu danh mục</translation>
-<translation id="530391007967514163">Hãy thử chuyển đến các phần văn bản theo tiêu đề bằng cách bằng cách thao tác với văn bản bên dưới.</translation>
+<translation id="530391007967514163">Hãy thử chuyển qua giữa các tiêu đề để chuyển qua phần văn bản bên dưới.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, thẻ</translation>
 <translation id="5308380583665731573">Kết nối</translation>
 <translation id="5310788376443009632">đã xóa:</translation>
@@ -618,7 +618,7 @@
 <translation id="5513242761114685513">Menu ngữ cảnh</translation>
 <translation id="551361796444814639">Màu xanh lam hài hòa</translation>
 <translation id="552195134157544755">Nút radio</translation>
-<translation id="5522423213731659107">Bạn đã tìm hiểu xong về cách định hướng nhanh!</translation>
+<translation id="5522423213731659107">Bạn đã học xong phần Khám phá nhanh!</translation>
 <translation id="5534303576632885660">tiêu đề</translation>
 <translation id="5539820223028224601">Màu xám sáng</translation>
 <translation id="5549179427201066174">Bật/tắt phản hồi bằng âm thanh (âm báo)</translation>
@@ -641,7 +641,7 @@
 <translation id="5653397561111110475">Sử dụng tính năng trợ năng của màn hình cảm ứng Chromebook</translation>
 <translation id="5655682562155942719">Chuyển lệnh</translation>
 <translation id="56637627897541303">Vùng văn bản</translation>
-<translation id="5669637233317991674">Nhấn tổ hợp phím Tìm kiếm + Mũi tên phải hoặc Tìm kiếm + Mũi tên trái để di chuyển trong bài học này</translation>
+<translation id="5669637233317991674">Nhấn tổ hợp phím Tìm kiếm + Mũi tên phải, hoặc Tìm kiếm + Mũi tên trái để di chuyển trong bài học này</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Mốc</translation>
@@ -849,7 +849,7 @@
 <translation id="7308519659008003150">Không có trường biểu mẫu nào trước đó</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">đã chọn một phần</translation>
-<translation id="7344012264516629579">Các lệnh chuyển bổ sung gồm có thao tác chuyển bằng đường liên kết, nút và hộp đánh dấu chẳng hạn. Bạn có thể tìm toàn bộ danh sách lệnh chuyển trong các trình đơn của ChromeVox. Bạn có thể mở các trình đơn này bằng cách nhấn tổ hợp phím Tìm kiếm + Dấu chấm.</translation>
+<translation id="7344012264516629579">Các lệnh chuyển bổ sung gồm có thao tác chuyển bằng đường liên kết, nút và hộp đánh dấu chẳng hạn. Toàn bộ danh sách lệnh chuyển có trong các trình đơn của ChromeVox. Bạn có thể mở các trình đơn này bằng cách nhấn tổ hợp phím Tìm kiếm + Dấu chấm.</translation>
 <translation id="7356165926712028380">Chuyển sang chữ nổi 8 chấm</translation>
 <translation id="7356610683936413584">Thông tin chi tiết danh sách mô tả</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{dấu và}other{# dấu và}}</translation>
@@ -1024,7 +1024,7 @@
 <translation id="8656888282555543604">Bật ghi nhật ký chữ nổi</translation>
 <translation id="8659501358298941449">Danh sách thả xuống</translation>
 <translation id="867187640362843212">Tiêu đề 5</translation>
-<translation id="8693391540059827073">Mùa yêu thích của tôi</translation>
+<translation id="8693391540059827073">Mùa tôi yêu thích</translation>
 <translation id="8696284982970258155">Màu dưa lưới</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{dấu sổ thẳng}other{# dấu sổ thẳng}}</translation>
 <translation id="8741370088760768424">Gợi ý: Nhấn tổ hợp phím Tìm kiếm + Dấu cách để kích hoạt mục hiện tại.</translation>
@@ -1034,7 +1034,7 @@
 <translation id="875769700429317857">Đã hoàn tất việc tải <ph name="FILE_NAME" /> xuống</translation>
 <translation id="8767968232364267681">Tiêu đề cấp 4 tiếp theo</translation>
 <translation id="8770473310765924354">thoát nội dung có cấu trúc, chẳng hạn như bảng</translation>
-<translation id="8775203254697638994">Sẽ có những lúc bạn cần chọn một mục trong danh sách thả xuống. Để thực hiện việc này, trước tiên, hãy mở rộng danh sách bằng cách nhấn tổ hợp phím Tìm kiếm + Phím cách. Sau đó, hãy dùng các phím Mũi tên lên và Mũi tên xuống để chọn một mục. Cuối cùng, thu gọn danh sách bằng cách nhấn tổ hợp phím Tìm kiếm + Phím cách.</translation>
+<translation id="8775203254697638994">Sẽ có những lúc bạn cần chọn một mục trong danh sách thả xuống. Để làm việc này, trước tiên, hãy mở rộng danh sách bằng cách nhấn tổ hợp phím Tìm kiếm + Phím cách. Sau đó, hãy dùng các phím Mũi tên lên và Mũi tên xuống để chọn một mục. Cuối cùng, thu gọn danh sách bằng cách nhấn tổ hợp phím Tìm kiếm + Phím cách.</translation>
 <translation id="8779057862865475116">Không có đường liên kết nào trước đó</translation>
 <translation id="8796411681063377102">Tiêu đề cấp 3 tiếp theo</translation>
 <translation id="8823311177246872527">Trang <ph name="CURRENTPAGE" />/<ph name="TOTALPAGES" /></translation>
@@ -1056,7 +1056,7 @@
 <translation id="89720367119469899">Thoát</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Quên</translation>
-<translation id="8989104346085848538">Để dừng lời nói ChromeVox hiện tại, hãy nhấn phím Control.</translation>
+<translation id="8989104346085848538">Để dừng giọng đọc ChromeVox hiện tại, hãy nhấn phím Control.</translation>
 <translation id="9014206344398081366">Hướng dẫn về ChromeVox</translation>
 <translation id="9040132695316389094">Tiêu đề 1</translation>
 <translation id="9061884144798498064">Chọn bảng chữ nổi 8 chấm:</translation>

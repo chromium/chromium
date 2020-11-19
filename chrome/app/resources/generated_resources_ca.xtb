@@ -433,6 +433,7 @@
 <translation id="1475502736924165259">Tens certificats arxivats que no s'ajusten a cap de les altres categories</translation>
 <translation id="1476088332184200792">Copia-ho al dispositiu</translation>
 <translation id="1476607407192946488">&amp;Configuració d'idioma</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.</translation>
 <translation id="1478340334823509079">Detalls: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">La instal·lació no està activada</translation>
 <translation id="1481537595330271162">S'ha produït un error en canviar la mida del disc</translation>
@@ -2032,6 +2033,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3320630259304269485">Configuració de la navegació segura (protecció contra llocs web perillosos) i altres opcions de configuració de seguretat</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Aquestes dades inclouen contingut sensible o perillós. Suprimeix aquest contingut i torna-ho a provar.}=1{Aquest fitxer inclou contingut sensible o perillós. Suprimeix aquest contingut i torna-ho a provar.}other{Aquests fitxers inclouen contingut sensible o perillós. Suprimeix aquest contingut i torna-ho a provar.}}</translation>
 <translation id="3323521181261657960">Has obtingut més temps de connexió!</translation>
+<translation id="3325804108816646710">S'estan cercant perfils disponibles...</translation>
 <translation id="3325910708063135066">La càmera i el micròfon estan desactivats a les preferències del sistema de Mac</translation>
 <translation id="3327050066667856415">Els Chromebook estan dissenyats perquè siguin segurs. El teu dispositiu està protegit del programari maliciós automàticament i no necessita programari addicional.</translation>
 <translation id="3328489342742826322">La restauració des d'una còpia de seguretat suprimirà les aplicacions i les dades de Linux existents a la teva carpeta de fitxers de Linux.</translation>
@@ -2099,6 +2101,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3412265149091626468">Ves directament a la selecció</translation>
 <translation id="3413122095806433232">Emissors de CA: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Mida:</translation>
+<translation id="3414966631182382431">El <ph name="BEGIN_LINK" />navegador està gestionat<ph name="END_LINK" /> per <ph name="MANAGER" /></translation>
 <translation id="3416468988018290825">Mostra sempre els URL complets</translation>
 <translation id="3417835166382867856">Cerca pestanyes</translation>
 <translation id="3417836307470882032">Hora militar</translation>
@@ -3173,6 +3176,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4651484272688821107">No s'ha pogut carregar el component en línia amb recursos del mode de demostració.</translation>
 <translation id="4652935475563630866">El canvi a l'opció de configuració de la càmera requereix reiniciar Parallels Desktop. Fes-ho per continuar.</translation>
 <translation id="4653405415038586100">S'ha produït un error en configurar Linux</translation>
+<translation id="4657914796247705218">Velocitat del TrackPoint</translation>
 <translation id="465878909996028221">Les redireccions del navegador només admeten els protocols http, https i de fitxers.</translation>
 <translation id="4659077111144409915">Compte principal</translation>
 <translation id="4659126640776004816">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada.</translation>
@@ -3833,6 +3837,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5470735824776589490">Cal reiniciar el dispositiu per poder restablir-lo amb Powerwash. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hola! Soc la teva veu per a la conversió de text a parla.</translation>
 <translation id="5472627187093107397">Desa les contrasenyes d'aquest lloc web</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN ha de tenir almenys 1 caràcter}other{El PIN ha de tenir almenys # caràcters}}</translation>
 <translation id="5473333559083690127">Torna a introduir el PIN nou</translation>
 <translation id="5481273127572794904">Sense permís per baixar automàticament diversos fitxers</translation>
 <translation id="5481941284378890518">Afegeix impressores properes</translation>
@@ -4374,6 +4379,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6087960857463881712">Cara de fascinació</translation>
 <translation id="6091761513005122595">L'ús compartit s'ha activat correctament.</translation>
 <translation id="6093888419484831006">S’està cancel·lant l’actualització...</translation>
+<translation id="6095541101974653012">Se t'ha tancat la sessió.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Obre-la maximitzada</translation>
 <translation id="6096326118418049043">Nom X.500</translation>
@@ -4706,6 +4712,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6474884162850599008">Desconnecta el compte de Google Drive</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla. Tria què vols compartir.</translation>
 <translation id="6478248366783946499">Vols desar el fitxer perillós?</translation>
+<translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Obre la baixada</translation>
 <translation id="6483805311199035658">S'està obrint <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">Selecciona l'idioma</translation>
@@ -4894,6 +4901,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="671928215901716392">Pantalla de bloqueig</translation>
 <translation id="6721678857435001674">Veure la marca i el model de la teva clau de seguretat</translation>
 <translation id="6721972322305477112">&amp;Fitxer</translation>
+<translation id="672208878794563299">Aquest lloc web t'ho tornarà a preguntar el pròxim cop.</translation>
 <translation id="672213144943476270">Desbloquegeu el perfil per poder navegar com a convidat.</translation>
 <translation id="6723661294526996303">Importa les adreces d'interès i la configuració...</translation>
 <translation id="6723839937902243910">Bateria</translation>
@@ -6294,6 +6302,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8317671367883557781">Afegeix una connexió a la xarxa</translation>
 <translation id="8319414634934645341">Ús ampliat de claus</translation>
 <translation id="8320459152843401447">La pantalla completa</translation>
+<translation id="8321837372750396788">Aquest dispositiu <ph name="DEVICE_TYPE" /> estarà gestionat per <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Aquesta pàgina no té permís per accedir al micròfon.</translation>
 <translation id="8323167517179506834">Escriviu l'URL</translation>
 <translation id="8324784016256120271">Els llocs web poden fer servir galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis</translation>
@@ -6601,6 +6610,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8698269656364382265">Per tornar a la pantalla anterior, llisca des de l'esquerra.</translation>
 <translation id="869884720829132584">Menú d'aplicacions</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
+<translation id="8702825062053163569">El dispositiu <ph name="DEVICE_TYPE" /> s'ha bloquejat</translation>
 <translation id="8703346390800944767">Omet l'anunci</translation>
 <translation id="8705331520020532516">Número de sèrie</translation>
 <translation id="8705580154597116082">Wi-Fi disponible mitjançant el telèfon</translation>

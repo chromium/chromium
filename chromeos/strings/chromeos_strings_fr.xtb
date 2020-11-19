@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1018656279737460067">Annulé</translation>
+<translation id="1071587090247825784">Pare-feu détecté</translation>
 <translation id="1075811647922107217">Taille de page</translation>
 <translation id="1195447618553298278">Erreur inconnue</translation>
 <translation id="1204296502688602597">Latence avec le DNS</translation>
+<translation id="1238612778414822719">Latence des requêtes HTTPS</translation>
 <translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
 <translation id="1397738625398125236">Pinguer la passerelle</translation>
+<translation id="1398634363027580500">Latence très élevée des requêtes HTTPS</translation>
 <translation id="1413240736185167732">Échec – Problème au niveau du filtre</translation>
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Échec – Bac de sortie plein</translation>
 <translation id="4034824040120875894">Imprimante</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
+<translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4227825898293920515">Le mot de passe arrive à expiration dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="467510802200863975">Les mots de passe sont différents</translation>
+<translation id="467715984478005772">Un pare-feu semble activé</translation>
 <translation id="4691278870498629773">Tâche suspendue - Bac manquant</translation>
 <translation id="469379815867856270">Force du signal</translation>
 <translation id="4731797938093519117">Accès parental</translation>
@@ -111,6 +116,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6048107060512778456">Échec – Bourrage papier</translation>
 <translation id="6050189528197190982">Niveaux de gris</translation>
 <translation id="6058625436358447366">Pour terminer, saisissez votre ancien mot de passe et le nouveau</translation>
+<translation id="6061772781719867950">Échec des requêtes HTTPS</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
 <translation id="6146993107019042706">Pour terminer, saisissez votre nouveau mot de passe</translation>
@@ -129,6 +135,8 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6747215703636344499">Tâche suspendue - Bac de sortie plein</translation>
+<translation id="6766275201586212568">Échec de résolutions DNS</translation>
+<translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6839141349259399400">Impossible d'établir la connexion avec les scanners ?</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
@@ -136,6 +144,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="7561454561030345039">Cette action est gérée par votre administrateur</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Latence élevée des requêtes HTTPS</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7805768142964895445">État</translation>
@@ -148,6 +157,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
 <translation id="8294431847097064396">Source</translation>
+<translation id="8302368968391049045">Pare-feu HTTPS</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8352772353338965963">Ajoutez un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Serveurs de noms vides</translation>

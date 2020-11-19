@@ -433,6 +433,7 @@
 <translation id="1475502736924165259">თქვენ შენახული გაქვთ სერტიფიკატები, რომლებიც არცერთ სხვა კატეგორიას არ ერგება</translation>
 <translation id="1476088332184200792">თქვენს მოწყობილობაზე კოპირება</translation>
 <translation id="1476607407192946488">&amp;ენის პარამეტრები</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> მოითხოვს, რომ თქვენი სმარტ-ბარათი ჩასმული იყოს.</translation>
 <translation id="1478340334823509079">დეტალები: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ინსტალაცია არ არის ჩართული</translation>
 <translation id="1481537595330271162">შეცდომა დისკის ზომის შეცვლისას</translation>
@@ -2032,6 +2033,7 @@
 <translation id="3320630259304269485">Safe Browsing (სახიფათო საიტებისგან დაცვა) და უსაფრთხოებასთან დაკავშირებული სხვა პარამეტრები</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{ეს მონაცემები შეიცავს სენსიტიურ ან სახიფათო კონტენტს. ამოშალეთ აღნიშნული კონტენტი და სცადეთ ხელახლა.}=1{ეს ფაილი შეიცავს სენსიტიურ ან სახიფათო კონტენტს. ამოშალეთ აღნიშნული კონტენტი და სცადეთ ხელახლა.}other{ეს ფაილები შეიცავს სენსიტიურ ან სახიფათო კონტენტს. ამოშალეთ აღნიშნული კონტენტი და სცადეთ ხელახლა.}}</translation>
 <translation id="3323521181261657960">გილოცავთ! ეკრანთან მეტ დროს გაატარებთ</translation>
+<translation id="3325804108816646710">იძებნება ხელმისაწვდომი პროფილები...</translation>
 <translation id="3325910708063135066">კამერა და მიკროფონი გამორთულია Mac-ის სისტემის პარამეტრებში</translation>
 <translation id="3327050066667856415">Chromebook-ები უსაფრთხოების მოთხოვნების გათვალისწინებით არის შექმნილი. თქვენი მოწყობილობა ავტომატურად არის დაცული მავნე პროგრამებისგან. ამიტომაც დამატებითი პროგრამული უზრუნველყოფა საჭირო არ არის.</translation>
 <translation id="3328489342742826322">სარეზერვო ასლიდან აღდგენის შემთხვევაში თქვენი Linux ფაილებიანი საქაღალდეებიდან წაიშლება არსებული Linux აპლიკაციები და მონაცემები.</translation>
@@ -2099,6 +2101,7 @@
 <translation id="3412265149091626468">მონიშნულ ობიექტზე გადახტომა</translation>
 <translation id="3413122095806433232">CA გამცემები: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">ზომა:</translation>
+<translation id="3414966631182382431">თქვენს <ph name="BEGIN_LINK" />ბრაუზერს მართავს<ph name="END_LINK" /> <ph name="MANAGER" /></translation>
 <translation id="3416468988018290825">URL-ების ყოველთვის სრულად გამოჩენა</translation>
 <translation id="3417835166382867856">ჩანართებში ძიება</translation>
 <translation id="3417836307470882032">დროის 24-საათიანი ფორმატი</translation>
@@ -3174,6 +3177,7 @@
 <translation id="4651484272688821107">დემო-რეჟიმის რესურსებიანი ონლაინ-კომპონენტის ჩატვირთვა ვერ მოხერხდა.</translation>
 <translation id="4652935475563630866">კამერის პარამეტრის ეს ცვლილება მოითხოვს Parallels Desktop-ის ხელახლა გაშვებას. გასაგრძელებლად ხელახლა გაუშვით Parallels Desktop.</translation>
 <translation id="4653405415038586100">შეცდომა Linux-ის კონფიგურაციისას</translation>
+<translation id="4657914796247705218">TrackPoint-ის სიჩქარე</translation>
 <translation id="465878909996028221">ბრაუზერის გადამისამართებისთვის მხარდაჭერილია მხოლოდ http, https და ფაილების პროტოკოლები.</translation>
 <translation id="4659077111144409915">ძირითადი ანგარიში</translation>
 <translation id="4659126640776004816">თქვენს Google ანგარიშში შესვლისას ეს ფუნქცია ჩართული იქნება.</translation>
@@ -3833,6 +3837,7 @@
 <translation id="5470735824776589490">გადატვირთვა საჭიროა, სანამ განხორციელდება თქვენი მოწყობილობის გადატვირთვა Powerwash-ით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">გამარჯობა! ეს არის ჩემი ხმა ტექსტის გახმოვანებისთვის.</translation>
 <translation id="5472627187093107397">პაროლების შენახვა ამ საიტისთვის</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-კოდი უნდა შეიცავდეს მინიმუმ 1 სიმბოლოს}other{PIN-კოდი უნდა შეიცავდეს მინიმუმ # სიმბოლოს}}</translation>
 <translation id="5473333559083690127">ხელახლა შეიყვანეთ ახალი PIN-კოდი</translation>
 <translation id="5481273127572794904">რამდენიმე ფაილის ავტომატურად ჩამოტვირთვა დაუშვებელია</translation>
 <translation id="5481941284378890518">ახლომახლო პრინტერების დამატება</translation>
@@ -4372,6 +4377,7 @@
 <translation id="6087960857463881712">არაჩვეულებრივი სახე</translation>
 <translation id="6091761513005122595">გაზიარება მიერთებულია წარმატებით.</translation>
 <translation id="6093888419484831006">განახლების გაუქმება…</translation>
+<translation id="6095541101974653012">თქვენ გახვედით სისტემიდან.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">გახსენით მაქსიმალური</translation>
 <translation id="6096326118418049043">X.500 სახელი</translation>
@@ -4704,6 +4710,7 @@
 <translation id="6474884162850599008">Google Drive ანგარიშთან კავშირის გაწყვეტა</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" />-ს სურს, გააზიაროს თქვენი ეკრანის შიგთავსი. აირჩიეთ, რისი გაზიარება გსურთ.</translation>
 <translation id="6478248366783946499">გსურთ სახიფათო ფაილის შენარჩუნება?</translation>
+<translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">ჩამოტვირთვის გახსნა</translation>
 <translation id="6483805311199035658">იხსნება <ph name="FILE" />…</translation>
 <translation id="6488384360522318064">აირჩიეთ ენა</translation>
@@ -4892,6 +4899,7 @@
 <translation id="671928215901716392">ჩაკეტილი ეკრანი</translation>
 <translation id="6721678857435001674">თქვენი უსაფრთხოების გასაღების ბრენდისა და მოდელის ნახვა</translation>
 <translation id="6721972322305477112">&amp;ფაილი</translation>
+<translation id="672208878794563299">ეს საიტი შემდეგში ხელახლა გკითხავთ.</translation>
 <translation id="672213144943476270">სტუმრის სტატუსით დათვალიერებამდე, გთხოვთ, განბლოკოთ თქვენი პროფილი.</translation>
 <translation id="6723661294526996303">სანიშნეების და პარამეტრების იმპორტი…</translation>
 <translation id="6723839937902243910">ენერგია</translation>
@@ -6290,6 +6298,7 @@
 <translation id="8317671367883557781">ქსელის კავშირის დამატება</translation>
 <translation id="8319414634934645341">გაფართოებული კოდის გამოყენება</translation>
 <translation id="8320459152843401447">მთლიანი ეკრანი</translation>
+<translation id="8321837372750396788">ამ <ph name="DEVICE_TYPE" />-ის მმართველი იქნება <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">წვდომა თქვენს მიკროფონზე ამ გვერდიდან დაიბლოკა.</translation>
 <translation id="8323167517179506834">აკრიფეთ URL</translation>
 <translation id="8324784016256120271">საიტები გამოიყენებს ქუქი-ჩანაწერებს სხვადასხვა საიტის თქვენ მიერ დათვალიერების აქტივობის სანახავად, მაგალითად, რეკლამის პერსონალიზების მიზნით</translation>
@@ -6597,6 +6606,7 @@
 <translation id="8698269656364382265">წინა ეკრანზე დასაბრუნებლად გადაფურცლეთ მარცხენა მხრიდან.</translation>
 <translation id="869884720829132584">პროგრამის მენიუ</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
+<translation id="8702825062053163569">თქვენი <ph name="DEVICE_TYPE" /> ჩაიკეტა.</translation>
 <translation id="8703346390800944767">რეკლამის გამოტოვება</translation>
 <translation id="8705331520020532516">სერიული ნომერი</translation>
 <translation id="8705580154597116082">ტელეფონი Wi-Fi კავშირს უზრუნველყოფს</translation>

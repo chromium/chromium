@@ -369,6 +369,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2354430244986887761">Usluga Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />pronašla štetne aplikacije <ph name="END_LINK" /> na web lokaciji <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Napadači mogu vidjeti slike koje gledate na ovoj web lokaciji i navesti vas da ih izmijenite.</translation>
 <translation id="2356070529366658676">Pitaj</translation>
+<translation id="2357481397660644965">Vašim uređajem upravlja <ph name="DEVICE_MANAGER" />, a vašim računom upravlja <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Veći broj</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2360873523816792727">Da koristite svoje kartice na svim uređajima, uključite sinhronizaciju.</translation>
@@ -548,6 +549,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3145945101586104090">Dekodiranje odgovora nije uspjelo</translation>
 <translation id="3150653042067488994">Privremena greška na serveru</translation>
 <translation id="3154506275960390542">Ova stranica sadrži obrazac čije slanje može biti nesigurno. Tokom prijenosa, drugi će moći vidjeti podatke koje šaljete, a prije nego što ih primi server može ih izmijeniti napadač.</translation>
+<translation id="315504272643575312">Vašim računom upravlja <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3162559335345991374">WiFi koji koristite može tražiti da posjetite njegovu stranicu za prijavu.</translation>
 <translation id="3167968892399408617">Stranice koje pregledate u anonimnim karticama neće ostati u historiji preglednika ili historiji prikazivanja nakon što zatvorite sve anonimne kartice. Zadržat će se svi fajlovi koje preuzmete ili oznake koje kreirate.</translation>
@@ -1929,6 +1931,7 @@ Dodatni detalji:
 <translation id="8680536109547170164"><ph name="QUERY" />, odgovor, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Web stranica na <ph name="PAGE" /> nije učitana zbog sljedećeg:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Vašim uređajem i računom upravlja <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostupno</translation>
 <translation id="868922510921656628">Broj stranica po skupu</translation>
 <translation id="869891660844655955">Datum isteka</translation>
@@ -1943,6 +1946,7 @@ Dodatni detalji:
 <translation id="8728672262656704056">Ušli ste u anonimni način rada</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731544501227493793">Dugme Upravljaj lozinkama, pritisnite Enter da pregledate lozinke i upravljate njima u postavkama Chromea</translation>
+<translation id="8734529307927223492">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da otvorite novi anonimni prozor i da privatno pregledate</translation>
 <translation id="8738058698779197622">Ispravno podesite sat da uspostavite sigurnu vezu. Razlog tome je taj što su certifikati koji web lokacije koriste da se identificiraju valjane samo na određeni period. Kako sat na vašem uređaju nije ispravan, Chromium ne može provjeriti ove certifikate.</translation>
 <translation id="8740359287975076522">Nije moguće pronaći &lt;abbr id="dnsDefinition"&gt;DNS adresu&lt;/abbr&gt; host računara <ph name="HOST_NAME" />. Dijagnosticiranje problema.</translation>
@@ -2032,6 +2036,7 @@ Dodatni detalji:
 <translation id="9101630580131696064">Ladica 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> obično koristi šifriranje za zaštitu vaših informacija. Kada se Chromium ovaj put pokušao povezati s web lokacijom <ph name="SITE" />, web lokacija je vratila neobične i netačne akreditive. To se može dogoditi kada se napadač pokušava predstaviti kao web lokacija <ph name="SITE" /> ili kada vezu prekine ekran za prijavu na WiFi. Vaše informacije su i dalje sigurne jer je Chromium prekinuo vezu prije bilo kakve razmjene podataka.</translation>
 <translation id="9106062320799175032">Dodaj adresu za naplatu</translation>
+<translation id="9107467864910557787">Vašim preglednikom upravlja <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Potvrđivanje kartice...</translation>
 <translation id="9114581008513152754">Ovim preglednikom ne upravlja kompanija ili neka druga organizacija. Aktivnostima na ovom uređaju se može upravljati van Chromea. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Otpremljeno</translation>

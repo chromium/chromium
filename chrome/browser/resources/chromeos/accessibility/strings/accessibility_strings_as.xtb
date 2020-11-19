@@ -24,8 +24,10 @@
 <translation id="1126928665165112660">ইটালিক নহয়</translation>
 <translation id="113582498867142724"><ph name="NUM" />টা বস্তুযুক্ত <ph name="TAG" />ৰ সংগ্ৰহ</translation>
 <translation id="1161762950103988776">Jump</translation>
+<translation id="1164857107703583584">এখন ৱেব পৃষ্ঠাত দক্ষতাৰে নেভিগে'ট কৰিবলৈ পোনপটীয়াকৈ যোৱাৰ নিৰ্দেশনাসমূহ ব্যৱহাৰ কৰিব পাৰি।</translation>
 <translation id="1175914831232945926">অংকবোৰ</translation>
 <translation id="1188858454923323853">পৰিপূৰক</translation>
+<translation id="1189258430971676908">অনুশীলনৰ ক্ষেত্ৰ: ড্ৰপ ডাউনৰ সূচী</translation>
 <translation id="1195238899008218998">উত্তৰভাষ</translation>
 <translation id="1197088940767939838">কমলা</translation>
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
@@ -68,11 +70,13 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">পাতল সেউজীয়া</translation>
+<translation id="1411043317877497323">অনুশীলনৰ ক্ষেত্ৰ</translation>
 <translation id="141454040365657399">পৃষ্ঠাৰ হে’ডাৰ</translation>
 <translation id="1417889266572670458">সাগৰৰ দৰে নীলা</translation>
 <translation id="1431911867058218151">প্লাম</translation>
 <translation id="1439316808600711881">rgn</translation>
 <translation id="146450394670219700">গ্ৰাফিক্স অব্‌জেক্ট</translation>
+<translation id="1465097259579587977">ক্ষিপ্ৰ অ'ৰিয়েণ্টশ্বন পুনৰ আৰম্ভ কৰক</translation>
 <translation id="1480046233931937785">স্বীকৃতি</translation>
 <translation id="1487494366197411587">Chromebookত সন্ধানৰ কীটো বাওঁফালৰ শ্বিফ্ট কীৰ ওপৰত থাকে।</translation>
 <translation id="1498498210836053409">পাঠ সম্পাদনা কৰাৰ সময়ত ষ্টিকি ম’ডটো অফ কৰক (স্মার্ট ষ্টিকি ম’ড)</translation>
@@ -83,6 +87,7 @@
 <translation id="1524531499102321782">ব্ৰেইলৰ পৰৱর্তী শাৰী</translation>
 <translation id="1542513807034338907">পূৰ্বৱৰ্তী পৃষ্ঠালৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="1546370775711804143">স্ক্ৰল বাৰ</translation>
+<translation id="1551572888042734032">গ্ৰীষ্মকাল</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="1559739829547075274">পাছলৈ নেভিগে'ট কৰক</translation>
 <translation id="1565432156062359693">কোনো পৰৱৰ্তী সূচী নাই</translation>
@@ -110,6 +115,7 @@
 <translation id="1714116687360794776">মিটাৰ</translation>
 <translation id="1722567105086139392">লিংক</translation>
 <translation id="1727806147743597030">ftr</translation>
+<translation id="1730447754326314349">ChromeVox টিউট’ৰিয়েললৈ স্বাগতম। যিকোনো সময়তে এই টিউট’ৰিয়েলটোৰ পৰা বাহিৰ হ'বলৈ কীব'ৰ্ডখনৰ ওপৰৰ বাওঁফালৰ চুকটোৰ এস্কে’প কীটো টিপক। ChromeVox অফ কৰিবলৈ ক'ণ্ট্ৰ'ল আৰু অল্‌ট টিপি ধৰি থাকি জেড টিপক। আপুনি সাজু হ'লে পৰৱৰ্তী অনুশীলনীটোলৈ নিবলৈ স্পেছবাৰডাল টিপক।</translation>
 <translation id="174268867904053074">পৰৱৰ্তী গ্ৰাফিক</translation>
 <translation id="1756785467854861272">গাঢ় মেজেণ্টা</translation>
 <translation id="1765245556747822181">এটা আঙুলি ওপৰলৈ ছোৱাইপ কৰক</translation>
@@ -154,9 +160,11 @@
 <translation id="2121067395472282800">এক্সেছ কী:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">এই বস্তুটোৰ বাবে কোনো উপলব্ধ পাঠ নাই</translation>
 <translation id="2127747486437921899">ইটালিক</translation>
+<translation id="2152179395627233441">অনুশীলনৰ ক্ষেত্ৰ বন্ধ কৰক</translation>
 <translation id="2163782704988363449">আসোঁৱাহ</translation>
 <translation id="2169714232367507776">বৰ্তমানৰ বস্তুটোত ক্লিক কৰক</translation>
 <translation id="2179452035581866348">ChromeVoxএ ধ্বনি ব্যৱহাৰ কৰি দৰকাৰী আৰু অতিৰিক্ত তথ্য যোগান ধৰে। আপুনি এই ধ্বনিবিলাক ব্যৱহাৰ কৰি আৰু সেইবোৰে কি বুজাই তাক শিকি খৰকৈ নেভিগে’ট কৰিব পাৰে। আপুনি সেইবোৰ ব্যৱহাৰ কৰি অভ্যস্ত হোৱাৰ পিছত, আপুনি উক্তিবিলাকৰ বহল বিৱৰণসমূহ বন্ধ কৰি ৰাখিব পাৰে আৰু কেৱল পৃষ্ঠাৰ বিষয়ে দৰকাৰী তথ্য জানিবৰ বাবে সেই ধ্বনিসমূহ ব্যৱহাৰ কৰিব পাৰে। এইখন হৈছে ধ্বনি আৰু সেইবিলাকে কি বুজাই তাৰ এখন পূৰ্ণ তালিকা।</translation>
+<translation id="2183409941723714159">টেব নেভিগেশ্বন</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{সোঁফালৰ চন্দ্ৰ বন্ধনী}one{#টা সোঁফালৰ চন্দ্ৰ বন্ধনী}other{#টা সোঁফালৰ চন্দ্ৰ বন্ধনী}}</translation>
 <translation id="2197863150503783129">ঘোঁৰাৰ জীনৰ দৰে মুগা</translation>
 <translation id="2199994615414171367">পূর্বৱর্তী গণিত</translation>
@@ -176,6 +184,7 @@
 <translation id="2318372665160196757">মুখ্য</translation>
 <translation id="2329324941084714723">টেবৰ পেনেল</translation>
 <translation id="2347456970887948350">এটা লিংক</translation>
+<translation id="2365384324219615024">আপুনি বস্তুবোৰ সক্ৰিয় কৰিবলৈ এণ্টাৰো টিপিব পাৰে। যেনে, ফৰ্মত পাঠ দাখিল কৰিবলৈ এণ্টাৰ ব্যৱহাৰ কৰিব পৰা যায়। অব্যাহত ৰাখিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="2381733276052567791">কথন অন বা অফ কৰিবলৈ ট’গ’ল কৰক</translation>
 <translation id="2390264819538553347">আগবাঢ়িবলৈ এণ্টাৰ দবাওক; উভতি যাবলৈ বেকস্পেছ দবাওক।</translation>
 <translation id="2398579267367951220">পৃষ্ঠাখনত সন্ধান কৰিবলৈ টাইপ কৰক। ফলাফললৈ পোনপটীয়াকৈ যাবলৈ এণ্টাৰ টিপক, ফলাফল ব্ৰাউজ কৰিবলৈ আপ অথবা ডাউন এৰ’সমূহ টিপক, আপোনাৰ সন্ধান সলনি কৰিবলৈ টাইপ কৰি থাকক অথবা বাতিল কৰিবলৈ এস্কে’প টিপক।</translation>
@@ -199,6 +208,8 @@
 <translation id="2523609930580546572">ChromeVox প্ৰশিক্ষণ</translation>
 <translation id="2525706221823668172">Chromebook কী’বর্ডৰ শ্বৰ্টকাট</translation>
 <translation id="2553108862507765288">ব্যাকৰণৰ ভুল</translation>
+<translation id="2556326187583116255">বৰ্তমানৰ যিকোনো কথন বন্ধ কৰিবলৈ ২ টা আঙুলিৰে টিপক</translation>
+<translation id="2573256689920773241">প্ৰাথমিক নেভিগেশ্বন</translation>
 <translation id="257674075312929031">গোট</translation>
 <translation id="2582407057977008361">পৃথক</translation>
 <translation id="2592212930811759050">সম্পাদনা আৰম্ভ কৰিবলৈ দুবাৰ টিপক</translation>
@@ -210,6 +221,7 @@
 <translation id="2638785836053527382"><ph name="FILE_NAME" />ৰ ডাউনল'ড পুনৰাম্ভ কৰা হৈছে</translation>
 <translation id="2639750663247012216">ChromeVox সংশোধক</translation>
 <translation id="2644542693584024604">ভুল বানান</translation>
+<translation id="2651441758640020174">আপোনাৰ প্ৰিয় ঋতুটো সূচীখনৰ পৰা বাছনি কৰি চাওক।</translation>
 <translation id="2654172656519784359">এটা শব্দ আগলৈ নিয়ক</translation>
 <translation id="2661530546602071611">জাননী</translation>
 <translation id="2673280813984708147">এ সম্পাদনা কৰি আছে</translation>
@@ -235,6 +247,7 @@
 <translation id="2808001342598757276">গাঢ়তা নাইকিয়া কৰা স্ক্ৰীণ</translation>
 <translation id="2811019999044652585">সঁজুলিদণ্ড বা ছিষ্টেম ট্ৰেইৰ দৰে স্ক্ৰীণৰ আন অংশলৈ যাবলৈ Control+Forward হেঁচক৷ Chromebookত, ফৰৱাৰ্ড কীটো সংখ্যা ২ কীৰ ওপৰত থাকে৷</translation>
 <translation id="2811204574343810641">শাৰী</translation>
+<translation id="2816868829355607410">অনুশীলনৰ ক্ষেত্ৰ: পোনপটীয়াকৈ যোৱাৰ নিৰ্দেশ</translation>
 <translation id="2841013758207633010">সময়</translation>
 <translation id="2843432675592278677">কোনো পূর্বৱর্তী ARIA লেণ্ডমার্ক নাই</translation>
 <translation id="2843814945404750166">জলফাইৰঙী গাঢ় সেউজীয়া</translation>
@@ -270,6 +283,7 @@
 <translation id="3060756054951570867"><ph name="TITLE" />মেনু খোলা হৈছে</translation>
 <translation id="3060880924447482063">বস্তু অনুসৰি আঁতৰাবলৈ বাওঁ বা সোঁফালে ছোৱাইপ কৰক</translation>
 <translation id="3070245424257836917">তিনিটা আঙুলি ওপৰলৈ ছোৱাইপ কৰক</translation>
+<translation id="307516670110542567">ক্ষিপ্ৰ অ'ৰিয়েণ্টশ্বন</translation>
 <translation id="3078345202707391975">পৰৱর্তী স্তৰ ২ৰ শিৰোনাম</translation>
 <translation id="3078740164268491126">তালিকা</translation>
 <translation id="3082249673510793544">পিছলৈ স্ক্ৰ’ল কৰক</translation>
@@ -298,6 +312,7 @@
 <translation id="3172700825913348768">{COUNT,plural, =1{স্পেচ}one{#টা স্পেচ}other{#টা স্পেচ}}</translation>
 <translation id="3179119189286472195">লিংক নহয়</translation>
 <translation id="320041337977930740">ডিছপ্লে’ৰ শৈলীটো ইণ্টাৰলীভলৈ সলনি কৰক</translation>
+<translation id="3206698050650195442">টিউট’ৰিয়েলৰ পৰা বাহিৰ হওক</translation>
 <translation id="3208346789712025453">কোনো পৰৱর্তী নিয়ন্ত্ৰণ নাই</translation>
 <translation id="321072937702597574">অৰ্কিড</translation>
 <translation id="3218691001991391708"><ph name="TEXT" /> পেষ্ট কৰক।</translation>
@@ -326,6 +341,8 @@
 <translation id="335581015389089642">কথন</translation>
 <translation id="3356951775008366684">শব্দৰ ধ্বনিগত উচ্চাৰণ ঘোষণা কৰক</translation>
 <translation id="3359142382821736686">seprtr</translation>
+<translation id="3363015957057974366">আপুনি স্ক্ৰীনত পৰৱৰ্তী ভাব-বিনিময়কাৰী বস্তুটোলৈ নিবলৈ টেব কীটোও ব্যৱহাৰ কৰিব পাৰে। ছাৰ্চ কীটোৰ একদম ওপৰত থকা টেব কীটো বিচাৰক। অব্যাহত ৰাখিবলৈ টেব কীটো টিপক।</translation>
+<translation id="3366946046494222386"><ph name="TOPIC" /> টিউট’ৰিয়েল, <ph name="LESSONS" /> অনুশীলনী</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{যোগ চিন}one{# যোগ চিন}other{# যোগ চিন}}</translation>
 <translation id="338583716107319301">পৃথকীকাৰক</translation>
 <translation id="3389259863310851658">ফ’র্মৰ পূর্বৱর্তী ক্ষেত্ৰ</translation>
@@ -333,6 +350,7 @@
 <translation id="3406283310380167331">তালিকাৰ পৰা দেখুৱাওক</translation>
 <translation id="3414400929511680526">এলিচ ব্লু</translation>
 <translation id="3418936350470374046">তলত কোনো কক্ষ নাই</translation>
+<translation id="3435494200763325275">টেব নেভিগেশ্বন অব্যাহত আছে</translation>
 <translation id="344800400831402066">পেৰু</translation>
 <translation id="3457000393508828486">আংশিকভাৱে হেঁচা দিয়া হৈছে</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, চুইচ্ছ অফ</translation>
@@ -348,6 +366,7 @@
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> কাট কৰক।</translation>
 <translation id="3564729643041517261">বৰ্তমানৰ ডিছপ্লে’ৰ শৈলীটো হৈছে কাষে-কাষে থকা</translation>
+<translation id="3570904478351465021">শীতকাল</translation>
 <translation id="3573145950452451508">পৃষ্ঠাৰ ফুটাৰ</translation>
 <translation id="3587482841069643663">সকলো</translation>
 <translation id="3589661172894441357">পৰিভাষা</translation>
@@ -355,12 +374,15 @@
 <translation id="3594207934078151302">মধ্যমীয়া সাগৰ সেউজীয়া</translation>
 <translation id="3599054940393788245">গণিতৰ ভিতৰত নহয়</translation>
 <translation id="360241989769010433">কৃতজ্ঞতা</translation>
+<translation id="3616016838842055984">আপুনি ক্লিক কৰিব খোজা বস্তুটো পালে, ছাৰ্চ + স্পেছ টিপক। অব্যাহত ৰাখিবলৈ এইটো এতিয়াই কৰি চাওক।</translation>
 <translation id="3616113530831147358">অডিঅ’</translation>
 <translation id="3622350485154495700">এটা আঙুলিৰে দুবাৰ টিপক</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{বেকটিক}one{#টা বেকটিক}other{#টা বেকটিক}}</translation>
 <translation id="3650317109285159359">চেকবক্স থকা মেনুৰ বস্তু</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ডলাৰ}one{#টা ডলাৰ চিহ্ন}other{#টা ডলাৰ চিহ্ন}}</translation>
 <translation id="3659787053479271466">সতৰ্ক</translation>
+<translation id="366419593095697301">ইংগিত: আপুনি যদি এই টিউট’ৰিয়েলটোৰ পৰা বাহিৰ হ'বলৈ বিচাৰে তেন্তে এস্কে’প টিপক।</translation>
+<translation id="3676062394766691318">আপুনি নিজৰ ডিভাইচ ছেট আপ কৰাৰ পাছত, আপুনি উভতি আহিব পাৰে আৰু প্ৰথমে ছাৰ্চ + অ' টিপি তাৰ পাছত টি টিপি অধিক টিউট’ৰিয়েল চাব পাৰে।</translation>
 <translation id="3681531118904532409">পাপায়া হুইপ</translation>
 <translation id="3692274950075847560">সন্ধান:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">কাটি দিয়া পাঠ</translation>
@@ -382,6 +404,7 @@
 <translation id="3856075812838139784">কেৱল পঢ়িব পৰা</translation>
 <translation id="3857141338659865495">মধ্যমীয়া সেউজ নীলা</translation>
 <translation id="3870295413168340326">কোনো পূর্বৱর্তী স্তৰ ৩ৰ শিৰোনাম নাই</translation>
+<translation id="3887399638190992181">অত্যাৱশ্যকীয় কী</translation>
 <translation id="3887576927692165210">সম্পাদনা</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3907138069015388678">lstgrd</translation>
@@ -400,6 +423,7 @@
 <translation id="4004802134384979325">পৰীক্ষা কৰা হ’ল</translation>
 <translation id="4006140876663370126">প্ৰতিচ্ছবি</translation>
 <translation id="4021716437419160885">তললৈ স্ক্ৰল কৰক</translation>
+<translation id="4035381225449278841">বসন্ত</translation>
 <translation id="4047216625641135770">চিহ্নিত কৰক</translation>
 <translation id="4053520724192563562">নেমুৰ দৰে সেউজীয়া</translation>
 <translation id="4054936709456751127">sts</translation>
@@ -505,6 +529,7 @@
 <translation id="4846428657345567687">ChromeVoxলৈ স্বাগতম!</translation>
 <translation id="4848993367330139335">টাইমাৰ</translation>
 <translation id="4854380505292502090">কোনো পূৰ্বৱৰ্তী মিডিয়া ৱিজেট নাই</translation>
+<translation id="4855927945655956315">অত্যাৱশ্যকীয় কী: কণ্ট্ৰ’ল</translation>
 <translation id="4862744964787595316">ব’ল্ড নহয়</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS লগ ইন সক্ষম কৰক</translation>
@@ -520,6 +545,7 @@
 <translation id="4973717656530883744">সৰ্বনিম্ন <ph name="X" /></translation>
 <translation id="4974612477719259470">কোনো পূৰ্বৱৰ্তী বুটাম নাই</translation>
 <translation id="4979404613699303341">পূর্বৱর্তী বুটাম</translation>
+<translation id="4982917827052020884">আহক, আপুনি নিয়মীয়াকৈ ব্যৱহাৰ কৰিব লগা কেইটামান কীৰে আৰম্ভ কৰোঁ। বৰ্তমানৰ যিকোনো কথন বন্ধ কৰিবলৈ ক'ণ্ট্ৰল কীটো ব্যৱহাৰ কৰিব পাৰি। আপোনাৰ কীব'ৰ্ডখনৰ একেবাৰে তলৰ বাওঁফালে চুকত ক'ণ্ট্ৰল কীটো বিচাৰক। অব্যাহত ৰাখিবলৈ, ক'ণ্ট্ৰ'ল কীটো টিপক।</translation>
 <translation id="4983588134362688868">পৃষ্ঠাটোৰ ওপৰৰ অংশলৈ যাওক</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ৱিণ্ড'</translation>
 <translation id="4993152509206108683">হাৰ <ph name="PERCENT" /> শতাংশ</translation>
@@ -531,6 +557,7 @@
 <translation id="5041394372352067729">ব্ৰেইল ডিছপ্লে' পৃষ্ঠাৰ ওপৰলৈ নিয়ক</translation>
 <translation id="5042770794184672516">কথনৰ ভলিউম বঢ়াওক</translation>
 <translation id="5042992464904238023">ৱেব সমল</translation>
+<translation id="5045870649377683106">এতিয়া, ক'ণ্ট্ৰল কীটোৰ একেবাৰে ওপৰত থকা বাওঁফালৰ শ্বিফ্ট কীটো বিচাৰক। অব্যাহত ৰাখিবলৈ, বাওঁফালৰ শ্বিফ্ট কীটো টিপক।</translation>
 <translation id="5050015258024679800">পূর্বৱর্তী স্তৰ ৪ৰ শিৰোনাম</translation>
 <translation id="5054047268577924192">পূর্বৱর্তী সূচীৰ বস্তু</translation>
 <translation id="5085453135206054947">শেঁতা বেঙুনীয়া ৰঙা</translation>
@@ -541,9 +568,11 @@
 <translation id="5111640677200759579">স্তম্ভৰ হেডাৰ</translation>
 <translation id="5115892389597951922">ChromeVoxৰ লগ</translation>
 <translation id="5119330972669454698">বাৰ্লী ৱুড</translation>
+<translation id="5130133513489020984">পূৰ্বৱৰ্তী অনুশীলনী</translation>
 <translation id="513774504516943387">লিংক</translation>
 <translation id="5138912041966667164">মধ্যমীয়া স্লে’ট ব্লু</translation>
 <translation id="5140016802771803559">ৰেবেকা পাৰ্পল</translation>
+<translation id="5142101052131610456">সকলো অনুশীলনী</translation>
 <translation id="5158275234811857234">ক'ভাৰ</translation>
 <translation id="5170206230005240598">ব্ৰেইল কেপশ্বনসমূহ সক্ষম কৰা আছে</translation>
 <translation id="5183440668879371625">ব্ৰেইল পূর্বৱর্তী শাৰী</translation>
@@ -552,6 +581,7 @@
 <translation id="5263344797180442561">শিৰোমান২</translation>
 <translation id="528468243742722775">সমাপ্ত</translation>
 <translation id="5302089807023311274">গ্ৰন্থপঞ্জীৰ প্ৰসংগ</translation>
+<translation id="530391007967514163">তলৰ পাঠটো নেভিগে'ট কৰিবলৈ শিৰোনামৰ জড়িয়তে পোনপটীয়াকৈ যাবলৈ চাওক।</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, টেব</translation>
 <translation id="5308380583665731573">সংযোগ কৰক</translation>
 <translation id="5310788376443009632">আঁতৰোৱা হ’ল:</translation>
@@ -582,10 +612,12 @@
 <translation id="5452267669091857717">কোনো পৰৱর্তী স্তৰ ১ৰ শিৰোনাম নাই</translation>
 <translation id="5455441614648621694">পৰিপূৰক</translation>
 <translation id="5462510922370980473">পৃষ্ঠাৰ সূচী</translation>
+<translation id="5495517933067991341">অত্যাৱশ্যকীয় কী: শ্বিফ্ট</translation>
 <translation id="549602578321198708">শব্দ</translation>
 <translation id="5513242761114685513">প্ৰসংগ মেনু</translation>
 <translation id="551361796444814639">মধ্যম নীলা</translation>
 <translation id="552195134157544755">ৰেডিঅ’ বুটাম</translation>
+<translation id="5522423213731659107">ক্ষিপ্ৰ অ'ৰিয়েণ্টশ্বন সম্পূৰ্ণ হ'ল!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">গেইন্সব'ৰ'</translation>
 <translation id="5549179427201066174">ধ্বনিৰ প্ৰতিক্রিয়া (ইয়েৰক’ন) অন অথবা অফ কৰক</translation>
@@ -599,6 +631,7 @@
 <translation id="5598905979683743333"><ph name="NAME" />, ৰেডিঅ' বুটাম বাছনি কৰাটো বাতিল কৰা হ'ল</translation>
 <translation id="5601172225407283979">ডিফ'ল্ট কার্য কৰক</translation>
 <translation id="5608798115546226984">স্বয়ংক্ৰিয়ভাৱে সম্পূর্ণ হোৱা ইনলাইন</translation>
+<translation id="5616029807486814372">পৰৱৰ্তী অনুশীলনী</translation>
 <translation id="561939826962581046">সময়</translation>
 <translation id="5623778242535476823">ৰেডিঅ’ বুটাম</translation>
 <translation id="5623842676595125836">লগ</translation>
@@ -607,6 +640,7 @@
 <translation id="5653397561111110475">Chromebook টাচ্চ্‌ স্ক্রীণৰ সাধ্য সুবিধাসমূহ ব্যৱহাৰ কৰক</translation>
 <translation id="5655682562155942719">নিৰ্দেশবোৰ অমান্য কৰক</translation>
 <translation id="56637627897541303">পাঠ লিখা ক্ষেত্ৰ</translation>
+<translation id="5669637233317991674">এই অনুশীলনীটো নিভিগে'ট কৰিবলৈ ছাৰ্চ + সোঁফালৰ এৰ' টিপক অথবা ছাৰ্চ + বাওঁফালৰ এৰ' টিপক</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">সংজ্ঞা</translation>
 <translation id="5682113568322255809">লেণ্ডমাৰ্ক</translation>
@@ -630,9 +664,11 @@
 <translation id="5850707923114094062">পিছ ফাললৈ পেন কৰক</translation>
 <translation id="5851548754964597211">টেবৰ তালিকা</translation>
 <translation id="5866042630553435010">আংশিকভাৱে পৰীক্ষা কৰা হৈছে</translation>
+<translation id="5866210856231860256">এই বিষয়টো ব্ৰাউজ কৰিবলৈ ছাৰ্চ + সোঁফালৰ এৰ' টিপক অথবা ছাৰ্চ + বাওঁফালৰ এৰ' টিপক</translation>
 <translation id="5867591286054666064">এই প্ৰশিক্ষণৰ সময়ত যিকোনো কীৰ নাম জানিবলৈ সেই কীটো টিপক।</translation>
 <translation id="5869546221129391014">গ্ৰিড</translation>
 <translation id="5876817486144482042">কথনৰ ভলিউম কমাওক</translation>
+<translation id="5878206664863390311">বিষয়সমূহ ব্ৰাউজ কৰিবলৈ ছাৰ্চ + সোঁফালৰ এৰ' টিপক অথবা ছাৰ্চ + বাওঁফালৰ এৰ' টিপক</translation>
 <translation id="5878908838135392163">পাউডাৰ নীলা</translation>
 <translation id="588108970619830498">পাঠৰ পৰা কথনৰ ছেটিংসমূহ ডিফ’ল্ট মানসমূহলৈ ৰিছেট কৰক</translation>
 <translation id="5891934789323004067">তালিকা</translation>
@@ -679,6 +715,7 @@
 <translation id="6254901459154107917">সম্পাদনা কৰিব পৰা পৰৱর্তী পাঠৰ ক্ষেত্ৰ</translation>
 <translation id="6259464875943891919"><ph name="TYPE" />ক বাহিৰ কৰা হৈছে।</translation>
 <translation id="6282062888058716985">নেভিগেশ্বন</translation>
+<translation id="6295699829709583154">অত্যাৱশ্যকীয় কী: ছাৰ্চ</translation>
 <translation id="6305702903308659374">ChromeVoxএ কিবা কৈ থাকিলেও স্বাভাৱিক ভলিউমতেই প্লে’ কৰক</translation>
 <translation id="6307969636681130414">হেঁচা দিয়া হ’ল</translation>
 <translation id="6315652249189065725">কীব’ৰ্ডৰ শ্বৰ্টকাটৰ মেনুখন খোলক</translation>
@@ -697,6 +734,7 @@
 <translation id="6385591741672306837">স্তম্ভ</translation>
 <translation id="6387719785439924554">পৃথক</translation>
 <translation id="6393014464788431702">অনুষ্ঠানৰ সকলো ফিল্টাৰ অক্ষম কৰক</translation>
+<translation id="6411569524720229058">শৰৎ কাল</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ক'লন}one{#টা ক’লন}other{#টা ক’লন}}</translation>
 <translation id="6444046323172968959">সতৰ্কতা সম্পৰ্কীয় ডায়ল'গ</translation>
@@ -732,6 +770,7 @@
 <translation id="6730312624811567147">Home অথবা Endৰ বাবে Search Left অথবা Right, Control Home অথবা Endৰ বাবে Search Control Left অথবা Right, Page Up অথবা Downৰ বাবে Search Up অথবা Down ব্যৱহাৰ কৰক</translation>
 <translation id="6736510033526053669">টেব সৃষ্টি কৰা হ’ল</translation>
 <translation id="675895815784134693">pgbar</translation>
+<translation id="6759710362319508545">সম্পদ</translation>
 <translation id="67862343314499040">বেঙুনীয়া</translation>
 <translation id="6786800275320335305">প্ৰৱন্ধ</translation>
 <translation id="6793101435925451627">lstbx</translation>
@@ -743,6 +782,7 @@
 <translation id="6858047746862060282">প্ৰস্তাৱনা</translation>
 <translation id="6859876496651143278">এটা আঙুলি বাওঁফালে ছোৱাইপ কৰক</translation>
 <translation id="6865519907510167493">বানান ভুল</translation>
+<translation id="6873188295213080042">ইংগিত: ছাৰ্চ কীটো টিপি ধৰি ৰাখক আৰু নেভিগে'ট কৰিবলৈ এৰ' কীসমূহ টিপক।</translation>
 <translation id="6894148351896207544">বৰ্তমানৰ সময় আৰু তাৰিখটো কৈ শুনাওক</translation>
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>
 <translation id="6897341342232909480">বাওঁফালে স্থানান্তৰ কৰক</translation>
@@ -808,14 +848,17 @@
 <translation id="7308519659008003150">কোনো পূৰ্বৱৰ্তী ফৰ্মৰ ক্ষেত্ৰ নাই</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">আংশিকভাৱে বাছনি কৰা হৈছে</translation>
+<translation id="7344012264516629579">অতিৰিক্ত পোনপটীয়াকৈ যোৱাৰ নিৰ্দেশনাসমূহত লিংক, বুটাম আৰু চেকবক্সেৰে পোনপটীয়াকৈ যোৱা অন্তৰ্ভুক্ত বুলিব পাৰি। ChromeVox মেনুত পোনপটীয়াকৈ যোৱাৰ নিৰ্দেশনাসমূহৰ এখন সম্পূৰ্ণ সূচী পাব পাৰি, যিখন ছাৰ্চ + পিৰিয়ড টিপি খুলিব পৰা যায়।</translation>
 <translation id="7356165926712028380">এইট-ডট্‌ ব্ৰেইললৈ সলনি কৰক</translation>
 <translation id="7356610683936413584">বিৱৰণ সূচীৰ সবিশেষ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{এম্পাৰছেণ্ড}one{#টা এম্পাৰছেণ্ড}other{#টা এম্পাৰছেণ্ড}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">স্লে'ট ব্লু</translation>
+<translation id="7393979322571982935">ধ্বনি আৰু ছেটিং</translation>
 <translation id="739763518212184081">আগৰ শাৰী</translation>
 <translation id="7400575256015741911">বানান ভুল চিনাক্ত কৰা হৈছে</translation>
 <translation id="7408482676469142474">tbl</translation>
+<translation id="7419264136822406994">আপুনি পূৰ্বৱৰ্তী ভাব-বিনিময়কাৰী বস্তুটোলৈ নিবলৈ শ্বিফ্ট + টেব ব্যৱহাৰ কৰিব পাৰে। অব্যাহত ৰাখিবলৈ শ্বিফ্ট + টেব টিপক।</translation>
 <translation id="7425395583360211003">উভতি যাওক</translation>
 <translation id="7429415133937917139">স্ক্ৰীনখনৰ ওপৰৰ অংশৰ ChromeVox পেনেলত
     থকা ৰিফ্ৰেশ্ব কৰিব পৰা কোনো ব্ৰেইল ডিছপ্লে’ৰ আউটপুট ছিমুলে’ট কৰে</translation>
@@ -843,6 +886,7 @@
 <translation id="762020119231868829">বর্তমান প্লে' হৈ থকা সকলো মিডিয়া ৱিজেট পজ কৰে।</translation>
 <translation id="7625690649919402823">পৰৱৰ্তী তালিকা</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), গ্ৰে’ড <ph name="GRADE" /></translation>
+<translation id="7637342083105831460">অনুশীলনৰ ক্ষেত্ৰখন অথবা পৰৱৰ্তী অনুশীলনীৰ বুটামটো বিচাৰিবলৈ ছাৰ্চ + সোঁফালৰ এৰ' কী টিপক। তাৰ পাছত সক্ৰিয় কৰিবলৈ ছাৰ্চ + স্পেছ টিপক।</translation>
 <translation id="7639968568612851608">গাঢ় ধোঁৱাবৰণীয়া</translation>
 <translation id="7663318257180412551">শিৰোনাম ২</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{ঘণ্টা}one{ঘণ্টা}other{ঘণ্টা}}</translation>
@@ -882,6 +926,7 @@
 <translation id="794091007957014205">{COUNT,plural, =1{এট}one{#টা এট চিহ্ন}other{#টা এট চিহ্ন}}</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7948364528129376623">কোনো পৰৱর্তী চোৱা লিংক নাই</translation>
+<translation id="7952460583030260752">নিৰ্দেশনাৰ প্ৰসঙ্গ</translation>
 <translation id="7965147473449754028">মেনু বন্ধ কৰা হ’ল</translation>
 <translation id="7968340748835037139">গাঢ় সেউজীয়া</translation>
 <translation id="7972507042926081808">চকলেট</translation>
@@ -911,6 +956,8 @@
 <translation id="812886159861361726"><ph name="FILE_NAME" />ৰ ডাউনল'ড বাধাপ্ৰাপ্ত হৈছে</translation>
 <translation id="8129445297241948503">ওপৰত কোনো কক্ষ নাই</translation>
 <translation id="8138880386467279117">স্পর্শ</translation>
+<translation id="8146613869421949343">ইয়াৰ পাছত আপুনি ছাৰ্চ কীটোৰ সম্পৰ্কে জানিব। ChromeVoxৰ নিৰ্দেশনাসমূহৰ বাবে ছাৰ্চ কীটো অন্য কীসমূহৰ সৈতে মিলাই ব্যৱহাৰ কৰা হয়। ছাৰ্চ কীটো বাওঁফালৰ শ্বিফ্ট কীৰ একদম ওপৰত থাকে। অব্যাহত ৰাখিবলৈ ছাৰ্চ কীটো টিপক।</translation>
+<translation id="816818801578874684">এইটো প্ৰথম শিৰোনাম। পৰৱৰ্তী শিৰোনামলৈ যাবলৈ ছাৰ্চ + এইছ টিপক।</translation>
 <translation id="8173092779156526980">চাৰিটা আঙুলিৰে বাওঁফাললৈ ছোৱাইপ কৰক</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{আণ্ডাৰস্ক’ৰ}one{#টা আণ্ডাৰস্ক’ৰ}other{#টা আণ্ডাৰস্ক’ৰ}}</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -951,6 +998,7 @@
 <translation id="8473540203671727883">মাউছৰ তলত থকা পাঠ কৈ শুনাওক</translation>
 <translation id="8476408756881832830">ChromeVoxএ কিবা কৈ থাকিলে প্লে’বেল পজ কৰক</translation>
 <translation id="8476508772960940536">ৱিণ্ড‘ অৱলোকন কৰক</translation>
+<translation id="8480873377842220259">এতিয়া আপুনি নেভিগেশ্বনৰ কিছুমান প্ৰাথমিক কথা শিকিব। আপুনি স্ক্ৰীনখনৰ ইফালে-সিফালে নিবলৈ ছাৰ্চ কীটো টিপি ধৰি থাকি এৰ' কী টিপিব পাৰে। অব্যাহত ৰাখিবলৈ ছাৰ্চ + সোঁফালৰ এৰ' কীটো টিপক।</translation>
 <translation id="8503360654911991865">নেভিগেশ্বনৰ বিস্তৃতি কমাওক</translation>
 <translation id="8520472399088452386">স্পিন বুটাম</translation>
 <translation id="8534394844575788431">ফৰ্মেট কৰি থকা হৈছে</translation>
@@ -965,6 +1013,7 @@
 <translation id="8603071050456974042">ChromeVox পেনেল</translation>
 <translation id="8606621670302093223">তাৰিখ নিয়ন্ত্ৰণ</translation>
 <translation id="8613709718990529335">বিস্ক</translation>
+<translation id="8614129468475308349">বঢ়িয়া! আপুনি ChromeVoxৰ প্ৰাথমিক কথাবোৰ জানিলে। আপুনি পুনৰ টিউট’ৰিয়েলটো চাব পাৰে অথবা তলত থকা এটা বুটাম বিচাৰি সেইটোত ক্লিক কৰি বাহিৰ হ'ব পাৰে।</translation>
 <translation id="8625173877182443267">কোনো পৰৱর্তী স্তৰ ৬ৰ শিৰোনাম নাই</translation>
 <translation id="8628186274519446680">বিলাহী</translation>
 <translation id="8638532244051952400">বর্তমানৰ কক্ষৰ স্থানাংক ঘোষণা কৰক</translation>
@@ -972,15 +1021,19 @@
 <translation id="8651481478098336970">ভলিউম মিউট কৰক</translation>
 <translation id="8653646212587894517">লিংকৰ সূচী দেখুৱাওক</translation>
 <translation id="8656888282555543604">ব্ৰেইলি লগ ইন সক্ষম কৰক</translation>
+<translation id="8659501358298941449">ড্ৰপ ডাউনৰ সূচী</translation>
 <translation id="867187640362843212">শিৰোনাম ৫</translation>
+<translation id="8693391540059827073">মোৰ প্ৰিয় ঋতু</translation>
 <translation id="8696284982970258155">HoneyDew</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{পাইপ}one{#ডাল উলম্ব পাইপ}other{#ডাল উলম্ব পাইপ}}</translation>
+<translation id="8741370088760768424">ইংগিত: বৰ্তমানৰ বস্তুটো সক্ৰিয় কৰিবলৈ ছাৰ্চ + স্পেছ টিপক।</translation>
 <translation id="8743786158317878347">সুসংগত সমল দিয়ক, যেনে তালিকা</translation>
 <translation id="8747966237988593539">অ'ৰ্ডাৰ দিয়া সূচী</translation>
 <translation id="8749988712346667988">ৰূপালী</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" />ৰ ডাউনল'ড সম্পূর্ণ হ'ল</translation>
 <translation id="8767968232364267681">পৰৱর্তী স্তৰ ৪ৰ শিৰোনাম</translation>
 <translation id="8770473310765924354">সুসংগঠিত সমল, যেনে তালিকা বাহিৰ কৰক</translation>
+<translation id="8775203254697638994">আপুনি এখন ড্ৰপ ডাউন সূচীৰ পৰা এটা বস্তু বাছনি কৰিব লগা হোৱাৰ সময় থাকিব। সেইটো কৰিবলৈ, প্ৰথমে ছাৰ্চ + স্পেছ টিপি সূচীখন বিস্তাৰ কৰক। তাৰ পাছত কোনো বস্তু বাছনি কৰিবলৈ আপ আৰু ডাউন এৰ' কীসমূহ ব্যৱহাৰ কৰক। শেষত, ছাৰ্চ + স্পেছ টিপি সূচীখন সংকোচন কৰক।</translation>
 <translation id="8779057862865475116">কোনো পূর্বৱর্তী লিংক নাই</translation>
 <translation id="8796411681063377102">পৰৱৰ্তী স্তৰ ৩ৰ শিৰোনাম</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" /> খন পৃষ্ঠাৰ <ph name="CURRENTPAGE" /> নম্বৰ পৃষ্ঠা</translation>
@@ -1002,6 +1055,8 @@
 <translation id="89720367119469899">ESCAPE</translation>
 <translation id="8978496506222343566">টুল টিপ</translation>
 <translation id="8986362086234534611">পাহৰক</translation>
+<translation id="8989104346085848538">বৰ্তমানৰ ChromeVoxৰ যিকোনো কথন বন্ধ কৰিবলৈ, ক'ণ্ট্ৰল কীটো টিপক।</translation>
+<translation id="9014206344398081366">ChromeVox টিউট’ৰিয়েল</translation>
 <translation id="9040132695316389094">শিৰোনাম ১</translation>
 <translation id="9061884144798498064">কোনো ৮-বিন্দুৰ ব্ৰেইল তালিকা বাছনি কৰক:</translation>
 <translation id="9065283790526219006">+পপআপ</translation>

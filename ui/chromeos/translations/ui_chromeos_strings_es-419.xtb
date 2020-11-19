@@ -9,7 +9,7 @@
 <translation id="1049926623896334335">Documento de Word</translation>
 <translation id="1060368002126861100">Para abrir archivos con <ph name="APP_NAME" />, primero debes moverlos a la carpeta de archivos de Windows.</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
-<translation id="1082570120854863773">Chino (Tradicional) Pinyin</translation>
+<translation id="1082570120854863773">Chino tradicional (Pinyin)</translation>
 <translation id="1119069657431255176">Archivo tar comprimido en Bzip2</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="1148097584170732637">Se encontró un total de <ph name="FILE_COUNT" />.
@@ -96,7 +96,7 @@
 <translation id="1995337122023280937">Ir a la ubicación del archivo</translation>
 <translation id="2001796770603320721">Administrar en Drive</translation>
 <translation id="2009067268969781306">Si formateas una unidad, se borrarán todos los datos almacenados en ella. No se puede deshacer esta acción.</translation>
-<translation id="2016165510591645686">Chino (pinyin)</translation>
+<translation id="2016165510591645686">Chino (Pinyin)</translation>
 <translation id="2028997212275086731">Archivo RAR</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2060251957438343874">Alemán (Alemania)</translation>
@@ -151,7 +151,7 @@
 <translation id="2664412712123763093">Ubicación del archivo</translation>
 <translation id="2672394958563893062">Ocurrió un error. Haz clic para reiniciar desde el principio.</translation>
 <translation id="2676946222714718093">Reproduciendo en</translation>
-<translation id="2718873684053049373">Chino Dayi</translation>
+<translation id="2718873684053049373">Chino (Dayi)</translation>
 <translation id="2735623501230989521">Permite que Parallels Desktop acceda a los archivos de la carpeta <ph name="FOLDER_NAME" />.</translation>
 <translation id="2771816809568414714">Queso</translation>
 <translation id="2781645665747935084">Belga</translation>
@@ -303,7 +303,7 @@
 <translation id="4603392156942865207">Copiando <ph name="FILE_NAME" /> a <ph name="FOLDER_NAME" /></translation>
 <translation id="4627439232948440198">Sánscrito</translation>
 <translation id="4631887759990505102">Artista</translation>
-<translation id="463813589602055304">Wubi chino</translation>
+<translation id="463813589602055304">Chino (Wubi)</translation>
 <translation id="4656293982926141856">Esta computadora</translation>
 <translation id="4669606053856530811">Los miembros de "<ph name="SOURCE_NAME" />" ya no tendrán acceso a estos elementos, a menos que se los comparta con ellos.</translation>
 <translation id="4669979276126590335">Serbio (transliteración)</translation>
@@ -332,7 +332,7 @@
 <translation id="4804827417948292437">Aguacate</translation>
 <translation id="4823651846660089135">El dispositivo es de solo lectura</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementos seleccionados</translation>
-<translation id="4842306555839940112">Telugu (transliteración)</translation>
+<translation id="4842306555839940112">Télugu (transliteración)</translation>
 <translation id="4843566743023903107">Las Chromebases</translation>
 <translation id="4849981557599196363">Alemán (Bélgica)</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -467,7 +467,7 @@
 <translation id="60357267506638014">Checo (QWERTY)</translation>
 <translation id="604001903249547235">Copia de seguridad en la nube</translation>
 <translation id="6040143037577758943">Cerrar</translation>
-<translation id="6041767187407754614">Chino con método rápido</translation>
+<translation id="6041767187407754614">Chino (rápido)</translation>
 <translation id="6074825444536523002">Formulario de Google</translation>
 <translation id="6096979789310008754">Busca texto borrado, con todos los archivos y carpetas.</translation>
 <translation id="610101264611565198">Moviendo <ph name="FILE_NAME" /> a <ph name="FOLDER_NAME" /></translation>
@@ -533,7 +533,7 @@
 <translation id="6862635236584086457">Se realiza automáticamente una copia de seguridad en línea de todos los archivos guardados en esta carpeta.</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6878261347041253038">Teclado devanagari (fonético)</translation>
-<translation id="6878301034829092662">Ruso con teclado fonético (YaZHert)</translation>
+<translation id="6878301034829092662">Ruso con teclado fonético YaZHert</translation>
 <translation id="6885780034956018177">Caracol</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898028766943174120">Más subcarpetas…</translation>
@@ -561,8 +561,8 @@
 <translation id="7106346894903675391">Comprar más almacenamiento...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;unidad de búsqueda&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
-<translation id="714369685015246514">Disposición en chino</translation>
-<translation id="7169438078134535111">Turco con teclado turco-F</translation>
+<translation id="714369685015246514">Chino (Array)</translation>
+<translation id="7169438078134535111">Turco con teclado Turco-F</translation>
 <translation id="7170467426996704624">Transliteración (salam → ሰላም)</translation>
 <translation id="7173380554947442031">Vietnamita (VNI)</translation>
 <translation id="7180611975245234373">Actualizar</translation>

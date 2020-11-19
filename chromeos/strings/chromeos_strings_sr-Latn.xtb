@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Veoma veliko HTTPS kašnjenje</translation>
 <translation id="1413240736185167732">Nije uspelo – filter je otkazao</translation>
 <translation id="1468664791493211953">Ponude</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i može da prati vaše aktivnosti.</translation>
 <translation id="1478594628797167447">Skener</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> niti)</translation>
 <translation id="1641857168437328880">Uvlačenje dokumenta (jednostrano)</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Skeniraj u:</translation>
 <translation id="4483049906298469269">Pingovanje mrežnog prolaza koji nije podrazumevan nije uspelo</translation>
 <translation id="4548483925627140043">Signal nije pronađen</translation>
+<translation id="455835558791489930">Baterija od <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite taster Enter da biste otkazali zadatak štampanja.</translation>
 <translation id="4646949265910132906">Bezbedna WiFi veza</translation>
@@ -138,8 +142,10 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6766275201586212568">Neuspešna DNS razrešavanja</translation>
 <translation id="6768237774506518020">Velika stopa neuspeha DNS razrešavanja</translation>
 <translation id="6839141349259399400">Povezivanje sa skenerima nije uspelo?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
 <translation id="714876143603641390">Povezivanje LAN-a</translation>
 <translation id="7162487448488904999">Galerija</translation>
+<translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip datoteke</translation>
 <translation id="7561454561030345039">Ovim podešavanjem upravlja administrator</translation>

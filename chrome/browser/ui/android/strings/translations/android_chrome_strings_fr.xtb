@@ -207,6 +207,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2450907520913474542">Découvrez les thèmes abordés sur la page Web que vous consultez sans devoir quitter cette page. La fonctionnalité Appuyer pour rechercher transmet un mot et son contexte à la recherche Google, qui renvoie à son tour des définitions, des images, des résultats de recherche et d'autres informations.
 
 Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la recherche, sélectionnez plus ou moins de mots. Pour modifier la recherche, ouvrez le panneau, appuyez sur l'icône pour ouvrir la recherche dans un nouvel onglet, puis modifiez-la dans le champ correspondant.</translation>
+<translation id="2459390580524506445">Recherche vocale améliorée</translation>
 <translation id="246532703174860178">Partager</translation>
 <translation id="2478076885740497414">Installer l'application</translation>
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
@@ -275,6 +276,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2932150158123903946">Stockage Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">L'onglet "Aperçu" est fermé</translation>
 <translation id="2956410042958133412">Ce compte est géré par <ph name="PARENT_NAME_1" /> et <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
 <translation id="2962095958535813455">Onglets de navigation privée sélectionnés</translation>
 <translation id="2979025552038692506">Onglet de navigation privée sélectionné</translation>
 <translation id="2987620471460279764">Texte partagé depuis un autre appareil</translation>
@@ -324,6 +326,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="32895400574683172">Les notifications sont autorisées</translation>
 <translation id="3290991969712132877">Pour accéder à ce site plus rapidement, ajoutez-le à l'écran d'accueil en cliquant sur le bouton "Plus d'options"</translation>
 <translation id="3295530008794733555">Naviguez plus rapidement en consommant moins de données</translation>
+<translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3298243779924642547">Simplifié</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
 <translation id="3315103659806849044">Vous personnalisez actuellement les paramètres relatifs aux services Google et à la synchronisation. Pour valider l'activation de la synchronisation, appuyez sur le bouton "Confirmer" en bas de l'écran. Revenir en haut de la page</translation>
@@ -625,6 +628,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5524843473235508879">Redirection bloquée.</translation>
 <translation id="5527082711130173040">Chrome doit avoir accès aux données de localisation pour rechercher des appareils. <ph name="BEGIN_LINK1" />Modifiez les autorisations.<ph name="END_LINK1" /> De plus, l'accès aux données de localisation est <ph name="BEGIN_LINK2" />désactivé pour cet appareil<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Fermer onglets navig. privée</translation>
+<translation id="5530920986376047241">Vous pouvez enregistrer des pages dans votre liste de lecture pour les lire plus tard</translation>
 <translation id="5534640966246046842">Site copié</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5561549206367097665">En attente de connexion au réseau…</translation>
@@ -704,6 +708,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5982307838673692400">Ouvrir un onglet de navigation privée</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page}many{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages}}</translation>
 <translation id="6014293228235665243">Non lu</translation>
 <translation id="6036057147555329831">ICU supplémentaire</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
@@ -938,6 +943,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="756809126120519699">Données de Chrome effacées</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}many{<ph name="FILES_DOWNLOADED_MANY" /> files downloaded}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
+<translation id="7583262514280211622">Votre liste de lecture s'affichera ici</translation>
 <translation id="7588219262685291874">Activer le thème sombre lorsque l'économiseur de batterie de l'appareil est activé</translation>
 <translation id="7593557518625677601">Ouvrez paramètres Android et réactivez synchro système Android pour démarrer synchro Chrome.</translation>
 <translation id="7596558890252710462">Système d'exploitation</translation>
@@ -969,6 +975,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7772375229873196092">Fermer <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}}</translation>
 <translation id="7778840695157240389">Revenez plus tard pour découvrir d'autres événements</translation>
+<translation id="7786595606756654269">L'Assistant Google propose une fonctionnalité améliorée pour effectuer des recherches vocales sur le Web et interagir avec les sites que vous consultez. Il recevra l'URL et le contenu des sites sur lesquels vous faites appel à lui.</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> onglets sont restaurés</translation>
 <translation id="780301667611848630">Non merci</translation>
@@ -994,6 +1001,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7961926449547174351">Vous avez désactivé l'accès à l'espace de stockage. Veuillez accéder aux paramètres pour l'activer.</translation>
 <translation id="7963646190083259054">Fournisseur :</translation>
 <translation id="7967911570373677897">Pour scanner un code QR, modifiez vos paramètres pour autoriser Chrome à utiliser votre appareil photo</translation>
+<translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Précharger les pages pour accélérer la navigation et la recherche</translation>
@@ -1055,6 +1063,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8372925856448695381">Module linguistique "<ph name="LANG" />" prêt.</translation>
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8407396331882458341">1. Sélectionnez <ph name="APP_NAME" />\n2. Appuyez sur "Toujours"</translation>
+<translation id="8410695015584479363">Activer le suivi des prix</translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8427875596167638501">L'onglet "Aperçu" est ouvert à moitié</translation>

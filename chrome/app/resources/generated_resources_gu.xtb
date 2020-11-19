@@ -264,6 +264,7 @@
 <translation id="1292849930724124745">સાઇન ઇન થયેલા રહેવા માટે સ્માર્ટ કાર્ડ દાખલ કરો</translation>
 <translation id="1293264513303784526">USB-C ઉપકરણ (ડાબું પોર્ટ)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1294807885394205587">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. કન્ટેનર મેનેજર શરૂ કરી રહ્યાં છીએ.</translation>
 <translation id="1296911687402551044">પસંદ કરેલી ટૅબને પિન કરો</translation>
 <translation id="1297175357211070620">લક્ષ્યસ્થાન</translation>
 <translation id="1300415640239881824"><ph name="DOMAIN" /> ઇચ્છે છે કે સુરક્ષિત કન્ટેન્ટના વિસ્તૃત પ્લેબૅક માટે પાત્રતા નિર્ધારિત કરવા માટે Google દ્વારા તમારા ઉપકરણની ઓળખ ચકાસવામાં આવે.</translation>
@@ -919,6 +920,7 @@
 <translation id="2046702855113914483">રામેન - જાપાનના એક પ્રકારના નૂડલ</translation>
 <translation id="204706822916043810">વર્ચ્યુઅલ મશીન ચેક કરી રહ્યાં છીએ</translation>
 <translation id="2048182445208425546">તમારા નેટવર્ક ટ્રાફિકની ઍક્સેસ</translation>
+<translation id="2048554637254265991">કન્ટેનર મેનેજર શરૂ થવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="2048653237708779538">ક્રિયા ઉપલબ્ધ નથી</translation>
 <translation id="204914487372604757">શૉર્ટકટ બનાવો </translation>
 <translation id="2050339315714019657">પોર્ટ્રેટ</translation>
@@ -1117,6 +1119,7 @@
 <translation id="2276503375879033601">વધુ એપ્લિકેશંસ ઉમેરો</translation>
 <translation id="2277255602909579701">તમામ કુકીઝ અને સાઇટ ડેટા</translation>
 <translation id="2278562042389100163">બ્રાઉઝર વિંડો ખોલો</translation>
+<translation id="2278668501808246459">કન્ટેનર મેનેજર શરૂ કરી રહ્યાં છીએ</translation>
 <translation id="2280486287150724112">જમણો હાસિયો</translation>
 <translation id="2282146716419988068">GPU પ્રક્રિયા</translation>
 <translation id="2282155092769082568">સ્વતઃગોઠવણી URL:</translation>
@@ -4386,6 +4389,7 @@ USB ડિવાઇસ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, નેટવર્ક નથી</translation>
 <translation id="6141988275892716286">ડાઉનલોડની પુષ્ટિ કરો</translation>
 <translation id="6143186082490678276">સહાય મેળવો</translation>
+<translation id="6143366292569327983">પેજની જે ભાષામાંથી અનુવાદ કરાવવા ઇચ્છતા હો, તે પસંદ કરો</translation>
 <translation id="6144938890088808325">Chromebooks બહેતર બનાવવામાં અમારી સહાય કરો</translation>
 <translation id="6147020289383635445">પ્રિન્ટ પ્રીવ્યૂ નિષ્ફળ ગયું.</translation>
 <translation id="6148576794665275391">હમણાં ખોલો</translation>
@@ -6069,6 +6073,7 @@ USB ડિવાઇસ</translation>
 <translation id="810728361871746125">ડિસ્પ્લેનું રિઝોલ્યુશન</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ત્રીજા પક્ષની કોઈ કુકી નથી}=1{ત્રીજા પક્ષની 1 કુકી બ્લૉક કરવામાં આવી છે}one{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}other{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}}</translation>
 <translation id="810875025413331850">નજીકમાં કોઈ ડિવાઇસ ન મળ્યું.</translation>
+<translation id="8109109153262930486">ડિફૉલ્ટ અવતાર</translation>
 <translation id="8110489095782891123">સંપર્ક સૂચિ ડાઉનલોડ કરી રહ્યાં છીએ...</translation>
 <translation id="8113476325385351118">આ સાઇટને MIDI ડિવાઇસનું સંપૂર્ણ નિયંત્રણ રાખવાથી બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="8114199541033039755">હોમ અથવા પાછળ જવા નૅવિગેટ કરો તેમજ ટૅબ્લેટ મોડમાં ઍપને બટનથી સ્વિચ કરો. જ્યારે ChromeVox અથવા ઑટોમૅટિક ક્લિક ચાલુ કરવામાં આવે છે, ત્યારે તે ચાલુ થઈ જાય છે.</translation>

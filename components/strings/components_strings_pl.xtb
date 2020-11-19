@@ -365,6 +365,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2354430244986887761">Funkcja Bezpieczne przeglądanie Google niedawno <ph name="BEGIN_LINK" />wykryła szkodliwe aplikacje<ph name="END_LINK" /> na <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Osoby dokonujące ataków mogą widzieć te same obrazy w witrynie co Ty i zmodyfikować je, by Cię oszukać.</translation>
 <translation id="2356070529366658676">Pytaj</translation>
+<translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Różne</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2360873523816792727">Aby używać swoich kart na wszystkich urządzeniach, włącz synchronizację.</translation>
@@ -518,7 +519,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3010559122411665027">Pozycja listy „<ph name="ENTRY_INDEX" />”: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3016780570757425217">Sprawdzanie Twojej lokalizacji</translation>
-<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />. Naciśnij Tab, a potem Enter, by usunąć sugestię.</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />. Aby usunąć sugestię, naciśnij Tab, a potem Enter.</translation>
 <translation id="3023071826883856138">You4 (koperta)</translation>
 <translation id="3024663005179499861">Nieprawidłowy typ zasady</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
@@ -544,6 +545,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3145945101586104090">Dekodowanie odpowiedzi nie powiodło się</translation>
 <translation id="3150653042067488994">Tymczasowy błąd serwera</translation>
 <translation id="3154506275960390542">Strona zawiera formularz, którego nie można przesłać bezpiecznie. Podczas przesyłania dane mogą zobaczyć inni użytkownicy, a hakerzy mogą je zmodyfikować, by na serwer dotarły zmienione dane.</translation>
+<translation id="315504272643575312">Tym kontem zarządza <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3162559335345991374">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony logowania.</translation>
 <translation id="3167968892399408617">Po zamknięciu wszystkich kart incognito wyświetlane na nich strony nie pozostawią żadnych śladów w historii przeglądarki, magazynie plików cookie ani historii wyszukiwania. Pobrane pliki i utworzone zakładki zostaną jednak zachowane.</translation>
@@ -1466,7 +1468,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6895330447102777224">Karta została potwierdzona</translation>
 <translation id="6897140037006041989">Klient</translation>
 <translation id="6898699227549475383">Organizacja (O)</translation>
-<translation id="6907293445143367439">Zezwól aplikacji <ph name="SITE_NAME" /> na:</translation>
+<translation id="6907293445143367439">Zezwól stronie <ph name="SITE_NAME" /> na:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> chce mieć pełny dostęp do sterowania urządzeniami MIDI</translation>
 <translation id="6915804003454593391">Użytkownik:</translation>
 <translation id="6934672428414710184">To imię i nazwisko pochodzi z Twojego konta Google</translation>
@@ -1920,6 +1922,7 @@ Dodatkowe informacje:
 <translation id="8680536109547170164"><ph name="QUERY" />, odpowiedź, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Nie można załadować strony <ph name="PAGE" />, ponieważ:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Twoim urządzeniem i kontem zarządza <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostępne</translation>
 <translation id="868922510921656628">Strony na zestaw</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
@@ -1934,6 +1937,7 @@ Dodatkowe informacje:
 <translation id="8728672262656704056">Jesteś w trybie incognito</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8731544501227493793">Przycisk zarządzania hasłami. Naciśnij Enter, by wyświetlić hasła i zarządzać nimi w ustawieniach Chrome.</translation>
+<translation id="8734529307927223492">Twoim urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by otworzyć nowe okno incognito i przeglądać prywatnie.</translation>
 <translation id="8738058698779197622">Aby nawiązać bezpieczne połączenie, Twój zegar musi mieć ustawioną prawidłową godzinę. Jest to wymagane, ponieważ certyfikaty używane do identyfikacji stron internetowych są ważne tylko przez określony czas. Ponieważ zegar Twojego urządzenia nie jest ustawiony prawidłowo, Chromium nie może zweryfikować tych certyfikatów.</translation>
 <translation id="8740359287975076522">Nie znaleziono &lt;abbr id="dnsDefinition"&gt;adresu DNS&lt;/abbr&gt; serwera <ph name="HOST_NAME" />. Diagnozujemy problem.</translation>
@@ -2023,6 +2027,7 @@ Dodatkowe informacje:
 <translation id="9101630580131696064">Taca 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> zazwyczaj używa szyfrowania do ochrony Twoich informacji. Gdy tym razem przeglądarka Chromium próbowała połączyć się ze stroną <ph name="SITE" />, odesłała ona nietypowe i nieprawidłowe dane logowania. Może się tak zdarzyć, gdy pod stronę <ph name="SITE" /> podszywa się osoba atakująca albo gdy ekran logowania do sieci Wi-Fi przerwie połączenie. Twoje informacje są nadal bezpieczne, bo połączenie w Chromium zakończyło się przed wymianą jakichkolwiek danych.</translation>
 <translation id="9106062320799175032">Dodaj adres rozliczeniowy</translation>
+<translation id="9107467864910557787">Twoją przeglądarką zarządza <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Sprawdzam kartę…</translation>
 <translation id="9114581008513152754">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Przesłano</translation>

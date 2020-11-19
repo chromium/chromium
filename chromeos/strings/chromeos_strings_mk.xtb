@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Многу висока латенција на HTTPS</translation>
 <translation id="1413240736185167732">Неуспешно - филтерот не успеа</translation>
 <translation id="1468664791493211953">Понуди</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> управува со уредов и може да ја набљудува вашата активност.</translation>
 <translation id="1478594628797167447">Скенер</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> управува со корисников и може оддалеку да управува со поставките и да ја набљудува неговата активност.</translation>
 <translation id="150962533380566081">Погрешен PUK.</translation>
 <translation id="1510238584712386396">Стартер</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> низи)</translation>
 <translation id="1641857168437328880">Внесувач на документи (едностран)</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1662989795263954667">Запрено - нема мастило</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Скенирај во</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
 <translation id="4548483925627140043">Не е најден сигнал</translation>
+<translation id="455835558791489930">Батерија од <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Неуспешно отворање на сите хостови</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притиснете Enter за да го откажете налогот за печатење.</translation>
 <translation id="4646949265910132906">Безбедна Wi-Fi врска</translation>
@@ -138,8 +142,10 @@
 <translation id="6766275201586212568">Неуспешни одредувања со DNS</translation>
 <translation id="6768237774506518020">Висока стапка на неуспех на одредување со DNS</translation>
 <translation id="6839141349259399400">Не може да се поврзете со скенерите?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> управува со уредов и има пристап до целата активност на корисникот, вклучувајќи ги и посетените веб-страници, лозинките и е-поштата.</translation>
 <translation id="714876143603641390">LAN-поврзливост</translation>
 <translation id="7162487448488904999">Галерија</translation>
+<translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Вид датотека</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>

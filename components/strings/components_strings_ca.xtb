@@ -365,6 +365,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2354430244986887761">Recentment, Navegació segura de Google <ph name="BEGIN_LINK" />ha trobat aplicacions perjudicials<ph name="END_LINK" /> a <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">És possible que els atacants puguin veure les imatges que miris en aquest lloc i que les modifiquin per enganyar-te.</translation>
 <translation id="2356070529366658676">Pregunta-ho</translation>
+<translation id="2357481397660644965">El dispositiu està gestionat per <ph name="DEVICE_MANAGER" /> i el compte està gestionat per <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Diverses</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360873523816792727">Per utilitzar les targetes en tots els dispositius, activa la sincronització.</translation>
@@ -542,6 +543,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3145945101586104090">No s'ha pogut descodificar la resposta</translation>
 <translation id="3150653042067488994">Error temporal del servidor</translation>
 <translation id="3154506275960390542">Aquesta pàgina inclou un formulari que pot ser que no s'enviï de manera segura. La resta d'usuaris poden veure les dades que enviïs mentre estiguin en trànsit o un atacant podria modificar-les per canviar el contingut que rep el servidor.</translation>
+<translation id="315504272643575312">El teu compte està gestionat per <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3162559335345991374">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu la seva pàgina d'inici de sessió.</translation>
 <translation id="3167968892399408617">Les pàgines que consulteu en pestanyes d'incògnit no s'emmagatzemaran a l'historial del navegador, al magatzem de galetes ni a l'historial de cerques després d'haver tancat totes les pestanyes d'incògnit. Els fitxers que baixeu i les adreces d'interès que creeu sí que es desaran.</translation>
@@ -1918,6 +1920,7 @@ Detalls addicionals:
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">La pàgina web <ph name="PAGE" /> no s'ha pogut carregar pels motius següents:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">El dispositiu i el compte estan gestionats per <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pàgines per conjunt</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
@@ -1932,6 +1935,7 @@ Detalls addicionals:
 <translation id="8728672262656704056">Has passat al mode d'incògnit</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8731544501227493793">Botó Gestiona les contrasenyes; prem Retorn per veure i gestionar les teves contrasenyes a la configuració de Chrome</translation>
+<translation id="8734529307927223492">El teu dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per obrir una finestra d'incògnit nova i navegar en privat</translation>
 <translation id="8738058698779197622">Per establir una connexió segura, el rellotge ha d'estar ben ajustat, perquè els certificats que els llocs web fan servir per identificar-se només són vàlids per a períodes de temps concrets. Com que el rellotge del dispositiu no està ben ajustat, Chromium no pot verificar aquests certificats.</translation>
 <translation id="8740359287975076522">No s'ha trobat l'&lt;abbr id="dnsDefinition"&gt;adreça DNS&lt;/abbr&gt; de <ph name="HOST_NAME" />. S'està diagnosticant el problema.</translation>
@@ -2021,6 +2025,7 @@ Detalls addicionals:
 <translation id="9101630580131696064">Safata 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> utilitza normalment l'encriptació per protegir la vostra informació. En aquesta ocasió, quan Chromium ha provat de connectar-se a <ph name="SITE" />, el lloc web ha enviat credencials poc comunes i incorrectes. Pot ser que un atacant estigui provant de fer-se passar per <ph name="SITE" /> o que una pantalla d'inici de sessió a la xarxa Wi-Fi hagi interromput la connexió. En qualsevol cas, la vostra informació continua estant segura, perquè Chromium ha aturat la connexió abans no s'intercanviés cap dada.</translation>
 <translation id="9106062320799175032">Afegeix una adreça de facturació</translation>
+<translation id="9107467864910557787">El navegador està gestionat per <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">S'està confirmant la targeta...</translation>
 <translation id="9114581008513152754">Cap empresa ni cap altra organització no gestiona aquest navegador. És possible que l'activitat d'aquest dispositiu es gestioni fora de Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Penjat</translation>

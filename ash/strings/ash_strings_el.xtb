@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">Νυχτ. φωτισμός</translation>
 <translation id="2727175239389218057">Απάντηση</translation>
 <translation id="2727977024730340865">Σύνδεση με φορτιστή χαμηλής ισχύος. Η φόρτιση της μπαταρίας ενδέχεται να μη γίνεται με αξιόπιστο τρόπο.</translation>
+<translation id="2778650143428714839">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Θα αποσυνδεθείτε τώρα.</translation>
 <translation id="28232023175184696">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο. Κάντε κλικ για να δοκιμάσετε ξανά.</translation>
@@ -563,6 +564,7 @@
 <translation id="6297287540776456956">Χρησιμοποιήστε τη γραφίδα για να επιλέξετε μια περιοχή</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> περιστράφηκε σε <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Φωνή</translation>
+<translation id="6338485349199627913">Το <ph name="DISPLAY_NAME" /> είναι μια διαχειριζόμενη περίοδος σύνδεσης την οποία διαχειρίζεται ο τομέας <ph name="MANAGER" />.</translation>
 <translation id="6376931439017688372">Το Bluetooth είναι ενεργοποιημένο</translation>
 <translation id="6381109794406942707">Για να ξεκλειδώσετε τη συσκευή, εισαγάγετε το PIN σας.</translation>
 <translation id="639644700271529076">Το CAPS LOCK είναι απενεργοποιημένο</translation>

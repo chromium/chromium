@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">ღამის განათება</translation>
 <translation id="2727175239389218057">პასუხი</translation>
 <translation id="2727977024730340865">შეერთებულია დაბალი სიმძლავრის დამტენთან. ბატარეის დატენვა შეიძლება არ იყოს სანდო.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
 <translation id="2792498699870441125">Alt+ძიება</translation>
 <translation id="2819276065543622893">თქვენ ახლა გამოხვალთ.</translation>
 <translation id="28232023175184696">ინტერნეტთან დაკავშირება ვერ მოხერხდა. დააწკაპუნეთ ხელახლა საცდელად.</translation>
@@ -563,6 +564,7 @@
 <translation id="6297287540776456956">რეგიონის ასარჩევად, გამოიყენეთ სტილუსი</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> შეტრიალებულია <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">ხმა</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> არის მართული სესია, რომელსაც მართავს <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth ჩართულია</translation>
 <translation id="6381109794406942707">მოწყობილობის განსაბლოკად შეიყვანეთ PIN-კოდი.</translation>
 <translation id="639644700271529076">CAPS LOCK გამორთულია</translation>

@@ -1989,11 +1989,11 @@
 
       此政策用于指定内置了 ecryptfs 且需改用 ext4 加密机制的设备的行为方式。
 
-      如果您将此政策设为“DisallowArc”，相应设备将会禁止所有用户（包括已采用 ext4 加密机制的用户）在其上使用 Android 应用，且不会主动为任何用户提供从 ecryptfs 到 ext4 加密机制的迁移服务。
+      如果您将此政策设为“DisallowArc”，相应设备将会禁止所有用户（包括已采用 ext4 加密机制的用户）在其上使用 Android 应用，且不会主动为任何用户提供从 ecryptfs 到 ext4 加密机制的迁移选项。
 
-      如果您将此政策设为“AllowMigration”，相应设备便会在必要时（目前是指可在该设备上使用 Android N 时）主动向使用 ecryptfs 主目录的用户提供可将这些主目录迁移至 ext4 加密机制的服务。
+      如果您将此政策设为“AllowMigration”，相应设备便会在必要时（目前是指可在该设备上使用 Android N 时）主动向使用 ecryptfs 主目录的用户提供将这些主目录迁移至 ext4 加密机制的选项。
 
-      此政策不适用于自助服务终端应用 - 这类应用会自动完成迁移。如果您未设置此政策，相应设备将会具有与此政策设为“DisallowArc”时相同的行为方式。</translation>
+      此政策不适用于自助服务终端应用 - 这类应用会自动完成迁移。如果未设置此政策，则设备的行为方式将与将此政策设为“DisallowArc”时相同。</translation>
 <translation id="4020682745012723568">Android 应用无法访问已转移到用户个人资料中的 Cookie。</translation>
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>

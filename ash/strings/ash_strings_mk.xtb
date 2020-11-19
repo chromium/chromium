@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">Ноќно светло</translation>
 <translation id="2727175239389218057">Одговори</translation>
 <translation id="2727977024730340865">Приклучен на полнач со мало напојување. Полнењето на батеријата може да не е веродостојно.</translation>
+<translation id="2778650143428714839"><ph name="MANAGER" /> управува со <ph name="DEVICE_TYPE" /></translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Сега ќе бидете одјавени.</translation>
 <translation id="28232023175184696">Не може да се поврзе на интернет. Кликнете за повторен обид.</translation>
@@ -564,6 +565,7 @@
 <translation id="6297287540776456956">Употребете го пенкалото за да изберете регион</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> беше ротирано до <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Глас</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> е управувана сесија со којашто управува <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth е вклучен</translation>
 <translation id="6381109794406942707">За да го отклучите уредот, внесете го вашиот PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK е исклучено</translation>

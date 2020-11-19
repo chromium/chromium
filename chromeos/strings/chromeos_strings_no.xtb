@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Svært høy HTTPS-tidsforsinkelse</translation>
 <translation id="1413240736185167732">Mislykket – filtersvikt</translation>
 <translation id="1468664791493211953">Tilbud</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> administrerer denne enheten og kan muligens overvåke aktiviteten din.</translation>
 <translation id="1478594628797167447">Skanner</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne brukeren og kan administrere innstillinger og overvåke brukeraktiviteten eksternt.</translation>
 <translation id="150962533380566081">Ugyldig PUK.</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråder)</translation>
 <translation id="1641857168437328880">Dokumentmater (ensidig)</translation>
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Skann til</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
 <translation id="4548483925627140043">Fant ikke noe signal</translation>
+<translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-tilkobling</translation>
@@ -138,8 +142,10 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6766275201586212568">Mislykkede DNS-oppslag</translation>
 <translation id="6768237774506518020">Høy feilfrekvens for DNS-oppslag</translation>
 <translation id="6839141349259399400">Kan du ikke koble til noen skannere?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
 <translation id="7162487448488904999">Galleri</translation>
+<translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>

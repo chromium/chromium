@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">വളരെ ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
 <translation id="1413240736185167732">പ്രിന്റ് ചെയ്യാനായില്ല - ഫിൽട്ടർ പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="1468664791493211953">ഓഫറുകൾ</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, ഒപ്പം നിങ്ങളുടെ ആക്‌റ്റിവിറ്റികൾ നിരീക്ഷിക്കാനുമായേക്കും.</translation>
 <translation id="1478594628797167447">സ്‌കാനർ</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> ആണ് ഈ ഉപയോക്താവിനെ മാനേജ് ചെയ്യുന്നത്, ഒപ്പം വിദൂരമായി ക്രമീകരണം മാനേജ് ചെയ്യുകയും ഉപയോക്തൃ ആക്‌റ്റിവിറ്റി നിരീക്ഷിക്കുകയും ചെയ്തേക്കാം.</translation>
 <translation id="150962533380566081">അസാധുവായ PUK.</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ)</translation>
 <translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="1662989795263954667">പ്രിന്റ് ജോലി നിർത്തി - മഷിയില്ല</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">ഇതിലേക്ക് സ്‌കാൻ ചെയ്ത് സംരക്ഷിക്കുക</translation>
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
 <translation id="4548483925627140043">സിഗ്‌നൽ കണ്ടെത്തിയില്ല</translation>
+<translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ബാറ്ററി</translation>
 <translation id="458794348635939462">എല്ലാ ഹോസ്‌റ്റുകളും പരിഹരിക്കാനായില്ല</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
 <translation id="4646949265910132906">സുരക്ഷിതമായ വൈഫൈ കണക്ഷൻ</translation>
@@ -137,8 +141,10 @@
 <translation id="6766275201586212568">പരാജയപ്പെട്ട DNS റെസല്യൂഷനുകൾ</translation>
 <translation id="6768237774506518020">ഉയർന്ന DNS റെസല്യൂഷൻ ഫെയ്‌ലിയർ നിരക്ക്</translation>
 <translation id="6839141349259399400">സ്‌കാനറുകളിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ലേ?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="714876143603641390">LAN കണക്റ്റിവിറ്റി</translation>
 <translation id="7162487448488904999">ഗാലറി</translation>
+<translation id="7177485034254901881">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്. അഡ്മിൻമാർ ഉപകരണം വിദൂരമായി കോൺഫിഗർ ചെയ്‌തേക്കാം.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ഫയല്‍ തരം</translation>
 <translation id="7561454561030345039">ഈ പ്രവർത്തനം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>

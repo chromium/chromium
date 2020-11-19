@@ -369,6 +369,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2354430244986887761">Google Safe Browsing har nylig <ph name="BEGIN_LINK" />funnet skadelige apper<ph name="END_LINK" /> på <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Angripere kan kanskje se bildene du ser på dette nettstedet, og lure deg ved å endre dem.</translation>
 <translation id="2356070529366658676">Spør</translation>
+<translation id="2357481397660644965">Enheten administreres av <ph name="DEVICE_MANAGER" />, og kontoen administreres av <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Flere</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2360873523816792727">For å bruke kortene dine på alle enheter, slå på synkronisering.</translation>
@@ -548,6 +549,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3145945101586104090">Kunne ikke avkode responsen</translation>
 <translation id="3150653042067488994">Midlertidig tjenerfeil</translation>
 <translation id="3154506275960390542">Denne siden inneholder et skjema som kanskje ikke sendes på en sikker måte. Data du sender, kan bli sett av andre mens de overføres, eller de kan endres av en angriper slik at tjeneren mottar noe annet enn det du sender.</translation>
+<translation id="315504272643575312">Kontoen din administreres av <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Gjenopprett</translation>
 <translation id="3162559335345991374">Det kan hende at Wi-Fi-nettverket du bruker, krever at du besøker en påloggingsside.</translation>
 <translation id="3167968892399408617">Sider du går til i inkognitofaner, blir ikke værende i nettleserloggen, lageret for informasjonskapsler eller søkeloggen etter at du har lukket alle inkognitofanene. Filer du laster ned eller bokmerker du oppretter, blir lagret.</translation>
@@ -1928,6 +1930,7 @@ Mer informasjon:
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Nettsiden på <ph name="PAGE" /> kunne ikke lastes inn fordi</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Enheten og kontoen din administreres av <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Tilgjengelig</translation>
 <translation id="868922510921656628">Sider pr. sett</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
@@ -1942,6 +1945,7 @@ Mer informasjon:
 <translation id="8728672262656704056">Du er nå i inkognitomodus</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8731544501227493793">Knappen «Administrer passord» – trykk på Enter for å se og administrere passord i Chrome-innstillingene</translation>
+<translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å åpne et nytt inkognitovindu for privat surfing</translation>
 <translation id="8738058698779197622">Klokken din må være riktig stilt for at du skal kunne opprette en sikker forbindelse. Sertifikatene som nettsteder bruker til å identifisere seg med, er nemlig bare gyldige i en viss tid. Siden enhetens klokke er feil, kan ikke Chromium kontrollere disse sertifikatene.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-adressen&lt;/abbr&gt; til <ph name="HOST_NAME" /> ble ikke funnet. Problemet diagnostiseres.</translation>
@@ -2031,6 +2035,7 @@ Mer informasjon:
 <translation id="9101630580131696064">Skuff 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> bruker vanligvis kryptering for å beskytte informasjonen din. Da Chromium prøvde å koble til <ph name="SITE" /> denne gangen, sendte nettstedet tilbake uvanlig og feil legitimasjon. Dette kan skje hvis en angriper prøver å utgi seg for å være <ph name="SITE" />, eller hvis en Wi-Fi-påloggingsskjerm har avbrutt tilkoblingen. Informasjonen din er likevel sikker fordi Chromium stoppet tilkoblingen før det ble utvekslet noen data.</translation>
 <translation id="9106062320799175032">Legg til faktureringsadresse</translation>
+<translation id="9107467864910557787">Nettleseren administreres av <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Bekrefter kortet …</translation>
 <translation id="9114581008513152754">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chrome. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Opplastet</translation>
