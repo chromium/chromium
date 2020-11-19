@@ -12,6 +12,9 @@ namespace chromeos {
 COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
 extern const char kCryptohomeGaiaKeyLabel[];
 
+COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
+extern const char kCryptohomePinLabel[];
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_LOGIN_AUTH_CRYPTOHOME_KEY_CONSTANTS_H_

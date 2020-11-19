@@ -15,4 +15,6 @@ namespace chromeos {
 // key label.
 const char kCryptohomeGaiaKeyLabel[] = "gaia";
 
+const char kCryptohomePinLabel[] = "pin";
+
 }  // namespace chromeos

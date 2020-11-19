@@ -19,12 +19,17 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Key {
  public:
   enum KeyType {
     // Plain text password.
+    // Used in early stages of auth process.
     KEY_TYPE_PASSWORD_PLAIN = 0,
     // SHA256 of salt + password, first half only, lower-case hex encoded.
+    // This hashing is used for user password.
     KEY_TYPE_SALTED_SHA256_TOP_HALF = 1,
     // PBKDF2 with 256 bit AES and 1234 iterations, base64 encoded.
+    // This hashing is used for user PINs.
     KEY_TYPE_SALTED_PBKDF2_AES256_1234 = 2,
     // SHA256 of salt + password, base64 encoded.
+    // This hashing is not used at the moment, it is introduced for
+    // credentials passing API.
     KEY_TYPE_SALTED_SHA256 = 3,
 
     // Sentinel. Must be last.

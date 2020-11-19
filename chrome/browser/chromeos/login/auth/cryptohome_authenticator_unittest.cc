@@ -37,6 +37,7 @@
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/mock_auth_status_consumer.h"
 #include "chromeos/login/auth/test_attempt_state.h"
@@ -63,9 +64,6 @@ using ::testing::_;
 namespace chromeos {
 
 namespace {
-
-// Label under which the user's key is stored.
-const char kCryptohomeGAIAKeyLabel[] = "gaia";
 
 // Salt used by pre-hashed key.
 const char kSalt[] = "SALT $$";
@@ -167,7 +165,7 @@ class TestCryptohomeClient : public ::chromeos::FakeCryptohomeClient {
     if (is_create_attempt_expected_) {
       EXPECT_EQ(expected_authorization_secret_,
                 request.create().keys(0).secret());
-      EXPECT_EQ(kCryptohomeGAIAKeyLabel,
+      EXPECT_EQ(kCryptohomeGaiaKeyLabel,
                 request.create().keys(0).data().label());
     }
     EXPECT_EQ(expected_id_, cryptohome_id);
@@ -271,7 +269,7 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     OwnerSettingsServiceChromeOSFactory::GetInstance()
         ->SetOwnerKeyUtilForTesting(owner_key_util_);
     Key key("fakepass");
-    key.SetLabel(kCryptohomeGAIAKeyLabel);
+    key.SetLabel(kCryptohomeGaiaKeyLabel);
     user_context_.SetKey(key);
     user_context_.SetUserIDHash("me_nowhere_com_hash");
     const user_manager::User* user =
@@ -380,7 +378,7 @@ class CryptohomeAuthenticatorTest : public testing::Test {
   void ExpectGetKeyDataExCall(std::unique_ptr<int64_t> key_type,
                               std::unique_ptr<std::string> salt) {
     auto key_definition = cryptohome::KeyDefinition::CreateForPassword(
-        std::string() /* secret */, kCryptohomeGAIAKeyLabel,
+        std::string() /* secret */, kCryptohomeGaiaKeyLabel,
         cryptohome::PRIV_DEFAULT);
     key_definition.revision = 1;
     if (key_type) {
