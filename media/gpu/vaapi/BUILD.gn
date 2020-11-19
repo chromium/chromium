@@ -20,6 +20,9 @@ generate_stubs("libva_stubs") {
   if (use_x11) {
     sigs += [ "va_x11.sigs" ]
   }
+  if (is_chromeos_ash) {
+    sigs += [ "va_prot.sigs" ]
+  }
   sigs += [ "va_drm.sigs" ]
 
   output_name = "va_stubs"

@@ -109,6 +109,17 @@ class MEDIA_GPU_EXPORT VaapiWrapper
  public:
   enum CodecMode {
     kDecode,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // NOTE: A kDecodeProtected VaapiWrapper is created using the actual video
+    // profile and an extra VAProfileProtected, each with some special added
+    // VAConfigAttribs. Then when CreateProtectedSession() is called, it will
+    // then create a protected session using protected profile & entrypoint
+    // which gets attached to the decoding context (or attached when the
+    // decoding context is created or re-created). This then enables
+    // decrypt + decode support in the driver and encrypted frame data can then
+    // be submitted.
+    kDecodeProtected,  // Decrypt + decode to protected surface.
+#endif
     kEncode,  // Encode with Constant Bitrate algorithm.
     kEncodeConstantQuantizationParameter,  // Encode with Constant Quantization
                                            // Parameter algorithm.
@@ -250,13 +261,29 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const gfx::Size& size,
       const base::Optional<gfx::Size>& visible_size = base::nullopt);
 
+  // Attempts to create a protected session that will be attached to the
+  // decoding context to enable encrypted video decoding. If it cannot be
+  // attached now, it will be attached when the decoding context is created or
+  // re-created. |encryption| should be the encryption scheme from the
+  // DecryptConfig, |full_sample| should be true if full sample (i.e. CENC v1)
+  // encryption is used. |hw_config| should have been obtained from the
+  // OEMCrypto implementation via the CdmFactoryDaemonProxy. |hw_identifier_out|
+  // is an output parameter which will return session specific information which
+  // can be passed through the ChromeOsCdmContext to retrieve encrypted key
+  // information. Returns true on success and false otherwise.
+  bool CreateProtectedSession(media::EncryptionScheme encryption,
+                              bool full_sample,
+                              const std::vector<uint8_t>& hw_config,
+                              std::vector<uint8_t>* hw_identifier_out);
+
   // Releases the |va_surfaces| and destroys |va_context_id_|.
   void DestroyContextAndSurfaces(std::vector<VASurfaceID> va_surfaces);
 
   // Creates a VAContextID of |size| (unless it's a Vpp context in which case
   // |size| is ignored and 0x0 is used instead). The client is responsible for
   // releasing said context via DestroyContext() or DestroyContextAndSurfaces(),
-  // or it will be released on dtor.
+  // or it will be released on dtor.  If a valid |va_protected_session_id_|
+  // exists, it will be attached to the newly created |va_context_id_| as well.
   virtual bool CreateContext(const gfx::Size& size) WARN_UNUSED_RESULT;
 
   // Destroys the context identified by |va_context_id_|.
@@ -476,6 +503,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // consumption and maximum speed.
   void MaybeSetLowQualityEncoding_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
+  // If a protected session is active, attaches it to the decoding context.
+  bool MaybeAttachProtectedSession_Locked()
+      EXCLUSIVE_LOCKS_REQUIRED(va_lock_) WARN_UNUSED_RESULT;
+
   const CodecMode mode_;
 
   // Pointer to VADisplayState's member |va_lock_|. Guaranteed to be valid for
@@ -485,10 +516,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // VA handles.
   // All valid after successful Initialize() and until Deinitialize().
   VADisplay va_display_ GUARDED_BY(va_lock_);
-  VAConfigID va_config_id_;
+  VAConfigID va_config_id_{VA_INVALID_ID};
   // Created in CreateContext() or CreateContextAndSurfaces() and valid until
   // DestroyContext() or DestroyContextAndSurfaces().
-  VAContextID va_context_id_;
+  VAContextID va_context_id_{VA_INVALID_ID};
 
   // Profile and entrypoint configured for the corresponding |va_context_id_|.
   VAProfile va_profile_;
@@ -501,6 +532,12 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // VA buffer to be used for kVideoProcess. Allocated the first time around,
   // and reused afterwards.
   std::unique_ptr<ScopedVABuffer> va_buffer_for_vpp_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // For protected decode mode.
+  VAConfigID va_protected_config_id_{VA_INVALID_ID};
+  VAProtectedSessionID va_protected_session_id_{VA_INVALID_ID};
+#endif
 
   // Called to report codec errors to UMA. Errors to clients are reported via
   // return values from public methods.
