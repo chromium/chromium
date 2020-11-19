@@ -997,6 +997,7 @@
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
       'android-code-coverage-native', # crbug/1018434
+      'android-lollipop-arm-rel', # crbug.com/1133002
       # http://crbug.com/1060245#c30: due to low utility and capacity.
       'android-marshmallow-arm64-rel',
     ],
@@ -1084,11 +1085,6 @@
         ],
         'swarming': {
           'shards': 20,
-        },
-      },
-      'android-lollipop-arm-rel': {
-        'swarming': {
-          'shards': 15,
         },
       },
       'android-marshmallow-arm64-rel': {
