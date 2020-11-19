@@ -410,11 +410,12 @@ class TabHoverCardBubbleView::ThumbnailObserver
     if (current_image_ == thumbnail_image)
       return;
 
-    scoped_observer_.RemoveAll();
+    if (scoped_observation_.IsObserving())
+      scoped_observation_.RemoveObservation();
     current_image_ = std::move(thumbnail_image);
 
     if (current_image_) {
-      scoped_observer_.Add(current_image_.get());
+      scoped_observation_.Observe(current_image_.get());
       current_image_->RequestThumbnailImage();
     }
   }
@@ -434,8 +435,8 @@ class TabHoverCardBubbleView::ThumbnailObserver
 
   scoped_refptr<ThumbnailImage> current_image_;
   TabHoverCardBubbleView* const hover_card_;
-  ScopedObserver<ThumbnailImage, ThumbnailImage::Observer> scoped_observer_{
-      this};
+  base::ScopedObservation<ThumbnailImage, ThumbnailImage::Observer>
+      scoped_observation_{this};
 };
 
 TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
@@ -547,7 +548,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
       std::make_unique<WidgetSlideAnimationDelegate>(this);
   fade_animation_delegate_ =
       std::make_unique<WidgetFadeAnimationDelegate>(GetWidget());
-  thumbnail_observer_ = std::make_unique<ThumbnailObserver>(this);
+  thumbnail_observation_ = std::make_unique<ThumbnailObserver>(this);
 
   constexpr int kFootnoteVerticalMargin = 8;
   GetBubbleFrameView()->set_footnote_margins(
@@ -648,7 +649,7 @@ void TabHoverCardBubbleView::FadeOutToHide() {
   delayed_show_timer_.Stop();
   if (!GetWidget()->IsVisible())
     return;
-  thumbnail_observer_->Observe(nullptr);
+  thumbnail_observation_->Observe(nullptr);
   slide_animation_delegate_->StopAnimation();
   last_visible_timestamp_ = base::TimeTicks::Now();
   if (disable_animations_for_testing_) {
@@ -804,12 +805,12 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
       auto thumbnail = tab->data().thumbnail;
       if (!thumbnail) {
         ClearPreviewImage();
-      } else if (thumbnail != thumbnail_observer_->current_image()) {
+      } else if (thumbnail != thumbnail_observation_->current_image()) {
         waiting_for_decompress_ = true;
-        thumbnail_observer_->Observe(thumbnail);
+        thumbnail_observation_->Observe(thumbnail);
       }
     } else {
-      thumbnail_observer_->Observe(nullptr);
+      thumbnail_observation_->Observe(nullptr);
     }
   }
 }

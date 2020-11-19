@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
@@ -410,7 +410,8 @@ class TabStrip : public views::View,
 
     views::ImageView* arrow_view_ = nullptr;
 
-    ScopedObserver<views::Widget, views::WidgetObserver> scoped_observer_{this};
+    base::ScopedObservation<views::Widget, views::WidgetObserver>
+        scoped_observation_{this};
   };
 
   void Init();
@@ -665,7 +666,8 @@ class TabStrip : public views::View,
   // The view tracker is used to keep track of if the hover card has been
   // destroyed by its widget.
   TabHoverCardBubbleView* hover_card_ = nullptr;
-  ScopedObserver<views::View, views::ViewObserver> hover_card_observer_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      hover_card_observation_{this};
   std::unique_ptr<ui::EventHandler> hover_card_event_sniffer_;
 
   std::unique_ptr<TabStripController> controller_;

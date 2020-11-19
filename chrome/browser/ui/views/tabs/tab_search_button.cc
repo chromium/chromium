@@ -96,7 +96,9 @@ void TabSearchButton::OnWidgetVisibilityChanged(views::Widget* widget,
 
 void TabSearchButton::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
-  observed_bubble_widget_.Remove(webui_bubble_manager_.GetBubbleWidget());
+  DCHECK(bubble_widget_observation_.IsObservingSource(
+      webui_bubble_manager_.GetBubbleWidget()));
+  bubble_widget_observation_.RemoveObservation();
   pressed_lock_.reset();
 }
 
@@ -114,8 +116,8 @@ bool TabSearchButton::ShowTabSearchBubble(bool triggered_by_keyboard_shortcut) {
 
   // There should only ever be a single bubble widget active for the
   // TabSearchButton.
-  DCHECK(!observed_bubble_widget_.IsObservingSources());
-  observed_bubble_widget_.Add(webui_bubble_manager_.GetBubbleWidget());
+  DCHECK(!bubble_widget_observation_.IsObserving());
+  bubble_widget_observation_.Observe(webui_bubble_manager_.GetBubbleWidget());
   widget_open_timer_.Reset(webui_bubble_manager_.GetBubbleWidget());
 
   // Hold the pressed lock while the |bubble_| is active.

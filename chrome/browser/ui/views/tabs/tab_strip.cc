@@ -1029,7 +1029,8 @@ TabStrip::~TabStrip() {
   // but before moving the mouse.
   RemoveMessageLoopObserver();
 
-  hover_card_observer_.RemoveAll();
+  if (hover_card_observation_.IsObserving())
+    hover_card_observation_.RemoveObservation();
 
   // Since TabGroupViews expects be able to remove the views it creates, clear
   // |group_views_| before removing the remaining children below.
@@ -1937,7 +1938,7 @@ void TabStrip::UpdateHoverCard(Tab* tab) {
     if (!tab)
       return;
     hover_card_ = new TabHoverCardBubbleView(tab);
-    hover_card_observer_.Add(hover_card_);
+    hover_card_observation_.Observe(hover_card_);
     if (GetWidget()) {
       hover_card_event_sniffer_ =
           std::make_unique<TabHoverCardEventSniffer>(hover_card_, this);
@@ -3257,7 +3258,7 @@ TabStrip::DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
   arrow_view_ =
       arrow_window_->SetContentsView(std::make_unique<views::ImageView>());
   arrow_view_->SetImage(GetDropArrowImage(point_down_));
-  scoped_observer_.Add(arrow_window_);
+  scoped_observation_.Observe(arrow_window_);
 
   arrow_window_->Show();
 }
@@ -3281,7 +3282,8 @@ void TabStrip::DropArrow::SetWindowBounds(const gfx::Rect& bounds) {
 }
 
 void TabStrip::DropArrow::OnWidgetDestroying(views::Widget* widget) {
-  scoped_observer_.Remove(arrow_window_);
+  DCHECK(scoped_observation_.IsObservingSource(arrow_window_));
+  scoped_observation_.RemoveObservation();
   arrow_window_ = nullptr;
 }
 
@@ -3621,7 +3623,8 @@ views::View* TabStrip::TargetForRect(views::View* root, const gfx::Rect& rect) {
 
 void TabStrip::OnViewIsDeleting(views::View* observed_view) {
   if (observed_view == hover_card_) {
-    hover_card_observer_.Remove(hover_card_);
+    DCHECK(hover_card_observation_.IsObservingSource(hover_card_));
+    hover_card_observation_.RemoveObservation();
     hover_card_event_sniffer_.reset();
     hover_card_ = nullptr;
   }

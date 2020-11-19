@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -99,7 +99,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   std::unique_ptr<WidgetFadeAnimationDelegate> fade_animation_delegate_;
   // Used to animate the tab hover card's movement between tabs.
   std::unique_ptr<WidgetSlideAnimationDelegate> slide_animation_delegate_;
-  std::unique_ptr<ThumbnailObserver> thumbnail_observer_;
+  std::unique_ptr<ThumbnailObserver> thumbnail_observation_;
 
   // Timestamp of the last time a hover card was visible, recorded before it is
   // hidden. This is used for metrics.

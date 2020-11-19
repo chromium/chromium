@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
@@ -693,7 +693,8 @@ class TabDragController : public views::WidgetObserver {
 
   std::unique_ptr<WindowFinder> window_finder_;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   base::WeakPtrFactory<TabDragController> weak_factory_{this};
 };

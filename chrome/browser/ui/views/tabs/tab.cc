@@ -17,7 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -146,13 +146,13 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
                                   TabController* controller)
       : tab_(tab), close_button_(close_button), controller_(controller) {
     DCHECK(close_button_);
-    tab_close_button_observer_.Add(close_button_);
+    tab_close_button_observation_.Observe(close_button_);
   }
   TabCloseButtonObserver(const TabCloseButtonObserver&) = delete;
   TabCloseButtonObserver& operator=(const TabCloseButtonObserver&) = delete;
 
   ~TabCloseButtonObserver() override {
-    tab_close_button_observer_.Remove(close_button_);
+    tab_close_button_observation_.RemoveObservation();
   }
 
  private:
@@ -166,8 +166,8 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
       controller_->UpdateHoverCard(nullptr);
   }
 
-  ScopedObserver<views::View, views::ViewObserver> tab_close_button_observer_{
-      this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      tab_close_button_observation_{this};
 
   Tab* tab_;
   views::View* close_button_;

@@ -80,8 +80,8 @@ class TabSearchButton : public NewTabButton,
   // in the process of being shown.
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> observed_bubble_widget_{
-      this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      bubble_widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_BUTTON_H_

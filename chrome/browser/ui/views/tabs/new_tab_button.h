@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/views/controls/button/image_button.h"
