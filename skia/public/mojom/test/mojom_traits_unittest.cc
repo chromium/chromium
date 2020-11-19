@@ -47,32 +47,6 @@ mojo::StructPtr<skia::mojom::InlineBitmap> ConstructInlineBitmap(
   return mojom_bitmap;
 }
 
-// mojo::test::SerializeAndDeserialize() doesn't work for a raw enum, so roll
-// our own.
-bool SerializeAndDeserialize(SkBlurImageFilter::TileMode* input,
-                             SkBlurImageFilter::TileMode* output) {
-  skia::mojom::BlurTileMode mode =
-      mojo::EnumTraits<skia::mojom::BlurTileMode,
-                       SkBlurImageFilter::TileMode>::ToMojom(*input);
-  return mojo::EnumTraits<skia::mojom::BlurTileMode,
-                          SkBlurImageFilter::TileMode>::FromMojom(mode, output);
-}
-
-template <typename MojomType, typename UserType>
-bool SerializeAndDeserializeFromMojom(mojo::StructPtr<MojomType>* input,
-                                      UserType* output) {
-  mojo::Message message = MojomType::SerializeAsMessage(input);
-
-  // This accurately simulates full serialization to ensure that all attached
-  // handles are serialized as well. Necessary for DeserializeFromMessage to
-  // work properly.
-  mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
-  message = mojo::Message::CreateFromMessageHandle(&handle);
-  DCHECK(!message.IsNull());
-
-  return MojomType::DeserializeFromMessage(std::move(message), output);
-}
-
 TEST(StructTraitsTest, ImageInfo) {
   SkImageInfo input = SkImageInfo::Make(
       34, 56, SkColorType::kGray_8_SkColorType,
@@ -182,7 +156,7 @@ TEST(StructTraitsTest, VerifyBitmapConstruction) {
 
   SkBitmap output;
   bool ok =
-      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
   EXPECT_TRUE(ok);
 }
 
@@ -192,7 +166,7 @@ TEST(StructTraitsTest, BitmapDeserializeIgnoresRowBytes) {
 
   SkBitmap output;
   bool ok =
-      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
   EXPECT_TRUE(ok);
   // The row_bytes field is ignored, and the minRowBytes() is always used.
   EXPECT_EQ(4u, output.rowBytes());
@@ -204,7 +178,7 @@ TEST(StructTraitsTest, BitmapDeserializeMismatchFormatAndPixels) {
 
   SkBitmap output;
   bool ok =
-      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
   EXPECT_FALSE(ok);
 }
 
@@ -214,7 +188,7 @@ TEST(StructTraitsTest, BitmapDeserializeTooFewPixels) {
 
   SkBitmap output;
   bool ok =
-      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
   EXPECT_FALSE(ok);
 }
 
@@ -224,20 +198,23 @@ TEST(StructTraitsTest, BitmapDeserializeTooManyPixels) {
 
   SkBitmap output;
   bool ok =
-      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
   EXPECT_FALSE(ok);
 }
 
 TEST(StructTraitsTest, BlurImageFilterTileMode) {
   SkBlurImageFilter::TileMode input(SkBlurImageFilter::kClamp_TileMode);
   SkBlurImageFilter::TileMode output;
-  ASSERT_TRUE(SerializeAndDeserialize(&input, &output));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
+      &input, &output));
   EXPECT_EQ(input, output);
   input = SkBlurImageFilter::kRepeat_TileMode;
-  ASSERT_TRUE(SerializeAndDeserialize(&input, &output));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
+      &input, &output));
   EXPECT_EQ(input, output);
   input = SkBlurImageFilter::kClampToBlack_TileMode;
-  ASSERT_TRUE(SerializeAndDeserialize(&input, &output));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
+      &input, &output));
   EXPECT_EQ(input, output);
 }
 
@@ -313,7 +290,7 @@ TEST(StructTraitsTest, VerifyInlineBitmapConstruction) {
       ConstructInlineBitmap(SkImageInfo::MakeN32Premul(1, 1), {1, 2, 3, 4});
 
   SkBitmap output;
-  bool ok = SerializeAndDeserializeFromMojom<skia::mojom::InlineBitmap>(
+  bool ok = mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
       &input, &output);
   EXPECT_TRUE(ok);
 }
@@ -323,7 +300,7 @@ TEST(StructTraitsTest, InlineBitmapDeserializeTooFewBytes) {
       ConstructInlineBitmap(SkImageInfo::MakeN32Premul(2, 1), {1, 2, 3, 4});
 
   SkBitmap output;
-  bool ok = SerializeAndDeserializeFromMojom<skia::mojom::InlineBitmap>(
+  bool ok = mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
       &input, &output);
   EXPECT_FALSE(ok);
 }
@@ -333,7 +310,7 @@ TEST(StructTraitsTest, InlineBitmapDeserializeTooManyBytes) {
       SkImageInfo::MakeN32Premul(1, 1), {1, 2, 3, 4, 5, 6, 7, 8});
 
   SkBitmap output;
-  bool ok = SerializeAndDeserializeFromMojom<skia::mojom::InlineBitmap>(
+  bool ok = mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
       &input, &output);
   EXPECT_FALSE(ok);
 }
