@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
@@ -682,7 +681,6 @@ void PageHandler::CaptureScreenshot(
     Maybe<int> quality,
     Maybe<Page::Viewport> clip,
     Maybe<bool> from_surface,
-    Maybe<bool> capture_beyond_viewport,
     std::unique_ptr<CaptureScreenshotCallback> callback) {
   if (!host_ || !host_->GetRenderWidgetHost() ||
       !host_->GetRenderWidgetHost()->GetView()) {
@@ -714,8 +712,7 @@ void PageHandler::CaptureScreenshot(
         base::BindOnce(&PageHandler::ScreenshotCaptured,
                        weak_factory_.GetWeakPtr(), std::move(callback),
                        screenshot_format, screenshot_quality, gfx::Size(),
-                       gfx::Size(), blink::DeviceEmulationParams(),
-                       base::nullopt),
+                       gfx::Size(), blink::DeviceEmulationParams()),
         false);
     return;
   }
@@ -778,30 +775,6 @@ void PageHandler::CaptureScreenshot(
     }
   }
 
-  base::Optional<blink::web_pref::WebPreferences> original_web_prefs_if_needed;
-  if (capture_beyond_viewport.fromMaybe(false)) {
-    blink::web_pref::WebPreferences original_web_prefs =
-        host_->GetRenderViewHost()->GetDelegate()->GetOrCreateWebPreferences();
-    original_web_prefs_if_needed = original_web_prefs;
-
-    blink::web_pref::WebPreferences modified_web_prefs = original_web_prefs;
-    // Hiding scrollbar is needed to avoid scrollbar artefacts on the
-    // screenshot. Details: https://crbug.com/1003629.
-    modified_web_prefs.hide_scrollbars = true;
-    modified_web_prefs.record_whole_document = true;
-    host_->GetRenderViewHost()->GetDelegate()->SetWebPreferences(
-        modified_web_prefs);
-
-    {
-      // TODO(crbug.com/1141835): Remove the bug is fixed.
-      // Walkaround for the bug. Emulated `view_size` has to be set twice,
-      // otherwise the scrollbar will be on the screenshot present.
-      blink::DeviceEmulationParams tmp_params = modified_params;
-      tmp_params.view_size = gfx::Size(1, 1);
-      emulation_handler_->SetDeviceEmulationParams(tmp_params);
-    }
-  }
-
   // We use DeviceEmulationParams to either emulate, set viewport or both.
   emulation_handler_->SetDeviceEmulationParams(modified_params);
 
@@ -834,8 +807,7 @@ void PageHandler::CaptureScreenshot(
       base::BindOnce(&PageHandler::ScreenshotCaptured,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      screenshot_format, screenshot_quality, original_view_size,
-                     requested_image_size, original_params,
-                     original_web_prefs_if_needed),
+                     requested_image_size, original_params),
       true);
 }
 
@@ -1138,18 +1110,11 @@ void PageHandler::ScreenshotCaptured(
     const gfx::Size& original_view_size,
     const gfx::Size& requested_image_size,
     const blink::DeviceEmulationParams& original_emulation_params,
-    const base::Optional<blink::web_pref::WebPreferences>&
-        maybe_original_web_prefs,
     const gfx::Image& image) {
   if (original_view_size.width()) {
     RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
     widget_host->GetView()->SetSize(original_view_size);
     emulation_handler_->SetDeviceEmulationParams(original_emulation_params);
-  }
-
-  if (maybe_original_web_prefs) {
-    host_->GetRenderViewHost()->GetDelegate()->SetWebPreferences(
-        maybe_original_web_prefs.value());
   }
 
   if (image.IsEmpty()) {

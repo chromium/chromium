@@ -6314,8 +6314,6 @@ domain Page
       optional Viewport clip
       # Capture the screenshot from the surface, rather than the view. Defaults to true.
       experimental optional boolean fromSurface
-      # Capture the screenshot beyond the viewport. Defaults to false.
-      experimental optional boolean captureBeyondViewport
     returns
       # Base64-encoded image data.
       binary data
