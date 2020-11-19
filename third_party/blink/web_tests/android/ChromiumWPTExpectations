@@ -1528,7 +1528,6 @@ crbug.com/1050754 external/wpt/css/cssom/border-shorthand-serialization.html [ F
 crbug.com/1050754 external/wpt/css/cssom/computed-style-002.html [ Failure ]
 crbug.com/1050754 external/wpt/css/cssom/computed-style-003.html [ Failure ]
 crbug.com/1050754 external/wpt/css/cssom/computed-style-004.html [ Failure ]
-crbug.com/1050754 external/wpt/css/cssom/cssstyledeclaration-csstext.html [ Failure ]
 crbug.com/1050754 external/wpt/css/cssom/cssstyledeclaration-properties.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/cssom/cssstyledeclaration-setter-logical.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/cssom/font-family-serialization-001.html [ Failure ]

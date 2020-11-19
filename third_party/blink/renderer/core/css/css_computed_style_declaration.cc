@@ -278,20 +278,8 @@ CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(
 CSSComputedStyleDeclaration::~CSSComputedStyleDeclaration() = default;
 
 String CSSComputedStyleDeclaration::cssText() const {
-  StringBuilder result;
-  static const Vector<const CSSProperty*>& properties =
-      ComputableProperties(GetExecutionContext());
-
-  for (unsigned i = 0; i < properties.size(); i++) {
-    if (i)
-      result.Append(' ');
-    result.Append(properties[i]->GetPropertyName());
-    result.Append(": ");
-    result.Append(GetPropertyValue(properties[i]->PropertyID()));
-    result.Append(';');
-  }
-
-  return result.ToString();
+  // CSSStyleDeclaration.cssText should return empty string for computed style.
+  return String();
 }
 
 void CSSComputedStyleDeclaration::setCSSText(const ExecutionContext*,
