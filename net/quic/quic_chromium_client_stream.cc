@@ -557,8 +557,9 @@ size_t QuicChromiumClientStream::WriteHeaders(
 
 bool QuicChromiumClientStream::WriteStreamData(absl::string_view data,
                                                bool fin) {
-  // Must not be called when data is buffered.
-  DCHECK(!HasBufferedData());
+  // For gQUIC, this must not be called when data is buffered because headers
+  // are sent on the dedicated header stream.
+  DCHECK(!HasBufferedData() || VersionUsesHttp3(quic_version_));
   // Writes the data, or buffers it.
   WriteOrBufferBody(data, fin);
   return !HasBufferedData();  // Was all data written?
