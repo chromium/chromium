@@ -49,9 +49,33 @@ class DebugLogsManagerTest : public testing::Test {
     bluez::BluezDBusManager::Shutdown();
   }
 
-  void SetDebugFlagState(bool debug_flag_enabled) {
-    feature_list_.InitWithFeatureState(
-        chromeos::features::kShowBluetoothDebugLogToggle, debug_flag_enabled);
+  void EnableDebugFlag() { is_debug_toggle_flag_enabled_ = true; }
+
+  void EnableGooglerDefaultPrefFlag() {
+    is_googler_default_pref_enabled_ = true;
+  }
+
+  void InitFeatures() {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    if (is_debug_toggle_flag_enabled_) {
+      enabled_features.push_back(
+          chromeos::features::kShowBluetoothDebugLogToggle);
+    } else {
+      disabled_features.push_back(
+          chromeos::features::kShowBluetoothDebugLogToggle);
+    }
+
+    if (is_googler_default_pref_enabled_) {
+      enabled_features.push_back(
+          chromeos::features::kEnableBluetoothVerboseLogsForGooglers);
+    } else {
+      disabled_features.push_back(
+          chromeos::features::kEnableBluetoothVerboseLogsForGooglers);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void InstantiateDebugManager(const char* email) {
@@ -69,6 +93,8 @@ class DebugLogsManagerTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  bool is_debug_toggle_flag_enabled_ = false;
+  bool is_googler_default_pref_enabled_ = false;
   bluez::FakeBluetoothDebugManagerClient* fake_bluetooth_debug_manager_client_;
   std::unique_ptr<DebugLogsManager> debug_logs_manager_;
   TestingPrefServiceSimple prefs_;
@@ -77,21 +103,33 @@ class DebugLogsManagerTest : public testing::Test {
 };
 
 TEST_F(DebugLogsManagerTest, FlagNotEnabled) {
-  SetDebugFlagState(false /* debug_flag_enabled */);
+  /* debug flag disabled */
+  InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
   EXPECT_EQ(debug_manager()->GetDebugLogsState(),
             DebugLogsManager::DebugLogsState::kNotSupported);
 }
 
 TEST_F(DebugLogsManagerTest, NonGoogler) {
-  SetDebugFlagState(true /* debug_flag_enabled */);
+  EnableDebugFlag();
+  InitFeatures();
   InstantiateDebugManager(kTestNonGooglerEmail);
   EXPECT_EQ(debug_manager()->GetDebugLogsState(),
             DebugLogsManager::DebugLogsState::kNotSupported);
 }
 
+TEST_F(DebugLogsManagerTest, GooglerDefaultPref) {
+  EnableDebugFlag();
+  EnableGooglerDefaultPrefFlag();
+  InitFeatures();
+  InstantiateDebugManager(kTestGooglerEmail);
+  EXPECT_EQ(debug_manager()->GetDebugLogsState(),
+            DebugLogsManager::DebugLogsState::kSupportedAndEnabled);
+}
+
 TEST_F(DebugLogsManagerTest, ChangeDebugLogsState) {
-  SetDebugFlagState(true /* debug_flag_enabled */);
+  EnableDebugFlag();
+  InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
   EXPECT_EQ(debug_manager()->GetDebugLogsState(),
             DebugLogsManager::DebugLogsState::kSupportedButDisabled);
@@ -119,7 +157,8 @@ TEST_F(DebugLogsManagerTest, ChangeDebugLogsState) {
 }
 
 TEST_F(DebugLogsManagerTest, SendVerboseLogsRequestUponLoginAndLogout) {
-  SetDebugFlagState(true /* debug_flag_enabled */);
+  EnableDebugFlag();
+  InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
   EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 0);
   debug_manager()->ChangeDebugLogsState(
@@ -156,7 +195,8 @@ TEST_F(DebugLogsManagerTest, RetryUponSetVerboseLogsFailure) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  SetDebugFlagState(true /* debug_flag_enabled */);
+  EnableDebugFlag();
+  InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
   EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 0);
   debug_manager()->ChangeDebugLogsState(

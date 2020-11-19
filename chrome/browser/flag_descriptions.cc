@@ -4415,6 +4415,11 @@ const char kShowBluetoothDebugLogToggleDescription[] =
     "Enables a toggle which can enable debug (i.e., verbose) logs for "
     "Bluetooth";
 
+const char kEnableBluetoothVerboseLogsForGooglersName[] =
+    "Enable Bluetooth verbose logs for Googlers";
+const char kEnableBluetoothVerboseLogsForGooglersDescription[] =
+    "Enables Bluetooth verbose logs for Googlers in feedback reports.";
+
 const char kShowBluetoothDeviceBatteryName[] = "Show Bluetooth device battery";
 const char kShowBluetoothDeviceBatteryDescription[] =
     "Enables showing the battery level of connected and supported Bluetooth "

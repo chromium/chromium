@@ -42598,6 +42598,8 @@ from previous Chrome versions.
       label="TurnOffStreamingMediaCachingOnBattery:disabled"/>
   <int value="-1492589689" label="ContentSuggestionsCategories:enabled"/>
   <int value="-1492211482" label="EnableWindowsGamingInputDataFetcher:enabled"/>
+  <int value="-1491705891"
+      label="EnableBluetoothVerboseLogsForGooglers:disabled"/>
   <int value="-1491417046" label="enable-fullscreen-toolbar-reveal"/>
   <int value="-1491304576" label="ProgressBarThrottle:disabled"/>
   <int value="-1490298774" label="enable-captive-portal-bypass-proxy-option"/>
@@ -46109,6 +46111,8 @@ from previous Chrome versions.
   <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
   <int value="1928407249" label="NewPhotoPicker:enabled"/>
   <int value="1929603041" label="HideShelfControlsInTabletMode:disabled"/>
+  <int value="1930185502"
+      label="EnableBluetoothVerboseLogsForGooglers:enabled"/>
   <int value="1930901873" label="disable-sync-app-list"/>
   <int value="1931309368" label="fill-on-account-select:disabled"/>
   <int value="1932204471" label="SyncPseudoUSSThemes:disabled"/>

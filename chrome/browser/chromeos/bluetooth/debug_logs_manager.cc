@@ -29,6 +29,14 @@ constexpr base::TimeDelta kDbusRetryInterval = base::TimeDelta::FromSeconds(3);
 DebugLogsManager::DebugLogsManager(const std::string& primary_user_email,
                                    PrefService* pref_service)
     : primary_user_email_(primary_user_email), pref_service_(pref_service) {
+  // For Googlers, set the default preference of Bluetooth verbose logs to true.
+  if (AreDebugLogsSupported() &&
+      !pref_service->HasPrefPath(kVerboseLoggingEnablePrefName) &&
+      base::FeatureList::IsEnabled(
+          chromeos::features::kEnableBluetoothVerboseLogsForGooglers)) {
+    ChangeDebugLogsState(true);
+  }
+
   SetVerboseLogsEnable(GetDebugLogsState() ==
                        DebugLogsState::kSupportedAndEnabled);
 }

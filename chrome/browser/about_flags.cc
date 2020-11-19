@@ -2812,6 +2812,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowBluetoothDebugLogToggleName,
      flag_descriptions::kShowBluetoothDebugLogToggleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kShowBluetoothDebugLogToggle)},
+    {"enable-bluetooth-verbose-logs-for-googlers",
+     flag_descriptions::kEnableBluetoothVerboseLogsForGooglersName,
+     flag_descriptions::kEnableBluetoothVerboseLogsForGooglersDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kEnableBluetoothVerboseLogsForGooglers)},
     {"show-bluetooth-device-battery",
      flag_descriptions::kShowBluetoothDeviceBatteryName,
      flag_descriptions::kShowBluetoothDeviceBatteryDescription, kOsCrOS,
