@@ -240,7 +240,7 @@ void TextLogUploadList::ParseLogEntries(
     std::unique_ptr<UploadInfo> info = nullptr;
     base::Optional<base::Value> json = base::JSONReader::Read(line);
 
-    if (json.has_value())
+    if (json.has_value() && json->is_dict())
       info = TryParseJsonLogEntry(json.value());
     else
       info = TryParseCsvLogEntry(line);
