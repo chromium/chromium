@@ -24,5 +24,18 @@ test((t) => {
 
 </script>
 
+<div id="hidden-container" style="display: none">
+  <h2 aria-hidden="false">h2</h2>
+</div>
+
+<script>
+test((t) => {
+    var hiddenContainer = accessibilityController.accessibleElementById("hidden-container");
+    assert_true(hiddenContainer.isIgnored);
+    assert_equals(hiddenContainer.childrenCount, 1);
+    var ariaVisibleH2 = hiddenContainer.childAtIndex(0);
+    assert_false(ariaVisibleH2.isIgnored);
+}, "Elements with aria-hidden=false inside a non-rendered element should be exposed in the accessibility tree, and not ignored");
+  </script>
 </body>
 </html>
