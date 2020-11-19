@@ -2080,6 +2080,8 @@ base::string16 RenderText::Elide(const base::string16& text,
       if (trailing_text_direction != text_direction &&
           new_text.length() + 2 > text.length() && guess >= 1) {
         new_text = slicer.CutString(guess - 1, false);
+        trailing_text_direction =
+            base::i18n::GetLastStrongCharacterDirection(new_text);
       }
 
       // Append the ellipsis and the optional directional marker characters.

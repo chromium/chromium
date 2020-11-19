@@ -2061,7 +2061,7 @@ const ElideTextCase kElideTailTextCases[] = {
     {"rtl_ltr_3", L"\u05d0\u05d1\u05d2abc", L"\u05d0\u05d1\u2026"},
     {"bidi_1", L"012a\u05d1b\u05d1c", L"012a\u2026"},
     {"bidi_2", L"012a\u05d1b\u05d1c", L"012a\u05d1\u2026\u200F"},
-    {"bidi_3", L"012a\u05d1b\u05d1c", L"012a\u05d1b\u2026\u200F"},
+    {"bidi_3", L"012a\u05d1b\u05d1c", L"012a\u05d1b\u2026"},
     // No RLM marker added as digits (012) have weak directionality.
     {"no_rlm", L"01\u05d0\u05d1\u05d2", L"01\u05d0\u2026"},
     // RLM marker added as "ab" have strong LTR directionality.
