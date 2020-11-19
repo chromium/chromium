@@ -581,6 +581,9 @@ class CORE_EXPORT WebFrameWidgetBase
   // still need the resize to happen in a synchronous fashion.
   void UseSynchronousResizeModeForTesting(bool enable);
 
+  // Sets the device color space for testing.
+  void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
+
   // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
   // pixels).
   gfx::Size DIPsToCeiledBlinkSpace(const gfx::Size& size);

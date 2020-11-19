@@ -78,7 +78,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WidgetBaseClient overrides:
   void FocusChanged(bool enabled) override;
 
-  void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
   void SetWindowRect(const gfx::Rect& window_rect);
   void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
 

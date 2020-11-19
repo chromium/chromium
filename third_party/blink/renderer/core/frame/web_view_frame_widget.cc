@@ -298,17 +298,6 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
   return event_result;
 }
 
-void WebViewFrameWidget::SetDeviceColorSpaceForTesting(
-    const gfx::ColorSpace& color_space) {
-  // We are changing the device color space from the renderer, so allocate a
-  // new viz::LocalSurfaceId to avoid surface invariants violations in tests.
-  widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
-
-  blink::ScreenInfo info = widget_base_->GetScreenInfo();
-  info.display_color_spaces = gfx::DisplayColorSpaces(color_space);
-  widget_base_->UpdateScreenInfo(info);
-}
-
 void WebViewFrameWidget::SetWindowRectSynchronouslyForTesting(
     const gfx::Rect& new_window_rect) {
   SetWindowRectSynchronously(new_window_rect);

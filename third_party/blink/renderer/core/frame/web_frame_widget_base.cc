@@ -1302,6 +1302,18 @@ void WebFrameWidgetBase::UseSynchronousResizeModeForTesting(bool enable) {
   main_data().synchronous_resize_mode_for_testing = enable;
 }
 
+void WebFrameWidgetBase::SetDeviceColorSpaceForTesting(
+    const gfx::ColorSpace& color_space) {
+  DCHECK(ForMainFrame());
+  // We are changing the device color space from the renderer, so allocate a
+  // new viz::LocalSurfaceId to avoid surface invariants violations in tests.
+  widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
+
+  blink::ScreenInfo info = widget_base_->GetScreenInfo();
+  info.display_color_spaces = gfx::DisplayColorSpaces(color_space);
+  widget_base_->UpdateScreenInfo(info);
+}
+
 // TODO(665924): Remove direct dispatches of mouse events from
 // PointerLockController, instead passing them through EventHandler.
 void WebFrameWidgetBase::PointerLockMouseEvent(
