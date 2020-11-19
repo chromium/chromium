@@ -28,6 +28,14 @@ using location::nearby::connections::mojom::PayloadPtr;
 using location::nearby::connections::mojom::PayloadTransferUpdatePtr;
 using location::nearby::connections::mojom::Status;
 
+void OnDisconnectFromEndpointResult(const std::string& endpoint_id,
+                                    Status status) {
+  if (status != Status::kSuccess) {
+    PA_LOG(WARNING) << "Failed to disconnect from endpoint with ID "
+                    << endpoint_id;
+  }
+}
+
 }  // namespace
 
 // static
@@ -85,7 +93,16 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
                      base::Unretained(this)));
 }
 
-NearbyConnectionBrokerImpl::~NearbyConnectionBrokerImpl() = default;
+NearbyConnectionBrokerImpl::~NearbyConnectionBrokerImpl() {
+  if (is_connection_active_) {
+    DCHECK(!remote_endpoint_id_.empty());
+    PA_LOG(VERBOSE) << "Disconnecting from endpoint with ID "
+                    << remote_endpoint_id_;
+    nearby_connections_->DisconnectFromEndpoint(
+        mojom::kServiceId, remote_endpoint_id_,
+        base::BindOnce(&OnDisconnectFromEndpointResult, remote_endpoint_id_));
+  }
+}
 
 void NearbyConnectionBrokerImpl::TransitionToStatus(
     ConnectionStatus connection_status) {
@@ -104,6 +121,7 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
     DiscoveredEndpointInfoPtr info) {
   DCHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_);
 
+  DCHECK(!endpoint_id.empty());
   remote_endpoint_id_ = endpoint_id;
   TransitionToStatus(ConnectionStatus::kRequestingConnection);
 
@@ -198,6 +216,7 @@ void NearbyConnectionBrokerImpl::OnConnectionInitiated(
   DCHECK_EQ(ConnectionStatus::kWaitingForConnectionInitiation,
             connection_status_);
   TransitionToStatus(ConnectionStatus::kAcceptingConnection);
+  is_connection_active_ = true;
 
   nearby_connections_->AcceptConnection(
       mojom::kServiceId, remote_endpoint_id_,
@@ -243,6 +262,7 @@ void NearbyConnectionBrokerImpl::OnDisconnected(
   }
 
   PA_LOG(WARNING) << "Connection disconnected";
+  is_connection_active_ = false;
   TransitionToDisconnected();
 }
 

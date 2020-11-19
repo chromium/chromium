@@ -169,6 +169,13 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     NotifyConnectionAccepted();
   }
 
+  void InvokeDisconnectionCallback() {
+    base::RunLoop disconnect_run_loop;
+    on_disconnected_closure_ = disconnect_run_loop.QuitClosure();
+    connection_lifecycle_listener_->OnDisconnected(kEndpointId);
+    disconnect_run_loop.Run();
+  }
+
   void SendMessage(const std::string& message, bool success) {
     base::RunLoop send_message_run_loop;
     base::RunLoop send_message_response_run_loop;
@@ -256,6 +263,27 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     disconnect_run_loop.Run();
   }
 
+  void DeleteBroker(bool expected_to_disconnect) {
+    if (!expected_to_disconnect) {
+      EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
+          .Times(0);
+      broker_.reset();
+      return;
+    }
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
+        .WillOnce(Invoke(
+            [&](const std::string& service_id, const std::string& endpoint_id,
+                NearbyConnectionsMojom::StopDiscoveryCallback callback) {
+              std::move(callback).Run(Status::kSuccess);
+              run_loop.Quit();
+            }));
+
+    broker_.reset();
+    run_loop.Run();
+  }
+
  private:
   // mojom::NearbyMessageReceiver:
   void OnMessageReceived(const std::string& message) override {
@@ -296,25 +324,36 @@ TEST_F(NearbyConnectionBrokerImplTest, SendAndReceive) {
   SendMessage("test2", /*success=*/true);
   ReceiveMessage("test3");
   ReceiveMessage("test4");
+  DeleteBroker(/*expected_to_disconnect=*/true);
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, DisconnectsUnexpectedly) {
+  SetUpFullConnection();
+  InvokeDisconnectionCallback();
+  DeleteBroker(/*expected_to_disconnect=*/false);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, ReceiveInvalidPayloadType) {
   SetUpFullConnection();
   ReceiveInvalidPayloadType();
+  DeleteBroker(/*expected_to_disconnect=*/true);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailToSend) {
   SetUpFullConnection();
   SendMessage("test", /*success=*/false);
+  DeleteBroker(/*expected_to_disconnect=*/true);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailDiscovery) {
   FailDiscovery();
+  DeleteBroker(/*expected_to_disconnect=*/false);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailRequestingConnection) {
   DiscoverEndpoint();
   InvokeRequestConnectionCallback(/*success=*/false);
+  DeleteBroker(/*expected_to_disconnect=*/false);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection) {
@@ -322,6 +361,7 @@ TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection) {
   InvokeRequestConnectionCallback(/*success=*/true);
   NotifyConnectionInitiated();
   InvokeAcceptConnectionCallback(/*success=*/false);
+  DeleteBroker(/*expected_to_disconnect=*/true);
 }
 
 }  // namespace secure_channel

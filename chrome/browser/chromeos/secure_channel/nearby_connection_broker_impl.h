@@ -151,8 +151,12 @@ class NearbyConnectionBrokerImpl
 
   ConnectionStatus connection_status_ = ConnectionStatus::kUninitialized;
 
-  // Set once an endpoint is discovered.
+  // Starts empty, then set in OnEndpointDiscovered().
   std::string remote_endpoint_id_;
+
+  // Starts as false; set to true in OnConnectionInitiated() and back to false
+  // in OnDisconnected().
+  bool is_connection_active_ = false;
 
   base::WeakPtrFactory<NearbyConnectionBrokerImpl> weak_ptr_factory_{this};
 };
