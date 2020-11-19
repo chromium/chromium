@@ -21,7 +21,10 @@ namespace device {
 FakeLocationProvider::FakeLocationProvider()
     : provider_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
-FakeLocationProvider::~FakeLocationProvider() = default;
+FakeLocationProvider::~FakeLocationProvider() {
+  if (destructor_callback_)
+    destructor_callback_.Run();
+}
 
 void FakeLocationProvider::HandlePositionChanged(
     const mojom::Geoposition& position) {
@@ -57,6 +60,20 @@ const mojom::Geoposition& FakeLocationProvider::GetPosition() {
 
 void FakeLocationProvider::OnPermissionGranted() {
   is_permission_granted_ = true;
+}
+
+void FakeLocationProvider::SetShouldUseSystemProviderCallback(
+    const ShouldUseCallback& callback) {
+  should_use_system_provider_callback_ = callback;
+}
+
+void FakeLocationProvider::CallShouldUseSystemProvider(bool should_use) {
+  should_use_system_provider_callback_.Run(should_use);
+}
+
+void FakeLocationProvider::SetProviderDestroyedCallback(
+    const base::RepeatingClosure& callback) {
+  destructor_callback_ = callback;
 }
 
 }  // namespace device

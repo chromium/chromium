@@ -8,6 +8,7 @@
 #import <CoreLocation/CoreLocation.h>
 
 #include "base/mac/scoped_nsobject.h"
+#include "services/device/geolocation/system_location_provider.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
@@ -16,7 +17,7 @@
 namespace device {
 
 // Location provider for macOS using the platform's Core Location API.
-class CoreLocationProvider : public LocationProvider {
+class CoreLocationProvider : public SystemLocationProvider {
  public:
   CoreLocationProvider();
   ~CoreLocationProvider() override;
@@ -29,16 +30,23 @@ class CoreLocationProvider : public LocationProvider {
   const mojom::Geoposition& GetPosition() override;
   void OnPermissionGranted() override;
 
+  // SystemLocationProvider implementation
+  void SetShouldUseSystemProviderCallback(
+      const ShouldUseCallback& callback) override;
+
   void SystemLocationPermissionGranted();
   void SystemLocationPermissionDenied();
   void DidUpdatePosition(CLLocation* location);
   void SetManagerForTesting(CLLocationManager* location_manager);
+  void StopUsing();
 
  private:
   base::scoped_nsobject<CLLocationManager> location_manager_;
   base::scoped_nsobject<LocationDelegate> delegate_;
   mojom::Geoposition last_position_;
   LocationProviderUpdateCallback callback_;
+  ShouldUseCallback should_use_callback_;
+  bool is_being_used_ = false;
   bool has_permission_ = false;
   bool provider_start_attemped_ = false;
   base::WeakPtrFactory<CoreLocationProvider> weak_ptr_factory_{this};

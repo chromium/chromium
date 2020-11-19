@@ -39,6 +39,7 @@ source_set("geolocation") {
     "public_ip_address_geolocator.h",
     "public_ip_address_location_notifier.cc",
     "public_ip_address_location_notifier.h",
+    "system_location_provider.h",
     "wifi_data.cc",
     "wifi_data.h",
     "wifi_data_provider.cc",

@@ -25,6 +25,7 @@
 // Utility functions.
 - (void)fakeUpdatePosition:(CLLocation*)test_location;
 - (void)fakeUpdatePermission:(CLAuthorizationStatus)status;
+- (void)fakeTurnOffWifi;
 @end
 
 @implementation FakeCLLocationManager
@@ -56,6 +57,16 @@
   [_delegate locationManager:(id)self didChangeAuthorizationStatus:status];
 }
 
+- (void)fakeTurnOffWifi {
+  [_delegate locationManager:(id)self
+            didFailWithError:[NSError errorWithDomain:NSURLErrorDomain
+                                                 code:kCLErrorLocationUnknown
+                                             userInfo:@{
+                                               @"Error reason" :
+                                                   @"Test wifi turning off"
+                                             }]];
+}
+
 @end
 
 namespace device {
@@ -63,6 +74,8 @@ namespace device {
 class CoreLocationProviderTest : public testing::Test {
  public:
   std::unique_ptr<CoreLocationProvider> provider_;
+
+  void ShouldUseCallback(bool should_use) { should_use_tracker_ = should_use; }
 
  protected:
   CoreLocationProviderTest() {}
@@ -74,6 +87,8 @@ class CoreLocationProviderTest : public testing::Test {
   }
 
   bool IsUpdating() { return [fake_location_manager_ updating]; }
+
+  bool ShouldUse() { return should_use_tracker_; }
 
   // updates the position synchronously
   void FakeUpdatePosition(CLLocation* location) {
@@ -87,6 +102,7 @@ class CoreLocationProviderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   const LocationProvider::LocationProviderUpdateCallback callback_;
   FakeCLLocationManager* fake_location_manager_;
+  bool should_use_tracker_ = false;
 };
 
 TEST_F(CoreLocationProviderTest, CreateDestroy) {
@@ -191,6 +207,34 @@ TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
   provider_->StopProvider();
   EXPECT_FALSE(IsUpdating());
   provider_.reset();
+}
+
+TEST_F(CoreLocationProviderTest, ShouldUseCallbackTest) {
+  InitializeProvider();
+
+  provider_->StartProvider(/*high_accuracy=*/true);
+  provider_->SetShouldUseSystemProviderCallback(base::BindRepeating(
+      &CoreLocationProviderTest::ShouldUseCallback, base::Unretained(this)));
+
+  CLLocationCoordinate2D coors;
+  coors.latitude = 147.147;
+  coors.longitude = 101.101;
+  CLLocation* test_mac_location =
+      [[CLLocation alloc] initWithCoordinate:coors
+                                    altitude:417.417
+                          horizontalAccuracy:10.5
+                            verticalAccuracy:15.5
+                                   timestamp:[NSDate date]];
+
+  provider_->SetUpdateCallback(
+      base::BindLambdaForTesting([&](const LocationProvider* provider,
+                                     const mojom::Geoposition& position) {}));
+  EXPECT_FALSE(ShouldUse());
+  FakeUpdatePosition(test_mac_location);
+  EXPECT_TRUE(ShouldUse());
+
+  [fake_location_manager_ fakeTurnOffWifi];
+  EXPECT_FALSE(ShouldUse());
 }
 
 }  // namespace device

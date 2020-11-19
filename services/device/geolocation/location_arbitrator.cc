@@ -46,24 +46,46 @@ bool LocationArbitrator::HasPermissionBeenGrantedForTest() const {
   return is_permission_granted_;
 }
 
+void LocationArbitrator::ShouldUseSystemProvider(bool should_use) {
+  force_ignore_system_location_ = !should_use;
+  if (!should_use && !network_location_provider_) {
+    network_location_provider_ =
+        NewNetworkLocationProvider(url_loader_factory_, api_key_);
+    RegisterProvider(network_location_provider_.get());
+  }
+
+  if (should_use && network_location_provider_)
+    network_location_provider_.reset();
+
+  DoStartProviders();
+}
+
 void LocationArbitrator::OnPermissionGranted() {
   is_permission_granted_ = true;
-  for (const auto& provider : providers_)
-    provider->OnPermissionGranted();
+
+#if defined(OS_MAC)
+  // On macOS we always want to keep the |system_location_provider_| in the most
+  // up to date state because it is the preferred provider if it is returning
+  // position data.
+  if (system_location_provider_ && force_ignore_system_location_)
+    system_location_provider_->OnPermissionGranted();
+#endif
+  auto* current_provider = GetProvider();
+  if (current_provider)
+    current_provider->OnPermissionGranted();
 }
 
 void LocationArbitrator::StartProvider(bool enable_high_accuracy) {
   is_running_ = true;
   enable_high_accuracy_ = enable_high_accuracy;
 
-  if (providers_.empty()) {
+  if (!HasProvider())
     RegisterProviders();
-  }
   DoStartProviders();
 }
 
 void LocationArbitrator::DoStartProviders() {
-  if (providers_.empty()) {
+  if (!HasProvider()) {
     // If no providers are available, we report an error to avoid
     // callers waiting indefinitely for a reply.
     mojom::Geoposition position;
@@ -71,9 +93,16 @@ void LocationArbitrator::DoStartProviders() {
     arbitrator_update_callback_.Run(this, position);
     return;
   }
-  for (const auto& provider : providers_) {
-    provider->StartProvider(enable_high_accuracy_);
-  }
+  // On macOS we always want to start the |system_location_provider_| even if it
+  // is currently being ignored because we want to switch to it if it starts
+  // producing valid data.
+#if defined(OS_MAC)
+  if (system_location_provider_ && force_ignore_system_location_)
+    system_location_provider_->StartProvider(enable_high_accuracy_);
+#endif
+  auto* current_provider = GetProvider();
+  if (current_provider)
+    current_provider->StartProvider(enable_high_accuracy_);
 }
 
 void LocationArbitrator::StopProvider() {
@@ -83,38 +112,51 @@ void LocationArbitrator::StopProvider() {
   position_provider_ = nullptr;
   position_ = mojom::Geoposition();
 
-  providers_.clear();
+  custom_location_provider_.reset();
+  if (system_location_provider_)
+    system_location_provider_->StopProvider();
+  network_location_provider_.reset();
   is_running_ = false;
 }
 
-void LocationArbitrator::RegisterProvider(
-    std::unique_ptr<LocationProvider> provider) {
+void LocationArbitrator::RegisterProvider(LocationProvider* provider) {
   if (!provider)
     return;
+  // Using base::Unretained is safe here because the |provider| is owned by
+  // this and therefore will be destroyed before this is.
   provider->SetUpdateCallback(base::BindRepeating(
       &LocationArbitrator::OnLocationUpdate, base::Unretained(this)));
   if (is_permission_granted_)
     provider->OnPermissionGranted();
-  providers_.push_back(std::move(provider));
 }
 
 void LocationArbitrator::RegisterProviders() {
   if (custom_location_provider_getter_) {
     auto custom_provider = custom_location_provider_getter_.Run();
     if (custom_provider) {
-      RegisterProvider(std::move(custom_provider));
+      RegisterProvider(custom_provider.get());
+      custom_location_provider_ = std::move(custom_provider);
       return;
     }
   }
 
   auto system_provider = NewSystemLocationProvider();
   if (system_provider) {
-    RegisterProvider(std::move(system_provider));
-    return;
+    RegisterProvider(system_provider.get());
+    system_location_provider_ = std::move(system_provider);
+    // Using base::Unretained is safe here because the
+    // |system_location_provider_| is owned by this and therefore will be
+    // destroyed before this is.
+    system_location_provider_->SetShouldUseSystemProviderCallback(
+        base::BindRepeating(&LocationArbitrator::ShouldUseSystemProvider,
+                            base::Unretained(this)));
   }
 
-  if (url_loader_factory_)
-    RegisterProvider(NewNetworkLocationProvider(url_loader_factory_, api_key_));
+  if (url_loader_factory_) {
+    network_location_provider_ =
+        NewNetworkLocationProvider(url_loader_factory_, api_key_);
+    RegisterProvider(network_location_provider_.get());
+  }
 }
 
 void LocationArbitrator::OnLocationUpdate(
@@ -154,7 +196,7 @@ LocationArbitrator::NewNetworkLocationProvider(
 #endif
 }
 
-std::unique_ptr<LocationProvider>
+std::unique_ptr<SystemLocationProvider>
 LocationArbitrator::NewSystemLocationProvider() {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
   return nullptr;
@@ -192,6 +234,25 @@ bool LocationArbitrator::IsNewPositionBetter(
     }
   }
   return false;
+}
+
+bool LocationArbitrator::HasProvider() {
+  return custom_location_provider_ ||
+         (system_location_provider_ && !force_ignore_system_location_) ||
+         network_location_provider_;
+}
+
+LocationProvider* LocationArbitrator::GetProvider() {
+  if (custom_location_provider_)
+    return custom_location_provider_.get();
+
+  if (system_location_provider_ && !force_ignore_system_location_)
+    return system_location_provider_.get();
+
+  if (network_location_provider_)
+    return network_location_provider_.get();
+
+  return nullptr;
 }
 
 }  // namespace device

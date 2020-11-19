@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/public/cpp/device_features.h"
 
 namespace device {
 
@@ -101,6 +102,12 @@ WifiDataProviderMac::~WifiDataProviderMac() {}
 
 std::unique_ptr<WifiDataProviderMac::WlanApiInterface>
 WifiDataProviderMac::CreateWlanApi() {
+  // With the Core Location backend enabled the NetworkLocationProvider is only
+  // needed when WiFi is turned off in order to provide a fallback location
+  // using the device IP address. Disable the WlanApi so avoid collecting more
+  // data than is necessary.
+  if (base::FeatureList::IsEnabled(features::kMacCoreLocationBackend))
+    return nullptr;
   return std::make_unique<CoreWlanApi>();
 }
 

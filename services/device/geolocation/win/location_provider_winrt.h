@@ -9,13 +9,14 @@
 #include <wrl/client.h>
 
 #include "base/threading/thread_checker.h"
+#include "services/device/geolocation/system_location_provider.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
 
 // Location provider for Windows 8/10 using the WinRT platform apis
-class LocationProviderWinrt : public LocationProvider {
+class LocationProviderWinrt : public SystemLocationProvider {
  public:
   LocationProviderWinrt();
   ~LocationProviderWinrt() override;
@@ -27,6 +28,10 @@ class LocationProviderWinrt : public LocationProvider {
   void StopProvider() override;
   const mojom::Geoposition& GetPosition() override;
   void OnPermissionGranted() override;
+
+  // SystemLocationProvider implementation
+  void SetShouldUseSystemProviderCallback(
+      const ShouldUseCallback& callback) override;
 
  protected:
   virtual HRESULT GetGeolocator(

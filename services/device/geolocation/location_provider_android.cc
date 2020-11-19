@@ -57,8 +57,14 @@ void LocationProviderAndroid::OnPermissionGranted() {
   // Nothing to do here.
 }
 
+void LocationProviderAndroid::SetShouldUseSystemProviderCallback(
+    const ShouldUseCallback& callback) {
+  // Androids's location provider should always be used.
+  callback.Run(/*should_use=*/true);
+}
+
 // static
-std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
+std::unique_ptr<SystemLocationProvider> NewSystemLocationProvider() {
   return base::WrapUnique(new LocationProviderAndroid);
 }
 
