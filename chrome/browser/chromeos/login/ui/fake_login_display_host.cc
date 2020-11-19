@@ -139,6 +139,8 @@ bool FakeLoginDisplayHost::HasUserPods() {
   return false;
 }
 
+void FakeLoginDisplayHost::VerifyOwnerForKiosk(base::OnceClosure) {}
+
 void FakeLoginDisplayHost::AddObserver(LoginDisplayHost::Observer* observer) {}
 
 void FakeLoginDisplayHost::RemoveObserver(

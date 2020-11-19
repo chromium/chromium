@@ -115,7 +115,6 @@ class ArcKioskAppServiceWrapper : public KioskAppLauncher {
 
 KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
     : host_(LoginDisplayHost::default_host()),
-      oobe_ui_(oobe_ui),
       splash_screen_view_(oobe_ui->GetView<AppLaunchSplashScreenHandler>()) {}
 
 KioskLaunchController::KioskLaunchController() : host_(nullptr) {}
@@ -206,8 +205,9 @@ void KioskLaunchController::OnConfigureNetwork() {
 
   network_ui_state_ = NetworkUIState::SHOWING;
   if (CanConfigureNetwork() && NeedOwnerAuthToConfigureNetwork()) {
-    signin_screen_.reset(new AppLaunchSigninScreen(oobe_ui_, this));
-    signin_screen_->Show();
+    host_->VerifyOwnerForKiosk(
+        base::BindOnce(&KioskLaunchController::OnOwnerSigninSuccess,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     // If kiosk mode was configured through enterprise policy, we may
     // not have an owner user.
@@ -464,7 +464,6 @@ void KioskLaunchController::OnOldEncryptionDetected(
 
 void KioskLaunchController::OnOwnerSigninSuccess() {
   ShowNetworkConfigureUI();
-  signin_screen_.reset();
 }
 
 bool KioskLaunchController::CanConfigureNetwork() {

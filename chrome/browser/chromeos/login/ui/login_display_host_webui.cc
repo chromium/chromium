@@ -1031,6 +1031,10 @@ bool LoginDisplayHostWebUI::HasUserPods() {
   return false;
 }
 
+void LoginDisplayHostWebUI::VerifyOwnerForKiosk(base::OnceClosure) {
+  NOTREACHED();
+}
+
 void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {
   observers_.AddObserver(observer);
 }

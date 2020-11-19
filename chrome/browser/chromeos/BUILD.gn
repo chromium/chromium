@@ -1536,8 +1536,6 @@ source_set("chromeos") {
     "lock_screen_apps/toast_dialog_view.h",
     "logging.cc",
     "logging.h",
-    "login/app_mode/app_launch_signin_screen.cc",
-    "login/app_mode/app_launch_signin_screen.h",
     "login/app_mode/kiosk_launch_controller.cc",
     "login/app_mode/kiosk_launch_controller.h",
     "login/auth/auth_prewarmer.cc",

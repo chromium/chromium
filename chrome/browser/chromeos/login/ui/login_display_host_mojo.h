@@ -94,6 +94,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   bool HasUserPods() override;
+  void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
 
@@ -163,6 +164,10 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // consume auth status events.
   void CreateExistingUserController();
 
+  // Consumer kiosk owner authentication functions.
+  void CheckOwnerCredentials(const UserContext& user_context);
+  void OnOwnerSigninSuccess();
+
   // State associated with a pending authentication attempt.
   struct AuthState {
     AuthState(AccountId account_id, base::OnceCallback<void(bool)> callback);
@@ -213,6 +218,11 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   // Store which screen is currently displayed.
   DisplayedScreen displayed_screen_ = DisplayedScreen::SIGN_IN_SCREEN;
+
+  // Consumer kiosk owner fields.
+  AccountId owner_account_id_;
+  base::OnceClosure owner_verified_callback_;
+  scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
 
   ScopedObserver<views::View, views::ViewObserver> scoped_observer_{this};
 

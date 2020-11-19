@@ -89,6 +89,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, UpdateAddUserButtonStatus, (), (override));
   MOCK_METHOD(void, RequestSystemInfoUpdate, (), (override));
   MOCK_METHOD(bool, HasUserPods, (), (override));
+  MOCK_METHOD(void, VerifyOwnerForKiosk, (base::OnceClosure), (override));
   MOCK_METHOD(void, AddObserver, (LoginDisplayHost::Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (LoginDisplayHost::Observer*), (override));
 

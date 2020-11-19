@@ -66,6 +66,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   bool HasUserPods() override;
+  void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
 

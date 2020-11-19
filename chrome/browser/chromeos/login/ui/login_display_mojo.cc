@@ -280,6 +280,35 @@ void LoginDisplayMojo::OnUserImageChanged(const user_manager::User& user) {
       UserSelectionScreen::BuildAshUserAvatarForUser(user));
 }
 
+void LoginDisplayMojo::ShowOwnerPod(const AccountId& owner) {
+  const user_manager::User* device_owner =
+      user_manager::UserManager::Get()->FindUser(owner);
+  CHECK(device_owner);
+
+  std::vector<ash::LoginUserInfo> user_info_list;
+  ash::LoginUserInfo user_info;
+  user_info.basic_user_info.type = device_owner->GetType();
+  user_info.basic_user_info.account_id = device_owner->GetAccountId();
+  user_info.basic_user_info.display_name =
+      base::UTF16ToUTF8(device_owner->GetDisplayName());
+  user_info.basic_user_info.display_email = device_owner->display_email();
+  user_info.basic_user_info.avatar =
+      UserSelectionScreen::BuildAshUserAvatarForUser(*device_owner);
+  user_info.auth_type = proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
+  user_info.is_signed_in = device_owner->is_logged_in();
+  user_info.is_device_owner = true;
+  user_info.can_remove = false;
+  user_info_list.push_back(user_info);
+
+  ash::LoginScreen::Get()->GetModel()->SetUserList(user_info_list);
+  ash::LoginScreen::Get()->SetAllowLoginAsGuest(false);
+  ash::LoginScreen::Get()->EnableAddUserButton(false);
+
+  // Disable PIN.
+  ash::LoginScreen::Get()->GetModel()->SetPinEnabledForUser(owner,
+                                                            /*enabled=*/false);
+}
+
 void LoginDisplayMojo::OnPinCanAuthenticate(const AccountId& account_id,
                                             bool can_authenticate) {
   ash::LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,

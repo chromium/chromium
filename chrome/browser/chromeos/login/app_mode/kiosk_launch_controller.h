@@ -8,7 +8,6 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_profile_loader.h"
-#include "chrome/browser/chromeos/login/app_mode/app_launch_signin_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 
 namespace chromeos {
@@ -53,8 +52,7 @@ class OobeUI;
 // NetworkUI state.
 class KioskLaunchController : public KioskProfileLoader::Delegate,
                               public AppLaunchSplashScreenView::Delegate,
-                              public KioskAppLauncher::Delegate,
-                              public AppLaunchSigninScreen::Delegate {
+                              public KioskAppLauncher::Delegate {
  public:
   using ReturnBoolCallback = base::Callback<bool()>;
 
@@ -138,8 +136,7 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnProfileLoadFailed(KioskAppLaunchError::Error error) override;
   void OnOldEncryptionDetected(const UserContext& user_context) override;
 
-  // AppLaunchSigninScreen::Delegate:
-  void OnOwnerSigninSuccess() override;
+  void OnOwnerSigninSuccess();
 
   // Whether the network could be configured during launching.
   bool CanConfigureNetwork();
@@ -166,7 +163,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   NetworkUIState network_ui_state_ = NetworkUIState::NOT_SHOWING;
 
   LoginDisplayHost* const host_;  // Not owned, destructed upon shutdown.
-  OobeUI* oobe_ui_ = nullptr;
   AppLaunchSplashScreenView* splash_screen_view_ = nullptr;  // Owned by OobeUI.
   KioskAppId kiosk_app_id_;                                  // Current app.
   Profile* profile_ = nullptr;                               // Not owned.
@@ -179,7 +175,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   // Used to login into kiosk user profile.
   std::unique_ptr<KioskProfileLoader> kiosk_profile_loader_;
-  std::unique_ptr<AppLaunchSigninScreen> signin_screen_;
 
   // A timer to ensure the app splash is shown for a minimum amount of time.
   base::OneShotTimer splash_wait_timer_;

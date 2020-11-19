@@ -43,6 +43,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/aura/window.h"
 #include "ui/views/view.h"
@@ -356,6 +357,20 @@ bool LoginDisplayHostMojo::HasUserPods() {
   return user_count_ > 0;
 }
 
+void LoginDisplayHostMojo::VerifyOwnerForKiosk(base::OnceClosure on_success) {
+  // This UI is specific fo the consumer kiosk. We hide all the pods except for
+  // the owner. User can't go back to the normal user screen from this. App
+  // launch cancellation results in the Chrome restart (see
+  // KioskLaunchController::OnCancelAppLaunch).
+  CHECK(GetKioskLaunchController());
+  DCHECK(!owner_verified_callback_);
+  owner_verified_callback_ = std::move(on_success);
+  owner_account_id_ = user_manager::UserManager::Get()->GetOwnerAccountId();
+  CHECK(owner_account_id_.is_valid());
+  login_display_->ShowOwnerPod(owner_account_id_);
+  HideOobeDialog();
+}
+
 void LoginDisplayHostMojo::AddObserver(LoginDisplayHost::Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -401,6 +416,11 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
                  << user_context.GetUserType();
     }
     user_context.SetIsUsingOAuth(false);
+  }
+
+  if (owner_verified_callback_) {
+    CheckOwnerCredentials(user_context);
+    return;
   }
 
   existing_user_controller_->Login(user_context, chromeos::SigninSpecifics());
@@ -614,6 +634,27 @@ void LoginDisplayHostMojo::CreateExistingUserController() {
 
   // We need auth attempt results to notify views-based login screen.
   existing_user_controller_->AddLoginStatusConsumer(this);
+}
+
+void LoginDisplayHostMojo::CheckOwnerCredentials(
+    const UserContext& user_context) {
+  CHECK_EQ(owner_account_id_, user_context.GetAccountId());
+  if (!extended_authenticator_)
+    extended_authenticator_ = ExtendedAuthenticator::Create(this);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ExtendedAuthenticator::AuthenticateToCheck,
+                     extended_authenticator_.get(), user_context,
+                     base::BindOnce(&LoginDisplayHostMojo::OnOwnerSigninSuccess,
+                                    base::Unretained(this))));
+}
+
+void LoginDisplayHostMojo::OnOwnerSigninSuccess() {
+  DCHECK(owner_verified_callback_);
+  std::move(owner_verified_callback_).Run();
+  extended_authenticator_.reset();
+  ShowFullScreen();
 }
 
 }  // namespace chromeos

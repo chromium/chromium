@@ -213,6 +213,8 @@ class LoginDisplayHost {
   // Returns if the device has any user after filtering based on policy.
   virtual bool HasUserPods() = 0;
 
+  virtual void VerifyOwnerForKiosk(base::OnceClosure on_success) = 0;
+
   // Used to add an observer for the changes in the web dilaog login view.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
