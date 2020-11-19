@@ -121,7 +121,8 @@ NGGridLayoutAlgorithm::RowTrackCollection() const {
 NGGridLayoutAlgorithm::GridItemData::GridItemData(const NGBlockNode node)
     : node(node) {}
 
-AutoPlacementType NGGridLayoutAlgorithm::GridItemData::AutoPlacement(
+NGGridLayoutAlgorithm::AutoPlacementType
+NGGridLayoutAlgorithm::GridItemData::AutoPlacement(
     GridTrackSizingDirection flow_direction) const {
   bool is_major_indefinite = Span(flow_direction).IsIndefinite();
   bool is_minor_indefinite =
@@ -259,7 +260,7 @@ NGGridLayoutAlgorithm::GetSetIteratorForItem(
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     const GridItemData& grid_item,
     GridTrackSizingDirection track_direction,
-    NGGridItemContributionType contribution_type) const {
+    GridItemContributionType contribution_type) const {
   const ComputedStyle& grid_item_style = grid_item.node.Style();
   GridTrackSizingDirection grid_item_track_direction = track_direction;
 
@@ -669,19 +670,22 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
 // Helpers for the track sizing algorithm.
 namespace {
 
+using GridItemContributionType =
+    NGGridLayoutAlgorithm::GridItemContributionType;
+
 // Returns the corresponding size to be increased by accommodating a grid item's
 // contribution; for intrinsic min track sizing functions, return the base size.
 // For intrinsic max track sizing functions, return the growth limit.
 static LayoutUnit AffectedSizeForContribution(
     const NGGridSet& set,
-    NGGridItemContributionType contribution_type) {
+    GridItemContributionType contribution_type) {
   switch (contribution_type) {
-    case NGGridItemContributionType::kForIntrinsicMinimums:
-    case NGGridItemContributionType::kForContentBasedMinimums:
-    case NGGridItemContributionType::kForMaxContentMinimums:
+    case GridItemContributionType::kForIntrinsicMinimums:
+    case GridItemContributionType::kForContentBasedMinimums:
+    case GridItemContributionType::kForMaxContentMinimums:
       return set.BaseSize();
-    case NGGridItemContributionType::kForIntrinsicMaximums:
-    case NGGridItemContributionType::kForMaxContentMaximums:
+    case GridItemContributionType::kForIntrinsicMaximums:
+    case GridItemContributionType::kForMaxContentMaximums:
       LayoutUnit growth_limit = set.GrowthLimit();
       // For infinite growth limits, substitute with the track's base size.
       if (growth_limit == kIndefiniteSize)
@@ -692,15 +696,15 @@ static LayoutUnit AffectedSizeForContribution(
 
 static void GrowAffectedSizeByPlannedIncrease(
     NGGridSet& set,
-    NGGridItemContributionType contribution_type) {
+    GridItemContributionType contribution_type) {
   switch (contribution_type) {
-    case NGGridItemContributionType::kForIntrinsicMinimums:
-    case NGGridItemContributionType::kForContentBasedMinimums:
-    case NGGridItemContributionType::kForMaxContentMinimums:
+    case GridItemContributionType::kForIntrinsicMinimums:
+    case GridItemContributionType::kForContentBasedMinimums:
+    case GridItemContributionType::kForMaxContentMinimums:
       set.SetBaseSize(set.BaseSize() + set.PlannedIncrease());
       break;
-    case NGGridItemContributionType::kForIntrinsicMaximums:
-    case NGGridItemContributionType::kForMaxContentMaximums:
+    case GridItemContributionType::kForIntrinsicMaximums:
+    case GridItemContributionType::kForMaxContentMaximums:
       LayoutUnit growth_limit = set.GrowthLimit();
       // If the affected size to grow is an infinite growth limit, set it to the
       // track's base size plus the planned increase.
@@ -716,20 +720,20 @@ static void GrowAffectedSizeByPlannedIncrease(
 // https://drafts.csswg.org/css-grid-1/#algo-spanning-items; false otherwise.
 static bool IsContributionAppliedToSet(
     const NGGridSet& set,
-    NGGridItemContributionType contribution_type) {
+    GridItemContributionType contribution_type) {
   switch (contribution_type) {
-    case NGGridItemContributionType::kForIntrinsicMinimums:
+    case GridItemContributionType::kForIntrinsicMinimums:
       return set.TrackSize().HasIntrinsicMinTrackBreadth();
-    case NGGridItemContributionType::kForContentBasedMinimums:
+    case GridItemContributionType::kForContentBasedMinimums:
       return set.TrackSize().HasMinOrMaxContentMinTrackBreadth();
-    case NGGridItemContributionType::kForMaxContentMinimums:
+    case GridItemContributionType::kForMaxContentMinimums:
       // TODO(ethavar): Check if the grid container is being sized under a
       // 'max-content' constraint to consider 'auto' min track sizing functions,
       // see https://drafts.csswg.org/css-grid-1/#track-size-max-content-min.
       return set.TrackSize().HasMaxContentMinTrackBreadth();
-    case NGGridItemContributionType::kForIntrinsicMaximums:
+    case GridItemContributionType::kForIntrinsicMaximums:
       return set.TrackSize().HasIntrinsicMaxTrackBreadth();
-    case NGGridItemContributionType::kForMaxContentMaximums:
+    case GridItemContributionType::kForMaxContentMaximums:
       return set.TrackSize().HasMaxContentOrAutoMaxTrackBreadth();
   }
 }
@@ -741,32 +745,32 @@ static bool IsContributionAppliedToSet(
 // collection of tracks different than "all affected tracks".
 static bool ShouldUsedSizeGrowBeyondLimit(
     const NGGridSet& set,
-    NGGridItemContributionType contribution_type) {
+    GridItemContributionType contribution_type) {
   // This function assumes that we already determined that extra space
   // distribution will be applied to the specified set.
   DCHECK(IsContributionAppliedToSet(set, contribution_type));
 
   switch (contribution_type) {
-    case NGGridItemContributionType::kForIntrinsicMinimums:
-    case NGGridItemContributionType::kForContentBasedMinimums:
+    case GridItemContributionType::kForIntrinsicMinimums:
+    case GridItemContributionType::kForContentBasedMinimums:
       return set.TrackSize().HasIntrinsicMaxTrackBreadth();
-    case NGGridItemContributionType::kForMaxContentMinimums:
+    case GridItemContributionType::kForMaxContentMinimums:
       return set.TrackSize().HasMaxContentMaxTrackBreadth();
-    case NGGridItemContributionType::kForIntrinsicMaximums:
-    case NGGridItemContributionType::kForMaxContentMaximums:
+    case GridItemContributionType::kForIntrinsicMaximums:
+    case GridItemContributionType::kForMaxContentMaximums:
       return false;
   }
 }
 
 static bool IsDistributionForGrowthLimits(
-    NGGridItemContributionType contribution_type) {
+    GridItemContributionType contribution_type) {
   switch (contribution_type) {
-    case NGGridItemContributionType::kForIntrinsicMinimums:
-    case NGGridItemContributionType::kForContentBasedMinimums:
-    case NGGridItemContributionType::kForMaxContentMinimums:
+    case GridItemContributionType::kForIntrinsicMinimums:
+    case GridItemContributionType::kForContentBasedMinimums:
+    case GridItemContributionType::kForMaxContentMinimums:
       return false;
-    case NGGridItemContributionType::kForIntrinsicMaximums:
-    case NGGridItemContributionType::kForMaxContentMaximums:
+    case GridItemContributionType::kForIntrinsicMaximums:
+    case GridItemContributionType::kForMaxContentMaximums:
       return true;
   }
 }
@@ -778,19 +782,19 @@ enum class InfinitelyGrowableBehavior { kEnforce, kIgnore };
 // as "infinitely growable", and equal to the growth limit otherwise.
 static LayoutUnit GrowthPotentialForSet(
     const NGGridSet& set,
-    NGGridItemContributionType contribution_type,
+    GridItemContributionType contribution_type,
     InfinitelyGrowableBehavior infinitely_growable_behavior =
         InfinitelyGrowableBehavior::kEnforce) {
   switch (contribution_type) {
-    case NGGridItemContributionType::kForIntrinsicMinimums:
-    case NGGridItemContributionType::kForContentBasedMinimums:
-    case NGGridItemContributionType::kForMaxContentMinimums: {
+    case GridItemContributionType::kForIntrinsicMinimums:
+    case GridItemContributionType::kForContentBasedMinimums:
+    case GridItemContributionType::kForMaxContentMinimums: {
       LayoutUnit growth_limit = set.GrowthLimit();
       return (growth_limit == kIndefiniteSize) ? kIndefiniteSize
                                                : growth_limit - set.BaseSize();
     }
-    case NGGridItemContributionType::kForIntrinsicMaximums:
-    case NGGridItemContributionType::kForMaxContentMaximums: {
+    case GridItemContributionType::kForIntrinsicMaximums:
+    case GridItemContributionType::kForMaxContentMaximums: {
       if (infinitely_growable_behavior ==
               InfinitelyGrowableBehavior::kEnforce &&
           !set.IsInfinitelyGrowable()) {
@@ -826,7 +830,7 @@ static LayoutUnit GrowthPotentialForSet(
 // notice that this method replaces the notion of "tracks" with "sets".
 void NGGridLayoutAlgorithm::DistributeExtraSpaceToSets(
     LayoutUnit extra_space,
-    NGGridItemContributionType contribution_type,
+    GridItemContributionType contribution_type,
     NGGridSetVector* sets_to_grow,
     NGGridSetVector* sets_to_grow_beyond_limit) {
   DCHECK(sets_to_grow && extra_space >= 0);
@@ -968,7 +972,7 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     GridTrackSizingDirection track_direction,
     ReorderedGridItems::Iterator group_begin,
     ReorderedGridItems::Iterator group_end,
-    NGGridItemContributionType contribution_type) {
+    GridItemContributionType contribution_type) {
   auto& track_collection = TrackCollection(track_direction);
   for (auto set_iterator = track_collection.GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
@@ -1075,7 +1079,7 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
 
     IncreaseTrackSizesToAccommodateGridItems(
         track_direction, current_group_begin, current_group_end,
-        NGGridItemContributionType::kForIntrinsicMinimums);
+        GridItemContributionType::kForIntrinsicMinimums);
 
     // TODO(ethavar): Add remaining stages, mark infinitely growable sets...
     current_group_begin = current_group_end;

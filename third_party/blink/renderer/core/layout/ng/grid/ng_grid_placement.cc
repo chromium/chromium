@@ -58,12 +58,16 @@ void NGGridPlacement::RunAutoPlacementAlgorithm() {
   for (NGGridLayoutAlgorithm::GridItemData* grid_item :
        items_not_locked_to_major_axis_) {
     DCHECK(grid_item);
-    const AutoPlacementType item_placement_type =
-        grid_item->AutoPlacement(major_direction_);
-    if (item_placement_type == AutoPlacementType::kMajor) {
-      PlaceAutoMajorAxisGridItem(*grid_item);
-    } else if (item_placement_type == AutoPlacementType::kBoth) {
-      PlaceAutoBothAxisGridItem(*grid_item);
+    switch (grid_item->AutoPlacement(major_direction_)) {
+      case NGGridLayoutAlgorithm::AutoPlacementType::kBoth:
+        PlaceAutoBothAxisGridItem(*grid_item);
+        break;
+      case NGGridLayoutAlgorithm::AutoPlacementType::kMajor:
+        PlaceAutoMajorAxisGridItem(*grid_item);
+        break;
+      case NGGridLayoutAlgorithm::AutoPlacementType::kMinor:
+      case NGGridLayoutAlgorithm::AutoPlacementType::kNotNeeded:
+        break;
     }
   }
 }
@@ -99,7 +103,7 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis() {
        items_locked_to_major_axis_) {
     DCHECK(grid_item);
     DCHECK_EQ(grid_item->AutoPlacement(major_direction_),
-              AutoPlacementType::kMinor);
+              NGGridLayoutAlgorithm::AutoPlacementType::kMinor);
     wtf_size_t minor_start;
     if (packing_behavior_ == PackingBehavior::kSparse &&
         minor_cursors.Contains(grid_item->StartLine(major_direction_) + 1)) {

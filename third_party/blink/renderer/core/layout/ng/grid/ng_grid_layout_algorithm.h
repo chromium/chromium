@@ -14,25 +14,24 @@
 
 namespace blink {
 
-// This enum corresponds to each step used to accommodate grid items across
-// intrinsic tracks according to their min and max track sizing functions, as
-// defined in https://drafts.csswg.org/css-grid-1/#algo-spanning-items.
-enum class NGGridItemContributionType {
-  kForIntrinsicMinimums,
-  kForContentBasedMinimums,
-  kForMaxContentMinimums,
-  kForIntrinsicMaximums,
-  kForMaxContentMaximums
-};
-
-enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
-
 class CORE_EXPORT NGGridLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
+  enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
   enum class AxisEdge { kStart, kCenter, kEnd, kBaseline };
+
+  // This enum corresponds to each step used to accommodate grid items across
+  // intrinsic tracks according to their min and max track sizing functions, as
+  // defined in https://drafts.csswg.org/css-grid-1/#algo-spanning-items.
+  enum class GridItemContributionType {
+    kForIntrinsicMinimums,
+    kForContentBasedMinimums,
+    kForMaxContentMinimums,
+    kForIntrinsicMaximums,
+    kForMaxContentMaximums
+  };
 
   struct GridItemData {
     explicit GridItemData(const NGBlockNode node);
@@ -136,7 +135,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   LayoutUnit ContributionSizeForGridItem(
       const GridItemData& grid_item,
       GridTrackSizingDirection track_direction,
-      NGGridItemContributionType contribution_type) const;
+      GridItemContributionType contribution_type) const;
 
   void ConstructAndAppendGridItems();
   GridItemData MeasureGridItem(const NGBlockNode node);
@@ -166,9 +165,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridTrackSizingDirection track_direction,
       ReorderedGridItems::Iterator group_begin,
       ReorderedGridItems::Iterator group_end,
-      NGGridItemContributionType contribution_type);
+      GridItemContributionType contribution_type);
   void DistributeExtraSpaceToSets(LayoutUnit extra_space,
-                                  NGGridItemContributionType contribution_type,
+                                  GridItemContributionType contribution_type,
                                   NGGridSetVector* sets_to_grow,
                                   NGGridSetVector* sets_to_grow_beyond_limit);
 
