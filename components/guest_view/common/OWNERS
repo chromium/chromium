@@ -1,4 +1,2 @@
 per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: Platform>Apps>BrowserTag
