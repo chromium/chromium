@@ -78,6 +78,17 @@ crbug.com/1020018 [ Linux ] external/wpt/webdriver/tests/get_active_element/get.
 crbug.com/1020018 [ Linux ] external/wpt/webdriver/tests/get_active_element/get.py>>test_sucess_input_non_interactable [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/switch_to_window/switch.py>>test_element_not_found_after_tab_switch [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/element_click/click.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/is_element_enabled/enabled.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_element_text/get.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_element_attribute/get.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_element_tag_name/get.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_element_property/get.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/is_element_selected/selected.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/element_send_keys/send_keys.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_element_css_value/get.py>>test_no_top_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_element_rect/get.py>>test_no_top_browsing_context [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer.py>>test_touch_pointer_properties [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer.py>>test_pen_pointer_properties [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/release_actions/release.py>>test_no_browsing_context [ Failure ]
