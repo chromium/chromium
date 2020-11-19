@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
 #include "base/strings/string16.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notification_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
 namespace ui {
@@ -28,24 +29,16 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   void operator=(const DataTransferDlpController&) = delete;
 
   // nullptr can be passed instead of `data_src` or `data_dst`. If data read is
-  // not allowed, this function will show a toast to the user.
+  // not allowed, this function will show a notification to the user.
   bool IsDataReadAllowed(
       const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) const override;
+      const ui::DataTransferEndpoint* const data_dst) override;
 
  private:
   DataTransferDlpController();
   ~DataTransferDlpController() override;
 
-  // Shows toast in case the data read is blocked.
-  // TODO(crbug.com/1131670): Move `ShowBlockToast` to a separate util/helper.
-  void ShowBlockToast(const base::string16& text) const;
-
-  // The text will be different if the data transferred is being shared with
-  // Crostini or Parallels or ARC.
-  base::string16 GetToastText(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) const;
+  DlpClipboardNotificationHelper helper_;
 };
 
 }  // namespace policy

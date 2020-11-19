@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
 
   virtual bool IsDataReadAllowed(
       const DataTransferEndpoint* const data_src,
-      const DataTransferEndpoint* const data_dst) const = 0;
+      const DataTransferEndpoint* const data_dst) = 0;
 
  protected:
   DataTransferPolicyController();

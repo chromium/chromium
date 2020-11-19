@@ -780,7 +780,7 @@ class FakeDataTransferPolicyController
   // ui::DataTransferPolicyController:
   bool IsDataReadAllowed(
       const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) const override {
+      const ui::DataTransferEndpoint* const data_dst) override {
     // The multipaste menu should have access to any clipboard data.
     if (data_dst && data_dst->type() == ui::EndpointType::kClipboardHistory)
       return true;

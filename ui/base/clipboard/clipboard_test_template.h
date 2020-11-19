@@ -109,9 +109,9 @@ class MockPolicyController : public DataTransferPolicyController {
   MockPolicyController();
   ~MockPolicyController() override;
 
-  MOCK_CONST_METHOD2(IsDataReadAllowed,
-                     bool(const DataTransferEndpoint* const data_src,
-                          const DataTransferEndpoint* const data_dst));
+  MOCK_METHOD2(IsDataReadAllowed,
+               bool(const DataTransferEndpoint* const data_src,
+                    const DataTransferEndpoint* const data_dst));
 };
 
 MockPolicyController::MockPolicyController() = default;
