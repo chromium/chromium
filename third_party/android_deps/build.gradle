@@ -72,7 +72,7 @@ dependencies {
     compile "androidx.leanback:leanback-preference:${androidXSupportLibVersion}"
     compile "androidx.localbroadcastmanager:localbroadcastmanager:1.1.0-SNAPSHOT"
     compile "androidx.media:media:${androidXSupportLibVersion}"
-    compile "androidx.mediarouter:mediarouter:${androidXSupportLibVersion}"
+    compile "androidx.mediarouter:mediarouter:1.3.0-SNAPSHOT"
     compile "androidx.preference:preference:1.1.1"
     compile "androidx.slice:slice-core:${androidXSupportLibVersion}"
     compile "androidx.slice:slice-builders:${androidXSupportLibVersion}"

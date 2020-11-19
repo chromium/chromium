@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.2.0-beta01-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.2.0-cr0
 package: chromium/third_party/android_deps/libs/androidx_appcompat_appcompat_resources
 description: "Android Resources Library"
 data:
-- file: appcompat-resources-1.2.0-beta01.aar
+- file: appcompat-resources-1.2.0.aar

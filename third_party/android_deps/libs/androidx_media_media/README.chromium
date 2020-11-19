@@ -1,7 +1,7 @@
 Name: Android Support Library media compat
 Short Name: media
-URL: http://developer.android.com/tools/extras/support-library.html
-Version: 1.0.0
+URL: https://developer.android.com/jetpack/androidx/releases/media#1.2.0
+Version: 1.2.0
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: yes

@@ -201,7 +201,7 @@ android_aar_prebuilt("androidx_appcompat_appcompat_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_appcompat_appcompat_resources_java") {
-  aar_path = "libs/androidx_appcompat_appcompat_resources/appcompat-resources-1.2.0-beta01.aar"
+  aar_path = "libs/androidx_appcompat_appcompat_resources/appcompat-resources-1.2.0.aar"
   info_path = "libs/androidx_appcompat_appcompat_resources/androidx_appcompat_appcompat_resources.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -527,12 +527,11 @@ android_aar_prebuilt(
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_media_media_java") {
-  aar_path = "libs/androidx_media_media/media-1.0.0.aar"
+  aar_path = "libs/androidx_media_media/media-1.2.0.aar"
   info_path = "libs/androidx_media_media/androidx_media_media.info"
   deps = [
-    ":androidx_annotation_annotation_java",
+    ":androidx_collection_collection_java",
     ":androidx_core_core_java",
-    ":androidx_versionedparcelable_versionedparcelable_java",
   ]
   resource_overlay = true
 
@@ -542,13 +541,16 @@ android_aar_prebuilt("androidx_media_media_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_mediarouter_mediarouter_java") {
-  aar_path = "libs/androidx_mediarouter_mediarouter/mediarouter-1.0.0.aar"
+  aar_path =
+      "libs/androidx_mediarouter_mediarouter/mediarouter-1.3.0-SNAPSHOT.aar"
   info_path = "libs/androidx_mediarouter_mediarouter/androidx_mediarouter_mediarouter.info"
   deps = [
     ":androidx_appcompat_appcompat_java",
+    ":androidx_appcompat_appcompat_resources_java",
     ":androidx_media_media_java",
     ":androidx_palette_palette_java",
     ":androidx_recyclerview_recyclerview_java",
+    ":com_google_guava_listenablefuture_java",
   ]
   resource_overlay = true
 
