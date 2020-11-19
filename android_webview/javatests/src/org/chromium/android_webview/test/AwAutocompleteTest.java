@@ -27,7 +27,7 @@ import java.util.concurrent.Callable;
 /**
  * AwAutocompleteTest only runs below Android O.
  */
-@DisabledTest
+@DisabledTest(message = "https://crbug.com/944504")
 public class AwAutocompleteTest {
     public static final String FILE = "/login.html";
     public static final String TITLE = "DONE";

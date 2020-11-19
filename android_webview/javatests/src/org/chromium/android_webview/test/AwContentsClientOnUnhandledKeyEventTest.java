@@ -82,7 +82,7 @@ public class AwContentsClientOnUnhandledKeyEventTest {
      * work.
     */
     @Test
-    @DisabledTest
+    @DisabledTest(message = "https://crbug.com/538377")
     public void testTextboxConsumesKeyEvents() throws Throwable {
         AwActivityTestRule.enableJavaScriptOnUiThread(mTestContainerView.getAwContents());
         final String data = "<html><head></head><body><textarea id='textarea0'></textarea></body>"

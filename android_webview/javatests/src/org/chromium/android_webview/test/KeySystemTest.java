@@ -111,8 +111,8 @@ public class KeySystemTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @DisabledTest
-    // crbug/701916
+    @SmallTest
+    @DisabledTest(message = "https://crbug.com/701916")
     public void testSupportWidevineKeySystem() throws Throwable {
         Assert.assertEquals(
                 getPlatformKeySystemExpectations(), isKeySystemSupported("com.widevine.alpha"));
@@ -127,8 +127,8 @@ public class KeySystemTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @DisabledTest
-    // crbug/701916
+    @SmallTest
+    @DisabledTest(message = "https://crbug.com/701916")
     public void testSupportPlatformKeySystem() throws Throwable {
         Assert.assertEquals(getPlatformKeySystemExpectations(),
                 isKeySystemSupported("x-com.oem.test-keysystem"));

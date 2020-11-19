@@ -177,10 +177,9 @@ public class AwImeTest {
      * keydown event.
      */
     // https://crbug.com/787651
-    // Flaky! - https://crbug.com/795423
     @Test
-    // @SmallTest
-    @DisabledTest
+    @SmallTest
+    @DisabledTest(message = "https://crbug.com/795423")
     public void testImeDpadMovesFocusOutOfWebView() throws Throwable {
         loadContentEditableBody();
         focusOnEditTextAndShowKeyboard();
@@ -243,10 +242,9 @@ public class AwImeTest {
     }
 
     // https://crbug.com/920061
-    // Flaky! - https://crbug.com/1061218
     @Test
-    // @SmallTest
-    @DisabledTest
+    @SmallTest
+    @DisabledTest(message = "https://crbug.com/1061218")
     public void testFocusAndViewSizeChangeCausesScroll() throws Throwable {
         loadBottomInputHtml();
         Rect currentRect = new Rect();
