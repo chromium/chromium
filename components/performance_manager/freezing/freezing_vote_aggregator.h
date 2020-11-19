@@ -29,6 +29,7 @@ using FreezingVotingChannel = voting::VotingChannel<FreezingVote>;
 using FreezingVoteObserver = voting::VoteObserver<FreezingVote>;
 using FreezingVoteConsumerDefaultImpl =
     voting::VoteConsumerDefaultImpl<FreezingVote>;
+using FreezingVotingChannelWrapper = voting::VotingChannelWrapper<FreezingVote>;
 
 // An aggregator for freezing votes. It upstreams an aggregated vote to an
 // upstream channel every time the freezing decision changes for a PageNode. It
@@ -85,20 +86,14 @@ class FreezingVoteAggregator final : public FreezingVoteObserver {
     FreezingVoteData& operator=(const FreezingVoteData& rhs) = delete;
     ~FreezingVoteData();
 
-    // Adds a vote. Returns an UpstreamVoteImpact indicating if the upstreamed
-    // vote should be updated by calling UpstreamVote.
-    UpstreamVoteImpact AddVote(FreezingVoterId voter_id,
-                               const FreezingVote& vote) WARN_UNUSED_RESULT;
+    // Adds a new vote.
+    void AddVote(FreezingVoterId voter_id, const FreezingVote& vote);
 
-    // Updates a vote. Returns an UpstreamVoteImpact indicating if the
-    // upstreamed vote should be updated by calling UpstreamVote.
-    UpstreamVoteImpact UpdateVote(FreezingVoterId voter_id,
-                                  const FreezingVote& new_vote)
-        WARN_UNUSED_RESULT;
+    // Updates an existing vote.
+    void UpdateVote(FreezingVoterId voter_id, const FreezingVote& new_vote);
 
-    // Removes a vote. Returns an UpstreamVoteImpact indicating if the
-    // upstreamed vote should be updated by calling UpstreamVote or invalidated.
-    UpstreamVoteImpact RemoveVote(FreezingVoterId voter_id) WARN_UNUSED_RESULT;
+    // Removes an existing vote
+    void RemoveVote(FreezingVoterId voter_id);
 
     // Upstreams the vote for this vote data, using the given voting |channel|.
     void UpstreamVote(const PageNode* page_node,
@@ -106,8 +101,8 @@ class FreezingVoteAggregator final : public FreezingVoteObserver {
 
     bool IsEmpty() { return votes_.empty(); }
 
-    // Returns the current aggregated vote.
-    const FreezingVote& GetCurrentVote();
+    // Returns the chosen vote. Invalid to call if IsEmpty() is true.
+    const FreezingVote& GetChosenVote();
 
    private:
     friend class FreezingVoteAggregatorTestAccess;
@@ -140,7 +135,7 @@ class FreezingVoteAggregator final : public FreezingVoteObserver {
   VoteDataMap vote_data_map_;
 
   // The channel for upstreaming our votes.
-  FreezingVotingChannel channel_;
+  FreezingVotingChannelWrapper channel_;
 
   // Provides FreezingVotingChannels to our input voters.
   FreezingVoteConsumerDefaultImpl vote_consumer_default_impl_;

@@ -256,5 +256,56 @@ TEST(FreezingVoteAggregatorTest, VoteIntegrity) {
   consumer.ExpectInvalidVote(0);
 }
 
+// Tests that submitting a second vote with the same value as the first one does
+// not change the upstreamed vote.
+TEST(FreezingVoteAggregatorTest, VoteConsistency) {
+  DummyFreezingVoteConsumer consumer;
+  FreezingVoteAggregator agg;
+  DummyFreezingVoter voter0;
+  DummyFreezingVoter voter1;
+
+  FreezingVoterId agg_id = voting::kInvalidVoterId<FreezingVote>;
+  {
+    auto channel = consumer.voting_channel_factory_.BuildVotingChannel();
+    agg_id = channel.voter_id();
+    agg.SetUpstreamVotingChannel(std::move(channel));
+  }
+
+  voter0.SetVotingChannel(agg.GetVotingChannel());
+  voter1.SetVotingChannel(agg.GetVotingChannel());
+
+  // Submit a first vote.
+  voter0.EmitVote(kPageNode0, FreezingVoteValue::kCanFreeze, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
+                           kReason0);
+
+  // Emit a second vote with the same value but a different reason so that they
+  // can be differentiated. The upstreamed vote should be the same.
+  voter1.EmitVote(kPageNode0, FreezingVoteValue::kCanFreeze, kReason1);
+  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
+                           kReason0);
+
+  // Clear the votes.
+  voter0.receipts_.clear();
+  voter1.receipts_.clear();
+
+  // Do the same with kCannotFreeze votes.
+
+  // Submit a first vote.
+  voter0.EmitVote(kPageNode0, FreezingVoteValue::kCannotFreeze, kReason0);
+  consumer.ExpectValidVote(1, agg_id, kPageNode0,
+                           FreezingVoteValue::kCannotFreeze, kReason0);
+
+  // Emit a second vote with the same value but a different reason so that they
+  // can be differentiated. The upstreamed vote should be the same.
+  voter1.EmitVote(kPageNode0, FreezingVoteValue::kCannotFreeze, kReason1);
+  consumer.ExpectValidVote(1, agg_id, kPageNode0,
+                           FreezingVoteValue::kCannotFreeze, kReason0);
+
+  // Clear the votes.
+  voter0.receipts_.clear();
+  voter1.receipts_.clear();
+}
+
 }  // namespace freezing
 }  // namespace performance_manager
