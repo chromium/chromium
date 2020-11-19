@@ -41613,6 +41613,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Throttled but stopped due to rebuffer"/>
 </enum>
 
+<enum name="LiveCaptionExpandBubbleEvent">
+  <int value="0" label="Bubble collapsed"/>
+  <int value="1" label="Bubble expanded"/>
+</enum>
+
 <enum name="LiveCaptionSessionEvent">
   <int value="0" label="Stream started"/>
   <int value="1" label="Stream finished"/>

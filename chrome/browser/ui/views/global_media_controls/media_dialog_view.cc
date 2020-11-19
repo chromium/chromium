@@ -308,6 +308,8 @@ void MediaDialogView::WindowClosing() {
 void MediaDialogView::LiveCaptionButtonPressed(const ui::Event& event) {
   bool enabled = !profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled);
   ToggleLiveCaption(enabled);
+  base::UmaHistogramBoolean(
+      "Accessibility.LiveCaption.EnableFromGlobalMediaControls", enabled);
 }
 
 void MediaDialogView::ToggleLiveCaption(bool enabled) {

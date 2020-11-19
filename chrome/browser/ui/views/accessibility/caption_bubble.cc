@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string16.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
@@ -74,6 +74,23 @@ static constexpr int kErrorMessageBetweenChildSpacingDip = 16;
 static constexpr int kFocusRingInnerInsetDip = 3;
 static constexpr int kWidgetDisplacementWithArrowKeyDip = 16;
 static constexpr int kNoActivityIntervalSeconds = 5;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. These should be the same as
+// LiveCaptionSessionEvent in enums.xml.
+enum class SessionEvent {
+  // We began showing captions for an audio stream.
+  kStreamStarted = 0,
+  // The audio stream ended and the caption bubble closes.
+  kStreamEnded = 1,
+  // The close button was clicked, so we stopped listening to an audio stream.
+  kCloseButtonClicked = 2,
+  kMaxValue = kCloseButtonClicked,
+};
+
+void LogSessionEvent(SessionEvent event) {
+  base::UmaHistogramEnumeration("Accessibility.LiveCaption.Session", event);
+}
 
 }  // namespace
 
@@ -507,18 +524,15 @@ void CaptionBubble::AddedToWidget() {
 }
 
 void CaptionBubble::CloseButtonPressed() {
-  // TODO(crbug.com/1055150): This histogram currently only reports a single
-  // bucket, but it will eventually be extended to report session starts and
-  // natural session ends (when the audio stream ends).
-  UMA_HISTOGRAM_ENUMERATION(
-      "Accessibility.LiveCaption.Session",
-      CaptionController::SessionEvent::kCloseButtonClicked);
+  LogSessionEvent(SessionEvent::kCloseButtonClicked);
   if (model_)
     model_->Close();
 }
 
 void CaptionBubble::ExpandOrCollapseButtonPressed() {
   is_expanded_ = !is_expanded_;
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.ExpandBubble",
+                            is_expanded_);
   views::Button *old_button = collapse_button_, *new_button = expand_button_;
   if (is_expanded_)
     std::swap(old_button, new_button);
@@ -656,6 +670,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
       GetWidget()->ShowInactive();
       GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
           IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT));
+      LogSessionEvent(SessionEvent::kStreamStarted);
     }
   } else if (GetWidget()->IsVisible()) {
     // No text and no error. Hide it.
@@ -756,6 +771,7 @@ void CaptionBubble::Redraw() {
 }
 
 void CaptionBubble::OnInactivityTimeout() {
+  LogSessionEvent(SessionEvent::kStreamEnded);
   if (GetWidget()->IsVisible())
     GetWidget()->Hide();
 }

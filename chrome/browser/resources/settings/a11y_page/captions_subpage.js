@@ -303,7 +303,7 @@ Polymer({
   onA11yLiveCaptionChange_(event) {
     const a11yLiveCaptionOn = event.target.checked;
     chrome.metricsPrivate.recordBoolean(
-        'Accessibility.LiveCaption.ToggleEnabled', a11yLiveCaptionOn);
+        'Accessibility.LiveCaption.EnableFromSettings', a11yLiveCaptionOn);
   },
 
   /**

@@ -40,20 +40,6 @@ class CaptionBubbleController;
 //
 class CaptionController : public BrowserListObserver, public KeyedService {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. These should be the same as
-  // LiveCaptionSessionEvent in enums.xml.
-  enum class SessionEvent {
-    // We began receiving captions for an audio stream.
-    kStreamStarted = 0,
-    // The audio stream ended, meaning no more captions will be received on that
-    // stream.
-    kStreamEnded = 1,
-    // The close button was clicked, so we stopped listening to an audio stream.
-    kCloseButtonClicked = 2,
-    kMaxValue = kCloseButtonClicked,
-  };
-
   explicit CaptionController(Profile* profile);
   ~CaptionController() override;
   CaptionController(const CaptionController&) = delete;
