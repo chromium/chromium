@@ -82,6 +82,11 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // Called when the keyboard was shown or hidden.
   void OnKeyboardVisibilityChanged(bool visible);
 
+  // Called when a trigger script was attempted to be shown on screen. This may
+  // have failed, for example when trying to show a trigger script after
+  // switching from CCT to regular tab.
+  void OnTriggerScriptShown(bool success);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
 

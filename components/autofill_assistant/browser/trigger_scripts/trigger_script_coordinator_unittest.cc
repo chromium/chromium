@@ -755,4 +755,31 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
 }
 
+TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).WillOnce([&]() {
+    coordinator_->OnTriggerScriptShown(/* success = */ false);
+  });
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+  AssertRecordedFinishedState(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW);
+}
+
 }  // namespace autofill_assistant

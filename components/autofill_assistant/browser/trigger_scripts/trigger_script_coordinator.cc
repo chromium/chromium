@@ -210,6 +210,13 @@ void TriggerScriptCoordinator::OnKeyboardVisibilityChanged(bool visible) {
   RunOutOfScheduleTriggerConditionCheck();
 }
 
+void TriggerScriptCoordinator::OnTriggerScriptShown(bool success) {
+  if (!success) {
+    Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW);
+    return;
+  }
+}
+
 void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
   HideTriggerScript();
   StopCheckingTriggerConditions();

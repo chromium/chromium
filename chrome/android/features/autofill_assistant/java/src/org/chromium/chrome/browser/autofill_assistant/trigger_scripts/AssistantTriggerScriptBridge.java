@@ -39,6 +39,7 @@ public class AssistantTriggerScriptBridge {
     private long mNativeBridge;
     private Delegate mDelegate;
     private Context mContext;
+    private WebContents mWebContents;
     private ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
@@ -59,6 +60,7 @@ public class AssistantTriggerScriptBridge {
             Delegate delegate) {
         mDelegate = delegate;
         mContext = context;
+        mWebContents = webContents;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mTriggerScript = new AssistantTriggerScript(context, new AssistantTriggerScript.Delegate() {
             @Override
@@ -111,12 +113,19 @@ public class AssistantTriggerScriptBridge {
     /**
      * Used by native to update and show the UI. The header should be updated using {@code
      * getHeaderModel} prior to calling this function.
+     * @return true if the trigger script was displayed, else false.
      */
     @CalledByNative
-    private void showTriggerScript(String[] cancelPopupMenuItems, int[] cancelPopupMenuActions,
+    private boolean showTriggerScript(String[] cancelPopupMenuItems, int[] cancelPopupMenuActions,
             List<AssistantChip> leftAlignedChips, int[] leftAlignedChipsActions,
             List<AssistantChip> rightAlignedChips, int[] rightAlignedChipsActions,
             boolean resizeVisualViewport) {
+        // Trigger scripts currently do not support switching activities (such as CCT->tab).
+        // TODO(b/171776026): Re-inject dependencies on activity change to support CCT->tab.
+        if (TabUtils.getActivity(TabUtils.fromWebContents(mWebContents)) != mContext) {
+            return false;
+        }
+
         // NOTE: the cancel popup menu must be set before the chips are bound.
         mTriggerScript.setCancelPopupMenu(cancelPopupMenuItems, cancelPopupMenuActions);
         mTriggerScript.setLeftAlignedChips(leftAlignedChips, leftAlignedChipsActions);
@@ -125,6 +134,7 @@ public class AssistantTriggerScriptBridge {
 
         // A trigger script was displayed, users are no longer considered first-time users.
         AutofillAssistantPreferencesUtil.setAutofillAssistantReturningLiteScriptUser();
+        return true;
     }
 
     @CalledByNative
@@ -134,6 +144,9 @@ public class AssistantTriggerScriptBridge {
 
     @CalledByNative
     private void onTriggerScriptFinished(@LiteScriptFinishedState int state) {
+        if (state == LiteScriptFinishedState.LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER) {
+            AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(false);
+        }
         mDelegate.onTriggerScriptFinished(state);
     }
 

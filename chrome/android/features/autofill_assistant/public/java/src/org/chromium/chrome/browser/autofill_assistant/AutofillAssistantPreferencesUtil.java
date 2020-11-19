@@ -36,6 +36,12 @@ public class AutofillAssistantPreferencesUtil {
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, true);
     }
 
+    /** Enables or disables the proactive help setting. */
+    public static void setProactiveHelpSwitch(boolean enabled) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, enabled);
+    }
+
     /** Returns whether the user has seen a lite script before or not. */
     static boolean isAutofillAssistantFirstTimeLiteScriptUser() {
         return SharedPreferencesManager.getInstance().readBoolean(
