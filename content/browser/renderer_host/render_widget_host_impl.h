@@ -258,6 +258,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetCursor(const ui::Cursor& cursor) override;
   void ShowContextMenuAtPoint(const gfx::Point& point,
                               const ui::MenuSourceType source_type) override;
+  void InsertVisualStateCallback(VisualStateCallback callback) override;
 
   // RenderProcessHostImpl::PriorityClient implementation.
   RenderProcessHost::Priority GetPriority() override;
@@ -777,14 +778,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // otherwise, it returns false.  See comments on
   // Add/ClearPendingUserActivation() for details.
   bool RemovePendingUserActivationIfAvailable();
-
-  // Roundtrips through the renderer and compositor pipeline to ensure that any
-  // changes to the contents resulting from operations executed prior to this
-  // call are visible on screen. The call completes asynchronously by running
-  // the supplied |callback| with a value of true upon successful completion and
-  // false otherwise when the widget is destroyed.
-  using VisualStateCallback = base::OnceCallback<void(bool)>;
-  void InsertVisualStateCallback(VisualStateCallback callback);
 
   const mojo::AssociatedRemote<blink::mojom::FrameWidget>&
   GetAssociatedFrameWidget();

@@ -319,6 +319,8 @@ component("ash") {
     "clipboard/clipboard_nudge_constants.h",
     "clipboard/clipboard_nudge_controller.cc",
     "clipboard/clipboard_nudge_controller.h",
+    "clipboard/scoped_clipboard_history_pause_impl.cc",
+    "clipboard/scoped_clipboard_history_pause_impl.h",
     "clipboard/views/clipboard_history_bitmap_item_view.cc",
     "clipboard/views/clipboard_history_bitmap_item_view.h",
     "clipboard/views/clipboard_history_item_view.cc",

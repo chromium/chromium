@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/public/cpp/clipboard_history_controller.h"
+#include "ash/public/cpp/scoped_clipboard_history_pause.h"
 #include "base/base64.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_controller.h"
@@ -14,10 +16,12 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
+#include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -32,6 +36,39 @@ ClipboardImageModelRequest::Params&
 ClipboardImageModelRequest::Params::operator=(Params&&) = default;
 
 ClipboardImageModelRequest::Params::~Params() = default;
+
+ClipboardImageModelRequest::ScopedClipboardModifier::ScopedClipboardModifier(
+    const std::string& html_markup) {
+  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+  const auto* current_data = clipboard->GetClipboardData(&data_dst);
+
+  // No need to replace the clipboard contents if the markup is the same.
+  if (current_data && (html_markup == current_data->markup_data()))
+    return;
+
+  // Put |html_markup| on the clipboard temporarily so it can be pasted into
+  // the WebContents. This is preferable to directly loading |html_markup_| in a
+  // data URL because pasting the data into WebContents sanitizes the markup.
+  // TODO(https://crbug.com/1144962): Sanitize copied HTML prior to storing it
+  // in the clipboard buffer. Then |html_markup_| can be loaded from a data URL
+  // and will not need to be pasted in this manner.
+  auto new_data = std::make_unique<ui::ClipboardData>();
+  new_data->set_markup_data(html_markup);
+
+  scoped_clipboard_history_pause_ =
+      ash::ClipboardHistoryController::Get()->CreateScopedPause();
+  replaced_clipboard_data_ = clipboard->WriteClipboardData(std::move(new_data));
+}
+
+ClipboardImageModelRequest::ScopedClipboardModifier::
+    ~ScopedClipboardModifier() {
+  if (!replaced_clipboard_data_)
+    return;
+
+  ui::ClipboardNonBacked::GetForCurrentThread()->WriteClipboardData(
+      std::move(replaced_clipboard_data_));
+}
 
 ClipboardImageModelRequest::ClipboardImageModelRequest(
     Profile* profile,
@@ -59,6 +96,7 @@ void ClipboardImageModelRequest::Start(Params&& params) {
   DCHECK_EQ(base::UnguessableToken(), request_id_);
 
   request_id_ = std::move(params.id);
+  html_markup_ = params.html_markup;
   deliver_image_model_callback_ = std::move(params.callback);
 
   timeout_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(10), this,
@@ -67,10 +105,17 @@ void ClipboardImageModelRequest::Start(Params&& params) {
   // Begin the document with the proper charset, this should prevent strange
   // looking characters from showing up in the render in some cases.
   std::string html_document(
-      "<!DOCTYPE html><html><head><meta "
-      "charset=\"UTF-8\"></meta></head><body>");
-  html_document.append(params.html_markup);
-  html_document.append("</body></html>");
+      "<!DOCTYPE html>"
+      "<html>"
+      " <head><meta charset=\"UTF-8\"></meta></head>"
+      " <body contenteditable='true'> "
+      "  <script>"
+      // Focus the Contenteditable body to ensure WebContents::Paste() reaches
+      // the body.
+      "   document.body.focus();"
+      "  </script>"
+      " </body>"
+      "</html");
 
   std::string encoded_html;
   base::Base64Encode(html_document, &encoded_html);
@@ -79,17 +124,36 @@ void ClipboardImageModelRequest::Start(Params&& params) {
       content::NavigationController::LoadURLParams(
           GURL(kDataURIPrefix + encoded_html)));
   widget_->ShowInactive();
+
+  // Give some initial bounds to the NativeView to force painting in an inactive
+  // shown widget.
+  web_contents()->GetNativeView()->SetBounds(gfx::Rect(0, 0, 1, 1));
 }
 
 void ClipboardImageModelRequest::Stop() {
+  scoped_clipboard_modifier_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
   copy_surface_weak_ptr_factory_.InvalidateWeakPtrs();
   timeout_timer_.Stop();
   widget_->Hide();
   deliver_image_model_callback_.Reset();
   request_id_ = base::UnguessableToken();
-  did_auto_resize_ = false;
+  did_stop_loading_ = false;
+
   on_request_finished_callback_.Run();
+}
+
+ClipboardImageModelRequest::Params
+ClipboardImageModelRequest::StopAndGetParams() {
+  DCHECK(IsRunningRequest());
+  Params params(request_id_, html_markup_,
+                std::move(deliver_image_model_callback_));
+  Stop();
+  return params;
+}
+
+bool ClipboardImageModelRequest::IsModifyingClipboard() const {
+  return scoped_clipboard_modifier_.has_value();
 }
 
 bool ClipboardImageModelRequest::IsRunningRequest(
@@ -101,7 +165,6 @@ bool ClipboardImageModelRequest::IsRunningRequest(
 void ClipboardImageModelRequest::ResizeDueToAutoResize(
     content::WebContents* web_contents,
     const gfx::Size& new_size) {
-  did_auto_resize_ = true;
   web_contents->GetNativeView()->SetBounds(gfx::Rect(gfx::Point(), new_size));
 
   // `ResizeDueToAutoResize()` can be called before and/or after
@@ -112,12 +175,23 @@ void ClipboardImageModelRequest::ResizeDueToAutoResize(
 }
 
 void ClipboardImageModelRequest::DidStopLoading() {
-  // Wait for auto resize. In some cases the data url will stop loading before
-  // auto resize has occurred. This will result in a incorrectly sized image.
-  if (!did_auto_resize_)
+  // `DidStopLoading()` can be called multiple times after a paste. We are only
+  // interested in the initial load of the data URL.
+  if (did_stop_loading_)
     return;
 
-  PostCopySurfaceTask();
+  did_stop_loading_ = true;
+
+  // Modify the clipboard so `html_markup_` can be pasted into the WebContents.
+  scoped_clipboard_modifier_.emplace(html_markup_);
+
+  web_contents()->GetRenderViewHost()->GetWidget()->InsertVisualStateCallback(
+      base::BindOnce(&ClipboardImageModelRequest::OnVisualStateChangeFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // TODO(https://crbug.com/1149556): Clipboard Contents could be overwritten
+  // prior to the `WebContents::Paste()` completing.
+  web_contents()->Paste();
 }
 
 void ClipboardImageModelRequest::RenderViewHostChanged(
@@ -128,6 +202,14 @@ void ClipboardImageModelRequest::RenderViewHostChanged(
 
   web_contents()->GetRenderWidgetHostView()->EnableAutoResize(
       gfx::Size(1, 1), gfx::Size(INT_MAX, INT_MAX));
+}
+
+void ClipboardImageModelRequest::OnVisualStateChangeFinished(bool done) {
+  if (!done)
+    return;
+
+  scoped_clipboard_modifier_.reset();
+  PostCopySurfaceTask();
 }
 
 void ClipboardImageModelRequest::PostCopySurfaceTask() {
@@ -142,7 +224,7 @@ void ClipboardImageModelRequest::PostCopySurfaceTask() {
       FROM_HERE,
       base::BindOnce(&ClipboardImageModelRequest::CopySurface,
                      copy_surface_weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(100));
+      base::TimeDelta::FromMilliseconds(250));
 }
 
 void ClipboardImageModelRequest::CopySurface() {
