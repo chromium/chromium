@@ -21,6 +21,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/exo/shell_surface_util.h"
@@ -107,11 +108,14 @@ base::FilePath GetUserDataDir() {
   return base_path.Append("lacros");
 }
 
-bool IsLacrosAllowed() {
-  return IsLacrosAllowed(chrome::GetChannel());
+bool IsLacrosEnabled() {
+  return IsLacrosEnabled(chrome::GetChannel());
 }
 
-bool IsLacrosAllowed(Channel channel) {
+bool IsLacrosEnabled(Channel channel) {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport))
+    return false;
+
   const User* user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (!user)
     return false;

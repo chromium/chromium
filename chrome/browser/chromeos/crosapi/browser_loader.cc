@@ -52,7 +52,7 @@ BrowserLoader::BrowserLoader(
 BrowserLoader::~BrowserLoader() = default;
 
 void BrowserLoader::Load(LoadCompletionCallback callback) {
-  DCHECK(browser_util::IsLacrosAllowed());
+  DCHECK(browser_util::IsLacrosEnabled());
 
   // TODO(crbug.com/1078607): Remove non-error logging from this class.
   LOG(WARNING) << "Starting lacros component load.";
@@ -78,7 +78,7 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
 }
 
 void BrowserLoader::Unload() {
-  DCHECK(browser_util::IsLacrosAllowed());
+  // Can be called even if Lacros isn't enabled, to clean up the old install.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CheckInstalledAndMaybeRemoveUserDirectory,

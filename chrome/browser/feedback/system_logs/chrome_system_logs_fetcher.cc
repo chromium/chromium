@@ -27,7 +27,6 @@
 #include "chrome/browser/chromeos/system_logs/shill_log_source.h"
 #include "chrome/browser/chromeos/system_logs/touch_log_source.h"
 #include "chrome/browser/chromeos/system_logs/ui_hierarchy_log_source.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
@@ -82,8 +81,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
 #endif
 
 #if defined(OS_CHROMEOS)
-  if (chromeos::features::IsLacrosSupportEnabled() &&
-      crosapi::browser_util::IsLacrosAllowed()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     fetcher->AddSource(std::make_unique<UserLogFilesLogSource>(
         base::FilePath(kDefaultLogPath), kLacrosUserLogKey));
   }

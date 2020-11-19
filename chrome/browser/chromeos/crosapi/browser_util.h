@@ -44,12 +44,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // Returns the user directory for lacros-chrome.
 base::FilePath GetUserDataDir();
 
-// Returns true if lacros is allowed for the current user type, chrome channel,
-// etc.
-bool IsLacrosAllowed();
+// Returns true if the Lacros feature is enabled and Lacros is allowed for the
+// current user type, chrome channel, and enterprise policy.
+bool IsLacrosEnabled();
 
 // As above, but takes a channel. Exposed for testing.
-bool IsLacrosAllowed(version_info::Channel channel);
+bool IsLacrosEnabled(version_info::Channel channel);
 
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.

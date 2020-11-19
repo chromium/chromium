@@ -37,7 +37,6 @@
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "extensions/common/constants.h"
 #endif
@@ -183,8 +182,7 @@ void AppServiceProxy::Initialize() {
     // Lacros does not support multi-signin, so only create for the primary
     // profile. This also avoids creating an instance for the lock screen app
     // profile and ensures there is only one instance of LacrosApps.
-    if (chromeos::features::IsLacrosSupportEnabled() &&
-        crosapi::browser_util::IsLacrosAllowed() &&
+    if (crosapi::browser_util::IsLacrosEnabled() &&
         chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
       lacros_apps_ = std::make_unique<LacrosApps>(app_service_);
     }

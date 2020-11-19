@@ -615,8 +615,7 @@ std::vector<ash::ShelfID> GetPinnedAppsFromSync(
   // If Lacros is enabled and allowed for this user type, ensure the Lacros icon
   // is pinned. Lacros doesn't support multi-signin, so only add the icon for
   // the primary user.
-  if (chromeos::features::IsLacrosSupportEnabled() &&
-      crosapi::browser_util::IsLacrosAllowed() &&
+  if (crosapi::browser_util::IsLacrosEnabled() &&
       chromeos::ProfileHelper::IsPrimaryProfile(helper->profile())) {
     syncer::StringOrdinal lacros_position =
         syncable_service->GetPinPosition(extension_misc::kLacrosAppId);

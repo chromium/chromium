@@ -12,9 +12,9 @@
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
@@ -22,7 +22,7 @@ namespace apps {
 
 LacrosApps::LacrosApps(
     const mojo::Remote<apps::mojom::AppService>& app_service) {
-  DCHECK(chromeos::features::IsLacrosSupportEnabled());
+  DCHECK(crosapi::browser_util::IsLacrosEnabled());
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kLacros);
 }
 

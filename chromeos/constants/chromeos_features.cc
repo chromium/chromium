@@ -398,6 +398,10 @@ const base::Feature kKerberosSettingsSection{"KerberosSettingsSection",
 // Enables "Linux and Chrome OS" support. Allows a Linux version of Chrome
 // ("lacros-chrome") to run as a Wayland client with this instance of Chrome
 // ("ash-chrome") acting as the Wayland server and window manager.
+// NOTE: Use crosapi::browser_util::IsLacrosEnabled() instead of checking the
+// feature directly. Lacros is not allowed for certain user types and can be
+// disabled by policy. These restrictions will be lifted when Lacros development
+// is complete.
 const base::Feature kLacrosSupport{"LacrosSupport",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -711,10 +715,6 @@ bool IsInstantTetheringBackgroundAdvertisingSupported() {
 
 bool IsKerberosSettingsSectionEnabled() {
   return base::FeatureList::IsEnabled(kKerberosSettingsSection);
-}
-
-bool IsLacrosSupportEnabled() {
-  return base::FeatureList::IsEnabled(kLacrosSupport);
 }
 
 bool IsLoginDeviceManagementDisclosureEnabled() {

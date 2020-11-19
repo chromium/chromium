@@ -51,7 +51,6 @@
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/system/statistics_provider.h"
@@ -257,8 +256,7 @@ std::string GetChromeVersionString() {
   // is indicated by |lacros_version| in BrowserManager being set to non-empty
   // string during lacros startup, attach its version in the chrome
   // version string.
-  if (chromeos::features::IsLacrosSupportEnabled() &&
-      crosapi::browser_util::IsLacrosAllowed() &&
+  if (crosapi::browser_util::IsLacrosEnabled() &&
       !crosapi::BrowserManager::Get()->lacros_version().empty()) {
     std::string lacros_version =
         crosapi::BrowserManager::Get()->lacros_version();
