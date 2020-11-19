@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 resources_locale_dir = "$root_gen_dir/remoting/resources/_locales"
 
 # See also remoting_locales_with_underscores below.
@@ -93,7 +95,7 @@ if (!is_ios || !is_official_build) {
 # TODO(yuweih): Our build script doesn't seem to work with en-US and Chrome
 # on iOS doesn't seem to have en-US.lproj. Add is_ios back if we do need to
 # work with en-US.
-if (is_chromeos) {
+if (is_chromeos_ash) {
   remoting_locales += [ "en-US" ]
   remoting_locales_with_underscores += [ "en_US" ]
 }

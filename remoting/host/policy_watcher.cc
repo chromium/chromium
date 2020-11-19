@@ -18,6 +18,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -181,7 +182,7 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
   result->SetString(key::kRemoteAccessHostUdpPortRange, "");
   result->SetBoolean(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                      false);
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   result->SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
   result->SetBoolean(key::kRemoteAccessHostEnableUserInterface, true);
 #endif
@@ -421,7 +422,7 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
   return base::WrapUnique(new PolicyWatcher(
       owned_policy_service.get(), std::move(owned_policy_service), nullptr,
       CreateSchemaRegistry()));
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED() << "CreateWithPolicyService() should be used on ChromeOS.";
   return nullptr;
 #else

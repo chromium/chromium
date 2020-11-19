@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 group("remoting_all") {
@@ -40,7 +41,7 @@ group("remoting_all") {
       "//remoting/host",
     ]
 
-    if (!is_chromeos && !is_android) {
+    if (!is_chromeos_ash && !is_android) {
       deps += [
         "//remoting/host:remoting_native_messaging_manifests",
         "//remoting/host:remoting_start_host",
@@ -52,11 +53,11 @@ group("remoting_all") {
       }
     }
 
-    if (is_win || (!is_chromeos && !is_android && !is_ios)) {
+    if (is_win || (!is_chromeos_ash && !is_android && !is_ios)) {
       deps += [ "//remoting/host:remoting_native_messaging_host" ]
     }
 
-    if (is_linux && !is_chromeos) {
+    if (is_linux || is_chromeos_lacros) {
       deps += [
         "//remoting/host/linux:remoting_dev_me2me_host",
         "//remoting/host/linux:remoting_user_session",
@@ -176,7 +177,8 @@ test("remoting_unittests") {
     ]
   }
 
-  if (!is_chromeos) {
+  # TODO(crbug.com/1052397): Change to !is_chromeos once lacros-chrome is switched to target_os=chromeos.
+  if (!is_chromeos_ash) {
     deps += [ "//remoting/client/display:unit_tests" ]
   }
 }

@@ -18,6 +18,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "remoting/base/fake_oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/signaling/fake_signal_strategy.h"
@@ -73,7 +74,9 @@ void ValidateHeartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
   ASSERT_TRUE(request->has_host_cpu_type());
   ASSERT_EQ(expected_is_initial_heartbeat, request->is_initial_heartbeat());
   bool is_linux = false;
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   is_linux = true;
 #endif
   if (is_googler && is_linux) {

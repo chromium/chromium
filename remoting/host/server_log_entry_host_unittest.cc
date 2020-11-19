@@ -8,6 +8,7 @@
 
 #include "base/strings/stringize_macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "remoting/signaling/server_log_entry.h"
 #include "remoting/signaling/server_log_entry_unittest.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,10 +51,10 @@ TEST(ServerLogEntryHostTest, AddHostFields) {
 #elif defined(OS_APPLE)
   key_value_pairs["os-name"] = "Mac";
   keys.insert("os-version");
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   key_value_pairs["os-name"] = "ChromeOS";
   keys.insert("os-version");
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   key_value_pairs["os-name"] = "Linux";
   keys.insert("os-version");
 #endif

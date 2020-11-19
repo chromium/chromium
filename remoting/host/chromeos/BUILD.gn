@@ -22,6 +22,7 @@ source_set("chromeos") {
 
   public_deps = [
     "//ash",
+    "//build:chromeos_buildflags",
     "//cc",
     "//gpu/command_buffer/common",
     "//ppapi/host",

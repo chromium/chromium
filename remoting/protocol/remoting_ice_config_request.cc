@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/protobuf_http_request.h"
@@ -75,7 +76,7 @@ void RemotingIceConfigRequest::Send(OnIceConfigCallback callback) {
   request_config->path = kGetIceConfigPath;
   request_config->request_message =
       std::make_unique<apis::v1::GetIceConfigRequest>();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Use the default Chrome API key for ChromeOS as the only host instance
   // which runs there is used for the ChromeOS Enterprise Kiosk mode
   // scenario.  If we decide to implement a remote access host for ChromeOS,

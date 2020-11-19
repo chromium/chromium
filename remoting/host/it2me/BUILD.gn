@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//remoting/remoting_locales.gni")
@@ -27,11 +28,11 @@ source_set("common") {
     "it2me_native_messaging_host.h",
   ]
 
-  if (is_linux && !is_chromeos) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "it2me_confirmation_dialog_chromeos.cc" ]
   }
 
@@ -50,6 +51,7 @@ source_set("common") {
 
   deps = [
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//net",
     "//remoting/base",
@@ -58,7 +60,7 @@ source_set("common") {
     "//remoting/resources",
     "//remoting/signaling",
   ]
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     deps += [
       "//build/config/linux/gtk",
 
@@ -70,7 +72,7 @@ source_set("common") {
   }
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   source_set("chrome_os_host") {
     sources = [
       "it2me_native_messaging_host_chromeos.cc",
@@ -88,7 +90,7 @@ if (is_chromeos) {
   }
 }
 
-if (!is_chromeos && enable_remoting_host) {
+if (!is_chromeos_ash && enable_remoting_host) {
   if (is_win) {
     executable("remote_assistance_host") {
       configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -234,7 +236,7 @@ if (!is_chromeos && enable_remoting_host) {
         }
       }
 
-      if (is_linux) {
+      if (is_linux || is_chromeos_lacros) {
         deps += [ "//build/config/linux/gtk" ]
       }
     }

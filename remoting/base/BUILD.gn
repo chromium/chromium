@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("protobuf_http_client_messages_proto") {
@@ -90,6 +91,7 @@ source_set("base") {
   deps = [
     ":protobuf_http_client_messages_proto",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//google_apis",
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
@@ -233,7 +235,7 @@ source_set("unit_tests") {
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
-  if (is_win || is_mac || is_chromeos) {
+  if (is_win || is_mac || is_chromeos_ash) {
     deps += [ "//third_party/breakpad:client" ]
   }
 

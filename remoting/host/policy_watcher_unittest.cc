@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
 #include "components/policy/policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -318,7 +319,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.SetBoolean(key::kRemoteAccessHostAllowGnubbyAuth, true);
     dict.SetBoolean(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                     false);
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     dict.SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
     dict.SetBoolean(key::kRemoteAccessHostEnableUserInterface, true);
 #endif
@@ -531,7 +532,7 @@ INSTANTIATE_TEST_SUITE_P(
                       "RemoteAccessHostdomain",
                       "RemoteAccessHostPolicyForFutureVersion"));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PolicyWatcherTest, PairingFalseThenTrue) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
@@ -561,7 +562,7 @@ TEST_F(PolicyWatcherTest, GnubbyAuth) {
   SetPolicies(gnubby_auth_false_);
   SetPolicies(gnubby_auth_true_);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PolicyWatcherTest, RemoteAssistanceUiAccess) {
   testing::InSequence sequence;
@@ -598,7 +599,7 @@ TEST_F(PolicyWatcherTest, Relay) {
   SetPolicies(relay_true_);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PolicyWatcherTest, Curtain) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
@@ -665,7 +666,7 @@ TEST_F(PolicyWatcherTest, ThirdPartyAuthPartialToFull) {
   SetPolicies(third_party_auth_partial_);
   SetPolicies(third_party_auth_full_);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PolicyWatcherTest, UdpPortRange) {
   testing::InSequence sequence;
@@ -698,7 +699,7 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
   // RemoteAccessHostMatchUsername is marked in policy_templates.json as not
   // supported on Windows and therefore is (by design) excluded from the schema.
   expected_schema.erase(key::kRemoteAccessHostMatchUsername);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   // Me2Me Policies are not supported on ChromeOS.
   expected_schema.erase(key::kRemoteAccessHostAllowGnubbyAuth);
   expected_schema.erase(key::kRemoteAccessHostAllowClientPairing);

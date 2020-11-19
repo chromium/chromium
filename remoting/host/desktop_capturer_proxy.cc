@@ -16,6 +16,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
@@ -24,7 +25,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "remoting/host/chromeos/aura_desktop_capturer.h"
 #endif
 
@@ -75,12 +76,12 @@ void DesktopCapturerProxy::Core::CreateCapturer(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!capturer_);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
       std::make_unique<AuraDesktopCapturer>());
-#else  // !defined(OS_CHROMEOS)
+#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!capturer_)
     LOG(ERROR) << "Failed to initialize screen capturer.";
 }

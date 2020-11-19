@@ -20,6 +20,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/core/embedder/embedder.h"
 #include "net/url_request/url_fetcher.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -48,9 +49,9 @@
 #include "remoting/host/pairing_registry_delegate_win.h"
 #endif  // defined(OS_WIN)
 
-#if defined(USE_GLIB) && !defined(OS_CHROMEOS)
+#if defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include <glib-object.h>
-#endif  // defined(USE_GLIB) && !defined(OS_CHROMEOS)
+#endif  // defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 using remoting::protocol::PairingRegistry;
 
@@ -72,14 +73,14 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   base::mac::ScopedNSAutoreleasePool pool;
 #endif  // defined(OS_APPLE)
 
-#if defined(USE_GLIB) && !defined(OS_CHROMEOS)
+#if defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // g_type_init will be deprecated in 2.36. 2.35 is the development
 // version for 2.36, hence do not call g_type_init starting 2.35.
 // http://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#g-type-init
 #if !GLIB_CHECK_VERSION(2, 35, 0)
   g_type_init();
 #endif
-#endif  // defined(USE_GLIB) && !defined(OS_CHROMEOS)
+#endif  // defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Required to find the ICU data file, used by some file_util routines.
   base::i18n::InitializeICU();

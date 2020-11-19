@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/network_interfaces.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/constants.h"
@@ -385,7 +386,9 @@ HeartbeatSender::CreateHeartbeatRequest() {
   heartbeat->set_is_initial_heartbeat(!initial_heartbeat_sent_);
   // Only set the hostname if the user's email is @google.com and they are using
   // a Linux OS.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (is_googler_) {
     heartbeat->set_hostname(net::GetHostName());
   }

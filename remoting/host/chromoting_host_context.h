@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -39,7 +40,7 @@ class ChromotingHostContext {
   static std::unique_ptr<ChromotingHostContext> Create(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Attaches task runners to the relevant browser threads for the chromoting
   // host.  Must be called on the UI thread of the browser process.
   // remoting::UrlRequestContextGetter returns ContainerURLRequestContext under
@@ -53,7 +54,7 @@ class ChromotingHostContext {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ~ChromotingHostContext();
 

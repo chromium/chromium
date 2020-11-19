@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -658,7 +659,7 @@ TEST_F(It2MeNativeMessagingHostTest,
   connect_message.SetBoolean("suppressUserDialogs", true);
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
-#if defined(OS_CHROMEOS) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   EXPECT_FALSE(factory_raw_ptr_->host->enable_dialogs());
 #else
   EXPECT_TRUE(factory_raw_ptr_->host->enable_dialogs());
@@ -675,7 +676,7 @@ TEST_F(It2MeNativeMessagingHostTest,
   connect_message.SetBoolean("suppressNotifications", true);
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
-#if defined(OS_CHROMEOS) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   EXPECT_FALSE(factory_raw_ptr_->host->enable_notifications());
 #else
   EXPECT_TRUE(factory_raw_ptr_->host->enable_notifications());

@@ -12,12 +12,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/it2me/it2me_host.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/signaling/delegating_signal_strategy.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "remoting/host/native_messaging/log_message_handler.h"
 #endif
 
@@ -72,7 +73,7 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
 
   static std::string HostStateToString(It2MeHostState host_state);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Creates native messaging host on ChromeOS. Must be called on the UI thread
   // of the browser process.
   static std::unique_ptr<extensions::NativeMessageHost> CreateForChromeOS(
@@ -80,7 +81,7 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
       scoped_refptr<base::SingleThreadTaskRunner> io_runnner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_runnner,
       policy::PolicyService* policy_service);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   // These "Process.." methods handle specific request types. The |response|
@@ -135,7 +136,7 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   std::unique_ptr<It2MeHostFactory> factory_;
   scoped_refptr<It2MeHost> it2me_host_;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't install a log message handler on ChromeOS because we run in the
   // browser process and don't want to intercept all its log messages.
   std::unique_ptr<LogMessageHandler> log_message_handler_;

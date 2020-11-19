@@ -223,6 +223,7 @@ static_library("protocol") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//crypto",
     "//jingle:jingle_glue",
     "//net",

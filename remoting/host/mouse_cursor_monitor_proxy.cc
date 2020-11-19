@@ -10,12 +10,13 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
 #endif
 
@@ -63,12 +64,12 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
     const webrtc::DesktopCaptureOptions& options) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   mouse_cursor_monitor_.reset(new MouseCursorMonitorAura());
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
       options, webrtc::kFullDesktopScreenId));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!mouse_cursor_monitor_)
     LOG(ERROR) << "Failed to initialize MouseCursorMonitor.";
 }

@@ -58,6 +58,7 @@ static_library("signaling") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//crypto",
     "//google_apis",
     "//jingle:webrtc_glue",

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 static_library("client") {
   sources = [
     "chromoting_client.cc",
@@ -66,7 +68,7 @@ static_library("client") {
 
   libs = []
 
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     # GestureInterpreter depends on //remoting/client/display, which currently
     # doesn't build on CrOS. crbug.com/869578
     sources += [

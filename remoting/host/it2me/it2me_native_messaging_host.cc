@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
 #include "net/base/url_util.h"
 #include "net/socket/client_socket_factory.h"
@@ -175,11 +176,11 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
 void It2MeNativeMessagingHost::Start(Client* client) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   client_ = client;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   log_message_handler_ = std::make_unique<LogMessageHandler>(
       base::BindRepeating(&It2MeNativeMessagingHost::SendMessageToClient,
                           base::Unretained(this)));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void It2MeNativeMessagingHost::SendMessageToClient(
@@ -336,7 +337,7 @@ void It2MeNativeMessagingHost::ProcessConnect(
   // Create the It2Me host and start connecting. Note that disabling dialogs is
   // only supported on ChromeOS.
   it2me_host_ = factory_->CreateIt2MeHost();
-#if defined(OS_CHROMEOS) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   it2me_host_->set_enable_dialogs(!suppress_user_dialogs);
   it2me_host_->set_enable_notifications(!suppress_notifications);
   it2me_host_->set_terminate_upon_input(terminate_upon_input);

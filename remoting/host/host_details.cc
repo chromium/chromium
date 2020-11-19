@@ -6,6 +6,7 @@
 
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/linux_util.h"
@@ -20,9 +21,9 @@ std::string GetHostOperatingSystemName() {
   return "Windows";
 #elif defined(OS_APPLE)
   return "Mac";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return "ChromeOS";
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return "Linux";
 #elif defined(OS_ANDROID)
   return "Android";
