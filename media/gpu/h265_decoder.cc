@@ -478,41 +478,57 @@ bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
   // Equation 8-5.
   int i, j, k;
   for (i = 0, j = 0, k = 0; i < curr_st_ref_pic_set.num_negative_pics; ++i) {
-    if (curr_st_ref_pic_set.used_by_curr_pic_s0[i]) {
-      poc_st_curr_before_[j++] =
-          curr_pic_->pic_order_cnt_val_ + curr_st_ref_pic_set.delta_poc_s0[i];
-    } else {
-      poc_st_foll_[k++] =
-          curr_pic_->pic_order_cnt_val_ + curr_st_ref_pic_set.delta_poc_s0[i];
+    base::CheckedNumeric<int> poc = curr_pic_->pic_order_cnt_val_;
+    poc += curr_st_ref_pic_set.delta_poc_s0[i];
+    if (!poc.IsValid()) {
+      DVLOG(1) << "Invalid POC";
+      return false;
     }
+    if (curr_st_ref_pic_set.used_by_curr_pic_s0[i])
+      poc_st_curr_before_[j++] = poc.ValueOrDefault(0);
+    else
+      poc_st_foll_[k++] = poc.ValueOrDefault(0);
   }
   num_poc_st_curr_before_ = j;
   for (i = 0, j = 0; i < curr_st_ref_pic_set.num_positive_pics; ++i) {
-    if (curr_st_ref_pic_set.used_by_curr_pic_s1[i]) {
-      poc_st_curr_after_[j++] =
-          curr_pic_->pic_order_cnt_val_ + curr_st_ref_pic_set.delta_poc_s1[i];
-    } else {
-      poc_st_foll_[k++] =
-          curr_pic_->pic_order_cnt_val_ + curr_st_ref_pic_set.delta_poc_s1[i];
+    base::CheckedNumeric<int> poc = curr_pic_->pic_order_cnt_val_;
+    poc += curr_st_ref_pic_set.delta_poc_s1[i];
+    if (!poc.IsValid()) {
+      DVLOG(1) << "Invalid POC";
+      return false;
     }
+    if (curr_st_ref_pic_set.used_by_curr_pic_s1[i])
+      poc_st_curr_after_[j++] = poc.ValueOrDefault(0);
+    else
+      poc_st_foll_[k++] = poc.ValueOrDefault(0);
   }
   num_poc_st_curr_after_ = j;
   num_poc_st_foll_ = k;
   for (i = 0, j = 0, k = 0;
        i < slice_hdr->num_long_term_sps + slice_hdr->num_long_term_pics; ++i) {
-    int poc_lt = slice_hdr->poc_lsb_lt[i];
+    base::CheckedNumeric<int> poc_lt = slice_hdr->poc_lsb_lt[i];
     if (slice_hdr->delta_poc_msb_present_flag[i]) {
-      poc_lt +=
-          curr_pic_->pic_order_cnt_val_ -
-          (slice_hdr->delta_poc_msb_cycle_lt[i] * max_pic_order_cnt_lsb_) -
-          (curr_pic_->pic_order_cnt_val_ & (max_pic_order_cnt_lsb_ - 1));
+      poc_lt += curr_pic_->pic_order_cnt_val_;
+      base::CheckedNumeric<int> poc_delta =
+          slice_hdr->delta_poc_msb_cycle_lt[i];
+      poc_delta *= max_pic_order_cnt_lsb_;
+      if (!poc_delta.IsValid()) {
+        DVLOG(1) << "Invalid POC";
+        return false;
+      }
+      poc_lt -= poc_delta.ValueOrDefault(0);
+      poc_lt -= curr_pic_->pic_order_cnt_val_ & (max_pic_order_cnt_lsb_ - 1);
+    }
+    if (!poc_lt.IsValid()) {
+      DVLOG(1) << "Invalid POC";
+      return false;
     }
     if (slice_hdr->used_by_curr_pic_lt[i]) {
-      poc_lt_curr_[j] = poc_lt;
+      poc_lt_curr_[j] = poc_lt.ValueOrDefault(0);
       curr_delta_poc_msb_present_flag_[j++] =
           slice_hdr->delta_poc_msb_present_flag[i];
     } else {
-      poc_lt_foll_[k] = poc_lt;
+      poc_lt_foll_[k] = poc_lt.ValueOrDefault(0);
       foll_delta_poc_msb_present_flag_[k++] =
           slice_hdr->delta_poc_msb_present_flag[i];
     }
