@@ -41,7 +41,7 @@ def get_total_files(git_src: str, subdirectory: str) -> int:
 def _run_ls_files_command(subdirectory: Optional[str],
                           git_src: str) -> List[str]:
   command = _build_ls_files_command(subdirectory)
-  filepath_str = run_command(_build_ls_files_command(subdirectory), cwd=git_src)
+  filepath_str = run_command(command, cwd=git_src)
   return [filepath for filepath in filepath_str.split('\n') if filepath]
 
 
