@@ -6,7 +6,7 @@
 [
     SecureContext,
     Exposed=Window,
-    ImplementedAs=NavigatorLocks
+    ImplementedAs=LockManager
 ] partial interface Navigator {
-    [CallWith=ScriptState] readonly attribute LockManager locks;
+    readonly attribute LockManager locks;
 };

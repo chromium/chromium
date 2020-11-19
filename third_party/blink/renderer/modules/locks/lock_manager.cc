@@ -202,10 +202,23 @@ class LockManager::LockRequestImpl final
   DISALLOW_COPY_AND_ASSIGN(LockRequestImpl);
 };
 
-LockManager::LockManager(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
-      service_(context),
-      observer_(context) {}
+const char LockManager::kSupplementName[] = "LockManager";
+
+// static
+LockManager* LockManager::locks(NavigatorBase& navigator) {
+  auto* supplement = Supplement<NavigatorBase>::From<LockManager>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<LockManager>(navigator);
+    Supplement<NavigatorBase>::ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+LockManager::LockManager(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator),
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      service_(navigator.GetExecutionContext()),
+      observer_(navigator.GetExecutionContext()) {}
 
 ScriptPromise LockManager::request(ScriptState* script_state,
                                    const String& name,
@@ -416,6 +429,7 @@ bool LockManager::IsPendingRequest(LockRequestImpl* request) {
 
 void LockManager::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(pending_requests_);
   visitor->Trace(held_locks_);

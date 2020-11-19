@@ -10,7 +10,5 @@ blink_modules_sources("locks") {
     "lock.h",
     "lock_manager.cc",
     "lock_manager.h",
-    "navigator_locks.cc",
-    "navigator_locks.h",
   ]
 }
