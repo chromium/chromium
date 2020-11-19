@@ -31,6 +31,17 @@
 
 namespace blink {
 
+class HeapListHashSetAllocator;
+template <typename ValueArg>
+class HeapListHashSetNode;
+
+namespace internal {
+
+template <typename T>
+constexpr bool IsMember = WTF::IsSubclassOfTemplate<T, Member>::value;
+
+}  // namespace internal
+
 #define DISALLOW_IN_CONTAINER()              \
  public:                                     \
   using IsDisallowedInContainerMarker = int; \
@@ -106,12 +117,6 @@ class PLATFORM_EXPORT HeapAllocator {
   template <typename T>
   static void BackingWriteBarrier(T** slot) {
     MarkingVisitor::WriteBarrier(slot);
-  }
-
-  template <typename Return, typename Metadata>
-  static Return Malloc(size_t size, const char* type_name) {
-    return reinterpret_cast<Return>(
-        MarkAsConstructed(ThreadHeap::Allocate<Metadata>(size)));
   }
 
   static bool IsAllocationAllowed() {
@@ -260,78 +265,6 @@ class PLATFORM_EXPORT HeapAllocator {
   friend class WTF::HashMap;
 };
 
-template <typename VisitorDispatcher, typename Value>
-static void TraceListHashSetValue(VisitorDispatcher visitor,
-                                  const Value& value) {
-  // We use the default hash traits for the value in the node, because
-  // ListHashSet does not let you specify any specific ones.
-  // We don't allow ListHashSet of WeakMember, so we set that one false
-  // (there's an assert elsewhere), but we have to specify some value for the
-  // strongify template argument, so we specify WTF::WeakPointersActWeak,
-  // arbitrarily.
-  TraceCollectionIfEnabled<WTF::kNoWeakHandling, Value,
-                           WTF::HashTraits<Value>>::Trace(visitor, &value);
-}
-
-// The inline capacity is just a dummy template argument to match the off-heap
-// allocator.
-// This inherits from the static-only HeapAllocator trait class, but we do
-// declare pointers to instances.  These pointers are always null, and no
-// objects are instantiated.
-template <typename ValueArg, wtf_size_t inlineCapacity>
-class HeapListHashSetAllocator : public HeapAllocator {
-  DISALLOW_NEW();
-
- public:
-  using TableAllocator = HeapAllocator;
-  using Node = WTF::ListHashSetNode<ValueArg, HeapListHashSetAllocator>;
-
-  class AllocatorProvider {
-    DISALLOW_NEW();
-
-   public:
-    // For the heap allocation we don't need an actual allocator object, so
-    // we just return null.
-    HeapListHashSetAllocator* Get() const { return nullptr; }
-
-    // No allocator object is needed.
-    void CreateAllocatorIfNeeded() {}
-    void ReleaseAllocator() {}
-
-    // There is no allocator object in the HeapListHashSet (unlike in the
-    // regular ListHashSet) so there is nothing to swap.
-    void Swap(AllocatorProvider& other) {}
-  };
-
-  void Deallocate(void* dummy) {}
-
-  // This is not a static method even though it could be, because it needs to
-  // match the one that the (off-heap) ListHashSetAllocator has.  The 'this'
-  // pointer will always be null.
-  void* AllocateNode() {
-    // Consider using a LinkedHashSet instead if this compile-time assert fails:
-    static_assert(!WTF::IsWeak<ValueArg>::value,
-                  "weak pointers in a ListHashSet will result in null entries "
-                  "in the set");
-
-    return Malloc<void*, Node>(
-        sizeof(Node),
-        nullptr /* Oilpan does not use the heap profiler at the moment. */);
-  }
-
-  template <typename VisitorDispatcher>
-  static void TraceValue(VisitorDispatcher visitor, const Node* node) {
-    TraceListHashSetValue(visitor, node->value_);
-  }
-};
-
-namespace internal {
-
-template <typename T>
-constexpr bool IsMember = WTF::IsSubclassOfTemplate<T, Member>::value;
-
-}  // namespace internal
-
 template <typename KeyArg,
           typename MappedArg,
           typename HashArg = typename DefaultHash<KeyArg>::Hash,
@@ -452,6 +385,77 @@ class HeapLinkedHashSet
   HeapLinkedHashSet() { CheckType(); }
 };
 
+}  // namespace blink
+
+namespace WTF {
+
+template <typename Value, wtf_size_t inlineCapacity>
+struct ListHashSetTraits<Value, inlineCapacity, blink::HeapListHashSetAllocator>
+    : public HashTraits<blink::Member<blink::HeapListHashSetNode<Value>>> {
+  using Allocator = blink::HeapListHashSetAllocator;
+  using Node = blink::HeapListHashSetNode<Value>;
+
+  static constexpr bool kCanTraceConcurrently =
+      HashTraits<Value>::kCanTraceConcurrently;
+};
+
+}  // namespace WTF
+
+namespace blink {
+
+template <typename ValueArg>
+class HeapListHashSetNode final
+    : public GarbageCollected<HeapListHashSetNode<ValueArg>> {
+ public:
+  using NodeAllocator = HeapListHashSetAllocator;
+  using PointerType = Member<HeapListHashSetNode>;
+  using Value = ValueArg;
+
+  template <typename U>
+  static HeapListHashSetNode* Create(NodeAllocator* allocator, U&& value) {
+    return MakeGarbageCollected<HeapListHashSetNode>(std::forward<U>(value));
+  }
+
+  template <typename U>
+  explicit HeapListHashSetNode(U&& value) : value_(std::forward<U>(value)) {
+    static_assert(std::is_trivially_destructible<Value>::value,
+                  "Garbage collected types used in ListHashSet must be "
+                  "trivially destructible");
+  }
+
+  void Destroy(NodeAllocator* allocator) {}
+
+  HeapListHashSetNode* Next() const { return next_; }
+  HeapListHashSetNode* Prev() const { return prev_; }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(prev_);
+    visitor->Trace(next_);
+    visitor->Trace(value_);
+  }
+
+  ValueArg value_;
+  PointerType prev_;
+  PointerType next_;
+};
+
+// Empty allocator as HeapListHashSetNode directly allocates using
+// MakeGarbageCollected().
+class HeapListHashSetAllocator {
+  DISALLOW_NEW();
+
+ public:
+  using TableAllocator = HeapAllocator;
+
+  static constexpr bool kIsGarbageCollected = true;
+
+  struct AllocatorProvider final {
+    void CreateAllocatorIfNeeded() {}
+    HeapListHashSetAllocator* Get() { return nullptr; }
+    void Swap(AllocatorProvider& other) {}
+  };
+};
+
 template <typename T, typename U>
 struct GCInfoTrait<HeapLinkedHashSet<T, U>>
     : public GCInfoTrait<LinkedHashSet<T, U, HeapAllocator>> {};
@@ -460,11 +464,10 @@ template <typename ValueArg,
           wtf_size_t inlineCapacity = 0,  // The inlineCapacity is just a dummy
                                           // to match ListHashSet (off-heap).
           typename HashArg = typename DefaultHash<ValueArg>::Hash>
-class HeapListHashSet
-    : public ListHashSet<ValueArg,
-                         inlineCapacity,
-                         HashArg,
-                         HeapListHashSetAllocator<ValueArg, inlineCapacity>> {
+class HeapListHashSet : public ListHashSet<ValueArg,
+                                           inlineCapacity,
+                                           HashArg,
+                                           HeapListHashSetAllocator> {
   IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
   DISALLOW_NEW();
 
@@ -494,10 +497,7 @@ class HeapListHashSet
 template <typename T, wtf_size_t inlineCapacity, typename U>
 struct GCInfoTrait<HeapListHashSet<T, inlineCapacity, U>>
     : public GCInfoTrait<
-          ListHashSet<T,
-                      inlineCapacity,
-                      U,
-                      HeapListHashSetAllocator<T, inlineCapacity>>> {};
+          ListHashSet<T, inlineCapacity, U, HeapListHashSetAllocator>> {};
 
 template <typename Value,
           typename HashFunctions = typename DefaultHash<Value>::Hash,
@@ -813,43 +813,6 @@ struct HashTraits<blink::UntracedMember<T>>
   static PeekOutType Peek(const blink::UntracedMember<T>& value) {
     return value;
   }
-};
-
-template <typename T, wtf_size_t inlineCapacity>
-struct IsTraceable<
-    ListHashSetNode<T, blink::HeapListHashSetAllocator<T, inlineCapacity>>*> {
-  STATIC_ONLY(IsTraceable);
-  static_assert(sizeof(T), "T must be fully defined");
-  // All heap allocated node pointers need visiting to keep the nodes alive,
-  // regardless of whether they contain pointers to other heap allocated
-  // objects.
-  static const bool value = true;
-};
-
-template <typename T, wtf_size_t inlineCapacity>
-struct IsGarbageCollectedType<
-    ListHashSetNode<T, blink::HeapListHashSetAllocator<T, inlineCapacity>>> {
-  static const bool value = true;
-};
-
-template <typename Set>
-struct IsGarbageCollectedType<ListHashSetIterator<Set>> {
-  static const bool value = IsGarbageCollectedType<Set>::value;
-};
-
-template <typename Set>
-struct IsGarbageCollectedType<ListHashSetConstIterator<Set>> {
-  static const bool value = IsGarbageCollectedType<Set>::value;
-};
-
-template <typename Set>
-struct IsGarbageCollectedType<ListHashSetReverseIterator<Set>> {
-  static const bool value = IsGarbageCollectedType<Set>::value;
-};
-
-template <typename Set>
-struct IsGarbageCollectedType<ListHashSetConstReverseIterator<Set>> {
-  static const bool value = IsGarbageCollectedType<Set>::value;
 };
 
 template <typename T, typename H>

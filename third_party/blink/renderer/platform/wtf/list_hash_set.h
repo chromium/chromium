@@ -59,30 +59,167 @@ class ListHashSetReverseIterator;
 template <typename Set>
 class ListHashSetConstReverseIterator;
 
-template <typename ValueArg>
-class ListHashSetNodeBase;
 template <typename ValueArg, typename Allocator>
-class ListHashSetNode;
-template <typename ValueArg, size_t inlineCapacity>
-struct ListHashSetAllocator;
+class MallocedListHashSetNode;
+template <typename ValueArg, wtf_size_t inlineCapacity>
+struct MallocedListHashSetAllocator;
 
 template <typename HashArg>
 struct ListHashSetNodeHashFunctions;
-template <typename HashArg>
+template <typename HashArg, typename NodeArg>
 struct ListHashSetTranslator;
+template <typename Value, wtf_size_t inlineCapacity, typename Allocator>
+struct ListHashSetTraits;
 
-template <typename Value, typename Allocator>
-struct ListHashSetTraits
-    : public HashTraits<ListHashSetNode<Value, Allocator>*> {
-  using Node = ListHashSetNode<Value, Allocator>;
+template <typename Value, wtf_size_t inlineCapacity>
+struct ListHashSetTraits<Value,
+                         inlineCapacity,
+                         MallocedListHashSetAllocator<Value, inlineCapacity>>
+    : public HashTraits<MallocedListHashSetNode<
+          Value,
+          MallocedListHashSetAllocator<Value, inlineCapacity>>*> {
+  using Allocator = MallocedListHashSetAllocator<Value, inlineCapacity>;
+  using Node = MallocedListHashSetNode<Value, Allocator>;
+};
 
-  static void ConstructDeletedValue(Node*& slot, bool) {
-    AsAtomicPtr(&slot)->store(reinterpret_cast<Node*>(-1),
-                              std::memory_order_relaxed);
+template <typename ValueArg, typename AllocatorArg>
+class MallocedListHashSetNode {
+  DISALLOW_NEW();
+
+ public:
+  using NodeAllocator = AllocatorArg;
+  using PointerType = MallocedListHashSetNode*;
+  using Value = ValueArg;
+
+  template <typename U>
+  static MallocedListHashSetNode* Create(NodeAllocator* allocator, U&& value) {
+    return new (allocator->AllocateNode())
+        MallocedListHashSetNode(std::forward<U>(value));
   }
 
-  static constexpr bool kCanTraceConcurrently =
-      HashTraits<Value>::kCanTraceConcurrently;
+  template <typename U>
+  explicit MallocedListHashSetNode(U&& value)
+      : value_(std::forward<U>(value)) {}
+
+  void Destroy(NodeAllocator* allocator) {
+    this->~MallocedListHashSetNode();
+    allocator->Deallocate(this);
+  }
+
+  MallocedListHashSetNode* Next() const { return next_; }
+  MallocedListHashSetNode* Prev() const { return prev_; }
+
+  ValueArg value_;
+  PointerType prev_ = nullptr;
+  PointerType next_ = nullptr;
+#if DCHECK_IS_ON()
+  bool is_allocated_ = true;
+#endif
+};
+
+// This allocator is only used for non-Heap ListHashSets.
+template <typename ValueArg, wtf_size_t inlineCapacity>
+struct MallocedListHashSetAllocator : public PartitionAllocator {
+  using TableAllocator = PartitionAllocator;
+  using Node = MallocedListHashSetNode<ValueArg, MallocedListHashSetAllocator>;
+
+  class AllocatorProvider {
+    DISALLOW_NEW();
+
+   public:
+    AllocatorProvider() = default;
+    void CreateAllocatorIfNeeded() {
+      if (!allocator_)
+        allocator_ = new MallocedListHashSetAllocator;
+    }
+
+    void ReleaseAllocator() {
+      delete allocator_;
+      allocator_ = nullptr;
+    }
+
+    void Swap(AllocatorProvider& other) {
+      std::swap(allocator_, other.allocator_);
+    }
+
+    MallocedListHashSetAllocator* Get() const {
+      DCHECK(allocator_);
+      return allocator_;
+    }
+
+   private:
+    // Not using std::unique_ptr as this pointer should be deleted at
+    // releaseAllocator() method rather than at destructor.
+    MallocedListHashSetAllocator* allocator_ = nullptr;
+  };
+
+  MallocedListHashSetAllocator() : free_list_(Pool()) {
+    memset(pool_, 0, sizeof(pool_));
+  }
+
+  Node* AllocateNode() {
+    Node* result = free_list_;
+
+    if (!result) {
+      return static_cast<Node*>(WTF::Partitions::FastMalloc(
+          sizeof(Node), WTF_HEAP_PROFILER_TYPE_NAME(Node)));
+    }
+
+#if DCHECK_IS_ON()
+    DCHECK(!result->is_allocated_);
+#endif
+
+    Node* next = result->Next();
+#if DCHECK_IS_ON()
+    DCHECK(!next || !next->is_allocated_);
+#endif
+    if (!next && !is_done_with_initial_free_list_) {
+      next = result + 1;
+      if (next == PastPool()) {
+        is_done_with_initial_free_list_ = true;
+        next = nullptr;
+      } else {
+        DCHECK(InPool(next));
+#if DCHECK_IS_ON()
+        DCHECK(!next->is_allocated_);
+#endif
+      }
+    }
+    free_list_ = next;
+
+    return result;
+  }
+
+  void Deallocate(Node* node) {
+    if (InPool(node)) {
+#if DCHECK_IS_ON()
+      node->is_allocated_ = false;
+#endif
+      node->next_ = free_list_;
+      free_list_ = node;
+      return;
+    }
+
+    WTF::Partitions::FastFree(node);
+  }
+
+  bool InPool(Node* node) { return node >= Pool() && node < PastPool(); }
+
+ private:
+  Node* Pool() { return reinterpret_cast_ptr<Node*>(pool_); }
+  Node* PastPool() { return Pool() + kPoolSize; }
+
+  Node* free_list_;
+  bool is_done_with_initial_free_list_ = false;
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  // The allocation pool for nodes is one big chunk that ASAN has no insight
+  // into, so it can cloak errors. Make it as small as possible to force nodes
+  // to be allocated individually where ASAN can see them.
+  static const size_t kPoolSize = 1;
+#else
+  static const size_t kPoolSize = inlineCapacity;
+#endif
+  alignas(Node) char pool_[sizeof(Node) * kPoolSize];
 };
 
 // Note that for a ListHashSet you cannot specify the HashTraits as a template
@@ -91,37 +228,37 @@ template <typename ValueArg,
           size_t inlineCapacity = 256,
           typename HashArg = typename DefaultHash<ValueArg>::Hash,
           typename AllocatorArg =
-              ListHashSetAllocator<ValueArg, inlineCapacity>>
+              MallocedListHashSetAllocator<ValueArg, inlineCapacity>>
 class ListHashSet
     : public ConditionalDestructor<
           ListHashSet<ValueArg, inlineCapacity, HashArg, AllocatorArg>,
           AllocatorArg::kIsGarbageCollected> {
-  typedef AllocatorArg Allocator;
+  using Allocator = AllocatorArg;
   USE_ALLOCATOR(ListHashSet, Allocator);
 
-  typedef ListHashSetNode<ValueArg, Allocator> Node;
-  typedef ListHashSetTraits<ValueArg, Allocator> NodeTraits;
-  typedef ListHashSetNodeHashFunctions<HashArg> NodeHash;
-  typedef ListHashSetTranslator<HashArg> BaseTranslator;
+  using NodeTraits = ListHashSetTraits<ValueArg, inlineCapacity, Allocator>;
+  using Node = typename NodeTraits::Node;
+  using NodeHash = ListHashSetNodeHashFunctions<HashArg>;
+  using BaseTranslator = ListHashSetTranslator<HashArg, Node>;
 
-  typedef HashTable<Node*,
-                    Node*,
+  typedef HashTable<typename Node::PointerType,
+                    typename Node::PointerType,
                     IdentityExtractor,
                     NodeHash,
                     NodeTraits,
                     NodeTraits,
                     typename Allocator::TableAllocator>
       ImplType;
-  typedef HashTableIterator<Node*,
-                            Node*,
+  typedef HashTableIterator<typename Node::PointerType,
+                            typename Node::PointerType,
                             IdentityExtractor,
                             NodeHash,
                             NodeTraits,
                             NodeTraits,
                             typename Allocator::TableAllocator>
       ImplTypeIterator;
-  typedef HashTableConstIterator<Node*,
-                                 Node*,
+  typedef HashTableConstIterator<typename Node::PointerType,
+                                 typename Node::PointerType,
                                  IdentityExtractor,
                                  NodeHash,
                                  NodeTraits,
@@ -254,7 +391,7 @@ class ListHashSet
   void PrependNode(Node*);
   void InsertNodeBefore(Node* before_node, Node* new_node);
   void DeleteAllNodes();
-  Allocator* GetAllocator() const { return allocator_provider_.Get(); }
+  Allocator* GetAllocator() { return allocator_provider_.Get(); }
   void CreateAllocatorIfNeeded() {
     allocator_provider_.CreateAllocatorIfNeeded();
   }
@@ -271,188 +408,9 @@ class ListHashSet
   }
 
   ImplType impl_;
-  Node* head_;
-  Node* tail_;
+  typename Node::PointerType head_;
+  typename Node::PointerType tail_;
   typename Allocator::AllocatorProvider allocator_provider_;
-};
-
-// ListHashSetNode has this base class to hold the members because the MSVC
-// compiler otherwise gets into circular template dependencies when trying to do
-// sizeof on a node.
-template <typename ValueArg>
-class ListHashSetNodeBase {
-  DISALLOW_NEW();
-
- protected:
-  template <typename U>
-  explicit ListHashSetNodeBase(U&& value) : value_(std::forward<U>(value)) {}
-
- public:
-  ValueArg value_;
-  ListHashSetNodeBase* prev_ = nullptr;
-  ListHashSetNodeBase* next_ = nullptr;
-#if DCHECK_IS_ON()
-  bool is_allocated_ = true;
-#endif
-};
-
-// This allocator is only used for non-Heap ListHashSets.
-template <typename ValueArg, size_t inlineCapacity>
-struct ListHashSetAllocator : public PartitionAllocator {
-  typedef PartitionAllocator TableAllocator;
-  typedef ListHashSetNode<ValueArg, ListHashSetAllocator> Node;
-  typedef ListHashSetNodeBase<ValueArg> NodeBase;
-
-  class AllocatorProvider {
-    DISALLOW_NEW();
-
-   public:
-    AllocatorProvider() : allocator_(nullptr) {}
-    void CreateAllocatorIfNeeded() {
-      if (!allocator_)
-        allocator_ = new ListHashSetAllocator;
-    }
-
-    void ReleaseAllocator() {
-      delete allocator_;
-      allocator_ = nullptr;
-    }
-
-    void Swap(AllocatorProvider& other) {
-      std::swap(allocator_, other.allocator_);
-    }
-
-    ListHashSetAllocator* Get() const {
-      DCHECK(allocator_);
-      return allocator_;
-    }
-
-   private:
-    // Not using std::unique_ptr as this pointer should be deleted at
-    // releaseAllocator() method rather than at destructor.
-    ListHashSetAllocator* allocator_;
-  };
-
-  ListHashSetAllocator()
-      : free_list_(Pool()), is_done_with_initial_free_list_(false) {
-    memset(pool_, 0, sizeof(pool_));
-  }
-
-  Node* AllocateNode() {
-    Node* result = free_list_;
-
-    if (!result)
-      return static_cast<Node*>(WTF::Partitions::FastMalloc(
-          sizeof(NodeBase), WTF_HEAP_PROFILER_TYPE_NAME(Node)));
-
-#if DCHECK_IS_ON()
-    DCHECK(!result->is_allocated_);
-#endif
-
-    Node* next = result->Next();
-#if DCHECK_IS_ON()
-    DCHECK(!next || !next->is_allocated_);
-#endif
-    if (!next && !is_done_with_initial_free_list_) {
-      next = result + 1;
-      if (next == PastPool()) {
-        is_done_with_initial_free_list_ = true;
-        next = nullptr;
-      } else {
-        DCHECK(InPool(next));
-#if DCHECK_IS_ON()
-        DCHECK(!next->is_allocated_);
-#endif
-      }
-    }
-    free_list_ = next;
-
-    return result;
-  }
-
-  void Deallocate(Node* node) {
-    if (InPool(node)) {
-#if DCHECK_IS_ON()
-      node->is_allocated_ = false;
-#endif
-      node->next_ = free_list_;
-      free_list_ = node;
-      return;
-    }
-
-    WTF::Partitions::FastFree(node);
-  }
-
-  bool InPool(Node* node) { return node >= Pool() && node < PastPool(); }
-
-  template <typename VisitorDispatcher>
-  static void TraceValue(VisitorDispatcher, const Node*) {}
-
- private:
-  Node* Pool() { return reinterpret_cast_ptr<Node*>(pool_); }
-  Node* PastPool() { return Pool() + kPoolSize; }
-
-  Node* free_list_;
-  bool is_done_with_initial_free_list_;
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  // The allocation pool for nodes is one big chunk that ASAN has no insight
-  // into, so it can cloak errors. Make it as small as possible to force nodes
-  // to be allocated individually where ASAN can see them.
-  static const size_t kPoolSize = 1;
-#else
-  static const size_t kPoolSize = inlineCapacity;
-#endif
-  alignas(NodeBase) char pool_[sizeof(NodeBase) * kPoolSize];
-};
-
-template <typename ValueArg, typename AllocatorArg>
-class ListHashSetNode : public ListHashSetNodeBase<ValueArg> {
- public:
-  typedef AllocatorArg NodeAllocator;
-  typedef ValueArg Value;
-
-  template <typename U>
-  explicit ListHashSetNode(U&& value)
-      : ListHashSetNodeBase<ValueArg>(std::forward<U>(value)) {
-    static_assert(!NodeAllocator::kIsGarbageCollected ||
-                      std::is_trivially_destructible<Value>::value,
-                  "Garbage collected types used in ListHashSet should be "
-                  "trivially destructible");
-  }
-
-  void* operator new(size_t, NodeAllocator* allocator) {
-    static_assert(
-        sizeof(ListHashSetNode) == sizeof(ListHashSetNodeBase<ValueArg>),
-        "please add any fields to the base");
-    return allocator->AllocateNode();
-  }
-
-  void Destroy(NodeAllocator* allocator) {
-    if (NodeAllocator::kIsGarbageCollected)
-      return;
-    this->~ListHashSetNode();
-    allocator->Deallocate(this);
-  }
-
-  template <typename VisitorDispatcher, typename A = NodeAllocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(
-      VisitorDispatcher visitor) const {
-    NodeAllocator::TraceValue(visitor, this);
-  }
-
-  ListHashSetNode* Next() const {
-    return reinterpret_cast<ListHashSetNode*>(this->next_);
-  }
-  ListHashSetNode* Prev() const {
-    return reinterpret_cast<ListHashSetNode*>(this->prev_);
-  }
-
-  // Don't add fields here, the ListHashSetNodeBase and this should have the
-  // same size.
-
-  static constexpr ListHashSetNode* UnlinkedNodePointer() {
-    return reinterpret_cast<ListHashSetNode*>(-1);
-  }
 };
 
 template <typename HashArg>
@@ -462,8 +420,8 @@ struct ListHashSetNodeHashFunctions {
   static unsigned GetHash(const T& key) {
     return HashArg::GetHash(key->value_);
   }
-  template <typename T>
-  static bool Equal(const T& a, const T& b) {
+  template <typename U, typename V>
+  static bool Equal(const U& a, const V& b) {
     return HashArg::Equal(a->value_, b->value_);
   }
   static const bool safe_to_compare_to_empty_or_deleted = false;
@@ -512,11 +470,6 @@ class ListHashSetIterator {
   }
 
   operator const_iterator() const { return iterator_; }
-
-  template <typename VisitorDispatcher>
-  void Trace(VisitorDispatcher visitor) const {
-    iterator_.Trace(visitor);
-  }
 
  private:
   Node* GetNode() { return iterator_.GetNode(); }
@@ -575,12 +528,6 @@ class ListHashSetConstIterator {
     return position_ != other.position_;
   }
 
-  template <typename VisitorDispatcher>
-  void Trace(VisitorDispatcher visitor) const {
-    visitor->Trace(*set_);
-    visitor->Trace(position_);
-  }
-
  private:
   Node* GetNode() { return position_; }
 
@@ -634,11 +581,6 @@ class ListHashSetReverseIterator {
   }
 
   operator const_reverse_iterator() const { return iterator_; }
-
-  template <typename VisitorDispatcher>
-  void Trace(VisitorDispatcher visitor) const {
-    iterator_.trace(visitor);
-  }
 
  private:
   Node* GetNode() { return iterator_.node(); }
@@ -697,12 +639,6 @@ class ListHashSetConstReverseIterator {
     return position_ != other.position_;
   }
 
-  template <typename VisitorDispatcher>
-  void Trace(VisitorDispatcher visitor) const {
-    visitor->Trace(*set_);
-    visitor->Trace(position_);
-  }
-
  private:
   Node* GetNode() { return position_; }
 
@@ -713,9 +649,12 @@ class ListHashSetConstReverseIterator {
   friend class ListHashSet;
 };
 
-template <typename HashFunctions>
+template <typename HashFunctions, typename NodeArg>
 struct ListHashSetTranslator {
   STATIC_ONLY(ListHashSetTranslator);
+
+  using Node = NodeArg;
+
   template <typename T>
   static unsigned GetHash(const T& key) {
     return HashFunctions::GetHash(key);
@@ -724,11 +663,15 @@ struct ListHashSetTranslator {
   static bool Equal(const T& a, const U& b) {
     return HashFunctions::Equal(a->value_, b);
   }
-  template <typename T, typename U, typename V>
-  static void Translate(T*& location, U&& key, const V& allocator) {
-    AsAtomicPtr(&location)->store(new (const_cast<V*>(&allocator))
-                                      T(std::forward<U>(key)),
-                                  std::memory_order_relaxed);
+  template <typename Key, typename Allocator>
+  static void Translate(typename Node::PointerType& location,
+                        Key&& key,
+                        Allocator& allocator) {
+    // PointerType is
+    // - Member<Node> for the Heap version, supporting concurrency using
+    //   atomics;
+    // - Node* for the PA version;
+    location = Node::Create(&allocator, std::forward<Key>(key));
   }
 };
 
@@ -1095,10 +1038,9 @@ ListHashSet<T, inlineCapacity, U, V>::Trace(VisitorDispatcher visitor) const {
   static_assert(!IsWeak<T>::value,
                 "HeapListHashSet does not support weakness, consider using "
                 "HeapLinkedHashSet instead.");
-  // This marks all the nodes and their contents live that can be accessed
-  // through the HashTable. That includes m_head and m_tail so we do not have
-  // to explicitly trace them here.
   impl_.Trace(visitor);
+  visitor->Trace(head_);
+  visitor->Trace(tail_);
 }
 
 }  // namespace WTF

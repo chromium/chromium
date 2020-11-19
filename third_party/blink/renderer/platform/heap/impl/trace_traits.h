@@ -22,10 +22,6 @@
 
 namespace blink {
 
-template <typename Table>
-class HeapHashTableBacking;
-template <typename ValueArg, wtf_size_t inlineCapacity>
-class HeapListHashSetAllocator;
 template <typename T>
 struct TraceTrait;
 template <typename T>
@@ -297,82 +293,6 @@ struct TraceInCollectionTrait<kWeakHandling, blink::WeakMember<T>, Traits> {
   static bool IsAlive(const blink::LivenessBroker& info,
                       const blink::WeakMember<T>& value) {
     return info.IsHeapObjectAlive(value);
-  }
-};
-
-// This specialization of TraceInCollectionTrait is for the backing of
-// HeapListHashSet.  This is for the case that we find a reference to the
-// backing from the stack.  That probably means we have a GC while we are in a
-// ListHashSet method since normal API use does not put pointers to the backing
-// on the stack.
-template <typename NodeContents,
-          size_t inlineCapacity,
-          typename T,
-          typename U,
-          typename V,
-          typename W,
-          typename X,
-          typename Y>
-struct TraceInCollectionTrait<
-    kNoWeakHandling,
-    blink::HeapHashTableBacking<HashTable<
-        ListHashSetNode<NodeContents,
-                        blink::HeapListHashSetAllocator<T, inlineCapacity>>*,
-        U,
-        V,
-        W,
-        X,
-        Y,
-        blink::HeapAllocator>>,
-    void> {
-  using Node =
-      ListHashSetNode<NodeContents,
-                      blink::HeapListHashSetAllocator<T, inlineCapacity>>;
-  using Table = HashTable<Node*, U, V, W, X, Y, blink::HeapAllocator>;
-
-  static void Trace(blink::Visitor* visitor, const void* self) {
-    const Node* const* array = reinterpret_cast<const Node* const*>(self);
-    blink::HeapObjectHeader* header =
-        blink::HeapObjectHeader::FromPayload(self);
-    size_t length = header->PayloadSize() / sizeof(Node*);
-    const bool is_concurrent = visitor->IsConcurrent();
-    for (size_t i = 0; i < length; ++i) {
-      const Node* node;
-      if (is_concurrent) {
-        // If tracing concurrently, IsEmptyOrDeletedBucket can cause data
-        // races. Loading array[i] atomically prevents possible data races.
-        // array[i] is of type Node* so can directly loaded atomically.
-        node = AsAtomicPtr(&array[i])->load(std::memory_order_relaxed);
-      } else {
-        node = array[i];
-      }
-      if (!HashTableHelper<
-              const Node*, typename Table::ExtractorType,
-              typename Table::KeyTraitsType>::IsEmptyOrDeletedBucket(node)) {
-        visitor->Trace(node);
-      }
-    }
-  }
-};
-
-// ListHashSetNode pointers (a ListHashSet is implemented as a hash table of
-// these pointers).
-template <typename Value, size_t inlineCapacity, typename Traits>
-struct TraceInCollectionTrait<
-    kNoWeakHandling,
-    ListHashSetNode<Value,
-                    blink::HeapListHashSetAllocator<Value, inlineCapacity>>*,
-    Traits> {
-  using Node =
-      ListHashSetNode<Value,
-                      blink::HeapListHashSetAllocator<Value, inlineCapacity>>;
-
-  static void Trace(blink::Visitor* visitor, const Node* node) {
-    static_assert(!IsWeak<Node>::value,
-                  "ListHashSet does not support weakness");
-    static_assert(IsTraceableInCollectionTrait<Traits>::value,
-                  "T should be traceable");
-    visitor->Trace(node);
   }
 };
 
