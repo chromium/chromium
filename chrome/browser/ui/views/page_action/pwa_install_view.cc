@@ -44,9 +44,10 @@ constexpr base::FeatureParam<ExperimentIcon> kInstallIconParam{
     &kIconParamOptions};
 
 // Site engagement score threshold to show In-Product Help.
+// Add x_ prefix so the IPH feature engagement tracker can ignore this.
 constexpr base::FeatureParam<int> kIphSiteEngagementThresholdParam{
     &feature_engagement::kIPHDesktopPwaInstallFeature,
-    "siteEngagementThreshold", 10};
+    "x_site_engagement_threshold", 10};
 
 }  // namespace
 
