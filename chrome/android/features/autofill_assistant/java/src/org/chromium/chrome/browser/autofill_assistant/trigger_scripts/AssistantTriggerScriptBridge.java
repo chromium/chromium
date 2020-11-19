@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.List;
 import java.util.Map;
@@ -53,8 +54,9 @@ public class AssistantTriggerScriptBridge {
      */
     public void start(BottomSheetController bottomSheetController, Context context,
             ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            @NonNull WebContents webContents, @NonNull String initialUrl,
-            Map<String, String> scriptParameters, String experimentIds, Delegate delegate) {
+            ApplicationViewportInsetSupplier bottomInsetProvider, @NonNull WebContents webContents,
+            @NonNull String initialUrl, Map<String, String> scriptParameters, String experimentIds,
+            Delegate delegate) {
         mDelegate = delegate;
         mContext = context;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
@@ -82,7 +84,7 @@ public class AssistantTriggerScriptBridge {
                         webContents.getVisibleUrl().getSpec(),
                         AssistantCoordinator.FEEDBACK_CATEGORY_TAG);
             }
-        }, bottomSheetController);
+        }, webContents, bottomSheetController, bottomInsetProvider);
 
         if (mKeyboardVisibilityListener != null) {
             mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(
@@ -113,12 +115,13 @@ public class AssistantTriggerScriptBridge {
     @CalledByNative
     private void showTriggerScript(String[] cancelPopupMenuItems, int[] cancelPopupMenuActions,
             List<AssistantChip> leftAlignedChips, int[] leftAlignedChipsActions,
-            List<AssistantChip> rightAlignedChips, int[] rightAlignedChipsActions) {
+            List<AssistantChip> rightAlignedChips, int[] rightAlignedChipsActions,
+            boolean resizeVisualViewport) {
         // NOTE: the cancel popup menu must be set before the chips are bound.
         mTriggerScript.setCancelPopupMenu(cancelPopupMenuItems, cancelPopupMenuActions);
         mTriggerScript.setLeftAlignedChips(leftAlignedChips, leftAlignedChipsActions);
         mTriggerScript.setRightAlignedChips(rightAlignedChips, rightAlignedChipsActions);
-        mTriggerScript.show();
+        mTriggerScript.show(resizeVisualViewport);
 
         // A trigger script was displayed, users are no longer considered first-time users.
         AutofillAssistantPreferencesUtil.setAutofillAssistantReturningLiteScriptUser();
