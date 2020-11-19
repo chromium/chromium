@@ -4,6 +4,8 @@
 
 #include "chrome/browser/reading_list/android/empty_reading_list_manager.h"
 
+#include "components/bookmarks/browser/bookmark_utils.h"
+
 EmptyReadingListManager::EmptyReadingListManager() = default;
 
 EmptyReadingListManager::~EmptyReadingListManager() = default;
@@ -27,6 +29,11 @@ const bookmarks::BookmarkNode* EmptyReadingListManager::GetNodeByID(
     int64_t id) const {
   return nullptr;
 }
+
+void EmptyReadingListManager::GetMatchingNodes(
+    const bookmarks::QueryFields& query,
+    size_t max_count,
+    std::vector<const bookmarks::BookmarkNode*>* nodes) {}
 
 bool EmptyReadingListManager::IsReadingListBookmark(
     const bookmarks::BookmarkNode* node) const {

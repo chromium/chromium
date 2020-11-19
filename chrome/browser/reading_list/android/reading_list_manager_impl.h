@@ -42,6 +42,10 @@ class ReadingListManagerImpl : public ReadingListManager,
                                      const std::string& title) override;
   const bookmarks::BookmarkNode* Get(const GURL& url) const override;
   const bookmarks::BookmarkNode* GetNodeByID(int64_t id) const override;
+  void GetMatchingNodes(
+      const bookmarks::QueryFields& query,
+      size_t max_count,
+      std::vector<const bookmarks::BookmarkNode*>* results) override;
   bool IsReadingListBookmark(
       const bookmarks::BookmarkNode* node) const override;
   void Delete(const GURL& url) override;

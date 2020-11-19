@@ -12,6 +12,7 @@
 
 namespace bookmarks {
 class BookmarkNode;
+struct QueryFields;
 }  // namespace bookmarks
 
 class GURL;
@@ -55,6 +56,14 @@ class ReadingListManager : public KeyedService {
   // Gets the bookmark node for the given |id|. The returned node can be the
   // root folder node. Returns nullptr if no match.
   virtual const bookmarks::BookmarkNode* GetNodeByID(int64_t id) const = 0;
+
+  // Gets the bookmark nodes that match a search |query|. The resulting nodes
+  // are appended to the |results| up to a upper limit of |max_count|. No-op if
+  // |results| already have |max_count| nodes.
+  virtual void GetMatchingNodes(
+      const bookmarks::QueryFields& query,
+      size_t max_count,
+      std::vector<const bookmarks::BookmarkNode*>* results) = 0;
 
   // Returns whether the bookmark node is maintained in reading list manager.
   // Will return true if |node| is the root for reading list nodes.
