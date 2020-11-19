@@ -458,8 +458,7 @@ ScriptPromise VideoEncoder::flush(ExceptionState& exception_state) {
     return ScriptPromise();
 
   Request* request = MakeGarbageCollected<Request>();
-  request->resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  request->resolver = MakePromise();
   request->reset_count = reset_count_;
   request->type = Request::Type::kFlush;
   EnqueueRequest(request);
@@ -471,9 +470,8 @@ void VideoEncoder::reset(ExceptionState& exception_state) {
   if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
 
-  ResetInternal();
-
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
+  ResetInternal();
 }
 
 void VideoEncoder::ResetInternal() {
@@ -482,13 +480,34 @@ void VideoEncoder::ResetInternal() {
   while (!requests_.empty()) {
     Request* pending_req = requests_.TakeFirst();
     DCHECK(pending_req);
-    if (pending_req->resolver) {
-      auto* ex = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "reset() was called.");
-      pending_req->resolver.Release()->Reject(ex);
-    }
+    RejectPromise(pending_req);
   }
   stall_request_processing_ = false;
+}
+
+ScriptPromiseResolver* VideoEncoder::MakePromise() {
+  outstanding_promises_++;
+  return MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+}
+
+void VideoEncoder::ResolvePromise(Request* req) {
+  if (!req || !req->resolver)
+    return;
+  req->resolver.Release()->Resolve();
+  DCHECK_GT(outstanding_promises_, 0u);
+  outstanding_promises_--;
+}
+
+void VideoEncoder::RejectPromise(Request* req, DOMException* ex) {
+  if (!req || !req->resolver)
+    return;
+  auto* resolver = req->resolver.Release();
+  if (ex)
+    resolver->Reject(ex);
+  else
+    resolver->Reject();
+  DCHECK_GT(outstanding_promises_, 0u);
+  outstanding_promises_--;
 }
 
 void VideoEncoder::HandleError(DOMException* ex) {
@@ -636,18 +655,22 @@ void VideoEncoder::ProcessFlush(Request* request) {
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::Status status) {
-    if (!self || self->reset_count_ != req->reset_count)
+    if (!self)
       return;
-    DCHECK(req->resolver);
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    if (self->reset_count_ != req->reset_count) {
+      self->RejectPromise(req);
+      return;
+    }
+    DCHECK(req->resolver);
     if (status.is_ok()) {
-      req->resolver.Release()->Resolve();
+      self->ResolvePromise(req);
     } else {
       std::string error_msg = "Flushing error.";
       self->HandleError(error_msg, status);
       auto* ex = MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kOperationError, error_msg.c_str());
-      req->resolver.Release()->Reject(ex);
+      self->RejectPromise(req, ex);
     }
     self->stall_request_processing_ = false;
     self->ProcessRequests();
@@ -696,6 +719,10 @@ void VideoEncoder::CallOutputCallback(
 
 void VideoEncoder::ContextDestroyed() {
   parent_media_log_ = nullptr;
+}
+
+bool VideoEncoder::HasPendingActivity() const {
+  return outstanding_promises_ > 0;
 }
 
 void VideoEncoder::Trace(Visitor* visitor) const {

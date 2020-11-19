@@ -6,7 +6,8 @@
 
 [
     Exposed=Window,
-    RuntimeEnabled=WebCodecs
+    RuntimeEnabled=WebCodecs,
+    ActiveScriptWrappable
 ] interface VideoEncoder {
     [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoEncoder]
     constructor(VideoEncoderInit init);

@@ -13,6 +13,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_output_callback.h"
@@ -38,6 +39,7 @@ class Visitor;
 
 class MODULES_EXPORT VideoEncoder final
     : public ScriptWrappable,
+      public ActiveScriptWrappable<VideoEncoder>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -67,6 +69,9 @@ class MODULES_EXPORT VideoEncoder final
 
   // ExecutionContextLifecycleObserver override.
   void ContextDestroyed() override;
+
+  // ScriptWrappable override.
+  bool HasPendingActivity() const override;
 
   // GarbageCollected override.
   void Trace(Visitor*) const override;
@@ -119,6 +124,9 @@ class MODULES_EXPORT VideoEncoder final
   void UpdateEncoderLog(std::string encoder_name, bool is_hw_accelerated);
 
   void ResetInternal();
+  ScriptPromiseResolver* MakePromise();
+  void ResolvePromise(Request* req);
+  void RejectPromise(Request* req, DOMException* ex = nullptr);
 
   std::unique_ptr<ParsedConfig> ParseConfig(const VideoEncoderConfig*,
                                             ExceptionState&);
@@ -150,6 +158,9 @@ class MODULES_EXPORT VideoEncoder final
   // when a callback needs to be dismissed because reset() was called between
   // an operation and its callback.
   uint32_t reset_count_ = 0;
+
+  // Number of not resolved/rejected promises created by this VideoEncoder.
+  uint32_t outstanding_promises_ = 0;
 
   // Some kConfigure and kFlush requests can't be executed in parallel with
   // kEncode. This flag stops processing of new requests in the requests_ queue
