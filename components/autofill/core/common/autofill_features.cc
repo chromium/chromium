@@ -78,6 +78,7 @@ const base::Feature kAutofillEnableAccountWalletStorage {
 
 // Controls whether to detect and fill the augmented phone country code field
 // when enabled.
+// TODO(crbug.com/1150890) Remove once launched
 const base::Feature kAutofillEnableAugmentedPhoneCountryCode{
     "AutofillEnableAugmentedPhoneCountryCode",
     base::FEATURE_DISABLED_BY_DEFAULT};

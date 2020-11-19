@@ -175,7 +175,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/896689): Remove once launched.
        autofill::features::kAutofillNameSectionsWithRendererIds,
        // TODO(crbug.com/1076175) Remove once launched.
-       autofill::features::kAutofillUseNewSectioningMethod},
+       autofill::features::kAutofillUseNewSectioningMethod,
+       // Remove once launched
+       autofill::features::kAutofillEnableAugmentedPhoneCountryCode},
       // Disabled
       {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
 }

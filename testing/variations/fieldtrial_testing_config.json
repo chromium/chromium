@@ -720,6 +720,26 @@
             ]
         }
     ],
+    "AutofillEnableAugmentedPhoneCountryCode": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "AutofillEnableAugmentedPhoneCountryCode",
+                    "enable_features": [
+                        "AutofillEnableAugmentedPhoneCountryCode"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableCardNicknameManagementAndUpstream": [
         {
             "platforms": [
