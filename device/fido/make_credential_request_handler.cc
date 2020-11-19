@@ -27,8 +27,7 @@
 
 namespace device {
 
-using MakeCredentialPINUVDisposition =
-    FidoAuthenticator::MakeCredentialPINUVDisposition;
+using PINUVDisposition = FidoAuthenticator::PINUVDisposition;
 using BioEnrollmentAvailability =
     AuthenticatorSupportedOptions::BioEnrollmentAvailability;
 
@@ -130,7 +129,7 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
   }
 
   if (authenticator->PINUVDispositionForMakeCredential(request, observer) ==
-      MakeCredentialPINUVDisposition::kUnsatisfiable) {
+      PINUVDisposition::kUnsatisfiable) {
     return MakeCredentialStatus::kAuthenticatorMissingUserVerification;
   }
 
@@ -428,14 +427,14 @@ void MakeCredentialRequestHandler::DispatchRequest(
   auto uv_disposition = authenticator->PINUVDispositionForMakeCredential(
       *request.get(), observer());
   switch (uv_disposition) {
-    case MakeCredentialPINUVDisposition::kNoUV:
-    case MakeCredentialPINUVDisposition::kNoTokenInternalUV:
-    case MakeCredentialPINUVDisposition::kNoTokenInternalUVPINFallback:
+    case PINUVDisposition::kNoUV:
+    case PINUVDisposition::kNoTokenInternalUV:
+    case PINUVDisposition::kNoTokenInternalUVPINFallback:
       break;
-    case MakeCredentialPINUVDisposition::kGetToken:
+    case PINUVDisposition::kGetToken:
       ObtainPINUVAuthToken(authenticator, skip_pin_touch);
       return;
-    case MakeCredentialPINUVDisposition::kUnsatisfiable:
+    case PINUVDisposition::kUnsatisfiable:
       // |IsCandidateAuthenticatorPostTouch| should have handled this case.
       NOTREACHED();
       return;
@@ -529,8 +528,8 @@ void MakeCredentialRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
                       << authenticator->GetId();
       return;
     case AuthTokenRequester::Result::kPostTouchAuthenticatorInternalUVLock:
-      HandleInternalUvLocked(authenticator);
-      return;
+      error = MakeCredentialStatus::kAuthenticatorMissingUserVerification;
+      break;
     case AuthTokenRequester::Result::kPostTouchAuthenticatorResponseInvalid:
       error = MakeCredentialStatus::kAuthenticatorResponseInvalid;
       break;
@@ -641,7 +640,7 @@ void MakeCredentialRequestHandler::HandleResponse(
       (status == CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid ||
        status == CtapDeviceResponseCode::kCtap2ErrPinRequired) &&
       authenticator->PINUVDispositionForMakeCredential(*request, observer()) ==
-          MakeCredentialPINUVDisposition::kNoTokenInternalUVPINFallback) {
+          PINUVDisposition::kNoTokenInternalUVPINFallback) {
     // Authenticators without uvToken support will return this error immediately
     // without user interaction when internal UV is locked.
     const base::TimeDelta response_time = request_timer.Elapsed();
@@ -716,15 +715,6 @@ void MakeCredentialRequestHandler::HandleResponse(
 
   std::move(completion_callback_)
       .Run(MakeCredentialStatus::kSuccess, std::move(*response), authenticator);
-}
-
-void MakeCredentialRequestHandler::HandleInternalUvLocked(
-    FidoAuthenticator* authenticator) {
-  state_ = State::kFinished;
-  CancelActiveAuthenticators(authenticator->GetId());
-  std::move(completion_callback_)
-      .Run(MakeCredentialStatus::kAuthenticatorMissingUserVerification,
-           base::nullopt, nullptr);
 }
 
 void MakeCredentialRequestHandler::HandleInapplicableAuthenticator(

@@ -73,18 +73,18 @@ void FidoAuthenticator::ChangePIN(const std::string& old_pin,
   NOTREACHED();
 }
 
-FidoAuthenticator::MakeCredentialPINUVDisposition
+FidoAuthenticator::PINUVDisposition
 FidoAuthenticator::PINUVDispositionForMakeCredential(
     const CtapMakeCredentialRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  return MakeCredentialPINUVDisposition::kNoUV;
+  return PINUVDisposition::kNoUV;
 }
 
-FidoAuthenticator::GetAssertionPINDisposition
-FidoAuthenticator::WillNeedPINToGetAssertion(
+FidoAuthenticator::PINUVDisposition
+FidoAuthenticator::PINUVDispositionForGetAssertion(
     const CtapGetAssertionRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  return GetAssertionPINDisposition::kNoPIN;
+  return PINUVDisposition::kNoUV;
 }
 
 void FidoAuthenticator::GetCredentialsMetadata(

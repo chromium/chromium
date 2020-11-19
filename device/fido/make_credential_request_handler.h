@@ -178,7 +178,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
       base::ElapsedTimer request_timer,
       CtapDeviceResponseCode response_code,
       base::Optional<AuthenticatorMakeCredentialResponse> response);
-  void HandleInternalUvLocked(FidoAuthenticator* authenticator);
   void HandleInapplicableAuthenticator(
       FidoAuthenticator* authenticator,
       std::unique_ptr<CtapMakeCredentialRequest> request);

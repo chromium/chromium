@@ -67,13 +67,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void ChangePIN(const std::string& old_pin,
                  const std::string& new_pin,
                  SetPINCallback callback) override;
-  MakeCredentialPINUVDisposition PINUVDispositionForMakeCredential(
+  PINUVDisposition PINUVDispositionForMakeCredential(
       const CtapMakeCredentialRequest& request,
       const FidoRequestHandlerBase::Observer* observer) override;
 
   // WillNeedPINToGetAssertion returns whether a PIN prompt will be needed to
   // serve the given request on this authenticator.
-  GetAssertionPINDisposition WillNeedPINToGetAssertion(
+  PINUVDisposition PINUVDispositionForGetAssertion(
       const CtapGetAssertionRequest& request,
       const FidoRequestHandlerBase::Observer* observer) override;
 

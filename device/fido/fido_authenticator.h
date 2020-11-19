@@ -146,9 +146,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                          const std::string& new_pin,
                          SetPINCallback callback);
 
-  // MakeCredentialPINUVDisposition enumerates the possible options for
-  // obtaining user verification when making a credential.
-  enum class MakeCredentialPINUVDisposition {
+  // PINUVDisposition enumerates the possible options for obtaining user
+  // verification when making a CTAP2 request.
+  enum class PINUVDisposition {
     // No UV (neither clientPIN nor internal) is needed to make this
     // credential.
     kNoUV,
@@ -165,31 +165,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
     // The request cannot be satisfied by this authenticator.
     kUnsatisfiable,
   };
-  // PINUVDispositionForMakeCredential returns whether and how user verification
+
+  // PINUVDisposition returns whether and how user verification
   // should be obtained in order to serve the given request on this
   // authenticator.
-  virtual MakeCredentialPINUVDisposition PINUVDispositionForMakeCredential(
+  virtual PINUVDisposition PINUVDispositionForMakeCredential(
       const CtapMakeCredentialRequest& request,
       const FidoRequestHandlerBase::Observer* observer);
 
-  // GetAssertionPINDisposition enumerates the possible interactions between
-  // a user-verification level and the PIN support of an authenticator when
-  // getting an assertion.
-  enum class GetAssertionPINDisposition {
-    // kNoPIN means that a PIN will not be needed for this assertion.
-    kNoPIN,
-    // kUsePIN means that a PIN must be gathered and used for this assertion.
-    kUsePIN,
-    // kUsePINForFallback means that a PIN may be used for fallback if internal
-    // user verification fails.
-    kUsePINForFallback,
-    // kUnsatisfiable means that the request cannot be satisfied by this
-    // authenticator.
-    kUnsatisfiable,
-  };
   // WillNeedPINToGetAssertion returns whether a PIN prompt will be needed to
   // serve the given request on this authenticator.
-  virtual GetAssertionPINDisposition WillNeedPINToGetAssertion(
+  virtual PINUVDisposition PINUVDispositionForGetAssertion(
       const CtapGetAssertionRequest& request,
       const FidoRequestHandlerBase::Observer* observer);
 
