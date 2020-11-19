@@ -206,7 +206,12 @@ void WebContentController::AttachTo(aura::Window* window, int window_id) {
 
 void WebContentController::OnVisible(aura::Window* window) {
   // Acquire initial focus.
-  GetWebContents()->SetInitialFocus();
+  auto* contents = GetWebContents();
+  if (contents) contents->SetInitialFocus();
+  else {
+    LOG(WARNING)
+        << "Webview unable to acquire initial focus due to missing webcontents";
+  }
 
   // Register for IME events
   input_method_observer_ = std::make_unique<WebviewInputMethodObserver>(
