@@ -26,6 +26,9 @@ const char kKeyPermissionsInLoginScreen[] = "key_permissions_in_login_screen";
 
 const char kImprivataInSessionExtension[] = "imprivata_in_session_extension";
 
+const char kImprivataLoginScreenExtension[] =
+    "imprivata_login_screen_extension";
+
 }  // namespace behavior_feature
 
 }  // namespace extensions
