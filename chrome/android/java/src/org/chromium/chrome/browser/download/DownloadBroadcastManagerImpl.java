@@ -22,6 +22,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 
@@ -376,11 +377,13 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 intent, DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE, false);
         boolean isOffTheRecord = IntentUtils.safeGetBooleanExtra(
                 intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
-        String originalUrl = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_ORIGINATING_URI);
-        String referrer = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_REFERRER);
+        Uri originalUrl = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_ORIGINATING_URI);
+        Uri referrer = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_REFERRER);
         DownloadManagerService.openDownloadedContent(context, downloadFilePath, isSupportedMimeType,
-                isOffTheRecord, contentId.id, id, originalUrl, referrer,
-                DownloadOpenSource.NOTIFICATION, null);
+                isOffTheRecord, contentId.id, id,
+                originalUrl == null ? null : originalUrl.toString(),
+                referrer == null ? null : referrer.toString(), DownloadOpenSource.NOTIFICATION,
+                null);
     }
 
     @Nullable
