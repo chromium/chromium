@@ -114,18 +114,6 @@ class PLATFORM_EXPORT HeapAllocator {
         MarkAsConstructed(ThreadHeap::Allocate<Metadata>(size)));
   }
 
-  // Compilers sometimes eagerly instantiates the unused 'operator delete', so
-  // we provide a version that asserts and fails at run-time if used.
-  static void Free(void*) { NOTREACHED(); }
-
-  template <typename T>
-  static void* NewArray(size_t bytes) {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  static void DeleteArray(void* ptr) { NOTREACHED(); }
-
   static bool IsAllocationAllowed() {
     return ThreadState::Current()->IsAllocationAllowed();
   }
