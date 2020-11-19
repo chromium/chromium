@@ -55,8 +55,9 @@ static_library("chrome_cleaner") {
   ]
 
   deps = [
-    # TODO(crbug.com/920223): Break dependency cycles with //chrome/browser
+    # TODO(crbug.com/925153): Break dependency cycles with //chrome/browser
     ":public",
+    "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
