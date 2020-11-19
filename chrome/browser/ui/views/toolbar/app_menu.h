@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
@@ -182,8 +182,8 @@ class AppMenu : public views::MenuDelegate,
   // Used for managing "Recent tabs" menu items.
   std::unique_ptr<RecentTabsMenuModelDelegate> recent_tabs_menu_model_delegate_;
 
-  ScopedObserver<GlobalErrorService, GlobalErrorObserver>
-      global_error_observer_{this};
+  base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
+      global_error_observation_{this};
 
   // The bit mask of views::MenuRunner::RunTypes.
   const int run_types_;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/menu_test_base.h"
@@ -189,8 +190,8 @@ class MenuViewDragAndDropTest : public MenuTestBase,
   // in separate child views).
   bool performed_in_menu_drop_ = false;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
-
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
   DISALLOW_COPY_AND_ASSIGN(MenuViewDragAndDropTest);
 };
 
@@ -220,7 +221,7 @@ void MenuViewDragAndDropTest::DoTestWithMenuOpen() {
   EXPECT_EQ(child_view, target_view_);
 
   // The menu is showing, so it has a widget we can observe now.
-  widget_observer_.Add(submenu->GetWidget());
+  widget_observation_.Observe(submenu->GetWidget());
 
   // We do this here (instead of in BuildMenu()) so that the menu is already
   // built and the bounds are correct.
@@ -228,7 +229,8 @@ void MenuViewDragAndDropTest::DoTestWithMenuOpen() {
 }
 
 void MenuViewDragAndDropTest::TearDown() {
-  widget_observer_.RemoveAll();
+  if (widget_observation_.IsObserving())
+    widget_observation_.RemoveObservation();
   MenuTestBase::TearDown();
 }
 

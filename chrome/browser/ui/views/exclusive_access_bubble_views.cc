@@ -99,8 +99,9 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   view_->SetBounds(0, 0, size.width(), size.height());
   popup_->AddObserver(this);
 
-  fullscreen_observer_.Add(bubble_view_context_->GetExclusiveAccessManager()
-                               ->fullscreen_controller());
+  fullscreen_observation_.Observe(
+      bubble_view_context_->GetExclusiveAccessManager()
+          ->fullscreen_controller());
 
   UpdateMouseWatcher();
 }

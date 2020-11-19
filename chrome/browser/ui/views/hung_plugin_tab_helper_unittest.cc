@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/hung_plugin_tab_helper.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -26,13 +26,14 @@ class HungPluginInfoBarObserver : public infobars::InfoBarManager::Observer {
  private:
   bool seen_removal_ = false;
 
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_{this};
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_observation_{this};
 };
 
 HungPluginInfoBarObserver::HungPluginInfoBarObserver(
     infobars::InfoBarManager* manager) {
-  infobar_observer_.Add(manager);
+  infobar_observation_.Observe(manager);
 }
 
 void HungPluginInfoBarObserver::OnInfoBarRemoved(infobars::InfoBar* infobar,

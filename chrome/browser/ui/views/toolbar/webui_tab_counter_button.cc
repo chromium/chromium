@@ -125,7 +125,7 @@ class InteractionTracker : public ui::EventHandler,
       : native_window_(widget->GetNativeWindow()) {
     if (native_window_)
       native_window_->AddPreTargetHandler(this);
-    scoped_widget_observer_.Add(widget);
+    scoped_widget_observation_.Observe(widget);
   }
 
   InteractionTracker(const InteractionTracker& other) = delete;
@@ -160,7 +160,8 @@ class InteractionTracker : public ui::EventHandler,
   void OnWidgetDestroying(views::Widget* widget) override {
     // Clean up all of our observers and event handlers before the native window
     // disappears.
-    scoped_widget_observer_.Remove(widget);
+    DCHECK(scoped_widget_observation_.IsObservingSource(widget));
+    scoped_widget_observation_.RemoveObservation();
     if (widget->GetNativeWindow()) {
       widget->GetNativeWindow()->RemovePreTargetHandler(this);
       native_window_ = nullptr;
@@ -169,8 +170,8 @@ class InteractionTracker : public ui::EventHandler,
 
   base::Optional<gfx::Point> last_interaction_location_;
   gfx::NativeWindow native_window_;
-  ScopedObserver<views::Widget, views::WidgetObserver> scoped_widget_observer_{
-      this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      scoped_widget_observation_{this};
 };
 
 //------------------------------------------------------------------------

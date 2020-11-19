@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -48,7 +49,7 @@ class ToolbarIconContainerView::WidgetRestoreObserver
   explicit WidgetRestoreObserver(
       ToolbarIconContainerView* toolbar_icon_container_view)
       : toolbar_icon_container_view_(toolbar_icon_container_view) {
-    scoped_observer_.Add(
+    scoped_observation_.Observe(
         toolbar_icon_container_view->GetWidget()->GetRootView());
   }
 
@@ -64,7 +65,8 @@ class ToolbarIconContainerView::WidgetRestoreObserver
  private:
   bool was_collapsed_ = true;
   ToolbarIconContainerView* const toolbar_icon_container_view_;
-  ScopedObserver<views::View, views::ViewObserver> scoped_observer_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
+      this};
 };
 
 ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)

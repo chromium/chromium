@@ -80,8 +80,8 @@ void HungPagesTableModel::InitForWebContents(
   DCHECK(!hang_monitor_restarter.is_null());
 
   DCHECK(!render_widget_host_);
-  DCHECK(!process_observer_.IsObservingSources());
-  DCHECK(!widget_observer_.IsObservingSources());
+  DCHECK(!process_observation_.IsObserving());
+  DCHECK(!widget_observation_.IsObserving());
   DCHECK(tab_observers_.empty());
 
   render_widget_host_ = render_widget_host;
@@ -93,8 +93,8 @@ void HungPagesTableModel::InitForWebContents(
         std::make_unique<WebContentsObserverImpl>(this, hung_contents));
   }
 
-  process_observer_.Add(render_widget_host_->GetProcess());
-  widget_observer_.Add(render_widget_host_);
+  process_observation_.Observe(render_widget_host_->GetProcess());
+  widget_observation_.Observe(render_widget_host_);
 
   // The world is different.
   if (observer_)
@@ -102,8 +102,8 @@ void HungPagesTableModel::InitForWebContents(
 }
 
 void HungPagesTableModel::Reset() {
-  process_observer_.RemoveAll();
-  widget_observer_.RemoveAll();
+  process_observation_.RemoveObservation();
+  widget_observation_.RemoveObservation();
   tab_observers_.clear();
   render_widget_host_ = nullptr;
 

@@ -91,7 +91,7 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
   views::BubbleDialogDelegateView* const bubble_view_ptr = bubble_view.get();
   widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  scoped_observer_.Add(widget_);
+  scoped_observation_.Observe(widget_);
 
   // Set required frame properties.
   views::BubbleFrameView* const frame_view =
@@ -111,7 +111,8 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
 FlyingIndicator::~FlyingIndicator() {
   // Kill the callback before deleting the widget so we don't call it.
   done_callback_.Reset();
-  scoped_observer_.RemoveAll();
+  if (scoped_observation_.IsObserving())
+    scoped_observation_.RemoveObservation();
   if (widget_)
     widget_->Close();
 }
@@ -119,7 +120,7 @@ FlyingIndicator::~FlyingIndicator() {
 void FlyingIndicator::OnWidgetDestroyed(views::Widget* widget) {
   if (widget != widget_)
     return;
-  scoped_observer_.Remove(widget_);
+  scoped_observation_.RemoveObservation();
   widget_ = nullptr;
   animation_.Stop();
   if (done_callback_)
@@ -182,7 +183,7 @@ void FlyingIndicator::AnimationEnded(const gfx::Animation* animation) {
   if (done_callback_)
     std::move(done_callback_).Run();
   if (widget_) {
-    scoped_observer_.Remove(widget_);
+    scoped_observation_.RemoveObservation();
     widget_->Close();
     widget_ = nullptr;
   }

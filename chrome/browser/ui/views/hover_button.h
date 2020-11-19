@@ -7,7 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -107,7 +107,8 @@ class HoverButton : public views::LabelButton {
   views::View* icon_view_ = nullptr;
   views::View* secondary_view_ = nullptr;
 
-  ScopedObserver<views::View, views::ViewObserver> observed_label_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(HoverButton);
 };

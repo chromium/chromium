@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FLYING_INDICATOR_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/geometry/point.h"
@@ -74,7 +74,8 @@ class FlyingIndicator : public views::WidgetObserver,
   gfx::MultiAnimation animation_;
   base::OnceClosure done_callback_;
   views::Widget* widget_ = nullptr;
-  ScopedObserver<views::Widget, views::WidgetObserver> scoped_observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      scoped_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FLYING_INDICATOR_H_

@@ -89,7 +89,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
       : browser_(browser),
         menu_open_count_(0),
         test_dismiss_menu_(test_dismiss_menu) {
-    observer_.Add(app_menu_button);
+    observation_.Observe(app_menu_button);
   }
 
   ~SendKeysMenuListener() override = default;
@@ -103,7 +103,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
           FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
           base::TimeDelta::FromMilliseconds(200));
     } else {
-      observer_.RemoveAll();
+      observation_.RemoveObservation();
       // Press DOWN to select the first item, then RETURN to select it.
       SendKeyPress(browser_, ui::VKEY_DOWN);
       SendKeyPress(browser_, ui::VKEY_RETURN);
@@ -120,7 +120,8 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
   // we dismiss it by sending the ESC key.
   bool test_dismiss_menu_;
 
-  ScopedObserver<AppMenuButton, AppMenuButtonObserver> observer_{this};
+  base::ScopedObservation<AppMenuButton, AppMenuButtonObserver> observation_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(SendKeysMenuListener);
 };

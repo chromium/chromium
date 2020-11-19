@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
@@ -43,10 +44,10 @@ class RenderViewContextMenuViews::SubmenuViewObserver
   SubmenuViewObserver(RenderViewContextMenuViews* parent,
                       views::SubmenuView* submenu_view)
       : parent_(parent), submenu_view_(submenu_view) {
-    observed_submenu_view_.Add(submenu_view);
+    submenu_view_observation_.Observe(submenu_view);
     auto* widget = submenu_view_->host();
     if (widget)
-      observed_submenu_widget_.Add(widget);
+      submenu_widget_observation_.Observe(widget);
   }
 
   SubmenuViewObserver(const SubmenuViewObserver&) = delete;
@@ -72,7 +73,7 @@ class RenderViewContextMenuViews::SubmenuViewObserver
     DCHECK_EQ(submenu_view_, observed_view);
     auto* widget = submenu_view_->host();
     if (widget)
-      observed_submenu_widget_.Add(widget);
+      submenu_widget_observation_.Observe(widget);
   }
 
   // WidgetObserver:
@@ -92,9 +93,10 @@ class RenderViewContextMenuViews::SubmenuViewObserver
  private:
   RenderViewContextMenuViews* const parent_;
   views::SubmenuView* const submenu_view_;
-  ScopedObserver<views::View, views::ViewObserver> observed_submenu_view_{this};
-  ScopedObserver<views::Widget, views::WidgetObserver> observed_submenu_widget_{
-      this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      submenu_view_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      submenu_widget_observation_{this};
 };
 
 ////////////////////////////////////////////////////////////////////////////////

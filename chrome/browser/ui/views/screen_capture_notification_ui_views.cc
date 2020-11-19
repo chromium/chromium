@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/grit/generated_resources.h"
@@ -102,7 +102,8 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
 
   base::OnceClosure stop_callback_;
   content::MediaStreamUI::SourceCallback source_callback_;
-  ScopedObserver<views::View, views::ViewObserver> bounds_observer_{this};
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      bounds_observations_{this};
   NotificationBarClientView* client_view_ = nullptr;
   views::ImageView* gripper_ = nullptr;
   views::Label* label_ = nullptr;
@@ -157,9 +158,9 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
 
   // The client rect for NotificationBarClientView uses the bounds for the
   // following views.
-  bounds_observer_.Add(source_button_);
-  bounds_observer_.Add(stop_button_);
-  bounds_observer_.Add(hide_link_);
+  bounds_observations_.AddObservation(source_button_);
+  bounds_observations_.AddObservation(stop_button_);
+  bounds_observations_.AddObservation(hide_link_);
 }
 
 ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
