@@ -1,31 +1,31 @@
 This is a testharness.js-based test.
-FAIL <input> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="text"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="TEXT"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="search"> assert_equals: -webkit-appearance expected "auto" but got "searchfield"
-FAIL <input type="tel"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="url"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="email"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="password"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="date"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="month"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="week"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="time"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="datetime-local"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="number"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
-FAIL <input type="range"> assert_equals: -webkit-appearance expected "auto" but got "slider-horizontal"
+PASS <input>
+PASS <input type="text">
+PASS <input type="TEXT">
+PASS <input type="search">
+PASS <input type="tel">
+PASS <input type="url">
+PASS <input type="email">
+PASS <input type="password">
+PASS <input type="date">
+PASS <input type="month">
+PASS <input type="week">
+PASS <input type="time">
+PASS <input type="datetime-local">
+PASS <input type="number">
+PASS <input type="range">
 PASS <input type="color">
 PASS <input type="checkbox">
 PASS <input type="radio">
 PASS <input type="submit">
 PASS <input type="reset">
 PASS <input type="button">
-FAIL <input type="unknowntype"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
+PASS <input type="unknowntype">
 FAIL <select> assert_equals: -webkit-appearance expected "auto" but got "menulist"
 FAIL <select multiple=""> assert_equals: -webkit-appearance expected "auto" but got "listbox"
 FAIL <select size="2"> assert_equals: -webkit-appearance expected "auto" but got "listbox"
 PASS <button>
-FAIL <textarea> assert_equals: -webkit-appearance expected "auto" but got "textarea"
+PASS <textarea>
 PASS <meter>
 PASS <progress>
 PASS <input type="hidden">

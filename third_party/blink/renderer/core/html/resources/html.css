@@ -424,7 +424,7 @@ input[type="hidden" i] {
 }
 
 input {
-    -webkit-appearance: textfield; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     padding: 1px;
     background-color: -internal-light-dark(white, black);
     border: 2px inset;
@@ -433,7 +433,7 @@ input {
 }
 
 input[type="search" i] {
-    -webkit-appearance: searchfield; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     box-sizing: border-box;
 }
 
@@ -500,7 +500,7 @@ select {
 }
 
 textarea {
-    -webkit-appearance: textarea; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     background-color: -internal-light-dark(white, black);
     border: 1px solid;
     column-count: initial !important;
@@ -633,7 +633,7 @@ input[type="button" i], input[type="submit" i], input[type="reset" i], input[typ
 }
 
 input[type="range" i] {
-    -webkit-appearance: slider-horizontal; /* AutoAppearanceFor() should match to this. */
+    appearance: auto; /* AutoAppearanceFor() should match to this. */
     padding: initial;
     border: initial;
     margin: 2px;
