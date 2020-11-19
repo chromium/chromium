@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/app_types.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -44,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
@@ -574,4 +576,10 @@ const ContainerId& DefaultContainerId() {
       kCrostiniDefaultVmName, kCrostiniDefaultContainerName);
   return *container_id;
 }
+
+bool IsCrostiniWindow(aura::Window* window) {
+  return window->GetProperty(aura::client::kAppType) ==
+         static_cast<int>(ash::AppType::CROSTINI_APP);
+}
+
 }  // namespace crostini
