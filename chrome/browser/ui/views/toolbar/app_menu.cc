@@ -473,7 +473,17 @@ class AppMenu::ZoomView : public AppMenuView {
         InMenuButtonBackground::LEADING_BORDER));
     fullscreen_button_->SetAccessibleName(GetAccessibleNameForAppMenuItem(
         menu_model, fullscreen_index, IDS_ACCNAME_FULLSCREEN,
-        /*add_accelerator_text*/ true));
+#if defined(OS_CHROMEOS)
+        // ChromeOS uses a dedicated "fullscreen" media key for fullscreen
+        // mode on most ChromeOS devices which cannot be specified in the
+        // standard way here, so omit the accelerator to avoid providing
+        // misleading or confusing information to screen reader users.
+        // See crbug.com/1110468 for more context.
+        /*add_accelerator_text*/ false
+#else
+        /*add_accelerator_text*/ true
+#endif
+        ));
     AddChildView(fullscreen_button_);
 
     // Need to set a font list for the zoom label width calculations.
