@@ -1415,8 +1415,8 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
           : views::Widget::MoveLoopSource::kTouch;
   const views::Widget::MoveLoopEscapeBehavior escape_behavior =
       is_dragging_new_browser_
-          ? views::Widget::MOVE_LOOP_ESCAPE_BEHAVIOR_HIDE
-          : views::Widget::MOVE_LOOP_ESCAPE_BEHAVIOR_DONT_HIDE;
+          ? views::Widget::MoveLoopEscapeBehavior::kHide
+          : views::Widget::MoveLoopEscapeBehavior::kDontHide;
   views::Widget::MoveLoopResult result = move_loop_widget_->RunMoveLoop(
       drag_offset, move_loop_source, escape_behavior);
   content::NotificationService::current()->Notify(
