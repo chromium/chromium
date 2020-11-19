@@ -128,5 +128,19 @@ void ArcDataSnapshotdBridge::TakeSnapshot(
   std::move(callback).Run(true /* success */);
 }
 
+void ArcDataSnapshotdBridge::LoadSnapshot(
+    const std::string& account_id,
+    base::OnceCallback<void(bool, bool)> callback) {
+  if (!is_available_) {
+    LOG(ERROR) << "LoadSnapshot call when D-Bus service is not available.";
+    std::move(callback).Run(false /* success */, false /* last */);
+    return;
+  }
+  VLOG(1) << "LoadSnapshot via D-Bus";
+  NOTIMPLEMENTED();
+
+  std::move(callback).Run(true /* success */, true /* last */);
+}
+
 }  // namespace data_snapshotd
 }  // namespace arc

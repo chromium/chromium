@@ -32,6 +32,7 @@
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/session/arc_bridge_host_impl.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
@@ -531,7 +532,23 @@ void ArcSessionImpl::OnSocketCreated(base::ScopedFD socket_fd) {
     return;
   }
 
-  VLOG(2) << "Socket is created. Starting ARC container";
+  VLOG(2) << "Socket is created. Start loading ARC data snapshot";
+  StartLoadingDataSnapshot(base::BindOnce(&ArcSessionImpl::OnDataSnapshotLoaded,
+                                          weak_factory_.GetWeakPtr(),
+                                          std::move(socket_fd)));
+}
+
+void ArcSessionImpl::StartLoadingDataSnapshot(base::OnceClosure callback) {
+  auto* arc_data_snapshotd_manager =
+      arc::data_snapshotd::ArcDataSnapshotdManager::Get();
+  if (arc_data_snapshotd_manager)
+    arc_data_snapshotd_manager->StartLoadingSnapshot(std::move(callback));
+  else
+    std::move(callback).Run();
+}
+
+void ArcSessionImpl::OnDataSnapshotLoaded(base::ScopedFD socket_fd) {
+  VLOG(2) << "Starting ARC container";
   client_->UpgradeArc(
       std::move(upgrade_params_),
       base::BindOnce(&ArcSessionImpl::OnUpgraded, weak_factory_.GetWeakPtr(),

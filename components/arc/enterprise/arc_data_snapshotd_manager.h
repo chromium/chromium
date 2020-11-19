@@ -36,6 +36,8 @@ class ArcDataSnapshotdManager final
     kNone,
     // Blocked UI mode is ON.
     kBlockedUi,
+    // Running with a snapshot.
+    kRunning,
     // In blocked UI mode, MGS can be launched.
     kMgsToLaunch,
     // MGS is launched to create a snapshot.
@@ -187,6 +189,10 @@ class ArcDataSnapshotdManager final
   // Stops arc-data-snapshotd.
   void EnsureDaemonStopped(base::OnceClosure callback);
 
+  // Starts loading a snapshot to android-data directory.
+  // |callback| is called once the process is over.
+  void StartLoadingSnapshot(base::OnceClosure callback);
+
   // Returns true if autologin to public account should be performed.
   bool IsAutoLoginConfigured();
   // Returns true if autologin is allowed to be performed and manager is not
@@ -231,6 +237,7 @@ class ArcDataSnapshotdManager final
   void GenerateKeyPair();
   void ClearSnapshot(bool last, base::OnceCallback<void(bool)> callback);
   void TakeSnapshot(const std::string& account_id);
+  void LoadSnapshot(const std::string& account_id, base::OnceClosure callback);
 
   // Called once the outdated snapshots were removed or ensured that there are
   // no outdated snapshots.
@@ -253,6 +260,13 @@ class ArcDataSnapshotdManager final
 
   // Called once a snapshot is taken.
   void OnSnapshotTaken(bool success);
+
+  // Called once a snapshot is taken.
+  void OnSnapshotLoaded(base::OnceClosure callback, bool success, bool last);
+
+  // Returns non-empty account ID string if a MGS is active.
+  // Otherwise returns an empty string.
+  std::string GetCryptohomeAccountId();
 
   static bool is_snapshot_enabled_for_testing_;
   State state_ = State::kNone;

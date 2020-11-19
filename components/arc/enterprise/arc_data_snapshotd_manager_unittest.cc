@@ -198,6 +198,33 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     EXPECT_TRUE(apps_tracker()->update_callback().is_null());
   }
 
+  void LoginAsPublicSession() {
+    auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
+    user_manager()->AddPublicAccountUser(account_id);
+    user_manager()->UserLoggedIn(account_id, account_id.GetUserEmail(), false,
+                                 false);
+  }
+
+  void LogoutPublicSession() {
+    auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
+    user_manager()->RemoveUserFromList(account_id);
+  }
+
+  // Set up local_state with info for previous and last snapshots and blocked ui
+  // mode.
+  void SetupLocalState(bool blocked_ui_mode) {
+    auto last = ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
+        base::SysInfo::OperatingSystemVersion(), "" /* creation_date */,
+        false /* verified */, false /* updated */, true /* last */);
+    auto previous = ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
+        base::SysInfo::OperatingSystemVersion(), "" /* creation_date */,
+        false /* verified */, false /* updated */, false /* last */);
+    auto snapshot = ArcDataSnapshotdManager::Snapshot::CreateForTesting(
+        local_state(), blocked_ui_mode, false /* started */, std::move(last),
+        std::move(previous));
+    snapshot->Sync();
+  }
+
   TestUpstartClient* upstart_client() { return upstart_client_.get(); }
   PrefService* local_state() { return &local_state_; }
   user_manager::FakeUserManager* user_manager() { return fake_user_manager_; }
@@ -245,6 +272,17 @@ class ArcDataSnapshotdManagerStateTest
       public ::testing::WithParamInterface<ArcDataSnapshotdManager::State> {
  public:
   ArcDataSnapshotdManager::State expected_state() { return GetParam(); }
+
+  // Returns the result state if the manager is in |state| entering
+  // OnSessionStateChanged.
+  ArcDataSnapshotdManager::State GetOnSessionStateChangedState(
+      ArcDataSnapshotdManager::State state) {
+    if (state == ArcDataSnapshotdManager::State::kMgsLaunched)
+      return ArcDataSnapshotdManager::State::kNone;
+    if (state == ArcDataSnapshotdManager::State::kRunning)
+      return ArcDataSnapshotdManager::State::kNone;
+    return state;
+  }
 };
 
 // Tests flows in ArcDataSnapshotdManager:
@@ -265,21 +303,6 @@ class ArcDataSnapshotdManagerFlowTest
     auto* command_line = base::CommandLine::ForCurrentProcess();
     EXPECT_EQ(command_line->GetSwitchValueASCII(switches::kOzonePlatform),
               "headless");
-  }
-
-  // Set up local_state with info for previous and last snapshots and blocked ui
-  // mode.
-  void SetupLocalState(bool blocked_ui_mode) {
-    auto last = ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
-        base::SysInfo::OperatingSystemVersion(), "" /* creation_date */,
-        false /* verified */, false /* updated */, true /* last */);
-    auto previous = ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
-        base::SysInfo::OperatingSystemVersion(), "" /* creation_date */,
-        false /* verified */, false /* updated */, false /* last */);
-    auto snapshot = ArcDataSnapshotdManager::Snapshot::CreateForTesting(
-        local_state(), blocked_ui_mode, false /* started */, std::move(last),
-        std::move(previous));
-    snapshot->Sync();
   }
 
   void RunUntilIdle() {
@@ -375,6 +398,86 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, RestoredAfterCrash) {
   ExpectStopDaemon(true /*success */);
 }
 
+// Test failure LoadSnapshot flow when no user is logged in.
+TEST_F(ArcDataSnapshotdManagerBasicTest, LoadSnapshotsFailureNoUser) {
+  // Set up two snapshots (previous and last) in local_state.
+  SetupLocalState(false /* blocked_ui_mode */);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+
+  // Stop daemon, nothing to do.
+  ExpectStopDaemon(true /*success */);
+  auto* manager = CreateManager();
+  // No snapshots in local_state either.
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  EXPECT_FALSE(manager->bridge());
+
+  base::RunLoop run_loop;
+  manager->StartLoadingSnapshot(
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+}
+
+// Test failure LoadSnapshot flow when no available snapshots.
+TEST_F(ArcDataSnapshotdManagerBasicTest, LoadSnapshotsFailureNoSnapshots) {
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+
+  // Stop daemon, nothing to do.
+  ExpectStopDaemon(true /*success */);
+  auto* manager = CreateManager();
+  // No snapshots in local_state either.
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  EXPECT_FALSE(manager->bridge());
+
+  LoginAsPublicSession();
+  base::RunLoop run_loop;
+  manager->StartLoadingSnapshot(
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+}
+
+// Test failure LoadSnapshot flow when the snapshot functionality is disabled
+TEST_F(ArcDataSnapshotdManagerBasicTest, LoadSnapshotsFailureDisabled) {
+  // Set up two snapshots (previous and last) in local_state.
+  SetupLocalState(false /* blocked_ui_mode */);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+
+  // Stop daemon, nothing to do.
+  ExpectStopDaemon(true /*success */);
+  auto* manager = CreateManager();
+  // No snapshots in local_state either.
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  EXPECT_FALSE(manager->bridge());
+
+  // Disable the feature.
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(
+      false /* enabled */);
+  LoginAsPublicSession();
+
+  base::RunLoop run_loop;
+  manager->StartLoadingSnapshot(
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+}
+
 // Test success TakeSnapshot flow: when public session account logs in and MGS
 // is expected to be launched, a new snapshot is expected to be taken.
 TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotSuccess) {
@@ -388,10 +491,7 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotSuccess) {
 
   // Logging into public session account.
   manager->set_state_for_testing(ArcDataSnapshotdManager::State::kMgsToLaunch);
-  auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
-  user_manager()->AddPublicAccountUser(account_id);
-  user_manager()->UserLoggedIn(account_id, account_id.GetUserEmail(), false,
-                               false);
+  LoginAsPublicSession();
   manager->OnSessionStateChanged();
 
   ExpectStartTrackingApps();
@@ -428,16 +528,13 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotMgsFailure) {
 
   // Logging into public session account.
   manager->set_state_for_testing(ArcDataSnapshotdManager::State::kMgsToLaunch);
-  auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
-  user_manager()->AddPublicAccountUser(account_id);
-  user_manager()->UserLoggedIn(account_id, account_id.GetUserEmail(), false,
-                               false);
+  LoginAsPublicSession();
   EXPECT_TRUE(user_manager()->IsLoggedInAsPublicAccount());
   manager->OnSessionStateChanged();
   ExpectStartTrackingApps();
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
 
-  user_manager()->RemoveUserFromList(account_id);
+  LogoutPublicSession();
   EXPECT_FALSE(user_manager()->IsLoggedInAsPublicAccount());
   manager->OnSessionStateChanged();
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
@@ -451,7 +548,7 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotMgsFailure) {
                  false /* expected_blocked_ui_mode */);
 }
 
-// Test no one state should lead to any changes except when MGS is launched.
+// Test that no one state should lead to any changes except when MGS is launched
 TEST_P(ArcDataSnapshotdManagerStateTest, OnSessionStateChangedWrongState) {
   // Daemon stopped in ctor, since no need to be running.
   ExpectStopDaemon(false /* success */);
@@ -460,16 +557,35 @@ TEST_P(ArcDataSnapshotdManagerStateTest, OnSessionStateChangedWrongState) {
   EXPECT_EQ(manager->state(), expected_state());
   EXPECT_FALSE(manager->bridge());
   manager->OnSessionStateChanged();
+  EXPECT_EQ(manager->state(), GetOnSessionStateChangedState(expected_state()));
+}
+
+// Test that no state except kNone should lead to any changes.
+TEST_P(ArcDataSnapshotdManagerStateTest, StartLoadingSnapshot) {
+  // Daemon stopped in ctor, since no need to be running.
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager();
+  manager->set_state_for_testing(expected_state());
   EXPECT_EQ(manager->state(), expected_state());
+  EXPECT_FALSE(manager->bridge());
+
+  base::RunLoop run_loop;
+  manager->StartLoadingSnapshot(base::BindLambdaForTesting([&]() {
+    EXPECT_EQ(manager->state(), expected_state());
+    run_loop.Quit();
+  }));
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    ArcDataSnapshotdManagerStateTest,
+    ArcDataSnapshotdManagerTest,
     ArcDataSnapshotdManagerStateTest,
     ::testing::Values(ArcDataSnapshotdManager::State::kNone,
                       ArcDataSnapshotdManager::State::kBlockedUi,
                       ArcDataSnapshotdManager::State::kMgsToLaunch,
-                      ArcDataSnapshotdManager::State::kRestored));
+                      ArcDataSnapshotdManager::State::kMgsLaunched,
+                      ArcDataSnapshotdManager::State::kRestored,
+                      ArcDataSnapshotdManager::State::kRunning));
 
 // Test clear snapshots flow.
 TEST_P(ArcDataSnapshotdManagerFlowTest, ClearSnapshotsBasic) {
@@ -542,6 +658,43 @@ TEST_P(ArcDataSnapshotdManagerFlowTest, BlockedUiBasic) {
     CheckSnapshots(2 /* expected_snapshots_number */,
                    false /* expected_blocked_ui */);
   }
+}
+
+// Test load snapshots flow.
+TEST_P(ArcDataSnapshotdManagerFlowTest, LoadSnapshotsBasic) {
+  // Set up two snapshots (previous and last) in local_state.
+  SetupLocalState(false /* blocked_ui_mode */);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+
+  // Stop daemon, nothing to do.
+  ExpectStopDaemon(true /*success */);
+  auto* manager = CreateManager();
+  RunUntilIdle();
+
+  // No snapshots in local_state either.
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  EXPECT_FALSE(manager->bridge());
+
+  // Loading snapshots is allowed only for public session accounts.
+  LoginAsPublicSession();
+
+  // Start daemon to load a snapshot.
+  ExpectStartDaemon(true /*success */);
+  ExpectStopDaemon(true /* success */);
+  base::RunLoop run_loop;
+  manager->StartLoadingSnapshot(
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+  if (is_dbus_client_available())
+    EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kRunning);
+  else
+    EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
 }
 
 INSTANTIATE_TEST_SUITE_P(ArcDataSnapshotdManagerFlowTest,

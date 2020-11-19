@@ -31,6 +31,8 @@ class ArcDataSnapshotdBridge {
   void ClearSnapshot(bool last, base::OnceCallback<void(bool)> callback);
   void TakeSnapshot(const std::string& account_id,
                     base::OnceCallback<void(bool)> callback);
+  void LoadSnapshot(const std::string& account_id,
+                    base::OnceCallback<void(bool, bool)> callback);
 
   bool is_available_for_testing() { return is_available_; }
 

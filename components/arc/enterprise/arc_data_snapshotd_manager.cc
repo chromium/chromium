@@ -320,6 +320,23 @@ void ArcDataSnapshotdManager::EnsureDaemonStopped(base::OnceClosure callback) {
   StopDaemon(std::move(callback));
 }
 
+void ArcDataSnapshotdManager::StartLoadingSnapshot(base::OnceClosure callback) {
+  // Do not load a snapshot if it's not a normal MGS setup.
+  if (state_ != State::kNone) {
+    std::move(callback).Run();
+    return;
+  }
+  std::string account_id = GetCryptohomeAccountId();
+  if (!account_id.empty() && IsSnapshotEnabled() &&
+      (snapshot_.last() || snapshot_.previous())) {
+    EnsureDaemonStarted(base::BindOnce(
+        &ArcDataSnapshotdManager::LoadSnapshot, weak_ptr_factory_.GetWeakPtr(),
+        std::move(account_id), std::move(callback)));
+    return;
+  }
+  std::move(callback).Run();
+}
+
 bool ArcDataSnapshotdManager::IsAutoLoginConfigured() {
   switch (state_) {
     case ArcDataSnapshotdManager::State::kBlockedUi:
@@ -328,6 +345,7 @@ bool ArcDataSnapshotdManager::IsAutoLoginConfigured() {
       return true;
     case ArcDataSnapshotdManager::State::kNone:
     case ArcDataSnapshotdManager::State::kRestored:
+    case ArcDataSnapshotdManager::State::kRunning:
       return false;
   }
 }
@@ -338,6 +356,7 @@ bool ArcDataSnapshotdManager::IsAutoLoginAllowed() {
       return false;
     case ArcDataSnapshotdManager::State::kNone:
     case ArcDataSnapshotdManager::State::kRestored:
+    case ArcDataSnapshotdManager::State::kRunning:
     case ArcDataSnapshotdManager::State::kMgsLaunched:
     case ArcDataSnapshotdManager::State::kMgsToLaunch:
       return true;
@@ -365,9 +384,17 @@ void ArcDataSnapshotdManager::OnSessionStateChanged() {
         return;
       }
       break;
-    case ArcDataSnapshotdManager::State::kBlockedUi:
-    case ArcDataSnapshotdManager::State::kNone:
-    case ArcDataSnapshotdManager::State::kRestored:
+    case State::kRunning:
+      if (user_manager::UserManager::Get() &&
+          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+        return;
+      }
+      // It is a correct state. Exit MGS withg loaded snapshot.
+      state_ = State::kNone;
+      return;
+    case State::kBlockedUi:
+    case State::kNone:
+    case State::kRestored:
       break;
   }
 }
@@ -438,6 +465,19 @@ void ArcDataSnapshotdManager::TakeSnapshot(const std::string& account_id) {
                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ArcDataSnapshotdManager::LoadSnapshot(const std::string& account_id,
+                                           base::OnceClosure callback) {
+  if (!bridge_) {
+    OnSnapshotLoaded(std::move(callback), false /* success */,
+                     false /* last */);
+    return;
+  }
+  bridge_->LoadSnapshot(
+      account_id,
+      base::BindOnce(&ArcDataSnapshotdManager::OnSnapshotLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void ArcDataSnapshotdManager::OnSnapshotsCleared(bool success) {
   switch (state_) {
     case State::kBlockedUi:
@@ -451,6 +491,7 @@ void ArcDataSnapshotdManager::OnSnapshotsCleared(bool success) {
       return;
     case State::kMgsToLaunch:
     case State::kMgsLaunched:
+    case State::kRunning:
       LOG(WARNING) << "Snapshots are cleared while in incorrect state";
       return;
   }
@@ -532,17 +573,8 @@ void ArcDataSnapshotdManager::OnArcInstanceStopped(bool success) {
     OnSnapshotTaken(false /* success */);
     return;
   }
-  std::string account_id = "";
-  // Take snapshots only for MGSs.
-  if (user_manager::UserManager::Get() &&
-      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
-      state_ == State::kMgsLaunched &&
-      user_manager::UserManager::Get()->GetActiveUser()) {
-    cryptohome::Identification id(
-        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
-    account_id = id.id();
-  }
-  if (account_id.empty()) {
+  std::string account_id = GetCryptohomeAccountId();
+  if (account_id.empty() || state_ != State::kMgsLaunched) {
     LOG(ERROR) << "Cryptohome account ID is empty.";
     OnSnapshotTaken(false /* success */);
     return;
@@ -563,6 +595,37 @@ void ArcDataSnapshotdManager::OnSnapshotTaken(bool success) {
 
   DCHECK(!attempt_user_exit_callback_.is_null());
   EnsureDaemonStopped(std::move(attempt_user_exit_callback_));
+}
+
+void ArcDataSnapshotdManager::OnSnapshotLoaded(base::OnceClosure callback,
+                                               bool success,
+                                               bool last) {
+  if (!success) {
+    LOG(ERROR) << "Failed to load ARC data directory snapshot.";
+    std::move(callback).Run();
+    return;
+  }
+  VLOG(1) << "Successfully loaded " << (last ? "last" : "previous")
+          << " snapshot";
+  state_ = State::kRunning;
+  // Clear last snapshot if the previous one was loaded.
+  if (!last && snapshot_.last())
+    snapshot_.ClearSnapshot(true /* last */);
+  EnsureDaemonStopped(base::DoNothing());
+  std::move(callback).Run();
+}
+
+std::string ArcDataSnapshotdManager::GetCryptohomeAccountId() {
+  // Take snapshots only for MGSs.
+  if (user_manager::UserManager::Get() &&
+      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
+      user_manager::UserManager::Get()->GetActiveUser()) {
+    return cryptohome::Identification(user_manager::UserManager::Get()
+                                          ->GetActiveUser()
+                                          ->GetAccountId())
+        .id();
+  }
+  return "";
 }
 
 }  // namespace data_snapshotd
