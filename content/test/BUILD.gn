@@ -1889,6 +1889,7 @@ test("content_unittests") {
     "../browser/plugin_list_unittest.cc",
     "../browser/prerender/prerender_host_registry_unittest.cc",
     "../browser/prerender/prerender_host_unittest.cc",
+    "../browser/prerender/prerender_processor_unittest.cc",
     "../browser/presentation/presentation_service_impl_unittest.cc",
     "../browser/quota/quota_change_dispatcher_unittest.cc",
     "../browser/renderer_host/ancestor_throttle_unittest.cc",
