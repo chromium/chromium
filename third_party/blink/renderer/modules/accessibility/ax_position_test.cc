@@ -1472,10 +1472,14 @@ TEST_F(AccessibilityTest, PositionBeforeAndAfterTable) {
 TEST_F(AccessibilityTest, PositionAtStartAndEndOfTable) {
   SetBodyInnerHTML(kHTMLTable);
 
-  // In the accessibility tree, the thead and tbody elements are ignored, but
-  // they are used as anchors when converting an AX position to a DOM position
-  // because they are the closest anchor to the first and last unignored AX
-  // positions inside the table.
+  // In the accessibility tree, the thead and tbody elements are accessibility
+  // ignored but included in the AXTree.
+  // Calling CreateFirstPositionInObject and CreateLastPositionInObject with the
+  // |table| element will create a position anchored to |table| which points to
+  // the |thead| element and the last whitespace text node within the table
+  // respectively.
+  const Node* table = GetElementById("table");
+  ASSERT_NE(nullptr, table);
   const Node* thead = GetElementById("thead");
   ASSERT_NE(nullptr, thead);
   const Node* header_row = GetElementById("headerRow");
@@ -1490,26 +1494,25 @@ TEST_F(AccessibilityTest, PositionAtStartAndEndOfTable) {
   ASSERT_NE(nullptr, ax_header_row);
   ASSERT_EQ(ax::mojom::Role::kRow, ax_header_row->RoleValue());
 
+  const AXObject* ax_thead = GetAXObjectByElementId("thead");
   const auto ax_position_at_start =
       AXPosition::CreateFirstPositionInObject(*ax_table);
   const auto position_at_start = ax_position_at_start.ToPositionWithAffinity();
-  EXPECT_EQ(thead, position_at_start.AnchorNode());
+  EXPECT_EQ(table, position_at_start.AnchorNode());
   EXPECT_EQ(1, position_at_start.GetPosition().OffsetInContainerNode());
-  EXPECT_EQ(header_row,
-            position_at_start.GetPosition().ComputeNodeAfterPosition());
+  EXPECT_EQ(thead, position_at_start.GetPosition().ComputeNodeAfterPosition());
 
   const auto ax_position_at_start_from_dom =
       AXPosition::FromPosition(position_at_start);
   EXPECT_EQ(ax_position_at_start, ax_position_at_start_from_dom);
-  EXPECT_EQ(ax_header_row,
-            ax_position_at_start_from_dom.ChildAfterTreePosition());
+  EXPECT_EQ(ax_thead, ax_position_at_start_from_dom.ChildAfterTreePosition());
 
   const auto ax_position_at_end =
       AXPosition::CreateLastPositionInObject(*ax_table);
   const auto position_at_end = ax_position_at_end.ToPositionWithAffinity();
-  EXPECT_EQ(tbody, position_at_end.AnchorNode());
+  EXPECT_EQ(table, position_at_end.AnchorNode());
   // There are three rows and a line break before and after each one.
-  EXPECT_EQ(6, position_at_end.GetPosition().OffsetInContainerNode());
+  EXPECT_EQ(4, position_at_end.GetPosition().OffsetInContainerNode());
 
   const auto ax_position_at_end_from_dom =
       AXPosition::FromPosition(position_at_end);

@@ -2,14 +2,15 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++treeGrid
-++++++++row hierarchicalLevel=1
-++++++++++cell name='Cell at level 1'
-++++++++++++staticText name='Cell at level 1'
-++++++++++++++inlineTextBox name='Cell at level 1'
-++++++++row hierarchicalLevel=2
-++++++++++cell name='Cell at level 2'
-++++++++++++staticText name='Cell at level 2'
-++++++++++++++inlineTextBox name='Cell at level 2'
+++++++++rowGroup ignored
+++++++++++row hierarchicalLevel=1
+++++++++++++cell name='Cell at level 1'
+++++++++++++++staticText name='Cell at level 1'
+++++++++++++++++inlineTextBox name='Cell at level 1'
+++++++++++row hierarchicalLevel=2
+++++++++++++cell name='Cell at level 2'
+++++++++++++++staticText name='Cell at level 2'
+++++++++++++++++inlineTextBox name='Cell at level 2'
 ++++++treeGrid
 ++++++++rowGroup
 ++++++++++row hierarchicalLevel=1

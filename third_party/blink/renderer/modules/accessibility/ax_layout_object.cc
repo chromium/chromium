@@ -400,7 +400,7 @@ bool AXLayoutObject::IsLineBreakingObject() const {
 
   const LayoutObject* layout_object = GetLayoutObject();
   if (layout_object->IsBR() || layout_object->IsLayoutBlock() ||
-      layout_object->IsAnonymousBlock() ||
+      layout_object->IsTableSection() || layout_object->IsAnonymousBlock() ||
       (layout_object->IsLayoutBlockFlow() &&
        layout_object->StyleRef().IsDisplayBlockContainer())) {
     return true;

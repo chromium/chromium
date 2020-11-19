@@ -15,7 +15,8 @@ rootWebArea
 ++++++++++++inlineTextBox name='Real '
 ++++++++++++inlineTextBox name='data '
 ++++++++++++inlineTextBox name='table'
-++++++++row
-++++++++++cell name='X'
-++++++++++++staticText name='X'
-++++++++++++++inlineTextBox name='X'
+++++++++rowGroup ignored
+++++++++++row
+++++++++++++cell name='X'
+++++++++++++++staticText name='X'
+++++++++++++++++inlineTextBox name='X'

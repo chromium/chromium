@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<!-- <script src="../resources/accessibility-helper.js"></script> -->
 
 <div id="container">
   <table role="presentation">
@@ -13,16 +14,20 @@
   </table>
 </div>
 
+<pre id="console"></pre>
 <script>
+  // buildAccessibilityTree(accessibilityController.accessibleElementById('container'), 0, 1, []);
 test(() => {
   var axTableContainer = accessibilityController.accessibleElementById('container').childAtIndex(0);
-  assert_equals(axTableContainer.childrenCount, 4);
-  var axTextContainer1 = axTableContainer.childAtIndex(0);
+  assert_equals(axTableContainer.childrenCount, 1);
+  var axSectionContainer = axTableContainer.childAtIndex(0);
+  assert_equals(axSectionContainer.role, "AXRole: AXGenericContainer");
+  var axTextContainer1 = axSectionContainer.childAtIndex(0);
   assert_equals(axTextContainer1.role, "AXRole: AXGenericContainer");
   var axText1 = axTextContainer1.childAtIndex(0);
   assert_equals(axText1.role, "AXRole: AXStaticText");
   assert_equals(axText1.name, "A");
-  var axTextContainer2 = axTableContainer.childAtIndex(1);
+  var axTextContainer2 = axSectionContainer.childAtIndex(1);
   assert_equals(axTextContainer2.role, "AXRole: AXGenericContainer");
   var axText2 = axTextContainer2.childAtIndex(0);
   assert_equals(axText2.role, "AXRole: AXStaticText");

@@ -19,10 +19,11 @@ rootWebArea
 ++++++++++staticText editable richlyEditable name='.'
 ++++++++++++inlineTextBox name='.'
 ++++++++table editable richlyEditable
-++++++++++row editable richlyEditable
-++++++++++++cell editable richlyEditable name='Always expose editable tables as tables.'
-++++++++++++++staticText editable richlyEditable name='Always expose editable tables as tables.'
-++++++++++++++++inlineTextBox name='Always expose editable tables as tables.'
+++++++++++rowGroup editable ignored richlyEditable
+++++++++++++row editable richlyEditable
+++++++++++++++cell editable richlyEditable name='Always expose editable tables as tables.'
+++++++++++++++++staticText editable richlyEditable name='Always expose editable tables as tables.'
+++++++++++++++++++inlineTextBox name='Always expose editable tables as tables.'
 ++++++++list editable richlyEditable
 ++++++++++listItem editable richlyEditable
 ++++++++++++listMarker editable richlyEditable name='1. '

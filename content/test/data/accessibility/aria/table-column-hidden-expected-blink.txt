@@ -2,36 +2,37 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++grid ariaColumnCount=5 ariaRowCount=4 tableRowCount=3 tableColumnCount=3
-++++++++row
-++++++++++columnHeader name='Month' ariaCellColumnIndex=2 ariaCellRowIndex=2
-++++++++++++staticText name='Month'
-++++++++++++++inlineTextBox name='Month'
-++++++++++columnHeader name='Day' ariaCellColumnIndex=3 ariaCellRowIndex=2
-++++++++++++staticText name='Day'
-++++++++++++++inlineTextBox name='Day'
-++++++++++columnHeader name='Weather' ariaCellColumnIndex=5 ariaCellRowIndex=2
-++++++++++++staticText name='Weather'
-++++++++++++++inlineTextBox name='Weather'
-++++++++row
-++++++++++cell name='January' ariaCellColumnIndex=2 ariaCellRowIndex=3
-++++++++++++staticText name='January'
-++++++++++++++inlineTextBox name='January'
-++++++++++cell name='01' ariaCellColumnIndex=3 ariaCellRowIndex=3
-++++++++++++staticText name='01'
-++++++++++++++inlineTextBox name='01'
-++++++++++cell name='Sunny' ariaCellColumnIndex=5 ariaCellRowIndex=3
-++++++++++++staticText name='Sunny'
-++++++++++++++inlineTextBox name='Sunny'
-++++++++row
-++++++++++cell name='January' ariaCellColumnIndex=2 ariaCellRowIndex=4
-++++++++++++staticText name='January'
-++++++++++++++inlineTextBox name='January'
-++++++++++cell name='02' ariaCellColumnIndex=3 ariaCellRowIndex=4
-++++++++++++staticText name='02'
-++++++++++++++inlineTextBox name='02'
-++++++++++cell name='Rainy' ariaCellColumnIndex=5 ariaCellRowIndex=4
-++++++++++++staticText name='Rainy'
-++++++++++++++inlineTextBox name='Rainy'
+++++++++rowGroup ignored
+++++++++++row
+++++++++++++columnHeader name='Month' ariaCellColumnIndex=2 ariaCellRowIndex=2
+++++++++++++++staticText name='Month'
+++++++++++++++++inlineTextBox name='Month'
+++++++++++++columnHeader name='Day' ariaCellColumnIndex=3 ariaCellRowIndex=2
+++++++++++++++staticText name='Day'
+++++++++++++++++inlineTextBox name='Day'
+++++++++++++columnHeader name='Weather' ariaCellColumnIndex=5 ariaCellRowIndex=2
+++++++++++++++staticText name='Weather'
+++++++++++++++++inlineTextBox name='Weather'
+++++++++++row
+++++++++++++cell name='January' ariaCellColumnIndex=2 ariaCellRowIndex=3
+++++++++++++++staticText name='January'
+++++++++++++++++inlineTextBox name='January'
+++++++++++++cell name='01' ariaCellColumnIndex=3 ariaCellRowIndex=3
+++++++++++++++staticText name='01'
+++++++++++++++++inlineTextBox name='01'
+++++++++++++cell name='Sunny' ariaCellColumnIndex=5 ariaCellRowIndex=3
+++++++++++++++staticText name='Sunny'
+++++++++++++++++inlineTextBox name='Sunny'
+++++++++++row
+++++++++++++cell name='January' ariaCellColumnIndex=2 ariaCellRowIndex=4
+++++++++++++++staticText name='January'
+++++++++++++++++inlineTextBox name='January'
+++++++++++++cell name='02' ariaCellColumnIndex=3 ariaCellRowIndex=4
+++++++++++++++staticText name='02'
+++++++++++++++++inlineTextBox name='02'
+++++++++++++cell name='Rainy' ariaCellColumnIndex=5 ariaCellRowIndex=4
+++++++++++++++staticText name='Rainy'
+++++++++++++++++inlineTextBox name='Rainy'
 ++++++paragraph
 ++++++++staticText name='done'
 ++++++++++inlineTextBox name='done'

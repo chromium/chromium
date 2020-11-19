@@ -30,4 +30,5 @@ rootWebArea
 ++++++++++++slider horizontal value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
 ++++++++++++++sliderThumb
 ++++++none ignored
+++++++++genericContainer ignored
 ++++++genericContainer ignored invisible
