@@ -29,8 +29,9 @@
       var node = message.contentElement();
 
       for (var node = message.contentElement(); node; node = node.traverseNextNode(message.contentElement())) {
-        if (node.treeElement) {
-          onTreeElement(node.treeElement.firstChild());
+        const treeElement = UI.TreeElement.getTreeElementBylistItemNode(node);
+        if (treeElement) {
+          onTreeElement(treeElement.firstChild());
           return;
         }
       }
