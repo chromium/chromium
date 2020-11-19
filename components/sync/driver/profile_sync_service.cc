@@ -334,6 +334,16 @@ void ProfileSyncService::Initialize() {
   RecordSyncInitialState(GetDisableReasons(),
                          user_settings_->IsFirstSetupComplete());
 
+#if defined(OS_ANDROID)
+  // If Sync was turned on after the feature toggle was enabled, it should be in
+  // the decoupled state.
+  if (!IsAuthenticatedAccountPrimary() &&
+      base::FeatureList::IsEnabled(
+          switches::kDecoupleSyncFromAndroidMasterSync)) {
+    sync_prefs_.SetDecoupledFromAndroidMasterSync();
+  }
+#endif  // defined(OS_ANDROID)
+
   // Auto-start means the first time the profile starts up, sync should start up
   // immediately. Since IsSyncRequested() is false by default and nobody else
   // will set it, we need to set it here.
@@ -385,6 +395,17 @@ WeakHandle<JsEventHandler> ProfileSyncService::GetJsEventHandler() {
 
 void ProfileSyncService::AccountStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if defined(OS_ANDROID)
+  // Once the feature toggle is enabled, Sync and master sync should only remain
+  // coupled if the former stays enabled and the latter disabled. Upon sign-out
+  // set the pref so they are decoupled on the next time Sync is turned on.
+  if (!IsAuthenticatedAccountPrimary() &&
+      base::FeatureList::IsEnabled(
+          switches::kDecoupleSyncFromAndroidMasterSync)) {
+    sync_prefs_.SetDecoupledFromAndroidMasterSync();
+  }
+#endif  // defined(OS_ANDROID)
 
   if (!IsSignedIn()) {
     // The account was signed out, so shut down.

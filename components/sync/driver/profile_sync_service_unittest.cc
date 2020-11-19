@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1389,6 +1390,44 @@ TEST_F(ProfileSyncServiceTest, ShouldPopulateAccountIdCachedInPrefs) {
   ASSERT_EQ(kTestCacheGuid, sync_prefs.GetCacheGuid());
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestUser), sync_prefs.GetGaiaId());
 }
+
+#if defined(OS_ANDROID)
+TEST_F(ProfileSyncServiceTest, DecoupleFromMasterSyncIfInitializedSignedOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kDecoupleSyncFromAndroidMasterSync);
+
+  SyncPrefs sync_prefs(prefs());
+  CreateService(ProfileSyncService::MANUAL_START);
+  ASSERT_FALSE(sync_prefs.GetDecoupledFromAndroidMasterSync());
+
+  service()->Initialize();
+  EXPECT_TRUE(sync_prefs.GetDecoupledFromAndroidMasterSync());
+}
+
+TEST_F(ProfileSyncServiceTest, DecoupleFromMasterSyncIfSignsOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kDecoupleSyncFromAndroidMasterSync);
+
+  SyncPrefs sync_prefs(prefs());
+  SignIn();
+  CreateService(ProfileSyncService::MANUAL_START);
+  InitializeForNthSync();
+  ASSERT_FALSE(sync_prefs.GetDecoupledFromAndroidMasterSync());
+
+  // Sign-out.
+  auto* account_mutator = identity_manager()->GetPrimaryAccountMutator();
+  DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
+  account_mutator->ClearPrimaryAccount(
+      signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  // Wait for ProfileSyncService to be notified.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(sync_prefs.GetDecoupledFromAndroidMasterSync());
+}
+#endif  // defined(OS_ANDROID)
 
 TEST_F(ProfileSyncServiceTest,
        ShouldNotPopulateAccountIdCachedInPrefsWithLocalSync) {

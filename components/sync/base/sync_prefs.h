@@ -166,7 +166,8 @@ class SyncPrefs : public CryptoSyncPrefs,
 
 #if defined(OS_ANDROID)
   // Sets a boolean pref representing that Sync should no longer respect whether
-  // Android master sync is enabled/disabled.
+  // Android master sync is enabled/disabled. It is set per-device and never
+  // gets cleared.
   void SetDecoupledFromAndroidMasterSync();
 
   // Gets the value for the boolean pref representing whether Sync should no
