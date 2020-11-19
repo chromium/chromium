@@ -14,28 +14,32 @@
 #include "ui/views/widget/widget.h"
 
 namespace arc {
-gfx::RectF ToChromeScale(const gfx::Rect& bounds) {
+gfx::RectF ScaleAndroidPxToChromePx(const gfx::Rect& android_bounds,
+                                    aura::Window* window) {
   DCHECK(exo::WMHelper::HasInstance());
-  gfx::RectF bounds_f(bounds);
-  bounds_f.Scale(1.0f /
-                 exo::WMHelper::GetInstance()->GetDefaultDeviceScaleFactor());
-  return bounds_f;
+  DCHECK(window);
+
+  const float chrome_dsf =
+      window->GetToplevelWindow()->layer()->device_scale_factor();
+  const float android_dsf =
+      exo::WMHelper::GetInstance()->GetDeviceScaleFactorForWindow(window);
+  if (chrome_dsf == android_dsf)
+    return gfx::RectF(android_bounds);
+
+  gfx::RectF chrome_bounds(android_bounds);
+  chrome_bounds.Scale(chrome_dsf / android_dsf);
+  return chrome_bounds;
 }
 
-gfx::RectF ToChromeBounds(const gfx::Rect& bounds, views::Widget* widget) {
-  DCHECK(widget);
-  gfx::RectF chrome_bounds = ToChromeScale(bounds);
-
+int GetChromeWindowHeightOffsetInDip(aura::Window* window) {
   // On Android side, content is rendered without considering height of
-  // caption bar, e.g. Content is rendered at y:0 instead of y:32 where 32 is
-  // height of caption bar. Add back height of caption bar here.
-  if (widget->IsMaximized()) {
-    chrome_bounds.Offset(
-        0,
-        widget->non_client_view()->frame_view()->GetBoundsForClientView().y());
-  }
+  // caption bar when it's maximized, e.g. Content is rendered at y:0 instead of
+  // y:32 where 32 is height of caption bar.
+  views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+  if (!widget->IsMaximized())
+    return 0;
 
-  return chrome_bounds;
+  return widget->non_client_view()->frame_view()->GetBoundsForClientView().y();
 }
 }  // namespace arc
 

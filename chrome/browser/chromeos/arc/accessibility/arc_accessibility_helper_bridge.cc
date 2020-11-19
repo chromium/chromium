@@ -93,9 +93,14 @@ void DispatchFocusChange(arc::mojom::AccessibilityNodeInfoData* node_data,
   if (!active_window)
     return;
 
-  gfx::Rect bounds_in_screen = gfx::ToEnclosingRect(arc::ToChromeBounds(
+  // Convert bounds from Android pixels to Chrome DIP, and adjust coordinate to
+  // Chrome's screen coordinate.
+  gfx::Rect bounds_in_screen = gfx::ScaleToEnclosingRect(
       node_data->bounds_in_screen,
-      views::Widget::GetWidgetForNativeView(active_window)));
+      1.0f / exo::WMHelper::GetInstance()->GetDeviceScaleFactorForWindow(
+                 active_window));
+  bounds_in_screen.Offset(0,
+                          arc::GetChromeWindowHeightOffsetInDip(active_window));
 
   bool is_editable = arc::GetBooleanProperty(
       node_data, arc::mojom::AccessibilityBooleanProperty::EDITABLE);
@@ -677,8 +682,8 @@ ArcAccessibilityHelperBridge::OnGetTextLocationDataResultInternal(
   if (!active_window)
     return base::nullopt;
 
-  gfx::RectF rect_f = arc::ToChromeScale(*result_rect);
-  rect_f.Scale(DeviceScaleFactorFromWindow(active_window));
+  const gfx::RectF& rect_f =
+      ScaleAndroidPxToChromePx(result_rect.value(), active_window);
   return gfx::ToEnclosingRect(rect_f);
 }
 

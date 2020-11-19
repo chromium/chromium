@@ -11,18 +11,19 @@ namespace gfx {
 class RectF;
 }
 
-namespace views {
-class Widget;
+namespace aura {
+class Window;
 }
 
 namespace arc {
-// Given ARC pixels, returns DIPs in Chrome OS main display.
-// This function only scales the bounds.
-gfx::RectF ToChromeScale(const gfx::Rect& rect);
+// Given a rect in Android pixels, returns a scaled rectangle in Chrome pixels.
+// This only scales the given bounds.
+gfx::RectF ScaleAndroidPxToChromePx(const gfx::Rect& android_bounds,
+                                    aura::Window* window);
 
-// Given ARC pixels in screen coordinate, returns DIPs in Chrome OS main
-// display. This function adjusts differences between ARC and Chrome.
-gfx::RectF ToChromeBounds(const gfx::Rect& rect, views::Widget* widget);
+// Returns an difference of y coordinate in DIP between Android internal bounds
+// and what Chrome actually renders in the screen.
+int GetChromeWindowHeightOffsetInDip(aura::Window* window);
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_GEOMETRY_UTIL_H_
