@@ -443,7 +443,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         // When we restore tabs, we focus the selected tab so the URL of the page shows.
     }
 
-    /* package */ void performSearchQuery(String query, List<String> searchParams) {
+    public void performSearchQuery(String query, List<String> searchParams) {
         if (TextUtils.isEmpty(query)) return;
 
         String queryUrl = TemplateUrlServiceFactory.get().getUrlForSearchQuery(query, searchParams);
