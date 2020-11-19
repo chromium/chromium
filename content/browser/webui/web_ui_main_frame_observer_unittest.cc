@@ -27,6 +27,8 @@
 namespace content {
 
 namespace {
+using testing::Eq;
+using testing::Optional;
 
 class FakeJsErrorReportProcessor : public JsErrorReportProcessor {
  public:
@@ -113,13 +115,15 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   // Calls observer_->OnDidAddMessageToConsole with the given arguments. This
   // is just here so that we don't need to FRIEND_TEST_ALL_PREFIXES for each
   // and every test.
-  void CallOnDidAddMessageToConsole(RenderFrameHost* source_frame,
-                                    blink::mojom::ConsoleMessageLevel log_level,
-                                    const base::string16& message,
-                                    int32_t line_no,
-                                    const base::string16& source_id) {
+  void CallOnDidAddMessageToConsole(
+      RenderFrameHost* source_frame,
+      blink::mojom::ConsoleMessageLevel log_level,
+      const base::string16& message,
+      int32_t line_no,
+      const base::string16& source_id,
+      const base::Optional<base::string16>& stack_trace) {
     observer_->OnDidAddMessageToConsole(source_frame, log_level, message,
-                                        line_no, source_id);
+                                        line_no, source_id, stack_trace);
   }
 
  protected:
@@ -134,39 +138,54 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   const base::string16 kMessage16 = base::UTF8ToUTF16(kMessage8);
   static constexpr char kSourceURL8[] = "chrome://here.is.error/";
   const base::string16 kSourceId16 = base::UTF8ToUTF16(kSourceURL8);
+  static constexpr char kStackTrace8[] =
+      "at badFunction (chrome://page/my.js:20:30)\n"
+      "at poorCaller (chrome://page/my.js:50:10)\n";
+  const base::string16 kStackTrace16 = base::UTF8ToUTF16(kStackTrace8);
 };
 
 constexpr char WebUIMainFrameObserverTest::kMessage8[];
 constexpr char WebUIMainFrameObserverTest::kSourceURL8[];
+constexpr char WebUIMainFrameObserverTest::kStackTrace8[];
 
 TEST_F(WebUIMainFrameObserverTest, ErrorReported) {
   CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
                                blink::mojom::ConsoleMessageLevel::kError,
-                               kMessage16, 5, kSourceId16);
+                               kMessage16, 5, kSourceId16, kStackTrace16);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(processor_->error_report_count(), 1);
   EXPECT_EQ(processor_->last_error_report().message, kMessage8);
   EXPECT_EQ(processor_->last_error_report().url, kSourceURL8);
+  EXPECT_THAT(processor_->last_error_report().stack_trace,
+              Optional(Eq(kStackTrace8)));
   // WebUI should use default product & version.
   EXPECT_EQ(processor_->last_error_report().product, "");
   EXPECT_EQ(processor_->last_error_report().version, "");
   EXPECT_EQ(*processor_->last_error_report().line_number, 5);
   EXPECT_FALSE(processor_->last_error_report().column_number);
-  EXPECT_FALSE(processor_->last_error_report().stack_trace);
   EXPECT_FALSE(processor_->last_error_report().app_locale);
   EXPECT_TRUE(processor_->last_error_report().send_to_production_servers);
+}
+
+TEST_F(WebUIMainFrameObserverTest, NoStackTrace) {
+  CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
+                               blink::mojom::ConsoleMessageLevel::kError,
+                               kMessage16, 5, kSourceId16, base::nullopt);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(processor_->error_report_count(), 1);
+  EXPECT_EQ(processor_->last_error_report().stack_trace, base::nullopt);
 }
 
 TEST_F(WebUIMainFrameObserverTest, NonErrorsIgnored) {
   CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
                                blink::mojom::ConsoleMessageLevel::kWarning,
-                               kMessage16, 5, kSourceId16);
+                               kMessage16, 5, kSourceId16, kStackTrace16);
   CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
                                blink::mojom::ConsoleMessageLevel::kInfo,
-                               kMessage16, 5, kSourceId16);
+                               kMessage16, 5, kSourceId16, kStackTrace16);
   CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
                                blink::mojom::ConsoleMessageLevel::kVerbose,
-                               kMessage16, 5, kSourceId16);
+                               kMessage16, 5, kSourceId16, kStackTrace16);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(processor_->error_report_count(), 0);
 }
@@ -175,7 +194,7 @@ TEST_F(WebUIMainFrameObserverTest, NoProcessorDoesntCrash) {
   FakeJsErrorReportProcessor::SetDefault(nullptr);
   CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
                                blink::mojom::ConsoleMessageLevel::kError,
-                               kMessage16, 5, kSourceId16);
+                               kMessage16, 5, kSourceId16, kStackTrace16);
   task_environment()->RunUntilIdle();
 }
 
@@ -185,15 +204,15 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
       features::kSendWebUIJavaScriptErrorReports);
   CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
                                blink::mojom::ConsoleMessageLevel::kError,
-                               kMessage16, 5, kSourceId16);
+                               kMessage16, 5, kSourceId16, kStackTrace16);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(processor_->error_report_count(), 0);
 }
 
 TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
-  CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
-                               blink::mojom::ConsoleMessageLevel::kError,
-                               kMessage16, 5, base::UTF8ToUTF16("invalid URL"));
+  CallOnDidAddMessageToConsole(
+      web_ui_->frame_host_for_test(), blink::mojom::ConsoleMessageLevel::kError,
+      kMessage16, 5, base::UTF8ToUTF16("invalid URL"), kStackTrace16);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(processor_->error_report_count(), 0);
 }
@@ -239,7 +258,8 @@ TEST_F(WebUIMainFrameObserverTest, URLPathIsPreservedOtherPartsRemoved) {
     int previous_count = processor_->error_report_count();
     CallOnDidAddMessageToConsole(web_ui_->frame_host_for_test(),
                                  blink::mojom::ConsoleMessageLevel::kError,
-                                 kMessage16, 5, base::UTF8ToUTF16(test.input));
+                                 kMessage16, 5, base::UTF8ToUTF16(test.input),
+                                 kStackTrace16);
     task_environment()->RunUntilIdle();
     EXPECT_EQ(processor_->error_report_count(), previous_count + 1)
         << "for " << test.input;

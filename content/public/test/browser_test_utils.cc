@@ -3095,7 +3095,8 @@ void WebContentsConsoleObserver::OnDidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message_contents,
     int32_t line_no,
-    const base::string16& source_id) {
+    const base::string16& source_id,
+    const base::Optional<base::string16>& untrusted_stack_trace) {
   Message message(
       {source_frame, log_level, message_contents, line_no, source_id});
   if (filter_ && !filter_.Run(message))

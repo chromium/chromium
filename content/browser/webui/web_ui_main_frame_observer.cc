@@ -47,7 +47,8 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message,
     int32_t line_no,
-    const base::string16& source_id) {
+    const base::string16& source_id,
+    const base::Optional<base::string16>& untrusted_stack_trace) {
   VLOG(3) << "OnDidAddMessageToConsole called for " << message;
   if (log_level != blink::mojom::ConsoleMessageLevel::kError) {
     VLOG(3) << "Message not reported, not an error";
@@ -94,6 +95,9 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   report.message = base::UTF16ToUTF8(message);
   report.line_number = line_no;
   report.url = std::move(redacted_url);
+  if (untrusted_stack_trace) {
+    report.stack_trace = base::UTF16ToUTF8(*untrusted_stack_trace);
+  }
   report.send_to_production_servers =
       features::kWebUIJavaScriptErrorReportsSendToProductionParam.Get();
 

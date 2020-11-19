@@ -210,10 +210,12 @@ class MockFrameHost : public mojom::FrameHost {
 
   void DidStopLoading() override {}
 
-  void DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel log_level,
-                              const base::string16& msg,
-                              int32_t line_number,
-                              const base::string16& source_id) override {
+  void DidAddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel log_level,
+      const base::string16& msg,
+      int32_t line_number,
+      const base::string16& source_id,
+      const base::Optional<base::string16>& untrusted_stack_trace) override {
     if (did_add_message_to_console_callback_) {
       std::move(did_add_message_to_console_callback_).Run(msg);
     }

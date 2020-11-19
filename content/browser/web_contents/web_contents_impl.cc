@@ -7525,13 +7525,15 @@ bool WebContentsImpl::DidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message,
     int32_t line_no,
-    const base::string16& source_id) {
+    const base::string16& source_id,
+    const base::Optional<base::string16>& untrusted_stack_trace) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidAddMessageToConsole",
                         "message", base::trace_event::ValueToString(message));
 
   observers_.ForEachObserver([&](WebContentsObserver* observer) {
     observer->OnDidAddMessageToConsole(source_frame, log_level, message,
-                                       line_no, source_id);
+                                       line_no, source_id,
+                                       untrusted_stack_trace);
   });
 
   if (!delegate_)
