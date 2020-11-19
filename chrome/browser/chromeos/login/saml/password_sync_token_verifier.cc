@@ -171,9 +171,16 @@ void PasswordSyncTokenVerifier::OnTokenVerified(bool is_valid) {
 void PasswordSyncTokenVerifier::OnApiCallFailed(
     PasswordSyncTokenFetcher::ErrorType error_type) {
   retry_backoff_.InformOfRequest(false);
-  // Schedule next token check with interval calculated with exponential
-  // backoff.
-  RecheckAfter(retry_backoff_.GetTimeUntilRelease());
+  password_sync_token_fetcher_.reset();
+  if (error_type == PasswordSyncTokenFetcher::ErrorType::kGetNoList ||
+      error_type == PasswordSyncTokenFetcher::ErrorType::kGetNoToken) {
+    // Token sync API has not been initialized yet. Create a sync token.
+    CreateTokenAsync();
+  } else {
+    // Schedule next token check with interval calculated with exponential
+    // backoff.
+    RecheckAfter(retry_backoff_.GetTimeUntilRelease());
+  }
 }
 
 }  // namespace chromeos

@@ -201,6 +201,19 @@ TEST_F(PasswordSyncTokenVerifierTest, SyncTokenNotSet) {
       kSyncToken);
 }
 
+TEST_F(PasswordSyncTokenVerifierTest, InitialSyncTokenListEmpty) {
+  CreatePasswordSyncTokenVerifier();
+  verifier_->FetchSyncTokenOnReauth();
+  verifier_->OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType::kGetNoList);
+  verifier_->OnTokenCreated(kSyncToken);
+  EXPECT_EQ(
+      user_manager::known_user::GetPasswordSyncToken(saml_login_account_id_),
+      kSyncToken);
+  EXPECT_EQ(
+      primary_profile_->GetPrefs()->GetString(prefs::kSamlPasswordSyncToken),
+      kSyncToken);
+}
+
 TEST_F(PasswordSyncTokenVerifierTest, SyncTokenInitForUser) {
   CreatePasswordSyncTokenVerifier();
   verifier_->FetchSyncTokenOnReauth();
