@@ -1,0 +1,18 @@
+Name: ARM_NEON_2_x86_SSE
+Short Name: neon_2_sse
+URL: https://github.com/intel/ARM_NEON_2_x86_SSE
+Version: 42b2bebacee25452e150095ef4480b3fa26e30f5
+Date: 2020/06/22
+License: Custom
+License File: LICENSE
+Security Critical: Yes
+License Android Compatible: Yes
+
+Description:
+The NEON_2_SSE.h file is intended to simplify ARM->IA32 porting. It makes the
+correspondence (or a real porting) of ARM NEON intrinsics as defined in
+"arm_neon.h" header and x86 SSE (up to SSE4.2) intrinsic functions as defined
+in corresponding x86 compilers headers files.
+
+Local Modifications:
+- Included only the NEON_2_SSE.h file.

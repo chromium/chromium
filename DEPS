@@ -915,6 +915,10 @@ deps = {
   'src/third_party/dom_distiller_js/dist':
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + 'f339eb9463714c3d31657c8ee1bd53d1c7e5c555',
 
+  'src/third_party/eigen3/src':
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '2ce2f5198929caab4b41a6ad1b9c93f67d8b9a69',
+
+
   'src/third_party/espresso': {
       'packages': [
           {
@@ -925,6 +929,9 @@ deps = {
       'condition': 'checkout_android',
       'dep_type': 'cipd',
   },
+
+  'src/third_party/farmhash/src':
+    Var('chromium_git') + '/external/github.com/google/farmhash.git' + '@' + '816a4ae622e964763ca0862d9dbd19324a1eaf45',
 
   'src/third_party/ffmpeg':
     Var('chromium_git') + '/chromium/third_party/ffmpeg.git' + '@' + '6d9096c9e3f7f5d4e6528104ed77987ec9327315',
@@ -940,6 +947,12 @@ deps = {
       'url': Var('chromium_git') + '/external/fontconfig.git' + '@' + '452be8125f0e2a18a7dfef469e05d19374d36307',
       'condition': 'checkout_linux',
   },
+
+  'src/third_party/fp16/src':
+    Var('chromium_git') + '/external/github.com/Maratyszcza/FP16.git' + '@' + 'febbb1c163726b5db24bed55cc9dc42529068997',
+
+  'src/third_party/gemmlowp/src':
+    Var('chromium_git') + '/external/github.com/google/gemmlowp.git' + '@' + 'fda83bdc38b118cc6b56753bd540caa49e570745',
 
   'src/third_party/grpc/src': {
       'url': Var('chromium_git') + '/external/github.com/grpc/grpc.git' + '@' + '4ac9c6f755463a2321f84b0cb2d631e1828faedb',
@@ -1221,6 +1234,9 @@ deps = {
       '19f3fad68da99277b2882939d3b2fa4c4b8d51d9'
   },
 
+  'src/third_party/neon_2_sse/src':
+    Var('chromium_git') + '/external/github.com/intel/ARM_NEON_2_x86_SSE.git' + '@' + '42b2bebacee25452e150095ef4480b3fa26e30f5',
+
   'src/third_party/netty-tcnative/src': {
       'url': Var('chromium_git') + '/external/netty-tcnative.git' + '@' + '5b46a8ef4a39c39c576fcdaaf718b585d75df463',
       'condition': 'checkout_android',
@@ -1400,6 +1416,9 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/ruy/src':
+    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '34ea9f4993955fa1ff4eb58e504421806b7f2e8f',
+
   'src/third_party/shaka-player/dist': {
       'packages': [
           {
@@ -1440,7 +1459,10 @@ deps = {
     'url': Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'b2df6bf7b4dc1665989306a8119eb041f013f567',
     'condition': 'checkout_ios',
   },
-
+  
+  'src/third_party/tflite/src':
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'fcc4b966f1265f466e82617020af93670141b009',
+  
   'src/third_party/turbine': {
       'packages': [
           {

@@ -31,6 +31,21 @@ source_set("flatbuffers") {
   public_configs = [ ":flatbuffers_config" ]
 }
 
+# Needed for TFLite support.
+source_set("tflite_deps") {
+  public = [
+    "src/include/flatbuffers/flexbuffers.h",
+    "src/include/flatbuffers/util.h",
+  ]
+
+  sources = [ "src/src/util.cpp" ]
+
+  public_deps = [ ":flatbuffers" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 # The complete FlatBuffers library, as required to build the flatc compiler and
 # some of the tests.
 source_set("compiler_files") {

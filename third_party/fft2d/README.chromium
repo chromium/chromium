@@ -1,0 +1,22 @@
+Name: 2-dim General Purpose FFT (Fast Fourier/Cosine/Sine Transform) Package
+Short Name: fft2d
+URL: http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html
+Version: 0
+Date: 2006/12/28
+License: Custom
+License File: LICENSE
+Security Critical: yes
+License Android Compatible: yes
+
+Description:
+This directory contains the third-party one- and two-dimensional
+fast Fourier transform and related sinusoidal transform code written
+by Takuya Ooura.
+
+Local Modifications:
+- Included only the C source files required by //third_party/tflite
+
+Version:
+--------
+    "fft2d.tgz (53KB) updated: 2006/12/28"
+    SHA512(fft2d.tgz)= af993f68e8e1eb3cb927a51e86da8f74cfafc912a7cd055515e50fe543dd19ab5a6f7b1c2be4a55d6f4a0e5d766ead34c3be4c5705be6353f78cb2a55bd5cf16

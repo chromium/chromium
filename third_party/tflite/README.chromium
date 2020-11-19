@@ -1,0 +1,14 @@
+Name: TensorFlow Lite
+Short Name: tflite
+URL: https://github.com/tensorflow/tensorflow
+Version: 2.3.0
+Date: 2020/07/27
+License: Apache 2.0
+License File: LICENSE
+Security Critical: Yes
+CPEPrefix: unknown
+
+Description:
+TFLite is a part of the open-source machine-learning library TensorFlow that
+provides a stable ML framework optimized for binary size and execution on
+mobile devices with limited computation and memory resources.
