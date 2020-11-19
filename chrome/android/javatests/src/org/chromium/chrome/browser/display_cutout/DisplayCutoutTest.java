@@ -9,12 +9,10 @@ import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -36,11 +34,6 @@ public class DisplayCutoutTest {
     @Rule
     public DisplayCutoutTestRule mTestRule =
             new DisplayCutoutTestRule<ChromeActivity>(ChromeActivity.class);
-
-    @After
-    public void tearDown() throws Exception {
-        ApplicationTestUtils.finishActivity(mTestRule.getActivity());
-    }
 
     /**
      * Test that no safe area is applied when we have viewport fit auto

@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -101,7 +102,7 @@ public class MainSettingsFragmentTest {
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(MainSettings.class, true);
+            new SettingsActivityTestRule<>(MainSettings.class);
 
     // SettingsActivity needs to be initialized and destroyed with the mock
     // signin environment setup in SyncTestRule
@@ -133,6 +134,7 @@ public class MainSettingsFragmentTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         SigninActivityLauncherImpl.setLauncherForTest(mMockSigninActivityLauncherImpl);
         DeveloperSettings.setIsEnabledForTests(true);
