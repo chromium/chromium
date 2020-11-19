@@ -272,7 +272,6 @@ if (is_chromeos) {
   mojom("media") {
     sources = [
       "gfx.mojom",
-      "protected_buffer_manager.mojom",
       "video.mojom",
       "video_common.mojom",
       "video_decode_accelerator.mojom",
@@ -280,7 +279,10 @@ if (is_chromeos) {
       "video_protected_buffer_allocator.mojom",
     ]
 
-    public_deps = [ "//ui/gfx/geometry/mojom" ]
+    public_deps = [
+      ":protected_buffer_manager",
+      "//ui/gfx/geometry/mojom",
+    ]
 
     cpp_typemaps = [
       {
@@ -371,6 +373,10 @@ if (is_chromeos) {
 
   mojom("oemcrypto") {
     sources = [ "oemcrypto.mojom" ]
+  }
+
+  mojom("protected_buffer_manager") {
+    sources = [ "protected_buffer_manager.mojom" ]
   }
 
   source_set("mojom_traits") {

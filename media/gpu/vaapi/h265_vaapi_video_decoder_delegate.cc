@@ -39,7 +39,10 @@ using DecodeStatus = H265Decoder::H265Accelerator::Status;
 H265VaapiVideoDecoderDelegate::H265VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper)
-    : VaapiVideoDecoderDelegate(vaapi_dec, std::move(vaapi_wrapper)) {
+    : VaapiVideoDecoderDelegate(vaapi_dec,
+                                std::move(vaapi_wrapper),
+                                base::DoNothing(),
+                                nullptr) {
   ref_pic_list_pocs_.reserve(kMaxRefIdxActive);
 }
 

@@ -714,7 +714,10 @@ bool FillAV1SliceParameters(
 AV1VaapiVideoDecoderDelegate::AV1VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper)
-    : VaapiVideoDecoderDelegate(vaapi_dec, std::move(vaapi_wrapper)) {}
+    : VaapiVideoDecoderDelegate(vaapi_dec,
+                                std::move(vaapi_wrapper),
+                                base::DoNothing(),
+                                nullptr) {}
 
 AV1VaapiVideoDecoderDelegate::~AV1VaapiVideoDecoderDelegate() = default;
 

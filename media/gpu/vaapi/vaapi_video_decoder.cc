@@ -680,8 +680,11 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
-    auto accelerator =
-        std::make_unique<H264VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
+    auto accelerator = std::make_unique<H264VaapiVideoDecoderDelegate>(
+        this, vaapi_wrapper_,
+        BindToCurrentLoop(base::BindRepeating(
+            &VaapiVideoDecoder::ProtectedSessionUpdate, weak_this_)),
+        cdm_context_);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(

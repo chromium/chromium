@@ -8,6 +8,7 @@
 
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/cdm_context.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/macros.h"
@@ -38,8 +39,13 @@ static constexpr uint8_t kZigzagScan8x8[64] = {
 
 H264VaapiVideoDecoderDelegate::H264VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
-    scoped_refptr<VaapiWrapper> vaapi_wrapper)
-    : VaapiVideoDecoderDelegate(vaapi_dec, std::move(vaapi_wrapper)) {}
+    scoped_refptr<VaapiWrapper> vaapi_wrapper,
+    ProtectedSessionUpdateCB on_protected_session_update_cb,
+    CdmContext* cdm_context)
+    : VaapiVideoDecoderDelegate(vaapi_dec,
+                                std::move(vaapi_wrapper),
+                                std::move(on_protected_session_update_cb),
+                                cdm_context) {}
 
 H264VaapiVideoDecoderDelegate::~H264VaapiVideoDecoderDelegate() = default;
 
@@ -185,6 +191,23 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
     const std::vector<SubsampleEntry>& subsamples) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media,gpu", "H264VaapiVideoDecoderDelegate::SubmitSlice");
+  bool uses_crypto = false;
+  VAEncryptionParameters crypto_params;
+  if (!subsamples.empty() && subsamples[0].cypher_bytes) {
+    // If there is only one clear byte, then this is CENC v1, full sample
+    // encryption (i.e. only the NALU header is unencrypted).
+    ProtectedSessionState state =
+        SetupDecryptDecode(subsamples[0].clear_bytes == 1, &crypto_params,
+                           &encryption_segment_info_, subsamples);
+    if (state == ProtectedSessionState::kFailed) {
+      LOG(ERROR) << "SubmitSlice fails because we couldn't setup the protected "
+                    "session";
+      return DecodeStatus::kFail;
+    } else if (state != ProtectedSessionState::kCreated) {
+      return DecodeStatus::kTryAgain;
+    }
+    uses_crypto = true;
+  }
   VASliceParameterBufferH264 slice_param;
   memset(&slice_param, 0, sizeof(slice_param));
 
@@ -273,10 +296,16 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
       FillVAPicture(&slice_param.RefPicList1[i], ref_pic_list1[i]);
   }
 
-  const bool success = vaapi_wrapper_->SubmitBuffers(
-      {{VASliceParameterBufferType, sizeof(slice_param), &slice_param},
-       {VASliceDataBufferType, size, data}});
-  return success ? DecodeStatus::kOk : DecodeStatus::kFail;
+  if (uses_crypto &&
+      !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
+                                    sizeof(crypto_params), &crypto_params)) {
+    return DecodeStatus::kFail;
+  }
+  return vaapi_wrapper_->SubmitBuffers(
+             {{VASliceParameterBufferType, sizeof(slice_param), &slice_param},
+              {VASliceDataBufferType, size, data}})
+             ? DecodeStatus::kOk
+             : DecodeStatus::kFail;
 }
 
 DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
@@ -286,6 +315,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
 
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       pic->AsVaapiH264Picture()->va_surface()->id());
+  encryption_segment_info_.clear();
   return success ? DecodeStatus::kOk : DecodeStatus::kFail;
 }
 
@@ -302,7 +332,18 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
 
 void H264VaapiVideoDecoderDelegate::Reset() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  encryption_segment_info_.clear();
   vaapi_wrapper_->DestroyPendingBuffers();
+}
+
+DecodeStatus H264VaapiVideoDecoderDelegate::SetStream(
+    base::span<const uint8_t> /*stream*/,
+    const DecryptConfig* decrypt_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!decrypt_config)
+    return Status::kOk;
+  return SetDecryptConfig(decrypt_config->Clone()) ? Status::kOk
+                                                   : Status::kFail;
 }
 
 void H264VaapiVideoDecoderDelegate::FillVAPicture(

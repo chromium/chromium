@@ -169,8 +169,8 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
 
     vda_.decoder_thread_task_runner_ = decoder_thread_.task_runner();
 
-    decoder_delegate_ =
-        std::make_unique<VaapiVideoDecoderDelegate>(&vda_, mock_vaapi_wrapper_);
+    decoder_delegate_ = std::make_unique<VaapiVideoDecoderDelegate>(
+        &vda_, mock_vaapi_wrapper_, base::DoNothing(), nullptr);
 
     // Plug in all the mocks and ourselves as the |client_|.
     vda_.decoder_.reset(mock_decoder_);

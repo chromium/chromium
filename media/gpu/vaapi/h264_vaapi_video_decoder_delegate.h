@@ -16,13 +16,18 @@ typedef struct _VAPictureH264 VAPictureH264;
 
 namespace media {
 
+class CdmContext;
 class H264Picture;
 
 class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
                                       public VaapiVideoDecoderDelegate {
  public:
-  H264VaapiVideoDecoderDelegate(DecodeSurfaceHandler<VASurface>* vaapi_dec,
-                                scoped_refptr<VaapiWrapper> vaapi_wrapper);
+  H264VaapiVideoDecoderDelegate(
+      DecodeSurfaceHandler<VASurface>* vaapi_dec,
+      scoped_refptr<VaapiWrapper> vaapi_wrapper,
+      ProtectedSessionUpdateCB on_protected_session_update_cb =
+          base::DoNothing(),
+      CdmContext* cdm_context = nullptr);
   ~H264VaapiVideoDecoderDelegate() override;
 
   // H264Decoder::H264Accelerator implementation.
@@ -45,12 +50,19 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
   Status SubmitDecode(scoped_refptr<H264Picture> pic) override;
   bool OutputPicture(scoped_refptr<H264Picture> pic) override;
   void Reset() override;
+  Status SetStream(base::span<const uint8_t> stream,
+                   const DecryptConfig* decrypt_config) override;
 
  private:
   void FillVAPicture(VAPictureH264* va_pic, scoped_refptr<H264Picture> pic);
   int FillVARefFramesFromDPB(const H264DPB& dpb,
                              VAPictureH264* va_pics,
                              int num_pics);
+
+  // We need to hold onto this memory here because it's referenced by the
+  // mapped buffer in libva across calls. It is filled in SubmitSlice() and
+  // stays alive until SubmitDecode() or Reset().
+  std::vector<VAEncryptionSegmentInfo> encryption_segment_info_;
 
   DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoDecoderDelegate);
 };

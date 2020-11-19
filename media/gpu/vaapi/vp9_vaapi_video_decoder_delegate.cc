@@ -19,7 +19,10 @@ namespace media {
 VP9VaapiVideoDecoderDelegate::VP9VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper)
-    : VaapiVideoDecoderDelegate(vaapi_dec, std::move(vaapi_wrapper)) {}
+    : VaapiVideoDecoderDelegate(vaapi_dec,
+                                std::move(vaapi_wrapper),
+                                base::DoNothing(),
+                                nullptr) {}
 
 VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() {
   DCHECK(!picture_params_);

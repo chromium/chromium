@@ -123,6 +123,7 @@ source_set("vaapi") {
     ]
 
     deps += [
+      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
       "//components/chromeos_camera:jpeg_encode_accelerator",
       "//components/chromeos_camera:mjpeg_decode_accelerator",
     ]
