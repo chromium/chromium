@@ -297,49 +297,55 @@ public final class AwBrowserProcess {
      */
     public static void handleMinidumps(final boolean userApproved) {
         sSequencedTaskRunner.postTask(() -> {
-            final Context appContext = ContextUtils.getApplicationContext();
-            final File crashSpoolDir = new File(appContext.getCacheDir().getPath(), "WebView");
-            if (!crashSpoolDir.isDirectory()) return;
-            final CrashFileManager crashFileManager = new CrashFileManager(crashSpoolDir);
+            try {
+                final Context appContext = ContextUtils.getApplicationContext();
+                final File cacheDir = new File(PathUtils.getCacheDirectory());
+                final CrashFileManager crashFileManager = new CrashFileManager(cacheDir);
 
-            // The lifecycle of a minidump in the app directory is very simple: foo.dmpNNNNN --
-            // where NNNNN is a Process ID (PID) -- gets created, and is either deleted or
-            // copied over to the shared crash directory for all WebView-using apps.
-            Map<String, Map<String, String>> crashesInfoMap =
-                    crashFileManager.importMinidumpsCrashKeys();
-            final File[] minidumpFiles = crashFileManager.getCurrentMinidumpsSansLogcat();
-            if (minidumpFiles.length == 0) return;
+                // The lifecycle of a minidump in the app directory is very simple: foo.dmpNNNNN --
+                // where NNNNN is a Process ID (PID) -- gets created, and is either deleted or
+                // copied over to the shared crash directory for all WebView-using apps.
+                Map<String, Map<String, String>> crashesInfoMap =
+                        crashFileManager.importMinidumpsCrashKeys();
+                final File[] minidumpFiles = crashFileManager.getCurrentMinidumpsSansLogcat();
+                if (minidumpFiles.length == 0) return;
 
-            // Delete the minidumps if the user doesn't allow crash data uploading.
-            if (!userApproved) {
-                deleteMinidumps(minidumpFiles);
-                return;
-            }
-
-            final Intent intent = new Intent();
-            intent.setClassName(getWebViewPackageName(), ServiceNames.CRASH_RECEIVER_SERVICE);
-
-            ServiceConnection connection = new ServiceConnection() {
-                private boolean mHasConnected;
-
-                @Override
-                public void onServiceConnected(ComponentName className, IBinder service) {
-                    if (mHasConnected) return;
-                    mHasConnected = true;
-                    // onServiceConnected is called on the UI thread, so punt this back to
-                    // the background thread.
-                    sSequencedTaskRunner.postTask(() -> {
-                        transmitMinidumps(minidumpFiles, crashesInfoMap,
-                                ICrashReceiverService.Stub.asInterface(service));
-                        appContext.unbindService(this);
-                    });
+                // Delete the minidumps if the user doesn't allow crash data uploading.
+                if (!userApproved) {
+                    deleteMinidumps(minidumpFiles);
+                    return;
                 }
 
-                @Override
-                public void onServiceDisconnected(ComponentName className) {}
-            };
-            if (!appContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
-                Log.w(TAG, "Could not bind to Minidump-copying Service " + intent);
+                final Intent intent = new Intent();
+                intent.setClassName(getWebViewPackageName(), ServiceNames.CRASH_RECEIVER_SERVICE);
+
+                ServiceConnection connection = new ServiceConnection() {
+                    private boolean mHasConnected;
+
+                    @Override
+                    public void onServiceConnected(ComponentName className, IBinder service) {
+                        if (mHasConnected) return;
+                        mHasConnected = true;
+                        // onServiceConnected is called on the UI thread, so punt this back to
+                        // the background thread.
+                        sSequencedTaskRunner.postTask(() -> {
+                            transmitMinidumps(minidumpFiles, crashesInfoMap,
+                                    ICrashReceiverService.Stub.asInterface(service));
+                            appContext.unbindService(this);
+                        });
+                    }
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName className) {}
+                };
+                if (!appContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+                    Log.w(TAG, "Could not bind to Minidump-copying Service " + intent);
+                }
+            } catch (RuntimeException e) {
+                // We don't want to crash the app if we hit an unexpected exception during minidump
+                // uploading as this could potentially put the app into a persistently bad state.
+                // Just log it.
+                Log.e(TAG, "Exception during minidump uploading process!", e);
             }
         });
     }
