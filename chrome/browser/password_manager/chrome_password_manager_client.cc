@@ -130,6 +130,7 @@
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "components/infobars/core/infobar.h"
+#include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "ui/base/ui_base_features.h"
 #else
@@ -330,8 +331,13 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     UpdatePasswordInfoBarDelegate::Create(web_contents(),
                                           std::move(form_to_save));
   } else {
-    SavePasswordInfoBarDelegate::Create(web_contents(),
-                                        std::move(form_to_save));
+    if (messages::IsPasswordMessagesUiEnabled()) {
+      save_password_message_delegate_.DisplaySavePasswordPrompt(
+          web_contents(), std::move(form_to_save));
+    } else {
+      SavePasswordInfoBarDelegate::Create(web_contents(),
+                                          std::move(form_to_save));
+    }
   }
 #else
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
@@ -593,7 +599,11 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
           password_manager::features::kPasswordChange)) {
     was_leak_dialog_shown_ = true;
   }
-  HideSavePasswordInfobar(web_contents());
+  if (messages::IsPasswordMessagesUiEnabled()) {
+    save_password_message_delegate_.DismissSavePasswordPrompt();
+  } else {
+    HideSavePasswordInfobar(web_contents());
+  }
   (new CredentialLeakControllerAndroid(
        leak_type, saved_sites, origin, username,
        web_contents()->GetTopLevelNativeWindow()))
