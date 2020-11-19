@@ -93,8 +93,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
 
   // WebFrameWidgetBase overrides:
   void DidCreateLocalRootView() override;
-  void ApplyVisualPropertiesSizing(
-      const VisualProperties& visual_properties) override;
 
   // FrameWidget overrides:
   bool ShouldHandleImeEvents() override;

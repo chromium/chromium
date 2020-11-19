@@ -637,10 +637,6 @@ class CORE_EXPORT WebFrameWidgetBase
 
   ScreenMetricsEmulator* DeviceEmulator();
 
-  // Called during |UpdateVisualProperties| to apply the new size to the widget.
-  virtual void ApplyVisualPropertiesSizing(
-      const VisualProperties& visual_properties) = 0;
-
   // Calculates the selection bounds in the root frame. Returns bounds unchanged
   // when there is no focused frame or no selection.
   void CalculateSelectionBounds(gfx::Rect& anchor_in_root_frame,
@@ -731,6 +727,9 @@ class CORE_EXPORT WebFrameWidgetBase
   // Perform a hit test for a point relative to the root frame of the page.
   HitTestResult HitTestResultForRootFramePos(
       const FloatPoint& pos_in_root_frame);
+
+  // Called during |UpdateVisualProperties| to apply the new size to the widget.
+  void ApplyVisualPropertiesSizing(const VisualProperties& visual_properties);
 
   // Returns the current state of synchronous resize mode for testing.
   bool SynchronousResizeModeForTestingEnabled();

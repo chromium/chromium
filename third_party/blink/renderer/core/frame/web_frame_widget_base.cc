@@ -1203,6 +1203,68 @@ void WebFrameWidgetBase::UpdateVisualProperties(
     ScrollFocusedEditableElementIntoView();
 }
 
+void WebFrameWidgetBase::ApplyVisualPropertiesSizing(
+    const VisualProperties& visual_properties) {
+  gfx::Rect new_compositor_viewport_pixel_rect =
+      visual_properties.compositor_viewport_pixel_rect;
+  if (ForMainFrame()) {
+    if (size_ !=
+        widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size)) {
+      // Only hide popups when the size changes. Eg https://crbug.com/761908.
+      View()->CancelPagePopup();
+    }
+
+    if (auto* device_emulator = DeviceEmulator()) {
+      device_emulator->UpdateVisualProperties(visual_properties);
+      return;
+    }
+
+    if (AutoResizeMode()) {
+      new_compositor_viewport_pixel_rect = gfx::Rect(gfx::ScaleToCeiledSize(
+          widget_base_->BlinkSpaceToFlooredDIPs(size_.value_or(gfx::Size())),
+          visual_properties.screen_info.device_scale_factor));
+    }
+  }
+
+  SetWindowSegments(visual_properties.root_widget_window_segments);
+
+  widget_base_->UpdateSurfaceAndScreenInfo(
+      visual_properties.local_surface_id.value_or(viz::LocalSurfaceId()),
+      new_compositor_viewport_pixel_rect, visual_properties.screen_info);
+
+  // Store this even when auto-resizing, it is the size of the full viewport
+  // used for clipping, and this value is propagated down the Widget
+  // hierarchy via the VisualProperties waterfall.
+  widget_base_->SetVisibleViewportSizeInDIPs(
+      visual_properties.visible_viewport_size);
+
+  if (ForMainFrame()) {
+    if (!AutoResizeMode()) {
+      size_ = widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size);
+
+      View()->ResizeWithBrowserControls(
+          size_.value(),
+          widget_base_->DIPsToCeiledBlinkSpace(
+              widget_base_->VisibleViewportSizeInDIPs()),
+          visual_properties.browser_controls_params);
+    }
+  } else {
+    // Widgets in a WebView's frame tree without a local main frame
+    // set the size of the WebView to be the |visible_viewport_size|, in order
+    // to limit compositing in (out of process) child frames to what is visible.
+    //
+    // Note that child frames in the same process/WebView frame tree as the
+    // main frame do not do this in order to not clobber the source of truth in
+    // the main frame.
+    if (!View()->MainFrameImpl()) {
+      View()->Resize(widget_base_->DIPsToCeiledBlinkSpace(
+          widget_base_->VisibleViewportSizeInDIPs()));
+    }
+
+    Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
+  }
+}
+
 void WebFrameWidgetBase::ScheduleAnimationForWebTests() {
   Client()->ScheduleAnimationForWebTests();
 }

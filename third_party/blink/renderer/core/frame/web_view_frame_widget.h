@@ -68,10 +68,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WebFrameWidget overrides:
   bool ScrollFocusedEditableElementIntoView() override;
 
-  // WebFrameWidgetBase overrides:
-  void ApplyVisualPropertiesSizing(
-      const VisualProperties& visual_properties) override;
-
   // FrameWidget overrides:
   bool ShouldHandleImeEvents() override;
 
