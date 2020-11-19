@@ -172,13 +172,14 @@ element
         AXRole: AXCaption
             AXRole: AXStaticText "Caption"
                 AXRole: AXInlineTextBox "Caption"
-        AXRole: AXRow
-            AXRole: AXCell "Cell1"
-                AXRole: AXStaticText "Cell1"
-                    AXRole: AXInlineTextBox "Cell1"
-            AXRole: AXCell "Cell2"
-                AXRole: AXStaticText "Cell2"
-                    AXRole: AXInlineTextBox "Cell2"
+        AXRole: AXRowGroup
+            AXRole: AXRow
+                AXRole: AXCell "Cell1"
+                    AXRole: AXStaticText "Cell1"
+                        AXRole: AXInlineTextBox "Cell1"
+                AXRole: AXCell "Cell2"
+                    AXRole: AXStaticText "Cell2"
+                        AXRole: AXInlineTextBox "Cell2"
     AXRole: AXFigure "Fig1. - Blue Box"
         AXRole: AXImage "blue"
         AXRole: AXFigcaption
