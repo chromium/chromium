@@ -75,7 +75,10 @@ class ScopedObservation {
   bool IsObserving() const { return source_ != nullptr; }
 
   // Returns true if |source| is being observed.
-  bool IsObservingSource(Source* source) const { return source_ == source; }
+  bool IsObservingSource(Source* source) const {
+    DCHECK(source);
+    return source_ == source;
+  }
 
  private:
   Observer* const observer_;

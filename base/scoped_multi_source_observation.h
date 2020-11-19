@@ -86,6 +86,7 @@ class ScopedMultiSourceObservation {
 
   // Returns true if |source| is being observed.
   bool IsObservingSource(Source* source) const {
+    DCHECK(source);
     return base::Contains(sources_, source);
   }
 
