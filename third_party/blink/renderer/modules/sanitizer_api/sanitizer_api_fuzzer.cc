@@ -22,6 +22,12 @@
 
 namespace blink {
 
+ScriptState* Initialization() {
+  static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
+  static DummyPageHolder* g_page_holder = new DummyPageHolder();
+  return ToScriptStateForMainWorld(&g_page_holder->GetFrame());
+}
+
 Vector<String> ToVector(
     const google::protobuf::RepeatedPtrField<std::string>& inputs) {
   Vector<String> elements;
@@ -60,35 +66,26 @@ void MakeConfiguration(SanitizerConfig* sanitizer_config,
   }
 }
 
-DEFINE_TEXT_PROTO_FUZZER(const SanitizerConfigProto& proto) {
-  static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
-  // Scope cannot be created before BlinkFuzzerTestSupport because it requires
-  // that Oilpan be initialized to access blink::ThreadState::Current.
-  LEAK_SANITIZER_DISABLED_SCOPE;
-  static DummyPageHolder* g_page_holder = new DummyPageHolder();
-
-  ScriptState* script_state =
-      ToScriptStateForMainWorld(&g_page_holder->GetFrame());
-
+void TextProtoFuzzer(const SanitizerConfigProto& proto,
+                     ScriptState* script_state) {
   // Create random Sanitizer.
   auto* sanitizer_config = MakeGarbageCollected<SanitizerConfig>();
   MakeConfiguration(sanitizer_config, proto);
   auto* sanitizer = MakeGarbageCollected<Sanitizer>(sanitizer_config);
 
   // Sanitize random strings.
+  String str = proto.html_string().c_str();
   StringOrTrustedHTMLOrDocumentFragmentOrDocument str1 =
-      StringOrTrustedHTMLOrDocumentFragmentOrDocument::FromString(
-          proto.html_string().c_str());
+      StringOrTrustedHTMLOrDocumentFragmentOrDocument::FromString(str);
   sanitizer->sanitize(script_state, str1, IGNORE_EXCEPTION_FOR_TESTING);
-
   StringOrDocumentFragmentOrDocument str2 =
-      StringOrDocumentFragmentOrDocument::FromString(
-          proto.html_string().c_str());
+      StringOrDocumentFragmentOrDocument::FromString(str);
   sanitizer->sanitizeToString(script_state, str2, IGNORE_EXCEPTION_FOR_TESTING);
-
-  // Request a garbage collection.
-  ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
 }
 
 }  // namespace blink
+
+DEFINE_TEXT_PROTO_FUZZER(const SanitizerConfigProto& proto) {
+  static blink::ScriptState* script_state = blink::Initialization();
+  blink::TextProtoFuzzer(proto, script_state);
+}
