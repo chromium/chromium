@@ -102,7 +102,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
     EXPECT_TRUE(report);
     EXPECT_EQ(profile()->GetProfileUserName(), report->name());
     EXPECT_EQ(profile()->GetPath().AsUTF8Unsafe(), report->id());
-    EXPECT_TRUE(report->is_full_report());
+    EXPECT_TRUE(report->is_available());
 
     return report;
   }
@@ -300,7 +300,7 @@ TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReport) {
   EXPECT_EQ(0, report->chrome_policies_size());
   EXPECT_EQ(0, report->extensions_size());
   EXPECT_EQ(0, report->policy_fetched_timestamps_size());
-  EXPECT_TRUE(report->is_full_report());
+  EXPECT_TRUE(report->is_available());
 }
 
 TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReportWithoutPolicy) {

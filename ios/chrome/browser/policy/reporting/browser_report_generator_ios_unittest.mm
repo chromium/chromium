@@ -64,7 +64,7 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
               EXPECT_EQ(kProfilePath.AsUTF8Unsafe(), profile.id());
               EXPECT_EQ(kProfilePath.BaseName().AsUTF8Unsafe(), profile.name());
 
-              EXPECT_FALSE(profile.is_full_report());
+              EXPECT_FALSE(profile.is_available());
 
               EXPECT_EQ(0, report->plugins_size());
 

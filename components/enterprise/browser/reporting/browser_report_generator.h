@@ -48,7 +48,7 @@ class BrowserReportGenerator {
 
   // Generates a BrowserReport with the following fields:
   // - browser_version, channel, executable_path
-  // - user profiles: id, name, is_full_report (always be false).
+  // - user profiles: id, name, is_available (always be false).
   // - plugins: name, version, filename, description.
   void Generate(ReportType report_type, ReportCallback callback);
 

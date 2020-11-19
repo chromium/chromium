@@ -136,7 +136,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
                   report->chrome_user_profile_infos(0);
               EXPECT_NE(std::string(), profile.id());
               EXPECT_EQ(kProfileName, profile.name());
-              EXPECT_FALSE(profile.is_full_report());
+              EXPECT_FALSE(profile.is_available());
 
 #if defined(OS_CHROMEOS)
               EXPECT_EQ(0, report->plugins_size());

@@ -42,7 +42,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
 
   if (report_type == ReportType::kExtensionRequest) {
     delegate_->GetExtensionRequest(report_.get());
-    report_->set_is_full_report(true);
+    report_->set_is_available(true);
 #if defined(OS_CHROMEOS)
     // Extension request is aggregated at the user level on CrOS.
     report_->set_name(name);
@@ -50,7 +50,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
 #endif  // defined(OS_CHROMEOS)
   } else {
     report_->set_name(name);
-    report_->set_is_full_report(true);
+    report_->set_is_available(true);
 
     delegate_->GetSigninUserInfo(report_.get());
     if (extensions_enabled_) {

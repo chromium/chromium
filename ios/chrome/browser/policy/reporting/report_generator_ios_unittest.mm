@@ -164,8 +164,8 @@ TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
   auto profile_info = browser_report.chrome_user_profile_infos(0);
   EXPECT_EQ(kProfilePath.AsUTF8Unsafe(), profile_info.id());
   EXPECT_EQ(kProfilePath.BaseName().AsUTF8Unsafe(), profile_info.name());
-  EXPECT_TRUE(profile_info.has_is_full_report());
-  EXPECT_TRUE(profile_info.is_full_report());
+  EXPECT_TRUE(profile_info.has_is_available());
+  EXPECT_TRUE(profile_info.is_available());
   EXPECT_EQ(2, profile_info.chrome_policies_size());
 }
 

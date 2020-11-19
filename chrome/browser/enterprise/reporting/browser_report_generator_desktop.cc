@@ -96,7 +96,7 @@ void BrowserReportGeneratorDesktop::GenerateProfileInfo(
         report->add_chrome_user_profile_infos();
     profile->set_id(profile_path.AsUTF8Unsafe());
     profile->set_name(base::UTF16ToUTF8(entry->GetName()));
-    profile->set_is_full_report(false);
+    profile->set_is_available(false);
   }
 
   if (throttler->IsEnabled() && (report_type == ReportType::kExtensionRequest ||

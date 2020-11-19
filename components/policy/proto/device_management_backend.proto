@@ -1810,10 +1810,10 @@ message ChromeUserProfileInfo {
   // the profile. Empty when in incognito mode
   optional string name = 2;
 
-  // A boolean to indicates if it's a full report which contains all Profile
-  // details. Only activated Profile is able to upload full report, idle Profile
-  // only uploads its |id| and |name|.
-  optional bool is_full_report = 3;
+  // A boolean to indicates if the profile contains all details. Only activated
+  // profiles can upload all needed details, idle profiles only upload |id| and
+  // |name|. Only used for partial reports.
+  optional bool is_available = 3;
 
   // Gaia account information if the Profile is signed in.
   optional ChromeSignedInUser chrome_signed_in_user = 4;

@@ -166,7 +166,7 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
       EXPECT_EQ(0u, profile.id().find(profiles_dir));
       EXPECT_LE(0u, profile.id().find(profile.name()));
 
-      if (profile.is_full_report())
+      if (profile.is_available())
         FindAndRemove(mutable_active_profile_names, profile.name());
       else
         FindAndRemove(mutable_idle_profile_names, profile.name());

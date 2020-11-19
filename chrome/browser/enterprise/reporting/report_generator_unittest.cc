@@ -238,10 +238,10 @@ class ReportGeneratorTest : public ::testing::Test {
       // Verify that the profile id is set as profile path.
       EXPECT_EQ(GetProfilePath(actual_profile_name), actual_profile_info.id());
 
-      EXPECT_TRUE(actual_profile_info.has_is_full_report());
+      EXPECT_TRUE(actual_profile_info.has_is_available());
 
       // Activate profiles have full report while the inactive ones don't.
-      if (actual_profile_info.is_full_report())
+      if (actual_profile_info.is_available())
         FindAndRemoveProfileName(&mutable_active_profiles_names,
                                  actual_profile_name);
       else
