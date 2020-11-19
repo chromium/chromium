@@ -18,7 +18,7 @@ extern const char kSigninScreen[];
 extern const char kAllowDeprecatedAudioApi[];
 extern const char kAllowSecondaryKioskAppEnabledOnLaunch[];
 extern const char kKeyPermissionsInLoginScreen[];
-extern const char kKeyImprivataInSessionExtension[];
+extern const char kImprivataInSessionExtension[];
 
 }  // namespace behavior_feature
 

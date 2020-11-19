@@ -48,7 +48,7 @@ bool RemoteAppsImpl::IsAllowed(content::RenderFrameHost* render_frame_host,
 
   const extensions::Feature* feature =
       extensions::FeatureProvider::GetBehaviorFeature(
-          extensions::behavior_feature::kKeyImprivataInSessionExtension);
+          extensions::behavior_feature::kImprivataInSessionExtension);
   DCHECK(feature);
   return feature->IsAvailableToExtension(extension).is_available();
 }

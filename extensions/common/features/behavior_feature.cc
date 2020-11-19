@@ -24,7 +24,7 @@ const char kAllowSecondaryKioskAppEnabledOnLaunch[] =
 
 const char kKeyPermissionsInLoginScreen[] = "key_permissions_in_login_screen";
 
-const char kKeyImprivataInSessionExtension[] = "imprivata_in_session_extension";
+const char kImprivataInSessionExtension[] = "imprivata_in_session_extension";
 
 }  // namespace behavior_feature
 
