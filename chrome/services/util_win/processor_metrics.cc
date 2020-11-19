@@ -5,6 +5,7 @@
 #include "chrome/services/util_win/processor_metrics.h"
 
 #include <objbase.h>
+#include <sysinfoapi.h>
 #include <wbemidl.h>
 #include <wrl/client.h>
 
@@ -94,6 +95,20 @@ void RecordProcessorMetricsFromWMI(const ComPtr<IWbemServices>& services) {
   }
 }
 
+// TODO(crbug.com/1136224) Can be removed once CET support is stable.
+void RecordCetAvailability() {
+  bool available = false;
+  auto is_user_cet_available_in_environment =
+      reinterpret_cast<decltype(&IsUserCetAvailableInEnvironment)>(
+          ::GetProcAddress(::GetModuleHandleW(L"kernel32.dll"),
+                           "IsUserCetAvailableInEnvironment"));
+  if (is_user_cet_available_in_environment) {
+    available = is_user_cet_available_in_environment(
+        USER_CET_ENVIRONMENT_WIN32_PROCESS);
+  }
+  base::UmaHistogramBoolean("Windows.CetAvailable", available);
+}
+
 }  // namespace
 
 void RecordProcessorMetrics() {
@@ -104,4 +119,5 @@ void RecordProcessorMetrics() {
     return;
   RecordProcessorMetricsFromWMI(wmi_services);
   RecordHypervStatusFromWMI(wmi_services);
+  RecordCetAvailability();
 }

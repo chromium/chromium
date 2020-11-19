@@ -26,4 +26,5 @@ TEST(ProcessorMetricsTest, TestRecordProcessorMetrics) {
   histogram_tester.ExpectTotalCount(
       "Windows.ProcessorVirtualizationFirmwareEnabled", 1);
   histogram_tester.ExpectTotalCount("Windows.HypervPresent", 1);
+  histogram_tester.ExpectTotalCount("Windows.CetAvailable", 1);
 }
