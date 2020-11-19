@@ -74,7 +74,7 @@ GlanceableInfoView::GlanceableInfoView(AmbientViewDelegate* delegate)
   DCHECK(delegate);
   SetID(AmbientViewID::kAmbientGlanceableInfoView);
   auto* backend_model = delegate_->GetAmbientBackendModel();
-  backend_model->AddObserver(this);
+  scoped_backend_model_observer_.Observe(backend_model);
 
   InitLayout();
 
@@ -84,9 +84,7 @@ GlanceableInfoView::GlanceableInfoView(AmbientViewDelegate* delegate)
   }
 }
 
-GlanceableInfoView::~GlanceableInfoView() {
-  delegate_->GetAmbientBackendModel()->RemoveObserver(this);
-}
+GlanceableInfoView::~GlanceableInfoView() = default;
 
 const char* GlanceableInfoView::GetClassName() const {
   return "GlanceableInfoView";
