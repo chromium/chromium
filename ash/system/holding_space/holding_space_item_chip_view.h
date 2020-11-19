@@ -35,10 +35,18 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   ~HoldingSpaceItemChipView() override;
 
  private:
+  class LabelMaskLayerOwner;
+
+  // HoldingSpaceItemView:
+  void OnPinVisiblityChanged(bool pin_visible) override;
+
   void UpdateImage();
+
+  std::unique_ptr<LabelMaskLayerOwner> label_mask_layer_owner_;
 
   RoundedImageView* image_ = nullptr;
   views::Label* label_ = nullptr;
+  views::View* label_and_pin_button_container_ = nullptr;
 
   std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
 };

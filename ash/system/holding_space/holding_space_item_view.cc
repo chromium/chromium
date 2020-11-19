@@ -319,6 +319,7 @@ void HoldingSpaceItemView::OnPinPressed() {
 void HoldingSpaceItemView::UpdatePin() {
   if (!IsMouseHovered()) {
     pin_->SetVisible(false);
+    OnPinVisiblityChanged(false);
     return;
   }
 
@@ -328,6 +329,7 @@ void HoldingSpaceItemView::UpdatePin() {
 
   pin_->SetToggled(!is_item_pinned);
   pin_->SetVisible(true);
+  OnPinVisiblityChanged(true);
 }
 
 BEGIN_METADATA(HoldingSpaceItemView, views::InkDropHostView)

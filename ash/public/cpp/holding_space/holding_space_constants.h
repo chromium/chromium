@@ -21,6 +21,7 @@ constexpr int kHoldingSpaceChipChildSpacing = 8;
 constexpr int kHoldingSpaceChipHeight = 40;
 constexpr int kHoldingSpaceChipIconSize = 24;
 constexpr int kHoldingSpaceChipWidth = 160;
+constexpr int kHoldingSpaceChipLabelMaskGradientWidth = 16;
 constexpr int kHoldingSpaceChipsPerRow = 2;
 constexpr int kHoldingSpaceColumnSpacing = 8;
 constexpr int kHoldingSpaceColumnWidth = 160;
