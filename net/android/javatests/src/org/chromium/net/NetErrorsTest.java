@@ -15,9 +15,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class NetErrorsTest {
     // These are manually copied and should be kept in sync with net_error_list.h.
     private static final int IO_PENDING_ERROR = -1;

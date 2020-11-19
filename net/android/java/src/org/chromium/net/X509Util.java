@@ -214,12 +214,6 @@ public class X509Util {
     private static final Object sLock = new Object();
 
     /**
-     * Allow disabling recording histograms for the certificate changes. Java unit tests do not load
-     * native libraries which prevent this from succeeding.
-     */
-    private static boolean sDisableNativeCodeForTest;
-
-    /**
      * Ensures that the trust managers and certificate factory are initialized.
      */
     private static void ensureInitialized() throws CertificateException,
@@ -577,10 +571,6 @@ public class X509Util {
             return new AndroidCertVerifyResult(CertVerifyStatusAndroid.OK,
                                                isIssuedByKnownRoot, verifiedChain);
         }
-    }
-
-    public static void setDisableNativeCodeForTest(boolean disabled) {
-        sDisableNativeCodeForTest = disabled;
     }
 
     @NativeMethods
