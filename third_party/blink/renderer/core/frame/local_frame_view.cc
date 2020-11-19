@@ -2786,11 +2786,10 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   // While printing or capturing a paint preview of a document, the paint walk
   // is done into a special canvas. There is no point doing a normal paint step
   // (or animations update) when in this mode.
-  bool is_capturing_layout =
-      frame_->GetDocument()->IsPrintingOrPaintingPreview();
-  bool repainted = false;
-  if (!is_capturing_layout)
-    repainted = PaintTree(benchmark_mode);
+  if (frame_->GetDocument()->IsPrintingOrPaintingPreview())
+    return;
+
+  bool repainted = PaintTree(benchmark_mode);
 
   if (benchmark_mode ==
           PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate ||
@@ -2801,78 +2800,73 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
     paint_artifact_compositor_->SetNeedsUpdate();
   }
 
-  if (!is_capturing_layout) {
-    bool needed_update = !paint_artifact_compositor_ ||
-                         paint_artifact_compositor_->NeedsUpdate();
-    PushPaintArtifactToCompositor(repainted);
-    size_t total_animations_count = 0;
-    bool current_frame_had_raf = false;
-    bool next_frame_has_pending_raf = false;
-    ForAllNonThrottledLocalFrameViews([this, &total_animations_count,
-                                       &current_frame_had_raf,
-                                       &next_frame_has_pending_raf](
-                                          LocalFrameView& frame_view) {
-      if (auto* scrollable_area = frame_view.GetScrollableArea())
-        scrollable_area->UpdateCompositorScrollAnimations();
-      if (const auto* animating_scrollable_areas =
-              frame_view.AnimatingScrollableAreas()) {
-        for (PaintLayerScrollableArea* area : *animating_scrollable_areas)
-          area->UpdateCompositorScrollAnimations();
-      }
-      frame_view.GetLayoutView()
-          ->GetDocument()
-          .GetDocumentAnimations()
-          .UpdateAnimations(DocumentLifecycle::kPaintClean,
-                            paint_artifact_compositor_.get());
-      Document& document = frame_view.GetLayoutView()->GetDocument();
-      total_animations_count +=
-          document.GetDocumentAnimations().GetAnimationsCount();
-      current_frame_had_raf |= document.CurrentFrameHadRAF();
-      next_frame_has_pending_raf |= document.NextFrameHasPendingRAF();
-    });
+  bool needed_update =
+      !paint_artifact_compositor_ || paint_artifact_compositor_->NeedsUpdate();
+  PushPaintArtifactToCompositor(repainted);
+  size_t total_animations_count = 0;
+  bool current_frame_had_raf = false;
+  bool next_frame_has_pending_raf = false;
+  ForAllNonThrottledLocalFrameViews(
+      [this, &total_animations_count, &current_frame_had_raf,
+       &next_frame_has_pending_raf](LocalFrameView& frame_view) {
+        if (auto* scrollable_area = frame_view.GetScrollableArea())
+          scrollable_area->UpdateCompositorScrollAnimations();
+        if (const auto* animating_scrollable_areas =
+                frame_view.AnimatingScrollableAreas()) {
+          for (PaintLayerScrollableArea* area : *animating_scrollable_areas)
+            area->UpdateCompositorScrollAnimations();
+        }
+        frame_view.GetLayoutView()
+            ->GetDocument()
+            .GetDocumentAnimations()
+            .UpdateAnimations(DocumentLifecycle::kPaintClean,
+                              paint_artifact_compositor_.get());
+        Document& document = frame_view.GetLayoutView()->GetDocument();
+        total_animations_count +=
+            document.GetDocumentAnimations().GetAnimationsCount();
+        current_frame_had_raf |= document.CurrentFrameHadRAF();
+        next_frame_has_pending_raf |= document.NextFrameHasPendingRAF();
+      });
 
-    if (GetLayoutView()->GetDocument().View() &&
-        GetLayoutView()->GetDocument().View()->GetCompositorAnimationHost()) {
-      GetLayoutView()
-          ->GetDocument()
-          .View()
-          ->GetCompositorAnimationHost()
-          ->SetAnimationCounts(total_animations_count, current_frame_had_raf,
-                               next_frame_has_pending_raf);
-    }
-
-    // Initialize animation properties in the newly created paint property
-    // nodes according to the current animation state. This is mainly for
-    // the running composited animations which didn't change state during
-    // above UpdateAnimations() but associated with new paint property nodes.
-    if (needed_update) {
-      auto* root_layer = RootCcLayer();
-      if (root_layer && root_layer->layer_tree_host()) {
-        root_layer->layer_tree_host()
-            ->mutator_host()
-            ->InitClientAnimationState();
-      }
-    }
-
-    // Notify the controller that the artifact has been pushed and some
-    // lifecycle state can be freed (such as raster invalidations).
-    if (paint_controller_)
-      paint_controller_->FinishCycle();
-
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer();
-      if (root) {
-        ForAllPaintingGraphicsLayers(*root, [](GraphicsLayer& layer) {
-          // Notify the paint controller that the artifact has been pushed and
-          // some lifecycle state can be freed (such as raster invalidations).
-          layer.GetPaintController().FinishCycle();
-        });
-      }
-    }
-
-    if (paint_artifact_compositor_)
-      paint_artifact_compositor_->ClearPropertyTreeChangedState();
+  if (GetLayoutView()->GetDocument().View() &&
+      GetLayoutView()->GetDocument().View()->GetCompositorAnimationHost()) {
+    GetLayoutView()
+        ->GetDocument()
+        .View()
+        ->GetCompositorAnimationHost()
+        ->SetAnimationCounts(total_animations_count, current_frame_had_raf,
+                             next_frame_has_pending_raf);
   }
+
+  // Initialize animation properties in the newly created paint property
+  // nodes according to the current animation state. This is mainly for
+  // the running composited animations which didn't change state during
+  // above UpdateAnimations() but associated with new paint property nodes.
+  if (needed_update) {
+    auto* root_layer = RootCcLayer();
+    if (root_layer && root_layer->layer_tree_host()) {
+      root_layer->layer_tree_host()->mutator_host()->InitClientAnimationState();
+    }
+  }
+
+  // Notify the controller that the artifact has been pushed and some
+  // lifecycle state can be freed (such as raster invalidations).
+  if (paint_controller_)
+    paint_controller_->FinishCycle();
+
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer();
+    if (root) {
+      ForAllPaintingGraphicsLayers(*root, [](GraphicsLayer& layer) {
+        // Notify the paint controller that the artifact has been pushed and
+        // some lifecycle state can be freed (such as raster invalidations).
+        layer.GetPaintController().FinishCycle();
+      });
+    }
+  }
+
+  if (paint_artifact_compositor_)
+    paint_artifact_compositor_->ClearPropertyTreeChangedState();
 
   if (GetPage())
     GetPage()->Animator().ReportFrameAnimations(GetCompositorAnimationHost());
