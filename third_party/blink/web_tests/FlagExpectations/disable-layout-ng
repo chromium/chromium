@@ -387,6 +387,8 @@ crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
 
 ### external/wpt/quirks/
+crbug.com/591099 external/wpt/quirks/body-fills-html-quirk-vertical.html [ Failure ]
+crbug.com/591099 external/wpt/quirks/body-fills-html-quirk.html [ Failure ]
 crbug.com/591099 external/wpt/quirks/line-height-trailing-collapsable-whitespace.html [ Failure ]
 
 ### fast/box-decoration-break/
@@ -426,6 +428,8 @@ crbug.com/591099 virtual/text-antialias/hyphens/hyphens-auto-nowrap.html [ Failu
 crbug.com/639223 virtual/text-antialias/line-break-between-text-nodes-latin1.html [ Failure ]
 
 ### http/tests/
+crbug.com/1139949 http/tests/devtools/elements/highlight/highlight-css-flex-multiline.js [ Failure ]
+crbug.com/1139949 http/tests/devtools/elements/highlight/highlight-css-flex.js [ Failure ]
 crbug.com/591099 http/tests/devtools/elements/highlight/highlight-node-vertical-rl.js [ Failure ]
 
 ### http/tests/images/
@@ -508,8 +512,8 @@ crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-027.html [ Fail
 
 # White space, absolute position and paint timing failures from June 5, 2020
 crbug.com/591099 external/wpt/paint-timing/fcp-only/fcp-pseudo-element-visibility.html [ Failure ]
-crbug.com/591099 external/wpt/css/css-position/position-absolute-center-001.tentative.html [ Failure ]
-crbug.com/591099 external/wpt/css/css-position/position-absolute-center-002.tentative.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-absolute-center-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-absolute-center-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/break-spaces-051.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/break-spaces-052.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/pre-wrap-051.html [ Failure ]
