@@ -258,7 +258,7 @@ void ClipboardHistoryControllerImpl::ShowMenu(
 
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {
   return !clipboard_history_->IsEmpty() &&
-         clipboard_history_->IsEnabledInCurrentMode();
+         ClipboardHistoryUtil::IsEnabledInCurrentMode();
 }
 
 void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {

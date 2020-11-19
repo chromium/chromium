@@ -8,6 +8,8 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/metrics/histogram_macros.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -110,6 +112,20 @@ bool IsSupported(const ui::ClipboardData& data) {
     return ContainsFileSystemData(data);
 
   return true;
+}
+
+bool IsEnabledInCurrentMode() {
+  switch (Shell::Get()->session_controller()->login_status()) {
+    case LoginStatus::NOT_LOGGED_IN:
+    case LoginStatus::LOCKED:
+    case LoginStatus::KIOSK_APP:
+    case LoginStatus::PUBLIC:
+      return false;
+    case LoginStatus::USER:
+    case LoginStatus::GUEST:
+    case LoginStatus::SUPERVISED:
+      return true;
+  }
 }
 
 }  // namespace ClipboardHistoryUtil

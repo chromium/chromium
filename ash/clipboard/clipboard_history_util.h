@@ -86,6 +86,9 @@ ASH_EXPORT base::string16 GetFileSystemSources(const ui::ClipboardData& data);
 // Returns true if `data` is supported by clipboard history.
 ASH_EXPORT bool IsSupported(const ui::ClipboardData& data);
 
+// Returns whether the clipboard history is enabled for the current user mode.
+ASH_EXPORT bool IsEnabledInCurrentMode();
+
 }  // namespace ClipboardHistoryUtil
 }  // namespace ash
 

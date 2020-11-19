@@ -5,6 +5,7 @@
 #include "ash/clipboard/clipboard_nudge_controller.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -111,8 +112,10 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
 void ClipboardNudgeController::OnClipboardDataRead() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!ShouldShowNudge(prefs))
+  if (!ClipboardHistoryUtil::IsEnabledInCurrentMode() ||
+      !ShouldShowNudge(prefs)) {
     return;
+  }
 
   switch (clipboard_state_) {
     case ClipboardState::kFirstCopy:
@@ -255,22 +258,26 @@ const ClipboardState& ClipboardNudgeController::GetClipboardStateForTesting() {
 }
 
 int ClipboardNudgeController::GetShownCount(PrefService* prefs) {
-  base::Optional<int> nudge_shown_count =
-      prefs->GetDictionary(prefs::kMultipasteNudges)->FindIntPath(kShownCount);
-  return nudge_shown_count.value_or(0);
+  const base::DictionaryValue* dictionary =
+      prefs->GetDictionary(prefs::kMultipasteNudges);
+  if (!dictionary)
+    return 0;
+  return dictionary->FindIntPath(kShownCount).value_or(0);
 }
 
 base::Time ClipboardNudgeController::GetLastShownTime(PrefService* prefs) {
-  const base::Value* last_shown_time_val =
-      prefs->GetDictionary(prefs::kMultipasteNudges)->FindPath(kLastTimeShown);
-  if (!last_shown_time_val)
+  const base::DictionaryValue* dictionary =
+      prefs->GetDictionary(prefs::kMultipasteNudges);
+  if (!dictionary)
     return base::Time();
   base::Optional<base::Time> last_shown_time =
-      *util::ValueToTime(last_shown_time_val);
+      util::ValueToTime(dictionary->FindPath(kLastTimeShown));
   return last_shown_time.value_or(base::Time());
 }
 
 bool ClipboardNudgeController::ShouldShowNudge(PrefService* prefs) {
+  if (!prefs)
+    return false;
   int nudge_shown_count = GetShownCount(prefs);
   base::Time last_shown_time = GetLastShownTime(prefs);
   // We should not show more nudges after hitting the limit.
