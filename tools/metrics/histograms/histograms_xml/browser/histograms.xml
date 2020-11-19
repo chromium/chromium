@@ -117,6 +117,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Browser.PaintPreview.CaptureExperiment.CompressedOnDiskSize"
     units="KB" expires_after="2020-12-20">
+  <obsolete>
+    Obsoleted on 2020-11-17 as corresponding experiment code was removed and the
+    experiment wrapped up.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -128,6 +132,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Browser.PaintPreview.CaptureExperiment.Success"
     enum="BooleanSuccess" expires_after="2020-12-20">
+  <obsolete>
+    Obsoleted on 2020-11-17 as corresponding experiment code was removed and the
+    experiment wrapped up.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
