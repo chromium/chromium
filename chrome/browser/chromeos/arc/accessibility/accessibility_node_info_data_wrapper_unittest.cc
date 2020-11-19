@@ -63,7 +63,7 @@ class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
   class TestAXTreeSourceArc : public AXTreeSourceArc {
    public:
     explicit TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate)
-        : AXTreeSourceArc(delegate, 1.0) {}
+        : AXTreeSourceArc(delegate) {}
 
     // AXTreeSourceArc overrides.
     bool IsRootOfNodeTree(int32_t id) const override {

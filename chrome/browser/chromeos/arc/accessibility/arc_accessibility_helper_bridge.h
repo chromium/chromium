@@ -172,7 +172,7 @@ class ArcAccessibilityHelperBridge
       mojom::AccessibilityEventData* event_data) const;
   void DispatchCustomSpokenFeedbackToggled(bool enabled) const;
 
-  AXTreeSourceArc* CreateFromKey(TreeKey, aura::Window* window);
+  AXTreeSourceArc* CreateFromKey(TreeKey);
   AXTreeSourceArc* GetFromKey(const TreeKey&);
   AXTreeSourceArc* GetFromTreeId(ui::AXTreeID tree_id) const;
 

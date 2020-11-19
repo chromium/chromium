@@ -45,7 +45,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
     virtual bool UseFullFocusMode() const = 0;
   };
 
-  AXTreeSourceArc(Delegate* delegate, float device_scale_factor);
+  explicit AXTreeSourceArc(Delegate* delegate);
   ~AXTreeSourceArc() override;
 
   // Notify automation of an accessibility event.
@@ -85,8 +85,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   void SerializeNode(AccessibilityInfoDataWrapper* info_data,
                      ui::AXNodeData* out_data) const override;
 
-  float device_scale_factor() const { return device_scale_factor_; }
-  void set_device_scale_factor(float dsf) { device_scale_factor_ = dsf; }
+  aura::Window* GetWindow() const;
 
   bool is_notification() { return is_notification_; }
 
@@ -162,9 +161,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   // Maps an AccessibilityInfoDataWrapper ID to its tree data.
   std::map<int32_t, std::unique_ptr<AccessibilityInfoDataWrapper>> tree_map_;
 
-  // The device scale factor of the display which the window is on.
-  float device_scale_factor_;
-
   // Maps an AccessibilityInfoDataWrapper ID to its parent.
   std::map<int32_t, int32_t> parent_map_;
 
@@ -175,6 +171,8 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
 
   bool is_notification_;
   bool is_input_method_window_;
+
+  base::Optional<std::string> notification_key_;
 
   std::map<int32_t, std::string> cached_names_;
   std::map<int32_t, ax::mojom::Role> cached_roles_;

@@ -8,12 +8,16 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
+#include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/geometry_util.h"
+#include "components/exo/input_method_surface.h"
+#include "components/exo/wm_helper.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/common/extension_messages.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -47,9 +51,8 @@ bool IsDrawerLayout(AXNodeInfoData* node) {
 }
 }  // namespace
 
-AXTreeSourceArc::AXTreeSourceArc(Delegate* delegate, float device_scale_factor)
-    : device_scale_factor_(device_scale_factor),
-      current_tree_serializer_(new AXTreeArcSerializer(this)),
+AXTreeSourceArc::AXTreeSourceArc(Delegate* delegate)
+    : current_tree_serializer_(new AXTreeArcSerializer(this)),
       is_notification_(false),
       is_input_method_window_(false),
       delegate_(delegate) {}
@@ -151,6 +154,35 @@ void AXTreeSourceArc::SerializeNode(AccessibilityInfoDataWrapper* info_data,
   info_data->Serialize(out_data);
 }
 
+aura::Window* AXTreeSourceArc::GetWindow() const {
+  if (is_notification_) {
+    if (!notification_key_.has_value())
+      return nullptr;
+
+    auto* surface_manager = ash::ArcNotificationSurfaceManager::Get();
+    if (!surface_manager)
+      return nullptr;
+
+    ash::ArcNotificationSurface* surface =
+        surface_manager->GetArcSurface(notification_key_.value());
+    if (!surface)
+      return nullptr;
+
+    return surface->GetWindow();
+  } else if (is_input_method_window_) {
+    exo::InputMethodSurface* input_method_surface =
+        exo::InputMethodSurface::GetInputMethodSurface();
+    if (!input_method_surface)
+      return nullptr;
+
+    return input_method_surface->host_window();
+  } else if (exo::WMHelper::HasInstance()) {
+    // TODO(b/173658482): Support non-active windows.
+    return exo::WMHelper::GetInstance()->GetActiveWindow();
+  }
+  return nullptr;
+}
+
 void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     const AXEventData& event_data) {
   if (window_id_ != event_data.window_id) {
@@ -158,6 +190,8 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     window_id_ = event_data.window_id;
   }
   is_notification_ = event_data.notification_key.has_value();
+  if (is_notification_)
+    notification_key_ = event_data.notification_key;
   is_input_method_window_ = event_data.is_input_method_window;
 
   // Prepare the wrapper objects of mojom data from Android.
