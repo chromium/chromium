@@ -8555,4 +8555,32 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SandboxedFramesNotCached) {
       FROM_HERE);
 }
 
+class BackForwardCacheBrowserTestWithFileSystemAPISupported
+    : public BackForwardCacheBrowserTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kBackForwardCache,
+                              "file_system_api_supported", "true");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFileSystemAPISupported,
+                       CacheWithFileSystemAPI) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page with WebFileSystem usage.
+  GURL url(embedded_test_server()->GetURL("/fileapi/request_test.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // 3) Go back to the page with WebFileSystem.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
+}
+
 }  // namespace content
