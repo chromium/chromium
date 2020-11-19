@@ -199,7 +199,13 @@ SkMatrix AffineTransformToSkMatrix(const AffineTransform& source) {
   // SkMatrices are 3x3, so they have a concept of "perspective" in the bottom
   // row. blink::AffineTransform is a 2x3 matrix that can encode 2d rotations,
   // skew and translation, but has no perspective. Those parameters are set to
-  // zero here.
+  // zero here. i.e.:
+
+  //   INPUT           OUTPUT
+  // | a c e |       | a c e |
+  // | b d f | ----> | b d f |
+  //                 | 0 0 1 |
+
   SkMatrix result;
 
   result.setScaleX(WebCoreDoubleToSkScalar(source.A()));
@@ -218,8 +224,16 @@ SkMatrix AffineTransformToSkMatrix(const AffineTransform& source) {
 }
 
 SkMatrix TransformationMatrixToSkMatrix(const TransformationMatrix& source) {
-  // For now this just encodes to a 2x3 transform, like the above function
-  // TODO(aaronhk) use the perspective properly crbug.com/1140535
+  // SkMatrix is 3x3, TransformationMatrix is 4x4, this function encodes
+  // assuming that a 2D-transformation with perspective is what's desired,
+  // throwing out the z-dimension values. i.e.:
+
+  //        INPUT                  OUTPUT
+  // | m11 m21 m31 m41 |       | m11 m21 m41 |
+  // | m12 m22 m32 m42 | ----> | m12 m22 m42 |
+  // | m13 m23 m33 m43 |       | m14 m24 m44 |
+  // | m14 m24 m34 m44 |
+
   SkMatrix result;
 
   result.setScaleX(WebCoreDoubleToSkScalar(source.M11()));
@@ -230,9 +244,9 @@ SkMatrix TransformationMatrixToSkMatrix(const TransformationMatrix& source) {
   result.setSkewY(WebCoreDoubleToSkScalar(source.M12()));
   result.setTranslateY(WebCoreDoubleToSkScalar(source.M42()));
 
-  result.setPerspX(0);
-  result.setPerspY(0);
-  result.set(SkMatrix::kMPersp2, SK_Scalar1);
+  result.setPerspX(source.M14());
+  result.setPerspY(source.M24());
+  result.set(SkMatrix::kMPersp2, source.M44());
 
   return result;
 }
