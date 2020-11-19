@@ -100,16 +100,6 @@ bool WebViewFrameWidget::ShouldHandleImeEvents() {
   return HasFocus();
 }
 
-void WebViewFrameWidget::SetWindowRect(const gfx::Rect& window_rect) {
-  if (SynchronousResizeModeForTestingEnabled()) {
-    // This is a web-test-only path. At one point, it was planned to be
-    // removed. See https://crbug.com/309760.
-    SetWindowRectSynchronously(window_rect);
-    return;
-  }
-  View()->SetWindowRect(window_rect);
-}
-
 bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
   return web_view_->ScrollFocusedEditableElementIntoView();
 }
@@ -296,36 +286,6 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
   }
   DidHandleGestureEvent(event, event_cancelled);
   return event_result;
-}
-
-void WebViewFrameWidget::SetWindowRectSynchronouslyForTesting(
-    const gfx::Rect& new_window_rect) {
-  SetWindowRectSynchronously(new_window_rect);
-}
-
-void WebViewFrameWidget::SetWindowRectSynchronously(
-    const gfx::Rect& new_window_rect) {
-  // This method is only call in tests, and it applies the |new_window_rect| to
-  // all three of:
-  // a) widget size (in |size_|)
-  // b) blink viewport (in |visible_viewport_size_|)
-  // c) compositor viewport (in cc::LayerTreeHost)
-  // Normally the browser controls these three things independently, but this is
-  // used in tests to control the size from the renderer.
-
-  // We are resizing the window from the renderer, so allocate a new
-  // viz::LocalSurfaceId to avoid surface invariants violations in tests.
-  widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
-
-  gfx::Rect compositor_viewport_pixel_rect(gfx::ScaleToCeiledSize(
-      new_window_rect.size(),
-      widget_base_->GetScreenInfo().device_scale_factor));
-  widget_base_->UpdateSurfaceAndScreenInfo(
-      widget_base_->local_surface_id_from_parent(),
-      compositor_viewport_pixel_rect, widget_base_->GetScreenInfo());
-
-  Resize(new_window_rect.size());
-  widget_base_->SetScreenRects(new_window_rect, new_window_rect);
 }
 
 void WebViewFrameWidget::ApplyVisualPropertiesSizing(

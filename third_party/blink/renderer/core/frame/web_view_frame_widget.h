@@ -78,14 +78,9 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WidgetBaseClient overrides:
   void FocusChanged(bool enabled) override;
 
-  void SetWindowRect(const gfx::Rect& window_rect);
-  void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
-
  private:
   // PageWidgetEventHandler overrides:
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
-
-  void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   scoped_refptr<WebViewImpl> web_view_;
 

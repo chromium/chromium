@@ -2827,16 +2827,11 @@ void WebViewImpl::DidShowCreatedWindow() {
   web_widget_->AckPendingWindowRect();
 }
 
-void WebViewImpl::SetWindowRect(const gfx::Rect& bounds) {
+void WebViewImpl::SendWindowRectToMainFrameHost(
+    const gfx::Rect& bounds,
+    base::OnceClosure ack_callback) {
   DCHECK(local_main_frame_host_remote_);
-  DCHECK(web_widget_);
-  web_widget_->SetPendingWindowRect(bounds);
-  local_main_frame_host_remote_->SetWindowRect(
-      bounds, WTF::Bind(&WebViewImpl::DidSetWindowRect, WTF::Unretained(this)));
-}
-
-void WebViewImpl::DidSetWindowRect() {
-  web_widget_->AckPendingWindowRect();
+  local_main_frame_host_remote_->SetWindowRect(bounds, std::move(ack_callback));
 }
 
 void WebViewImpl::UpdateTargetURL(const WebURL& url,

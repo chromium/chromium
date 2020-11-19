@@ -492,7 +492,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
             const gfx::Rect& rect,
             bool opened_by_user_gesture);
 
-  void SetWindowRect(const gfx::Rect& bounds);
+  // Send the window rect to the browser and call `ack_callback` when the
+  // browser has processed it.
+  void SendWindowRectToMainFrameHost(const gfx::Rect& bounds,
+                                     base::OnceClosure ack_callback);
 
   // TODO(crbug.com/1149992): This is called from the associated widget and this
   // code should eventually move out of WebView into somewhere else.
@@ -628,10 +631,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Callback when this widget window has been displayed by the browser.
   // Corresponds to a Show method call.
   void DidShowCreatedWindow();
-
-  // Callback when the window rect has been adjusted by the browser.
-  // Corresponds to a SetWindowRect method call.
-  void DidSetWindowRect();
 
   // Can be null (e.g. unittests, shared workers, etc).
   WebViewClient* web_view_client_;

@@ -588,6 +588,9 @@ class CORE_EXPORT WebFrameWidgetBase
   // pixels).
   gfx::Size DIPsToCeiledBlinkSpace(const gfx::Size& size);
 
+  void SetWindowRect(const gfx::Rect& window_rect);
+  void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
+
   void SetToolTipText(const String& tooltip_text, TextDirection dir);
 
   void ShowVirtualKeyboardOnElementFocus();
@@ -787,6 +790,8 @@ class CORE_EXPORT WebFrameWidgetBase
 
   void ForEachRemoteFrameControlledByWidget(
       const base::RepeatingCallback<void(RemoteFrame*)>& callback);
+
+  void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   static bool ignore_input_events_;
 
