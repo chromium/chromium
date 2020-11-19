@@ -58,7 +58,7 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
     self.assertEquals(local_machine_junit_test_run._MAX_SHARDS, shards)
 
     # Tests using min_class per shards.
-    test_classes = [1] * 10
+    test_classes = [1] * 20
     test_shards = 8
     shards = local_machine_junit_test_run.ChooseNumOfShards(
         test_classes, test_shards)

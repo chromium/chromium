@@ -48,7 +48,7 @@ _MAX_SHARDS = 10
 # It can actually take longer to run if you shard too much, especially on
 # smaller suites. Locally media_base_junit_tests takes 4.3 sec with 1 shard,
 # and 6 sec with 2 or more shards.
-_MIN_CLASSES_PER_SHARD = 4
+_MIN_CLASSES_PER_SHARD = 8
 
 
 class LocalMachineJunitTestRun(test_run.TestRun):
