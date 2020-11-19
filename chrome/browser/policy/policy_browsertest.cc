@@ -34,7 +34,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -51,8 +50,6 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_file_util.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -96,7 +93,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/download/public/common/download_item.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -119,7 +115,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
-#include "content/public/browser/download_manager.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_details.h"
@@ -140,7 +135,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/download_test_observer.h"
 #include "content/public/test/mock_notification_observer.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -182,7 +176,6 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/shell.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -222,34 +215,6 @@ namespace {
 const int kOneHourInMs = 60 * 60 * 1000;
 const int kThreeHoursInMs = 180 * 60 * 1000;
 #endif
-
-// Downloads a file named |file| and expects it to be saved to |dir|, which
-// must be empty.
-void DownloadAndVerifyFile(Browser* browser,
-                           const base::FilePath& dir,
-                           const base::FilePath& file) {
-  net::EmbeddedTestServer embedded_test_server;
-  base::FilePath test_data_directory;
-  GetTestDataDirectory(&test_data_directory);
-  embedded_test_server.ServeFilesFromDirectory(test_data_directory);
-  ASSERT_TRUE(embedded_test_server.Start());
-  content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser->profile());
-  content::DownloadTestObserverTerminal observer(
-      download_manager, 1,
-      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
-  GURL url(embedded_test_server.GetURL("/" + file.MaybeAsASCII()));
-  base::FilePath downloaded = dir.Append(file);
-  EXPECT_FALSE(base::PathExists(downloaded));
-  ui_test_utils::NavigateToURL(browser, url);
-  observer.WaitForFinished();
-  EXPECT_EQ(1u,
-            observer.NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
-  EXPECT_TRUE(base::PathExists(downloaded));
-  base::FileEnumerator enumerator(dir, false, base::FileEnumerator::FILES);
-  EXPECT_EQ(file, enumerator.Next().BaseName());
-  EXPECT_EQ(base::FilePath(), enumerator.Next());
-}
 
 #if defined(OS_CHROMEOS)
 int CountScreenshots() {
@@ -414,71 +379,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
     EXPECT_TRUE(content::WaitForLoadStop(contents));
   EXPECT_TRUE(IsWebGLEnabled(contents));
 }
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory) {
-  // Verifies that the download directory can be forced by policy.
-
-  // Don't prompt for the download location during this test.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kPromptForDownload, false);
-
-  base::FilePath initial_dir =
-      DownloadPrefs(browser()->profile()).DownloadPath();
-
-  // Verify that downloads end up on the default directory.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
-  DownloadAndVerifyFile(browser(), initial_dir, file);
-  base::DieFileDie(initial_dir.Append(file), false);
-
-  // Override the download directory with the policy and verify a download.
-  base::FilePath forced_dir = initial_dir.AppendASCII("forced");
-
-  PolicyMap policies;
-  policies.Set(key::kDownloadDirectory, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(forced_dir.value()), nullptr);
-  UpdateProviderPolicy(policies);
-  DownloadAndVerifyFile(browser(), forced_dir, file);
-  // Verify that the first download location wasn't affected.
-  EXPECT_FALSE(base::PathExists(initial_dir.Append(file)));
-}
-
-#if defined(OS_CHROMEOS)
-// Verifies that the download directory can be forced to Google Drive by policy.
-IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory_Drive) {
-  // Override the download directory with the policy.
-  {
-    PolicyMap policies;
-    policies.Set(key::kDownloadDirectory, POLICY_LEVEL_RECOMMENDED,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                 base::Value("${google_drive}/"), nullptr);
-    UpdateProviderPolicy(policies);
-
-    EXPECT_EQ(drive::DriveIntegrationServiceFactory::FindForProfile(
-                  browser()->profile())
-                  ->GetMountPointPath()
-                  .AppendASCII("root"),
-              DownloadPrefs(browser()->profile())
-                  .DownloadPath()
-                  .StripTrailingSeparators());
-  }
-
-  PolicyMap policies;
-  policies.Set(key::kDownloadDirectory, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value("${google_drive}/Downloads"), nullptr);
-  UpdateProviderPolicy(policies);
-
-  EXPECT_EQ(drive::DriveIntegrationServiceFactory::FindForProfile(
-                browser()->profile())
-                ->GetMountPointPath()
-                .AppendASCII("root/Downloads"),
-            DownloadPrefs(browser()->profile())
-                .DownloadPath()
-                .StripTrailingSeparators());
-}
-#endif  // !defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, HomepageLocation) {
   // Verifies that the homepage can be configured with policies.

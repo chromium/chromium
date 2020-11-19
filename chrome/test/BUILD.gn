@@ -1223,6 +1223,7 @@ if (!is_android) {
       "../browser/policy/content_settings_policy_browsertest.cc",
       "../browser/policy/default_search_provider_policy_browsertest.cc",
       "../browser/policy/developer_tools_policy_browsertest.cc",
+      "../browser/policy/download_directory_browsertest.cc",
       "../browser/policy/force_google_safe_search_policy_browsertest.cc",
       "../browser/policy/hide_webstore_icon_policy_browsertest.cc",
       "../browser/policy/hsts_policy_browsertest.cc",
