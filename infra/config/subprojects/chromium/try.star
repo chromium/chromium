@@ -130,7 +130,7 @@ try_.list_view(
 
 try_.list_view(
     name = "tryserver.chromium.linux",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.ALL_BRANCHES,
 )
 
 try_.list_view(
@@ -820,7 +820,7 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "chromium_presubmit",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.ALL_BRANCHES,
     executable = "recipe:presubmit",
     goma_backend = None,
     main_list_view = "try",
