@@ -23,11 +23,12 @@ enum class FreezingVoteValue {
 
 using FreezingVote =
     voting::Vote<PageNode, FreezingVoteValue, FreezingVoteValue::kCannotFreeze>;
+using FreezingVoterId = voting::VoterId<FreezingVote>;
 using FreezingVoteReceipt = voting::VoteReceipt<FreezingVote>;
 using FreezingVotingChannel = voting::VotingChannel<FreezingVote>;
-using FreezingVoteConsumer = voting::VoteConsumer<FreezingVote>;
-using AcceptedFreezingVote = voting::AcceptedVote<FreezingVote>;
-using FreezingVotingChannelFactory = voting::VotingChannelFactory<FreezingVote>;
+using FreezingVoteObserver = voting::VoteObserver<FreezingVote>;
+using FreezingVoteConsumerDefaultImpl =
+    voting::VoteConsumerDefaultImpl<FreezingVote>;
 
 // An aggregator for freezing votes. It upstreams an aggregated vote to an
 // upstream channel every time the freezing decision changes for a PageNode. It
@@ -35,7 +36,7 @@ using FreezingVotingChannelFactory = voting::VotingChannelFactory<FreezingVote>;
 // kCanFreeze vote for this node. Any kCannotFreeze vote received will have
 // priority over the kCanFreeze votes and will prevent the PageNode from being
 // frozen.
-class FreezingVoteAggregator final : public FreezingVoteConsumer {
+class FreezingVoteAggregator final : public FreezingVoteObserver {
  public:
   FreezingVoteAggregator();
   FreezingVoteAggregator(const FreezingVoteAggregator& rhs) = delete;
@@ -48,16 +49,15 @@ class FreezingVoteAggregator final : public FreezingVoteConsumer {
   // Sets the upstream voting channel. Should only be called once.
   void SetUpstreamVotingChannel(FreezingVotingChannel&& channel);
 
-  // VoteConsumer implementation:
-  FreezingVoteReceipt SubmitVote(base::PassKey<FreezingVotingChannel>,
-                                 voting::VoterId<FreezingVote> voter_id,
-                                 const PageNode* page_node,
-                                 const FreezingVote& vote) override;
-  void ChangeVote(base::PassKey<AcceptedFreezingVote>,
-                  AcceptedFreezingVote* old_vote,
-                  const FreezingVote& new_vote) override;
-  void VoteInvalidated(base::PassKey<AcceptedFreezingVote>,
-                       AcceptedFreezingVote* vote) override;
+  // FreezingVoteObserver implementation:
+  void OnVoteSubmitted(FreezingVoterId voter_id,
+                       const PageNode* page_node,
+                       const FreezingVote& vote) override;
+  void OnVoteChanged(FreezingVoterId voter_id,
+                     const PageNode* page_node,
+                     const FreezingVote& new_vote) override;
+  void OnVoteInvalidated(FreezingVoterId voter_id,
+                         const PageNode* page_node) override;
 
  private:
   friend class FreezingVoteAggregatorTestAccess;
@@ -87,44 +87,45 @@ class FreezingVoteAggregator final : public FreezingVoteConsumer {
 
     // Adds a vote. Returns an UpstreamVoteImpact indicating if the upstreamed
     // vote should be updated by calling UpstreamVote.
-    UpstreamVoteImpact AddVote(AcceptedFreezingVote&& vote) WARN_UNUSED_RESULT;
+    UpstreamVoteImpact AddVote(FreezingVoterId voter_id,
+                               const FreezingVote& vote) WARN_UNUSED_RESULT;
 
     // Updates a vote. Returns an UpstreamVoteImpact indicating if the
     // upstreamed vote should be updated by calling UpstreamVote.
-    UpstreamVoteImpact UpdateVote(AcceptedFreezingVote* old_vote,
+    UpstreamVoteImpact UpdateVote(FreezingVoterId voter_id,
                                   const FreezingVote& new_vote)
         WARN_UNUSED_RESULT;
 
     // Removes a vote. Returns an UpstreamVoteImpact indicating if the
     // upstreamed vote should be updated by calling UpstreamVote or invalidated.
-    UpstreamVoteImpact RemoveVote(AcceptedFreezingVote* vote)
-        WARN_UNUSED_RESULT;
+    UpstreamVoteImpact RemoveVote(FreezingVoterId voter_id) WARN_UNUSED_RESULT;
 
     // Upstreams the vote for this vote data, using the given voting |channel|.
-    void UpstreamVote(FreezingVotingChannel* channel);
+    void UpstreamVote(const PageNode* page_node,
+                      FreezingVotingChannel* channel);
 
-    bool IsEmpty() { return accepted_votes_.empty(); }
+    bool IsEmpty() { return votes_.empty(); }
 
     // Returns the current aggregated vote.
-    const AcceptedFreezingVote& GetCurrentVote();
+    const FreezingVote& GetCurrentVote();
 
+   private:
     friend class FreezingVoteAggregatorTestAccess;
 
     // The current set of votes.
-    using AcceptedVotesDeque = base::circular_deque<AcceptedFreezingVote>;
+    using VotesDeque =
+        base::circular_deque<std::pair<FreezingVoterId, FreezingVote>>;
 
-    const AcceptedVotesDeque& GetAcceptedVotesForTesting() {
-      return accepted_votes_;
-    }
+    const VotesDeque& GetVotesForTesting() { return votes_; }
 
-    // Returns the iterator of |vote| in |accepted_votes_|. |vote| is expected
+    // Returns the iterator of |voter_id| in |votes_|. |voter_id| is expected
     // to be in the deque, this is enforced by a DCHECK.
-    AcceptedVotesDeque::iterator FindVote(AcceptedFreezingVote* vote);
+    VotesDeque::iterator FindVote(FreezingVoterId voter_id);
 
-    void AddVoteToDeque(AcceptedFreezingVote&& vote);
+    void AddVoteToDeque(FreezingVoterId voter_id, const FreezingVote& vote);
 
     // kCannotFreeze votes are always at the beginning of the deque.
-    AcceptedVotesDeque accepted_votes_;
+    VotesDeque votes_;
 
     // The receipt for the vote we've upstreamed.
     FreezingVoteReceipt receipt_;
@@ -141,8 +142,8 @@ class FreezingVoteAggregator final : public FreezingVoteConsumer {
   // The channel for upstreaming our votes.
   FreezingVotingChannel channel_;
 
-  // The factory for providing FreezingVotingChannels to our input voters.
-  FreezingVotingChannelFactory factory_;
+  // Provides FreezingVotingChannels to our input voters.
+  FreezingVoteConsumerDefaultImpl vote_consumer_default_impl_;
 };
 
 }  // namespace freezing

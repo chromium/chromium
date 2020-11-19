@@ -11,11 +11,12 @@
 namespace performance_manager {
 namespace freezing {
 
-FreezingVoteAggregator::FreezingVoteAggregator() : factory_(this) {}
+FreezingVoteAggregator::FreezingVoteAggregator()
+    : vote_consumer_default_impl_(this) {}
 FreezingVoteAggregator::~FreezingVoteAggregator() = default;
 
 FreezingVotingChannel FreezingVoteAggregator::GetVotingChannel() {
-  return factory_.BuildVotingChannel();
+  return vote_consumer_default_impl_.BuildVotingChannel();
 }
 
 void FreezingVoteAggregator::SetUpstreamVotingChannel(
@@ -26,52 +27,41 @@ void FreezingVoteAggregator::SetUpstreamVotingChannel(
   channel_ = std::move(channel);
 }
 
-FreezingVoteReceipt FreezingVoteAggregator::SubmitVote(
-    base::PassKey<FreezingVotingChannel>,
-    voting::VoterId<FreezingVote> voter_id,
-    const PageNode* page_node,
-    const FreezingVote& vote) {
+void FreezingVoteAggregator::OnVoteSubmitted(FreezingVoterId voter_id,
+                                             const PageNode* page_node,
+                                             const FreezingVote& vote) {
   DCHECK(vote.IsValid());
   DCHECK(channel_.IsValid());
 
   auto& vote_data = vote_data_map_[page_node];
 
-  AcceptedFreezingVote accepted_vote(this, voter_id, page_node, vote);
-  auto receipt = accepted_vote.IssueReceipt();
-  if (vote_data.AddVote(std::move(accepted_vote)) ==
+  if (vote_data.AddVote(voter_id, vote) ==
       FreezingVoteData::UpstreamVoteImpact::kUpstreamVoteChanged) {
-    vote_data.UpstreamVote(&channel_);
-  }
-
-  // Return a vote receipt to our voter for the received vote.
-  return receipt;
-}
-
-void FreezingVoteAggregator::ChangeVote(base::PassKey<AcceptedFreezingVote>,
-                                        AcceptedFreezingVote* old_vote,
-                                        const FreezingVote& new_vote) {
-  DCHECK(old_vote->IsValid());
-
-  auto& vote_data = GetVoteData(old_vote->context())->second;
-
-  if (vote_data.UpdateVote(old_vote, new_vote) ==
-      FreezingVoteData::UpstreamVoteImpact::kUpstreamVoteChanged) {
-    vote_data.UpstreamVote(&channel_);
+    vote_data.UpstreamVote(page_node, &channel_);
   }
 }
 
-void FreezingVoteAggregator::VoteInvalidated(
-    base::PassKey<AcceptedFreezingVote>,
-    AcceptedFreezingVote* vote) {
-  DCHECK(!vote->IsValid());
-  auto it = GetVoteData(vote->context());
+void FreezingVoteAggregator::OnVoteChanged(FreezingVoterId voter_id,
+                                           const PageNode* page_node,
+                                           const FreezingVote& new_vote) {
+  auto& vote_data = GetVoteData(page_node)->second;
+
+  if (vote_data.UpdateVote(voter_id, new_vote) ==
+      FreezingVoteData::UpstreamVoteImpact::kUpstreamVoteChanged) {
+    vote_data.UpstreamVote(page_node, &channel_);
+  }
+}
+
+void FreezingVoteAggregator::OnVoteInvalidated(FreezingVoterId voter_id,
+                                               const PageNode* page_node) {
+  auto it = GetVoteData(page_node);
   auto& vote_data = it->second;
 
-  auto remove_vote_result = vote_data.RemoveVote(vote);
+  auto remove_vote_result = vote_data.RemoveVote(voter_id);
   // Remove the vote, and upstream if necessary.
   if (remove_vote_result ==
       FreezingVoteData::UpstreamVoteImpact::kUpstreamVoteChanged) {
-    vote_data.UpstreamVote(&channel_);
+    vote_data.UpstreamVote(page_node, &channel_);
   }
 
   // If all the votes for this PageNode have disappeared then remove the entry
@@ -92,94 +82,98 @@ FreezingVoteAggregator::FreezingVoteData::operator=(
 FreezingVoteAggregator::FreezingVoteData::~FreezingVoteData() = default;
 
 FreezingVoteAggregator::FreezingVoteData::UpstreamVoteImpact
-FreezingVoteAggregator::FreezingVoteData::AddVote(AcceptedFreezingVote&& vote) {
+FreezingVoteAggregator::FreezingVoteData::AddVote(FreezingVoterId voter_id,
+                                                  const FreezingVote& vote) {
   auto current_decision = FreezingVoteValue::kCanFreeze;
-  if (accepted_votes_.size())
-    current_decision = GetCurrentVote().vote().value();
+  if (votes_.size())
+    current_decision = GetCurrentVote().value();
 
-  AddVoteToDeque(std::move(vote));
+  AddVoteToDeque(voter_id, vote);
 
   // Always report the first vote.
-  if (accepted_votes_.size() == 1)
+  if (votes_.size() == 1)
     return UpstreamVoteImpact::kUpstreamVoteChanged;
 
-  return (current_decision != GetCurrentVote().vote().value())
+  return (current_decision != GetCurrentVote().value())
              ? UpstreamVoteImpact::kUpstreamVoteChanged
              : UpstreamVoteImpact::kUpstreamVoteUnchanged;
 }
 
 FreezingVoteAggregator::FreezingVoteData::UpstreamVoteImpact
 FreezingVoteAggregator::FreezingVoteData::UpdateVote(
-    AcceptedFreezingVote* old_vote,
+    FreezingVoterId voter_id,
     const FreezingVote& new_vote) {
-  auto current_decision = GetCurrentVote().vote().value();
+  auto current_decision = GetCurrentVote().value();
 
-  auto it = FindVote(old_vote);
-  DCHECK(it != accepted_votes_.end());
-  auto vote = std::move(*it);
-  accepted_votes_.erase(it);
-  vote.UpdateVote(new_vote);
-  AddVoteToDeque(std::move(vote));
+  auto it = FindVote(voter_id);
+  DCHECK(it != votes_.end());
+  votes_.erase(it);
 
-  return (current_decision != GetCurrentVote().vote().value())
+  AddVoteToDeque(voter_id, new_vote);
+
+  return (current_decision != GetCurrentVote().value())
              ? UpstreamVoteImpact::kUpstreamVoteChanged
              : UpstreamVoteImpact::kUpstreamVoteUnchanged;
 }
 
 FreezingVoteAggregator::FreezingVoteData::UpstreamVoteImpact
-FreezingVoteAggregator::FreezingVoteData::RemoveVote(
-    AcceptedFreezingVote* vote) {
-  auto current_decision = GetCurrentVote().vote().value();
+FreezingVoteAggregator::FreezingVoteData::RemoveVote(FreezingVoterId voter_id) {
+  auto current_decision = GetCurrentVote().value();
 
-  accepted_votes_.erase(FindVote(vote));
+  votes_.erase(FindVote(voter_id));
 
   // Indicate that the upstream vote should be removed.
-  if (accepted_votes_.empty())
+  if (votes_.empty())
     return UpstreamVoteImpact::kUpstreamVoteRemoved;
 
-  return (current_decision != GetCurrentVote().vote().value())
+  return (current_decision != GetCurrentVote().value())
              ? UpstreamVoteImpact::kUpstreamVoteChanged
              : UpstreamVoteImpact::kUpstreamVoteUnchanged;
 }
 
 void FreezingVoteAggregator::FreezingVoteData::UpstreamVote(
+    const PageNode* page_node,
     FreezingVotingChannel* channel) {
-  DCHECK_NE(0u, accepted_votes_.size());
+  DCHECK_NE(0u, votes_.size());
   auto& vote = GetCurrentVote();
 
   // Change our existing vote, or create a new one as necessary.
   if (receipt_.HasVote()) {
-    receipt_.ChangeVote(vote.vote().value(), vote.vote().reason());
+    receipt_.ChangeVote(vote.value(), vote.reason());
   } else {
-    receipt_ = channel->SubmitVote(vote.context(), vote.vote());
+    receipt_ = channel->SubmitVote(page_node, vote);
   }
 }
 
-const AcceptedFreezingVote&
-FreezingVoteAggregator::FreezingVoteData::GetCurrentVote() {
+const FreezingVote& FreezingVoteAggregator::FreezingVoteData::GetCurrentVote() {
   DCHECK(!IsEmpty());
   // The set of votes is ordered and the first one in the set is the one that
   // should be sent to the consumer.
-  return *accepted_votes_.begin();
+  return votes_.begin()->second;
 }
 
-FreezingVoteAggregator::FreezingVoteData::AcceptedVotesDeque::iterator
-FreezingVoteAggregator::FreezingVoteData::FindVote(AcceptedFreezingVote* vote) {
+FreezingVoteAggregator::FreezingVoteData::VotesDeque::iterator
+FreezingVoteAggregator::FreezingVoteData::FindVote(FreezingVoterId voter_id) {
   // TODO(sebmarchand): Consider doing a reverse search for kCanFreeze votes and
   // a normal one for kCannotFreeze votes.
 
-  auto it = std::find_if(accepted_votes_.begin(), accepted_votes_.end(),
-                         [vote](const auto& rhs) { return &rhs == vote; });
-  DCHECK(it != accepted_votes_.end());
+  auto it =
+      std::find_if(votes_.begin(), votes_.end(),
+                   [voter_id](const auto& e) { return e.first == voter_id; });
+  DCHECK(it != votes_.end());
   return it;
 }
 
 void FreezingVoteAggregator::FreezingVoteData::AddVoteToDeque(
-    AcceptedFreezingVote&& vote) {
-  if (vote.vote().value() == FreezingVoteValue::kCannotFreeze) {
-    accepted_votes_.push_front(std::move(vote));
+    FreezingVoterId voter_id,
+    const FreezingVote& vote) {
+  DCHECK(std::find_if(votes_.begin(), votes_.end(), [voter_id](const auto& e) {
+           return e.first == voter_id;
+         }) == votes_.end());
+  if (vote.value() == FreezingVoteValue::kCannotFreeze) {
+    votes_.emplace_front(voter_id, vote);
   } else {
-    accepted_votes_.push_back(std::move(vote));
+    votes_.emplace_back(voter_id, vote);
   }
 }
 
