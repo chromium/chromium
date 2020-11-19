@@ -328,11 +328,11 @@
     Listen
   </message>
   <message name="IDS_FILE_BROWSER_TASK_INSTALL_LINUX_PACKAGE" desc="Title of the action to install a Linux package.">
-    Install with Linux (Beta)
+    Install with Linux
   </message>
 
   <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_TITLE" desc="In the File Manager, the title shown in the dialog for installing a Linux application.">
-    Install app with Linux (Beta)
+    Install app with Linux
   </message>
   <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_LABEL" desc="In the File Manager, the label shown above the app information (name, version, etc.) in the dialog for installing a Linux application.">
     Details

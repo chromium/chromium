@@ -46,6 +46,7 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"cancel", IDS_APP_CANCEL},
       {"learnMore", IDS_LEARN_MORE},
 
+      {"promptTitle", IDS_CROSTINI_INSTALLER_TITLE},
       {"installingTitle", IDS_CROSTINI_INSTALLER_INSTALLING},
       {"cancelingTitle", IDS_CROSTINI_INSTALLER_CANCELING_TITLE},
       {"errorTitle", IDS_CROSTINI_INSTALLER_ERROR_TITLE},
@@ -93,9 +94,6 @@ void AddStringResources(content::WebUIDataSource* source) {
 
   base::string16 device_name = ui::GetChromeOSDeviceName();
 
-  source->AddString(
-      "promptTitle",
-      l10n_util::GetStringFUTF8(IDS_CROSTINI_INSTALLER_TITLE, device_name));
   source->AddString("promptMessage",
                     l10n_util::GetStringFUTF8(
                         IDS_CROSTINI_INSTALLER_BODY,

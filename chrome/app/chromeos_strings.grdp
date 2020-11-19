@@ -4554,7 +4554,7 @@
     Ready
   </message>
   <message name="IDS_CROSTINI_INSTALLER_TITLE" desc="Title of the Crostini installer, a dialog for installing Linux.">
-    Set up Linux (Beta) on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+    Set up Linux development environment (Beta)
   </message>
   <message name="IDS_CROSTINI_INSTALLER_BODY" desc="Description for the Crostini installer, a dialog for installing Linux.">
     Get tools for developing websites, Android apps, and more. Installing Linux will download <ph name="DOWNLOAD_SIZE">$1<ex>300MB</ex></ph> of data.
@@ -4686,7 +4686,7 @@
     Custom
   </message>
   <message name="IDS_CROSTINI_UNINSTALLER_TITLE" desc="Title of the Crostini uninstaller, a dialog for uninstalling Linux, the associated VM and Linux files.">
-    Delete Linux (Beta)
+    Remove Linux development environment
   </message>
   <message name="IDS_CROSTINI_UNINSTALLER_BODY" desc="Description for the Crostini uninstaller, a dialog for uninstalling Linux, the associated VM and Linux files.">
     Delete all Linux applications and data in your Linux files folder from this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>?
@@ -4716,10 +4716,10 @@
     Upgrade
   </message>
   <message name="IDS_CROSTINI_UPGRADER_TITLE" desc="Title of the Crostini upgrader, a dialog for upgrading Linux.">
-    Upgrade Linux (Beta)
+    Upgrade Linux
   </message>
   <message name="IDS_CROSTINI_UPGRADER_BODY" desc="Description for the Crostini upgrader, a dialog for upgrading Linux.">
-    Backing up files is recommended in case the upgrade cannot be completed. Starting the upgrade will cause Linux (Beta) to shut down. Please save open files before proceeding.
+    Backing up files is recommended in case the upgrade cannot be completed. Starting the upgrade will cause Linux to shut down. Please save open files before proceeding.
   </message>
   <message name="IDS_CROSTINI_UPGRADER_UPGRADE_BUTTON" desc="Label for the button in the Crostini upgrader dialog to begin upgrading Linux.">
     Upgrade
@@ -4821,13 +4821,13 @@
     Retry
   </message>
   <message name="IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM" desc="Text shown in the context menu for the Linux terminal app, allowing users to shut down the Linux virtual machine.">
-    Shut down Linux (Beta)
+    Shut down Linux
   </message>
   <message name="IDS_CROSTINI_CREDITS_PLACEHOLDER" desc="Message shown to the user if the credits file is unavailable (e.g. because Crostini isn't installed).">
     Crostini is not installed. Please install Crostini to view credits.
   </message>
   <message name="IDS_CROSTINI_TERMINA_UPDATE_REQUIRED" desc="Text shown in the Crostini update dialog when the VM component needs updating.">
-    Linux (Beta) update required
+    Linux update required
   </message>
   <message name="IDS_CROSTINI_TERMINA_UPDATE_OFFLINE" desc="Text shown in the Crostini update dialog when the VM component needs updating but the user is offline.">
     Please connect to the internet and try again.

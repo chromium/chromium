@@ -806,9 +806,9 @@
     Delete Crostini
   </message>
   <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SETUP" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to set up Linux integration with Chromebook. Alternate phrase for: 'Set up Crostini'">
-    Set up Linux
+    Set up Linux development environment
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SETUP_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to set up Linux integration with Chromebook. Alternate phrase for: 'Set up Linux'">
+  <message name="IDS_OS_SETTINGS_TAG_CROSTINI_SETUP_ALT1" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to set up Linux integration with Chromebook. Alternate phrase for: 'Set up Linux development environment'">
     Set up Crostini
   </message>
   <message name="IDS_OS_SETTINGS_TAG_CROSTINI_BACKUP_RESTORE" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings, with an option to back up and restore Linux apps/files. Alternate phrase for: 'Crostini backup'">

@@ -1391,13 +1391,13 @@
     Dynamically allocated
   </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_NOT_SUPPORTED_SUBTEXT" desc="The subtext on the row in settings for managing Crostini's disk size when the existing disk does not support resizing.">
-    Your container is not configured to support disk resizes. To adjust the amount of space that is reserved for Linux (Beta), back up and then restore into a new container.
+    Your container is not configured to support disk resizes. To adjust the amount of space that is reserved for Linux, back up and then restore into a new container.
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_TITLE" desc="The title of the settings dialogue the user uses to resize the Crostini (AKA Linux (Beta)) Disk.">
+  <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_TITLE" desc="The title of the settings dialogue the user uses to resize the Crostini (AKA Linux) Disk.">
     Resize Linux disk
   </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_UNSUPPORTED" desc="The message displayed to the user when resizing their Crostini disk isn't supported, explaining a workaround.">
-    Your container doesn't support being resized. To adjust the amount of space that is pre-allocated to Linux (Beta), back up and then restore into a new container.
+    Your container doesn't support being resized. To adjust the amount of space that is pre-allocated to Linux, back up and then restore into a new container.
   </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_RECOMMENDED" desc="The message shown indicating the recommended disk size in Gigabytes.">
     At least <ph name="INSTALL_SIZE">$1<ex>5.0 GB</ex></ph>  of space is recommended for Linux.
@@ -1430,7 +1430,7 @@
     Done
   </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_CONFIRMATION_DIALOG_TITLE" desc="Confirmation dialog title when a user is about to reserve a size for a disk which previously did not have a fixed size.">
-    Are you sure you want to reserve a fixed size disk for Linux (Beta)?
+    Are you sure you want to reserve a fixed size disk for Linux?
   </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_CONFIRMATION_DIALOG_MESSAGE" desc="Message displayed in the confirmation dialog when the user is about to resize a disk to one with a fixed size.">
     This operation cannot be undone
@@ -1451,7 +1451,7 @@
     Run Linux tools, editors, and IDEs on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_CROSTINI_REMOVE" desc="Label for the row to open a dialog confirming removal of Crostini.">
-    Remove Linux for <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+    Remove Linux development environment
   </message>
   <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_TABLE_TITLE" desc="Title for the list display of current preferences.">
     Ports
@@ -3292,7 +3292,7 @@
     Apps and extensions
   </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_CROSTINI" desc="In Device Settings > Storage, label for the total size of Crostini VMs, apps and cache.">
-    Linux (Beta) storage
+    Linux storage
   </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_OTHER_USERS" desc="In Device Settings > Storage, label for the total size of other users' data directories.">
     Other users
