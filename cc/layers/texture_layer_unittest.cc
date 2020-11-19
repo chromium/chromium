@@ -1004,6 +1004,7 @@ class TextureLayerChangeInvisibleMailboxTest
     ++prepare_called_;
     if (!resource_changed_)
       return false;
+    resource_changed_ = false;
     *resource = resource_;
     *release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
         &TextureLayerChangeInvisibleMailboxTest::ResourceReleased,
