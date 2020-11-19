@@ -119,9 +119,6 @@ class WebView {
   // Destroys the WebView.
   virtual void Close() = 0;
 
-  // Sets whether the WebView is focused.
-  virtual void SetFocus(bool enable) = 0;
-
   // Called to inform WebViewImpl that a local main frame has been attached.
   // After this call MainFrameImpl() will return a valid frame until it is
   // detached.

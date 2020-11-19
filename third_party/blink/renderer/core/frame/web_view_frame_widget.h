@@ -75,9 +75,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // FrameWidget overrides:
   bool ShouldHandleImeEvents() override;
 
-  // WidgetBaseClient overrides:
-  void FocusChanged(bool enabled) override;
-
  private:
   // PageWidgetEventHandler overrides:
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;

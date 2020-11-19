@@ -99,9 +99,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   // FrameWidget overrides:
   bool ShouldHandleImeEvents() override;
 
-  // WidgetBaseClient overrides:
-  void FocusChanged(bool enable) override;
-
   void UpdateMainFrameLayoutSize();
 
  private:

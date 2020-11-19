@@ -92,10 +92,6 @@ void WebViewFrameWidget::Resize(const gfx::Size& size) {
   web_view_->Resize(size);
 }
 
-void WebViewFrameWidget::FocusChanged(bool enable) {
-  web_view_->SetFocus(enable);
-}
-
 bool WebViewFrameWidget::ShouldHandleImeEvents() {
   return HasFocus();
 }

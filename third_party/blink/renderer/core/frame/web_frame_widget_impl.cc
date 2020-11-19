@@ -334,52 +334,6 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   return true;
 }
 
-void WebFrameWidgetImpl::FocusChanged(bool enable) {
-  if (enable)
-    GetPage()->GetFocusController().SetActive(true);
-  GetPage()->GetFocusController().SetFocused(enable);
-  if (enable) {
-    LocalFrame* focused_frame = GetPage()->GetFocusController().FocusedFrame();
-    if (focused_frame) {
-      Element* element = focused_frame->GetDocument()->FocusedElement();
-      if (element && focused_frame->Selection()
-                         .ComputeVisibleSelectionInDOMTreeDeprecated()
-                         .IsNone()) {
-        // If the selection was cleared while the WebView was not
-        // focused, then the focus element shows with a focus ring but
-        // no caret and does respond to keyboard inputs.
-        focused_frame->GetDocument()->UpdateStyleAndLayoutTree();
-        if (element->IsTextControl()) {
-          element->UpdateFocusAppearance(SelectionBehaviorOnFocus::kRestore);
-        } else if (HasEditableStyle(*element)) {
-          // updateFocusAppearance() selects all the text of
-          // contentseditable DIVs. So we set the selection explicitly
-          // instead. Note that this has the side effect of moving the
-          // caret back to the beginning of the text.
-          Position position(element, 0);
-          focused_frame->Selection().SetSelectionAndEndTyping(
-              SelectionInDOMTree::Builder().Collapse(position).Build());
-        }
-      }
-    }
-  } else {
-    LocalFrame* focused_frame = FocusedLocalFrameInWidget();
-    if (focused_frame) {
-      // Finish an ongoing composition to delete the composition node.
-      if (focused_frame->GetInputMethodController().HasComposition()) {
-        // TODO(editing-dev): The use of
-        // UpdateStyleAndLayout needs to be audited.
-        // See http://crbug.com/590369 for more details.
-        focused_frame->GetDocument()->UpdateStyleAndLayout(
-            DocumentUpdateReason::kFocus);
-
-        focused_frame->GetInputMethodController().FinishComposingText(
-            InputMethodController::kKeepSelection);
-      }
-    }
-  }
-}
-
 WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     const WebGestureEvent& event) {
   DCHECK(Client());

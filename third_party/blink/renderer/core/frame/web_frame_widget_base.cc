@@ -1087,6 +1087,14 @@ void WebFrameWidgetBase::ScheduleAnimation() {
   Client()->ScheduleAnimation();
 }
 
+void WebFrameWidgetBase::FocusChanged(bool enable) {
+  // TODO(crbug.com/689777): FocusChange events are only sent to the MainFrame
+  // these maybe should goto the local root so that the rest of input messages
+  // sent to those are preserved in order.
+  DCHECK(ForMainFrame());
+  View()->SetPageFocus(enable);
+}
+
 bool WebFrameWidgetBase::ShouldAckSyntheticInputImmediately() {
   // TODO(bokan): The RequestPresentation API appears not to function in VR. As
   // a short term workaround for https://crbug.com/940063, ACK input

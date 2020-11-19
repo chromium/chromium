@@ -408,6 +408,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetCursorVisibilityState(bool is_visible) override;
   blink::FrameWidget* FrameWidget() override { return this; }
   void ScheduleAnimation() override;
+  void FocusChanged(bool enable) override;
   bool ShouldAckSyntheticInputImmediately() override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;

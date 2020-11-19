@@ -569,7 +569,8 @@ void RemoteFrame::SetEmbeddingToken(
 }
 
 void RemoteFrame::SetPageFocus(bool is_focused) {
-  WebFrame::FromFrame(this)->View()->SetFocus(is_focused);
+  static_cast<WebViewImpl*>(WebFrame::FromFrame(this)->View())
+      ->SetPageFocus(is_focused);
 }
 
 void RemoteFrame::ScrollRectToVisible(

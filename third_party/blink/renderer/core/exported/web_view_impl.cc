@@ -1787,7 +1787,7 @@ bool WebViewImpl::HasVerticalScrollbar() {
   return MainFrameImpl()->GetFrameView()->LayoutViewport()->VerticalScrollbar();
 }
 
-void WebViewImpl::SetFocus(bool enable) {
+void WebViewImpl::SetPageFocus(bool enable) {
   if (enable)
     page_->GetFocusController().SetActive(true);
   page_->GetFocusController().SetFocused(enable);
@@ -1818,15 +1818,7 @@ void WebViewImpl::SetFocus(bool enable) {
   } else {
     CancelPagePopup();
 
-    // Clear focus on the currently focused frame if any.
-    if (!page_)
-      return;
-
-    LocalFrame* frame = DynamicTo<LocalFrame>(page_->MainFrame());
-    if (!frame)
-      return;
-
-    LocalFrame* focused_frame = FocusedLocalFrameInWidget();
+    LocalFrame* focused_frame = page_->GetFocusController().FocusedFrame();
     if (focused_frame) {
       // Finish an ongoing composition to delete the composition node.
       if (focused_frame->GetInputMethodController().HasComposition()) {

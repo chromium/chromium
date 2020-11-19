@@ -504,6 +504,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Indication that the root layer for the main frame widget has changed.
   void DidChangeRootLayer(bool root_layer_exists);
 
+  // Sets the page focus.
+  void SetPageFocus(bool enable);
+
   // This method is used for testing.
   // Resizes the unscaled (page scale = 1.0) visual viewport. Normally the
   // unscaled visual viewport is the same size as the main frame. The passed
@@ -535,7 +538,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // These are temporary methods to allow WebViewFrameWidget to delegate to
   // WebViewImpl. We expect to eventually move these out.
   void ThemeChanged();
-  void SetFocus(bool enable) override;
 
   // Update the target url locally and tell the browser that the target URL has
   // changed. If |url| is empty, show |fallback_url|.
