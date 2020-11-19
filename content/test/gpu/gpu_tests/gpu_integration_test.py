@@ -25,6 +25,8 @@ _SUPPORTED_WIN_GPU_VENDORS = [0x8086, 0x10de, 0x1002]
 _SUPPORTED_WIN_INTEL_GPUS = [0x5912, 0x3e92]
 _SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS = [0x5912, 0x3e92]
 _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS = [0x5912, 0x3e92]
+# Hardware overlays are disabled in 26.20.100.8141 per crbug.com/1079393#c105
+_UNSUPPORTED_WIN_INTEL_GPU_DRIVERS_WITH_NV12_OVERLAYS = ['5912-26.20.100.8141']
 
 
 class GpuIntegrationTest(
@@ -458,9 +460,12 @@ class GpuIntegrationTest(
       config['nv12_overlay_support'] = 'SOFTWARE'
       if gpu_vendor_id == 0x8086:
         assert gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS
+        gpu_device_and_driver = ('%x-' + gpu.driver_version) % gpu_device_id
         if gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS:
           config['yuy2_overlay_support'] = 'SCALING'
-        if gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS:
+        if (gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS
+            and gpu_device_and_driver not in
+            _UNSUPPORTED_WIN_INTEL_GPU_DRIVERS_WITH_NV12_OVERLAYS):
           config['nv12_overlay_support'] = 'SCALING'
     return config
 
