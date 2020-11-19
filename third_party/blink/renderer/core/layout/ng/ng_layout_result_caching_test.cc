@@ -1836,5 +1836,42 @@ TEST_F(NGLayoutResultCachingTest, MissTableCellBaselineAlignment) {
   EXPECT_NE(result.get(), measure.get());
 }
 
+TEST_F(NGLayoutResultCachingTest, MissTablePercent) {
+  ScopedLayoutNGTableForTest table_ng(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .bfc { display: flow-root; width: 100px; }
+      table { height: 100%; }
+      caption { height: 50px; }
+    </style>
+    <div class="bfc" style="height: 50px;">
+      <table id="test">
+        <caption></caption>
+        <td></td>
+      </table>
+    </div>
+    <div class="bfc" style="height: 100px;">
+      <table id="src">
+        <caption></caption>
+        <td></td>
+      </table>
+    </div>
+  )HTML");
+
+  auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
+  auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
+
+  NGLayoutCacheStatus cache_status;
+  base::Optional<NGFragmentGeometry> fragment_geometry;
+  const NGConstraintSpace& space =
+      src->GetCachedLayoutResult()->GetConstraintSpaceForCaching();
+  scoped_refptr<const NGLayoutResult> result = test->CachedLayoutResult(
+      space, nullptr, nullptr, &fragment_geometry, &cache_status);
+
+  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(result.get(), nullptr);
+}
+
 }  // namespace
 }  // namespace blink

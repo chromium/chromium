@@ -635,10 +635,13 @@ class CORE_EXPORT NGConstraintSpace final {
     return other.rare_data_->IsInitialForMaySkipLayout();
   }
 
-  // Returns true if the size constraints (shrink-to-fit, fixed-inline-size)
-  // are equal.
-  bool AreSizeConstraintsEqual(const NGConstraintSpace& other) const {
-    return bitfields_.AreSizeConstraintsEqual(other.bitfields_);
+  // Returns true if the size constraints (stretch-block-size,
+  // fixed-inline-size) are equal.
+  bool AreInlineSizeConstraintsEqual(const NGConstraintSpace& other) const {
+    return bitfields_.AreInlineSizeConstraintsEqual(other.bitfields_);
+  }
+  bool AreBlockSizeConstraintsEqual(const NGConstraintSpace& other) const {
+    return bitfields_.AreBlockSizeConstraintsEqual(other.bitfields_);
   }
 
   bool AreSizesEqual(const NGConstraintSpace& other) const {
@@ -1313,10 +1316,12 @@ class CORE_EXPORT NGConstraintSpace final {
              baseline_algorithm_type == other.baseline_algorithm_type;
     }
 
-    bool AreSizeConstraintsEqual(const Bitfields& other) const {
+    bool AreInlineSizeConstraintsEqual(const Bitfields& other) const {
       return stretch_inline_size_if_auto == other.stretch_inline_size_if_auto &&
-             stretch_block_size_if_auto == other.stretch_block_size_if_auto &&
-             is_fixed_inline_size == other.is_fixed_inline_size &&
+             is_fixed_inline_size == other.is_fixed_inline_size;
+    }
+    bool AreBlockSizeConstraintsEqual(const Bitfields& other) const {
+      return stretch_block_size_if_auto == other.stretch_block_size_if_auto &&
              is_fixed_block_size == other.is_fixed_block_size &&
              is_fixed_block_size_indefinite ==
                  other.is_fixed_block_size_indefinite &&

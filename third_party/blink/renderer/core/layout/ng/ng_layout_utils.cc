@@ -72,6 +72,46 @@ inline bool BlockLengthMayChange(const Length& length,
   return false;
 }
 
+bool BlockSizeMayChange(const NGBlockNode& node,
+                        const NGConstraintSpace& new_space,
+                        const NGConstraintSpace& old_space,
+                        const NGLayoutResult& layout_result) {
+  DCHECK_EQ(new_space.IsFixedBlockSize(), old_space.IsFixedBlockSize());
+  DCHECK_EQ(new_space.IsFixedBlockSizeIndefinite(),
+            old_space.IsFixedBlockSizeIndefinite());
+  DCHECK_EQ(new_space.StretchBlockSizeIfAuto(),
+            old_space.StretchBlockSizeIfAuto());
+  DCHECK_EQ(new_space.TableCellChildLayoutMode(),
+            old_space.TableCellChildLayoutMode());
+
+  if (node.IsQuirkyAndFillsViewport())
+    return true;
+
+  if (new_space.IsFixedBlockSize()) {
+    if (new_space.AvailableSize().block_size !=
+        old_space.AvailableSize().block_size)
+      return true;
+  } else {
+    const ComputedStyle& style = node.Style();
+    if (BlockLengthMayChange(style.LogicalHeight(), new_space, old_space) ||
+        BlockLengthMayChange(style.LogicalMinHeight(), new_space, old_space) ||
+        BlockLengthMayChange(style.LogicalMaxHeight(), new_space, old_space))
+      return true;
+    // We only need to check if the PercentageResolutionBlockSizes match if the
+    // layout result has explicitly marked itself as dependent.
+    if (layout_result.PhysicalFragment().DependsOnPercentageBlockSize()) {
+      if (new_space.PercentageResolutionBlockSize() !=
+          old_space.PercentageResolutionBlockSize())
+        return true;
+      if (new_space.ReplacedPercentageResolutionBlockSize() !=
+          old_space.ReplacedPercentageResolutionBlockSize())
+        return true;
+    }
+  }
+
+  return false;
+}
+
 // Return true if it's possible (but not necessarily guaranteed) that the new
 // constraint space will give a different size compared to the old one, when
 // computed style and child content remain unchanged.
@@ -79,19 +119,9 @@ bool SizeMayChange(const NGBlockNode& node,
                    const NGConstraintSpace& new_space,
                    const NGConstraintSpace& old_space,
                    const NGLayoutResult& layout_result) {
-  if (node.IsQuirkyAndFillsViewport())
-    return true;
-
   DCHECK_EQ(new_space.IsFixedInlineSize(), old_space.IsFixedInlineSize());
-  DCHECK_EQ(new_space.IsFixedBlockSize(), old_space.IsFixedBlockSize());
-  DCHECK_EQ(new_space.IsFixedBlockSizeIndefinite(),
-            old_space.IsFixedBlockSizeIndefinite());
   DCHECK_EQ(new_space.StretchInlineSizeIfAuto(),
             old_space.StretchInlineSizeIfAuto());
-  DCHECK_EQ(new_space.StretchBlockSizeIfAuto(),
-            old_space.StretchBlockSizeIfAuto());
-  DCHECK_EQ(new_space.TableCellChildLayoutMode(),
-            old_space.TableCellChildLayoutMode());
 
   const ComputedStyle& style = node.Style();
 
@@ -122,27 +152,6 @@ bool SizeMayChange(const NGBlockNode& node,
       return true;
   }
 
-  if (new_space.IsFixedBlockSize()) {
-    if (new_space.AvailableSize().block_size !=
-        old_space.AvailableSize().block_size)
-      return true;
-  } else {
-    if (BlockLengthMayChange(style.LogicalHeight(), new_space, old_space) ||
-        BlockLengthMayChange(style.LogicalMinHeight(), new_space, old_space) ||
-        BlockLengthMayChange(style.LogicalMaxHeight(), new_space, old_space))
-      return true;
-    // We only need to check if the PercentageResolutionBlockSizes match if the
-    // layout result has explicitly marked itself as dependent.
-    if (layout_result.PhysicalFragment().DependsOnPercentageBlockSize()) {
-      if (new_space.PercentageResolutionBlockSize() !=
-          old_space.PercentageResolutionBlockSize())
-        return true;
-      if (new_space.ReplacedPercentageResolutionBlockSize() !=
-          old_space.ReplacedPercentageResolutionBlockSize())
-        return true;
-    }
-  }
-
   if (style.MayHavePadding() &&
       new_space.PercentageResolutionInlineSize() !=
           old_space.PercentageResolutionInlineSize()) {
@@ -155,7 +164,7 @@ bool SizeMayChange(const NGBlockNode& node,
       return true;
   }
 
-  return false;
+  return BlockSizeMayChange(node, new_space, old_space, layout_result);
 }
 
 // Given the pre-computed |fragment_geometry| calcuates the
@@ -180,6 +189,23 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 
   if (fragment_geometry.border_box_size.inline_size != fragment.InlineSize())
     return NGLayoutCacheStatus::kNeedsLayout;
+
+  if (style.MayHavePadding() && fragment_geometry.padding != fragment.Padding())
+    return NGLayoutCacheStatus::kNeedsLayout;
+
+  // Tables are special - we can't determine the final block-size ahead of time
+  // (or based on the previous intrinsic size).
+  // Instead if the block-size *may* change, force a layout. If we definitely
+  // know the block-size won't change (the size constraints haven't changed) we
+  // can hit the cache.
+  //
+  // *NOTE* - any logic below this branch shouldn't apply to tables.
+  if (node.IsTable()) {
+    if (!new_space.AreBlockSizeConstraintsEqual(old_space) ||
+        BlockSizeMayChange(node, new_space, old_space, layout_result))
+      return NGLayoutCacheStatus::kNeedsLayout;
+    return NGLayoutCacheStatus::kHit;
+  }
 
   LayoutUnit block_size = fragment_geometry.border_box_size.block_size;
   bool is_initial_block_size_indefinite = block_size == kIndefiniteSize;
@@ -325,9 +351,6 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     }
   }
 
-  if (style.MayHavePadding() && fragment_geometry.padding != fragment.Padding())
-    return NGLayoutCacheStatus::kNeedsLayout;
-
   // Table-cells with vertical alignment might shift their contents if the
   // block-size changes.
   if (new_space.IsTableCell()) {
@@ -383,6 +406,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   // If we've reached here we know that we can potentially "stretch"/"shrink"
   // ourselves without affecting any of our children.
   // In that case we may be able to perform "simplified" layout.
+  DCHECK(!node.IsTable());
   return is_block_size_equal ? NGLayoutCacheStatus::kHit
                              : NGLayoutCacheStatus::kNeedsSimplifiedLayout;
 }
@@ -424,7 +448,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
   if (!new_space.MaySkipLayout(old_space))
     return NGLayoutCacheStatus::kNeedsLayout;
 
-  if (new_space.AreSizeConstraintsEqual(old_space)) {
+  if (new_space.AreInlineSizeConstraintsEqual(old_space) &&
+      new_space.AreBlockSizeConstraintsEqual(old_space)) {
     // It is possible that our intrinsic size has changed, check for that here.
     // TODO(cbiesinger): Investigate why this check doesn't apply to
     // |MaySkipLegacyLayout|.
@@ -460,7 +485,10 @@ bool MaySkipLegacyLayout(const NGBlockNode& node,
   if (!new_space.MaySkipLayout(old_space))
     return false;
 
-  if (!new_space.AreSizeConstraintsEqual(old_space))
+  if (!new_space.AreInlineSizeConstraintsEqual(old_space))
+    return false;
+
+  if (!new_space.AreBlockSizeConstraintsEqual(old_space))
     return false;
 
   if (new_space.AreSizesEqual(old_space))
