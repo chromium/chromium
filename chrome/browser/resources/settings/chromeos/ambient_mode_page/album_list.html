@@ -30,7 +30,7 @@
     <paper-spinner-lite active="[[!albums]]" hidden="[[albums]]">
     </paper-spinner-lite>
 
-    <iron-list grid scrollable scroll-target="document" items="{{albums}}">
+    <iron-list grid items="{{albums}}">
       <template>
         <album-item album="{{item}}" checked="{{item.checked}}"
             topic-source="[[topicSource]]" tabindex$="[[tabIndex]]"
