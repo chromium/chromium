@@ -28,6 +28,19 @@ class ImeDecoder {
     kFunctionMissing = 4,
   };
 
+  // This contains the function pointers to the entry points for the loaded
+  // decoder shared library.
+  struct EntryPoints {
+    ImeDecoderInitOnceFn initOnce;
+    ImeDecoderSupportsFn support;
+    ImeDecoderActivateImeFn activateIme;
+    ImeDecoderProcessFn process;
+    ImeDecoderCloseFn closeDecoder;
+
+    // Whether the EntryPoints is ready to use.
+    bool isReady;
+  };
+
   // Gets the singleton ImeDecoder.
   static ImeDecoder* GetInstance();
 
@@ -36,7 +49,11 @@ class ImeDecoder {
   Status GetStatus() const;
 
   // Returns an instance of ImeEngineMainEntry from the IME shared library.
+  // TODO(b/172527471): Remove it when decoder DSO is uprevved.
   ImeEngineMainEntry* CreateMainEntry(ImeCrosPlatform* platform);
+
+  // Returns entry points of the loaded decoder shared library.
+  EntryPoints GetEntryPoints();
 
  private:
   friend class base::NoDestructor<ImeDecoder>;
@@ -49,7 +66,12 @@ class ImeDecoder {
 
   // Result of IME decoder DSO initialization.
   base::Optional<base::ScopedNativeLibrary> library_;
+
+  // Function pointors from decoder DSO.
+  // TODO(b/172527471): Remove it when decoder DSO is uprevved.
   ImeMainEntryCreateFn createMainEntry_;
+
+  EntryPoints entry_points_;
 
   DISALLOW_COPY_AND_ASSIGN(ImeDecoder);
 };

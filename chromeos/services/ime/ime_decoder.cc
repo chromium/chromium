@@ -45,6 +45,13 @@ void ImeLoggerBridge(int severity, const char* message) {
       break;
   }
 }
+
+// Check whether the crucial members of an EntryPoints are loaded.
+bool isEntryPointsLoaded(ImeDecoder::EntryPoints entry) {
+  return (entry.initOnce && entry.support && entry.activateIme &&
+          entry.process && entry.closeDecoder);
+}
+
 }  // namespace
 
 ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
@@ -65,21 +72,35 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
     return;
   }
 
+  // TODO(b/172527471): Remove it when decoder DSO is uprevved.
   createMainEntry_ = reinterpret_cast<ImeMainEntryCreateFn>(
       library.GetFunctionPointer(IME_MAIN_ENTRY_CREATE_FN_NAME));
-  if (!createMainEntry_) {
+
+  // TODO(b/172527471): Create a macro to fetch function pointers.
+  entry_points_.initOnce = reinterpret_cast<ImeDecoderInitOnceFn>(
+      library.GetFunctionPointer("ImeDecoderInitOnce"));
+  entry_points_.support = reinterpret_cast<ImeDecoderSupportsFn>(
+      library.GetFunctionPointer("ImeDecoderSupports"));
+  entry_points_.activateIme = reinterpret_cast<ImeDecoderActivateImeFn>(
+      library.GetFunctionPointer("ImeDecoderActivateIme"));
+  entry_points_.process = reinterpret_cast<ImeDecoderProcessFn>(
+      library.GetFunctionPointer("ImeDecoderProcess"));
+  entry_points_.closeDecoder = reinterpret_cast<ImeDecoderCloseFn>(
+      library.GetFunctionPointer("ImeDecoderClose"));
+  if (!isEntryPointsLoaded(entry_points_)) {
     status_ = Status::kFunctionMissing;
     return;
   }
+  entry_points_.isReady = true;
 
+  // Optional function pointer.
   ImeEngineLoggerSetterFn loggerSetter =
       reinterpret_cast<ImeEngineLoggerSetterFn>(
           library.GetFunctionPointer("SetImeEngineLogger"));
   if (loggerSetter) {
     loggerSetter(ImeLoggerBridge);
   } else {
-    // Not a blocking issue yet.
-    LOG(ERROR) << "Failed to load SetImeEngineLogger function.";
+    LOG(WARNING) << "Failed to set a Chrome Logger for decoder DSO.";
   }
 
   library_ = std::move(library);
@@ -97,9 +118,15 @@ ImeDecoder::Status ImeDecoder::GetStatus() const {
   return status_;
 }
 
+// TODO(b/172527471): Remove it when decoder DSO is uprevved.
 ImeEngineMainEntry* ImeDecoder::CreateMainEntry(ImeCrosPlatform* platform) {
-  DCHECK(status_ == Status::kSuccess);
+  DCHECK(createMainEntry_);
   return createMainEntry_(platform);
+}
+
+ImeDecoder::EntryPoints ImeDecoder::GetEntryPoints() {
+  DCHECK(status_ == Status::kSuccess);
+  return entry_points_;
 }
 
 }  // namespace ime

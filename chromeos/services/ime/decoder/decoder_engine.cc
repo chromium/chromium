@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "chromeos/services/ime/constants.h"
-#include "chromeos/services/ime/ime_decoder.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
 
 namespace chromeos {
@@ -66,12 +65,11 @@ DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
 DecoderEngine::~DecoderEngine() {}
 
 bool DecoderEngine::TryLoadDecoder() {
-  if (engine_main_entry_)
-    return true;
-
   auto* decoder = ImeDecoder::GetInstance();
-  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess) {
-    engine_main_entry_ = decoder->CreateMainEntry(platform_);
+  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess &&
+      decoder->GetEntryPoints().isReady) {
+    decoder_entry_points_ = decoder->GetEntryPoints();
+    decoder_entry_points_->initOnce(platform_);
     return true;
   }
   return false;
@@ -86,7 +84,7 @@ bool DecoderEngine::BindRequest(
     // Activates an IME engine via the shared library. Passing a
     // |ClientDelegate| for engine instance created by the shared library to
     // make safe calls on the client.
-    if (engine_main_entry_->ActivateIme(
+    if (decoder_entry_points_->activateIme(
             ime_spec.c_str(),
             new ClientDelegate(ime_spec, std::move(remote)))) {
       decoder_channel_receivers_.Add(this, std::move(receiver));
@@ -102,8 +100,10 @@ bool DecoderEngine::BindRequest(
 }
 
 bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
-  return engine_main_entry_ &&
-         engine_main_entry_->IsImeSupported(ime_spec.c_str());
+  if (decoder_entry_points_) {
+    return decoder_entry_points_->support(ime_spec.c_str());
+  }
+  return false;
 }
 
 void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
@@ -112,8 +112,9 @@ void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
   std::vector<uint8_t> result;
 
   // Handle message via corresponding functions of loaded decoder.
-  if (engine_main_entry_)
-    engine_main_entry_->Process(message.data(), message.size());
+  if (decoder_entry_points_) {
+    decoder_entry_points_->process(message.data(), message.size());
+  }
 
   std::move(callback).Run(result);
 }
