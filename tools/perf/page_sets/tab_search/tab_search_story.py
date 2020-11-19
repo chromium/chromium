@@ -60,6 +60,8 @@ TOP_URL = [
     'whatsapp.com',
 ]
 
+TAB_SEARCH_URL = 'chrome://tab-search/'
+
 
 class TabSearchStory(page.Page):
   """Base class for tab search stories"""
@@ -87,16 +89,16 @@ class TabSearchStory(page.Page):
 
   def RunPageInteractions(self, action_runner):
     tabs = action_runner.tab.browser.tabs
-    tabs_len = len(tabs)
 
     # Open Tab Search bubble.
     action_runner.tab.browser.supports_inspecting_webui = True
     action_runner.tab.browser.ExecuteBrowserCommand('openTabSearch')
     # Wait for Tab Search bubble to be inspectable.
-    py_utils.WaitFor(lambda: len(tabs) > tabs_len, 10)
+    py_utils.WaitFor(
+        lambda: any([True for tab in tabs if tab.url == TAB_SEARCH_URL]), 10)
 
     # Wait for Tab Search bubble to load.
-    tab = tabs[-1]
+    tab = next(iter([tab for tab in tabs if tab.url == TAB_SEARCH_URL]))
     action_runner = ActionRunner(
         tab)  # Recreate action_runner for Tab Search bubble.
     tab.WaitForDocumentReadyStateToBeComplete()
