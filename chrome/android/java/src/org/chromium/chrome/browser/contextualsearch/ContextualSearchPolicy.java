@@ -31,8 +31,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.net.URL;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -440,60 +438,6 @@ class ContextualSearchPolicy {
     int getTapCount() {
         return mPreferencesManager.readInt(
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_COUNT);
-    }
-
-    // --------------------------------------------------------------------------------------------
-    // Translation support.
-    // --------------------------------------------------------------------------------------------
-
-    /**
-     * Determines whether translation is needed between the given languages.
-     * @param sourceLanguage The source language code; language we're translating from.
-     * @param targetLanguages A list of target language codes; languages we might translate to.
-     * @return Whether translation is needed or not.
-     */
-    boolean needsTranslation(String sourceLanguage, List<String> targetLanguages) {
-        // For now, we just look for a language match.
-        for (String targetLanguage : targetLanguages) {
-            if (TextUtils.equals(sourceLanguage, targetLanguage)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * @return The best target language from the ordered list, or the empty string if
-     *         none is available.
-     */
-    String bestTargetLanguage(List<String> targetLanguages) {
-        return bestTargetLanguage(targetLanguages, Locale.getDefault().getCountry());
-    }
-
-    /**
-     * Determines the best language to convert into, given the ordered list of languages the user
-     * knows, and the UX language.
-     * @param targetLanguages The list of languages to consider converting to.
-     * @param countryOfUx The country of the UX.
-     * @return the best language or an empty string.
-     */
-    @VisibleForTesting
-    String bestTargetLanguage(List<String> targetLanguages, String countryOfUx) {
-        // For now, we just return the first language, unless it's English
-        // (due to over-usage).
-        // TODO(donnd): Improve this logic. Determining the right language seems non-trivial.
-        // E.g. If this language doesn't match the user's server preferences, they might see a page
-        // in one language and the one box translation in another, which might be confusing.
-        // Also this logic should only apply on Android, where English setup is overused.
-        if (targetLanguages.size() > 1
-                && TextUtils.equals(targetLanguages.get(0), Locale.ENGLISH.getLanguage())
-                && !PREDOMINENTLY_ENGLISH_SPEAKING_COUNTRIES.contains(countryOfUx)) {
-            return targetLanguages.get(1);
-        } else if (targetLanguages.size() > 0) {
-            return targetLanguages.get(0);
-        } else {
-            return "";
-        }
     }
 
     /**

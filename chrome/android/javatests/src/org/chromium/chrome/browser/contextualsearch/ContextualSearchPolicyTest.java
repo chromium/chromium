@@ -29,7 +29,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Tests for the ContextualSearchPolicy class.
@@ -51,55 +50,6 @@ public class ContextualSearchPolicyTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> mPolicy = new ContextualSearchPolicy(null, mMockServer));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    public void testBestTargetLanguageFromMultiple() {
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("br");
-        list.add("de");
-        Assert.assertEquals("br", mPolicy.bestTargetLanguage(list));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    public void testBestTargetLanguageSkipsEnglish() {
-        String countryOfUx = "";
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("en");
-        list.add("id");
-        Assert.assertEquals("id", mPolicy.bestTargetLanguage(list, countryOfUx));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    public void testBestTargetLanguageReturnsEnglishWhenInUS() {
-        String countryOfUx = "US";
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("en");
-        list.add("id");
-        Assert.assertEquals("en", mPolicy.bestTargetLanguage(list, countryOfUx));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    public void testBestTargetLanguageUsesEnglishWhenOnlyChoice() {
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("en");
-        Assert.assertEquals("en", mPolicy.bestTargetLanguage(list));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    public void testBestTargetLanguageReturnsEmptyWhenNoChoice() {
-        ArrayList<String> list = new ArrayList<String>();
-        Assert.assertEquals("", mPolicy.bestTargetLanguage(list));
     }
 
     /** Call on the UI thread to set up all the conditions needed for sending the URL. */
