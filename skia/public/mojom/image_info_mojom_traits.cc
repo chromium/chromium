@@ -11,6 +11,39 @@
 
 namespace mojo {
 
+namespace {
+
+SkImageInfo MakeSkImageInfo(SkColorType color_type,
+                            SkAlphaType alpha_type,
+                            int width,
+                            int height,
+                            mojo::ArrayDataView<float> color_transfer_function,
+                            mojo::ArrayDataView<float> color_to_xyz_matrix) {
+  sk_sp<SkColorSpace> color_space;
+  if (!color_transfer_function.is_null() && !color_to_xyz_matrix.is_null()) {
+    const float* data = color_transfer_function.data();
+    skcms_TransferFunction transfer_function;
+    CHECK_EQ(7u, color_transfer_function.size());
+    transfer_function.g = data[0];
+    transfer_function.a = data[1];
+    transfer_function.b = data[2];
+    transfer_function.c = data[3];
+    transfer_function.d = data[4];
+    transfer_function.e = data[5];
+    transfer_function.f = data[6];
+
+    skcms_Matrix3x3 to_xyz_matrix;
+    CHECK_EQ(9u, color_to_xyz_matrix.size());
+    memcpy(to_xyz_matrix.vals, color_to_xyz_matrix.data(), 9 * sizeof(float));
+    color_space = SkColorSpace::MakeRGB(transfer_function, to_xyz_matrix);
+  }
+
+  return SkImageInfo::Make(width, height, color_type, alpha_type,
+                           std::move(color_space));
+}
+
+}  // namespace
+
 // static
 skia::mojom::AlphaType EnumTraits<skia::mojom::AlphaType, SkAlphaType>::ToMojom(
     SkAlphaType type) {
@@ -117,18 +150,6 @@ bool EnumTraits<skia::mojom::ColorType, SkColorType>::FromMojom(
 }
 
 // static
-SkColorType StructTraits<skia::mojom::ImageInfoDataView,
-                         SkImageInfo>::color_type(const SkImageInfo& info) {
-  return info.colorType();
-}
-
-// static
-SkAlphaType StructTraits<skia::mojom::ImageInfoDataView,
-                         SkImageInfo>::alpha_type(const SkImageInfo& info) {
-  return info.alphaType();
-}
-
-// static
 uint32_t StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::width(
     const SkImageInfo& info) {
   // Negative width images are invalid.
@@ -186,33 +207,28 @@ bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
   mojo::ArrayDataView<float> color_to_xyz_matrix;
   data.GetColorToXyzMatrixDataView(&color_to_xyz_matrix);
 
-  // Sender must supply both color space fields or neither. This approach is
-  // simpler than having an optional ColorSpace mojo struct, due to BUILD.gn
-  // complexity with blink variants.
-  if (color_transfer_function.is_null() != color_to_xyz_matrix.is_null())
+  *info = MakeSkImageInfo(color_type, alpha_type, data.width(), data.height(),
+                          std::move(color_transfer_function),
+                          std::move(color_to_xyz_matrix));
+  return true;
+}
+
+// static
+bool StructTraits<skia::mojom::BitmapN32ImageInfoDataView, SkImageInfo>::Read(
+    skia::mojom::BitmapN32ImageInfoDataView data,
+    SkImageInfo* info) {
+  SkAlphaType alpha_type;
+  if (!data.ReadAlphaType(&alpha_type))
     return false;
 
-  sk_sp<SkColorSpace> sk_color_space;
-  if (!color_transfer_function.is_null() && !color_to_xyz_matrix.is_null()) {
-    const float* data = color_transfer_function.data();
-    skcms_TransferFunction transfer_function;
-    CHECK_EQ(7u, color_transfer_function.size());
-    transfer_function.g = data[0];
-    transfer_function.a = data[1];
-    transfer_function.b = data[2];
-    transfer_function.c = data[3];
-    transfer_function.d = data[4];
-    transfer_function.e = data[5];
-    transfer_function.f = data[6];
+  mojo::ArrayDataView<float> color_transfer_function;
+  data.GetColorTransferFunctionDataView(&color_transfer_function);
+  mojo::ArrayDataView<float> color_to_xyz_matrix;
+  data.GetColorToXyzMatrixDataView(&color_to_xyz_matrix);
 
-    skcms_Matrix3x3 to_xyz_matrix;
-    CHECK_EQ(9u, color_to_xyz_matrix.size());
-    memcpy(to_xyz_matrix.vals, color_to_xyz_matrix.data(), 9 * sizeof(float));
-    sk_color_space = SkColorSpace::MakeRGB(transfer_function, to_xyz_matrix);
-  }
-
-  *info = SkImageInfo::Make(data.width(), data.height(), color_type, alpha_type,
-                            std::move(sk_color_space));
+  *info = MakeSkImageInfo(kN32_SkColorType, alpha_type, data.width(),
+                          data.height(), std::move(color_transfer_function),
+                          std::move(color_to_xyz_matrix));
   return true;
 }
 

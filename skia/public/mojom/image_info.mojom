@@ -54,3 +54,25 @@ struct ImageInfo {
   // no explicit color space.
   array<float, 9>? color_to_xyz_matrix;
 };
+
+// Similar to ImageInfo, but is used when only N32 ColorType is allowed. As such
+// the ColorType is not transmitted over the wire at all.
+struct BitmapN32ImageInfo {
+  AlphaType alpha_type;
+  uint32 width;
+  uint32 height;
+
+  // Color transfer function mapping encoded values to linear values,
+  // represented by this 7-parameter piecewise function:
+  //   linear = sign(encoded) *  (c*|encoded| + f)       , 0 <= |encoded| < d
+  //          = sign(encoded) * ((a*|encoded| + b)^g + e), d <= |encoded|
+  // (A simple gamma transfer function sets g to gamma and a to 1.)
+  // See SkColorSpace and skcms_TransferFunction. Null if the image has no
+  // explicit color space. Parameters are serialized as: g, a, b, c, d, e, f.
+  array<float, 7>? color_transfer_function;
+
+  // Color transformation matrix to convert colors to XYZ D50, represented as
+  // a row-major 3x3 matrix. See SkColorSpace::MakeRGB(). Null if the image has
+  // no explicit color space.
+  array<float, 9>? color_to_xyz_matrix;
+};

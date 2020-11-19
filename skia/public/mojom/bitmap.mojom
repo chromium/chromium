@@ -33,10 +33,15 @@ struct BitmapMappedFromTrustedProcess {
   mojo_base.mojom.BigBuffer pixel_data;
 };
 
-// NOTE: This should only be used when an SkBitmap MUST be serialized as raw
-// bytes (i.e. it's not OK for shared memory to be used, as above).
+// Encode an N32 SkBitmap for transport without relying on shared memory.
+// Normally, it is preferable to use shared memory and this mojom type should
+// NOT be used for IPC.
+//
+// This type is useful, however, for de/serialization to a string (via
+// skia::mojom::InlineBitmap::Serialize() and Deserialize()) since it will not
+// attempt to use a shared memory handle and will encode the actual pixel
+// content always.
 struct InlineBitmap {
-  ImageInfo image_info;
-  uint64 row_bytes;
+  BitmapN32ImageInfo image_info;
   array<uint8> pixel_data;
 };

@@ -31,8 +31,12 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
 template <>
 struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
     StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo> {
-  static SkColorType color_type(const SkImageInfo& info);
-  static SkAlphaType alpha_type(const SkImageInfo& info);
+  static SkColorType color_type(const SkImageInfo& info) {
+    return info.colorType();
+  }
+  static SkAlphaType alpha_type(const SkImageInfo& info) {
+    return info.alphaType();
+  }
   static uint32_t width(const SkImageInfo& info);
   static uint32_t height(const SkImageInfo& info);
   static base::Optional<std::vector<float>> color_transfer_function(
@@ -41,6 +45,37 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
       const SkImageInfo& info);
 
   static bool Read(skia::mojom::ImageInfoDataView data, SkImageInfo* info);
+};
+
+template <>
+struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
+    StructTraits<skia::mojom::BitmapN32ImageInfoDataView, SkImageInfo> {
+  static SkAlphaType alpha_type(const SkImageInfo& info) {
+    // BitmapN32ImageInfo only allows N32 SkImageInfos.
+    CHECK_EQ(info.colorType(), kN32_SkColorType);
+    return info.alphaType();
+  }
+  static uint32_t width(const SkImageInfo& info) {
+    return ImageInfoStructTraits::width(info);
+  }
+  static uint32_t height(const SkImageInfo& info) {
+    return ImageInfoStructTraits::height(info);
+  }
+  static base::Optional<std::vector<float>> color_transfer_function(
+      const SkImageInfo& info) {
+    return ImageInfoStructTraits::color_transfer_function(info);
+  }
+  static base::Optional<std::vector<float>> color_to_xyz_matrix(
+      const SkImageInfo& info) {
+    return ImageInfoStructTraits::color_to_xyz_matrix(info);
+  }
+
+  static bool Read(skia::mojom::BitmapN32ImageInfoDataView data,
+                   SkImageInfo* info);
+
+ private:
+  using ImageInfoStructTraits =
+      StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>;
 };
 
 }  // namespace mojo

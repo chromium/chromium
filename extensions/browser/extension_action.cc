@@ -17,7 +17,6 @@
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
-#include "skia/ext/skia_utils_base.h"
 #include "skia/public/mojom/bitmap.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -137,20 +136,12 @@ ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
     } else {
       continue;
     }
-    SkBitmap unsafe_bitmap;
-    if (!skia::mojom::InlineBitmap::Deserialize(bytes, num_bytes,
-                                                &unsafe_bitmap)) {
-      return IconParseResult::kUnpickleFailure;
-    }
-    CHECK(!unsafe_bitmap.isNull());
-    // On receipt of an arbitrary bitmap from the renderer, we convert to an N32
-    // 32bpp bitmap. Other pixel sizes can lead to out-of-bounds mistakes when
-    // transferring the pixels out of the/ bitmap into other buffers.
     SkBitmap bitmap;
-    if (!skia::SkBitmapToN32OpaqueOrPremul(unsafe_bitmap, &bitmap)) {
-      NOTREACHED() << "Unable to convert bitmap for icon";
+    if (!skia::mojom::InlineBitmap::Deserialize(bytes, num_bytes, &bitmap)) {
       return IconParseResult::kUnpickleFailure;
     }
+    // A well-behaved renderer will never send a null bitmap to us here.
+    CHECK(!bitmap.isNull());
 
     // Chrome helpfully scales the provided icon(s), but let's not go overboard.
     const int kActionIconMaxSize = 10 * ActionIconSize();

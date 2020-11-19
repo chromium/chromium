@@ -297,49 +297,6 @@ TEST(DeclarativeContentActionTest, SetIcon) {
   }
 }
 
-TEST(DeclarativeContentActionTest, SetInvalidIcon) {
-  TestExtensionEnvironment env;
-  content::RenderViewHostTestEnabler rvh_enabler;
-
-  // This bitmap type is allowed by skia::mojom::InlineBitmap but we should
-  // convert to N32 upon receipt.
-  SkBitmap bitmap;
-  EXPECT_TRUE(bitmap.tryAllocPixels(
-      SkImageInfo::Make(19, 19, kAlpha_8_SkColorType, kPremul_SkAlphaType)));
-  bitmap.eraseARGB(255, 255, 0, 0);
-
-  DictionaryBuilder builder;
-  builder.Set("instanceType", "declarativeContent.SetIcon");
-
-  std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
-  builder.Set("imageData", DictionaryBuilder().Set("19", s).Build());
-
-  std::unique_ptr<base::DictionaryValue> dict = builder.Build();
-
-  const Extension* extension = env.MakeExtension(
-      ParseJson(R"({"page_action": {"default_title": "Extension"}})"));
-  base::HistogramTester histogram_tester;
-  TestingProfile profile;
-  std::string error;
-  std::unique_ptr<const ContentAction> result =
-      ContentAction::Create(&profile, extension, *dict, &error);
-  EXPECT_EQ("", error);
-  ASSERT_TRUE(result.get());
-
-  ExtensionAction* action = ExtensionActionManager::Get(env.profile())
-                                ->GetExtensionAction(*extension);
-
-  std::unique_ptr<content::WebContents> contents = env.MakeTab();
-  const int tab_id = ExtensionTabUtil::GetTabId(contents.get());
-  ContentAction::ApplyInfo apply_info = {extension, env.profile(),
-                                         contents.get(), 100};
-  EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
-  result->Apply(apply_info);
-  EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
-  EXPECT_EQ(kN32_SkColorType,
-            action->GetDeclarativeIcon(tab_id).ToSkBitmap()->colorType());
-}
-
 TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   TestExtensionEnvironment env;
 

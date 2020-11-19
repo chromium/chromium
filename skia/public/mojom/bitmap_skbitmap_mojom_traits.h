@@ -20,11 +20,13 @@ namespace mojo {
 template <>
 struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
     StructTraits<skia::mojom::BitmapDataView, SkBitmap> {
-  static bool IsNull(const SkBitmap& b);
-  static void SetToNull(SkBitmap* b);
-  static const SkImageInfo& image_info(const SkBitmap& b);
-  static uint64_t row_bytes(const SkBitmap& b);
+  static bool IsNull(const SkBitmap& b) { return b.isNull(); }
+  static void SetToNull(SkBitmap* b) { b->reset(); }
+
+  static const SkImageInfo& image_info(const SkBitmap& b) { return b.info(); }
+  static uint64_t row_bytes(const SkBitmap& b) { return b.rowBytes(); }
   static mojo_base::BigBufferView pixel_data(const SkBitmap& b);
+
   static bool Read(skia::mojom::BitmapDataView data, SkBitmap* b);
 };
 
@@ -32,11 +34,13 @@ template <>
 struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
     StructTraits<skia::mojom::BitmapMappedFromTrustedProcessDataView,
                  SkBitmap> {
-  static bool IsNull(const SkBitmap& b);
-  static void SetToNull(SkBitmap* b);
-  static const SkImageInfo& image_info(const SkBitmap& b);
-  static uint64_t row_bytes(const SkBitmap& b);
+  static bool IsNull(const SkBitmap& b) { return b.isNull(); }
+  static void SetToNull(SkBitmap* b) { b->reset(); }
+
+  static const SkImageInfo& image_info(const SkBitmap& b) { return b.info(); }
+  static uint64_t row_bytes(const SkBitmap& b) { return b.rowBytes(); }
   static mojo_base::BigBufferView pixel_data(const SkBitmap& b);
+
   static bool Read(skia::mojom::BitmapMappedFromTrustedProcessDataView data,
                    SkBitmap* b);
 };
@@ -44,11 +48,12 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
 template <>
 struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
     StructTraits<skia::mojom::InlineBitmapDataView, SkBitmap> {
-  static bool IsNull(const SkBitmap& b);
-  static void SetToNull(SkBitmap* b);
-  static const SkImageInfo& image_info(const SkBitmap& b);
-  static uint64_t row_bytes(const SkBitmap& b);
+  static bool IsNull(const SkBitmap& b) { return b.isNull(); }
+  static void SetToNull(SkBitmap* b) { b->reset(); }
+
+  static const SkImageInfo& image_info(const SkBitmap& b) { return b.info(); }
   static base::span<const uint8_t> pixel_data(const SkBitmap& b);
+
   static bool Read(skia::mojom::InlineBitmapDataView data, SkBitmap* b);
 };
 
