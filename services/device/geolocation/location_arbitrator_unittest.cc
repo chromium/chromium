@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
-#include "build/build_config.h"
 #include "services/device/geolocation/fake_location_provider.h"
 #include "services/device/geolocation/fake_position_cache.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -103,24 +102,16 @@ class TestingLocationArbitrator : public LocationArbitrator {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key) override {
     network_location_provider_ = new FakeLocationProvider;
-    network_location_provider_->SetProviderDestroyedCallback(
-        base::BindRepeating(
-            &TestingLocationArbitrator::FakeLocationProviderDestructorCallback,
-            base::Unretained(this)));
     return base::WrapUnique(network_location_provider_);
   }
 
-  std::unique_ptr<SystemLocationProvider> NewSystemLocationProvider() override {
+  std::unique_ptr<LocationProvider> NewSystemLocationProvider() override {
     if (!should_use_system_location_provider_) {
       return nullptr;
     }
 
     system_location_provider_ = new FakeLocationProvider;
     return base::WrapUnique(system_location_provider_);
-  }
-
-  void FakeLocationProviderDestructorCallback() {
-    network_location_provider_ = nullptr;
   }
 
   FakeLocationProvider* network_location_provider_ = nullptr;
@@ -248,31 +239,27 @@ TEST_F(GeolocationLocationArbitratorTest, NormalUsageSystem) {
   EXPECT_FALSE(system_location_provider());
   arbitrator_->StartProvider(false);
 
-  auto* location_provider = network_location_provider();
-  EXPECT_TRUE(location_provider);
-
-#if defined(OS_MAC)
-  location_provider = system_location_provider();
-  EXPECT_TRUE(location_provider);
-#endif
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, location_provider->state_);
+  EXPECT_FALSE(network_location_provider());
+  ASSERT_TRUE(system_location_provider());
+  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
+            system_location_provider()->state_);
   EXPECT_FALSE(ValidateGeoposition(observer_->last_position()));
   EXPECT_EQ(mojom::Geoposition::ErrorCode::NONE,
             observer_->last_position().error_code);
 
-  SetReferencePosition(location_provider);
+  SetReferencePosition(system_location_provider());
 
   EXPECT_TRUE(ValidateGeoposition(observer_->last_position()) ||
               observer_->last_position().error_code !=
                   mojom::Geoposition::ErrorCode::NONE);
-  EXPECT_EQ(location_provider->GetPosition().latitude,
+  EXPECT_EQ(system_location_provider()->GetPosition().latitude,
             observer_->last_position().latitude);
 
-  EXPECT_FALSE(location_provider->is_permission_granted());
+  EXPECT_FALSE(system_location_provider()->is_permission_granted());
   EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
   arbitrator_->OnPermissionGranted();
   EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
-  EXPECT_TRUE(location_provider->is_permission_granted());
+  EXPECT_TRUE(system_location_provider()->is_permission_granted());
 }
 
 // Tests basic operation (single position fix) with no network location
@@ -361,49 +348,5 @@ TEST_F(GeolocationLocationArbitratorTest, TwoOneShotsIsNewPositionBetter) {
   SetPositionFix(network_location_provider(), 3, 139, 150);
   CheckLastPositionInfo(3, 139, 150);
 }
-
-#if defined(OS_MAC)
-TEST_F(GeolocationLocationArbitratorTest, NetworkProviderFallback) {
-  InitializeArbitrator(
-      base::BindRepeating(&GetCustomLocationProviderForTest, nullptr),
-      url_loader_factory_, /*should_use_system_location_provider=*/true);
-  ASSERT_TRUE(arbitrator_);
-
-  arbitrator_->StartProvider(false);
-
-  EXPECT_EQ(network_location_provider()->state(),
-            FakeLocationProvider::State::LOW_ACCURACY);
-  EXPECT_EQ(system_location_provider()->state(),
-            FakeLocationProvider::State::LOW_ACCURACY);
-
-  system_location_provider()->CallShouldUseSystemProvider(/*should_use=*/true);
-
-  EXPECT_FALSE(network_location_provider());
-  EXPECT_EQ(system_location_provider()->state(),
-            FakeLocationProvider::State::LOW_ACCURACY);
-
-  arbitrator_->StopProvider();
-  arbitrator_->StartProvider(/*high_accuracy=*/false);
-
-  EXPECT_FALSE(network_location_provider());
-  EXPECT_EQ(system_location_provider()->state(),
-            FakeLocationProvider::State::LOW_ACCURACY);
-
-  system_location_provider()->CallShouldUseSystemProvider(/*should_use=*/false);
-
-  EXPECT_EQ(network_location_provider()->state(),
-            FakeLocationProvider::State::LOW_ACCURACY);
-  EXPECT_EQ(system_location_provider()->state(),
-            FakeLocationProvider::State::LOW_ACCURACY);
-
-  arbitrator_->StopProvider();
-  arbitrator_->StartProvider(/*high_accuracy=*/false);
-
-  EXPECT_EQ(network_location_provider()->state(),
-            FakeLocationProvider::State::LOW_ACCURACY);
-  EXPECT_EQ(system_location_provider()->state(),
-            FakeLocationProvider::State::LOW_ACCURACY);
-}
-#endif
 
 }  // namespace device

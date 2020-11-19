@@ -18,7 +18,6 @@
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/geolocation/network_location_provider.h"
 #include "services/device/geolocation/position_cache.h"
-#include "services/device/geolocation/system_location_provider.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "url/gurl.h"
@@ -50,7 +49,6 @@ class LocationArbitrator : public LocationProvider {
 
   static GURL DefaultNetworkProviderURL();
   bool HasPermissionBeenGrantedForTest() const;
-  void ShouldUseSystemProvider(bool should_use);
 
   // LocationProvider implementation.
   void SetUpdateCallback(
@@ -66,7 +64,7 @@ class LocationArbitrator : public LocationProvider {
   virtual std::unique_ptr<LocationProvider> NewNetworkLocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key);
-  virtual std::unique_ptr<SystemLocationProvider> NewSystemLocationProvider();
+  virtual std::unique_ptr<LocationProvider> NewSystemLocationProvider();
   virtual base::Time GetTimeNow() const;
 
  private:
@@ -74,7 +72,7 @@ class LocationArbitrator : public LocationProvider {
 
   // Provider will either be added to |providers_| or
   // deleted on error (e.g. it fails to start).
-  void RegisterProvider(LocationProvider* provider);
+  void RegisterProvider(std::unique_ptr<LocationProvider> provider);
   void RegisterProviders();
 
   // Tells all registered providers to start.
@@ -94,19 +92,13 @@ class LocationArbitrator : public LocationProvider {
                            const mojom::Geoposition& new_position,
                            bool from_same_provider) const;
 
-  bool HasProvider();
-  LocationProvider* GetProvider();
-
   const CustomLocationProviderCallback custom_location_provider_getter_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string api_key_;
 
   LocationProvider::LocationProviderUpdateCallback arbitrator_update_callback_;
 
-  std::unique_ptr<LocationProvider> custom_location_provider_;
-  std::unique_ptr<LocationProvider> network_location_provider_;
-  std::unique_ptr<SystemLocationProvider> system_location_provider_;
-  bool force_ignore_system_location_ = true;
+  std::vector<std::unique_ptr<LocationProvider>> providers_;
   bool enable_high_accuracy_;
   // The provider which supplied the current |position_|
   const LocationProvider* position_provider_;
@@ -124,7 +116,7 @@ class LocationArbitrator : public LocationProvider {
 
 // Factory functions for the various types of location provider to abstract
 // over the platform-dependent implementations.
-std::unique_ptr<SystemLocationProvider> NewSystemLocationProvider();
+std::unique_ptr<LocationProvider> NewSystemLocationProvider();
 
 }  // namespace device
 

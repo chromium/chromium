@@ -15,8 +15,6 @@
      didUpdateLocations:(NSArray*)locations;
 - (void)locationManager:(CLLocationManager*)manager
     didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
-- (void)locationManager:(CLLocationManager*)manager
-       didFailWithError:(NSError*)error;
 
 @end
 
@@ -44,17 +42,6 @@
     } else {
       provider_->SystemLocationPermissionDenied();
     }
-  }
-}
-
-- (void)locationManager:(CLLocationManager*)manager
-       didFailWithError:(NSError*)error {
-  [error localizedDescription];
-  if ([error code] == kCLErrorLocationUnknown) {
-    // Fallback to network provider because Core Location is not able to
-    // determine location. This is likely due to wifi adapter being turned off.
-    if (provider_)
-      provider_->StopUsing();
   }
 }
 
@@ -115,11 +102,6 @@ void CoreLocationProvider::OnPermissionGranted() {
   // Nothing to do here.
 }
 
-void CoreLocationProvider::SetShouldUseSystemProviderCallback(
-    const ShouldUseCallback& callback) {
-  should_use_callback_ = callback;
-}
-
 void CoreLocationProvider::SystemLocationPermissionGranted() {
   has_permission_ = true;
   if (provider_start_attemped_) {
@@ -132,17 +114,7 @@ void CoreLocationProvider::SystemLocationPermissionDenied() {
   has_permission_ = false;
 }
 
-void CoreLocationProvider::StopUsing() {
-  if (should_use_callback_)
-    should_use_callback_.Run(/*should_use=*/false);
-  is_being_used_ = false;
-}
-
 void CoreLocationProvider::DidUpdatePosition(CLLocation* location) {
-  if (!is_being_used_ && should_use_callback_) {
-    should_use_callback_.Run(/*should_use=*/true);
-    is_being_used_ = true;
-  }
   // The error values in CLLocation correlate exactly to our error values.
   last_position_.latitude = location.coordinate.latitude;
   last_position_.longitude = location.coordinate.longitude;
@@ -153,6 +125,7 @@ void CoreLocationProvider::DidUpdatePosition(CLLocation* location) {
   last_position_.altitude_accuracy = location.verticalAccuracy;
   last_position_.speed = location.speed;
   last_position_.heading = location.course;
+
   callback_.Run(this, last_position_);
 }
 

@@ -456,14 +456,8 @@ HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {
   return hr;
 }
 
-void LocationProviderWinrt::SetShouldUseSystemProviderCallback(
-    const ShouldUseCallback& callback) {
-  // WinRT's location provider should always be used if available.
-  callback.Run(/*should_use=*/true);
-}
-
 // static
-std::unique_ptr<SystemLocationProvider> NewSystemLocationProvider() {
+std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
   if (!base::FeatureList::IsEnabled(
           features::kWinrtGeolocationImplementation) ||
       !IsWinRTSupported() || !IsSystemLocationSettingEnabled()) {

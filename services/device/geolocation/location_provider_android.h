@@ -8,14 +8,13 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "services/device/geolocation/system_location_provider.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
 
 // Location provider for Android using the platform provider over JNI.
-class LocationProviderAndroid : public SystemLocationProvider {
+class LocationProviderAndroid : public LocationProvider {
  public:
   LocationProviderAndroid();
   ~LocationProviderAndroid() override;
@@ -30,10 +29,6 @@ class LocationProviderAndroid : public SystemLocationProvider {
   void StopProvider() override;
   const mojom::Geoposition& GetPosition() override;
   void OnPermissionGranted() override;
-
-  // SystemLocationProvider implementation.
-  void SetShouldUseSystemProviderCallback(
-      const ShouldUseCallback& callback) override;
 
  private:
   base::ThreadChecker thread_checker_;

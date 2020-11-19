@@ -10,14 +10,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "services/device/geolocation/system_location_provider.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
 
 // Fake implementation of a location provider for testing.
-class FakeLocationProvider : public SystemLocationProvider {
+class FakeLocationProvider : public LocationProvider {
  public:
   enum State { STOPPED, LOW_ACCURACY, HIGH_ACCURACY } state_ = STOPPED;
 
@@ -38,22 +37,12 @@ class FakeLocationProvider : public SystemLocationProvider {
   const mojom::Geoposition& GetPosition() override;
   void OnPermissionGranted() override;
 
-  // SystemLocationProvider implementation
-  void SetShouldUseSystemProviderCallback(
-      const ShouldUseCallback& callback) override;
-
-  void CallShouldUseSystemProvider(bool should_use);
-
-  void SetProviderDestroyedCallback(const base::RepeatingClosure& callback);
-
   scoped_refptr<base::SingleThreadTaskRunner> provider_task_runner_;
 
  private:
   bool is_permission_granted_ = false;
   mojom::Geoposition position_;
   LocationProviderUpdateCallback callback_;
-  ShouldUseCallback should_use_system_provider_callback_;
-  base::RepeatingClosure destructor_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeLocationProvider);
 };
