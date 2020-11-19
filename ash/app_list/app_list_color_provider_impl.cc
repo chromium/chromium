@@ -4,6 +4,7 @@
 
 #include "ash/app_list/app_list_color_provider_impl.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_colors.h"
 
@@ -79,7 +80,10 @@ SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
       /*default_color*/ gfx::kGoogleGrey100);
 }
 
-SkColor AppListColorProviderImpl::GetAppListItemTextColor() const {
+SkColor AppListColorProviderImpl::GetAppListItemTextColor(
+    bool is_in_folder) const {
+  if (is_in_folder && !features::IsDarkLightModeEnabled())
+    return SK_ColorBLACK;
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary,
       /*default_color*/ SK_ColorWHITE);

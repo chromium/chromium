@@ -312,10 +312,8 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
   title->SetHandlesTooltips(false);
   title->SetFontList(GetAppListConfig().app_title_font());
   title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  title->SetEnabledColor(
-      apps_grid_view_->is_in_folder()
-          ? SK_ColorBLACK
-          : AppListColorProvider::Get()->GetAppListItemTextColor());
+  title->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
+      apps_grid_view_->is_in_folder()));
 
   icon_ = AddChildView(std::make_unique<IconImageView>());
 

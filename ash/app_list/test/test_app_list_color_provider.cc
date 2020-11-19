@@ -54,7 +54,8 @@ SkColor TestAppListColorProvider::GetSuggestionChipTextColor() const {
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetAppListItemTextColor() const {
+SkColor TestAppListColorProvider::GetAppListItemTextColor(
+    bool is_in_folder) const {
   return gfx::kGoogleGrey200;
 }
 
