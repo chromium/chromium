@@ -1386,7 +1386,11 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AmbientModePhotoSource">
-  <int value="0" label="Default"/>
+  <int value="0" label="Default">
+    This is when user clicked on the top level Screen Saver toggle but did not
+    click on any of photo source categories. The system will default show Art
+    Gallery with a default list of art sub categories.
+  </int>
   <int value="1" label="Art Gallery"/>
   <int value="2" label="Google Photos Recent Highlights Only"/>
   <int value="3" label="Google Photos Personal Albums Only"/>
