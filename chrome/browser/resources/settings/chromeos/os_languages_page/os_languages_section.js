@@ -94,27 +94,56 @@ Polymer({
    * @param {string|undefined} uiLanguage Current UI language fully specified,
    *     e.g. "English (United States)".
    * @param {string} id The input method ID, e.g. "US Keyboard".
-   * @param {!Array<!chrome.languageSettingsPrivate.InputMethod>}
-   *     enabledInputMethods The list of currently enabled input methods.
    * @param {!LanguageHelper} languageHelper The LanguageHelper object.
    * @return {string} A sublabel for the 'Languages and input' row
    * @private
    */
-  getSubLabel_(uiLanguage, id, enabledInputMethods, languageHelper) {
-    if (uiLanguage === undefined) {
+  getSubLabel_(uiLanguage, id, languageHelper) {
+    const languageDisplayName =
+        this.getLanguageDisplayName_(uiLanguage, languageHelper);
+    if (!languageDisplayName) {
       return '';
     }
-    const languageDisplayName =
-        languageHelper.getLanguage(uiLanguage).displayName;
-    const inputMethod = enabledInputMethods.find(function(inputMethod) {
-      return inputMethod.id === id;
-    });
-    const inputMethodDisplayName = inputMethod ? inputMethod.displayName : '';
+    const inputMethodDisplayName =
+        this.getInputMethodDisplayName_(id, languageHelper);
     if (!inputMethodDisplayName) {
       return languageDisplayName;
     }
     // It is OK to use string concatenation here because it is just joining a 2
     // element list (i.e. it's a standard format).
     return languageDisplayName + ', ' + inputMethodDisplayName;
+  },
+
+  /**
+   * @param {string|undefined} code The language code of the language.
+   * @param {!LanguageHelper} languageHelper The LanguageHelper object.
+   * @return {string} The display name of the language specified.
+   * @private
+   */
+  getLanguageDisplayName_(code, languageHelper) {
+    if (!code) {
+      return '';
+    }
+    const language = languageHelper.getLanguage(code);
+    if (!language) {
+      return '';
+    }
+    return language.displayName;
+  },
+
+  /**
+   * @param {string} id The input method ID.
+   * @param {!LanguageHelper} languageHelper The LanguageHelper object.
+   * @return {string} The display name of the input method.
+   * @private
+   */
+  getInputMethodDisplayName_(id, languageHelper) {
+    // LanguageHelper.getInputMethodDisplayName will throw an error if the ID
+    // isn't found, such as when using CrOS on Linux.
+    try {
+      return languageHelper.getInputMethodDisplayName(id);
+    } catch (_) {
+      return '';
+    }
   },
 });
