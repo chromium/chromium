@@ -2179,6 +2179,7 @@ virtual/sxg-subresource-disabled/http/tests/loading/sxg/sxg-subresource-origin-t
 external/wpt/native-file-system/showSaveFilePicker-manual.https.html [ Skip ]
 
 # These tests require a physical device connected.
+wpt_internal/hid/hidDevice_collections-manual.https.html [ Skip ]
 wpt_internal/serial/serialPort_loopback-manual.https.html [ Skip ]
 wpt_internal/serial/serialPort_disconnect-manual.https.html [ Skip ]
 

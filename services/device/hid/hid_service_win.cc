@@ -13,7 +13,10 @@
 #include <wdmguid.h>
 #include <winioctl.h>
 
+#include <algorithm>
+#include <limits>
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -31,10 +34,38 @@
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/hid/hid_connection_win.h"
 #include "services/device/hid/hid_device_info.h"
+#include "services/device/hid/hid_preparsed_data.h"
 
 namespace device {
 
 namespace {
+
+// Flags for the BitField member of HIDP_BUTTON_CAPS and HIDP_VALUE_CAPS. This
+// bitfield is defined in the Device Class Definition for HID v1.11 section
+// 6.2.2.5.
+// https://www.usb.org/document-library/device-class-definition-hid-111
+constexpr uint16_t kBitFieldFlagConstant = 1 << 0;
+constexpr uint16_t kBitFieldFlagVariable = 1 << 1;
+constexpr uint16_t kBitFieldFlagRelative = 1 << 2;
+constexpr uint16_t kBitFieldFlagWrap = 1 << 3;
+constexpr uint16_t kBitFieldFlagNonLinear = 1 << 4;
+constexpr uint16_t kBitFieldFlagNoPreferredState = 1 << 5;
+constexpr uint16_t kBitFieldFlagHasNullPosition = 1 << 6;
+constexpr uint16_t kBitFieldFlagVolatile = 1 << 7;
+constexpr uint16_t kBitFieldFlagBufferedBytes = 1 << 8;
+
+// Unpacks |bit_field| into the corresponding members of |item|.
+void UnpackBitField(uint16_t bit_field, mojom::HidReportItem* item) {
+  item->is_constant = bit_field & kBitFieldFlagConstant;
+  item->is_variable = bit_field & kBitFieldFlagVariable;
+  item->is_relative = bit_field & kBitFieldFlagRelative;
+  item->wrap = bit_field & kBitFieldFlagWrap;
+  item->is_non_linear = bit_field & kBitFieldFlagNonLinear;
+  item->no_preferred_state = bit_field & kBitFieldFlagNoPreferredState;
+  item->has_null_position = bit_field & kBitFieldFlagHasNullPosition;
+  item->is_volatile = bit_field & kBitFieldFlagVolatile;
+  item->is_buffered_bytes = bit_field & kBitFieldFlagBufferedBytes;
+}
 
 // Looks up the value of a GUID-type device property specified by |property| for
 // the device described by |device_info_data|. On success, returns true and sets
@@ -126,7 +157,183 @@ base::win::ScopedDevInfo GetDeviceInfoFromPath(
   return device_info_set;
 }
 
+mojom::HidReportItemPtr CreateHidReportItem(
+    const HidServiceWin::PreparsedData::ReportItem& item) {
+  auto hid_report_item = mojom::HidReportItem::New();
+  UnpackBitField(item.bit_field, hid_report_item.get());
+  if (item.usage_minimum == item.usage_maximum) {
+    hid_report_item->is_range = false;
+    hid_report_item->usages.push_back(
+        mojom::HidUsageAndPage::New(item.usage_minimum, item.usage_page));
+    hid_report_item->usage_minimum = mojom::HidUsageAndPage::New(0, 0);
+    hid_report_item->usage_maximum = mojom::HidUsageAndPage::New(0, 0);
+  } else {
+    hid_report_item->is_range = true;
+    hid_report_item->usage_minimum =
+        mojom::HidUsageAndPage::New(item.usage_minimum, item.usage_page);
+    hid_report_item->usage_maximum =
+        mojom::HidUsageAndPage::New(item.usage_maximum, item.usage_page);
+  }
+  hid_report_item->designator_minimum = item.designator_minimum;
+  hid_report_item->designator_maximum = item.designator_maximum;
+  hid_report_item->string_minimum = item.string_minimum;
+  hid_report_item->string_maximum = item.string_maximum;
+  hid_report_item->logical_minimum = item.logical_minimum;
+  hid_report_item->logical_maximum = item.logical_maximum;
+  hid_report_item->physical_minimum = item.physical_minimum;
+  hid_report_item->physical_maximum = item.physical_maximum;
+  hid_report_item->unit_exponent = item.unit_exponent;
+  hid_report_item->unit = item.unit;
+  hid_report_item->report_size = item.report_size;
+  hid_report_item->report_count = item.report_count;
+  return hid_report_item;
+}
+
+// Returns a mojom::HidReportItemPtr representing a constant (zero) field within
+// a report. |bit_size| is the bit width of the constant field.
+mojom::HidReportItemPtr CreateConstHidReportItem(uint16_t bit_size) {
+  auto hid_report_item = mojom::HidReportItem::New();
+  hid_report_item->is_constant = true;
+  hid_report_item->report_count = 1;
+  hid_report_item->report_size = bit_size;
+  hid_report_item->usage_minimum = mojom::HidUsageAndPage::New(0, 0);
+  hid_report_item->usage_maximum = mojom::HidUsageAndPage::New(0, 0);
+  return hid_report_item;
+}
+
+// Returns a vector of mojom::HidReportDescriptionPtr constructed from the
+// information about the top-level collection described by |preparsed_data|.
+// The returned vector contains information about all reports of type
+// |report_type|.
+std::vector<mojom::HidReportDescriptionPtr> CreateReportDescriptions(
+    const HidServiceWin::PreparsedData& preparsed_data,
+    HIDP_REPORT_TYPE report_type) {
+  auto report_items = preparsed_data.GetReportItems(report_type);
+
+  // Sort items by |report_id| and |bit_index|.
+  base::ranges::sort(report_items, [](const auto& a, const auto& b) {
+    if (a.report_id < b.report_id)
+      return true;
+    if (a.report_id == b.report_id)
+      return a.bit_index < b.bit_index;
+    return false;
+  });
+
+  std::vector<mojom::HidReportDescriptionPtr> reports;
+  mojom::HidReportDescription* current_report = nullptr;
+  mojom::HidReportItem* current_item = nullptr;
+  size_t current_bit_index = 0;
+  size_t next_bit_index = 0;
+  for (const auto& item : report_items) {
+    if (!current_report || current_report->report_id != item.report_id) {
+      reports.push_back(mojom::HidReportDescription::New());
+      current_report = reports.back().get();
+      current_report->report_id = item.report_id;
+      current_item = nullptr;
+      current_bit_index = 0;
+      next_bit_index = 0;
+    }
+    // If |item| occupies the same bit index as |current_item| then they must be
+    // merged into a single HidReportItem. This can occur when a report item is
+    // defined with a list of usages instead of a usage range.
+    if (current_item && current_bit_index == item.bit_index) {
+      // Usage ranges cannot be merged into a single item. Ensure that both
+      // |item| and |current_item| are single-usage items. If either has a usage
+      // range, omit |item| from the report.
+      if (!current_item->is_range && item.usage_minimum == item.usage_maximum) {
+        current_item->usages.push_back(
+            mojom::HidUsageAndPage::New(item.usage_minimum, item.usage_page));
+      }
+      continue;
+    }
+    // If there is a gap between the last bit of |current_item| and the first
+    // bit of |item|, insert a constant item for padding.
+    if (next_bit_index < item.bit_index) {
+      size_t pad_bits = item.bit_index - next_bit_index;
+      current_report->items.push_back(CreateConstHidReportItem(pad_bits));
+    }
+    current_report->items.push_back(CreateHidReportItem(item));
+    current_item = current_report->items.back().get();
+    current_bit_index = item.bit_index;
+    next_bit_index = item.bit_index + item.report_size * item.report_count;
+  }
+
+  // Compute the size of each report and, if needed, add a final constant item
+  // to pad the report to the expected report byte length.
+  const size_t report_byte_length =
+      preparsed_data.GetReportByteLength(report_type);
+  for (auto& report : reports) {
+    size_t bit_length = 0;
+    for (auto& item : report->items)
+      bit_length += item->report_size * item->report_count;
+    DCHECK_LE(bit_length, report_byte_length * CHAR_BIT);
+    size_t pad_bits = report_byte_length * CHAR_BIT - bit_length;
+    if (pad_bits > 0)
+      report->items.push_back(CreateConstHidReportItem(pad_bits));
+  }
+
+  return reports;
+}
+
 }  // namespace
+
+mojom::HidCollectionInfoPtr
+HidServiceWin::PreparsedData::CreateHidCollectionInfo() const {
+  const HIDP_CAPS& caps = GetCaps();
+  auto collection_info = mojom::HidCollectionInfo::New();
+  collection_info->usage =
+      mojom::HidUsageAndPage::New(caps.Usage, caps.UsagePage);
+  collection_info->input_reports = CreateReportDescriptions(*this, HidP_Input);
+  collection_info->output_reports =
+      CreateReportDescriptions(*this, HidP_Output);
+  collection_info->feature_reports =
+      CreateReportDescriptions(*this, HidP_Feature);
+
+  // Collect and de-duplicate report IDs.
+  std::set<uint8_t> report_ids;
+  for (const auto& report : collection_info->input_reports) {
+    if (report->report_id)
+      report_ids.insert(report->report_id);
+  }
+  for (const auto& report : collection_info->output_reports) {
+    if (report->report_id)
+      report_ids.insert(report->report_id);
+  }
+  for (const auto& report : collection_info->feature_reports) {
+    if (report->report_id)
+      report_ids.insert(report->report_id);
+  }
+  collection_info->report_ids.insert(collection_info->report_ids.end(),
+                                     report_ids.begin(), report_ids.end());
+
+  return collection_info;
+}
+
+uint16_t HidServiceWin::PreparsedData::GetReportByteLength(
+    HIDP_REPORT_TYPE report_type) const {
+  uint16_t report_length = 0;
+  switch (report_type) {
+    case HidP_Input:
+      report_length = GetCaps().InputReportByteLength;
+      break;
+    case HidP_Output:
+      report_length = GetCaps().OutputReportByteLength;
+      break;
+    case HidP_Feature:
+      report_length = GetCaps().FeatureReportByteLength;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  // Whether or not the device includes report IDs in its reports the size
+  // of the report ID is included in the value provided by Windows. This
+  // appears contrary to the MSDN documentation.
+  if (report_length)
+    return report_length - 1;
+
+  return 0;
+}
 
 HidServiceWin::HidServiceWin()
     : task_runner_(base::SequencedTaskRunnerHandle::Get()),
@@ -143,7 +350,7 @@ HidServiceWin::HidServiceWin()
                                 weak_factory_.GetWeakPtr(), task_runner_));
 }
 
-HidServiceWin::~HidServiceWin() {}
+HidServiceWin::~HidServiceWin() = default;
 
 void HidServiceWin::Connect(const std::string& device_guid,
                             ConnectCallback callback) {
@@ -218,48 +425,6 @@ void HidServiceWin::EnumerateBlocking(
 }
 
 // static
-void HidServiceWin::CollectInfoFromButtonCaps(
-    PHIDP_PREPARSED_DATA preparsed_data,
-    HIDP_REPORT_TYPE report_type,
-    USHORT button_caps_length,
-    mojom::HidCollectionInfo* collection_info) {
-  if (button_caps_length > 0) {
-    std::unique_ptr<HIDP_BUTTON_CAPS[]> button_caps(
-        new HIDP_BUTTON_CAPS[button_caps_length]);
-    if (HidP_GetButtonCaps(report_type, &button_caps[0], &button_caps_length,
-                           preparsed_data) == HIDP_STATUS_SUCCESS) {
-      for (size_t i = 0; i < button_caps_length; i++) {
-        int report_id = button_caps[i].ReportID;
-        if (report_id != 0) {
-          collection_info->report_ids.push_back(report_id);
-        }
-      }
-    }
-  }
-}
-
-// static
-void HidServiceWin::CollectInfoFromValueCaps(
-    PHIDP_PREPARSED_DATA preparsed_data,
-    HIDP_REPORT_TYPE report_type,
-    USHORT value_caps_length,
-    mojom::HidCollectionInfo* collection_info) {
-  if (value_caps_length > 0) {
-    std::unique_ptr<HIDP_VALUE_CAPS[]> value_caps(
-        new HIDP_VALUE_CAPS[value_caps_length]);
-    if (HidP_GetValueCaps(report_type, &value_caps[0], &value_caps_length,
-                          preparsed_data) == HIDP_STATUS_SUCCESS) {
-      for (size_t i = 0; i < value_caps_length; i++) {
-        int report_id = value_caps[i].ReportID;
-        if (report_id != 0) {
-          collection_info->report_ids.push_back(report_id);
-        }
-      }
-    }
-  }
-}
-
-// static
 void HidServiceWin::AddDeviceBlocking(
     base::WeakPtr<HidServiceWin> service,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -277,57 +442,9 @@ void HidServiceWin::AddDeviceBlocking(
     return;
   }
 
-  PHIDP_PREPARSED_DATA preparsed_data = nullptr;
-  if (!HidD_GetPreparsedData(device_handle.Get(), &preparsed_data) ||
-      !preparsed_data) {
-    HID_LOG(EVENT) << "Failed to get device data.";
+  auto preparsed_data = HidPreparsedData::Create(device_handle.Get());
+  if (!preparsed_data)
     return;
-  }
-
-  HIDP_CAPS capabilities = {0};
-  if (HidP_GetCaps(preparsed_data, &capabilities) != HIDP_STATUS_SUCCESS) {
-    HID_LOG(EVENT) << "Failed to get device capabilities.";
-    HidD_FreePreparsedData(preparsed_data);
-    return;
-  }
-
-  // Whether or not the device includes report IDs in its reports the size
-  // of the report ID is included in the value provided by Windows. This
-  // appears contrary to the MSDN documentation.
-  size_t max_input_report_size = 0;
-  size_t max_output_report_size = 0;
-  size_t max_feature_report_size = 0;
-  if (capabilities.InputReportByteLength > 0) {
-    max_input_report_size = capabilities.InputReportByteLength - 1;
-  }
-  if (capabilities.OutputReportByteLength > 0) {
-    max_output_report_size = capabilities.OutputReportByteLength - 1;
-  }
-  if (capabilities.FeatureReportByteLength > 0) {
-    max_feature_report_size = capabilities.FeatureReportByteLength - 1;
-  }
-
-  auto collection_info = mojom::HidCollectionInfo::New();
-  collection_info->usage =
-      mojom::HidUsageAndPage::New(capabilities.Usage, capabilities.UsagePage);
-  CollectInfoFromButtonCaps(preparsed_data, HidP_Input,
-                            capabilities.NumberInputButtonCaps,
-                            collection_info.get());
-  CollectInfoFromButtonCaps(preparsed_data, HidP_Output,
-                            capabilities.NumberOutputButtonCaps,
-                            collection_info.get());
-  CollectInfoFromButtonCaps(preparsed_data, HidP_Feature,
-                            capabilities.NumberFeatureButtonCaps,
-                            collection_info.get());
-  CollectInfoFromValueCaps(preparsed_data, HidP_Input,
-                           capabilities.NumberInputValueCaps,
-                           collection_info.get());
-  CollectInfoFromValueCaps(preparsed_data, HidP_Output,
-                           capabilities.NumberOutputValueCaps,
-                           collection_info.get());
-  CollectInfoFromValueCaps(preparsed_data, HidP_Feature,
-                           capabilities.NumberFeatureValueCaps,
-                           collection_info.get());
 
   // 1023 characters plus NULL terminator is more than enough for a USB string
   // descriptor which is limited to 126 characters.
@@ -347,14 +464,16 @@ void HidServiceWin::AddDeviceBlocking(
   // This populates the HidDeviceInfo instance without a raw report descriptor.
   // The descriptor is unavailable on Windows because HID devices are exposed to
   // user-space as individual top-level collections.
-  scoped_refptr<HidDeviceInfo> device_info(new HidDeviceInfo(
-      device_path, physical_device_id, attrib.VendorID, attrib.ProductID,
-      product_name, serial_number,
-      // TODO(reillyg): Detect Bluetooth. crbug.com/443335
-      mojom::HidBusType::kHIDBusTypeUSB, std::move(collection_info),
-      max_input_report_size, max_output_report_size, max_feature_report_size));
+  scoped_refptr<HidDeviceInfo> device_info(
+      new HidDeviceInfo(device_path, physical_device_id, attrib.VendorID,
+                        attrib.ProductID, product_name, serial_number,
+                        // TODO(crbug.com/443335): Detect Bluetooth.
+                        mojom::HidBusType::kHIDBusTypeUSB,
+                        preparsed_data->CreateHidCollectionInfo(),
+                        preparsed_data->GetReportByteLength(HidP_Input),
+                        preparsed_data->GetReportByteLength(HidP_Output),
+                        preparsed_data->GetReportByteLength(HidP_Feature)));
 
-  HidD_FreePreparsedData(preparsed_data);
   task_runner->PostTask(FROM_HERE, base::BindOnce(&HidServiceWin::AddDevice,
                                                   service, device_info));
 }

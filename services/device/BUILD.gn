@@ -358,6 +358,7 @@ source_set("tests") {
       "geolocation/win/fake_status_changed_event_args_winrt.cc",
       "geolocation/win/fake_status_changed_event_args_winrt.h",
       "geolocation/win/location_provider_winrt_unittest.cc",
+      "hid/hid_preparsed_data_unittest.cc",
     ]
 
     # Needed for "generic_sensor/platform_sensor_and_provider_unittest_win.cc"

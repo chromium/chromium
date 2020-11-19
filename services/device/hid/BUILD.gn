@@ -53,6 +53,8 @@ source_set("hid") {
     sources += [
       "hid_connection_win.cc",
       "hid_connection_win.h",
+      "hid_preparsed_data.cc",
+      "hid_preparsed_data.h",
       "hid_service_win.cc",
       "hid_service_win.h",
     ]
