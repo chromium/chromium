@@ -982,8 +982,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       was_discarded_(false),
       is_loading_(false),
       nav_entry_id_(0),
-      accessibility_reset_token_(0),
-      accessibility_reset_count_(0),
       browser_plugin_embedder_ax_tree_id_(ui::AXTreeIDUnknown()),
       no_create_browser_accessibility_manager_for_testing_(false),
       web_ui_type_(WebUI::kNoWebUI),
@@ -8670,11 +8668,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     UpdateRenderProcessHostFramePriorities();
 
   // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation might not be right. Should this be moved to
-  // DidCommitNewDocument()?
-  accessibility_reset_count_ = 0;
-
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
   // navigation isn't right. This should be moved to DidCommitNewDocument().
   appcache_handle_ = navigation_request->TakeAppCacheHandle();
 
@@ -8883,6 +8876,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // TODO(arthursonzogni): Updating this flag for same-document or bfcache
   // navigation isn't right. This should be moved to DidCommitNewDocument().
   loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
+
+  accessibility_reset_count_ = 0;
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(

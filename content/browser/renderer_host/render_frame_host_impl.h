@@ -2762,11 +2762,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This is nonzero if we sent an accessibility reset to the renderer and
   // we're waiting for an IPC containing this reset token (sequentially
   // assigned) and a complete replacement accessibility tree.
-  int accessibility_reset_token_;
+  int accessibility_reset_token_ = 0;
 
   // A count of the number of times we needed to reset accessibility, so
   // we don't keep trying to reset forever.
-  int accessibility_reset_count_;
+  int accessibility_reset_count_ = 0;
 
   // The last AXTreeData for this frame received from the RenderFrame.
   ui::AXTreeData ax_tree_data_;
