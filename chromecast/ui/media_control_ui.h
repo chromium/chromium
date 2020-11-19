@@ -17,7 +17,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromecast {
@@ -94,8 +93,6 @@ class MediaControlUi : public mojom::MediaControlUi {
   base::TimeTicks last_media_timestamp_;
 
   base::RepeatingTimer media_time_update_timer_;
-
-  views::LayoutProvider layout_provider_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<MediaControlUi> weak_factory_;

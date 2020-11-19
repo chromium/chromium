@@ -53,7 +53,10 @@ cast_source_set("aura_components") {
   if (use_aura) {
     sources += [ "aura_components.cc" ]
 
-    deps += [ ":media_overlay" ]
+    deps += [
+      ":media_overlay",
+      "//ui/views",
+    ]
   } else {
     sources += [ "aura_components_dummy.cc" ]
   }

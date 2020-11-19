@@ -22,7 +22,6 @@
 
 namespace views {
 class Label;
-class LayoutProvider;
 class ProgressBar;
 class View;
 class Widget;
@@ -68,7 +67,6 @@ class MediaOverlayImpl : public MediaOverlay,
       std::unique_ptr<views::View> content_view);
 
   CastWindowManager* const window_manager_;
-  const std::unique_ptr<views::LayoutProvider> layout_provider_;
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   base::flat_set<media::MediaPipelineImpl*> passthrough_pipelines_;
   Controller* controller_;

@@ -43,7 +43,6 @@ constexpr base::TimeDelta kUiHideDelay = base::TimeDelta::FromSeconds(3);
 
 MediaOverlayImpl::MediaOverlayImpl(CastWindowManager* window_manager)
     : window_manager_(window_manager),
-      layout_provider_(std::make_unique<views::LayoutProvider>()),
       ui_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       controller_(nullptr),
       volume_icon_image_(ui::ResourceBundle::GetSharedInstance().GetImageNamed(

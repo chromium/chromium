@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromecast/ui/media_overlay.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace chromecast {
 
@@ -28,6 +29,7 @@ class AuraComponents {
   MediaOverlay* media_overlay() const { return media_overlay_.get(); }
 
  private:
+  views::LayoutProvider layout_provider_;
   std::unique_ptr<MediaOverlay> media_overlay_;
 };
 
