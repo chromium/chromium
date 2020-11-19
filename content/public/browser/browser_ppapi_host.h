@@ -38,7 +38,7 @@ class CONTENT_EXPORT BrowserPpapiHost {
   static BrowserPpapiHost* CreateExternalPluginProcess(
       IPC::Sender* sender,
       ppapi::PpapiPermissions permissions,
-      base::ProcessHandle plugin_child_process,
+      base::Process plugin_child_process,
       IPC::ChannelProxy* channel,
       int render_process_id,
       int render_view_id,

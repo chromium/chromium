@@ -282,8 +282,8 @@ void ProcessProxy::ClearFdPair(int* pipe) {
   pipe[PT_SLAVE_FD] = base::kInvalidFd;
 }
 
-base::ProcessHandle ProcessProxy::GetProcessHandleForTesting() {
-  return process_.IsValid() ? process_.Handle() : base::kNullProcessHandle;
+const base::Process* ProcessProxy::GetProcessForTesting() {
+  return &process_;
 }
 
 }  // namespace chromeos

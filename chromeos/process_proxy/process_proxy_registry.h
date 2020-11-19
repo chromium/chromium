@@ -71,8 +71,8 @@ class CHROMEOS_EXPORT ProcessProxyRegistry {
   // Shuts down registry, closing all associated processed.
   void ShutDown();
 
-  // Get the process handle for testing purposes.
-  base::ProcessHandle GetProcessHandleForTesting(const std::string& id);
+  // Get the process for testing purposes.
+  const base::Process* GetProcessForTesting(const std::string& id);
 
  private:
   friend struct ::base::LazyInstanceTraitsBase<ProcessProxyRegistry>;

@@ -48,7 +48,7 @@ class TestRunner {
   TestRunner() = default;
   virtual ~TestRunner() = default;
   virtual void SetupExpectations(const std::string& id,
-                                 base::ProcessHandle handle) = 0;
+                                 const base::Process* process) = 0;
   virtual void OnSomeRead(const std::string& id,
                           const std::string& type,
                           const std::string& output) = 0;
@@ -60,7 +60,7 @@ class TestRunner {
 
  protected:
   std::string id_;
-  base::ProcessHandle handle_;
+  const base::Process* process_;
 
   base::OnceClosure done_read_closure_;
 };
@@ -70,9 +70,9 @@ class RegistryTestRunner : public TestRunner {
   ~RegistryTestRunner() override = default;
 
   void SetupExpectations(const std::string& id,
-                         base::ProcessHandle handle) override {
+                         const base::Process* process) override {
     id_ = id;
-    handle_ = handle;
+    process_ = process;
     left_to_check_index_[0] = 0;
     left_to_check_index_[1] = 0;
     // We consider that a line processing has started if a value in
@@ -150,10 +150,10 @@ class RegistryNotifiedOnProcessExitTestRunner : public TestRunner {
   ~RegistryNotifiedOnProcessExitTestRunner() override = default;
 
   void SetupExpectations(const std::string& id,
-                         base::ProcessHandle handle) override {
+                         const base::Process* process) override {
     output_received_ = false;
     id_ = id;
-    handle_ = handle;
+    process_ = process;
   }
 
   void OnSomeRead(const std::string& id,
@@ -165,9 +165,7 @@ class RegistryNotifiedOnProcessExitTestRunner : public TestRunner {
       output_received_ = true;
       EXPECT_EQ(type, "stdout");
       EXPECT_EQ(output, "p");
-      base::Process process =
-          base::Process::DeprecatedGetProcessFromHandle(handle_);
-      process.Terminate(0, true);
+      process_->Terminate(0, true);
       return;
     }
     EXPECT_EQ("exit", type);
@@ -200,11 +198,11 @@ class ProcessProxyTest : public testing::Test {
         base::BindRepeating(&ProcessProxyTest::HandleRead,
                             base::Unretained(this)),
         &id_);
-    handle_ = registry_->GetProcessHandleForTesting(id_);
+    process_ = registry_->GetProcessForTesting(id_);
 
     EXPECT_TRUE(success);
     test_runner_->set_done_read_closure(std::move(done_closure));
-    test_runner_->SetupExpectations(id_, handle_);
+    test_runner_->SetupExpectations(id_, process_);
     test_runner_->StartRegistryTest(registry_);
   }
 
@@ -222,12 +220,10 @@ class ProcessProxyTest : public testing::Test {
 
     int unused_exit_code = 0;
     base::TerminationStatus status =
-        base::GetTerminationStatus(handle_, &unused_exit_code);
+        base::GetTerminationStatus(process_->Handle(), &unused_exit_code);
     EXPECT_NE(base::TERMINATION_STATUS_STILL_RUNNING, status);
     if (status == base::TERMINATION_STATUS_STILL_RUNNING) {
-      base::Process process =
-          base::Process::DeprecatedGetProcessFromHandle(handle_);
-      process.Terminate(0, true);
+      process_->Terminate(0, true);
     }
 
     registry_->ShutDown();
@@ -266,7 +262,7 @@ class ProcessProxyTest : public testing::Test {
 
   ProcessProxyRegistry* registry_;
   std::string id_;
-  base::ProcessHandle handle_;
+  const base::Process* process_ = nullptr;
 
   base::test::TaskEnvironment task_environment_;
 };

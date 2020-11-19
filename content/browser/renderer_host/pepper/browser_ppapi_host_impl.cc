@@ -17,7 +17,7 @@ namespace content {
 BrowserPpapiHost* BrowserPpapiHost::CreateExternalPluginProcess(
     IPC::Sender* sender,
     ppapi::PpapiPermissions permissions,
-    base::ProcessHandle plugin_child_process,
+    base::Process plugin_child_process,
     IPC::ChannelProxy* channel,
     int render_process_id,
     int render_view_id,
@@ -31,8 +31,7 @@ BrowserPpapiHost* BrowserPpapiHost::CreateExternalPluginProcess(
                                profile_directory,
                                false /* in_process */,
                                true /* external_plugin */);
-  browser_ppapi_host->set_plugin_process(
-      base::Process::DeprecatedGetProcessFromHandle(plugin_child_process));
+  browser_ppapi_host->set_plugin_process(std::move(plugin_child_process));
 
   scoped_refptr<PepperMessageFilter> pepper_message_filter(
       new PepperMessageFilter());

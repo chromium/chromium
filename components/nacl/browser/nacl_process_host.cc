@@ -900,7 +900,7 @@ bool NaClProcessHost::StartPPAPIProxy(
   // browser process.
   ppapi_host_.reset(content::BrowserPpapiHost::CreateExternalPluginProcess(
       ipc_proxy_channel_.get(),  // sender
-      permissions_, process_->GetData().GetProcess().Handle(),
+      permissions_, process_->GetData().GetProcess().Duplicate(),
       ipc_proxy_channel_.get(), nacl_host_message_filter_->render_process_id(),
       render_view_id_, profile_directory_));
 

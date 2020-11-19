@@ -199,14 +199,14 @@ bool ProcessProxyRegistry::EnsureWatcherThreadStarted() {
       base::Thread::Options(base::MessagePumpType::IO, 0));
 }
 
-base::ProcessHandle ProcessProxyRegistry::GetProcessHandleForTesting(
+const base::Process* ProcessProxyRegistry::GetProcessForTesting(
     const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::map<std::string, ProcessProxyInfo>::iterator it = proxy_map_.find(id);
   if (it == proxy_map_.end())
-    return base::kNullProcessHandle;
+    return nullptr;
 
-  return it->second.proxy->GetProcessHandleForTesting();
+  return it->second.proxy->GetProcessForTesting();  // IN-TEST
 }
 
 }  // namespace chromeos

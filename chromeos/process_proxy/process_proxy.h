@@ -66,7 +66,7 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
   void AckOutput();
 
   // Get the process handle for testing purposes.
-  base::ProcessHandle GetProcessHandleForTesting();
+  const base::Process* GetProcessForTesting();
 
  private:
   friend class base::RefCountedThreadSafe<ProcessProxy>;
