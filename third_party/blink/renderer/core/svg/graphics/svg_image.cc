@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -215,27 +214,38 @@ bool SVGImage::IsInSVGImage(const Node* node) {
   return page->GetChromeClient().IsSVGImageChromeClient();
 }
 
+LocalFrame* SVGImage::GetFrame() const {
+  DCHECK(page_);
+  return To<LocalFrame>(page_->MainFrame());
+}
+
+SVGSVGElement* SVGImage::RootElement() const {
+  if (!page_)
+    return nullptr;
+  return DynamicTo<SVGSVGElement>(GetFrame()->GetDocument()->documentElement());
+}
+
+LayoutSVGRoot* SVGImage::LayoutRoot() const {
+  if (SVGSVGElement* root_element = RootElement())
+    return To<LayoutSVGRoot>(root_element->GetLayoutObject());
+  return nullptr;
+}
+
 void SVGImage::CheckLoaded() const {
   CHECK(page_);
-
-  auto* frame = To<LocalFrame>(page_->MainFrame());
-
   // Failures of this assertion might result in wrong origin tainting checks,
   // because CurrentFrameHasSingleSecurityOrigin() assumes all subresources of
   // the SVG are loaded and thus ready for origin checks.
-  CHECK(frame->GetDocument()->LoadEventFinished());
+  CHECK(GetFrame()->GetDocument()->LoadEventFinished());
 }
 
 bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
   if (!page_)
     return true;
 
-  auto* frame = To<LocalFrame>(page_->MainFrame());
-
   CheckLoaded();
 
-  auto* root_element =
-      DynamicTo<SVGSVGElement>(frame->GetDocument()->documentElement());
+  SVGSVGElement* root_element = RootElement();
   if (!root_element)
     return true;
 
@@ -258,29 +268,18 @@ bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
   return true;
 }
 
-static SVGSVGElement* SvgRootElement(Page* page) {
-  if (!page)
-    return nullptr;
-  auto* frame = To<LocalFrame>(page->MainFrame());
-  return DynamicTo<SVGSVGElement>(frame->GetDocument()->documentElement());
-}
-
 LayoutSize SVGImage::ContainerSize() const {
-  SVGSVGElement* root_element = SvgRootElement(page_.Get());
-  if (!root_element)
-    return LayoutSize();
-
-  auto* layout_object = To<LayoutSVGRoot>(root_element->GetLayoutObject());
-  if (!layout_object)
+  const LayoutSVGRoot* layout_root = LayoutRoot();
+  if (!layout_root)
     return LayoutSize();
 
   // If a container size is available it has precedence.
-  LayoutSize container_size = layout_object->ContainerSize();
+  LayoutSize container_size = layout_root->ContainerSize();
   if (!container_size.IsEmpty())
     return container_size;
 
   // Assure that a container size is always given for a non-identity zoom level.
-  DCHECK_EQ(layout_object->StyleRef().EffectiveZoom(), 1);
+  DCHECK_EQ(layout_root->StyleRef().EffectiveZoom(), 1);
 
   // No set container size; use concrete object size.
   return intrinsic_size_;
@@ -305,21 +304,15 @@ bool SVGImage::HasIntrinsicDimensions() const {
 }
 
 bool SVGImage::HasIntrinsicSizingInfo() const {
-  SVGSVGElement* svg = SvgRootElement(page_.Get());
-  return svg && svg->GetLayoutObject();
+  return LayoutRoot();
 }
 
 bool SVGImage::GetIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  SVGSVGElement* svg = SvgRootElement(page_.Get());
-  if (!svg)
+  const LayoutSVGRoot* layout_root = LayoutRoot();
+  if (!layout_root)
     return false;
-
-  auto* layout_object = To<LayoutSVGRoot>(svg->GetLayoutObject());
-  if (!layout_object)
-    return false;
-
-  layout_object->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
+  layout_root->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
   return true;
 }
 
@@ -336,7 +329,7 @@ FloatSize SVGImage::ConcreteObjectSize(
   // We're not using an intrinsic aspect ratio to resolve a missing
   // intrinsic width or height when preserveAspectRatio is none.
   // (Ref: crbug.com/584172)
-  SVGSVGElement* svg = SvgRootElement(page_.Get());
+  SVGSVGElement* svg = RootElement();
   if (svg->preserveAspectRatio()->CurrentValue()->Align() ==
       SVGPreserveAspectRatio::kSvgPreserveaspectratioNone)
     return default_object_size;
@@ -390,11 +383,8 @@ void SVGImage::ForContainer(const FloatSize& container_size, Func&& func) {
 
   LayoutSize rounded_container_size = RoundedLayoutSize(container_size);
 
-  if (SVGSVGElement* root_element = SvgRootElement(page_.Get())) {
-    if (auto* layout_object =
-            To<LayoutSVGRoot>(root_element->GetLayoutObject()))
-      layout_object->SetContainerSize(rounded_container_size);
-  }
+  if (LayoutSVGRoot* layout_root = LayoutRoot())
+    layout_root->SetContainerSize(rounded_container_size);
 
   func(FloatSize(rounded_container_size.Width() / container_size.Width(),
                  rounded_container_size.Height() / container_size.Height()));
@@ -576,7 +566,7 @@ void SVGImage::Draw(
 
 sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(const KURL& url) {
   DCHECK(page_);
-  LocalFrameView* view = To<LocalFrame>(page_->MainFrame())->View();
+  LocalFrameView* view = GetFrame()->View();
   IntSize rounded_container_size = RoundedIntSize(ContainerSize());
   view->Resize(rounded_container_size);
   page_->GetVisualViewport().SetSize(rounded_container_size);
@@ -640,13 +630,13 @@ void SVGImage::ScheduleTimelineRewind() {
 void SVGImage::FlushPendingTimelineRewind() {
   if (!has_pending_timeline_rewind_)
     return;
-  if (SVGSVGElement* root_element = SvgRootElement(page_.Get()))
+  if (SVGSVGElement* root_element = RootElement())
     root_element->setCurrentTime(0);
   has_pending_timeline_rewind_ = false;
 }
 
 void SVGImage::StartAnimation() {
-  SVGSVGElement* root_element = SvgRootElement(page_.Get());
+  SVGSVGElement* root_element = RootElement();
   if (!root_element)
     return;
   chrome_client_->ResumeAnimation();
@@ -655,7 +645,7 @@ void SVGImage::StartAnimation() {
 }
 
 void SVGImage::StopAnimation() {
-  SVGSVGElement* root_element = SvgRootElement(page_.Get());
+  SVGSVGElement* root_element = RootElement();
   if (!root_element)
     return;
   chrome_client_->SuspendAnimation();
@@ -663,7 +653,7 @@ void SVGImage::StopAnimation() {
 }
 
 void SVGImage::ResetAnimation() {
-  SVGSVGElement* root_element = SvgRootElement(page_.Get());
+  SVGSVGElement* root_element = RootElement();
   if (!root_element)
     return;
   chrome_client_->SuspendAnimation();
@@ -683,14 +673,11 @@ void SVGImage::RestoreAnimation() {
 }
 
 bool SVGImage::MaybeAnimated() {
-  SVGSVGElement* root_element = SvgRootElement(page_.Get());
+  SVGSVGElement* root_element = RootElement();
   if (!root_element)
     return false;
   return root_element->TimeContainer()->HasAnimations() ||
-         To<LocalFrame>(page_->MainFrame())
-             ->GetDocument()
-             ->Timeline()
-             .HasPendingUpdates();
+         root_element->GetDocument().Timeline().HasPendingUpdates();
 }
 
 void SVGImage::ServiceAnimations(
@@ -721,7 +708,8 @@ void SVGImage::ServiceAnimations(
   // actually generating painted output, not only for performance reasons,
   // but to preserve correct coherence of the cache of the output with
   // the needsRepaint bits of the PaintLayers in the image.
-  LocalFrameView* frame_view = To<LocalFrame>(page_->MainFrame())->View();
+  LocalFrame* frame = GetFrame();
+  LocalFrameView* frame_view = frame->View();
   frame_view->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kSVGImage);
 
@@ -730,14 +718,12 @@ void SVGImage::ServiceAnimations(
   // know SVG images never have composited animations, we can update animations
   // directly without worrying about including PaintArtifactCompositor's
   // analysis of whether animations should be composited.
-  frame_view->GetLayoutView()
-      ->GetDocument()
-      .GetDocumentAnimations()
-      .UpdateAnimations(DocumentLifecycle::kLayoutClean, nullptr);
+  frame->GetDocument()->GetDocumentAnimations().UpdateAnimations(
+      DocumentLifecycle::kLayoutClean, nullptr);
 }
 
 void SVGImage::AdvanceAnimationForTesting() {
-  if (SVGSVGElement* root_element = SvgRootElement(page_.Get())) {
+  if (SVGSVGElement* root_element = RootElement()) {
     root_element->TimeContainer()->AdvanceFrameForTesting();
 
     // The following triggers animation updates which can issue a new draw
@@ -763,7 +749,7 @@ SVGImageChromeClient& SVGImage::ChromeClientForTesting() {
 }
 
 void SVGImage::UpdateUseCounters(const Document& document) const {
-  if (SVGSVGElement* root_element = SvgRootElement(page_.Get())) {
+  if (SVGSVGElement* root_element = RootElement()) {
     if (root_element->TimeContainer()->HasAnimations()) {
       document.CountUse(WebFeature::kSVGSMILAnimationInImageRegardlessOfCache);
     }
@@ -783,7 +769,7 @@ void SVGImage::LoadCompleted() {
       // Document::ImplicitClose(), we defer AsyncLoadCompleted() to avoid
       // potential bugs and timing dependencies around ImplicitClose() and
       // to make LoadEventFinished() true when AsyncLoadCompleted() is called.
-      To<LocalFrame>(page_->MainFrame())
+      GetFrame()
           ->GetTaskRunner(TaskType::kInternalLoading)
           ->PostTask(FROM_HERE, WTF::Bind(&SVGImage::NotifyAsyncLoadCompleted,
                                           scoped_refptr<SVGImage>(this)));
@@ -904,12 +890,11 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   switch (load_state_) {
     case kInDataChanged:
       load_state_ = kWaitingForAsyncLoadCompletion;
-      return SvgRootElement(page_.Get())
-                 ? kSizeAvailableAndLoadingAsynchronously
-                 : kSizeUnavailable;
+      return RootElement() ? kSizeAvailableAndLoadingAsynchronously
+                           : kSizeUnavailable;
 
     case kLoadCompleted:
-      return SvgRootElement(page_.Get()) ? kSizeAvailable : kSizeUnavailable;
+      return RootElement() ? kSizeAvailable : kSizeUnavailable;
 
     case kDataChangedNotStarted:
     case kWaitingForAsyncLoadCompletion:
@@ -922,7 +907,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
 }
 
 bool SVGImage::IsSizeAvailable() {
-  return SvgRootElement(page_.Get());
+  return RootElement();
 }
 
 String SVGImage::FilenameExtension() const {

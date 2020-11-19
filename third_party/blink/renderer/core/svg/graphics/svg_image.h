@@ -41,10 +41,13 @@
 namespace blink {
 
 class Document;
+class LayoutSVGRoot;
+class LocalFrame;
 class Page;
 class PaintController;
 class SVGImageChromeClient;
 class SVGImageForContainer;
+class SVGSVGElement;
 struct IntrinsicSizingInfo;
 
 // SVGImage does not use Skia to draw images (as BitmapImage does) but instead
@@ -202,6 +205,10 @@ class CORE_EXPORT SVGImage final : public Image {
   Page* GetPageForTesting() { return page_; }
   void LoadCompleted();
   void NotifyAsyncLoadCompleted();
+
+  LocalFrame* GetFrame() const;
+  SVGSVGElement* RootElement() const;
+  LayoutSVGRoot* LayoutRoot() const;
 
   class SVGImageLocalFrameClient;
 
