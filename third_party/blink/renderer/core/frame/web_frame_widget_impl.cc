@@ -307,17 +307,6 @@ void WebFrameWidgetImpl::UpdateMainFrameLayoutSize() {
   view->SetLayoutSize(WebSize(layout_size));
 }
 
-bool WebFrameWidgetImpl::ShouldHandleImeEvents() {
-  // TODO(ekaramad): WebViewWidgetImpl returns true only if it has focus.
-  // We track page focus in all RenderViews on the page but
-  // the RenderWidgets corresponding to child local roots do not get the
-  // update. For now, this method returns true when the RenderWidget is for a
-  // child local frame, i.e., IME events will be processed regardless of page
-  // focus. We should revisit this after page focus for OOPIFs has been fully
-  // resolved (https://crbug.com/689777).
-  return LocalRootImpl();
-}
-
 bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   Element* element = FocusedElement();
   if (!element || !WebElement(element).IsEditable())

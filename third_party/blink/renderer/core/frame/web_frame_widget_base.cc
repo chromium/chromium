@@ -2769,6 +2769,21 @@ uint64_t WebFrameWidgetBase::GetScrollableContainerIdAt(
   return HitTestResultAt(point).GetScrollableContainerId();
 }
 
+bool WebFrameWidgetBase::ShouldHandleImeEvents() {
+  if (ForMainFrame()) {
+    return HasFocus();
+  } else {
+    // TODO(ekaramad): main frame widget returns true only if it has focus.
+    // We track page focus in all WebViews on the page but the WebFrameWidgets
+    // corresponding to child local roots do not get the update. For now, this
+    // method returns true when the WebFrameWidget is for a child local frame,
+    // i.e., IME events will be processed regardless of page focus. We should
+    // revisit this after page focus for OOPIFs has been fully resolved
+    // (https://crbug.com/689777).
+    return LocalRootImpl();
+  }
+}
+
 void WebFrameWidgetBase::SetEditCommandsForNextKeyEvent(
     Vector<mojom::blink::EditCommandPtr> edit_commands) {
   edit_commands_ = std::move(edit_commands);

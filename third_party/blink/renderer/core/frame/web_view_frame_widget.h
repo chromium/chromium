@@ -68,9 +68,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WebFrameWidget overrides:
   bool ScrollFocusedEditableElementIntoView() override;
 
-  // FrameWidget overrides:
-  bool ShouldHandleImeEvents() override;
-
  private:
   // PageWidgetEventHandler overrides:
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;

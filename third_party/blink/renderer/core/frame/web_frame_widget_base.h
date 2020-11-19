@@ -206,6 +206,7 @@ class CORE_EXPORT WebFrameWidgetBase
   bool IsProvisional() override;
   uint64_t GetScrollableContainerIdAt(
       const gfx::PointF& point_in_dips) override;
+  bool ShouldHandleImeEvents() override;
   void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> edit_commands) override;
 
