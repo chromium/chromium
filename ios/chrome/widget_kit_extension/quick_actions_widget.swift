@@ -7,6 +7,8 @@ import SwiftUI
 import WidgetKit
 
 struct QuickActionsWidget: Widget {
+  // Changing |kind| or deleting this widget will cause all installed instances of this widget to
+  // stop updating and show the placeholder state.
   let kind: String = "QuickActionsWidget"
 
   var body: some WidgetConfiguration {

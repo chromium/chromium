@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/widget_kit/widget_kit_swift.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,13 +18,15 @@ using base::UmaHistogramEnumeration;
 namespace {
 
 // Values of the UMA IOS.WidgetKit.Install, IOS.WidgetKit.Uninstall and
-// IOS.WidgetKit.Current histograms. These values are persisted to logs. Entries
-// should not be renumbered and numeric values should never be reused.
+// IOS.WidgetKit.Current histograms. Must be kept up to date with
+// IOSWidgetKitExtensionKind in enums.xml. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
 enum class WidgetKitExtensionKind {
   kDino = 0,
   kSearch = 1,
   kQuickActions = 2,
-  kMaxValue = kQuickActions,
+  kObsolete = 3,
+  kMaxValue = kObsolete,
 };
 
 WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
@@ -39,8 +42,8 @@ WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
   if ([kind isEqualToString:@"QuickActionsWidget"]) {
     return WidgetKitExtensionKind::kQuickActions;
   }
-  NOTREACHED();
-  return WidgetKitExtensionKind::kDino;
+  NOTREACHED() << base::SysNSStringToUTF8(kind);
+  return WidgetKitExtensionKind::kObsolete;
 }
 
 }  // namespace

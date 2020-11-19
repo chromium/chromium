@@ -39413,6 +39413,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="Dino game widget"/>
   <int value="1" label="Search widget"/>
   <int value="2" label="Quick actions widget"/>
+  <int value="3" label="A widget that has become obsolete"/>
 </enum>
 
 <enum name="IOSWKWebViewLinkPreviewAction">

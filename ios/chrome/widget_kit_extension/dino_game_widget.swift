@@ -7,6 +7,8 @@ import SwiftUI
 import WidgetKit
 
 struct DinoGameWidget: Widget {
+  // Changing |kind| or deleting this widget will cause all installed instances of this widget to
+  // stop updating and show the placeholder state.
   let kind: String = "DinoGameWidget"
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
