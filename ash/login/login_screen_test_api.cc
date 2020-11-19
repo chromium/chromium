@@ -195,6 +195,11 @@ bool LoginScreenTestApi::IsShutdownButtonShown() {
 }
 
 // static
+bool LoginScreenTestApi::IsAppsButtonShown() {
+  return IsLoginShelfViewButtonShown(LoginShelfView::kApps);
+}
+
+// static
 bool LoginScreenTestApi::IsAuthErrorBubbleShown() {
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   LockContentsView::TestApi lock_contents_test(

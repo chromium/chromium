@@ -324,11 +324,16 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 };
 
 // Verify that certificate manager dialog opens.
-// Disabled for being flaky. See crbug.com/1116058.
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, DISABLED_OpenCertificateConfig) {
-  EXPECT_TRUE(ash::LoginScreenTestApi::LaunchApp(kTestKioskAppId));
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
+  while (!ash::LoginScreenTestApi::IsAppsButtonShown()) {
+    int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
+    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+  }
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsAppsButtonShown());
+  ASSERT_TRUE(ash::LoginScreenTestApi::LaunchApp(kTestKioskAppId));
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 
   DialogWindowWaiter waiter(
       l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE));

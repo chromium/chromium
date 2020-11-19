@@ -29,6 +29,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static bool IsLoginShelfShown();
   static bool IsRestartButtonShown();
   static bool IsShutdownButtonShown();
+  static bool IsAppsButtonShown();
   static bool IsAuthErrorBubbleShown();
   static bool IsGuestButtonShown();
   static bool IsAddUserButtonShown();
