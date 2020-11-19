@@ -19,90 +19,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 
 namespace {
 
 // Use same value as in Safari's WebKit.
 const int kLiveRegionChangeIntervalMS = 20;
-
-// Declare undocumented accessibility constants and enums only present in
-// WebKit.
-
-enum AXTextStateChangeType {
-  AXTextStateChangeTypeUnknown,
-  AXTextStateChangeTypeEdit,
-  AXTextStateChangeTypeSelectionMove,
-  AXTextStateChangeTypeSelectionExtend
-};
-
-enum AXTextSelectionDirection {
-  AXTextSelectionDirectionUnknown,
-  AXTextSelectionDirectionBeginning,
-  AXTextSelectionDirectionEnd,
-  AXTextSelectionDirectionPrevious,
-  AXTextSelectionDirectionNext,
-  AXTextSelectionDirectionDiscontiguous
-};
-
-enum AXTextSelectionGranularity {
-  AXTextSelectionGranularityUnknown,
-  AXTextSelectionGranularityCharacter,
-  AXTextSelectionGranularityWord,
-  AXTextSelectionGranularityLine,
-  AXTextSelectionGranularitySentence,
-  AXTextSelectionGranularityParagraph,
-  AXTextSelectionGranularityPage,
-  AXTextSelectionGranularityDocument,
-  AXTextSelectionGranularityAll
-};
-
-enum AXTextEditType {
-  AXTextEditTypeUnknown,
-  AXTextEditTypeDelete,
-  AXTextEditTypeInsert,
-  AXTextEditTypeTyping,
-  AXTextEditTypeDictation,
-  AXTextEditTypeCut,
-  AXTextEditTypePaste,
-  AXTextEditTypeAttributesChange
-};
-
-// Native mac notifications fired.
-NSString* const NSAccessibilityAutocorrectionOccurredNotification =
-    @"AXAutocorrectionOccurred";
-NSString* const NSAccessibilityLoadCompleteNotification = @"AXLoadComplete";
-NSString* const NSAccessibilityInvalidStatusChangedNotification =
-    @"AXInvalidStatusChanged";
-NSString* const NSAccessibilityLiveRegionCreatedNotification =
-    @"AXLiveRegionCreated";
-NSString* const NSAccessibilityLiveRegionChangedNotification =
-    @"AXLiveRegionChanged";
-NSString* const NSAccessibilityExpandedChanged = @"AXExpandedChanged";
-NSString* const NSAccessibilityMenuItemSelectedNotification =
-    @"AXMenuItemSelected";
-
-// The following native mac notifications are not fired:
-// AXLayoutComplete: Voiceover does not use this, it is considered too spammy.
-
-// Attributes used for NSAccessibilitySelectedTextChangedNotification and
-// NSAccessibilityValueChangedNotification.
-NSString* const NSAccessibilityTextStateChangeTypeKey =
-    @"AXTextStateChangeType";
-NSString* const NSAccessibilityTextStateSyncKey = @"AXTextStateSync";
-NSString* const NSAccessibilityTextSelectionDirection =
-    @"AXTextSelectionDirection";
-NSString* const NSAccessibilityTextSelectionGranularity =
-    @"AXTextSelectionGranularity";
-NSString* const NSAccessibilityTextSelectionChangedFocus =
-    @"AXTextSelectionChangedFocus";
-NSString* const NSAccessibilityTextChangeElement = @"AXTextChangeElement";
-NSString* const NSAccessibilityTextEditType = @"AXTextEditType";
-NSString* const NSAccessibilityTextChangeValue = @"AXTextChangeValue";
-NSString* const NSAccessibilityChangeValueStartMarker =
-    @"AXTextChangeValueStartMarker";
-NSString* const NSAccessibilityTextChangeValueLength =
-    @"AXTextChangeValueLength";
-NSString* const NSAccessibilityTextChangeValues = @"AXTextChangeValues";
 
 }  // namespace
 
@@ -164,7 +86,7 @@ void BrowserAccessibilityManagerMac::FireBlinkEvent(
   NSString* mac_notification = nullptr;
   switch (event_type) {
     case ax::mojom::Event::kAutocorrectionOccured:
-      mac_notification = NSAccessibilityAutocorrectionOccurredNotification;
+      mac_notification = ui::NSAccessibilityAutocorrectionOccurredNotification;
       break;
     default:
       return;
@@ -203,6 +125,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   auto native_node = ToBrowserAccessibilityCocoa(node);
   DCHECK(native_node);
 
+  bool focus_changed = GetFocus() != GetLastFocusedNode();
+
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
   NSString* mac_notification = nullptr;
   switch (event_type) {
@@ -223,7 +147,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::ALERT:
       NSAccessibilityPostNotification(
-          native_node, NSAccessibilityLiveRegionCreatedNotification);
+          native_node, ui::NSAccessibilityLiveRegionCreatedNotification);
       // Voiceover requires a live region changed notification to actually
       // announce the live region.
       FireGeneratedEvent(ui::AXEventGenerator::Event::LIVE_REGION_CHANGED,
@@ -242,7 +166,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
           node->GetRole() == ax::mojom::Role::kTreeItem) {
         mac_notification = NSAccessibilityRowCollapsedNotification;
       } else {
-        mac_notification = NSAccessibilityExpandedChanged;
+        mac_notification = ui::NSAccessibilityExpandedChanged;
       }
       break;
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
@@ -259,7 +183,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         // API has been present on versions of OS X since 10.7 but doesn't
         // appear to be needed by Voiceover before version 10.11.
         NSDictionary* user_info =
-            GetUserInfoForSelectedTextChangedNotification();
+            GetUserInfoForSelectedTextChangedNotification(focus_changed);
 
         BrowserAccessibilityManager* root_manager = GetRootManager();
         if (!root_manager)
@@ -284,11 +208,11 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
           node->GetRole() == ax::mojom::Role::kTreeItem) {
         mac_notification = NSAccessibilityRowExpandedNotification;
       } else {
-        mac_notification = NSAccessibilityExpandedChanged;
+        mac_notification = ui::NSAccessibilityExpandedChanged;
       }
       break;
     case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
-      mac_notification = NSAccessibilityInvalidStatusChangedNotification;
+      mac_notification = ui::NSAccessibilityInvalidStatusChangedNotification;
       break;
     case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED: {
       // Voiceover seems to drop live region changed notifications if they come
@@ -297,7 +221,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
 
       if (never_suppress_or_delay_events_for_testing_) {
         NSAccessibilityPostNotification(
-            native_node, NSAccessibilityLiveRegionChangedNotification);
+            native_node, ui::NSAccessibilityLiveRegionChangedNotification);
         return;
       }
 
@@ -321,7 +245,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
               [](base::scoped_nsobject<BrowserAccessibilityCocoa> node) {
                 if (node && [node instanceActive]) {
                   NSAccessibilityPostNotification(
-                      node, NSAccessibilityLiveRegionChangedNotification);
+                      node, ui::NSAccessibilityLiveRegionChangedNotification);
                 }
               },
               std::move(retained_node)),
@@ -329,7 +253,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       return;
     }
     case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
-      mac_notification = NSAccessibilityLiveRegionCreatedNotification;
+      mac_notification = ui::NSAccessibilityLiveRegionCreatedNotification;
       break;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
       // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
@@ -343,7 +267,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       // |NSAccessibilityLoadCompleteNotification| should only be fired on the
       // top document and when the document is not Chrome's new tab page.
       if (IsRootTree() && !IsChromeNewTabPage()) {
-        mac_notification = NSAccessibilityLoadCompleteNotification;
+        mac_notification = ui::NSAccessibilityLoadCompleteNotification;
       } else {
         // Voiceover moves focus to the web content when it receives an
         // AXLoadComplete event. On Chrome's new tab page, focus should stay
@@ -353,7 +277,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       }
       break;
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
-      mac_notification = NSAccessibilityMenuItemSelectedNotification;
+      mac_notification = ui::NSAccessibilityMenuItemSelectedNotification;
       break;
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
       DCHECK(node->GetData().IsRangeValueSupported());
@@ -532,18 +456,32 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
   }
 }
 
-NSDictionary* BrowserAccessibilityManagerMac::
-    GetUserInfoForSelectedTextChangedNotification() {
+NSDictionary*
+BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
+    bool focus_changed) {
   NSMutableDictionary* user_info =
       [[[NSMutableDictionary alloc] init] autorelease];
-  [user_info setObject:@YES forKey:NSAccessibilityTextStateSyncKey];
-  [user_info setObject:@(AXTextStateChangeTypeUnknown)
-                forKey:NSAccessibilityTextStateChangeTypeKey];
-  [user_info setObject:@(AXTextSelectionDirectionUnknown)
-                forKey:NSAccessibilityTextSelectionDirection];
-  [user_info setObject:@(AXTextSelectionGranularityUnknown)
-                forKey:NSAccessibilityTextSelectionGranularity];
-  [user_info setObject:@YES forKey:NSAccessibilityTextSelectionChangedFocus];
+  [user_info setObject:@YES forKey:ui::NSAccessibilityTextStateSyncKey];
+  [user_info setObject:@(ui::AXTextSelectionDirectionUnknown)
+                forKey:ui::NSAccessibilityTextSelectionDirection];
+  [user_info setObject:@(ui::AXTextSelectionGranularityUnknown)
+                forKey:ui::NSAccessibilityTextSelectionGranularity];
+  [user_info setObject:@YES
+                forKey:ui::NSAccessibilityTextSelectionChangedFocus];
+
+  // Try to detect when the text selection changes due to a focus change.
+  // This is necessary so that VoiceOver also anounces information about the
+  // element that contains this selection.
+  // TODO(mrobinson): Determine definitively what the type of this text
+  // selection change is. This requires passing this information here from
+  // blink.
+  if (focus_changed) {
+    [user_info setObject:@(ui::AXTextStateChangeTypeSelectionMove)
+                  forKey:ui::NSAccessibilityTextStateChangeTypeKey];
+  } else {
+    [user_info setObject:@(ui::AXTextStateChangeTypeUnknown)
+                  forKey:ui::NSAccessibilityTextStateChangeTypeKey];
+  }
 
   int32_t focus_id = ax_tree()->GetUnignoredSelection().focus_object_id;
   BrowserAccessibility* focus_object = GetFromID(focus_id);
@@ -552,7 +490,7 @@ NSDictionary* BrowserAccessibilityManagerMac::
     auto native_focus_object = ToBrowserAccessibilityCocoa(focus_object);
     if (native_focus_object && [native_focus_object instanceActive]) {
       [user_info setObject:native_focus_object
-                    forKey:NSAccessibilityTextChangeElement];
+                    forKey:ui::NSAccessibilityTextChangeElement];
 
       id selected_text = [native_focus_object selectedTextMarkerRange];
       if (selected_text) {
@@ -581,38 +519,39 @@ BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
   if (!deleted_text.empty()) {
     NSMutableDictionary* change =
         [NSMutableDictionary dictionaryWithDictionary:@{
-          NSAccessibilityTextEditType : @(AXTextEditTypeDelete),
-          NSAccessibilityTextChangeValueLength : @(deleted_text.length()),
-          NSAccessibilityTextChangeValue :
+          ui::NSAccessibilityTextEditType : @(ui::AXTextEditTypeDelete),
+          ui::NSAccessibilityTextChangeValueLength : @(deleted_text.length()),
+          ui::NSAccessibilityTextChangeValue :
               base::SysUTF16ToNSString(deleted_text)
         }];
     if (edit_text_marker) {
-      change[NSAccessibilityChangeValueStartMarker] = edit_text_marker;
+      change[ui::NSAccessibilityChangeValueStartMarker] = edit_text_marker;
     }
     [changes addObject:change];
   }
   if (!inserted_text.empty()) {
     // TODO(nektar): Figure out if this is a paste, insertion or typing.
     // Changes to Blink would be required. A heuristic is currently used.
-    auto edit_type = inserted_text.length() > 1 ? @(AXTextEditTypeInsert)
-                                                : @(AXTextEditTypeTyping);
+    auto edit_type = inserted_text.length() > 1 ? @(ui::AXTextEditTypeInsert)
+                                                : @(ui::AXTextEditTypeTyping);
     NSMutableDictionary* change =
         [NSMutableDictionary dictionaryWithDictionary:@{
-          NSAccessibilityTextEditType : edit_type,
-          NSAccessibilityTextChangeValueLength : @(inserted_text.length()),
-          NSAccessibilityTextChangeValue :
+          ui::NSAccessibilityTextEditType : edit_type,
+          ui::NSAccessibilityTextChangeValueLength : @(inserted_text.length()),
+          ui::NSAccessibilityTextChangeValue :
               base::SysUTF16ToNSString(inserted_text)
         }];
     if (edit_text_marker) {
-      change[NSAccessibilityChangeValueStartMarker] = edit_text_marker;
+      change[ui::NSAccessibilityChangeValueStartMarker] = edit_text_marker;
     }
     [changes addObject:change];
   }
 
   return @{
-    NSAccessibilityTextStateChangeTypeKey : @(AXTextStateChangeTypeEdit),
-    NSAccessibilityTextChangeValues : changes,
-    NSAccessibilityTextChangeElement : native_node
+    ui::
+    NSAccessibilityTextStateChangeTypeKey : @(ui::AXTextStateChangeTypeEdit),
+    ui::NSAccessibilityTextChangeValues : changes,
+    ui::NSAccessibilityTextChangeElement : native_node
   };
 }
 

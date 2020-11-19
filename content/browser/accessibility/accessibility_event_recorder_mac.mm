@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <algorithm>
 #include <string>
 
 #include "base/logging.h"
@@ -15,6 +16,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 
 namespace content {
 
@@ -28,7 +30,11 @@ class AccessibilityEventRecorderMac : public AccessibilityEventRecorder {
   ~AccessibilityEventRecorderMac() override;
 
   // Callback executed every time we receive an event notification.
-  void EventReceived(AXUIElementRef element, CFStringRef notification);
+  void EventReceived(AXUIElementRef element,
+                     CFStringRef notification,
+                     CFDictionaryRef user_info);
+  static std::string SerializeTextSelectionChangedProperties(
+      CFDictionaryRef user_info);
 
  private:
   // Add one notification to the list of notifications monitored by our
@@ -54,10 +60,11 @@ class AccessibilityEventRecorderMac : public AccessibilityEventRecorder {
 static void EventReceivedThunk(AXObserverRef observer_ref,
                                AXUIElementRef element,
                                CFStringRef notification,
+                               CFDictionaryRef user_info,
                                void* refcon) {
   AccessibilityEventRecorderMac* this_ptr =
       static_cast<AccessibilityEventRecorderMac*>(refcon);
-  this_ptr->EventReceived(element, notification);
+  this_ptr->EventReceived(element, notification, user_info);
 }
 
 // static
@@ -95,8 +102,9 @@ AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
     base::ProcessId pid,
     AXUIElementRef node)
     : AccessibilityEventRecorder(manager), observer_run_loop_source_(NULL) {
-  if (kAXErrorSuccess != AXObserverCreate(pid, EventReceivedThunk,
-                                          observer_ref_.InitializeInto())) {
+  if (kAXErrorSuccess !=
+      AXObserverCreateWithInfoCallback(pid, EventReceivedThunk,
+                                       observer_ref_.InitializeInto())) {
     LOG(FATAL) << "Failed to create AXObserverRef";
   }
 
@@ -157,7 +165,8 @@ std::string AccessibilityEventRecorderMac::GetAXAttributeValue(
 }
 
 void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
-                                                  CFStringRef notification) {
+                                                  CFStringRef notification,
+                                                  CFDictionaryRef user_info) {
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
   std::string role = GetAXAttributeValue(element, NSAccessibilityRoleAttribute);
   if (role.empty())
@@ -180,7 +189,49 @@ void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
   if (!value.empty())
     log += base::StringPrintf(" AXValue=\"%s\"", value.c_str());
 
+  if (notification_str ==
+      base::SysNSStringToUTF8(NSAccessibilitySelectedTextChangedNotification))
+    log += " " + SerializeTextSelectionChangedProperties(user_info);
+
   OnEvent(log);
+}
+
+std::string
+AccessibilityEventRecorderMac::SerializeTextSelectionChangedProperties(
+    CFDictionaryRef user_info) {
+  std::vector<std::string> serialized_info;
+  CFDictionaryApplyFunction(
+      user_info,
+      [](const void* raw_key, const void* raw_value, void* context) {
+        auto* key = static_cast<NSString*>(raw_key);
+        auto* value = static_cast<NSObject*>(raw_value);
+        auto* serialized_info = static_cast<std::vector<std::string>*>(context);
+        std::string value_string;
+        if ([key isEqual:ui::NSAccessibilityTextStateChangeTypeKey]) {
+          value_string = ToString(static_cast<ui::AXTextStateChangeType>(
+              [static_cast<NSNumber*>(value) intValue]));
+        } else if ([key isEqual:ui::NSAccessibilityTextSelectionDirection]) {
+          value_string = ToString(static_cast<ui::AXTextSelectionDirection>(
+              [static_cast<NSNumber*>(value) intValue]));
+        } else if ([key isEqual:ui::NSAccessibilityTextSelectionGranularity]) {
+          value_string = ToString(static_cast<ui::AXTextSelectionGranularity>(
+              [static_cast<NSNumber*>(value) intValue]));
+        } else if ([key isEqual:ui::NSAccessibilityTextEditType]) {
+          value_string = ToString(static_cast<ui::AXTextEditType>(
+              [static_cast<NSNumber*>(value) intValue]));
+        } else {
+          return;
+        }
+        serialized_info->push_back(base::SysNSStringToUTF8(key) + "=" +
+                                   value_string);
+      },
+      &serialized_info);
+
+  // Always sort the info so that we don't depend on CFDictionary for
+  // consistent output ordering.
+  std::sort(serialized_info.begin(), serialized_info.end());
+
+  return base::JoinString(serialized_info, " ");
 }
 
 }  // namespace content

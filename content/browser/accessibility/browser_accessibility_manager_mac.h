@@ -54,7 +54,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
                               const std::vector<Change>& changes) override;
 
   // Returns an autoreleased object.
-  NSDictionary* GetUserInfoForSelectedTextChangedNotification();
+  NSDictionary* GetUserInfoForSelectedTextChangedNotification(
+      bool focus_changed);
 
   // Returns an autoreleased object.
   NSDictionary* GetUserInfoForValueChangedNotification(
