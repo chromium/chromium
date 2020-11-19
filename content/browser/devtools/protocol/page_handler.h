@@ -126,6 +126,7 @@ class PageHandler : public DevToolsDomainHandler,
       Maybe<int> quality,
       Maybe<Page::Viewport> clip,
       Maybe<bool> from_surface,
+      Maybe<bool> capture_beyond_viewport,
       std::unique_ptr<CaptureScreenshotCallback> callback) override;
   void CaptureSnapshot(
       Maybe<std::string> format,
@@ -187,13 +188,15 @@ class PageHandler : public DevToolsDomainHandler,
       std::unique_ptr<Page::ScreencastFrameMetadata> metadata,
       const protocol::Binary& data);
 
-  void ScreenshotCaptured(std::unique_ptr<CaptureScreenshotCallback> callback,
-                          const std::string& format,
-                          int quality,
-                          const gfx::Size& original_view_size,
-                          const gfx::Size& requested_image_size,
-                          const blink::DeviceEmulationParams& original_params,
-                          const gfx::Image& image);
+  void ScreenshotCaptured(
+      std::unique_ptr<CaptureScreenshotCallback> callback,
+      const std::string& format,
+      int quality,
+      const gfx::Size& original_view_size,
+      const gfx::Size& requested_image_size,
+      const blink::DeviceEmulationParams& original_params,
+      const base::Optional<blink::web_pref::WebPreferences>& original_web_prefs,
+      const gfx::Image& image);
 
   void GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
                    const GURL& manifest_url,
