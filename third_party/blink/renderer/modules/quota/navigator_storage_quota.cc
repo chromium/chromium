@@ -38,14 +38,14 @@
 
 namespace blink {
 
-NavigatorStorageQuota::NavigatorStorageQuota(Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
+NavigatorStorageQuota::NavigatorStorageQuota(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator) {}
 
 const char NavigatorStorageQuota::kSupplementName[] = "NavigatorStorageQuota";
 
-NavigatorStorageQuota& NavigatorStorageQuota::From(Navigator& navigator) {
+NavigatorStorageQuota& NavigatorStorageQuota::From(NavigatorBase& navigator) {
   NavigatorStorageQuota* supplement =
-      Supplement<Navigator>::From<NavigatorStorageQuota>(navigator);
+      Supplement<NavigatorBase>::From<NavigatorStorageQuota>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorStorageQuota>(navigator);
     ProvideTo(navigator, supplement);
@@ -55,59 +55,40 @@ NavigatorStorageQuota& NavigatorStorageQuota::From(Navigator& navigator) {
 
 DeprecatedStorageQuota* NavigatorStorageQuota::webkitTemporaryStorage(
     Navigator& navigator) {
-  return NavigatorStorageQuota::From(navigator).webkitTemporaryStorage();
+  NavigatorStorageQuota& navigator_storage = From(navigator);
+  if (!navigator_storage.temporary_storage_) {
+    navigator_storage.temporary_storage_ =
+        MakeGarbageCollected<DeprecatedStorageQuota>(
+            DeprecatedStorageQuota::kTemporary, navigator.DomWindow());
+  }
+  return navigator_storage.temporary_storage_.Get();
 }
 
 DeprecatedStorageQuota* NavigatorStorageQuota::webkitPersistentStorage(
     Navigator& navigator) {
-  return NavigatorStorageQuota::From(navigator).webkitPersistentStorage();
-}
-
-StorageManager* NavigatorStorageQuota::storage(Navigator& navigator) {
-  return NavigatorStorageQuota::From(navigator).storage();
-}
-
-DeprecatedStorageQuota* NavigatorStorageQuota::webkitTemporaryStorage() const {
-  if (!temporary_storage_) {
-    temporary_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
-        DeprecatedStorageQuota::kTemporary, GetSupplementable()->DomWindow());
+  NavigatorStorageQuota& navigator_storage = From(navigator);
+  if (!navigator_storage.persistent_storage_) {
+    navigator_storage.persistent_storage_ =
+        MakeGarbageCollected<DeprecatedStorageQuota>(
+            DeprecatedStorageQuota::kPersistent, navigator.DomWindow());
   }
-  return temporary_storage_.Get();
+  return navigator_storage.persistent_storage_.Get();
 }
 
-DeprecatedStorageQuota* NavigatorStorageQuota::webkitPersistentStorage() const {
-  if (!persistent_storage_) {
-    persistent_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
-        DeprecatedStorageQuota::kPersistent, GetSupplementable()->DomWindow());
+StorageManager* NavigatorStorageQuota::storage(NavigatorBase& navigator) {
+  NavigatorStorageQuota& navigator_storage = From(navigator);
+  if (!navigator_storage.storage_manager_) {
+    navigator_storage.storage_manager_ =
+        MakeGarbageCollected<StorageManager>(navigator.GetExecutionContext());
   }
-  return persistent_storage_.Get();
-}
-
-StorageManager* NavigatorStorageQuota::storage() const {
-  if (!storage_manager_) {
-    mojo::Remote<mojom::blink::QuotaManagerHost> backend;
-
-    auto* supplementable = GetSupplementable();
-    auto* execution_context =
-        supplementable ? supplementable->GetExecutionContext() : nullptr;
-    if (execution_context) {
-      if (&execution_context->GetBrowserInterfaceBroker() !=
-          &GetEmptyBrowserInterfaceBroker()) {
-        execution_context->GetBrowserInterfaceBroker().GetInterface(
-            backend.BindNewPipeAndPassReceiver());
-      }
-    }
-    storage_manager_ = MakeGarbageCollected<StorageManager>(execution_context,
-                                                            std::move(backend));
-  }
-  return storage_manager_.Get();
+  return navigator_storage.storage_manager_.Get();
 }
 
 void NavigatorStorageQuota::Trace(Visitor* visitor) const {
   visitor->Trace(temporary_storage_);
   visitor->Trace(persistent_storage_);
   visitor->Trace(storage_manager_);
-  Supplement<Navigator>::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
 }
 
 }  // namespace blink

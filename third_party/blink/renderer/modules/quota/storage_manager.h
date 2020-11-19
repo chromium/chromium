@@ -29,8 +29,7 @@ class StorageManager final : public EventTargetWithInlineData,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit StorageManager(ExecutionContext*,
-                          mojo::Remote<mojom::blink::QuotaManagerHost> backend);
+  explicit StorageManager(ExecutionContext*);
   ~StorageManager() override;
 
   ScriptPromise persisted(ScriptState*);

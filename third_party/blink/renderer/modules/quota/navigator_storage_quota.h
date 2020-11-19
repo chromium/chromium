@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_QUOTA_NAVIGATOR_STORAGE_QUOTA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_QUOTA_NAVIGATOR_STORAGE_QUOTA_H_
 
-#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_quota.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -39,28 +38,29 @@
 namespace blink {
 
 class Navigator;
+class NavigatorBase;
 class StorageManager;
 
 class NavigatorStorageQuota final
     : public GarbageCollected<NavigatorStorageQuota>,
-      public Supplement<Navigator> {
+      public Supplement<NavigatorBase> {
  public:
   static const char kSupplementName[];
 
-  static NavigatorStorageQuota& From(Navigator&);
+  // Web-exposed on window only.
   static DeprecatedStorageQuota* webkitTemporaryStorage(Navigator&);
   static DeprecatedStorageQuota* webkitPersistentStorage(Navigator&);
-  static StorageManager* storage(Navigator&);
 
-  DeprecatedStorageQuota* webkitTemporaryStorage() const;
-  DeprecatedStorageQuota* webkitPersistentStorage() const;
-  StorageManager* storage() const;
+  // Web-exposed on both window and worker.
+  static StorageManager* storage(NavigatorBase&);
 
-  explicit NavigatorStorageQuota(Navigator&);
+  explicit NavigatorStorageQuota(NavigatorBase&);
 
   void Trace(Visitor*) const override;
 
  private:
+  static NavigatorStorageQuota& From(NavigatorBase&);
+
   mutable Member<DeprecatedStorageQuota> temporary_storage_;
   mutable Member<DeprecatedStorageQuota> persistent_storage_;
   mutable Member<StorageManager> storage_manager_;
