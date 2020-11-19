@@ -231,6 +231,7 @@ source_set("chromeos") {
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
     "//components/arc",
+    "//components/arc/enterprise",
     "//components/arc/media_session",
     "//components/arc/mojom:mojom_traits",
     "//components/autofill/core/browser",
