@@ -145,7 +145,11 @@ def build_mojom_bindings(mojom_bindings):
         os.path.join(get_chromium_root(),
                      ('mojo/public/tools/bindings/' +
                       'concatenate_and_replace_closure_exports.py')),
+        os.path.join(get_chromium_root(),
+                     'mojo/public/js/mojo_internal_preamble.js.part'),
         os.path.join(get_chromium_root(), 'mojo/public/js/bindings_lite.js'),
+        os.path.join(get_chromium_root(),
+                     'mojo/public/js/interface_support_preamble.js.part'),
         os.path.join(get_chromium_root(),
                      'mojo/public/js/interface_support.js'),
         ('build/mojo/mojo/public/interfaces/' +
