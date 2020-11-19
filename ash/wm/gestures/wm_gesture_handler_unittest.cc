@@ -81,8 +81,6 @@ void AddDesk() {
 class WmGestureHandlerTest : public AshTestBase {
  public:
   WmGestureHandlerTest() = default;
-  WmGestureHandlerTest(const WmGestureHandlerTest&) = delete;
-  WmGestureHandlerTest& operator=(const WmGestureHandlerTest&) = delete;
   ~WmGestureHandlerTest() override = default;
 
   void Scroll(float x_offset, float y_offset, int fingers) {
@@ -92,16 +90,11 @@ class WmGestureHandlerTest : public AshTestBase {
   }
 
   void ScrollToSwitchDesks(bool scroll_left) {
-    // Theres no animation when scrolling with enhanced desk animations, so no
-    // need to wait.
-    auto waiter = features::IsEnhancedDeskAnimations()
-                      ? nullptr
-                      : std::make_unique<DeskSwitchAnimationWaiter>();
+    DeskSwitchAnimationWaiter waiter;
     const float x_offset =
         (scroll_left ? -1 : 1) * WmGestureHandler::kHorizontalThresholdDp;
     Scroll(x_offset, 0, kNumFingersForDesksSwitch);
-    if (waiter)
-      waiter->Wait();
+    waiter.Wait();
   }
 
   void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
@@ -109,6 +102,9 @@ class WmGestureHandlerTest : public AshTestBase {
     for (int i = 0; i < num_of_times; i++)
       generator->MoveMouseWheel(delta_x, delta_y);
   }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(WmGestureHandlerTest);
 };
 
 // Tests a three fingers upwards scroll gesture to enter and a scroll down to
@@ -283,11 +279,6 @@ TEST_F(DesksGestureHandlerTest, NoDeskChanges) {
 
 // Tests that a large scroll only moves to the next desk.
 TEST_F(DesksGestureHandlerTest, NoDoubleDeskChange) {
-  // Enhanced desk animations supports switching multiple desks with large
-  // enough scrolls.
-  if (features::IsEnhancedDeskAnimations())
-    return;
-
   auto* desk_controller = DesksController::Get();
   desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
   desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
