@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<lint>
-  <!--
-STOP! It looks like you want to suppress some lint errors:
-- Have you tried identifing the offending patch?
-  Ask the author for a fix and/or revert the patch.
-- It is preferred to add suppressions in the code instead of
-  sweeping it under the rug here. See:
-    http://developer.android.com/tools/debugging/improving-w-lint.html
-
-Still reading?
-- Edit this file manually to suppress an issue. Please make the suppression as
-  local as possible, i.e. by warning message or by file.
-- When adding new issues, please keep the issue ids in sorted order.
+<!--
+Please refer to the lint doc for how to use this file and what should go in it:
+https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.md
 -->
+<lint>
   <!-- Ignore all lint errors in clank code. -->
   <issue id="all">
     <ignore regexp="^\.\./\.\./clank/"/>
@@ -31,15 +22,10 @@ Still reading?
   <issue id="IconDensities">
     <!-- This is intentional to reduce APK size. See: http://crrev/c/1352161 -->
     <ignore regexp="chrome/android/features/autofill_assistant/java/res/drawable-*"/>
-    <!-- crbug.com/457918 is tracking missing assets -->
-    <ignore regexp="chrome/android/java/res/drawable-xxhdpi"/>
-    <ignore regexp="chrome/android/java/res/drawable-xxxhdpi"/>
+    <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
+    <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png, logo_card_back.png"/>
     <!-- This is intentional to save on WebAPKs' size. -->
     <ignore regexp="chrome/android/webapk/shell_apk/res/drawable-*"/>
-    <ignore regexp="content/public/android/java/res/drawable-xxhdpi"/>
-    <ignore regexp="content/public/android/java/res/drawable-xxxhdpi"/>
-    <ignore regexp="ui/android/java/res/drawable-xxhdpi"/>
-    <ignore regexp="ui/android/java/res/drawable-xxxhdpi"/>
   </issue>
   <issue id="IconDipSize">
     <!-- These only need to be 1px for all densities. See: crbug.com/804449 -->
@@ -52,16 +38,10 @@ Still reading?
     <ignore regexp="tools/android/memconsumer/java/res/drawable/"/>
   </issue>
   <issue id="IconMissingDensityFolder">
-    <!-- see crbug.com/542435 -->
-    <ignore regexp="android_webview/nonembedded/java/res"/>
-    <ignore regexp="android_webview/tools/system_webview_shell/apk/res"/>
     <!-- This is intentional to reduce APK size. See: http://crrev/c/1352161 -->
     <ignore regexp="chrome/android/features/autofill_assistant/java/res"/>
-    <ignore regexp="chrome/android/webapk/shell_apk/res"/>
-    <!-- crbug.com/457918 is tracking missing assets -->
+    <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
     <ignore regexp="components/embedder_support/android/java/res"/>
-    <ignore regexp="tools/android/push_apps_to_background/res"/>
-    <ignore regexp="ui/android/java/res"/>
   </issue>
   <issue id="ImpliedQuantity">
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd"/>
@@ -71,18 +51,7 @@ Still reading?
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
   </issue>
-  <issue id="InconsistentArrays">
-    <ignore regexp="android_webview/locale_paks.resources.zip/values/locale-paks.xml"/>
-    <ignore regexp="chrome/android/chrome_locale_paks.resources.zip/values/locale-paks.xml"/>
-    <ignore regexp="preloaded_fonts.xml"/>
-  </issue>
-  <issue id="InefficientWeight">
-    <ignore regexp="android_webview/tools/system_webview_shell/apk/res/layout/activity_webview_browser.xml"/>
-  </issue>
   <issue id="InvalidVectorPath" severity="ignore"/>
-  <issue id="LabelFor">
-    <ignore regexp="android_webview/tools/system_webview_shell/apk/res/layout/activity_webview_browser.xml"/>
-  </issue>
   <issue id="LogConditional" severity="ignore"/>
   <issue id="LongLogTag" severity="ignore"/>
   <issue id="MergeRootFrame">
@@ -153,10 +122,6 @@ Still reading?
   <issue id="ScopedStorage" severity="ignore"/>
   <issue id="SetJavaScriptEnabled" severity="ignore"/>
   <issue id="SignatureOrSystemPermissions" severity="ignore"/>
-  <issue id="StaticFieldLeak">
-    <!-- Nice to fix, but not necessary or performance critical. -->
-    <ignore regexp="This `AsyncTask` class should be static or leaks might occur"/>
-  </issue>
   <issue id="StringFormatCount">
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"/>
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-cs/android_chrome_strings.xml"/>
