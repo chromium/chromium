@@ -220,30 +220,6 @@ class FakeBluetoothChooser : public content::BluetoothChooser {
   base::Optional<std::string> device_to_select_;
 };
 
-class FakeBluetoothScanningPrompt : public content::BluetoothScanningPrompt {
- public:
-  explicit FakeBluetoothScanningPrompt(
-      const content::BluetoothScanningPrompt::EventHandler& event_handler)
-      : event_handler_(event_handler) {}
-  ~FakeBluetoothScanningPrompt() override = default;
-
-  // Move-only class
-  FakeBluetoothScanningPrompt(const FakeBluetoothScanningPrompt&) = delete;
-  FakeBluetoothScanningPrompt& operator=(const FakeBluetoothScanningPrompt&) =
-      delete;
-
-  void RunPromptEventHandler(content::BluetoothScanningPrompt::Event event) {
-    if (event_handler_.is_null()) {
-      FAIL() << "event_handler_ is not set";
-      return;
-    }
-    event_handler_.Run(event);
-  }
-
- protected:
-  content::BluetoothScanningPrompt::EventHandler event_handler_;
-};
-
 class TestBluetoothDelegate : public ChromeBluetoothDelegate {
  public:
   TestBluetoothDelegate() = default;
@@ -253,18 +229,6 @@ class TestBluetoothDelegate : public ChromeBluetoothDelegate {
 
   void SetDeviceToSelect(const std::string& device_address) {
     device_to_select_ = device_address;
-  }
-
-  // This method waits until ShowBluetoothScanningPrompt() has been called and
-  // |scanning_prompt_| contains a pointer to the created prompt, so the test
-  // will timeout if |navigator.bluetooth.requestLEScan()| has not been called
-  // in JavaScript.
-  void RunPromptEventHandler(content::BluetoothScanningPrompt::Event event) {
-    if (!scanning_prompt_) {
-      scanning_prompt_creation_loop_.emplace();
-      scanning_prompt_creation_loop_->Run();
-    }
-    scanning_prompt_->RunPromptEventHandler(event);
   }
 
  protected:
@@ -280,20 +244,12 @@ class TestBluetoothDelegate : public ChromeBluetoothDelegate {
       content::RenderFrameHost* frame,
       const content::BluetoothScanningPrompt::EventHandler& event_handler)
       override {
-    auto scanning_prompt =
-        std::make_unique<FakeBluetoothScanningPrompt>(event_handler);
-    scanning_prompt_ = scanning_prompt.get();
-    if (scanning_prompt_creation_loop_)
-      scanning_prompt_creation_loop_->Quit();
-    return scanning_prompt;
+    // Simulate that a prompt was accepted; no actual prompt is needed here.
+    event_handler.Run(content::BluetoothScanningPrompt::Event::kAllow);
+    return nullptr;
   }
 
   base::Optional<std::string> device_to_select_;
-  FakeBluetoothScanningPrompt* scanning_prompt_;
-
-  // This RunLoop is used to ensure that |scanning_prompt_| is not nullptr when
-  // RunPromptEventHandler() is called.
-  base::Optional<base::RunLoop> scanning_prompt_creation_loop_;
 };
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {
@@ -391,10 +347,6 @@ class WebBluetoothTest : public InProcessBrowserTest {
 
   void SetDeviceToSelect(const std::string& device_address) {
     browser_client_.bluetooth_delegate()->SetDeviceToSelect(device_address);
-  }
-
-  void RunPromptEventHandler(content::BluetoothScanningPrompt::Event event) {
-    browser_client_.bluetooth_delegate()->RunPromptEventHandler(event);
   }
 
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
@@ -596,14 +548,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        PRE_WebBluetoothScanningIdsNotPersistent) {
-  // Grant permission to scan for Bluetooth devices and store the detected
+  // The request to scan should be automatically accepted. Store the detected
   // device's WebBluetoothDeviceId in localStorage to retrieve it after the
   // browser restarts.
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  RunPromptEventHandler(content::BluetoothScanningPrompt::Event::kAllow);
   ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
 
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
@@ -625,16 +576,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   EXPECT_TRUE(blink::WebBluetoothDeviceId::IsValid(scan_id));
 }
 
-// TODO(crbug.com/1147575) Test failure on Mac10.15
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
-                       DISABLED_WebBluetoothScanningIdsNotPersistent) {
-  // Grant permission to scan for Bluetooth devices again, and compare the ID
+                       WebBluetoothScanningIdsNotPersistent) {
+  // The request to scan should be automatically accepted. Store the detected
   // assigned to the scanned device against the one that was stored previously.
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  RunPromptEventHandler(content::BluetoothScanningPrompt::Event::kAllow);
   ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
 
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
@@ -683,16 +632,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   EXPECT_TRUE(blink::WebBluetoothDeviceId::IsValid(granted_id));
 }
 
-// TODO(crbug.com/1147582): Flaky
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
-                       DISABLED_WebBluetoothIdsUsedInWebBluetoothScanning) {
-  // Grant permission to scan for Bluetooth devices again, and compare the ID
+                       WebBluetoothIdsUsedInWebBluetoothScanning) {
+  // The request to scan should be automatically accepted. Store the detected
   // assigned to the scanned device against the one that was stored previously.
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  RunPromptEventHandler(content::BluetoothScanningPrompt::Event::kAllow);
   ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
 
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
