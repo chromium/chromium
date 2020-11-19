@@ -104,6 +104,7 @@ preprocess_grit("preprocess_generated") {
     "audio_player/js/test_util.m.js",
     "audio_player/js/background.m.js",
     "audio_player/js/audio_player.m.js",
+    "audio_player/js/metadata_worker.m.js",
     "audio_player/elements/audio_player.m.js",
     "audio_player/elements/track_info_panel.m.js",
     "audio_player/elements/track_list.m.js",
@@ -130,6 +131,8 @@ preprocess_grit("preprocess_generated") {
     "externs/volume_info.m.js",
     "externs/volume_info_list.m.js",
     "externs/volume_manager.m.js",
+    "externs/metadata_worker_window.m.js",
+    "externs/exif_entry.m.js",
 
     # Files app Background:
     "file_manager/background/js/app_windows.m.js",
@@ -165,6 +168,16 @@ preprocess_grit("preprocess_generated") {
     "file_manager/foreground/js/metadata/metadata_cache_set.m.js",
     "file_manager/foreground/js/metadata/metadata_request.m.js",
     "file_manager/foreground/js/metadata/image_orientation.m.js",
+    "file_manager/foreground/js/metadata/metadata_dispatcher.m.js",
+    "file_manager/foreground/js/metadata/image_parsers.m.js",
+    "file_manager/foreground/js/metadata/exif_parser.m.js",
+    "file_manager/foreground/js/metadata/id3_parser.m.js",
+    "file_manager/foreground/js/metadata/metadata_parser.m.js",
+    "file_manager/foreground/js/metadata/mpeg_parser.m.js",
+    "file_manager/foreground/js/metadata/byte_reader.m.js",
+    "file_manager/foreground/js/metadata/function_parallel.m.js",
+    "file_manager/foreground/js/metadata/function_sequence.m.js",
+    "file_manager/foreground/js/metadata/exif_constants.m.js",
   ]
 
   deps = [
@@ -196,6 +209,7 @@ generate_grd("build_grd") {
   input_files = [
     "audio_player/js/main.m.rollup.js",
     "audio_player/js/main_background.m.rollup.js",
+    "audio_player/js/metadata_worker.m.rollup.js",
 
     "file_manager/foreground/elements/files_icon_button.m.js",
     "file_manager/foreground/elements/files_toggle_ripple.m.js",
@@ -205,11 +219,13 @@ generate_grd("build_grd") {
   resource_path_rewrites = [
     "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
     "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
+    "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
   ]
 
   deps = [
     "//ui/file_manager/audio_player/js:build",
     "//ui/file_manager/audio_player/js:build_background",
+    "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager/foreground/elements:files_icon_button_module",
     "//ui/file_manager/file_manager/foreground/elements:files_ripple_module",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple_module",

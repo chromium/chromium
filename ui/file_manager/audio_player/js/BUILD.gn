@@ -79,6 +79,7 @@ js_library("audio_player.m") {
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:content_metadata_provider.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
+    "//ui/webui/resources/js:load_time_data",
   ]
 
   externs_list = [
@@ -185,6 +186,22 @@ optimize_webui("build") {
 
   deps = [
     ":main.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
+  ]
+}
+
+optimize_webui("build_worker") {
+  host = "audio_player"
+
+  input = preprocess_folder
+  js_module_in_files = [ "metadata_worker.m.js" ]
+
+  js_out_files = [ "metadata_worker.m.rollup.js" ]
+
+  deps = [
+    ":metadata_worker.m",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/webui/resources:preprocess",

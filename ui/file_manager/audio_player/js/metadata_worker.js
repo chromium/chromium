@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import './metadata_dispatcher.m.js';
+// #import '../../file_manager/foreground/js/metadata/metadata_dispatcher.m.js';
 
 /* #ignore */ // Load the worker script of the Files app.
 /* #ignore */ importScripts(

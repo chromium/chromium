@@ -14,13 +14,8 @@
 // #import * as wrappedUtil from '../../file_manager/common/js/util.m.js'; const {util} = wrappedUtil;
 // #import {ContentMetadataProvider} from '../../file_manager/foreground/js/metadata/content_metadata_provider.m.js';
 // #import {MetadataModel} from '../../file_manager/foreground/js/metadata/metadata_model.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on
-
-/**
- * Overrided metadata worker's path.
- * @type {string}
- */
-ContentMetadataProvider.WORKER_SCRIPT = '/js/metadata_worker.js';
 
 /**
  * @param {Element} container Container element.
@@ -31,7 +26,13 @@ ContentMetadataProvider.WORKER_SCRIPT = '/js/metadata_worker.js';
 
   this.volumeManager_ = new FilteredVolumeManager(
       AllowedPaths.ANY_PATH, false, appUtil.getVolumeManager());
-  this.metadataModel_ = MetadataModel.create(this.volumeManager_);
+
+  this.resolveMetadataModel_ = null;
+  this.metadataModelReady_ = new Promise(resolve => {
+    this.resolveMetadataModel_ = resolve;
+  });
+  this.metadataModel_ = null;
+
   this.selectedEntry_ = null;
   this.invalidTracks_ = {};
   this.entries_ = [];
@@ -117,6 +118,8 @@ ContentMetadataProvider.WORKER_SCRIPT = '/js/metadata_worker.js';
     this.offlineString_ = '';
     chrome.fileManagerPrivate.getStrings(function(strings) {
       strings = /** @type {!Object<string>} */ (strings);
+      loadTimeData.data = strings;
+
       container.ownerDocument.title = strings['AUDIO_PLAYER_TITLE'];
       this.errorString_ = strings['AUDIO_ERROR'];
       this.offlineString_ = strings['AUDIO_OFFLINE'];
@@ -138,6 +141,17 @@ ContentMetadataProvider.WORKER_SCRIPT = '/js/metadata_worker.js';
       };
       this.player_.ariaExpandArtworkLabel =
           strings['AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL'];
+
+      /**
+       * Overrided metadata worker's path.
+       * @type {string}
+       */
+      ContentMetadataProvider.WORKER_SCRIPT =
+          util.isAudioPlayerJsModulesEnabled() ? '/js/metadata_worker.m.js' :
+                                                 '/js/metadata_worker.js';
+
+      this.metadataModel_ = MetadataModel.create(this.volumeManager_);
+      this.resolveMetadataModel_();
     }.bind(this));
 
     this.volumeManager_.addEventListener('externally-unmounted',
@@ -340,7 +354,8 @@ AudioPlayer.prototype.select_ = function(newTrack) {
  * @param {function(Object)} callback Callback.
  * @private
  */
-AudioPlayer.prototype.fetchMetadata_ = function(entry, callback) {
+AudioPlayer.prototype.fetchMetadata_ = async function(entry, callback) {
+  await this.metadataModelReady_;
   this.metadataModel_.get(
       [entry],
       ['mediaTitle', 'mediaArtist', 'present', 'contentThumbnailUrl']).then(

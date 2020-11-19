@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // <include src="../../../webui/resources/js/cr.js">
+// <include src="../../../webui/resources/js/load_time_data.js">
 // <include src="../../../webui/resources/js/cr/event_target.js">
 // <include src="../../../webui/resources/js/cr/ui/array_data_model.js">
 
