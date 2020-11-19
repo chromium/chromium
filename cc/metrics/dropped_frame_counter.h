@@ -6,6 +6,8 @@
 #define CC_METRICS_DROPPED_FRAME_COUNTER_H_
 
 #include <stddef.h>
+#include <queue>
+#include <utility>
 
 #include "base/containers/ring_buffer.h"
 #include "cc/cc_export.h"
@@ -64,8 +66,18 @@ class CC_EXPORT DroppedFrameCounter {
     total_counter_ = total_counter;
   }
 
+  double sliding_window_max_percent_dropped() const {
+    return sliding_window_max_percent_dropped_;
+  }
+
  private:
   void NotifyFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
+  base::TimeDelta ComputeCurrentWindowSize() const;
+
+  const base::TimeDelta kSlidingWindowInterval =
+      base::TimeDelta::FromSeconds(1);
+  std::queue<std::pair<const viz::BeginFrameArgs, bool>> sliding_window_;
+  uint32_t dropped_frame_count_in_window_ = 0;
 
   RingBufferType ring_buffer_;
   size_t total_frames_ = 0;
@@ -73,6 +85,7 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_dropped_ = 0;
   size_t total_smoothness_dropped_ = 0;
   bool fcp_received_ = false;
+  double sliding_window_max_percent_dropped_ = 0;
 
   UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;
   FrameSorter frame_sorter_;

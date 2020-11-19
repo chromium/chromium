@@ -4,7 +4,11 @@
 
 #include "cc/metrics/dropped_frame_counter.h"
 
+#include <algorithm>
+
 #include "base/bind.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/total_frame_counter.h"
@@ -67,11 +71,15 @@ void DroppedFrameCounter::ReportFrames() {
       total_counter_->ComputeTotalVisibleFrames(base::TimeTicks::Now());
   TRACE_EVENT2("cc,benchmark", "SmoothnessDroppedFrame", "total", total_frames,
                "smoothness", total_smoothness_dropped_);
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow",
+      sliding_window_max_percent_dropped_);
 
   if (ukm_smoothness_data_ && total_frames > 0) {
     UkmSmoothnessData smoothness_data;
     smoothness_data.avg_smoothness =
         static_cast<double>(total_smoothness_dropped_) * 100 / total_frames;
+    smoothness_data.worst_smoothness = sliding_window_max_percent_dropped_;
 
     ukm_smoothness_data_->seq_lock.WriteBegin();
     device::OneWriterSeqLock::AtomicWriterMemcpy(&ukm_smoothness_data_->data,
@@ -91,14 +99,46 @@ void DroppedFrameCounter::Reset() {
   total_partial_ = 0;
   total_dropped_ = 0;
   total_smoothness_dropped_ = 0;
+  sliding_window_max_percent_dropped_ = 0;
+  dropped_frame_count_in_window_ = 0;
   fcp_received_ = false;
+  sliding_window_ = {};
   ring_buffer_.Clear();
   frame_sorter_.Reset();
 }
 
+base::TimeDelta DroppedFrameCounter::ComputeCurrentWindowSize() const {
+  DCHECK_GT(sliding_window_.size(), 0u);
+  return sliding_window_.back().first.frame_time +
+         sliding_window_.back().first.interval -
+         sliding_window_.front().first.frame_time;
+}
+
 void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
                                             bool is_dropped) {
-  // TODO(crbug.com/1115141) The implementation of smoothness metrics.
+  sliding_window_.push({args, is_dropped});
+  if (is_dropped)
+    dropped_frame_count_in_window_++;
+
+  if (ComputeCurrentWindowSize() < kSlidingWindowInterval)
+    return;
+
+  DCHECK_GE(dropped_frame_count_in_window_, 0u);
+  DCHECK_GE(sliding_window_.size(), dropped_frame_count_in_window_);
+  DCHECK_GT(kSlidingWindowInterval, args.interval);
+  // args.interval being lower than the window interval guarantees that queue
+  // would not be empty at any point in the loop below.
+
+  double percent_dropped_frame =
+      (dropped_frame_count_in_window_ * 100.0) / sliding_window_.size();
+  sliding_window_max_percent_dropped_ =
+      fmax(sliding_window_max_percent_dropped_, percent_dropped_frame);
+
+  while (ComputeCurrentWindowSize() >= kSlidingWindowInterval) {
+    if (sliding_window_.front().second)  // If frame is dropped.
+      dropped_frame_count_in_window_--;
+    sliding_window_.pop();
+  }
 }
 
 void DroppedFrameCounter::OnFcpReceived() {
