@@ -39,7 +39,7 @@ namespace assistant {
 namespace {
 
 constexpr const char kTestUser[] = "test_user@gmail.com";
-constexpr const char kTestUserGaiaId[] = "test_user@gaia.id";
+constexpr const char kTestUserGaiaId[] = "test_user_gaia_id";
 
 LoginManagerMixin::TestUserInfo GetTestUserInfo() {
   return LoginManagerMixin::TestUserInfo(
