@@ -406,8 +406,7 @@ void SVGImage::DrawForContainer(cc::PaintCanvas* canvas,
     adjusted_src_size.Scale(residual_scale.Width(), residual_scale.Height());
     scaled_src.SetSize(adjusted_src_size);
 
-    DrawInternal(canvas, flags, dst_rect, scaled_src, kRespectImageOrientation,
-                 kClampImageToSourceRect, url);
+    DrawInternal(canvas, flags, dst_rect, scaled_src, url);
   });
 }
 
@@ -549,19 +548,16 @@ bool SVGImage::ApplyShaderForContainer(const FloatSize& container_size,
   return result;
 }
 
-void SVGImage::Draw(
-    cc::PaintCanvas* canvas,
-    const PaintFlags& flags,
-    const FloatRect& dst_rect,
-    const FloatRect& src_rect,
-    RespectImageOrientationEnum should_respect_image_orientation,
-    ImageClampingMode clamp_mode,
-    ImageDecodingMode) {
+void SVGImage::Draw(cc::PaintCanvas* canvas,
+                    const PaintFlags& flags,
+                    const FloatRect& dst_rect,
+                    const FloatRect& src_rect,
+                    RespectImageOrientationEnum,
+                    ImageClampingMode,
+                    ImageDecodingMode) {
   if (!page_)
     return;
-
-  DrawInternal(canvas, flags, dst_rect, src_rect,
-               should_respect_image_orientation, clamp_mode, NullURL());
+  DrawInternal(canvas, flags, dst_rect, src_rect, NullURL());
 }
 
 sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(const KURL& url) {
@@ -597,8 +593,6 @@ void SVGImage::DrawInternal(cc::PaintCanvas* canvas,
                             const PaintFlags& flags,
                             const FloatRect& dst_rect,
                             const FloatRect& src_rect,
-                            RespectImageOrientationEnum,
-                            ImageClampingMode,
                             const KURL& url) {
   {
     PaintCanvasAutoRestore ar(canvas, false);

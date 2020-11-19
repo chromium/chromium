@@ -146,8 +146,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect& from_rect,
-            const FloatRect& to_rect,
+            const FloatRect& dst_rect,
+            const FloatRect& src_rect,
             RespectImageOrientationEnum,
             ImageClampingMode,
             ImageDecodingMode) override;
@@ -179,10 +179,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   void DrawInternal(cc::PaintCanvas*,
                     const cc::PaintFlags&,
-                    const FloatRect& from_rect,
-                    const FloatRect& to_rect,
-                    RespectImageOrientationEnum,
-                    ImageClampingMode,
+                    const FloatRect& dst_rect,
+                    const FloatRect& src_rect,
                     const KURL&);
 
   template <typename Func>
