@@ -1169,6 +1169,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PhoneHub.InterstitialScreenEvent.{Screen}"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
+    Removed 11/2020 in M89.
+  </obsolete>
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
@@ -1203,6 +1207,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PhoneHub.NotificationCount" units="notifications"
     expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
+    Removed 11/2020 in M89.
+  </obsolete>
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
@@ -1213,6 +1221,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PhoneHub.NotificationOptInEvents"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
+    Removed 11/2020 in M89.
+  </obsolete>
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Events for the given notification opt-in prompt.</summary>
@@ -1220,6 +1232,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PhoneHub.QuickActionClicked" enum="PhoneHubQuickAction"
     expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
+    Removed 11/2020 in M89.
+  </obsolete>
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
@@ -1227,6 +1243,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PhoneHub.ScreenOnSettingsButtonClicked"
     enum="PhoneHubScreen" expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
+    Removed 11/2020 in M89.
+  </obsolete>
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
@@ -1237,6 +1257,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PhoneHub.ScreenOn{BubbleEvent}" enum="PhoneHubScreen"
     expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
+    Removed 11/2020 in M89.
+  </obsolete>
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
@@ -1251,6 +1275,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PhoneHub.TabContinuationChipClicked" units="tab index"
     expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
+    Removed 11/2020 in M89.
+  </obsolete>
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>

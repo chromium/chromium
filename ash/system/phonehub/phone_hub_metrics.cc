@@ -15,19 +15,19 @@ namespace {
 std::string GetInterstitialScreenEventHistogramName(Screen screen) {
   switch (screen) {
     case Screen::kPhoneDisconnected:
-      return "Ash.PhoneHub.InterstitialScreenEvent.PhoneDisconnected";
+      return "PhoneHub.InterstitialScreenEvent.PhoneDisconnected";
     case Screen::kBluetoothOrWifiDisabled:
-      return "Ash.PhoneHub.InterstitialScreenEvent.BluetoothOrWifiDisabled";
+      return "PhoneHub.InterstitialScreenEvent.BluetoothOrWifiDisabled";
     case Screen::kPhoneConnecting:
-      return "Ash.PhoneHub.InterstitialScreenEvent.PhoneConnecting";
+      return "PhoneHub.InterstitialScreenEvent.PhoneConnecting";
     case Screen::kOnboardingExistingMultideviceUser:
-      return "Ash.PhoneHub.InterstitialScreenEvent.Onboarding."
+      return "PhoneHub.InterstitialScreenEvent.Onboarding."
              "ExistingMultideviceUser";
     case Screen::kOnboardingNewMultideviceUser:
-      return "Ash.PhoneHub.InterstitialScreenEvent.Onboarding."
+      return "PhoneHub.InterstitialScreenEvent.Onboarding."
              "NewMultideviceUser";
     case Screen::kOnboardingDismissPrompt:
-      return "Ash.PhoneHub.InterstitialScreenEvent.OnboardingDismissPrompt";
+      return "PhoneHub.InterstitialScreenEvent.OnboardingDismissPrompt";
     default:
       DCHECK(false) << "Invalid interstitial screen";
       return "";
@@ -42,33 +42,32 @@ void LogInterstitialScreenEvent(Screen screen, InterstitialScreenEvent event) {
 }
 
 void LogScreenOnBubbleOpen(Screen screen) {
-  base::UmaHistogramEnumeration("Ash.PhoneHub.ScreenOnBubbleOpen", screen);
+  base::UmaHistogramEnumeration("PhoneHub.ScreenOnBubbleOpen", screen);
 }
 
 void LogScreenOnBubbleClose(Screen screen) {
-  base::UmaHistogramEnumeration("Ash.PhoneHub.ScreenOnBubbleClose", screen);
+  base::UmaHistogramEnumeration("PhoneHub.ScreenOnBubbleClose", screen);
 }
 
 void LogScreenOnSettingsButtonClicked(Screen screen) {
-  base::UmaHistogramEnumeration("Ash.PhoneHub.Screen.OnSettingsButtonClicked",
+  base::UmaHistogramEnumeration("PhoneHub.Screen.OnSettingsButtonClicked",
                                 screen);
 }
 
 void LogNotificationOptInEvent(InterstitialScreenEvent event) {
-  base::UmaHistogramEnumeration("Ash.PhoneHub.NotificationOptIn", event);
+  base::UmaHistogramEnumeration("PhoneHub.NotificationOptIn", event);
 }
 
 void LogTabContinuationChipClicked(int tab_index) {
-  base::UmaHistogramCounts100("Ash.PhoneHub.TabContinuationChipClicked",
-                              tab_index);
+  base::UmaHistogramCounts100("PhoneHub.TabContinuationChipClicked", tab_index);
 }
 
 void LogQuickActionClick(QuickAction action) {
-  base::UmaHistogramEnumeration("Ash.PhoneHub.QuickActionClicked", action);
+  base::UmaHistogramEnumeration("PhoneHub.QuickActionClicked", action);
 }
 
 void LogNotificationCount(int count) {
-  base::UmaHistogramCounts100("Ash.PhoneHub.NotificationCount", count);
+  base::UmaHistogramCounts100("PhoneHub.NotificationCount", count);
 }
 
 }  // namespace phone_hub_metrics
