@@ -53,7 +53,7 @@ specific_include_rules = {
   # TODO: This should not be an allowed dep; see
   # http://crbug.com/1148093 and
   # http://b/173144152.
-  "(assistive_window_controller|personal_info_suggester)\.h": [
+  "tts_handler\.h": [
     "!content/public/browser/tts_controller.h",
   ],
 

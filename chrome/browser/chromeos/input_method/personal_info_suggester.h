@@ -13,8 +13,8 @@
 #include "chrome/browser/chromeos/input_method/suggester.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
 #include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
+#include "chrome/browser/chromeos/input_method/tts_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
-#include "content/public/browser/tts_controller.h"
 
 namespace autofill {
 class PersonalDataManager;
@@ -32,31 +32,6 @@ const char kPersonalInfoSuggesterShowSettingCount[] =
 const int kMaxShowSettingCount = 10;
 
 AssistiveType ProposePersonalInfoAssistiveAction(const base::string16& text);
-
-class TtsHandler : public content::UtteranceEventDelegate {
- public:
-  explicit TtsHandler(Profile* profile);
-  ~TtsHandler() override;
-
-  // Announce |text| after some |delay|. The delay is to avoid conflict with
-  // other ChromeVox announcements. This should be no-op if ChromeVox is not
-  // enabled.
-  void Announce(const std::string& text,
-                const base::TimeDelta delay = base::TimeDelta());
-
-  // UtteranceEventDelegate implementation.
-  void OnTtsEvent(content::TtsUtterance* utterance,
-                  content::TtsEventType event_type,
-                  int char_index,
-                  int length,
-                  const std::string& error_message) override;
-
- private:
-  virtual void Speak(const std::string& text);
-
-  Profile* const profile_;
-  std::unique_ptr<base::OneShotTimer> delay_timer_;
-};
 
 // An agent to suggest personal information when the user types, and adopt or
 // dismiss the suggestion according to the user action.

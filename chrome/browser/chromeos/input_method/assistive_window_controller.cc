@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/prefs/pref_service.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
@@ -44,39 +42,6 @@ constexpr base::TimeDelta kTtsShowDelay =
     base::TimeDelta::FromMilliseconds(1200);
 
 }  // namespace
-
-TtsHandler::TtsHandler(Profile* profile) : profile_(profile) {}
-TtsHandler::~TtsHandler() = default;
-
-void TtsHandler::Announce(const std::string& text,
-                          const base::TimeDelta delay) {
-  const bool chrome_vox_enabled = profile_->GetPrefs()->GetBoolean(
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled);
-  if (!chrome_vox_enabled)
-    return;
-
-  delay_timer_ = std::make_unique<base::OneShotTimer>();
-  delay_timer_->Start(
-      FROM_HERE, delay,
-      base::BindOnce(&TtsHandler::Speak, base::Unretained(this), text));
-}
-
-void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
-                            content::TtsEventType event_type,
-                            int char_index,
-                            int length,
-                            const std::string& error_message) {}
-
-void TtsHandler::Speak(const std::string& text) {
-  std::unique_ptr<content::TtsUtterance> utterance =
-      content::TtsUtterance::Create(profile_);
-  utterance->SetText(text);
-  utterance->SetEventDelegate(this);
-  utterance->SetCanEnqueue(true);
-
-  auto* tts_controller = content::TtsController::GetInstance();
-  tts_controller->SpeakOrEnqueue(std::move(utterance));
-}
 
 AssistiveWindowController::AssistiveWindowController(
     AssistiveWindowControllerDelegate* delegate,

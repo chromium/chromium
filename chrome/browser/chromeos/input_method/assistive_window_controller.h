@@ -9,10 +9,10 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
+#include "chrome/browser/chromeos/input_method/tts_handler.h"
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_window_view.h"
 #include "chrome/browser/chromeos/input_method/ui/undo_window.h"
-#include "content/public/browser/tts_controller.h"
 #include "ui/base/ime/chromeos/ime_assistive_window_handler_interface.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -25,31 +25,6 @@ class Widget;
 namespace chromeos {
 
 namespace input_method {
-
-class TtsHandler : public content::UtteranceEventDelegate {
- public:
-  explicit TtsHandler(Profile* profile);
-  ~TtsHandler() override;
-
-  // Announce |text| after some |delay|. The delay is to avoid conflict with
-  // other ChromeVox announcements. This should be no-op if ChromeVox is not
-  // enabled.
-  void Announce(const std::string& text,
-                const base::TimeDelta delay = base::TimeDelta());
-
-  // UtteranceEventDelegate implementation.
-  void OnTtsEvent(content::TtsUtterance* utterance,
-                  content::TtsEventType event_type,
-                  int char_index,
-                  int length,
-                  const std::string& error_message) override;
-
- private:
-  virtual void Speak(const std::string& text);
-
-  Profile* const profile_;
-  std::unique_ptr<base::OneShotTimer> delay_timer_;
-};
 
 class AssistiveWindowControllerDelegate;
 
