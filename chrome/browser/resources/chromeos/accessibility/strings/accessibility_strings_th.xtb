@@ -76,7 +76,7 @@
 <translation id="1431911867058218151">สีพลัม</translation>
 <translation id="1439316808600711881">ภูมิภาค</translation>
 <translation id="146450394670219700">ออบเจ็กต์กราฟิก</translation>
-<translation id="1465097259579587977">รีสตาร์ทการแนะนำเบื้องต้นแบบด่วน</translation>
+<translation id="1465097259579587977">เริ่มเรียนการแนะนำเบื้องต้นแบบด่วนใหม่</translation>
 <translation id="1480046233931937785">เครดิต</translation>
 <translation id="1487494366197411587">บน Chromebook ปุ่มค้นหาจะอยู่เหนือปุ่ม Shift ด้านซ้าย</translation>
 <translation id="1498498210836053409">ปิดโหมดกดค้างเมื่อแก้ไขข้อความ (โหมดกดค้างอัจฉริยะ)</translation>
@@ -382,7 +382,7 @@
 <translation id="3655855170848725876">{COUNT,plural, =1{เครื่องหมายดอลลาร์}other{# เครื่องหมายดอลลาร์}}</translation>
 <translation id="3659787053479271466">การแจ้งเตือน</translation>
 <translation id="366419593095697301">คำแนะนำ: กดแป้น Escape หากต้องการออกจากบทแนะนำนี้</translation>
-<translation id="3676062394766691318">หลังจากตั้งค่าอุปกรณ์แล้ว คุณกลับมาและดูบทแนะนำเพิ่มเติมได้โดยกดแป้น Search + O แล้วกด T</translation>
+<translation id="3676062394766691318">หลังจากตั้งค่าอุปกรณ์แล้ว คุณกลับมาดูบทแนะนำเพิ่มเติมได้โดยกดแป้น Search + O แล้วกด T</translation>
 <translation id="3681531118904532409">สีชมพูพาพายาวิป</translation>
 <translation id="3692274950075847560">ค้นหา:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">ขีดฆ่า</translation>
@@ -546,7 +546,7 @@
 <translation id="4973717656530883744">ขั้นต่ำ <ph name="X" /></translation>
 <translation id="4974612477719259470">ไม่มีปุ่มก่อนหน้า</translation>
 <translation id="4979404613699303341">ปุ่มก่อนหน้า</translation>
-<translation id="4982917827052020884">เริ่มจาก 2-3 แป้นที่คุณจะใช้เป็นประจำ สามารถใช้แป้น Control เพื่อหยุดเสียงที่กำลังพูดอยู่ได้ แป้น Control จะอยู่ที่มุมซ้ายล่างของคีย์บอร์ด กด Control เพื่อดำเนินการต่อ</translation>
+<translation id="4982917827052020884">เริ่มจาก 2-3 แป้นที่คุณจะใช้เป็นประจำ สามารถใช้แป้น Control เพื่อหยุดเสียงที่กำลังพูดอยู่ได้ แป้น Control จะอยู่ที่มุมซ้ายล่างของคีย์บอร์ด กดแป้น Control เพื่อดำเนินการต่อ</translation>
 <translation id="4983588134362688868">ข้ามไปที่ส่วนบนสุดของหน้าเว็บ</translation>
 <translation id="4986606102545753256">หน้าต่าง <ph name="NAME" /></translation>
 <translation id="4993152509206108683">ระดับ <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
@@ -998,7 +998,7 @@
 <translation id="8473540203671727883">พูดข้อความที่อยู่ใต้เมาส์</translation>
 <translation id="8476408756881832830">หยุดเล่นชั่วคราวเมื่อ ChromeVox กำลังพูด</translation>
 <translation id="8476508772960940536">ภาพรวมหน้าต่าง</translation>
-<translation id="8480873377842220259">ตอนนี้คุณจะได้เรียนรู้พื้นฐานบางอย่างสำหรับการไปยังส่วนต่างๆ คุณสามารถกด Search ค้างไว้แล้วไปยังส่วนต่างๆ บนหน้าจอได้โดยใช้แป้นลูกศร กด Search + ลูกศรขวาเพื่อดำเนินการต่อ</translation>
+<translation id="8480873377842220259">ตอนนี้คุณจะได้เรียนรู้วิธีพื้นฐานในการไปยังส่วนต่างๆ คุณสามารถกด Search ค้างไว้แล้วไปยังส่วนต่างๆ บนหน้าจอได้โดยใช้แป้นลูกศร กด Search + ลูกศรขวาเพื่อดำเนินการต่อ</translation>
 <translation id="8503360654911991865">ลดความละเอียดในการนำทาง</translation>
 <translation id="8520472399088452386">ปุ่มหมุน</translation>
 <translation id="8534394844575788431">การจัดรูปแบบ</translation>

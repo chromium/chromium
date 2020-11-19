@@ -105,7 +105,7 @@
 <translation id="1116639326869298217">تعذُّر إثبات هويتك</translation>
 <translation id="1116694919640316211">لمحة</translation>
 <translation id="1116779635164066733">تم فرض هذا الإعداد بواسطة الإضافة "<ph name="NAME" />".</translation>
-<translation id="1116811861615819198">لم يستجِب الجهاز الذي تحاول المشاركة معه لطلبك بالمشاركة.</translation>
+<translation id="1116811861615819198">لم يستجِب الجهاز الذي تحاول المشاركة معه لطلبك.</translation>
 <translation id="1118738876271697201">تعذَّر على النظام تحديد طراز الجهاز أو رقمه التسلسلي.</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1122068467107743258">العمل</translation>
@@ -177,12 +177,12 @@
 <translation id="1188807932851744811">لم يتم تحميل السجل.</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{الوصول إلى ملف مخزّن على جهاز الكمبيوتر}zero{ الوصول إلى # من الملفات المخزّنة على جهاز الكمبيوتر}two{الوصول إلى ملفين (#) مخزّنين على جهاز الكمبيوتر}few{ الوصول إلى # ملفات مخزّنة على جهاز الكمبيوتر}many{الوصول إلى # ملفًا مخزنًا على جهاز الكمبيوتر}other{الوصول إلى # من الملفات المخزّنة على جهاز الكمبيوتر}}</translation>
 <translation id="119092896208640858">‏لمحو بيانات التصفُّح من هذا الجهاز فقط والاحتفاظ بها في حسابك على Google، يُرجى <ph name="BEGIN_LINK" />تسجيل الخروج<ph name="END_LINK" />.</translation>
-<translation id="1192706927100816598">{0,plural, =1{سيتم تسجيل الخروج تلقائيًا بعد ثانية واحدة.
-يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}zero{سيتم تسجيل الخروج تلقائيًا بعد # ثانية.
-يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}two{سيتم تسجيل الخروج تلقائيًا بعد ثانيتَين.
-يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}few{سيتم تسجيل الخروج تلقائيًا بعد # ثوانٍ.
-يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}many{سيتم تسجيل الخروج تلقائيًا بعد # ثانية.
-يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}other{سيتم تسجيل الخروج تلقائيًا بعد # ثانية.
+<translation id="1192706927100816598">{0,plural, =1{سيتم تسجيل خروجك تلقائيًا بعد ثانية واحدة.
+يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}zero{سيتم تسجيل خروجك تلقائيًا بعد # ثانية.
+يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}two{سيتم تسجيل خروجك تلقائيًا بعد ثانيتَين.
+يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}few{سيتم تسجيل خروجك تلقائيًا بعد # ثوانٍ.
+يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}many{سيتم تسجيل خروجك تلقائيًا بعد # ثانية.
+يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}other{سيتم تسجيل خروجك تلقائيًا بعد # ثانية.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}}</translation>
 <translation id="1193273168751563528">دخول إلى الجلسة المُدارة</translation>
 <translation id="1193927020065025187">قد يحاول هذا الموقع الإلكتروني خداعك للسماح بإشعارات غير مرغوب فيها.</translation>
@@ -268,7 +268,7 @@
 <translation id="1285484354230578868">‏تخزين البيانات في حساب Google Drive</translation>
 <translation id="1288037062697528143">سيتم تشغيل الإضاءة الليلية تلقائيًا عند غروب الشمس.</translation>
 <translation id="1288300545283011870">خصائص الكلام</translation>
-<translation id="1292849930724124745">يجب إدخال البطاقة الذكية لتبقى مسجِّلاً الدخول</translation>
+<translation id="1292849930724124745">أدخِل بطاقة ذكية لتظل مسجلاً الدخول</translation>
 <translation id="1293264513303784526">‏جهاز USB-C (المنفذ الأيسر)</translation>
 <translation id="1293556467332435079">ملفات</translation>
 <translation id="1296911687402551044">تثبيت علامة التبويب المحددة</translation>
@@ -1472,7 +1472,7 @@
 <translation id="265390580714150011">قيمة الحقل</translation>
 <translation id="2654166010170466751">السماح للمواقع الإلكترونية بتثبيت معالجات الدفع</translation>
 <translation id="2654553774144920065">طلب طباعة</translation>
-<translation id="2657807507504044638">‏ما من ملفات تعريفية متوفِّرة لشريحة eSIM. يمكنك تنزيل ملف تعريفي جديد <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
+<translation id="2657807507504044638">‏ما مِن ملفات شخصية متوفِّرة لشريحة eSIM. يمكنك تنزيل ملف شخصي جديد <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />تختلف الميزات حسب الجهاز</translation>
 <translation id="2659971421398561408">‏تغيير حجم قرص نظام التشغيل Crostini</translation>
 <translation id="2660779039299703961">حدث</translation>
@@ -1615,7 +1615,7 @@
 <translation id="2805646850212350655">‏نظام ترميز الملفات لـ Microsoft</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2805770823691782631">تفاصيل إضافية</translation>
-<translation id="2806372837663997957">رفض الجهاز الذي تحاول المشاركة معه طلبك بالمشاركة.</translation>
+<translation id="2806372837663997957">رفض الجهاز الذي تحاول تنفيذ المشاركة معه طلبك.</translation>
 <translation id="2807517655263062534">هنا تظهر الملفات التي تم تنزيلها</translation>
 <translation id="2809586584051668049">و<ph name="NUMBER_ADDITIONAL_DISABLED" /> من الإضافات الأخرى</translation>
 <translation id="2810390687497823527">في حال عدم التعرُّف على إحدى الإضافات أو في حال كان متصفّحك لا يعمل كما هو متوقع، يمكنك إيقاف الإضافات أو تخصيصها هنا.</translation>
@@ -2978,7 +2978,7 @@
 <translation id="4434045419905280838">النوافذ المنبثقة وإعادة التوجيه</translation>
 <translation id="443454694385851356">قديم (غير آمن)</translation>
 <translation id="443475966875174318">تحديث التطبيقات غير المتوافقة أو إزالتها</translation>
-<translation id="4436063104263971834">‏ما من ملفات تعريفية متوفِّرة لشريحة SIM. يمكنك إنشاء ملف تعريفي جديد <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
+<translation id="4436063104263971834">‏ما مِن ملفات شخصية متوفِّرة لشريحة SIM. يمكنك إنشاء ملف شخصي جديد <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
 <translation id="4438043733494739848">شفاف</translation>
 <translation id="4439427728133035643">اتصال الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، الاتصال</translation>
 <translation id="4441124369922430666">هل ترغب في تشغيل هذا التطبيق تلقائيًا عند تشغيل الجهاز؟</translation>
@@ -3234,7 +3234,7 @@
 <translation id="4726710629007580002">ظهرت تحذيرات عن محاولة تثبيت هذه الإضافة:</translation>
 <translation id="4727847987444062305">جلسة الضيف المُدارة</translation>
 <translation id="4728558894243024398">النظام الأساسي</translation>
-<translation id="4728570203948182358">لقد أوقف <ph name="BEGIN_LINK" />المشرف<ph name="END_LINK" /> ميزة "التحقُّق من البرامج الضارّة".</translation>
+<translation id="4728570203948182358">لقد أوقف <ph name="BEGIN_LINK" />مشرفك<ph name="END_LINK" /> عملية التحقُّق من البرامج الضارّة.</translation>
 <translation id="4730492586225682674">أحدث ملاحظة باستخدام قلم الشاشة في وضع قفل الشاشة</translation>
 <translation id="4733793249294335256">الموقع</translation>
 <translation id="473546211690256853">تتم إدارة هذا الحساب من خلال <ph name="DOMAIN" /></translation>
@@ -4540,7 +4540,7 @@
 <translation id="6280215091796946657">تسجيل الدخول باستخدام حساب مختلف</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{تم تجاوز الحد المسموح به والبالغ ورقة واحدة.}zero{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}two{تم تجاوز الحد المسموح به والبالغ ورقتان ({COUNT}).}few{تم تجاوز الحد المسموح به والبالغ {COUNT} أوراق.}many{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}other{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}}</translation>
-<translation id="6283438600881103103">سيتم تسجيل الخروج تلقائيًا الآن.
+<translation id="6283438600881103103">سيتم تسجيل خروجك تلقائيًا الآن.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.</translation>
 <translation id="628352644014831790">4 ثوانٍ</translation>
 <translation id="6285120108426285413">لا يتم تنزيل <ph name="FILE_NAME" /> بشكل شائع وربما يكون ضارًا.</translation>
@@ -5497,7 +5497,7 @@
 <translation id="7427348830195639090">صفحة الخلفية: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">الاتصال من <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">‏لم يتم العثور على أجهزة HID</translation>
-<translation id="7433708794692032816">يجب إدخال البطاقة الذكية للاستمرار في استخدام الجهاز <ph name="DEVICE_TYPE" /></translation>
+<translation id="7433708794692032816">أدخِل بطاقة ذكية للاستمرار في استخدام الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">تجاهل</translation>
 <translation id="7434509671034404296">المطوِّر</translation>
 <translation id="7434635829372401939">مزامنة إعداداتك</translation>

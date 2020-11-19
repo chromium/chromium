@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android एपहरू</translation>
 <translation id="2107021941795971877">मुद्रणसम्बन्धी सहायता प्रदान गर्ने सेवा</translation>
 <translation id="2108755909498034140">आफ्नो कम्प्युटर पुनः सुरु गर्नुहोस्</translation>
+<translation id="2111166930115883695">प्ले गर्न space थिच्नुहोस्</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">कार्ड</translation>
 <translation id="2114841414352855701">यसलाई <ph name="POLICY_NAME" /> द्वारा ओभरराइड गरिएको हुनाले उपेक्षा गरियो।</translation>
@@ -522,6 +523,7 @@
 <translation id="3010559122411665027">सूची प्रविष्टि "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">स्वतः रोक लगाइयो</translation>
 <translation id="3016780570757425217">तपाईँको स्थान जान्नुहोस्</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, सुझाव हटाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्।</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">गलत नीति प्रकार</translation>
 <translation id="3037605927509011580">हरे, स्न्याप!</translation>
@@ -761,6 +763,7 @@
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4058922952496707368">कुञ्जी "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">स्क्रिन क्याप्चर गर्ने कार्य सुचारु भएको छ।</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
 <translation id="4072486802667267160">तपाईंको भुक्तानीको प्रक्रियालाई अघि बढाउँदा कुनै त्रुटि भयो, कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4075732493274867456">ग्राहक र सर्भरले एउटा साधारण SSL प्रोटोकल संस्करण वा साइफर सुइटलाई समर्थन गर्दैनन्।</translation>
@@ -844,6 +847,7 @@
 <translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4300675098767811073">दायाँपट्टि एकभन्दा बढी प्वाल</translation>
+<translation id="4302514097724775343">प्ले गर्न dino मा ट्याप गर्नुहोस्</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">तपाईंको फाइल हेर्न र प्रयोग गर्न सकिएन</translation>
 <translation id="4305817255990598646">स्विच</translation>
@@ -1243,6 +1247,7 @@
 <translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> को मूल नीतिका आधारमा रोक लगाइयो।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक गरिएको)</translation>
+<translation id="5913377024445952699">स्क्रिन क्याप्चर गर्ने सुविधा पज गरियो</translation>
 <translation id="59174027418879706">सक्षम गरिएको</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">सक्रिय छ</translation>
@@ -1255,6 +1260,7 @@
 <translation id="5963413905009737549">खण्ड</translation>
 <translation id="5967592137238574583">सम्पर्कसम्बन्धी जानकारी सम्पादन गर्नुहोस्</translation>
 <translation id="5967867314010545767">इतिहासबाट हटाउनुहोस्</translation>
+<translation id="5968793460449681917">साइट खोल्दैपिच्छे</translation>
 <translation id="5975083100439434680">जुम आउट</translation>
 <translation id="5979084224081478209">पासवर्डहरूको जाँच गर्नुहोस्</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1470,6 +1476,7 @@
 <translation id="6895330447102777224">तपाईंको कार्डको पुष्टि भयो</translation>
 <translation id="6897140037006041989">प्रयोगकर्ता एजेन्ट</translation>
 <translation id="6898699227549475383">संगठन (सं)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> लाई निम्न कार्यहरू गर्न दिनुहोस्:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> तपाईंका MIDI यन्त्रहरूमाथि पूर्ण नियन्त्रण प्राप्त गर्न चाहन्छ</translation>
 <translation id="6915804003454593391">प्रयोगकर्ता:</translation>
 <translation id="6934672428414710184">यो नाम तपाईंको Google खाताबाट लिइएको हो</translation>
@@ -1905,6 +1912,7 @@
 <translation id="8574899947864779331">कार्डहरू अझ छिटो पुष्टि गर्न Touch ID प्रयोग गर्नुहोस्</translation>
 <translation id="858637041960032120">फोन नम्बर थप्नुहोस्</translation>
 <translation id="8589998999637048520">उत्कृष्ट गुणस्तर</translation>
+<translation id="8600271352425265729">यो बेला मात्र</translation>
 <translation id="860043288473659153">कार्डवालाको नाम</translation>
 <translation id="8606726445206553943">तपाईँका MIDI यन्त्रहरू प्रयोग गर्नुहोस्</translation>
 <translation id="8612761427948161954">नमस्ते <ph name="USERNAME" />,
@@ -1914,6 +1922,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">मिल्दो पासवर्ड फेला परेन। सुरक्षित गरिएका सबै पासवर्डहरू देखाउनुहोस्।</translation>
 <translation id="8625384913736129811">यो कार्डलाई यस यन्त्रमा सुरक्षित गर्नुहोस्</translation>
+<translation id="8627040765059109009">स्क्रिनसट खिच्ने सुविधा सुचारु गरिएको छ</translation>
 <translation id="8657078576661269990">तपाईंका एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME_1" /> र <ph name="VM_NAME_2" /> मा सेयर गर्ने रोक लगाउनुभएको छ</translation>
 <translation id="8663226718884576429">अर्डरको सारांश, <ph name="TOTAL_LABEL" />, थप विवरण</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
@@ -2061,6 +2070,7 @@
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="945855313015696284">तल दिइएको जानकारीको जाँच गर्नुहोस् र सबै अमान्य कार्ड मेट्नुहोस्</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
+<translation id="951941430552851965">तपाईंको स्क्रिनमा गोप्य सामग्री भएका कारण तपाईंका एड्मिनले स्क्रिन क्याप्चर गर्ने कार्य अस्थायी रूपमा रोक्का गर्नुभएको छ।</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>
 <translation id="962484866189421427">यो सामग्रीले आफूलाई अर्कै रूपमा प्रस्तुत गर्ने भ्रामक अनुप्रयोगहरूको स्थापना गर्न वा तपाईंलाई ट्र्याक गर्ने कार्यमा प्रयोग गर्न सकिने डेटाको सङ्कलन गर्ने प्रयास गर्न सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">आधिकारिक निर्माण</translation>

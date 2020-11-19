@@ -98,6 +98,7 @@
 <translation id="1838895407229022812">रात्रि प्रकाश निष्क्रिय छ।</translation>
 <translation id="1850504506766569011">Wi-Fi बन्द गरिएको छ।</translation>
 <translation id="1864454756846565995">USB-C यन्त्र (पछाडिको पोर्ट)</translation>
+<translation id="1882814835921407042">मोबाइल नेटवर्कमा कनेक्ट भएको छैन</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> मा प्रतिबिम्बित गर्दै</translation>
 <translation id="1885785240814121742">फिंगरप्रिन्टमार्फत अनलक गर्नुहोस्</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> मा <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ज) रिजोल्युसन प्रयोग गर्न मिल्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) बनाइयो। यो परिवर्तन सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अबको <ph name="TIMEOUT_SECONDS" /> मा यी सेटिङ परिवर्तन गरी पहिलेको जस्तै बनाइने छ।</translation>
@@ -119,6 +120,7 @@
 <translation id="2049240716062114887">डेस्कको नाम बदलेर <ph name="DESK_NAME" /> बनाइयो</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2067602449040652523">किबोर्डको चमक</translation>
+<translation id="2078034614700056995">अर्को डेस्कमा जान टचप्याडमा चारवटा औँलाले दायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="2083190527011054446">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्कमा जोडिएको छैन</translation>
 <translation id="2126242104232412123">नयाँ डेस्क</translation>
@@ -126,6 +128,7 @@
 <translation id="2132302418721800944">फुल स्क्रिनको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="2135456203358955318">डक गरिएको म्याग्निफायर</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फेरि प्रयास गर्नुहोस्</translation>
+<translation id="2170530631236737939">हालैका स्क्रिन देखाइने मोड बन्द गर्न तीनवटा औँलाले तलतिर स्वाइप गर्नुहोस्</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटप मोड</translation>
 <translation id="2220572644011485463">PIN वा पासवर्ड</translation>
 <translation id="2222338659135520253">साइन इन गर्न आवश्यक छ</translation>
@@ -235,6 +238,7 @@
 <translation id="3236488194889173876">मोबाइल नेटवर्क उपलब्ध छैन</translation>
 <translation id="3249513730522716925">विन्डो सारेर <ph name="WINDOW_TITLE" /> डेस्क <ph name="ACTIVE_DESK" /> बाट <ph name="TARGET_DESK" /> डेस्कमा पुर्‍याइयो</translation>
 <translation id="3255483164551725916">तपाईं के गर्न सक्नुहुन्छ?</translation>
+<translation id="3289674678944039601">एड्याप्टरमार्फत चार्ज गरिँदै छ</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3294437725009624529">पाहुना</translation>
 <translation id="3307642347673023554">ल्यापटप मोड प्रयोग गर्न थालियो</translation>
@@ -293,6 +297,7 @@
 <translation id="3799080171973636491">तपाईंले फुल स्क्रिन म्याग्निफायरको किबोर्ड सर्टकट थिच्नुभयो। तपाईं यसलाई सक्रिय गर्न चाहनुहुन्छ?</translation>
 <translation id="380165613292957338">नमस्ते, म कसरी मद्दत गर्न सक्छु?</translation>
 <translation id="3826099427150913765">पासवर्ड प्रयोग गर्न थाल्नुहोस्</translation>
+<translation id="383058930331066723">ब्याट्री सेभर मोड अन छ</translation>
 <translation id="383629559565718788">किबोर्डका सेटिङहरू देखाउनुहोस्</translation>
 <translation id="3846214748874656680">पूर्ण स्क्रिनबाट निस्कनुहोस्</translation>
 <translation id="3846575436967432996">सञ्जाल जानकारी उपलब्ध छैन</translation>
@@ -323,6 +328,7 @@
 <translation id="4112140312785995938">पछाडि जानुहोस्</translation>
 <translation id="4114315158543974537">फोन हब अन गर्नुहोस्</translation>
 <translation id="4121728057981832179">कुनै भर्चुअल मेसिनले तपाईंको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
+<translation id="4126167871198063089">चयन गरेर बोल्ने मोडबाट बाहिरिनुहोस्</translation>
 <translation id="4129129681837227511">आफ्नो लक स्क्रिनमा सूचनाहरू हेर्नका लागि सेटिङहरू परिवर्तन गर्न अनलक गर्नुहोस्</translation>
 <translation id="4146833061457621061">सङ्गीत प्ले गर्नुहोस्</translation>
 <translation id="4149156641122542261"><ph name="DOMAIN" /> ले व्यवस्थित गरेको<ph name="DEVICE_TYPE" /></translation>
@@ -337,6 +343,7 @@
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
+<translation id="425364040945105958">SIM कार्ड छैन</translation>
 <translation id="4261870227682513959">सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। सूचनाहरू निष्क्रिय छन्</translation>
 <translation id="4267383818855338811">कुनै भर्चुअल मेसिनले तपाईंको क्यामेरा प्रयोग गरिरहेको छ</translation>
 <translation id="4269883910223712419">यो यन्त्रको प्रशासक निम्न कुराहरू गर्न सक्नुहु्न्छ:</translation>
@@ -382,6 +389,7 @@
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="4570957409596482333">चयन गरेर बोल्ने सेवासम्बन्धी बटन</translation>
 <translation id="4577274620589681794">समय सकियो · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">प्रिभ्यूहरू देखाउनुहोस्</translation>
 <translation id="4585337515783392668">कुनै अज्ञात प्रापकमा casting गर्न छाड्नुहोस्</translation>
 <translation id="4596144739579517758">अँध्यारो थिम अफ छ</translation>
 <translation id="4623167406982293031">खाता पुष्टि गर्नुहोस्</translation>
@@ -429,11 +437,13 @@
 <translation id="4961318399572185831">स्क्रिन cast गर्नुहोस्</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />घन्टा <ph name="MINUTES" />मिनेट <ph name="SECONDS" />सेकेन्ड</translation>
 <translation id="4975771730019223894">एपमा ब्याज देखाउने सुविधा</translation>
+<translation id="5003993274120026347">अर्को वाक्य</translation>
 <translation id="5019169674188023236">तपाईंको <ph name="DEVICE_TYPE" /> को ब्लुटुथ वा Wi-Fi अफ गरिएको छ जस्तो देखिन्छ। फोन हब प्रयोग गर्न कृपया आफ्नो यन्त्रको ब्लुटुथ वा Wi-Fi कनेक्सन जाँच्नुहोस्।</translation>
 <translation id="5030687792513154421">समय सकियो</translation>
 <translation id="5033299697334913360">फुल स्क्रिनको फोटो खिच्न कुनै ठाउँमा क्लिक गर्नुहोस्</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> कुनै नयाँ फोनसँग जोडियो</translation>
 <translation id="5035389544768382859">डिस्प्ले कन्फिगुरेसन पुष्टि गर्नुहोस्</translation>
+<translation id="504465286040788597">अघिल्लो अनुच्छेद</translation>
 <translation id="5078796286268621944">गलत PIN</translation>
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
@@ -466,13 +476,17 @@
 <translation id="54609108002486618">व्यवस्थापन गरिएको</translation>
 <translation id="5465662442746197494">मद्दत आवश्यक छ?</translation>
 <translation id="5496819745535887422">तपाईंको प्रशासकले तपाईंको यन्त्रलाई पहिलेको स्थितिमा फर्काउँदै हुनुहुन्छ। यन्त्र पुनः सुरु हुँदा सबै डेटा मेटाइने छ।</translation>
+<translation id="5516420770350073386">तपाईंको स्क्रिनमा गोप्य सामग्री भएका कारण तपाईंका एड्मिनले स्क्रिन रेकर्ड गर्ने कार्य बन्द गर्नुभएको छ।</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> कनेक्ट हुँदै छ।</translation>
+<translation id="5532994612895037630">स्क्रिनको सबै भाग रेकर्ड गर्न कुनै पनि ठाउँमा ट्याप गर्नुहोस्</translation>
 <translation id="553675580533261935">सत्रबाट बाहिर जाँदै</translation>
 <translation id="5537725057119320332">कास्ट गर्नु</translation>
 <translation id="554893713779400387">श्रुतिलेखन सुविधा टगल गर्नुहोस्</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5571066253365925590">ब्लुटूथ सक्षम भयो</translation>
+<translation id="557563299383177668">अर्को अनुच्छेद</translation>
+<translation id="55808498489107691">तपाईंको स्क्रिनमा गोप्य सामग्री भएका कारण तपाईंका एड्मिनले स्क्रिन क्याप्चर गर्ने कार्य ब्लक गर्नुभएको छ।</translation>
 <translation id="558849140439112033">फोटो खिच्ने कुनै क्षेत्र चयन गर्न ड्र्याग गर्नुहोस्</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">बोली प्रतिक्रिया असक्षम पार्न Ctrl + Alt + Z थिच्नुहोस्।</translation>
@@ -523,6 +537,7 @@
 <translation id="602001110135236999">बायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6030495522958826102">मेनु सारेर स्क्रिनको फेदको बायाँ कुनामा लगियो।</translation>
+<translation id="6032620807120418574">स्क्रिनको सबै भाग रेकर्ड गर्न कुनै पनि ठाउँमा क्लिक गर्नुहोस्</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6043212731627905357">तपाईंको मनिटरले <ph name="DEVICE_TYPE" /> सँग राम्ररी काम गरिरहेको छैन (यस मनिटरलाई समर्थन छैन)।</translation>
 <translation id="6043994281159824495">अहिले साइन आउट गर्नुहोस्</translation>
@@ -531,6 +546,7 @@
 <translation id="6059276912018042191">Chrome का हालसालै खोलिएका ट्याबहरू</translation>
 <translation id="6062360702481658777">तपाइँ <ph name="LOGOUT_TIME_LEFT" /> मा स्वचालित रूपमा साइन आउट हुनुहुनेछ।</translation>
 <translation id="607652042414456612">तपाइँको कम्प्युटर नजिकको ब्लुतुथ यन्त्रहरूको लागि दृश्य-योग्य छ र "<ph name="NAME" />" को रूपमा ठेगाना <ph name="ADDRESS" /> सँग देखा पर्नेछ</translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> को खाता हटाउने कार्यसम्बन्धी डायलग खोल्नुहोस्</translation>
 <translation id="615957422585914272">अन-स्क्रिन कुञ्जीपाटी देखाउनुहोस्</translation>
@@ -545,6 +561,7 @@
 <translation id="6283712521836204486">बाधा नपुर्‍याउनुहोस् नामक मोड निष्क्रिय छ।</translation>
 <translation id="6284232397434400372">रिजोल्युसन परिवर्तन गरियो</translation>
 <translation id="6288235558961782912">अभिभावकको अनुमति लिएर <ph name="USER_EMAIL_ADDRESS" /> पछि पुनः थप्न सकिन्छ।</translation>
+<translation id="6291221004442998378">चार्ज भइरहेको छैन</translation>
 <translation id="6297287540776456956">कुनै क्षेत्रलाई चयन गर्न स्टाइलसको प्रयोग गर्नुहोस्</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> लाई <ph name="ROTATION" /> मा घुमाइएको थियो</translation>
 <translation id="6315170314923504164">भ्वाइस</translation>
@@ -573,6 +590,7 @@
 <translation id="6537924328260219877">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, <ph name="BATTERY_STATUS" /> फोनको ब्याट्री</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
 <translation id="6559976592393364813">प्रशासकलाई सोध्नुहोस्</translation>
+<translation id="6570902864550063460">USB मार्फत चार्ज गरिँदै छ</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुन्छ।</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6614169507485700968">गोपनीयताको स्क्रिन सक्रिय छ</translation>
@@ -650,6 +668,7 @@
 <translation id="7377169924702866686">क्याप्स लक सक्रिय छ।</translation>
 <translation id="7378203170292176219">रेकर्ड गर्ने कुनै क्षेत्र चयन गर्न ड्र्याग गर्नुहोस्</translation>
 <translation id="7378594059915113390">मिडियासम्बन्धी नियन्त्रणहरू</translation>
+<translation id="7378889811480108604">ब्याट्री सेभर मोड अफ छ</translation>
 <translation id="7392563512730092880">तपाईं पछि जुनसुकै बेला सेटिङमा गई सेट अप गर्न सक्नुहुन्छ।</translation>
 <translation id="7398254312354928459">नेटवर्क जडान बदल्ने कार्य गरियो</translation>
 <translation id="7405710164030118432">यन्त्र अनलक गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड प्रविष्टि गर्नुहोस्‌</translation>
@@ -699,6 +718,7 @@
 <translation id="7837740436429729974">समय सकियो</translation>
 <translation id="7842569679327885685">चेतावनी: परीक्षणको क्रममा रहेको सुविधा</translation>
 <translation id="7846634333498149051">किबोर्ड</translation>
+<translation id="7860671499921112077">हालैका स्क्रिन देखाइने मोड खोल्न तीनवटा औँलाले माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="7868900307798234037">फिंगरप्रिन्टमार्फत अनलक गर्दै</translation>
 <translation id="7872786842639831132">अफ छ</translation>
 <translation id="7886169021410746335">गोपनीयतासम्बन्धी सेटिङहरूको समायोजन गर्नुहोस्</translation>
@@ -723,6 +743,7 @@
 <translation id="8029247720646289474">हटस्पटमा कनेक्ट गर्न सकिएन</translation>
 <translation id="8029629653277878342">थप सुरक्षाका लागि PIN वा पासवर्ड चाहिन्छ</translation>
 <translation id="8030169304546394654">जडान विच्छेद भयो</translation>
+<translation id="8036504271468642248">अघिल्लो वाक्य</translation>
 <translation id="8042893070933512245">पहुँचसम्बन्धी सेटिङको मेनु खोल्नुहोस्</translation>
 <translation id="8048123526339889627">ब्लुटुथका सेटिङहरू</translation>
 <translation id="8054466585765276473">ब्याटरि समय हिसाब गर्दै।</translation>
@@ -739,6 +760,7 @@
 <translation id="8152092012181020186">बन्द गर्न Ctrl + W थिच्नुहोस्।</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> तपाईंका प्रशासक यो सेटिङ मिलाउनुहुन्छ।</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> प्रयोग गर्दै</translation>
+<translation id="8170567869359129153">मोबाइल नेटवर्क। सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /> छ</translation>
 <translation id="8192202700944119416">सूचनाहरू लुकाइन्छन्।</translation>
 <translation id="8196787716797768628">एउटा अनुप्रयोगबाट तुरुन्तै अर्को अनुप्रयोगमा जान र आफ्नो Chromebook ट्याब्लेट मोडमा प्रयोग गर्न इसाराहरूको प्रयोग गर्नुहोस्।</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
@@ -748,6 +770,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, फोनको ब्याट्री <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> का लागि अनलक गर्न Enter थिच्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
+<translation id="8284362522226889623">अघिल्लो डेस्कमा जान टचप्याडमा चारवटा औँलाले बायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="828708037801473432">अफ</translation>
 <translation id="8297006494302853456">कमजोर</translation>
 <translation id="8308637677604853869">अघिल्लो मेनु</translation>
@@ -804,6 +827,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> मा जोड्नुहोस्</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">इनपुट विधिसम्बन्धी सेटिङ</translation>
 <translation id="8825863694328519386">पछि फर्कन दायाँबाट स्वाइप गर्नुहोस्</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">पछाडि नामक बटन</translation>
@@ -861,6 +885,7 @@
 <translation id="921989828232331238">तपाईंका अभिभावकले आजका लागि तपाईंको यन्त्र लक गर्नुभयो</translation>
 <translation id="9220525904950070496">खाता हटाउनुहोस्</translation>
 <translation id="923686485342484400">साइन आउट गर्न दुई पटक Control Q थिच्नुहोस्।</translation>
+<translation id="925832987464884575">प्रिभ्यूहरू लुकाउनुहोस्</translation>
 <translation id="938963181863597773">मेरो क्यालेन्डरमा के छ?</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="98515147261107953">ल्यान्डस्केप</translation>

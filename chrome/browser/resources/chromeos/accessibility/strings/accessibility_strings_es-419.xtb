@@ -24,7 +24,7 @@
 <translation id="1126928665165112660">Sin cursiva</translation>
 <translation id="113582498867142724">Colección de <ph name="TAG" /> con <ph name="NUM" /> elementos</translation>
 <translation id="1161762950103988776">Saltar</translation>
-<translation id="1164857107703583584">Los comandos de salto pueden usarse para navegar de manera eficaz por la página web.</translation>
+<translation id="1164857107703583584">Los comandos de salto pueden usarse para navegar con eficiencia por páginas web.</translation>
 <translation id="1175914831232945926">Dígitos</translation>
 <translation id="1188858454923323853">complementario</translation>
 <translation id="1189258430971676908">Área de práctica: Listas desplegables</translation>
@@ -115,7 +115,7 @@
 <translation id="1714116687360794776">Medidor</translation>
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">pie</translation>
-<translation id="1730447754326314349">Te damos la bienvenida al instructivo de ChromeVox. Para salir del instructivo en cualquier momento, presiona la tecla Escape, que se encuentra en la esquina superior izquierda del teclado. Para desactivar ChromeVox, mantén presionado Control and y Alt y presiona Z. Cuando esté todo listo, usa la barra espaciadora para pasar a la siguiente lección.</translation>
+<translation id="1730447754326314349">Te damos la bienvenida al instructivo de ChromeVox. Para salir del instructivo en cualquier momento, presiona la tecla Escape, que se encuentra en la esquina superior izquierda del teclado. Para desactivar ChromeVox, mantén presionadas las teclas Control y Alt y presiona Z. Cuando esté todo listo, usa la barra espaciadora para pasar a la lección siguiente.</translation>
 <translation id="174268867904053074">Siguiente gráfico</translation>
 <translation id="1756785467854861272">Magenta oscuro</translation>
 <translation id="1765245556747822181">Deslizar un dedo hacia arriba</translation>
@@ -164,7 +164,7 @@
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Hacer clic en el elemento actual</translation>
 <translation id="2179452035581866348">ChromeVox usa sonidos para otorgarte información fundamental y adicional. Puedes usar estos sonidos para navegar con mayor velocidad al aprender qué significa cada sonido. Cuando te sientas más cómodo, puedes desactivar las descripciones detalladas de voz y confiar en los sonidos para obtener información fundamental sobre la página. A continuación, encontrarás una lista completa de sonidos y sus significados.</translation>
-<translation id="2183409941723714159">Navegación con la tecla de tabulación</translation>
+<translation id="2183409941723714159">Navegación con la tecla Tab</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{paréntesis de cierre}other{# paréntesis de cierre}}</translation>
 <translation id="2197863150503783129">Marrón arenoso</translation>
 <translation id="2199994615414171367">Expresión matemática anterior</translation>
@@ -341,7 +341,7 @@
 <translation id="335581015389089642">Voz</translation>
 <translation id="3356951775008366684">Anuncia la pronunciación fonética de las palabras</translation>
 <translation id="3359142382821736686">seprtr</translation>
-<translation id="3363015957057974366">Para pasar al siguiente elemento interactivo de la pantalla, también puedes usar la tecla de tabulación, que se encuentra inmediatamente arriba de la tecla Búsqueda. Para continuar, presiona la tecla de tabulación.</translation>
+<translation id="3363015957057974366">Para pasar al siguiente elemento interactivo de la pantalla, también puedes usar la tecla Tab, que se encuentra inmediatamente arriba de la tecla Búsqueda. Para continuar, presiona la tecla Tab.</translation>
 <translation id="3366946046494222386">Instructivo sobre <ph name="TOPIC" />: <ph name="LESSONS" /> lecciones</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{más}other{# signos más}}</translation>
 <translation id="338583716107319301">Separador</translation>
@@ -350,7 +350,7 @@
 <translation id="3406283310380167331">Mostrar lista de formularios</translation>
 <translation id="3414400929511680526">Azul Alicia</translation>
 <translation id="3418936350470374046">No hay celdas debajo</translation>
-<translation id="3435494200763325275">Navegación con la tecla de tabulación (continuación)</translation>
+<translation id="3435494200763325275">Navegación con la tecla Tab (continuación)</translation>
 <translation id="344800400831402066">Perú</translation>
 <translation id="3457000393508828486">Presionado parcialmente</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, desactivar</translation>
@@ -546,7 +546,7 @@
 <translation id="4973717656530883744">Mínimo <ph name="X" /></translation>
 <translation id="4974612477719259470">No hay botones anteriores</translation>
 <translation id="4979404613699303341">Botón anterior</translation>
-<translation id="4982917827052020884">Comencemos con algunas teclas que usas normalmente. Con la tecla Control, que se encuentra en la esquina inferior izquierda del teclado, puedes silenciar la voz actual. Para continuar, presiona la tecla Control.</translation>
+<translation id="4982917827052020884">Comencemos con algunas teclas que usarás con frecuencia. Con la tecla Control, que se encuentra en la esquina inferior izquierda del teclado, puedes silenciar la voz actual. Para continuar, presiona la tecla Control.</translation>
 <translation id="4983588134362688868">Ir al principio de la página</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ventana</translation>
 <translation id="4993152509206108683">Velocidad: <ph name="PERCENT" /> %</translation>
@@ -582,7 +582,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Finalizar</translation>
 <translation id="5302089807023311274">Referencia bibliográfica</translation>
-<translation id="530391007967514163">Salta de un encabezado al siguiente.</translation>
+<translation id="530391007967514163">Navega por el texto que sigue saltando de un encabezado a otro.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, pestaña</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5310788376443009632">eliminado:</translation>
@@ -632,7 +632,7 @@
 <translation id="5598905979683743333"><ph name="NAME" />, botón de selección no seleccionado</translation>
 <translation id="5601172225407283979">Realizar acción predeterminada</translation>
 <translation id="5608798115546226984">Integración de autocompletados</translation>
-<translation id="5616029807486814372">Siguiente lección</translation>
+<translation id="5616029807486814372">Lección siguiente</translation>
 <translation id="561939826962581046">time</translation>
 <translation id="5623778242535476823">rbtn</translation>
 <translation id="5623842676595125836">Registro</translation>
@@ -665,11 +665,11 @@
 <translation id="5850707923114094062">Desplazar hacia atrás</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
 <translation id="5866042630553435010">Seleccionado parcialmente</translation>
-<translation id="5866210856231860256">Presiona Búsqueda + flecha hacia la derecha o Búsqueda + flecha hacia la izquierda para navegar de una lección a otra en este tema</translation>
+<translation id="5866210856231860256">Presiona Búsqueda + flecha hacia la derecha o Búsqueda + flecha hacia la izquierda para navegar entre lecciones dentro de este tema</translation>
 <translation id="5867591286054666064">Durante este instructivo, presiona cualquier tecla para escuchar su nombre.</translation>
 <translation id="5869546221129391014">Cuadrícula</translation>
 <translation id="5876817486144482042">Disminuir el volumen de voz</translation>
-<translation id="5878206664863390311">Presiona Búsqueda + flecha hacia la derecha o Búsqueda + flecha hacia la izquierda para navegar de un tema a otro</translation>
+<translation id="5878206664863390311">Presiona Búsqueda + flecha hacia la derecha o Búsqueda + flecha hacia la izquierda para navegar entre temas</translation>
 <translation id="5878908838135392163">Azul pastel</translation>
 <translation id="588108970619830498">Se restablecen los valores predeterminados de la configuración de texto a voz</translation>
 <translation id="5891934789323004067">Tabla</translation>
@@ -783,7 +783,7 @@
 <translation id="6858047746862060282">Prólogo</translation>
 <translation id="6859876496651143278">Deslizar un dedo hacia la izquierda</translation>
 <translation id="6865519907510167493">Error ortográfico</translation>
-<translation id="6873188295213080042">Sugerencia: Mantén presionado Búsqueda y presiona las flechas para navegar.</translation>
+<translation id="6873188295213080042">Sugerencia: Con la tecla Búsqueda presionada, presiona las flechas para navegar.</translation>
 <translation id="6894148351896207544">Di la fecha y la hora actuales</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897341342232909480">Mover hacia la izquierda</translation>
@@ -849,7 +849,7 @@
 <translation id="7308519659008003150">No hay campos de formulario anteriores</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">se seleccionó parcialmente</translation>
-<translation id="7344012264516629579">Los comandos de salto adicionales incluyen saltos por vínculo, botón y casilla de verificación, entre otros. En los menús de ChromeVox, encontrarás una lista completa de los comandos de salto. Para acceder a estos menúes, presiona Búsqueda + la tecla de punto.</translation>
+<translation id="7344012264516629579">Entre otros comandos de salto se incluyen saltos por vínculo, botón y casilla de verificación. Encontrarás una lista completa de los comandos de salto en los menús de ChromeVox, que puedes abrir presionando Búsqueda + punto.</translation>
 <translation id="7356165926712028380">Cambiar a braille de ocho puntos</translation>
 <translation id="7356610683936413584">Detalle de la lista de descripciones</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{et}other{# signos et}}</translation>
@@ -859,7 +859,7 @@
 <translation id="739763518212184081">Línea anterior</translation>
 <translation id="7400575256015741911">Error de ortografía detectado</translation>
 <translation id="7408482676469142474">tbl</translation>
-<translation id="7419264136822406994">Puedes usar Mayúsculas + tecla de tabulación para ir al elemento interactivo anterior. Para continuar, presiona Mayúsculas + tecla de tabulación.</translation>
+<translation id="7419264136822406994">Puedes usar Mayúsculas + Tab para ir al elemento interactivo anterior. Para continuar, presiona Mayúsculas + Tab.</translation>
 <translation id="7425395583360211003">retorno de carro</translation>
 <translation id="7429415133937917139">Simula el resultado de una pantalla braille que se actualiza
     en el panel de ChromeVox, en la parte superior de la pantalla</translation>
@@ -887,7 +887,7 @@
 <translation id="762020119231868829">Detiene todos los widgets de medios que se estén reproduciendo.</translation>
 <translation id="7625690649919402823">Siguiente tabla</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grado <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">Presiona Búsqueda + flecha hacia la derecha para encontrar el área de práctica o el botón Siguiente lección. Luego, presiona Búsqueda + barra espaciadora para activar la selección.</translation>
+<translation id="7637342083105831460">Presiona Búsqueda + flecha hacia la derecha para encontrar el área de práctica o el botón Lección siguiente. Luego, presiona Búsqueda + barra espaciadora para activar la selección.</translation>
 <translation id="7639968568612851608">Gris oscuro</translation>
 <translation id="7663318257180412551">Encabezado 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{hora}other{horas}}</translation>
@@ -999,7 +999,7 @@
 <translation id="8473540203671727883">Pronunciar el texto cuando pasas el puntero del mouse</translation>
 <translation id="8476408756881832830">Pausar la reproducción cuando ChromeVox esté hablando</translation>
 <translation id="8476508772960940536">vista general de ventana</translation>
-<translation id="8480873377842220259">Ya aprendiste algunos aspectos básicos de la navegación. Para pasar de una pantalla a otra, mantén presionado Búsqueda y presiona las flechas. Para continuar, presiona Búsqueda + flecha hacia la derecha.</translation>
+<translation id="8480873377842220259">Ya aprendiste algunos aspectos básicos de la navegación. Para desplazarte por la pantalla, mantén presionada la tecla Búsqueda y presiona las flechas. Para continuar, presiona Búsqueda + flecha hacia la derecha.</translation>
 <translation id="8503360654911991865">Disminuir nivel de detalle de navegación</translation>
 <translation id="8520472399088452386">Botón de número</translation>
 <translation id="8534394844575788431">Formato</translation>
@@ -1034,7 +1034,7 @@
 <translation id="875769700429317857">Se completó la descarga de <ph name="FILE_NAME" /></translation>
 <translation id="8767968232364267681">Siguiente encabezado de nivel 4</translation>
 <translation id="8770473310765924354">salir del contenido estructurado, como tablas</translation>
-<translation id="8775203254697638994">Para seleccionar un elemento de una lista desplegable, primero expande la lista presionando Búsqueda + barra espaciadora. Luego, usa las flechas hacia arriba y abajo para seleccionar un elemento. Por último, contrae la lista presionando Búsqueda + barra espaciadora.</translation>
+<translation id="8775203254697638994">Para seleccionar un elemento de una lista desplegable, primero expande la lista presionando Búsqueda + barra espaciadora. Luego, usa las flechas hacia arriba y abajo para seleccionarlo. Por último, contrae la lista presionando Búsqueda + barra espaciadora.</translation>
 <translation id="8779057862865475116">No hay vínculos anteriores</translation>
 <translation id="8796411681063377102">Siguiente encabezado de nivel 3</translation>
 <translation id="8823311177246872527">Página <ph name="CURRENTPAGE" /> de <ph name="TOTALPAGES" /></translation>

@@ -813,7 +813,7 @@
 <translation id="1885106732301550621">Levytila</translation>
 <translation id="1886996562706621347">Anna sivustojen ehdottaa protokollien oletuskäsittelypalveluiden määrittämistä (suositus)</translation>
 <translation id="1887442540531652736">Sisäänkirjautumisvirhe</translation>
-<translation id="1887597546629269384">Sano taas Hei Google</translation>
+<translation id="1887597546629269384">Sano taas OK Google</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
 <translation id="1890674179660343635">&lt;span&gt;Tunnus:&lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
 <translation id="1891362123137972260">Levytila on erittäin vähissä. Vapauta levytilaa.</translation>
@@ -2900,7 +2900,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4349828822184870497">Hyödyllinen</translation>
 <translation id="4350019051035968019">Tätä laitetta ei voi rekisteröidä verkkotunnukselle, johon tilisi kuuluu, koska laite on merkitty eri verkkotunnuksen hallinnoitavaksi.</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> ei saa koskaan käyttää sijaintitietojasi</translation>
-<translation id="4350782034419308508">Hei Google</translation>
+<translation id="4350782034419308508">OK Google</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> haluaa etsiä lähellä olevia Bluetooth-laitteita. Seuraavat laitteet löydettiin:</translation>
 <translation id="4354073718307267720">Kysy aina, kun sivusto pyytää lupaa luoda 3D-kartan ympäristöstäsi tai seurata kameran asentoa</translation>
 <translation id="4354344420232759511">Käyttämäsi sivustot tulevat näkyviin tähän</translation>
@@ -3056,7 +3056,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4531924570968473143">Kenet haluat lisätä tälle laitteelle (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4532625150642446981"><ph name="USB_DEVICE_NAME" /> on käytössä. Käytössä olevan laitteen siirtäminen voi johtaa virheisiin. Haluatko varmasti jatkaa?</translation>
 <translation id="4532646538815530781">Tämä sivusto käyttää liiketunnistimia.</translation>
-<translation id="4533846798469727141">Sano nyt Hei Google</translation>
+<translation id="4533846798469727141">Sano nyt OK Google</translation>
 <translation id="4533985347672295764">Prosessoriaika</translation>
 <translation id="4534661889221639075">Yritä uudelleen.</translation>
 <translation id="4535127706710932914">Oletusprofiili</translation>

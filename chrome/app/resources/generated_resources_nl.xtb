@@ -1610,7 +1610,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2805770823691782631">Aanvullende informatie</translation>
-<translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert niet</translation>
+<translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert dit niet</translation>
 <translation id="2807517655263062534">Bestanden die je downloadt, worden hier weergegeven</translation>
 <translation id="2809586584051668049">en <ph name="NUMBER_ADDITIONAL_DISABLED" /> meer</translation>
 <translation id="2810390687497823527">Als je een extensie niet herkent of als je browser niet werkt zoals verwacht, kun je extensies hier uitschakelen of aanpassen.</translation>
@@ -1823,7 +1823,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3058498974290601450">Je kunt synchronisatie op elk gewenst moment inschakelen via de instellingen</translation>
 <translation id="3060379269883947824">'Selecteer om uitgesproken te worden' inschakelen</translation>
 <translation id="3060952009917586498">Wijzig de taal van het apparaat. De huidige taal is <ph name="LANGUAGE" />.</translation>
-<translation id="3060987956645097882">We kunnen geen verbinding met je telefoon maken. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi zijn ingeschakeld.</translation>
+<translation id="3060987956645097882">We kunnen geen verbinding maken met je telefoon. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi zijn ingeschakeld.</translation>
 <translation id="3065041951436100775">Feedback over gesloten tabblad.</translation>
 <translation id="306535478112428611">Geen toestemming om bestanden en mappen op je apparaat te bewerken</translation>
 <translation id="3065522099314259755">Herhalingsvertraging toetsenbord</translation>
@@ -3685,7 +3685,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5297082477358294722">Het wachtwoord is opgeslagen. Bekijk en beheer opgeslagen wachtwoorden in je <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5298219193514155779">Thema gemaakt door</translation>
 <translation id="5299109548848736476">Niet bijhouden</translation>
-<translation id="5299558715747014286">Je tabbladgroepen weergeven en beheren</translation>
+<translation id="5299558715747014286">Je tabbladgroepen bekijken en beheren</translation>
 <translation id="5300287940468717207">Sitemachtigingen resetten?</translation>
 <translation id="5300589172476337783">Weergeven</translation>
 <translation id="5300719150368506519">URL's van pagina's die je bezoekt naar Google sturen</translation>
@@ -4312,7 +4312,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6031600495088157824">Invoeropties in werkbalk</translation>
 <translation id="6032715498678347852">Klik op een extensie om de extensie toegang tot deze site te geven.</translation>
 <translation id="6032912588568283682">Bestandssysteem</translation>
-<translation id="603539183851330738">Knop voor aAutocorrectie ongedaan maken. Terugzetten naar <ph name="TYPED_WORD" />.  Druk op Enter om te activeren of op Escape om te sluiten.</translation>
+<translation id="603539183851330738">Knop voor autocorrectie ongedaan maken. Terugzetten naar <ph name="TYPED_WORD" />.  Druk op Enter om te activeren of op Escape om te sluiten.</translation>
 <translation id="6035517790085323771">Wie content met jouw apparaat kan delen</translation>
 <translation id="6038929619733116134">Blokkeren als site opdringerige of misleidende advertenties weergeeft</translation>
 <translation id="6039651071822577588">Woordenboek van netwerkproperty is onjuist opgemaakt</translation>
@@ -4451,7 +4451,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6185132558746749656">Apparaatlocatie</translation>
 <translation id="6186394437969115158">Sites kiezen er vaak voor advertenties weer te geven zodat ze hun content en services gratis kunnen aanbieden. Het is echter bekend dat bepaalde sites opdringerige of misleidende advertenties weergeven.</translation>
 <translation id="6195693561221576702">Dit apparaat kan niet worden ingesteld in de offline demomodus.</translation>
-<translation id="6196640612572343990">Indirecte cookies blokkeren</translation>
+<translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6196854373336333322">De extensie '<ph name="EXTENSION_NAME" />' heeft het beheer van je proxyinstellingen overgenomen. Dit betekent dat de extensie alles wat je online doet, kan wijzigen, beschadigen of bekijken. Als je niet zeker weet waarom deze wijziging heeft plaatsgevonden, is het waarschijnlijk een ongewenste wijziging.</translation>
 <translation id="6198102561359457428">Log uit en log daarna weer in...</translation>
 <translation id="6198252989419008588">Pincode wijzigen</translation>

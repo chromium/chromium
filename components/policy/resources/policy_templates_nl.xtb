@@ -198,7 +198,7 @@
 <translation id="1309465583050255779">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is ingeschakeld en je <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> instelt, wordt de naam van de standaard zoekprovider gespecificeerd.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> niet instelt, wordt de hostnaam gebruikt die door de zoek-URL wordt gespecificeerd.</translation>
-<translation id="1310052497030002740">Als je het beleid instelt, probeert <ph name="PRODUCT_NAME" /> zichzelf te registreren bij <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. De waarde van dit beleid is een token voor inschrijving die je kunt ophalen uit de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+<translation id="1310052497030002740">Als je het beleid instelt, probeert <ph name="PRODUCT_NAME" /> zichzelf aan te melden bij <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. De waarde van dit beleid is een token voor inschrijving die je kunt ophalen uit de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Zie https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 voor meer informatie.</translation>
 <translation id="1312799700549720683">Beheert weergave-instellingen.</translation>
@@ -419,7 +419,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="1617235075406854669">Verwijderen van browser- en downloadgeschiedenis inschakelen</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1626379196197114720">Toestaan dat de Back-Forward Cache wordt gebruikt</translation>
-<translation id="1628974048137236820">De pagina 'Nieuw tabblad' laat geen kaarten zien</translation>
+<translation id="1628974048137236820">Geen kaarten te zien op de pagina Nieuw tabblad</translation>
 <translation id="163200210584085447">Patronen in deze lijst worden vergeleken met de
       beveiligingsoorsprong van de aanvragende URL. Als een overeenkomst
       wordt gevonden, wordt toegang tot apparaten voor het vastleggen van
@@ -1862,7 +1862,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3821861026311587684">De gebruiker gedwongen uitloggen als zijn of haar account niet meer geverifieerd is</translation>
 <translation id="3823381379309653965">Als je het beleid instelt, wordt de periode in milliseconden gespecificeerd waarna de apparaatbeheerservice wordt gevraagd om informatie over het apparaatbeleid. Geldige waarden liggen tussen 1.800.000 (30 minuten) en 86.400.000 (1 dag). Waarden buiten dit bereik worden vast ingesteld op de respectieve grenswaarde.
 
-      Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaard waarde van 3 uur.
+      Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardwaarde van 3 uur.
 
       Opmerking: Beleidsmeldingen dwingen een vernieuwing af als het beleid wordt gewijzigd, waardoor frequente vernieuwingen overbodig zijn. Als het platform deze meldingen ondersteunt, is de vernieuwingsvertraging 24 uur (hierbij worden alle standaardinstellingen en de waarde van dit beleid genegeerd).</translation>
 <translation id="382476126209906314">Het voorvoegsel voor het TalkGadget configureren voor hosts voor externe toegang</translation>
@@ -2085,7 +2085,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Dit beleid heeft alleen gevolgen voor gebruikers die SAML-verificatie gebruiken.</translation>
 <translation id="4105989332710272578">Handhaving van Certificaattransparantie voor een lijst met URL's uitschakelen</translation>
 <translation id="4121350739760194865">Voorkomen dat app-promoties worden weergegeven op de pagina 'Nieuw tabblad'</translation>
-<translation id="4122473079291425973">De pagina 'Nieuw tabblad' laat kaarten zien als er content beschikbaar is, maar gebruikers mogen deze instelling wijzigen</translation>
+<translation id="4122473079291425973">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is, maar gebruikers mogen deze instelling wijzigen</translation>
 <translation id="412697421478384751">Gebruikers toestaan om zwakke pincodes in te stellen als pincode voor het vergrendelscherm</translation>
 <translation id="4138655880188755661">Tijdslimiet</translation>
 <translation id="4144164749344898721">Dit beleid beheert meerdere instellingen voor de energiebeheerstrategie wanneer de gebruiker inactief is.
@@ -2987,9 +2987,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Deze instelling bepaalt de presentatie van de welkomstpagina's waar gebruikers kunnen inloggen op <ph name="PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> kunnen instellen als standaardbrowser van de gebruiker of anderszins kunnen worden geïnformeerd over productfuncties.</translation>
 <translation id="544654037134815017">Met dit beleid bepaal je of er kaarten worden weergegeven op de pagina Nieuw tabblad. Kaarten tonen startpunten voor algemene gebruikerstrajecten op basis van het browsegedrag van de gebruiker.
 
-      Als je het beleid inschakelt, laat de pagina 'Nieuw tabblad' kaarten zien als er content beschikbaar is.
+      Als je het beleid inschakelt, laat de pagina Nieuw tabblad kaarten zien als er content beschikbaar is.
 
-      Als je het beleid uitschakelt, laat de pagina 'Nieuw tabblad' geen kaarten zien.
+      Als je het beleid uitschakelt, laat de pagina Nieuw tabblad geen kaarten zien.
 
       Als je het beleid niet instelt, kan de gebruiker zelf bepalen of de kaarten wel of niet zichtbaar zijn. De standaardwaarde is 'zichtbaar'.
       </translation>
@@ -3541,7 +3541,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Opmerking: Wachtwoorden kunnen ouder zijn dan de ingestelde periode als de client langere tijd offline is.</translation>
 <translation id="6281043242780654992">Configureert beleid voor systeemeigen berichten. Hosts voor systeemeigen berichten op de zwarte lijst worden niet toegestaan, tenzij ze op de witte lijst worden gezet.</translation>
-<translation id="6282524907402492171">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> weergeven</translation>
+<translation id="6282524907402492171">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> tonen</translation>
 <translation id="6282799760374509080">Het opnemen van audio toestaan of weigeren</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6310223829319187614">Automatisch aanvullen van domeinnaam bij inloggen van gebruiker inschakelen</translation>
@@ -3713,7 +3713,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als je het beleid niet instelt, 'Gebruikers laten bepalen' instelt of het beleid instelt op 'None', bepalen gebruikers de automatische tijdzonedetectie via de normale opties in chrome://settings.</translation>
 <translation id="6532769014584932288">Wake locks toestaan</translation>
-<translation id="6536444379078076149">De weergave van verbindingsgerelateerde UI op de hostdesktop in- of uitschakelen als er een verbinding actief is</translation>
+<translation id="6536444379078076149">De weergave van verbindingsgerelateerde UI op de hostdesktop in- of uitschakelen als er een verbinding actief is.</translation>
 <translation id="6536600139108165863">Automatisch opnieuw opstarten wanneer apparaat wordt afgesloten</translation>
 <translation id="6539246272469751178">Dit beleid is niet van invloed op Android-apps. Android-apps gebruiken altijd de standaardmap voor downloads en hebben geen toegang tot bestanden die door <ph name="PRODUCT_OS_NAME" /> zijn gedownload naar een niet-standaard downloadmap.</translation>
 <translation id="654303922206238013">Migratiestrategie voor eCryptfs</translation>
@@ -4849,7 +4849,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> niet instelt, worden er geen alternatieve URL's gespecificeerd om zoektermen uit de zoekmachine te extraheren.</translation>
 <translation id="8006921530139404577">Als je dit beleid uitschakelt, wordt verbindingsgerelateerde UI (bijvoorbeeld het venster voor verbinding verbreken) niet weergegeven voor niet-afgeschermde verbindingen voor externe toegang. Dit beleid heeft geen gevolgen voor afgeschermde verbindingen voor externe toegang en externe supportsessies.
 
-          Dit beleid is niet van kracht als het is ingesteld op True, leeg wordt gelaten of niet wordt ingesteld.</translation>
+          Dit beleid is niet geldig als het is ingesteld op True, leeg wordt gelaten of niet wordt ingesteld.</translation>
 <translation id="8011935490612940798">De functie <ph name="PRODUCT_NAME" /> beheren.</translation>
 <translation id="802147957407376460">Scherm 0 graden draaien</translation>
 <translation id="8027265928215448940">Lijst met instellingen voor Chrome Enterprise-connectorservices die moeten worden toegepast op de Enterprise-connector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt gedownload in Chrome.
@@ -5406,12 +5406,12 @@ Dit beleid wordt verwijderd in M75.</translation>
       Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien opgegeven, moet verwijzen naar een XML-updatedocument voor het manifest ( https://developer.chrome.com/extensions/autoupdate ). Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven.
 
        Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Bekijk meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).</translation>
-<translation id="8832829916385857156">De pagina 'Nieuw tabblad' laat kaarten zien als er content beschikbaar is</translation>
+<translation id="8832829916385857156">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is</translation>
 <translation id="8833109046074170275">Verificatie via GAIA (standaard)</translation>
-<translation id="8834641112681661892">Als je het beleid instelt, wordt de maximum vertraging in milliseconden gespecificeerd tussen het ontvangen van een ongeldigverklaring van een beleid en het ophalen van het nieuwe beleid uit de apparaatbeheerservice Geldige waarden liggen tussen 1000 (1 seconde) en 300.000 (5 minuten). Waarden buiten dit bereik worden vast ingesteld op de respectieve grenswaarde.
+<translation id="8834641112681661892">Als je het beleid instelt, wordt de maximumvertraging in milliseconden gespecificeerd tussen het ontvangen van een ongeldigverklaring van een beleid en het ophalen van het nieuwe beleid uit de apparaatbeheerservice. Geldige waarden liggen tussen 1000 (1 seconde) en 300.000 (5 minuten). Waarden buiten dit bereik worden vast ingesteld op de respectieve grenswaarde.
 
       Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaardwaarde van 10 seconden.</translation>
-<translation id="885147810817138322">Media-aanbevelingen weergeven aan gebruikers</translation>
+<translation id="885147810817138322">Media-aanbevelingen tonen aan gebruikers</translation>
 <translation id="8852579753940989645">Code-integriteit van weergaveprogramma inschakelen</translation>
 <translation id="8854571659927427063">Als je het beleid inschakelt, worden de bookmarks van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid uitschakelt of niet instelt, worden de bookmarks niet geïmporteerd bij de eerste uitvoering.
 
@@ -5599,7 +5599,7 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als je het beleid instelt, gebruikt <ph name="PRODUCT_NAME" /> de door jou opgegeven cachegrootte, ongeacht of gebruikers de optie '--disk-cache-size' hebben opgegeven. (Waarden onder enkele megabytes worden naar boven afgerond.)
 
       Als dit beleid niet is ingesteld, gebruikt <ph name="PRODUCT_NAME" /> de standaardgrootte. Gebruikers kunnen deze instelling wijzigen met behulp van de optie '--disk-cache-size'.</translation>
-<translation id="9055866143096316150">Wake lock-verzoeken voor het scherm verlagen naar wake lock-verzoeken voor het systeem.</translation>
+<translation id="9055866143096316150">Wake lock-verzoeken voor het scherm verlagen naar wake lock-verzoeken voor het systeem</translation>
 <translation id="9057444687284972605">Hiermee kun je een lijst met URL-patronen opgeven om sites te specificeren. Hiervoor wordt automatisch een clientcertificaat geselecteerd op het inlogscherm in het frame waarin het SAML-proces wordt gehost als de site vraagt om een certificaat. Een gebruiksvoorbeeld is de configuratie van een certificaat voor het hele apparaat dat wordt gepresenteerd aan de SAML IdP.
 
       De waarde is een matrix van JSON-woordenboeken met tekenreeksen, elk met de indeling <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, waarbij <ph name="URL_PATTERN_PLACEHOLDER" /> een patroon voor het instellen van content is. <ph name="FILTER_PLACEHOLDER" /> beperkt de clientcertificaten waaruit de browser automatisch kan kiezen. Onafhankelijk van het filter worden alleen certificaten geselecteerd die overeenkomen met het certificaatverzoek van de server.

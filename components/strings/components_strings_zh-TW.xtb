@@ -301,6 +301,7 @@
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2107021941795971877">列印支援</translation>
 <translation id="2108755909498034140">重新啟動電腦</translation>
+<translation id="2111166930115883695">按下空格鍵即可開始遊戲</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">信用卡</translation>
 <translation id="2114841414352855701">由於政策被「<ph name="POLICY_NAME" />」覆寫了，因此遭到略過。</translation>
@@ -516,6 +517,7 @@
 <translation id="3010559122411665027">清單項目「<ph name="ENTRY_INDEX" />」：<ph name="ERROR" /></translation>
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3016780570757425217">存取您的位置資訊</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />，按下 Tab 鍵再按下 Enter 鍵即可移除建議項目。</translation>
 <translation id="3023071826883856138">You4 (信封)</translation>
 <translation id="3024663005179499861">政策類型有誤</translation>
 <translation id="3037605927509011580">糟糕！</translation>
@@ -757,6 +759,7 @@
 <translation id="4056223980640387499">深褐色調</translation>
 <translation id="4058922952496707368">鍵「<ph name="SUBKEY" />」：<ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (信封)</translation>
+<translation id="4067669230157909013">已繼續擷取螢幕畫面。</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
 <translation id="4072486802667267160">處理你的訂單時發生錯誤，請再試一次。</translation>
 <translation id="4075732493274867456">用戶端和伺服器不支援一般 SSL 通訊協定版本或加密套件。</translation>
@@ -837,6 +840,7 @@
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 頁的縮圖</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4300675098767811073">多孔 (右側)</translation>
+<translation id="4302514097724775343">輕觸恐龍即可開始遊戲</translation>
 <translation id="4302965934281694568">Chou3 (信封)</translation>
 <translation id="4305666528087210886">無法存取你的檔案</translation>
 <translation id="4305817255990598646">切換</translation>
@@ -1249,6 +1253,7 @@
 <translation id="5963413905009737549">區段</translation>
 <translation id="5967592137238574583">編輯聯絡資訊</translation>
 <translation id="5967867314010545767">從記錄中移除</translation>
+<translation id="5968793460449681917">每次造訪</translation>
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1464,6 +1469,7 @@
 <translation id="6895330447102777224">您的信用卡已通過驗證</translation>
 <translation id="6897140037006041989">使用者代理程式</translation>
 <translation id="6898699227549475383">組織 (O)</translation>
+<translation id="6907293445143367439">允許 <ph name="SITE_NAME" /> 執行下列操作：</translation>
 <translation id="6910240653697687763"><ph name="URL" /> 要求取得 MIDI 裝置的完整控制權限</translation>
 <translation id="6915804003454593391">使用者：</translation>
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>
@@ -1899,6 +1905,7 @@
 <translation id="8574899947864779331">使用 Touch ID 加快卡片驗證速度</translation>
 <translation id="858637041960032120">新增電話號碼</translation>
 <translation id="8589998999637048520">最佳畫質</translation>
+<translation id="8600271352425265729">僅限這次</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8606726445206553943">使用您的 MIDI 裝置</translation>
 <translation id="8612761427948161954"><ph name="USERNAME" />，你好：
@@ -2056,6 +2063,7 @@
 <translation id="939736085109172342">新增資料夾</translation>
 <translation id="945855313015696284">查看下方資訊並刪除所有無效的卡片</translation>
 <translation id="950736567201356821">三孔 (頂端)</translation>
+<translation id="951941430552851965">系統管理員因為螢幕上的內容，已暫停擷取螢幕畫面。</translation>
 <translation id="961663415146723894">裝訂 (底部)</translation>
 <translation id="962484866189421427">這項內容可能會試圖讓你安裝身分不實的欺騙性應用程式，或是收集可用於追蹤你的資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">正式版本</translation>

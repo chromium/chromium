@@ -1450,6 +1450,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
         * auf 4 gesetzt ist, wird die <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware nach der Registrierung aktualisiert, bevor sich der Nutzer anmeldet.
 
       Ist die Richtlinie nicht konfiguriert, ist kein <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdate verfügbar.</translation>
+<translation id="3232691106293445015">Nicht sichere HTTP-Verbindungen dürfen keine <ph name="BASIC_AUTH" />-Authentifizierungen verwenden; HTTPS ist erforderlich</translation>
 <translation id="3236046242843493070">URL-Muster für die Installation von Erweiterungen, Apps und Nutzerskripten von</translation>
 <translation id="3240609035816615922">Richtlinie für den Zugriff auf die Konfiguration von Druckern.</translation>
 <translation id="324062325008698789">Hiermit wird eine Liste von Druckern konfiguriert</translation>
@@ -2640,6 +2641,7 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="5085647276663819155">Druckvorschau deaktivieren</translation>
 <translation id="5090209345759901501">Einstellung für Flash-Inhalt auf alle Inhalte anwenden</translation>
 <translation id="5090791951240382356">Zusammenführen von Wörterbuchrichtlinien aus unterschiedlichen Quellen erlauben</translation>
+<translation id="5091315650312105069"><ph name="BASIC_AUTH" /> die Authentifizierung für HTTP erlauben</translation>
 <translation id="5101600510268095939">Mit dieser Richtlinie können Sie eine Liste mit URL-Mustern festlegen und so Websites angeben, auf denen keine blockierbaren (aktiven) gemischten Inhalte (HTTP-Inhalte auf HTTPS-Websites) angezeigt werden dürfen und für die optional blockierbare (passive) gemischte Inhalte auf HTTPS umgestellt werden.
 
           Wenn Sie diese Richtlinie nicht konfigurieren, werden blockierbare gemischte Inhalte gesperrt und optional blockierbare gemischte Inhalte auf HTTPS umgestellt. Nutzer können jedoch Ausnahmen für bestimmte Websites festlegen.
@@ -3991,6 +3993,13 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Hiermit werden die Parameter angegeben, die beim Starten von <ph name="PRODUCT_NAME" /> angewendet werden sollen. Sie gelten nur auf dem Anmeldebildschirm. Über diese Richtlinie festgelegte Parameter haben keine Auswirkungen auf Nutzersitzungen.</translation>
 <translation id="685769593149966548">Strikt eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
+<translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
+
+      Wenn die bevorzugte App für den Sperrbildschirm konfiguriert ist, erscheint ein UI-Element zum Starten der bevorzugten Notizen-App auf dem Bildschirm. Nach dem Starten der App wird über dem Sperrbildschirm ein Fenster eingeblendet, in das Notizen eingegeben werden können. Die App kann nach dem Entsperren Notizen in die Hauptsitzung importieren. Nur <ph name="PRODUCT_NAME" />-Notizen-Apps werden auf dem Sperrbildschirm unterstützt.
+
+      Wenn die Richtlinie aktiviert und die Erweiterungs-ID einer App in der entsprechenden Liste aufgeführt ist, können Nutzer diese App auf dem Sperrbildschirm starten. Die Vorgabe einer leeren Liste führt demnach dazu, dass auf dem Sperrbildschirm keine Notizen erstellt werden können. Die Konfiguration der Richtlinie mit einer App-ID bedeutet jedoch nicht unbedingt, dass Nutzer die jeweilige App als Notizen-App auf dem Sperrbildschirm aktivieren können. Bei <ph name="PRODUCT_NAME" /> 61 ist beispielsweise auch durch die Plattform festgelegt, welche Apps verfügbar sind.
+
+      Wenn die Richtlinie nicht konfiguriert ist, werden dadurch die Apps, die Nutzer auf dem Sperrbildschirm aktivieren können, nicht durch die Richtlinie eingeschränkt.</translation>
 <translation id="6889123056995503704">Nutzer entscheiden über das Verhalten zum Versionsdowngrade</translation>
 <translation id="6894178810167845842">URL für "Neuer Tab"-Seite</translation>
 <translation id="6897730193187922386">Nachrichten zu veralteten Funktionen von <ph name="CLOUD_PRINT_NAME" /> unterdrücken</translation>
@@ -4351,6 +4360,9 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 <translation id="7295019613773647480">Betreute Nutzer aktivieren</translation>
 <translation id="7302043767260300182">Verzögerung für die Bildschirmsperre im Netzbetrieb</translation>
 <translation id="731208205557053914">VPD-Informationen melden</translation>
+<translation id="7319863628760093590">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sind <ph name="BASIC_AUTH" />-Authentifizierungsherausforderungen zulässig, die über nicht sicheres HTTP empfangen wurden.
+
+      Ist diese Richtlinie deaktiviert, dürfen nicht sichere HTTP-Anfragen das <ph name="BASIC_AUTH" />-Authentifizierungsschema nicht verwenden; nur HTTPS ist zulässig.</translation>
 <translation id="7323896582714668701">Zusätzliche Befehlszeilenparameter für <ph name="PRODUCT_NAME" /></translation>
 <translation id="7326394567531622570">Ähnlich wie bei den Werkseinstellungen (Wert 2); hier wird jedoch versucht, die Log-in-Tokens zu übernehmen, sodass der Nutzer sich nicht noch einmal anmelden muss.</translation>
 <translation id="7331962793961469250">Wenn die Option auf "True" gesetzt ist, erscheint Werbung für Chrome Web Store-Apps nicht auf der "Neuer Tab"-Seite. Wenn sie auf "False" eingestellt oder nicht konfiguriert ist, so erscheint Chrome Web Store-Werbung auf der "Neuer Tab"-Seite.</translation>
@@ -5089,6 +5101,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8369602308428138533">Verzögerung für die Bildschirmabschaltung im Netzbetrieb</translation>
 <translation id="8371178326720637170">Ermöglicht verwalteten Erweiterungen, die Enterprise Hardware Platform API zu verwenden</translation>
 <translation id="8375817202037102567">Schreibzugriff auf Dateien und Verzeichnisse auf diesen Websites blockieren</translation>
+<translation id="8379317372795444261"><ph name="BASIC_AUTH" />-Authentifizierung ist bei HTTP-Verbindungen zulässig</translation>
 <translation id="8380490658357556620">Ermöglicht den Einsatz von Relayservern, wenn Remote-Clients versuchen, eine Verbindung zu diesem Computer herzustellen.
 
           Ist diese Einstellung aktiviert, können Remote-Clients über Relayserver eine Verbindung zu diesem Computer herstellen, sofern keine direkte Verbindung verfügbar ist, zum Beispiel aufgrund von Firewallbeschränkungen.

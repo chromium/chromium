@@ -264,7 +264,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1285484354230578868">Gorde datuak Google Drive-ko kontuan</translation>
 <translation id="1288037062697528143">Gaueko argia iluntzean aktibatuko da automatikoki</translation>
 <translation id="1288300545283011870">Hizketaren propietateak</translation>
-<translation id="1292849930724124745">Sartu txartel adimenduna saioa hasita jarraitzeko</translation>
+<translation id="1292849930724124745">Sartu txartel adimenduna saioa hasita izaten jarraitzeko</translation>
 <translation id="1293264513303784526">USB-C gailua (ezkerraldeko ataka)</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1296911687402551044">Ainguratu hautatutako fitxa</translation>
@@ -1315,7 +1315,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="248003956660572823">Pasahitzak ez daude gordeta</translation>
 <translation id="2480868415629598489">Aldatu kopiatzen eta itsasten dituzun datuak</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
-<translation id="2482895651873876648"><ph name="GROUP_NAME" /> taldera mugitu da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
+<translation id="2482895651873876648"><ph name="GROUP_NAME" /> taldera eraman da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="2484959914739448251">Sinkronizatutako gailu guztietako eta zure Google-ko kontuko arakatze-datuak garbitzeko, <ph name="BEGIN_LINK" />idatzi pasaesaldia<ph name="END_LINK" />.</translation>
 <translation id="2485005079599453134">Gorde da pasahitza gailuan</translation>
 <translation id="2485394160472549611">Zuretzat aukeratutakoak</translation>
@@ -1774,7 +1774,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3003144360685731741">Sare hobetsiak</translation>
 <translation id="3003623123441819449">CSS cachea</translation>
 <translation id="3003828226041301643">Ezin da gehitu gailua domeinuan. Gailuak gehitzeko pribilegioak dituzula ziurtatzeko, egiaztatu kontua.</translation>
-<translation id="3003967365858406397"><ph name="PHONE_NAME" /> telefonoak wifi bidezko konexio pribatu bat egingo du.</translation>
+<translation id="3003967365858406397"><ph name="PHONE_NAME" /> telefonoak wifi-konexio pribatu bat egingo du.</translation>
 <translation id="3004391367407090544">Itzuli geroago</translation>
 <translation id="3006881078666935414">Ez dago erabilerari buruzko daturik</translation>
 <translation id="3007771295016901659">Bikoiztu fitxa</translation>
@@ -3378,7 +3378,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4907161631261076876">Fitxategia ez da deskargatu ohi eta baliteke arriskutsua izatea.</translation>
 <translation id="4907306957610201395">Baimen-kategoria</translation>
 <translation id="4908811072292128752">Bi webgune aldi berean arakatzeko, ireki beste fitxa bat</translation>
-<translation id="4909038193460299775">Kontu hau <ph name="DOMAIN" /> domeinuak kudeatzen duenez, kendu egingo dira gailutik laster-markak, historia, pasahitzak eta bestelako ezarpenak. Hala ere, Google-ko kontuan jarraituko dute lehendik dituzun datuek, eta <ph name="BEGIN_LINK" />Google Panela<ph name="END_LINK" /> erabil dezakezu haiek kudeatzeko.</translation>
+<translation id="4909038193460299775">Kontu hau <ph name="DOMAIN" /> domeinuak kudeatzen duenez, kendu egingo dira gailutik laster-markak, historia, pasahitzak eta bestelako ezarpenak. Hala ere, Google-ko kontuan jarraituko dute lehendik dituzun datuek, eta <ph name="BEGIN_LINK" />Google-ren Panela<ph name="END_LINK" /> erabil dezakezu haiek kudeatzeko.</translation>
 <translation id="4912643508233590958">Jarduerarik gabeko egoeratik ateratzea</translation>
 <translation id="4915961947098019832">Irudiak erakuts ditzakete</translation>
 <translation id="4916542008280060967"><ph name="FILE_NAME" /> editatzeko baimena eman nahi diozu webguneari?</translation>
@@ -3577,7 +3577,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5160634252433617617">Teklatu fisikoa</translation>
 <translation id="5160857336552977725">Hasi saioa <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="5162905305237671850">Blokeatu egin da <ph name="DEVICE_TYPE" /></translation>
-<translation id="5163910114647549394">Fitxen zintaren amaierara mugitu da fitxa</translation>
+<translation id="5163910114647549394">Fitxen zintaren amaierara eraman da fitxa</translation>
 <translation id="5166596762332123936"><ph name="PLUGIN_NAME" /> blokeatu egin da zaharkituta dagoelako</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5171045022955879922">Bilatu edo idatzi URLa</translation>
@@ -4135,7 +4135,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5826395379250998812">Konektatu <ph name="DEVICE_TYPE" /> telefonoarekin. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Erdi-gardena</translation>
 <translation id="5827266244928330802">Safari</translation>
-<translation id="5828545842856466741">Gehitu profila…</translation>
+<translation id="5828545842856466741">Gehitu profil bat…</translation>
 <translation id="5828633471261496623">Inprimatzen…</translation>
 <translation id="5830720307094128296">Gorde orria &amp;honela…</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
@@ -4860,12 +4860,12 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6684827949542560880">Azken eguneratzea deskargatzen</translation>
 <translation id="668599234725812620">Ireki Google Play</translation>
 <translation id="6686490380836145850">Itxi eskuineko fitxak</translation>
-<translation id="6686665106869989887">Eskuinera mugitu da fitxa</translation>
+<translation id="6686665106869989887">Eskuinera eraman da fitxa</translation>
 <translation id="6686817083349815241">Gorde zure pasahitza</translation>
 <translation id="6688285987813868112">Sortu irudiaren QR kodea</translation>
 <translation id="6690659332373509948">Ezin izan da <ph name="FILE_NAME" /> fitxategia analizatu</translation>
 <translation id="6690751852586194791">Aukeratu gailuan gehitu nahi duzun gainbegiratutako erabiltzailea.</translation>
-<translation id="6691331417640343772">Kudeatu sinkronizatutako datuak Google Panela atalean</translation>
+<translation id="6691331417640343772">Kudeatu sinkronizatutako datuak Google-ren Panela atalean</translation>
 <translation id="6691541770654083180">Lurra</translation>
 <translation id="6691936601825168937">&amp;Aurrera</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 orri}other{{COUNT} orri}}</translation>
@@ -4889,6 +4889,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="671928215901716392">Pantaila blokeatua</translation>
 <translation id="6721678857435001674">Ikusi segurtasun-giltzaren marka eta modeloa</translation>
 <translation id="6721972322305477112">&amp;Fitxategia</translation>
+<translation id="672208878794563299">Hurrengoan ere eskatuko dizu baimena webguneak.</translation>
 <translation id="672213144943476270">Desblokea ezazu profila gonbidatu gisa arakatu ahal izateko.</translation>
 <translation id="6723661294526996303">Inportatu laster-markak eta ezarpenak…</translation>
 <translation id="6723839937902243910">Bateria</translation>
@@ -5122,7 +5123,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="698524779381350301">Eman automatikoki webgune hauetan sartzeko baimena</translation>
 <translation id="6985607387932385770">Inprimagailuak</translation>
 <translation id="6988094684494323731">Linux-en edukiontzia abiarazten</translation>
-<translation id="6988403677482707277">Fitxen zintaren hasierara mugitu da fitxa</translation>
+<translation id="6988403677482707277">Fitxen zintaren hasierara eraman da fitxa</translation>
 <translation id="6990778048354947307">Gai iluna</translation>
 <translation id="6991665348624301627">Hautatu helmuga</translation>
 <translation id="6992554835374084304">Aktibatu ortografia-zuzentzaile hobetua</translation>
@@ -5275,7 +5276,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7168109975831002660">Letra-tamaina minimoa</translation>
 <translation id="7170041865419449892">Barrutitik kanpo</translation>
 <translation id="7170236477717446850">Profileko argazkia</translation>
-<translation id="7171000599584840888">Gehitu profila…</translation>
+<translation id="7171000599584840888">Gehitu profil bat…</translation>
 <translation id="7171259390164035663">Ez erregistratu</translation>
 <translation id="7171559745792467651">Instalatu beste gailuetako aplikazioak</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Gehitu fitxa talde berrian}other{Gehitu fitxak talde berrian}}</translation>
@@ -5794,7 +5795,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7773726648746946405">Saioaren biltegiratzea</translation>
 <translation id="7774365994322694683">Txoria</translation>
 <translation id="7774792847912242537">Eskaera gehiegi daude.</translation>
-<translation id="7775694664330414886">Talde izengabe batera mugitu da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
+<translation id="7775694664330414886">Talde izengabe batera eraman da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> webguneak <ph name="FOLDERNAME" /> karpetako fitxategiak ikusteko baimena izango du webguneko fitxa guztiak ixten dituzun arte</translation>
 <translation id="7776701556330691704">Ez da aurkitu ahotsik</translation>
 <translation id="7780252971640011240">Arazoak ditugu konektatzeko. Jarri operadorearekin harremanetan laguntza lortzeko.</translation>
@@ -5907,7 +5908,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7881483672146086348">Ikusi kontua</translation>
 <translation id="7882358943899516840">Hornitzaile mota</translation>
 <translation id="7885253890047913815">Azken inprimagailuak</translation>
-<translation id="7886605625338676841">eSIM txartela</translation>
+<translation id="7886605625338676841">eSIM sareak</translation>
 <translation id="7887334752153342268">Bikoiztu</translation>
 <translation id="7887864092952184874">Bluetooth sagua parekatuta dago</translation>
 <translation id="7890147169288018054">Ikusi sarearen informazioa, hala nola IP helbidea edo MAC helbidea</translation>
@@ -6049,7 +6050,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8042142357103597104">Testuaren opakutasuna</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> aplikazioak ez du erantzuten.</translation>
 <translation id="8044899503464538266">Motela</translation>
-<translation id="8045253504249021590">Sinkronizazioa gelditu egin da Google Panela atalean.</translation>
+<translation id="8045253504249021590">Sinkronizazioa gelditu egin da Google-ren Panela atalean.</translation>
 <translation id="8045923671629973368">Idatzi aplikazioaren IDa edo sareko dendaren URLa</translation>
 <translation id="8047242494569930800">Eraman Google-ko kontura</translation>
 <translation id="804786196054284061">Azken erabiltzailearen lizentzia-kontratua</translation>
@@ -6806,7 +6807,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8909298138148012791">Desinstalatu da <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">Webgunea zure kokapenaren jarraipena egiten ari da</translation>
 <translation id="8910146161325739742">Partekatu pantaila</translation>
-<translation id="8910222113987937043">Aurrerantzean, ez dira sinkronizatuko Google-ko kontuarekin laster-marketan, historian, pasahitzetan eta bestelako ezarpenetan egindako aldaketak. Hala ere, Google-ko kontuan biltegiratuko dira lehendik dauden datuak, eta <ph name="BEGIN_LINK" />Google panelaren<ph name="END_LINK" /> bidez kudea daitezke.</translation>
+<translation id="8910222113987937043">Aurrerantzean, ez dira sinkronizatuko Google-ko kontuarekin laster-marketan, historian, pasahitzetan eta bestelako ezarpenetan egindako aldaketak. Hala ere, Google-ko kontuan biltegiratuko dira lehendik dauden datuak, eta <ph name="BEGIN_LINK" />Google-ren Panela<ph name="END_LINK" /> atalaren bidez kudea daitezke.</translation>
 <translation id="8912362522468806198">Google-ko kontua</translation>
 <translation id="8912793549644936705">Zabaldu</translation>
 <translation id="8912810933860534797">Gaitu bilaketa automatikoa</translation>
@@ -6946,7 +6947,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9066782832737749352">Testua ahots bihurtzeko eginbidea</translation>
 <translation id="9068849894565669697">Hautatu kolorea</translation>
 <translation id="9068878141610261315">Fitxategi mota hau ez da onartzen</translation>
-<translation id="9070342919388027491">Ezkerrera mugitu da fitxa</translation>
+<translation id="9070342919388027491">Ezkerrera eraman da fitxa</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{1 helbide}other{# helbide}}</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth-a</translation>

@@ -382,7 +382,7 @@
 <translation id="3655855170848725876">{COUNT,plural, =1{dolar}few{# znaky dolar}many{# dollar signs}other{# znaků dolar}}</translation>
 <translation id="3659787053479271466">upoz</translation>
 <translation id="366419593095697301">Tip: Tento výukový program můžete opustit stisknutím klávesy Escape.</translation>
-<translation id="3676062394766691318">Po nastavení zařízení se můžete vrátit a stisknutím kombinace kláves Hledat + Q a poté klávesy T zobrazit další výukové programy.</translation>
+<translation id="3676062394766691318">Po nastavení zařízení se můžete vrátit a stisknutím kombinace kláves Hledat + Q a poté klávesy T zobrazit další výukové programy.</translation>
 <translation id="3681531118904532409">Papájová</translation>
 <translation id="3692274950075847560">V:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">Přeškrtnuté</translation>
@@ -957,7 +957,7 @@
 <translation id="8129445297241948503">Nahoře žádná buňka není</translation>
 <translation id="8138880386467279117">Dotykové</translation>
 <translation id="8146613869421949343">V dalším kroku se seznámíte s vyhledávacím tlačítkem. Vyhledávací tlačítko (označované také jako klávesa Hledat) se používá v kombinaci s dalšími klávesami pro příkazy čtečky ChromeVox. Vyhledávací tlačítko se nachází přímo nad klávesou Shift. Pokračujte stisknutím vyhledávacího tlačítka.</translation>
-<translation id="816818801578874684">Toto je první nadpis. Stisknutím kombinace kláves Hledat + H přejdete na další nadpis.</translation>
+<translation id="816818801578874684">Toto je první nadpis. Stisknutím kombinace kláves Hledat + H přejdete na další nadpis.</translation>
 <translation id="8173092779156526980">Přejeďte čtyřmi prsty doleva</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podtržítko}few{# podtržítka}many{# underscores}other{# podtržítek}}</translation>
 <translation id="8179976553408161302">Enter</translation>

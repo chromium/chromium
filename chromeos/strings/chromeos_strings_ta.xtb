@@ -2,12 +2,15 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
+<translation id="1071587090247825784">ஃபயர்வால் கண்டறியப்பட்டது</translation>
 <translation id="1075811647922107217">பக்க அளவு</translation>
 <translation id="1195447618553298278">தெரியாத பிழை.</translation>
 <translation id="1204296502688602597">DNS தாமதம்</translation>
+<translation id="1238612778414822719">HTTPS தாமதம்</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1397738625398125236">கேட்வேயிற்குப் பிங் செய்வது</translation>
+<translation id="1398634363027580500">HTTPS கோரிக்கைகள் மிகவும் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="1413240736185167732">ஃபில்டர் வேலை செய்யாததால் அச்சிட முடியவில்லை</translation>
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
 <translation id="1478594628797167447">ஸ்கேனர்</translation>
@@ -64,6 +67,7 @@
 <translation id="4027485274696301677">இந்த <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> டொமைனால் நிர்வகிக்கப்படுகிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="4034824040120875894">பிரிண்டர்</translation>
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
+<translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
@@ -79,6 +83,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. அச்சுப் பணியை ரத்துசெய்ய என்ட்டர் விசையை அழுத்தவும்.</translation>
 <translation id="4646949265910132906">பாதுகாப்பான WiFi இணைப்பு</translation>
 <translation id="467510802200863975">கடவுச்சொற்கள் பொருந்தவில்லை</translation>
+<translation id="467715984478005772">ஃபயர்வால் இருப்பதுபோல் தெரிகிறது</translation>
 <translation id="4691278870498629773">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="469379815867856270">சிக்னலின் வலிமை</translation>
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">காகிதம் சிக்கிக் கொண்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6050189528197190982">கிரேஸ்கேல்</translation>
 <translation id="6058625436358447366">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லையும் புதிய கடவுச்சொல்லையும் உள்ளிடவும்</translation>
+<translation id="6061772781719867950">HTTPS கோரிக்கைகளுக்குப் பதில் கிடைக்கவில்லை</translation>
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6108689792487843350">கேட்வேயை அணுக முடியவில்லை</translation>
 <translation id="6146993107019042706">நிறைவுசெய்ய புதிய கடவுச்சொல்லை உள்ளிடவும்</translation>
@@ -128,12 +134,15 @@
 <translation id="6643016212128521049">அழி</translation>
 <translation id="6704062477274546131">DNS ரெசல்யூஷன்</translation>
 <translation id="6747215703636344499">பிரிண்ட் வெளியே வரும் டிரே நிரம்பிவிட்டதால் அச்சிட முடியவில்லை</translation>
+<translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் கிடைக்கவில்லை</translation>
+<translation id="6768237774506518020">DNS ரெசல்யூஷன் விகிதம் அதிகமாக உள்ளது</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
 <translation id="7162487448488904999">கேலரி</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">கோப்பு வகை</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
 <translation id="7805768142964895445">நிலை</translation>
@@ -143,6 +152,7 @@
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8294431847097064396">மூலம்</translation>
+<translation id="8302368968391049045">HTTPS ஃபயர்வால்</translation>
 <translation id="8347227221149377169">அச்சுப் பணிகள்</translation>
 <translation id="8352772353338965963">பல உள்நுழைவுக்குக் கணக்கைச் சேர்க்கவும். உள்நுழைந்த அனைத்து கணக்குகளையும் கடவுச்சொல் இல்லாமலே அணுகலாம் என்பதால் இந்த அம்சத்தை நம்பகமான கணக்குகளுடன் மட்டுமே பயன்படுத்த வேண்டும்.</translation>
 <translation id="8364946094152050673">பெயர் சேவையகங்கள் காலியாக உள்ளன</translation>

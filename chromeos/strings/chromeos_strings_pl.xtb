@@ -120,7 +120,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6048107060512778456">Niepowodzenie – zacięcie papieru</translation>
 <translation id="6050189528197190982">Skala odcieni szarości</translation>
 <translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
-<translation id="6061772781719867950">nieudane żądania HTTP</translation>
+<translation id="6061772781719867950">nieudane żądania HTTPS</translation>
 <translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
 <translation id="6108689792487843350">Brama jest nieosiągalna</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
@@ -140,7 +140,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6747215703636344499">Zatrzymano – odbiornik papieru jest pełny</translation>
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
-<translation id="6768237774506518020">duża liczba błędów rozpoznania nazwy DNS</translation>
+<translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
 <translation id="6839141349259399400">Nie możesz połączyć się ze skanerami?</translation>
 <translation id="714876143603641390">Łączność LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>

@@ -888,7 +888,7 @@
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="1987317783729300807">Хаяг</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
-<translation id="1990512225220753005">Энэ хуудсан дээр товчлолыг бүү үзүүл</translation>
+<translation id="1990512225220753005">Энэ хуудсан дээр товчлолыг бүү харуул</translation>
 <translation id="1992397118740194946">Суугдаагүй</translation>
 <translation id="1992924914582925289">Төхөөрөмжөөс хасах</translation>
 <translation id="1994173015038366702">Сайтын URL</translation>
@@ -1610,7 +1610,7 @@
 <translation id="2809586584051668049">ба <ph name="NUMBER_ADDITIONAL_DISABLED" /> дэлгэрэнгүй</translation>
 <translation id="2810390687497823527">Хэрэв та өргөтгөлийг танихгүй эсвэл таны хөтөч сайн ажиллахгүй байвал та өргөтгөлийг эндээс унтраах эсвэл өөрчлөх боломжтой.</translation>
 <translation id="2812049959647166806">Thunderbolt-г дэмждэггүй</translation>
-<translation id="2812989263793994277">Зургийг бүү үзүүл</translation>
+<translation id="2812989263793994277">Зургийг бүү харуул</translation>
 <translation id="2813094189969465044">Эцэг эхийн хяналт</translation>
 <translation id="281390819046738856">Хүсэлтийг гүйцэтгэх боломжгүй байна.</translation>
 <translation id="2814489978934728345">Энэ хуудсыг ачааллахаа зогсоо</translation>
@@ -3018,7 +3018,7 @@
 <translation id="4488502501195719518">Бүх өгөгдлийг устгах уу?</translation>
 <translation id="449232563137139956">Сайтууд ихэвчлэн онлайн дэлгүүрийн эсвэл мэдээний нийтлэлийн зураг зэрэг зурагт тайлбар өгөхийн тулд зураг харуулдаг</translation>
 <translation id="4493468155686877504">Санал болгосон (<ph name="INSTALL_SIZE" />)</translation>
-<translation id="4495419450179050807">Энэ хуудсан дээр бүү үзүүл</translation>
+<translation id="4495419450179050807">Энэ хуудсан дээр бүү харуул</translation>
 <translation id="4496054781541092778"><ph name="PERMISSION" />-г автоматаар блоклосон</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> гэмтсэн байна</translation>
 <translation id="450099669180426158">Анхаарлын тэмдэгийн дүрс</translation>
@@ -3457,7 +3457,7 @@
 <translation id="5019392775062123007">Ойролцоох төхөөрөмжүүдэд <ph name="DEVICE_NAME" /> нэрээр харагдана</translation>
 <translation id="5021750053540820849">Хараахан шинэчлэгдээгүй</translation>
 <translation id="5026806129670917316">Wi-Fi асаах</translation>
-<translation id="5026874946691314267">Үүнийг дахин бүү үзүүл</translation>
+<translation id="5026874946691314267">Үүнийг дахиж бүү харуул</translation>
 <translation id="5027550639139316293">И-мэйлийн гэрчилгээ</translation>
 <translation id="5027562294707732951">Өргөтгөл нэмэх</translation>
 <translation id="5029568752722684782">Хуулбарыг арилгах</translation>

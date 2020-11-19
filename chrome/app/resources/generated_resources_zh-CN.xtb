@@ -104,7 +104,7 @@
 <translation id="1116639326869298217">无法验证您的身份</translation>
 <translation id="1116694919640316211">关于</translation>
 <translation id="1116779635164066733">此设置是由“<ph name="NAME" />”这一扩展程序强制指定的。</translation>
-<translation id="1116811861615819198">目标设备未响应您的文件共享请求</translation>
+<translation id="1116811861615819198">目标设备未响应您的文件分享请求</translation>
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="1119447706177454957">内部错误</translation>
 <translation id="1122068467107743258">工作</translation>
@@ -1587,7 +1587,7 @@
 <translation id="2805646850212350655">Microsoft 加密文件系统</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2805770823691782631">更多详情</translation>
-<translation id="2806372837663997957">目标设备未接受您的文件共享请求</translation>
+<translation id="2806372837663997957">目标设备未接受您的文件分享请求</translation>
 <translation id="2807517655263062534">您下载的文件会显示在此处</translation>
 <translation id="2809586584051668049">及另外<ph name="NUMBER_ADDITIONAL_DISABLED" />个扩展程序</translation>
 <translation id="2810390687497823527">如果您不认识某款扩展程序或者您的浏览器无法按预期运行，您可在此处关闭或自定义扩展程序。</translation>

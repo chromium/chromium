@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android ஆப்ஸ்</translation>
 <translation id="2107021941795971877">உதவித் தோற்றமைப்புகளை அச்சிடுதல்</translation>
 <translation id="2108755909498034140">கம்ப்யூட்டரை மீண்டும் தொடங்கவும்</translation>
+<translation id="2111166930115883695">விளையாடத் தொடங்க ஸ்பேஸ் விசையை அழுத்தவும்</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">கார்டு</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> ஆல் கொள்கை மேலெழுதப்பட்டுள்ளதால் புறக்கணிக்கப்பட்டது.</translation>
@@ -520,6 +521,7 @@
 <translation id="3010559122411665027">பட்டியல் உள்ளீடு "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">தானாகத் தடுக்கப்பட்டது</translation>
 <translation id="3016780570757425217">உங்கள் இருப்பிடத்தை அறியும்</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, பரிந்துரையை அகற்ற Tab விசையை அழுத்தியபிறகு Enter விசையை அழுத்துங்கள்.</translation>
 <translation id="3023071826883856138">You4 (என்வலப்)</translation>
 <translation id="3024663005179499861">தவறான கொள்கை வகை</translation>
 <translation id="3037605927509011580">அச்சச்சோ!</translation>
@@ -758,6 +760,7 @@
 <translation id="4056223980640387499">செபியா</translation>
 <translation id="4058922952496707368">விசை "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (என்வலப்)</translation>
+<translation id="4067669230157909013">திரையின் ஸ்கிரீன்ஷாட் எடுப்பது மீண்டும் தொடங்கப்பட்டது.</translation>
 <translation id="4067947977115446013">சரியான முகவரியைச் சேர்க்கவும்</translation>
 <translation id="4072486802667267160">ஆர்டரைச் செயல்படுத்துவதில் பிழை ஏற்பட்டது. பிறகு முயலவும்.</translation>
 <translation id="4075732493274867456">க்ளையன்ட்டும் சேவையகமும் பொதுவான SSL நெறிமுறைப் பதிப்பையோ சைஃபர் பொதியையோ ஆதரிக்கவில்லை.</translation>
@@ -842,6 +845,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> பக்கத்தின் சிறு படம்</translation>
 <translation id="42981349822642051">விரி</translation>
 <translation id="4300675098767811073">மல்டிப்பில் பஞ்ச் ரைட்</translation>
+<translation id="4302514097724775343">விளையாட டைனோவைத் தட்டுங்கள்</translation>
 <translation id="4302965934281694568">Chou3 (என்வலப்)</translation>
 <translation id="4305666528087210886">உங்கள் கோப்பினை அணுக முடியவில்லை</translation>
 <translation id="4305817255990598646">மாறு</translation>
@@ -1253,6 +1257,7 @@
 <translation id="5963413905009737549">பிரிவு</translation>
 <translation id="5967592137238574583">தொடர்புத் தகவலைத் திருத்தவும்</translation>
 <translation id="5967867314010545767">வரலாற்றிலிருந்து அகற்று</translation>
+<translation id="5968793460449681917">ஒவ்வொரு முறை வரும்போதும்</translation>
 <translation id="5975083100439434680">சிறிதாக்கு</translation>
 <translation id="5979084224081478209">கடவுச்சொற்களைச் சோதித்துப் பார்க்கவும்</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1467,6 +1472,7 @@
 <translation id="6895330447102777224">கார்டு உறுதிசெய்யப்பட்டது</translation>
 <translation id="6897140037006041989">பயனர் ஏஜெண்ட்</translation>
 <translation id="6898699227549475383">நிறுவனம் (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> இவற்றை அணுக அனுமதிக்கவும்:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> MIDI சாதனங்களின் முழுக் கட்டுப்பாடையும் பெற விரும்புகிறது</translation>
 <translation id="6915804003454593391">பயனர்:</translation>
 <translation id="6934672428414710184">இந்தப் பெயர் உங்கள் ‘Google கணக்கிலிருந்து’ பெறப்பட்டது</translation>
@@ -1902,6 +1908,7 @@
 <translation id="8574899947864779331">கார்டுகளை மேலும் விரைவாக உறுதிப்படுத்த Touch IDயைப் பயன்படுத்துங்கள்</translation>
 <translation id="858637041960032120">ஃபோன் எண்ணைச் சேர்</translation>
 <translation id="8589998999637048520">சிறந்த தரம்</translation>
+<translation id="8600271352425265729">இப்போது மட்டும்</translation>
 <translation id="860043288473659153">கார்டு உரிமையாளரின் பெயர்</translation>
 <translation id="8606726445206553943">MIDI சாதனங்களைப் பயன்படுத்தவும்</translation>
 <translation id="8612761427948161954">வணக்கம் <ph name="USERNAME" />,
@@ -2059,6 +2066,7 @@
 <translation id="939736085109172342">புதிய கோப்புறை</translation>
 <translation id="945855313015696284">கீழுள்ள தகவல்களைச் சரிபார்த்து, செல்லுபடியாகாத கார்டுகள் ஏதேனும் இருந்தால் அவற்றை நீக்கவும்.</translation>
 <translation id="950736567201356821">டிரிப்பில் பஞ்ச் டாப்</translation>
+<translation id="951941430552851965">திரையில் தோன்றும் உள்ளடக்கம் காரணமாக ஸ்கிரீன்ஷாட் எடுப்பதை உங்கள் நிர்வாகி இடைநிறுத்தியுள்ளார்.</translation>
 <translation id="961663415146723894">பைண்டு பாட்டம்</translation>
 <translation id="962484866189421427">இந்த உள்ளடக்கம், வேறொரு பிரபல ஆப்ஸ் போலத் தோற்றமளிக்கக்கூடிய அல்லது உங்களைக் கண்காணிக்கப் பயன்படுத்தக்கூடிய தரவைச் சேகரிக்கும் போலியான ஆப்ஸை நிறுவ முயலலாம். <ph name="BEGIN_LINK" />பரவாயில்லை, பக்கத்தைக் காட்டு<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">அதிகாரப்பூர்வ கட்டமைப்பு</translation>

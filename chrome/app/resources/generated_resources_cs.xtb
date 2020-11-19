@@ -105,7 +105,7 @@
 <translation id="1116639326869298217">Vaši identitu se nepodařilo ověřit</translation>
 <translation id="1116694919640316211">Informace</translation>
 <translation id="1116779635164066733">Toto nastavení je vynucováno rozšířením <ph name="NAME" />.</translation>
-<translation id="1116811861615819198">Cílové zařízení neopovědělo</translation>
+<translation id="1116811861615819198">Cílové zařízení neodpovědělo</translation>
 <translation id="1118738876271697201">Systému se nepodařilo určit model nebo sériové číslo zařízení</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
 <translation id="1122068467107743258">Práce</translation>
@@ -4889,6 +4889,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="671928215901716392">Zamknout obrazovku</translation>
 <translation id="6721678857435001674">Zobrazení modelu a značky vašeho bezpečnostního klíče</translation>
 <translation id="6721972322305477112">&amp;Soubor</translation>
+<translation id="672208878794563299">Tento web se příště zeptá znovu.</translation>
 <translation id="672213144943476270">Před zahájením procházení v režimu hosta prosím odemkněte svůj profil.</translation>
 <translation id="6723661294526996303">Importovat záložky a nastavení...</translation>
 <translation id="6723839937902243910">Napájení</translation>
@@ -6948,7 +6949,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9066782832737749352">Převod textu na řeč</translation>
 <translation id="9068849894565669697">Výběr barvy</translation>
 <translation id="9068878141610261315">Nepodporovaný typ souboru</translation>
-<translation id="9070342919388027491">Byla vybrána karta vlevo</translation>
+<translation id="9070342919388027491">Karta se přesunula vlevo</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{1 adresy}few{# adres}many{# adresy}other{# adres}}</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

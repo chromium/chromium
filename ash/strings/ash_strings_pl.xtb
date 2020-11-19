@@ -238,7 +238,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3236488194889173876">Brak dostępnych sieci komórkowych</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Co potrafisz?</translation>
-<translation id="3289674678944039601">Ładowanie z zasilacza</translation>
+<translation id="3289674678944039601">Ładowanie z zasilacza.</translation>
 <translation id="3290356915286466215">Niezabezpieczona</translation>
 <translation id="3294437725009624529">Gość</translation>
 <translation id="3307642347673023554">Przełączono na tryb laptopa</translation>
@@ -297,7 +297,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3799080171973636491">Naciśnięto skrót klawiszowy lupy pełnoekranowej. Czy chcesz ją włączyć?</translation>
 <translation id="380165613292957338">Cześć, w czym mogę pomóc?</translation>
 <translation id="3826099427150913765">Zmień na hasło</translation>
-<translation id="383058930331066723">Włączony jest tryb oszczędzania baterii</translation>
+<translation id="383058930331066723">Włączone jest oszczędzanie baterii.</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
 <translation id="3846214748874656680">Zamknij pełny ekran</translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
@@ -479,7 +479,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5516420770350073386">Nagrywanie ekranu zostało zatrzymane przez administratora z powodu wyświetlenia pewnych treści.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">Funkcja <ph name="FEATURE_NAME" /> nawiązuje połączenie.</translation>
-<translation id="5532994612895037630">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
+<translation id="5532994612895037630">Aby nagrać cały ekran, kliknij w dowolnym miejscu</translation>
 <translation id="553675580533261935">Zamykanie sesji</translation>
 <translation id="5537725057119320332">Przesyłaj</translation>
 <translation id="554893713779400387">Włącz lub wyłącz dyktowanie</translation>
@@ -537,7 +537,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="602001110135236999">Przewiń w lewo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="6030495522958826102">Menu zostało przeniesione w lewy dolny róg ekranu.</translation>
-<translation id="6032620807120418574">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
+<translation id="6032620807120418574">Aby nagrać cały ekran, kliknij w dowolnym miejscu</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6043212731627905357">Ten monitor nie działa z Twoim urządzeniem <ph name="DEVICE_TYPE" /> (nie jest obsługiwany).</translation>
 <translation id="6043994281159824495">Wyloguj się teraz</translation>
@@ -668,7 +668,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7377169924702866686">Caps Lock jest włączony.</translation>
 <translation id="7378203170292176219">Przeciągnij, by wybrać obszar, który chcesz nagrać</translation>
 <translation id="7378594059915113390">Sterowanie multimediami</translation>
-<translation id="7378889811480108604">Oszczędzanie baterii jest wyłączone</translation>
+<translation id="7378889811480108604">Oszczędzanie baterii jest wyłączone.</translation>
 <translation id="7392563512730092880">W każdej chwili możesz skonfigurować sterowanie telefonem w Ustawieniach.</translation>
 <translation id="7398254312354928459">Przełączono połączenie sieciowe</translation>
 <translation id="7405710164030118432">Aby odblokować urządzenie, wpisz kod dostępu Family Link rodzica</translation>
@@ -718,7 +718,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7837740436429729974">Czas minął</translation>
 <translation id="7842569679327885685">Ostrzeżenie: funkcja eksperymentalna</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
-<translation id="7860671499921112077">Przesuń 3 palcami w górę, by otworzyć Przegląd</translation>
+<translation id="7860671499921112077">Aby otworzyć Przegląd, przesuń 3 palcami w górę</translation>
 <translation id="7868900307798234037">Odblokowano odciskiem palca</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
 <translation id="7886169021410746335">Dostosowywać ustawienia prywatności</translation>
@@ -760,7 +760,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8152092012181020186">Aby zamknąć, naciśnij CTRL + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – tym ustawieniem zarządza Twój administrator.</translation>
 <translation id="8167567890448493835">W użyciu jest: <ph name="LOCALE_NAME" /></translation>
-<translation id="8170567869359129153">Sieć komórkowa. Siła sygnału <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8170567869359129153">Sieć komórkowa. Siła sygnału: <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="8192202700944119416">Powiadomienia są ukryte.</translation>
 <translation id="8196787716797768628">Używając gestów, możesz szybko przełączać się między aplikacjami i korzystać z Chromebooka w trybie tabletu.</translation>
 <translation id="8200772114523450471">Wznów</translation>

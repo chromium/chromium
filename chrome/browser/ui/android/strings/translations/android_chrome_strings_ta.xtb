@@ -204,6 +204,7 @@
 <translation id="2450907520913474542">பக்கத்தை விட்டு வெளியேறாமலேயே இணையதளங்களில் தலைப்புகளைப் பற்றித் தெரிந்துகொள்ளலாம். 'தேடுவதற்குத் தொடு' அம்சமானது சொல்லையும் அதன் சூழலையும் Google தேடலுக்கு அனுப்பி விளக்கங்கள், படங்கள், தேடல் முடிவுகள் மற்றும் பிற விவரங்களை வழங்குகிறது.
 
 தேடுவதற்கு ஏதேனும் ஒரு சொல்லைத் தொட்டுப் பிடிக்கவும். உங்கள் தேடுதலை துல்லியமாக்க அதிகமான அல்லது குறைவான வார்த்தைகளைத் தேர்ந்தெடுக்கவும். உங்கள் தேடலைத் திருத்த, பேனலைத் திறந்து, புதிய தாவலைத் திறக்கும் ஐகானைத் தட்டி தேடல் பெட்டியில் உங்கள் மாற்றங்களைச் செய்யவும்.</translation>
+<translation id="2459390580524506445">மேம்பட்ட குரல் தேடல்</translation>
 <translation id="246532703174860178">பகிர்</translation>
 <translation id="2478076885740497414">ஆப்ஸை நிறுவு</translation>
 <translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -272,6 +273,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> இன் சேமிப்பகம்</translation>
 <translation id="2942036813789421260">மாதிரிக்காட்சித் தாவல் மூடப்பட்டுள்ளது</translation>
 <translation id="2956410042958133412">இந்தக் கணக்கு <ph name="PARENT_NAME_1" /> மற்றும் <ph name="PARENT_NAME_2" /> ஆல் நிர்வகிக்கப்படுகிறது.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{படிக்காத பக்கம்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />}other{படிக்காத பக்கங்கள்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />}}</translation>
 <translation id="2962095958535813455">மறைநிலைத் தாவல்களுக்கு மாற்றப்பட்டது</translation>
 <translation id="2979025552038692506">தேர்ந்தெடுத்த மறைநிலைத் தாவல்</translation>
 <translation id="2987620471460279764">பிற சாதனத்திலிருந்து உரை பகிரப்பட்டது</translation>
@@ -320,6 +322,7 @@
 <translation id="32895400574683172">அறிவிப்புகள் அனுமதிக்கப்படுகின்றன</translation>
 <translation id="3290991969712132877">விரைவாக இந்தப் பக்கத்தை அணுக, கூடுதல் விருப்பத்தேர்வுகள் பட்டனைப் பயன்படுத்தி இதை உங்கள் முகப்புத் திரையில் சேர்க்கவும்</translation>
 <translation id="3295530008794733555">வேகமாக உலாவலாம். குறைவான டேட்டாவைப் பயன்படுத்தலாம்.</translation>
+<translation id="3297344142967351106">குரல் உதவி</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">உள்ளடக்கத்தைப் பதிவிறக்குவதைத் தொடரவா?</translation>
 <translation id="3315103659806849044">உங்கள் ஒத்திசைவு மற்றும் Google சேவை அமைப்புகளைத் தற்போது உங்களுக்கேற்ப மாற்றியமைக்கிறீர்கள். ஒத்திசைவை இயக்க, திரையின் அடிப்பகுதிக்கு அருகிலுள்ள ‘உறுதிப்படுத்து’ பட்டனைத் தட்டவும். மேலே செல்</translation>
@@ -619,6 +622,7 @@
 <translation id="5524843473235508879">திசைதிருப்புவது தடுக்கப்பட்டது.</translation>
 <translation id="5527082711130173040">சாதனங்களைத் தேட Chromeமுக்கு இருப்பிட அணுகல் தேவை. <ph name="BEGIN_LINK1" />அனுமதிகளை மாற்றவும்<ph name="END_LINK1" />. இருப்பிட அணுகலும் <ph name="BEGIN_LINK2" />இந்தச் சாதனத்தில் முடக்கப்பட்டுள்ளது<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">மறைநிலை தாவல்களை மூடு</translation>
+<translation id="5530920986376047241">பக்கங்களைப் பின்னர் வாசிக்க உங்கள் வாசிப்புப் பட்டியலில் அவற்றைச் சேமிக்கலாம்</translation>
 <translation id="5534640966246046842">தளம் நகலெடுக்கப்பட்டது</translation>
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
 <translation id="5561549206367097665">நெட்வொர்க்கிற்காகக் காத்திருக்கிறது…</translation>
@@ -697,6 +701,7 @@
 <translation id="5982307838673692400">மறைநிலைத் தாவலைத் திற</translation>
 <translation id="6000066717592683814">Googleஐ இயல்பு இன்ஜினாக வைத்திரு</translation>
 <translation id="6005538289190791541">பரிந்துரைக்கப்படும் கடவுச்சொல்</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> பக்கம் உள்ளது}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> பக்கங்கள் உள்ளன}}</translation>
 <translation id="6014293228235665243">படிக்காதவை</translation>
 <translation id="6036057147555329831">கூடுதல் ICU</translation>
 <translation id="6039379616847168523">அடுத்த தாவலுக்குச் செல்லும்</translation>
@@ -930,6 +935,7 @@
 <translation id="756809126120519699">Chrome தரவு அழிக்கப்பட்டது</translation>
 <translation id="7577900504646297215">ஆர்வங்களை நிர்வகிக்கும்</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> கோப்பு பதிவிறக்கப்பட்டது}other{<ph name="FILES_DOWNLOADED_MANY" /> கோப்புகள் பதிவிறக்கப்பட்டன}}</translation>
+<translation id="7583262514280211622">உங்கள் வாசிப்புப் பட்டியலை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="7588219262685291874">சாதனத்தில் பேட்டரி சேமிப்பான் இயக்கத்தில் இருக்கும்போது டார்க் தீமை இயக்கும்</translation>
 <translation id="7593557518625677601">Chrome ஒத்திசைவைத் தொடங்க, Android அமைப்புகளைத் திறந்து Android சாதன ஒத்திசைவை மீண்டும் இயக்கவும்</translation>
 <translation id="7596558890252710462">ஆப்ரேட்டிங் சிஸ்டம்</translation>
@@ -961,6 +967,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" />ஐ மூடு</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறை}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறைகள்}}</translation>
 <translation id="7778840695157240389">புதிய கட்டுரைகளைப் பார்க்க பின்னர் வந்து பாருங்கள்</translation>
+<translation id="7786595606756654269">குரல் மூலம் இணையத்தில் தேடுவதற்கும் நீங்கள் திறந்திருக்கும் தளங்களுடன் ஈடுபாடு கொள்வதற்கும் Google Assistant சிறந்த அனுபவத்தை வழங்குகிறது. Google Assistant மூலம் நீங்கள் பயன்படுத்தும் தளங்களின் URLலையும் உள்ளடக்கங்களையும் அது உள்வாங்கிக் கொள்ளும்.</translation>
 <translation id="7791543448312431591">சேர்</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> தாவல்கள் மீட்டெடுக்கப்பட்டன</translation>
 <translation id="780301667611848630">வேண்டாம்</translation>
@@ -986,6 +993,7 @@
 <translation id="7961926449547174351">சேமிப்பக அணுகலை முடக்கியுள்ளீர்கள். இதை இயக்க, அமைப்புகளுக்குச் செல்லவும்.</translation>
 <translation id="7963646190083259054">விற்பனையாளர்:</translation>
 <translation id="7967911570373677897">QR குறியீட்டை ஸ்கேன் செய்ய, அமைப்புகளை மாற்றியமைக்கவும். அப்போதுதான் Chrome உங்கள் கேமராவைப் பயன்படுத்த முடியும்</translation>
+<translation id="7968014550143838305">வாசிப்புப் பட்டியலில் சேர்ந்தது</translation>
 <translation id="7971136598759319605">கடைசியாக 1 நாளுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="7975379999046275268">பக்க மாதிரிக்காட்சியைக் காட்டு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">மிக விரைவான உலாவலுக்காகவும் தேடலிற்காகவும் பக்கங்களை முன்னதாக ஏற்றும்</translation>
@@ -1046,6 +1054,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> மொழித்தொகுப்பு தயாராக உள்ளது.</translation>
 <translation id="8393700583063109961">செய்தி அனுப்பு</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" /> ஐத் தேர்வுசெய்யவும்\n2. “எப்போதும்” என்பதைத் தட்டவும்</translation>
+<translation id="8410695015584479363">விலைகளைக் கண்காணி</translation>
 <translation id="8413126021676339697">முழு வரலாற்றையும் காண்பி</translation>
 <translation id="8425213833346101688">மாற்று</translation>
 <translation id="8427875596167638501">மாதிரிக்காட்சித் தாவல் பாதியளவு திறந்துள்ளது</translation>

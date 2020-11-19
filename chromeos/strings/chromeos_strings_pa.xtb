@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
+<translation id="1071587090247825784">Firewall ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="1075811647922107217">ਪੰਨੇ ਦਾ ਆਕਾਰ</translation>
 <translation id="1195447618553298278">ਅਗਿਆਤ ਗੜਬੜ।</translation>
 <translation id="1204296502688602597">DNS ਵਿਲੰਬਤਾ</translation>
+<translation id="1238612778414822719">HTTPS ਵਿਲੰਬਤਾ</translation>
 <translation id="1290331692326790741">ਕਮਜ਼ੋਰ ਸਿਗਨਲ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ਸਕੈਨ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
 <translation id="1397738625398125236">ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
+<translation id="1398634363027580500">ਬਹੁਤ ਜ਼ਿਆਦਾ HTTPS ਵਿਲੰਬਤਾ</translation>
 <translation id="1413240736185167732">ਅਸਫਲ ਰਹੀ - ਫਿਲਟਰ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="1468664791493211953">ਪੇਸ਼ਕਸ਼ਾਂ</translation>
 <translation id="1478594628797167447">ਸਕੈਨਰ</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਇਦ ਪ੍ਰਸ਼ਾਸਕ ਰਿਮੋਟਲੀ ਡੀਵਾਈਸ ਦਾ ਸੰਰੂਪਣ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4034824040120875894">ਪ੍ਰਿੰਟਰ</translation>
 <translation id="4131410914670010031">ਕਾਲਾ ਅਤੇ ਚਿੱਟਾ</translation>
+<translation id="4145784616224233563">HTTP ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="4227825898293920515">ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ <ph name="TIME" /> ਵਿੱਚ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
 <translation id="4238516577297848345">ਕੋਈ ਪ੍ਰਿੰਟ ਜੌਬ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਨਹੀਂ ਹੈ</translation>
 <translation id="4297501883039923494">ਬੰਦ ਹੋ ਗਿਆ - ਅਗਿਆਤ ਗੜਬੜ</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="4646949265910132906">ਸੁਰੱਖਿਅਤ ਵਾਈ-ਫਾਈ ਕਨੈਕਸ਼ਨ</translation>
 <translation id="467510802200863975">ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
+<translation id="467715984478005772">ਫ਼ਾਇਰਵਾਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
 <translation id="4691278870498629773">ਬੰਦ ਹੋ ਗਿਆ - ਟ੍ਰੇਅ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="469379815867856270">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ</translation>
 <translation id="4731797938093519117">ਮਾਂ-ਪਿਓ ਲਈ ਪਹੁੰਚ</translation>
@@ -114,6 +119,7 @@
 <translation id="6048107060512778456">ਅਸਫਲ ਰਹੀ - ਕਾਗਜ਼ ਫਸ ਗਿਆ ਹੈ</translation>
 <translation id="6050189528197190982">Grayscale</translation>
 <translation id="6058625436358447366">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਅਤੇ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="6061772781719867950">ਅਸਫਲ HTTP ਬੇਨਤੀਆਂ</translation>
 <translation id="6106186594183574873">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6108689792487843350">ਗੇਟਵੇ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ</translation>
 <translation id="6146993107019042706">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
@@ -132,6 +138,8 @@
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
 <translation id="6704062477274546131">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="6747215703636344499">ਬੰਦ ਹੋ ਗਿਆ - ਆਊਟਪੁੱਟ ਭਰ ਗਿਆ ਹੈ</translation>
+<translation id="6766275201586212568">ਅਸਫਲ DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
+<translation id="6768237774506518020">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਅਸਫਲ ਦੀ ਉੱਚ ਦਰ</translation>
 <translation id="6839141349259399400">ਕੀ ਸਕੈਨਰਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ?</translation>
 <translation id="714876143603641390">LAN ਕਨੈਕਟੀਵਿਟੀ</translation>
 <translation id="7162487448488904999">ਗੈਲਰੀ</translation>
@@ -139,6 +147,7 @@
 <translation id="7359657277149375382">ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ</translation>
 <translation id="7561454561030345039">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਕਾਰਵਾਈ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">ਜ਼ਿਆਦਾ HTTPS ਵਿਲੰਬਤਾ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7690294790491645610">ਨਵੇਂ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
@@ -150,6 +159,7 @@
 <translation id="8208861521865154048">ਫ਼ਾਇਦੇ</translation>
 <translation id="8230672074305416752">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8294431847097064396">ਸ੍ਰੋਤ</translation>
+<translation id="8302368968391049045">HTTPS ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="8347227221149377169">ਪ੍ਰਿੰਟ ਜੌਬਾਂ</translation>
 <translation id="8352772353338965963">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਲਈ ਇੱਕ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ। ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਖਾਤਿਆਂ ਤੱਕ ਬਿਨਾਂ ਕਿਸੇ ਪਾਸਵਰਡ ਦੇ ਪਹੁੰਚਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਇਸਲਈ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਸਿਰਫ਼ ਭਰੋਸੇਯੋਗ ਖਾਤਿਆਂ ਨਾਲ ਵਰਤੀ ਜਾਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="8364946094152050673">ਖਾਲੀ ਨਾਮ ਸਰਵਰ</translation>

@@ -16,7 +16,7 @@
 <translation id="1105960400813249514">Captura de pantalla</translation>
 <translation id="1111673857033749125">Los favoritos guardados en tus otros dispositivos aparecerán aquí.</translation>
 <translation id="1113597929977215864">Mostrar la vista simplificada</translation>
-<translation id="1118561384561215815">Ayuda con tareas en la Web</translation>
+<translation id="1118561384561215815">Obtener ayuda para la Web</translation>
 <translation id="1123070903960493543">Cómo interactúas con Chrome, las opciones de configuración que elegiste y detalles sobre las fallas de Chrome</translation>
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -207,6 +207,7 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 <translation id="2450907520913474542">Obtén información sobre los temas en sitios web sin salir de la página. La función Tocar para buscar envía una palabra y el contexto en el que se encuentra a la Búsqueda de Google, y muestra definiciones, fotos, resultados de la búsqueda y otros detalles.
 
 Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqueda, selecciona más o menos palabras. Si quieres editar la búsqueda, abre el panel, presiona el ícono para abrir una pestaña nueva y realiza los cambios que quieras en el cuadro de búsqueda.</translation>
+<translation id="2459390580524506445">Búsqueda por voz mejorada</translation>
 <translation id="246532703174860178">Compartir</translation>
 <translation id="2478076885740497414">Instalar aplicación</translation>
 <translation id="2479148705183875116">Ir a Configuración</translation>
@@ -275,6 +276,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2932150158123903946">Almacenamiento de Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Se cerró la pestaña de vista previa</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> y <ph name="PARENT_NAME_2" /> administran esta cuenta.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
 <translation id="2962095958535813455">Se seleccionaron las pestañas en modo de navegación de incógnito</translation>
 <translation id="2979025552038692506">Pestaña de incógnito seleccionada</translation>
 <translation id="2987620471460279764">Texto compartido desde otro dispositivo</translation>
@@ -324,6 +326,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="32895400574683172">Las notificaciones están habilitadas</translation>
 <translation id="3290991969712132877">Para acceder aquí más rápido, agrega esta página a tu pantalla principal desde el botón Más opciones</translation>
 <translation id="3295530008794733555">Navega más rápido; usa menos datos</translation>
+<translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3298243779924642547">Básico</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
 <translation id="3315103659806849044">Estás personalizando la opción de configuración "Sincronización y servicios". Para activar la sincronización, presiona el botón Confirmar cerca de la parte inferior de la pantalla. Navegar hacia arriba</translation>
@@ -625,6 +628,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5524843473235508879">Se bloqueó el redireccionamiento</translation>
 <translation id="5527082711130173040">Chrome debe acceder a la ubicación para buscar dispositivos. <ph name="BEGIN_LINK1" />Actualiza los permisos<ph name="END_LINK1" />. El acceso a la ubicación también está <ph name="BEGIN_LINK2" />desactivado en este dispositivo<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Cerrar pest. de incógnito</translation>
+<translation id="5530920986376047241">Puedes guardar páginas en tu lista de lectura para volver a ellas más tarde.</translation>
 <translation id="5534640966246046842">Se copió el sitio</translation>
 <translation id="5556459405103347317">Cargar de nuevo</translation>
 <translation id="5561549206367097665">Esperando red…</translation>
@@ -704,6 +708,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5982307838673692400">Abrir una pestaña de incógnito</translation>
 <translation id="6000066717592683814">Seguir usando Google</translation>
 <translation id="6005538289190791541">Contraseña sugerida</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tienes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página}other{Tienes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas}}</translation>
 <translation id="6014293228235665243">No leídas</translation>
 <translation id="6036057147555329831">ICU adicional</translation>
 <translation id="6039379616847168523">Ir a la pestaña siguiente</translation>
@@ -938,6 +943,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7577900504646297215">Administrar intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> archivo descargado}other{<ph name="FILES_DOWNLOADED_MANY" /> archivos descargados}}</translation>
+<translation id="7583262514280211622">Aquí encontrarás tu lista de lectura</translation>
 <translation id="7588219262685291874">Activar el tema oscuro cuando esté activado el Ahorro de batería de tu dispositivo</translation>
 <translation id="7593557518625677601">Para iniciar la Sincronización de Chrome, abre la configuración de Android y vuelve a habilitar la sincronización del sistema Android</translation>
 <translation id="7596558890252710462">Sistema operativo</translation>
@@ -969,6 +975,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7772375229873196092">Cerrar <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="7778840695157240389">Vuelve más tarde para ver historias nuevas</translation>
+<translation id="7786595606756654269">Asistente de Google proporciona una mejor experiencia de voz para realizar búsquedas en la Web y relacionarse con los sitios que abras. Asistente de Google tendrá acceso a las URL y al contenido de los sitios que uses.</translation>
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="7798392620021911922">Se restablecieron <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="780301667611848630">No, gracias</translation>
@@ -994,6 +1001,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7961926449547174351">Inhabilitaste el acceso al almacenamiento. Ve a la Configuración para habilitarlo.</translation>
 <translation id="7963646190083259054">Proveedor:</translation>
 <translation id="7967911570373677897">Si quieres escanear un código QR, cambia la configuración para que Chrome pueda usar la cámara</translation>
+<translation id="7968014550143838305">Se agregó a la lista de lectura</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Vista previa de página <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Precargar las páginas para acelerar la navegación y las búsquedas</translation>
@@ -1055,6 +1063,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="8372925856448695381">El idioma <ph name="LANG" /> está listo.</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8407396331882458341">1. Elige <ph name="APP_NAME" />.\n2. Presiona "Siempre".</translation>
+<translation id="8410695015584479363">Seguimiento de precios</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8427875596167638501">La pestaña de vista previa está abierta a la mitad</translation>

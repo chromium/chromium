@@ -184,7 +184,7 @@
 <translation id="2318372665160196757">本文</translation>
 <translation id="2329324941084714723">タブ パネル</translation>
 <translation id="2347456970887948350">リンク</translation>
-<translation id="2365384324219615024">項目を有効にするには、Enter キーを押すこともできます。たとえば、フォームでテキストを送信する際に Enter キーを使用できます。次へ進むには Enter キーを押してください。</translation>
+<translation id="2365384324219615024">Enter キーを押して項目を有効にすることもできます。たとえば、フォームでテキストを送信する際に Enter キーを使用できます。次へ進むには Enter キーを押してください。</translation>
 <translation id="2381733276052567791">読み上げの有効と無効を切り替えます</translation>
 <translation id="2390264819538553347">次に進むには Enter キー、前に戻るには Backspace キーを押します。</translation>
 <translation id="2398579267367951220">ページ内を検索するには入力してください。見つかった結果に移動するには、Enter キーを押します。結果を 1 つずつ確認するには、上矢印または下矢印キーを押します。違う語句を検索する場合は、その語句を入力します。キャンセルする場合は、Esc キーを押します。</translation>
@@ -382,7 +382,7 @@
 <translation id="3655855170848725876">{COUNT,plural, =1{ドル}other{# 個のドル記号}}</translation>
 <translation id="3659787053479271466">アラート</translation>
 <translation id="366419593095697301">ヒント: このチュートリアルを終了する場合は Esc キーを押してください。</translation>
-<translation id="3676062394766691318">デバイスを設定した後で、このチュートリアルにアクセスして詳細を確認するには、検索+O+T キーを押してください。</translation>
+<translation id="3676062394766691318">デバイスを設定した後で、このチュートリアルにアクセスして詳細を確認するには、検索+O キーを押してから T キーを押してください。</translation>
 <translation id="3681531118904532409">パパイヤ ウィップ</translation>
 <translation id="3692274950075847560">け: <ph name="RESULT" /></translation>
 <translation id="370367311675896712">取り消し線付き</translation>
@@ -887,7 +887,7 @@
 <translation id="762020119231868829">現在再生中のメディア ウィジェットをすべて一時停止します</translation>
 <translation id="7625690649919402823">次の表</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />（<ph name="VARIANT" />）、グレード <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">検索+右矢印キーを押して [練習エリア] または [次のレッスン] ボタンを選択し、検索+Space キーを押して開きます。</translation>
+<translation id="7637342083105831460">検索+右矢印キーを押して [練習エリア] または [次のレッスン] ボタンに移動し、検索+Space キーを押して選択します。</translation>
 <translation id="7639968568612851608">ダークグレー</translation>
 <translation id="7663318257180412551">見出し 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{時間}other{時間}}</translation>
@@ -1034,7 +1034,7 @@
 <translation id="875769700429317857"><ph name="FILE_NAME" /> のダウンロードが完了しました</translation>
 <translation id="8767968232364267681">次のレベル 4 見出し</translation>
 <translation id="8770473310765924354">表などの構造化コンテンツの外に出ます</translation>
-<translation id="8775203254697638994">必要な場合は、プルダウン リストから項目を選択することもできます。この場合の手順は、まず検索+Space キーを押してリストを展開します。次に、上下の矢印キーを使用して項目を選択します。最後に、検索+Space キーを押してリストを折りたたみます。</translation>
+<translation id="8775203254697638994">必要な場合は、プルダウン リストから項目を選択することもできます。それには、まず検索+Space キーを押してリストを展開します。次に、上下の矢印キーを使用して項目を選択します。最後に、検索+Space キーを押してリストを折りたたみます。</translation>
 <translation id="8779057862865475116">前のリンクはありません</translation>
 <translation id="8796411681063377102">次のレベル 3 見出し</translation>
 <translation id="8823311177246872527"><ph name="CURRENTPAGE" />/<ph name="TOTALPAGES" /> ページ目</translation>

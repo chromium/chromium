@@ -264,7 +264,7 @@
 <translation id="1285484354230578868">Ruaji të dhënat në llogarinë tënde të "Diskut të Google"</translation>
 <translation id="1288037062697528143">"Drita e natës" do të aktivizohet automatikisht kur të perëndojë dielli</translation>
 <translation id="1288300545283011870">Karakteristikat e ligjërimit</translation>
-<translation id="1292849930724124745">Fut kartën inteligjente për të qëndruar i identifikuar</translation>
+<translation id="1292849930724124745">Fut kartën smart për të qëndruar i identifikuar</translation>
 <translation id="1293264513303784526">Pajisja USB-C (porta majtas)</translation>
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1296911687402551044">Gozhdo skedën e zgjedhur</translation>
@@ -5490,7 +5490,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7427348830195639090">Faqja në sfond: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Telefonatë nga <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nuk u gjetën pajisje HID</translation>
-<translation id="7433708794692032816">Fut kartën inteligjente për të vazhduar përdorimin e pajisjes sate <ph name="DEVICE_TYPE" /></translation>
+<translation id="7433708794692032816">Fut kartën smart për të vazhduar përdorimin e pajisjes sate <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Mbaje</translation>
 <translation id="7434509671034404296">Zhvilluesi</translation>
 <translation id="7434635829372401939">Sinkronizo cilësimet e tua</translation>
@@ -7115,7 +7115,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="971774202801778802">Shëno URL-në</translation>
 <translation id="973473557718930265">Dil</translation>
 <translation id="975893173032473675">Gjuha në të cilën do të përkthehet</translation>
-<translation id="976499800099896273">Dialogu i zhbërjes së korrigjimit automatik shfaqet për <ph name="TYPED_WORD" /> të korrigjuar në <ph name="CORRECTED_WORD" />.  Shtyp shigjetën lart për t'u qasur, Escape për ta shpërfillur.</translation>
+<translation id="976499800099896273">Dialogu i zhbërjes së korrigjimit automatik shfaqet për <ph name="TYPED_WORD" /> të korrigjuar në <ph name="CORRECTED_WORD" />.  Shtyp shigjetën lart për t'iu qasur, Escape për ta shpërfillur.</translation>
 <translation id="978146274692397928">Gjerësia fillestare e pikësimit është e plotë</translation>
 <translation id="97905529126098460">Kjo dritare do të mbyllet pas përfundimit të anulimit.</translation>
 <translation id="980731642137034229">Butoni i menysë së veprimeve</translation>

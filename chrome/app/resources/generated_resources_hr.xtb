@@ -1470,7 +1470,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="265390580714150011">Vrijednost polja</translation>
 <translation id="2654166010170466751">Dopusti web-lokacijama instalaciju rukovatelja plaćanjem</translation>
 <translation id="2654553774144920065">Zahtjev za ispis</translation>
-<translation id="2657807507504044638">Nema eSIM profila. Novi profil preuzmite <ph name="BEGIN_LINK" />ovdje<ph name="END_LINK" /></translation>
+<translation id="2657807507504044638">Nema dostupnih eSIM profila. Novi profil preuzmite <ph name="BEGIN_LINK" />ovdje<ph name="END_LINK" /></translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Značajke se razlikuju ovisno o uređaju</translation>
 <translation id="2659971421398561408">Promjena veličine diska za Crostini</translation>
 <translation id="2660779039299703961">Događaj</translation>
@@ -4538,7 +4538,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6280215091796946657">Prijavite se drugim računom</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Premašuje ograničenje od jednog lista papira}one{Premašuje ograničenje od {COUNT} lista papira}few{Premašuje ograničenje od {COUNT} lista papira}other{Premašuje ograničenje od {COUNT} listova papira}}</translation>
-<translation id="6283438600881103103">Sad ćete se automatski odjaviti.
+<translation id="6283438600881103103">Bit ćete automatski odjavljeni.
 <ph name="DOMAIN" /> zahtijeva da vaša pametna kartica ostane umetnuta.</translation>
 <translation id="628352644014831790">Četiri sekunde</translation>
 <translation id="6285120108426285413">Datoteka <ph name="FILE_NAME" /> obično se ne preuzima i mogla bi biti opasna.</translation>
@@ -4891,6 +4891,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="671928215901716392">Zaključaj zaslon</translation>
 <translation id="6721678857435001674">Pogledajte izradu i model sigurnosnog ključa</translation>
 <translation id="6721972322305477112">&amp;File (Datoteka)</translation>
+<translation id="672208878794563299">Web-lokacija će sljedeći put ponovo postaviti pitanje.</translation>
 <translation id="672213144943476270">Otključajte profil da biste mogli pregledavati kao gost.</translation>
 <translation id="6723661294526996303">Uvoz oznaka i postavki...</translation>
 <translation id="6723839937902243910">Napajanje</translation>

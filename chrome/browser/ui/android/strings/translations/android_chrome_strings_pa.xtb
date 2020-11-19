@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">ਪੰਨਾ ਛੱਡੇ ਬਿਨਾਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਜਾਣੋ। 'ਖੋਜਣ ਲਈ ਸਪਰਸ਼ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ 'Google ਖੋਜ', ਵਾਪਸੀ ਪਰਿਭਾਸ਼ਾਵਾਂ, ਤਸਵੀਰਾਂ, ਖੋਜ ਨਤੀਜਿਆਂ ਅਤੇ ਹੋਰਾਂ ਵੇਰਵਿਆਂ ਨੂੰ ਇੱਕ ਸ਼ਬਦ ਅਤੇ ਉਸਦੇ ਨੇੜਲੇ ਸੰਦਰਭ ਭੇਜਦੀ ਹੈ।
 
 ਖੋਜ ਕਰਨ ਲਈ ਕਿਸੇ ਵੀ ਸ਼ਬਦ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ। ਆਪਣੀ ਖੋਜ ਵਿੱਚ ਸੋਧ ਕਰਨ ਲਈ, ਜ਼ਿਆਦਾ ਜਾਂ ਘੱਟ ਸ਼ਬਦ ਚੁਣੋ। ਆਪਣੀ ਖੋਜ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ, ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹਣ ਲਈ ਪ੍ਰਤੀਕ 'ਤੇ ਟੈਪ ਕਰੋ, ਅਤੇ ਖੋਜ ਬਾਕਸ ਵਿੱਚ ਆਪਣੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰੋ।</translation>
+<translation id="2459390580524506445">ਵਿਸਤ੍ਰਿਤ ਅਵਾਜ਼ੀ ਖੋਜ</translation>
 <translation id="246532703174860178">ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2478076885740497414">ਐਪ ਇੰਸਟੌਲ ਕਰੋ</translation>
 <translation id="2479148705183875116">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ਸਟੋਰੇਜ</translation>
 <translation id="2942036813789421260">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਬੰਦ ਹੈ</translation>
 <translation id="2956410042958133412">ਇਹ ਖਾਤਾ <ph name="PARENT_NAME_1" /> ਅਤੇ <ph name="PARENT_NAME_2" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ਨਾ-ਪੜ੍ਹੇ ਪੰਨੇ}}</translation>
 <translation id="2962095958535813455">ਬਦਲਕੇ incognito ਟੈਬਾਂ ਲਿਆਂਦੀਆਂ ਗਈਆਂ</translation>
 <translation id="2979025552038692506">ਚੁਣੀ ਗਈ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="2987620471460279764">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਲਿਖਤ</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">ਸੂਚਨਾਵਾਂ ਦਿਖਾਈਆਂ ਜਾਂਦੀਆਂ ਹਨ</translation>
 <translation id="3290991969712132877">ਇੱਥੇ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚ ਕਰਨ ਲਈ, 'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਇਸ ਪੰਨੇ ਨੂੰ ਆਪਣੀ ਹੋਮ ਸਕ੍ਰੀਨ ‘ਤੇ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3295530008794733555">ਵਧੇਰੇ ਤੇਜ਼ ਬ੍ਰਾਊਜ਼ ਕਰੋ। ਘੱਟ ਡਾਟਾ ਵਰਤੋ।</translation>
+<translation id="3297344142967351106">ਅਵਾਜ਼ੀ ਸਹਾਇਕ</translation>
 <translation id="3298243779924642547">ਲਾਈਟ</translation>
 <translation id="3303414029551471755">ਕੀ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="3315103659806849044">ਤੁਸੀਂ ਇਸ ਵੇਲੇ ਆਪਣੀਆਂ ਸਮਕਾਲੀਕਰਨ ਅਤੇ Google ਸੇਵਾ ਸੈਟਿੰਗਾਂ ਵਿਉਂਤਬੱਧ ਕਰ ਰਹੇ ਹੋ। ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਕਰਨ ਲਈ, ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ 'ਪੁਸ਼ਟੀ ਕਰੋ' ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ। ਉੱਪਰ ਵੱਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="5527082711130173040">Chrome ਨੂੰ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰਨ ਵਾਸਤੇ ਟਿਕਾਣਾ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ। <ph name="BEGIN_LINK1" />ਇਜਾਜ਼ਤਾਂ ਅੱਪਡੇਟ ਕਰੋ<ph name="END_LINK1" />। ਟਿਕਾਣਾ ਪਹੁੰਚ ਵੀ <ph name="BEGIN_LINK2" />ਇਸ ਡੀਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤੀ ਹੋਈ ਹੈ<ph name="END_LINK2" />।</translation>
 <translation id="5530766185686772672">ਗੁਮਨਾਮ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
+<translation id="5530920986376047241">ਪੰਨਿਆਂ ਨੂੰ ਦੁਬਾਰਾ ਲੱਭਣ ਲਈ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="5534640966246046842">ਸਾਈਟ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="5556459405103347317">ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="5561549206367097665">ਨੈੱਟਵਰਕ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="6000066717592683814">Google ਰੱਖੋ</translation>
 <translation id="6005538289190791541">ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ਪੰਨਾ ਹੈ}one{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ਪੰਨਾ ਹੈ}other{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ਪੰਨੇ ਹਨ}}</translation>
 <translation id="6014293228235665243">ਨਾ-ਪੜ੍ਹੇ</translation>
 <translation id="6036057147555329831">ਵਾਧੂ ICU</translation>
 <translation id="6039379616847168523">ਅਗਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">Chrome ਡਾਟਾ ਕਲੀਅਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7577900504646297215">ਦਿਲਚਸਪੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕੀਤੀ ਗਈ}one{<ph name="FILES_DOWNLOADED_MANY" /> ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕੀਤੀ ਗਈ}other{<ph name="FILES_DOWNLOADED_MANY" /> ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ}}</translation>
+<translation id="7583262514280211622">ਤੁਹਾਨੂੰ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਇੱਥੇ ਮਿਲੇਗੀ</translation>
 <translation id="7588219262685291874">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਚਾਲੂ ਹੋਣ 'ਤੇ ਗੂੜ੍ਹੇ ਥੀਮ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7593557518625677601">Android ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ ਅਤੇ Chrome ਸਮਕਾਲੀਕਰਨ ਸ਼ੁਰੂ ਕਰਨ ਲਈ Android ਸਿਸਟਮ ਸਮਕਾਲੀਕਰਨ ਮੁੜ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7596558890252710462">ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}}</translation>
 <translation id="7778840695157240389">ਨਵੀਆਂ ਕਹਾਣੀਆਂ ਲਈ ਬਾਅਦ ਵਿੱਚ ਵਾਪਸ ਜਾਂਚ ਕਰੋ</translation>
+<translation id="7786595606756654269">Google Assistant ਵੈੱਬ 'ਤੇ ਖੋਜ ਕਰਨ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੀਆਂ ਸਾਈਟਾਂ ਨਾਲ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਇੱਕ ਬਿਹਤਰ ਅਵਾਜ਼ੀ ਅਨੁਭਵ ਮੁਹੱਈਆ ਕਰਦੀ ਹੈ। Google Assistant ਨੂੰ ਉਹਨਾਂ ਸਾਈਟਾਂ ਦੇ URL ਅਤੇ ਸਮੱਗਰੀਆਂ ਮਿਲਣਗੀਆਂ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਇਸਨੂੰ ਵਰਤਦੇ ਹੋ।</translation>
 <translation id="7791543448312431591">ਜੋੜੋ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">ਤੁਸੀਂ ਸਟੋਰੇਜ ਤੱਕ ਪਹੁੰਚ ਬੰਦ ਕਰ ਦਿੱਤੀ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="7963646190083259054">ਵੈਂਡਰ:</translation>
 <translation id="7967911570373677897">ਕਿਸੇ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰਨ ਲਈ, ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਬਦਲੋ ਤਾਂ ਜੋ Chrome ਤੁਹਾਡੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤ ਸਕੇ</translation>
+<translation id="7968014550143838305">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7971136598759319605">1 ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="7975379999046275268">ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਤੇ ਖੋਜ ਕਰਨ ਲਈ ਪੰਨੇ ਪਹਿਲਾਂ ਤੋਂ ਲੋਡ ਕਰੋ</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> ਤਿਆਰ ਹੈ।</translation>
 <translation id="8393700583063109961">ਸੁਨੇਹਾ ਭੇਜੋ</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" /> ਚੁਣੋ\n2. “ਹਮੇਸ਼ਾਂ” 'ਤੇ ਟੈਪ ਕਰੋ</translation>
+<translation id="8410695015584479363">ਕੀਮਤਾਂ 'ਤੇ ਨਜ਼ਰ ਰੱਖੋ</translation>
 <translation id="8413126021676339697">ਪੂਰਾ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
 <translation id="8425213833346101688">ਬਦਲੋ</translation>
 <translation id="8427875596167638501">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਅੱਧੀ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ</translation>

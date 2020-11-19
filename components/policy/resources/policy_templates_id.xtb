@@ -1485,7 +1485,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
         * 4, firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> akan diupdate setelah pendaftaran, sebelum pengguna login.
 
       Jika kebijakan tidak disetel, update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> tidak akan tersedia.</translation>
-<translation id="3232691106293445015">Koneksi HTTP yang tidak aman dilarang menggunakan autentikasi <ph name="BASIC_AUTH" />; perlu HTTPS</translation>
+<translation id="3232691106293445015">Koneksi HTTP yang tidak aman dilarang menggunakan autentikasi <ph name="BASIC_AUTH" />; HTTPS diwajibkan</translation>
 <translation id="3236046242843493070">Pola URL untuk memungkinkan pemasangan skrip pengguna, aplikasi, dan ekstensi dari</translation>
 <translation id="3240609035816615922">Kebijakan akses konfigurasi untuk printer.</translation>
 <translation id="324062325008698789">Mengonfigurasi daftar printer</translation>
@@ -4395,7 +4395,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="731208205557053914">Melaporkan info VPD</translation>
 <translation id="7319863628760093590">Jika kebijakan disetel ke Aktif atau tidak disetel, verifikasi autentikasi <ph name="BASIC_AUTH" /> akan diizinkan diterima melalui HTTP yang tidak aman.
 
-      Jika kebijakan disetel ke Nonaktif, permintaan HTTP yang tidak aman akan dilarang menggunakan skema autentikasi <ph name="BASIC_AUTH" />; hanya mengizinkan HTTPS yang aman.</translation>
+      Jika kebijakan disetel ke Nonaktif, permintaan HTTP yang tidak aman akan dilarang menggunakan skema autentikasi <ph name="BASIC_AUTH" />; hanya HTTPS yang diizinkan.</translation>
 <translation id="7323896582714668701">Parameter baris perintah tambahan untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="7326394567531622570">Serupa dengan Wipe (nilai 2), namun mencoba untuk mempertahankan token login sehingga pengguna tidak perlu login lagi.</translation>
 <translation id="7331962793961469250">Bila disetel ke True, promosi untuk apl Chrome Webstore tidak akan muncul pada halaman tab baru. Menyetel opsi ini ke False atau membiarkannya tanpa disetel akan membuat promosi untuk apl Chrome Webstore muncul di halaman tab baru</translation>

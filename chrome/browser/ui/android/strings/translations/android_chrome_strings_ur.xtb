@@ -708,7 +708,7 @@
 <translation id="5982307838673692400">ایک پوشیدگی ٹیب کھولیں</translation>
 <translation id="6000066717592683814">‏Google کو رکھیں</translation>
 <translation id="6005538289190791541">تجویز کردہ پاس ورڈ</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> صفحہ ہیں}other{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحات ہیں}}</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> صفحہ ہے}other{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحات ہیں}}</translation>
 <translation id="6014293228235665243">بغیر پڑھے ہوئے</translation>
 <translation id="6036057147555329831">‏اضافی ICU</translation>
 <translation id="6039379616847168523">اگلے ٹیب پر جائیں</translation>

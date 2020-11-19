@@ -128,7 +128,7 @@
 <translation id="1136712381129578788">The security key is locked because the wrong PIN was entered too many times. To unlock it, remove and reinsert it.</translation>
 <translation id="1137589305610962734">temporary data</translation>
 <translation id="1137673463384776352">Open link in <ph name="APP" /></translation>
-<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New notification}other{# New notifications}}</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New Notification}other{# New Notifications}}</translation>
 <translation id="1139343347646843679">There was an error while configuring Linux. Please contact your administrator.</translation>
 <translation id="1140351953533677694">Access your Bluetooth and Serial devices</translation>
 <translation id="114036956334641753">Audio and captions</translation>
@@ -2862,7 +2862,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="428565720843367874">Anti-virus software failed unexpectedly while scanning this file.</translation>
 <translation id="4287099557599763816">Screen reader</translation>
-<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Show}other{Show all}}</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Show}other{Show All}}</translation>
 <translation id="4289372044984810120">Manage your accounts here. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4295072614469448764">App is available in your terminal. There may also be an icon in your Launcher.</translation>
@@ -4889,6 +4889,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="671928215901716392">Lock screen</translation>
 <translation id="6721678857435001674">See the make and model of your Security Key</translation>
 <translation id="6721972322305477112">&amp;File</translation>
+<translation id="672208878794563299">This site will ask again next time.</translation>
 <translation id="672213144943476270">Please unlock your profile before browsing as a guest.</translation>
 <translation id="6723661294526996303">Import bookmarks and settings...</translation>
 <translation id="6723839937902243910">Power</translation>

@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">Эта функция позволяет находить картинки, определения и другую информацию, не покидая открытой страницы. Просто выберите слово, и оно будет отправлено в Google Поиск вместе с контекстом.
 
 Чтобы начать поиск, нажмите и удерживайте любое слово. Чтобы уточнить поиск, выделите нужное слово или фразу. Для изменения запроса откройте панель и нажмите на значок приложения, чтобы открыть его в новой вкладке. Затем внесите изменения в окне поиска.</translation>
+<translation id="2459390580524506445">Улучшенный голосовой поиск</translation>
 <translation id="246532703174860178">Отправка</translation>
 <translation id="2478076885740497414">Установить приложение</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Хранилище Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Вкладка предпросмотра закрыта</translation>
 <translation id="2956410042958133412">Этим аккаунтом управляют <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
 <translation id="2962095958535813455">Переключено на вкладки в режиме инкогнито</translation>
 <translation id="2979025552038692506">Выбранная вкладка инкогнито</translation>
 <translation id="2987620471460279764">Текст, полученный с другого устройства</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">Может отправлять уведомления</translation>
 <translation id="3290991969712132877">Для быстрого доступа добавьте эту страницу на главный экран, нажав кнопку настроек "Ещё".</translation>
 <translation id="3295530008794733555">Быстрый просмотр сайтов и экономия трафика</translation>
+<translation id="3297344142967351106">Голосовой помощник</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Скачать?</translation>
 <translation id="3315103659806849044">Сейчас вы находитесь на странице настроек сервисов Google и синхронизации. Чтобы включить синхронизацию, нажмите кнопку "Подтвердить" в нижней части экрана. Перейти вверх</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">Попытка переадресации заблокирована.</translation>
 <translation id="5527082711130173040">Чтобы выполнить поиск устройств, браузеру Chrome нужен доступ к геоданным. <ph name="BEGIN_LINK2" />Включите доступ<ph name="END_LINK2" /> и <ph name="BEGIN_LINK1" />обновите разрешения<ph name="END_LINK1" />.</translation>
 <translation id="5530766185686772672">Закрыть вкладки инкогнито</translation>
+<translation id="5530920986376047241">В нем можно сохранять страницы, чтобы прочитать их позже.</translation>
 <translation id="5534640966246046842">Адрес сайта скопирован</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5561549206367097665">Поиск сети…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">Открыть вкладку инкогнито</translation>
 <translation id="6000066717592683814">Использовать Google</translation>
 <translation id="6005538289190791541">Предложенный пароль</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> страница.}one{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страница.}few{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страницы.}many{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страниц.}other{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страницы.}}</translation>
 <translation id="6014293228235665243">Не прочитано</translation>
 <translation id="6036057147555329831">Дополнительный модуль ICU</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">Данные Chrome удалены</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Скачан <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Скачан <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}many{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файлов}other{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
+<translation id="7583262514280211622">Здесь вы найдете свой список для чтения</translation>
 <translation id="7588219262685291874">Использовать тёмную тему, когда включен режим энергосбережения</translation>
 <translation id="7593557518625677601">Откройте настройки Android и снова включите синхронизацию системы</translation>
 <translation id="7596558890252710462">Операционная система</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092">Закрыть вкладку "<ph name="APP_NAME" />"</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}many{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способов оплаты}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}}</translation>
 <translation id="7778840695157240389">Новый контент появится позже.</translation>
+<translation id="7786595606756654269">Включив Google Ассистента, вы сможете выполнять поиск в Интернете и работать с сайтами, используя голосовые команды. При взаимодействии с сайтами Ассистент будет получать их контент и URL.</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7798392620021911922">Восстановлено вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">Откройте доступ к хранилищу в настройках устройства.</translation>
 <translation id="7963646190083259054">Поставщик:</translation>
 <translation id="7967911570373677897">Чтобы отсканировать QR-код, разрешите Chrome доступ к камере в настройках.</translation>
+<translation id="7968014550143838305">Добавлено в список для чтения.</translation>
 <translation id="7971136598759319605">Последние действия: 1 день назад</translation>
 <translation id="7975379999046275268">Просмотреть страницу <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Разрешить предзагрузку страниц для повышения скорости работы браузера и поиска</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381">Пакет "<ph name="LANG" />" скачан.</translation>
 <translation id="8393700583063109961">Отправить сообщение</translation>
 <translation id="8407396331882458341">1. Выберите <ph name="APP_NAME" />.\n2. Нажмите "Всегда".</translation>
+<translation id="8410695015584479363">Отслеживать цены</translation>
 <translation id="8413126021676339697">Показать всю историю</translation>
 <translation id="8425213833346101688">Изменить</translation>
 <translation id="8427875596167638501">Вкладка предпросмотра открыта на половину высоты</translation>

@@ -301,6 +301,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2102495993840063010">Apps de Android</translation>
 <translation id="2107021941795971877">Compatibilidades de la impresora</translation>
 <translation id="2108755909498034140">Reinicia la computadora.</translation>
+<translation id="2111166930115883695">Presiona la barra espaciadora para jugar</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Tarjeta</translation>
 <translation id="2114841414352855701">Se ignoró porque fue anulada por <ph name="POLICY_NAME" /> .</translation>
@@ -516,6 +517,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3010559122411665027">Entrada de lista "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloqueado de forma automática</translation>
 <translation id="3016780570757425217">Determinar tu ubicación</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, presiona la tecla de tabulación y, luego, Intro para quitar la sugerencia.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Tipo de política incorrecto</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
@@ -758,6 +760,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">Se reanudó la captura de pantalla.</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
 <translation id="4072486802667267160">Se produjo un error al procesar tu pedido. Vuelve a intentarlo.</translation>
 <translation id="4075732493274867456">El cliente y el servidor no admiten un conjunto de cifrado o una versión de protocolo SSL en común.</translation>
@@ -838,6 +841,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4297502707443874121">Miniatura para la página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4300675098767811073">Perforaciones múltiples a la derecha</translation>
+<translation id="4302514097724775343">Presiona el dinosaurio para jugar</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">No se pudo acceder a tu archivo</translation>
 <translation id="4305817255990598646">Cambiar</translation>
@@ -1250,6 +1254,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5963413905009737549">Sección</translation>
 <translation id="5967592137238574583">Editar la información de contacto</translation>
 <translation id="5967867314010545767">Eliminar del historial</translation>
+<translation id="5968793460449681917">En cada visita</translation>
 <translation id="5975083100439434680">Alejar</translation>
 <translation id="5979084224081478209">Revisar contraseñas</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1465,6 +1470,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6895330447102777224">Tu tarjeta se confirmó</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
+<translation id="6907293445143367439">Permitir a <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> desea obtener el control total de tus dispositivos MIDI</translation>
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6934672428414710184">Este nombre es de tu Cuenta de Google</translation>
@@ -1901,6 +1907,7 @@ Detalles adicionales:
 <translation id="858637041960032120">Agregar teléfono
 </translation>
 <translation id="8589998999637048520">Mejor calidad</translation>
+<translation id="8600271352425265729">Solo esta vez</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
 <translation id="8606726445206553943">Usar tus dispositivos MIDI</translation>
 <translation id="8612761427948161954">Hola <ph name="USERNAME" />:
@@ -2058,6 +2065,7 @@ Detalles adicionales:
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="945855313015696284">Comprueba la información que se muestra a continuación y borra las tarjetas que no sean válidas</translation>
 <translation id="950736567201356821">Perforación triple en la parte superior</translation>
+<translation id="951941430552851965">El administrador pausó la captura de pantalla debido al contenido que se muestra en la pantalla.</translation>
 <translation id="961663415146723894">Encuadernado en la parte inferior</translation>
 <translation id="962484866189421427">Este contenido podría intentar instalar apps engañosas que se hagan pasar por otro tipo de contenido o que recopilen datos que se usen para rastrearte. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Build oficial</translation>

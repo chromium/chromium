@@ -383,7 +383,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1422159345171879700">Wczytaj niezabezpieczone skrypty</translation>
 <translation id="1423716227250567100">To działanie spowoduje:
           <ph name="LINE_BREAKS" />
-           • zresetowanie ustawień Chrome i skrótów Chrome,
+           • zresetowanie ustawień i skrótów Chrome,
            <ph name="LINE_BREAK" />
            • wyłączenie rozszerzeń,
            <ph name="LINE_BREAK" />
@@ -4310,7 +4310,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6031600495088157824">Opcje wprowadzania na pasku narzędzi</translation>
 <translation id="6032715498678347852">Aby przyznać rozszerzeniu dostęp do tej strony, kliknij je.</translation>
 <translation id="6032912588568283682">System plików</translation>
-<translation id="603539183851330738">Przycisk cofnięcia autokorekty. Przywróć: <ph name="TYPED_WORD" />.  Naciśnij Enter, by aktywować, albo Escape, by odrzucić.</translation>
+<translation id="603539183851330738">Przycisk cofania autokorekty. Przywróć: <ph name="TYPED_WORD" />.  Naciśnij Enter, by aktywować, albo Escape, by odrzucić.</translation>
 <translation id="6035517790085323771">Kto może udostępniać treści Twojemu urządzeniu</translation>
 <translation id="6038929619733116134">Blokuj, jeśli na stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy</translation>
 <translation id="6039651071822577588">Zniekształcony słownik właściwości sieci</translation>
@@ -4887,6 +4887,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="671928215901716392">Zablokuj ekran</translation>
 <translation id="6721678857435001674">Odczytywanie marki i modelu klucza bezpieczeństwa</translation>
 <translation id="6721972322305477112">&amp;Plik</translation>
+<translation id="672208878794563299">Następnym razem ta strona znów o to poprosi.</translation>
 <translation id="672213144943476270">Aby przeglądać jako gość, odblokuj swój profil.</translation>
 <translation id="6723661294526996303">Importuj zakładki i ustawienia...</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
@@ -5598,7 +5599,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7556033326131260574">Smart Lock nie mógł zweryfikować Twojego konta. Wpisz hasło, by uzyskać dostęp do urządzenia.</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" /> nie może niestety odzyskać Twoich ustawień. Aby naprawić ten błąd, <ph name="SHORT_PRODUCT_NAME" /> musi zresetować urządzenie za pomocą Powerwash.</translation>
 <translation id="7557194624273628371">Przekierowanie portów w Linuksie</translation>
-<translation id="7559269329306630685">Odciski palców są przechowywane w bezpieczny sposób i są dostępne tylko na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="7559269329306630685">Odcisk palca jest przechowywany w bezpieczny sposób i jest dostępny tylko na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7559719679815339381">Zaczekaj....Aplikacja kiosku jest aktualizowana. Nie odłączaj pamięci USB.</translation>
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="756445078718366910">Otwórz okno przeglądarki</translation>
@@ -7120,7 +7121,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="971774202801778802">URL zakładki</translation>
 <translation id="973473557718930265">Zakończ</translation>
 <translation id="975893173032473675">Język docelowy tłumaczenia</translation>
-<translation id="976499800099896273">Wyświetlane jest okno autokorekty dla słowa <ph name="TYPED_WORD" /> poprawionego na <ph name="CORRECTED_WORD" />.  Naciśnij strzałkę w górę, by przejść do tego okna, albo Escape, by je zignorować.</translation>
+<translation id="976499800099896273">Wyświetlane jest okno cofania autokorekty dla słowa <ph name="TYPED_WORD" /> poprawionego na <ph name="CORRECTED_WORD" />.  Naciśnij strzałkę w górę, by przejść do tego okna, albo Escape, by je zignorować.</translation>
 <translation id="978146274692397928">Początkowa szerokość przestankowania: pełna</translation>
 <translation id="97905529126098460">Po zakończeniu anulowania okno zostanie zamknięte.</translation>
 <translation id="980731642137034229">Przycisk menu czynności</translation>
