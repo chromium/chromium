@@ -83,10 +83,6 @@ vs-chromium-project.txt
 /chrome/android/profiles/local.txt
 /chrome/angle_unittests_run.xml
 /chrome/app/vector_icons/google_chrome/
-/chrome/build/chrome.x64.orderfile
-/chrome/build/chrome.x86.orderfile
-/chrome/build/chrome_child.x64.orderfile
-/chrome/build/chrome_child.x86.orderfile
 /chrome/build/pgo_profiles/
 /chrome/gl_tests_run.xml
 /chrome/gles2_conform_test_run.xml

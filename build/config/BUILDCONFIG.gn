@@ -361,11 +361,6 @@ if (is_android) {
       [ "//build/config/android:default_orderfile_instrumentation" ]
 }
 
-if (is_win) {
-  default_compiler_configs +=
-      [ "//build/config/win:default_cygprofile_instrumentation" ]
-}
-
 if (is_clang && !is_nacl) {
   default_compiler_configs += [
     "//build/config/clang:find_bad_constructs",

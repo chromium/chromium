@@ -266,10 +266,6 @@ group("common_deps") {
     public_deps += [ "//base/android/orderfile:orderfile_instrumentation" ]
   }
 
-  if (is_win && generate_order_files && !is_nacl) {
-    public_deps += [ "//tools/cygprofile_win" ]
-  }
-
   if (is_fuchsia) {
     public_deps +=
         [ "//third_party/fuchsia-sdk/sdk/build/config:runtime_library_group" ]

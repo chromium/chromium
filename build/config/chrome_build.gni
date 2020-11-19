@@ -7,10 +7,6 @@ declare_args() {
   # true means official Google Chrome branding (requires extra Google-internal
   # resources).
   is_chrome_branded = false
-
-  # Turn this on to generate order files. See
-  # https://chromium.googlesource.com/chromium/src/+/master/docs/win_order_files.md
-  generate_order_files = false
 }
 
 declare_args() {

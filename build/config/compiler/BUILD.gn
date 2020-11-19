@@ -176,7 +176,7 @@ declare_args() {
                                                        current_cpu == "x64"))))
 }
 
-if (is_win || is_android || (is_chromeos && is_chromeos_device)) {
+if (is_android || (is_chromeos && is_chromeos_device)) {
   # Set the path to use orderfile for linking Chrome
   # Note that this is for using only one orderfile for linking
   # the Chrome binary/library.
@@ -187,8 +187,6 @@ if (is_win || is_android || (is_chromeos && is_chromeos_device)) {
       # Allow downstream tools to set orderfile path with
       # another variable.
       chrome_orderfile_path = default_chrome_orderfile
-    } else if (is_win && is_clang && is_official_build) {
-      chrome_orderfile_path = "//chrome/build/chrome.$target_cpu.orderfile"
     } else if (is_chromeos && is_chromeos_device) {
       chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
     }
@@ -2470,29 +2468,19 @@ if (is_chromeos && is_chromeos_device) {
   }
 }
 
-if (is_win || is_android || (is_chromeos && is_chromeos_device)) {
-  # Use orderfile for linking Chrome on win, android, and Chrome OS.
+if (is_android || (is_chromeos && is_chromeos_device)) {
+  # Use orderfile for linking Chrome on Android and Chrome OS.
   # This config enables using an orderfile for linking in LLD.
+  # TODO: Consider using call graph sort instead, at least on Android.
   config("chrome_orderfile_config") {
     if (chrome_orderfile_path != "" && !enable_call_graph_profile_sort) {
       assert(use_lld)
       _rebased_orderfile = rebase_path(chrome_orderfile_path, root_build_dir)
-      if (is_android || (is_chromeos && is_chromeos_device)) {
-        ldflags = [
-          "-Wl,--symbol-ordering-file",
-          "-Wl,$_rebased_orderfile",
-          "-Wl,--no-warn-symbol-ordering",
-        ]
-      } else {
-        ldflags = [
-          "/order:@$_rebased_orderfile",
-
-          # Ignore warnings about missing functions or functions not in their
-          # own section.
-          "/ignore:4037",
-          "/ignore:4065",
-        ]
-      }
+      ldflags = [
+        "-Wl,--symbol-ordering-file",
+        "-Wl,$_rebased_orderfile",
+        "-Wl,--no-warn-symbol-ordering",
+      ]
       inputs = [ chrome_orderfile_path ]
     }
   }
