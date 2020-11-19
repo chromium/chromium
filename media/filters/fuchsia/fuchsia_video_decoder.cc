@@ -765,14 +765,18 @@ void FuchsiaVideoDecoder::OnOutputConstraints(
   fuchsia::sysmem::BufferCollectionTokenPtr collection_token;
   sysmem_allocator_.raw()->AllocateSharedCollection(
       collection_token.NewRequest());
+  collection_token->SetName(100u, "ChromiumVideoDecoderOutput");
+  collection_token->SetDebugClientInfo("chromium_video_decoder", 0u);
 
   // Create sysmem tokens for the gpu process and the codec.
   fuchsia::sysmem::BufferCollectionTokenPtr collection_token_for_codec;
   collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
                               collection_token_for_codec.NewRequest());
+  collection_token_for_codec->SetDebugClientInfo("codec", 0u);
   fuchsia::sysmem::BufferCollectionTokenPtr collection_token_for_gpu;
   collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
                               collection_token_for_gpu.NewRequest());
+  collection_token_for_gpu->SetDebugClientInfo("chromium_gpu", 0u);
 
   // Convert the token to a BufferCollection connection.
   sysmem_allocator_.raw()->BindSharedCollection(

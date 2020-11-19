@@ -256,7 +256,7 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   // the ImagePipe.
   fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
   sysmem_allocator_->AllocateSharedCollection(collection_token.NewRequest());
-  collection_token->SetName(100u, "ChromiumOutput");
+  collection_token->SetName(100u, "ChromiumPrimaryPlaneOutput");
   collection_token->SetDebugClientInfo("vulkan", 0u);
 
   fuchsia::sysmem::BufferCollectionTokenSyncPtr token_for_scenic;
