@@ -163,6 +163,26 @@ void ThreadCache::Delete(void* tcache_ptr) {
   root->RawFree(tcache_ptr);
 }
 
+void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
+  // Avoids acquiring the lock needlessly.
+  if (!bucket.count)
+    return;
+
+  // Acquire the lock once for the bucket. Allocations from the same bucket are
+  // likely to be hitting the same cache lines in the central allocator, and
+  // lock acquisitions can be expensive.
+  internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
+  while (bucket.count > limit) {
+    auto* entry = bucket.freelist_head;
+    PA_DCHECK(entry);
+    bucket.freelist_head = entry->GetNext();
+
+    root_->RawFreeLocked(entry);
+    bucket.count--;
+  }
+  PA_DCHECK(bucket.count == limit);
+}
+
 void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->alloc_count += stats_.alloc_count;
   stats->alloc_hits += stats_.alloc_hits;
@@ -174,8 +194,6 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->cache_fill_count += stats_.cache_fill_count;
   stats->cache_fill_hits += stats_.cache_fill_hits;
   stats->cache_fill_misses += stats_.cache_fill_misses;
-  stats->cache_fill_bucket_full += stats_.cache_fill_bucket_full;
-  stats->cache_fill_too_large += stats_.cache_fill_too_large;
 
   for (size_t i = 0; i < kBucketCount; i++) {
     stats->bucket_total_memory +=
@@ -191,25 +209,9 @@ void ThreadCache::SetShouldPurge() {
 }
 
 void ThreadCache::Purge() {
-  for (Bucket& bucket : buckets_) {
-    size_t count = bucket.count;
-    if (!count)
-      continue;
+  for (auto& bucket : buckets_)
+    ClearBucket(bucket, 0);
 
-    // Acquire the lock once per bucket. This avoids acquiring it for too long,
-    // and also allocations from the same bucket are likely to be hitting the
-    // same cache lines in the central allocator.
-    internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
-    while (bucket.freelist_head) {
-      auto* entry = bucket.freelist_head;
-      bucket.freelist_head = entry->GetNext();
-
-      root_->RawFreeLocked(entry);
-      count--;
-    }
-    CHECK_EQ(0u, count);
-    bucket.count = 0;
-  }
   should_purge_.store(false, std::memory_order_relaxed);
 }
 

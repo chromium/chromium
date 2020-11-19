@@ -227,9 +227,6 @@ void ReportPartitionAllocThreadCacheStats(MemoryAllocatorDump* dump,
   dump->AddScalar("cache_fill_count", "scalar", stats.cache_fill_count);
   dump->AddScalar("cache_fill_hits", "scalar", stats.cache_fill_hits);
   dump->AddScalar("cache_fill_misses", "scalar", stats.cache_fill_misses);
-  dump->AddScalar("cache_fill_bucket_full", "scalar",
-                  stats.cache_fill_bucket_full);
-  dump->AddScalar("cache_fill_too_large", "scalar", stats.cache_fill_too_large);
 
   dump->AddScalar("size", "bytes", stats.bucket_total_memory);
   dump->AddScalar("metadata_overhead", "bytes", stats.metadata_overhead);

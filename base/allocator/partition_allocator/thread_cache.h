@@ -159,13 +159,15 @@ class BASE_EXPORT ThreadCache {
   }
 
  private:
-  explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
-  static void Delete(void* thread_cache_ptr);
-
   struct Bucket {
     size_t count;
     PartitionFreelistEntry* freelist_head;
   };
+
+  explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
+  static void Delete(void* thread_cache_ptr);
+  // Empties the |bucket| until there are at most |limit| objects in it.
+  void ClearBucket(Bucket& bucket, size_t limit);
 
   // TODO(lizeb): Optimize the threshold.
   static constexpr size_t kSizeThreshold = 512;
@@ -206,18 +208,11 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
   INCREMENT_COUNTER(stats_.cache_fill_count);
 
   if (bucket_index >= kBucketCount) {
-    INCREMENT_COUNTER(stats_.cache_fill_too_large);
     INCREMENT_COUNTER(stats_.cache_fill_misses);
     return false;
   }
 
   auto& bucket = buckets_[bucket_index];
-
-  if (bucket.count >= kMaxCountPerBucket) {
-    INCREMENT_COUNTER(stats_.cache_fill_bucket_full);
-    INCREMENT_COUNTER(stats_.cache_fill_misses);
-    return false;
-  }
 
   PA_DCHECK(bucket.count != 0 || bucket.freelist_head == nullptr);
 
@@ -227,6 +222,12 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
   bucket.count++;
 
   INCREMENT_COUNTER(stats_.cache_fill_hits);
+
+  // Batched deallocation, amortizing lock acquisitions.
+  if (bucket.count >= kMaxCountPerBucket) {
+    ClearBucket(bucket, kMaxCountPerBucket / 2);
+  }
+
   return true;
 }
 

@@ -184,8 +184,6 @@ TEST_F(ThreadCacheTest, LargeAllocationsAreNotCached) {
       tcache->stats_.alloc_miss_too_large};
   DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
   DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
-  DeltaCounter cache_fill_too_large_counter{
-      tcache->stats_.cache_fill_too_large};
 
   FillThreadCacheAndReturnIndex(100 * 1024);
   tcache = g_root->thread_cache_for_testing();
@@ -193,7 +191,6 @@ TEST_F(ThreadCacheTest, LargeAllocationsAreNotCached) {
   EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
   EXPECT_EQ(1u, cache_fill_counter.Delta());
   EXPECT_EQ(1u, cache_fill_misses_counter.Delta());
-  EXPECT_EQ(1u, cache_fill_too_large_counter.Delta());
 }
 #endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
 
@@ -287,8 +284,6 @@ TEST_F(ThreadCacheTest, RecordStats) {
   DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
   DeltaCounter cache_fill_hits_counter{tcache->stats_.cache_fill_hits};
   DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
-  DeltaCounter cache_fill_bucket_full_counter{
-      tcache->stats_.cache_fill_bucket_full};
 
   // Cache has been purged, first allocation is a miss.
   void* data = g_root->Alloc(kTestSize, "");
@@ -304,19 +299,19 @@ TEST_F(ThreadCacheTest, RecordStats) {
 
   tcache->Purge();
   cache_fill_counter.Reset();
-  // Bucket full accounting.
+  // Bucket are never full, fill always succeeds.
   size_t bucket_index = FillThreadCacheAndReturnIndex(
       kTestSize, ThreadCache::kMaxCountPerBucket + 10);
   EXPECT_EQ(ThreadCache::kMaxCountPerBucket + 10, cache_fill_counter.Delta());
-  EXPECT_EQ(10u, cache_fill_bucket_full_counter.Delta());
-  EXPECT_EQ(10u, cache_fill_misses_counter.Delta());
+  EXPECT_EQ(0u, cache_fill_misses_counter.Delta());
 
   // Memory footprint.
   ThreadCacheStats stats;
   ThreadCacheRegistry::Instance().DumpStats(true, &stats);
-  EXPECT_EQ(
-      g_root->buckets[bucket_index].slot_size * ThreadCache::kMaxCountPerBucket,
-      stats.bucket_total_memory);
+  // Bucket was cleared (count halved, then refilled).
+  EXPECT_EQ(g_root->buckets[bucket_index].slot_size *
+                (ThreadCache::kMaxCountPerBucket / 2 + 10),
+            stats.bucket_total_memory);
   EXPECT_EQ(sizeof(ThreadCache), stats.metadata_overhead);
 }
 
