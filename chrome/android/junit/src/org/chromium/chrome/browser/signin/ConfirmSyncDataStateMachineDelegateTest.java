@@ -19,7 +19,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAlertDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 
 /** Tests for {@link ConfirmSyncDataStateMachineDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,7 +35,6 @@ public class ConfirmSyncDataStateMachineDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1145573")
     public void testTimeoutDialogWhenPositiveButtonPressed() {
         ConfirmSyncDataStateMachineDelegate.TimeoutDialogListener mockListener =
                 mock(ConfirmSyncDataStateMachineDelegate.TimeoutDialogListener.class);
@@ -47,7 +45,6 @@ public class ConfirmSyncDataStateMachineDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1145573")
     public void testTimeoutDialogWhenNegativeButtonPressed() {
         ConfirmSyncDataStateMachineDelegate.TimeoutDialogListener mockListener =
                 mock(ConfirmSyncDataStateMachineDelegate.TimeoutDialogListener.class);
@@ -58,7 +55,6 @@ public class ConfirmSyncDataStateMachineDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1145573")
     public void testProgressDialog() {
         ConfirmSyncDataStateMachineDelegate.ProgressDialogListener mockListener =
                 mock(ConfirmSyncDataStateMachineDelegate.ProgressDialogListener.class);
@@ -69,7 +65,6 @@ public class ConfirmSyncDataStateMachineDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1145573")
     public void testDismissAllDialogs() {
         ConfirmSyncDataStateMachineDelegate.TimeoutDialogListener mockListener =
                 mock(ConfirmSyncDataStateMachineDelegate.TimeoutDialogListener.class);
