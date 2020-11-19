@@ -2435,10 +2435,6 @@ source_set("browser") {
       "//ui/events/platform/x11",
       "//ui/gfx/x",
     ]
-    sources += [
-      "gpu/gpu_memory_buffer_manager_singleton_x11.cc",
-      "gpu/gpu_memory_buffer_manager_singleton_x11.h",
-    ]
   }
 
   if (use_pangocairo) {

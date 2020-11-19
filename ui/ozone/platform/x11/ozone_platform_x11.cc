@@ -9,9 +9,11 @@
 
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
@@ -25,6 +27,7 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
@@ -172,11 +175,19 @@ class OzonePlatformX11 : public OzonePlatform,
       properties->platform_shows_drag_image = false;
       properties->supports_global_application_menus = true;
       properties->app_modal_dialogs_use_event_blocker = true;
+      properties->fetch_buffer_formats_for_gmb_on_gpu = true;
 
       initialised = true;
     }
 
     return *properties;
+  }
+
+  bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
+                                     gfx::BufferUsage usage) const override {
+    // Native pixmap support is determined on gpu process via gpu extra info
+    // that gets this information from GpuMemoryBufferSupportX11.
+    return false;
   }
 
   void InitializeUI(const InitParams& params) override {
@@ -215,7 +226,13 @@ class OzonePlatformX11 : public OzonePlatform,
 
   void InitializeGPU(const InitParams& params) override {
     InitializeCommon(params);
-
+    if (params.enable_native_gpu_memory_buffers) {
+      base::ThreadPool::PostTask(
+          FROM_HERE, base::BindOnce([]() {
+            SCOPED_UMA_HISTOGRAM_TIMER("Linux.X11.GbmSupportX11CreationTime");
+            ui::GpuMemoryBufferSupportX11::GetInstance();
+          }));
+    }
     // In single process mode either the UI thread will create an event source
     // or it's a test and an event source isn't desired.
     if (!params.single_process)

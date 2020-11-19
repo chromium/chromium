@@ -69,10 +69,24 @@
 
 #if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 namespace content {
 namespace {
+
+#if defined(USE_OZONE) || defined(USE_X11)
+bool GetGmbConfigFromGpu() {
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    return ui::OzonePlatform::GetInstance()
+        ->GetPlatformProperties()
+        .fetch_buffer_formats_for_gmb_on_gpu;
+  }
+#endif
+  return true;
+}
+#endif
 
 WebUIDataSource* CreateGpuHTMLSource() {
   WebUIDataSource* source = WebUIDataSource::Create(kChromeUIGpuHost);
@@ -393,8 +407,8 @@ std::unique_ptr<base::ListValue> GpuMemoryBufferInfo(
   gpu::GpuMemoryBufferSupport gpu_memory_buffer_support;
 
   gpu::GpuMemoryBufferConfigurationSet native_config;
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
+#if defined(USE_OZONE) || defined(USE_X11)
+  if (GetGmbConfigFromGpu()) {
     for (const auto& config : gpu_extra_info.gpu_memory_buffer_support_x11) {
       native_config.emplace(config);
     }

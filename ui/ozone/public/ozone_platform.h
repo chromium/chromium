@@ -70,6 +70,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // operate as a single process for platforms (i.e. drm) that are usually
     // split between a host and viz specific portion.
     bool single_process = false;
+
+    // Setting this to true indicates the the platform can do additional
+    // initialization for the GpuMemoryBuffer framework.
+    bool enable_native_gpu_memory_buffers = false;
   };
 
   // Struct used to indicate platform properties.
@@ -122,6 +126,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Determines if the application modal dialogs should use the event blocker
     // to allow the only browser window receiving UI events.
     bool app_modal_dialogs_use_event_blocker = false;
+
+    // Determines whether buffer formats should be fetched on GPU and passed
+    // back via gpu extra info.
+    bool fetch_buffer_formats_for_gmb_on_gpu = false;
   };
 
   // Properties available in the host process after initialization.

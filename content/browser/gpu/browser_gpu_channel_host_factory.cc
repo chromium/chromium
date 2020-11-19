@@ -42,11 +42,6 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
-#if defined(USE_X11)
-#include "content/browser/gpu/gpu_memory_buffer_manager_singleton_x11.h"  // nogncheck
-#include "ui/base/ui_base_features.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -70,15 +65,6 @@ void TimerFired() {
                                       base::BindOnce(&DumpGpuStackOnIO));
 }
 #endif  // OS_ANDROID
-
-GpuMemoryBufferManagerSingleton* CreateGpuMemoryBufferManagerSingleton(
-    int gpu_client_id) {
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    return new GpuMemoryBufferManagerSingletonX11(gpu_client_id);
-#endif
-  return new GpuMemoryBufferManagerSingleton(gpu_client_id);
-}
 
 }  // namespace
 
@@ -298,7 +284,7 @@ BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
       gpu_client_tracing_id_(
           memory_instrumentation::mojom::kServiceTracingProcessId),
       gpu_memory_buffer_manager_(
-          CreateGpuMemoryBufferManagerSingleton(gpu_client_id_)) {
+          new GpuMemoryBufferManagerSingleton(gpu_client_id_)) {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableGpuShaderDiskCache)) {
     DCHECK(GetContentClient());

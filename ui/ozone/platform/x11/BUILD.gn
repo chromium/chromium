@@ -57,6 +57,8 @@ source_set("x11") {
     "//ui/events/x",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/gfx/linux:gbm",
+    "//ui/gfx/linux:gpu_memory_buffer_support_x11",
     "//ui/gfx/x",
     "//ui/gl",
     "//ui/ozone:ozone_base",

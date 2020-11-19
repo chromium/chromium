@@ -98,6 +98,23 @@ namespace content {
 
 namespace {
 
+// On X11 (Ozone and non-Ozone), we do not know GpuMemoryBuffer configuration
+// support until receiving the initial GPUInfo.
+bool CanUpdateGmbGpuPreferences() {
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    return !ui::OzonePlatform::GetInstance()
+                ->GetPlatformProperties()
+                .fetch_buffer_formats_for_gmb_on_gpu;
+  }
+#endif
+#if defined(USE_X11)
+  DCHECK(!features::IsUsingOzonePlatform());
+  return false;
+#endif
+  return true;
+}
+
 #if defined(OS_ANDROID)
 // NOINLINE to ensure this function is used in crash reports.
 NOINLINE void FatalGpuProcessLaunchFailureOnBackground() {
@@ -1152,20 +1169,13 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
 
   // For performance reasons, discourage storing VideoFrames in a biplanar
   // GpuMemoryBuffer if this is not native, see https://crbug.com/791676.
-  if (auto* gpu_memory_buffer_manager =
-          GpuMemoryBufferManagerSingleton::GetInstance()) {
-    // On X11, we do not know GpuMemoryBuffer configuration support until
-    // receiving the initial GPUInfo.
-    bool should_update = true;
-#if defined(USE_X11)
-    should_update = features::IsUsingOzonePlatform();
-#endif
-    if (should_update) {
-      gpu_preferences->disable_biplanar_gpu_memory_buffers_for_video_frames =
-          !gpu_memory_buffer_manager->IsNativeGpuMemoryBufferConfiguration(
-              gfx::BufferFormat::YUV_420_BIPLANAR,
-              gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
-    }
+  auto* gpu_memory_buffer_manager =
+      GpuMemoryBufferManagerSingleton::GetInstance();
+  if (gpu_memory_buffer_manager && CanUpdateGmbGpuPreferences()) {
+    gpu_preferences->disable_biplanar_gpu_memory_buffers_for_video_frames =
+        !gpu_memory_buffer_manager->IsNativeGpuMemoryBufferConfiguration(
+            gfx::BufferFormat::YUV_420_BIPLANAR,
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
   }
 
   gpu_preferences->gpu_program_cache_size =

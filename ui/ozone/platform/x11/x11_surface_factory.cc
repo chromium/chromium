@@ -8,6 +8,9 @@
 
 #include "gpu/vulkan/buildflags.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/linux/gbm_buffer.h"
+#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
+#include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_x11_gles2.h"
@@ -119,6 +122,39 @@ std::unique_ptr<SurfaceOzoneCanvas> X11SurfaceFactory::CreateCanvasForWidget(
         std::make_unique<X11EventSource>(connection);
   }
   return std::make_unique<X11CanvasSurface>(widget);
+}
+
+scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
+    gfx::AcceleratedWidget widget,
+    VkDevice vk_device,
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    base::Optional<gfx::Size> framebuffer_size) {
+  scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
+  auto buffer = ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBuffer(
+      format, size, usage);
+  if (buffer) {
+    gfx::NativePixmapHandle handle = buffer->ExportHandle();
+    pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
+                                                           std::move(handle));
+  }
+
+  // CreateNativePixmap is non-blocking operation. Thus, it is safe to call it
+  // and return the result with the provided callback.
+  return pixmap;
+}
+
+void X11SurfaceFactory::CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
+                                                VkDevice vk_device,
+                                                gfx::Size size,
+                                                gfx::BufferFormat format,
+                                                gfx::BufferUsage usage,
+                                                NativePixmapCallback callback) {
+  // CreateNativePixmap is non-blocking operation. Thus, it is safe to call it
+  // and return the result with the provided callback.
+  std::move(callback).Run(
+      CreateNativePixmap(widget, vk_device, size, format, usage));
 }
 
 }  // namespace ui

@@ -317,6 +317,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::InitParams params;
     params.single_process = false;
+    params.enable_native_gpu_memory_buffers =
+        gpu_preferences.enable_native_gpu_memory_buffers;
     ui::OzonePlatform::InitializeForGPU(params);
     // We need to get supported formats before sandboxing to avoid an known
     // issue which breaks the camera preview. (b/166850715)

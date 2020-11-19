@@ -37,6 +37,24 @@ namespace viz {
 
 namespace {
 
+bool MustSignalGmbConfigReadyForTest() {
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    // Some Ozone platforms (Ozone/X11) require GPU process initialization to
+    // determine GMB support.
+    return ui::OzonePlatform::GetInstance()
+        ->GetPlatformProperties()
+        .fetch_buffer_formats_for_gmb_on_gpu;
+  }
+#endif
+#if defined(USE_X11)
+  // X11 requires GPU process initialization to determine GMB support.
+  DCHECK(!features::IsUsingOzonePlatform());
+  return true;
+#endif
+  return false;
+}
+
 class TestGpuService : public mojom::GpuService {
  public:
   TestGpuService() = default;
@@ -235,11 +253,8 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
         std::move(gpu_service_provider), 1,
         std::move(gpu_memory_buffer_support),
         base::ThreadTaskRunnerHandle::Get());
-#if defined(USE_X11)
-    // X11 requires GPU process initialization to determine GMB support.
-    if (!features::IsUsingOzonePlatform())
+    if (MustSignalGmbConfigReadyForTest())
       gpu_memory_buffer_manager_->native_configurations_initialized_.Signal();
-#endif
   }
 
   // Not all platforms support native configurations (currently only Windows,
