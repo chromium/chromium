@@ -8897,14 +8897,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M87">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
-  <summary>Tracks mouse acceleration setting changes by the user.</summary>
+  <summary>
+    Tracks mouse acceleration setting changes by the user. Only reported on
+    Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Mouse.Acceleration.Started" enum="BooleanEnabled"
     expires_after="M87">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
-  <summary>Tracks mouse acceleration setting on startup.</summary>
+  <summary>
+    Tracks mouse acceleration setting on startup. Only reported on Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Mouse.PointerSensitivity.Changed" enum="PointerSensitivity"
@@ -8913,7 +8918,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks mouse sensitivity setting changes by the user. This replaces the old
-    Mouse.Sensitivity.Changed metric.
+    Mouse.Sensitivity.Changed metric. Only reported on Chrome OS.
   </summary>
 </histogram>
 
@@ -8923,20 +8928,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks mouse sensitivity setting on startup. This replaces the old
-    Mouse.Sensitivity.Started metric.
+    Mouse.Sensitivity.Started metric. Only reported on Chrome OS.
   </summary>
 </histogram>
 
 <histogram name="Mouse.ReverseScroll.Changed" enum="BooleanEnabled"
     expires_after="M77">
   <owner>lannm@chromium.org</owner>
-  <summary>Tracks mouse reverse scroll setting changes by the user.</summary>
+  <summary>
+    Tracks mouse reverse scroll setting changes by the user. Only reported on
+    Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Mouse.ReverseScroll.Started" enum="BooleanEnabled"
     expires_after="M85">
   <owner>lannm@chromium.org</owner>
-  <summary>Tracks mouse reverse scroll setting on startup.</summary>
+  <summary>
+    Tracks mouse reverse scroll setting on startup. Only reported on Chrome OS.
+  </summary>
 </histogram>
 
 <histogram base="true" name="Mouse.ScrollAcceleration" enum="BooleanEnabled"
@@ -8945,7 +8955,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>khorimoto@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
-  <summary>Whether mouse scroll acceleration is enabled.</summary>
+  <summary>
+    Whether mouse scroll acceleration is enabled. Only reported on Chrome OS.
+  </summary>
 </histogram>
 
 <histogram base="true" name="Mouse.ScrollSensitivity" enum="PointerSensitivity"
@@ -8954,7 +8966,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>khorimoto@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
-  <summary>Mouse scroll sensitivity value.</summary>
+  <summary>Mouse scroll sensitivity value. Only reported on Chrome OS.</summary>
 </histogram>
 
 <histogram name="MPArch.ChildProcessLaunchFirst" units="units"
@@ -15353,14 +15365,19 @@ should be kept until we use this API.  -->
     expires_after="M87">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
-  <summary>Tracks touchpad acceleration setting changes by the user.</summary>
+  <summary>
+    Tracks touchpad acceleration setting changes by the user. Only reported on
+    Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Touchpad.Acceleration.Started" enum="BooleanEnabled"
     expires_after="M87">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
-  <summary>Tracks touchpad acceleration setting on startup.</summary>
+  <summary>
+    Tracks touchpad acceleration setting on startup. Only reported on Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Touchpad.Device" enum="TouchpadDeviceState"
@@ -15373,14 +15390,20 @@ should be kept until we use this API.  -->
     expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
-  <summary>Tracks touchpad natural scroll setting changes by the user.</summary>
+  <summary>
+    Tracks touchpad natural scroll setting changes by the user. Only reported on
+    Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Touchpad.NaturalScroll.Started" enum="BooleanEnabled"
     expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
-  <summary>Tracks touchpad natural scroll setting on startup.</summary>
+  <summary>
+    Tracks touchpad natural scroll setting on startup. Only reported on Chrome
+    OS.
+  </summary>
 </histogram>
 
 <histogram name="Touchpad.PointerSensitivity.Changed" enum="PointerSensitivity"
@@ -15389,7 +15412,7 @@ should be kept until we use this API.  -->
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad sensitivity setting changes by the user. This replaces the
-    old Touchpad.Sensitivity.Changed metric.
+    old Touchpad.Sensitivity.Changed metric. Only reported on Chrome OS.
   </summary>
 </histogram>
 
@@ -15399,7 +15422,7 @@ should be kept until we use this API.  -->
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad sensitivity setting on startup. This replaces the old
-    Touchpad.Sensitivity.Started metric.
+    Touchpad.Sensitivity.Started metric. Only reported on Chrome OS.
   </summary>
 </histogram>
 
@@ -15409,7 +15432,9 @@ should be kept until we use this API.  -->
 
   <owner>khorimoto@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
-  <summary>Whether touchpad scroll acceleration is enabled.</summary>
+  <summary>
+    Whether touchpad scroll acceleration is enabled. Only reported on Chrome OS.
+  </summary>
 </histogram>
 
 <histogram base="true" name="Touchpad.ScrollSensitivity"
@@ -15418,35 +15443,48 @@ should be kept until we use this API.  -->
 
   <owner>khorimoto@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
-  <summary>Touchpad scroll sensitivity value.</summary>
+  <summary>
+    Touchpad scroll sensitivity value. Only reported on Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Touchpad.TapDragging.Changed" enum="BooleanEnabled"
     expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
-  <summary>Tracks touchpad TapDragging setting changes by the user.</summary>
+  <summary>
+    Tracks touchpad TapDragging setting changes by the user. Only reported on
+    Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Touchpad.TapDragging.Started" enum="BooleanEnabled"
     expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
-  <summary>Tracks touchpad TapDragging setting on startup.</summary>
+  <summary>
+    Tracks touchpad TapDragging setting on startup. Only reported on Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Touchpad.TapToClick.Changed" enum="BooleanEnabled"
     expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
-  <summary>Tracks touchpad TapToClick setting changes by the user.</summary>
+  <summary>
+    Tracks touchpad TapToClick setting changes by the user. Only reported on
+    Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="Touchpad.TapToClick.Started" enum="BooleanEnabled"
     expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
-  <summary>Tracks touchpad TapToClick setting changes by the user.</summary>
+  <summary>
+    Tracks touchpad TapToClick setting changes by the user. Only reported on
+    Chrome OS.
+  </summary>
 </histogram>
 
 <histogram name="TouchScreen.MissedTOUCHEVENTF_UP" enum="BooleanHit"
