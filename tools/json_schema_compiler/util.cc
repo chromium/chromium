@@ -16,11 +16,10 @@ namespace {
 bool ReportError(const base::Value& from,
                  base::Value::Type expected,
                  base::string16* error) {
-  if (!error->empty())
-    error->append(base::ASCIIToUTF16("; "));
-  error->append(base::ASCIIToUTF16(base::StringPrintf(
+  DCHECK(error->empty());
+  *error = base::ASCIIToUTF16(base::StringPrintf(
       "expected %s, got %s", base::Value::GetTypeName(expected),
-      base::Value::GetTypeName(from.type()))));
+      base::Value::GetTypeName(from.type())));
   return false;  // Always false on purpose.
 }
 

@@ -95,11 +95,10 @@ bool PopulateArrayFromList(const base::ListValue& list_value,
   const auto& list = list_value.GetList();
   for (size_t i = 0; i < list.size(); ++i) {
     if (!PopulateItem(list[i], &item, &item_error)) {
-      if (!error->empty())
-        error->append(base::ASCIIToUTF16("; "));
-      error->append(base::ASCIIToUTF16(
+      DCHECK(error->empty());
+      *error = base::ASCIIToUTF16(
           base::StringPrintf("Parsing array failed at index %" PRIuS ": %s", i,
-                             base::UTF16ToASCII(item_error).c_str())));
+                             base::UTF16ToASCII(item_error).c_str()));
       return false;
     }
     out->push_back(std::move(item));

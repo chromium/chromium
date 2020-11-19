@@ -1274,9 +1274,8 @@ class _Generator(object):
     c = Code()
     if not self._generate_error_messages:
       return c
-    (c.Append('if (error->length())')
-      .Append('  error->append(UTF8ToUTF16("; "));')
-      .Append('error->append(%s);' % error16))
+    c.Append('DCHECK(error->empty());')
+    c.Append('*error = %s;' % error16)
     return c
 
   def _GenerateError(self, body):

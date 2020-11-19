@@ -46,6 +46,7 @@ void PopulateInvalidEnumValueError(
     base::string16* error,
     std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(error);
+  DCHECK(error->empty());
   DCHECK(error_path_reversed);
   DCHECK(error_path_reversed->empty());
 
@@ -76,6 +77,7 @@ const base::Value* FindKeyOfType(
     base::string16* error,
     std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(error);
+  DCHECK(error->empty());
   DCHECK(error_path_reversed);
   DCHECK(error_path_reversed->empty());
 

@@ -309,25 +309,6 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
   }
 }
 
-TEST(JsonSchemaCompilerErrorTest, MultiplePopulationErrors) {
-  {
-    std::unique_ptr<base::DictionaryValue> value =
-        Dictionary("TheArray", std::make_unique<Value>(5));
-    errors::ArrayObject out;
-    base::string16 error;
-    EXPECT_FALSE(errors::ArrayObject::Populate(*value, &out, &error));
-    EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
-        error));
-    EXPECT_EQ(NULL, out.the_array.get());
-
-    EXPECT_FALSE(errors::ArrayObject::Populate(*value, &out, &error));
-    EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer; "
-        "'TheArray': expected list, got integer",
-        error));
-    EXPECT_EQ(NULL, out.the_array.get());
-  }
-}
-
 TEST(JsonSchemaCompilerErrorTest, TooManyKeys) {
   {
     std::unique_ptr<base::DictionaryValue> value =
