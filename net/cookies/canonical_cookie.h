@@ -35,7 +35,11 @@ using CookieAndLineAccessResultList =
     std::vector<CookieAndLineWithAccessResult>;
 using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 
-struct CookieAccessParams {
+struct NET_EXPORT CookieAccessParams {
+  CookieAccessParams() = delete;
+  CookieAccessParams(CookieAccessSemantics access_semantics,
+                     bool delegate_treats_url_as_trustworthy);
+
   // |access_semantics| is the access mode of the cookie access check.
   CookieAccessSemantics access_semantics = CookieAccessSemantics::UNKNOWN;
   // |delegate_treats_url_as_trustworthy| should be true iff the

@@ -257,6 +257,11 @@ void ApplySameSiteCookieWarningToStatus(
 
 }  // namespace
 
+CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
+                                       bool delegate_treats_url_as_trustworthy)
+    : access_semantics(access_semantics),
+      delegate_treats_url_as_trustworthy(delegate_treats_url_as_trustworthy) {}
+
 CanonicalCookie::CanonicalCookie() = default;
 
 CanonicalCookie::CanonicalCookie(const CanonicalCookie& other) = default;
