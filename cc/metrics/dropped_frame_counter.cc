@@ -116,6 +116,12 @@ base::TimeDelta DroppedFrameCounter::ComputeCurrentWindowSize() const {
 
 void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
                                             bool is_dropped) {
+  // Entirely disregard the frames with interval larger than the window --
+  // these are violating the assumptions in the below code and should
+  // only occur with external frame control, where dropped frame stats
+  // are not relevant.
+  if (args.interval >= kSlidingWindowInterval)
+    return;
   sliding_window_.push({args, is_dropped});
   if (is_dropped)
     dropped_frame_count_in_window_++;
@@ -125,15 +131,14 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
 
   DCHECK_GE(dropped_frame_count_in_window_, 0u);
   DCHECK_GE(sliding_window_.size(), dropped_frame_count_in_window_);
-  DCHECK_GT(kSlidingWindowInterval, args.interval);
-  // args.interval being lower than the window interval guarantees that queue
-  // would not be empty at any point in the loop below.
 
   double percent_dropped_frame =
       (dropped_frame_count_in_window_ * 100.0) / sliding_window_.size();
   sliding_window_max_percent_dropped_ =
       fmax(sliding_window_max_percent_dropped_, percent_dropped_frame);
 
+  // args.interval being lower than the window interval guarantees that queue
+  // would not be empty at any point in the loop below (see check at top).
   while (ComputeCurrentWindowSize() >= kSlidingWindowInterval) {
     if (sliding_window_.front().second)  // If frame is dropped.
       dropped_frame_count_in_window_--;

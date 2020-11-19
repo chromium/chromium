@@ -278,6 +278,8 @@ class DroppedFrameCounterTest : public testing::Test {
     return dropped_frame_counter_.sliding_window_max_percent_dropped();
   }
 
+  void SetInterval(base::TimeDelta interval) { interval_ = interval; }
+
  private:
   DroppedFrameCounter dropped_frame_counter_;
   TotalFrameCounter total_frame_counter_;
@@ -285,7 +287,7 @@ class DroppedFrameCounterTest : public testing::Test {
   uint64_t source_id_ = 1;
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
   base::TimeTicks frame_time_ = tick_clock_->NowTicks();
-  const base::TimeDelta interval_ =
+  base::TimeDelta interval_ =
       base::TimeDelta::FromMicroseconds(16667);  // 16.667 ms
 
   viz::BeginFrameArgs SimulateBeginFrameArgs() {
@@ -341,6 +343,11 @@ TEST_F(DroppedFrameCounterTest, MaxPercentDroppedWithIdleFrames) {
   // So in total, there are 40 frames in the 1 second window with 16 dropped
   // frames (40% in total).
   EXPECT_EQ(MaxPercentDroppedFrame(), 40.0);
+}
+
+TEST_F(DroppedFrameCounterTest, NoCrashForIntervalLargerThanWindow) {
+  SetInterval(base::TimeDelta::FromMilliseconds(1000));
+  SimulateFrameSequence({false, false}, 1);
 }
 
 }  // namespace
