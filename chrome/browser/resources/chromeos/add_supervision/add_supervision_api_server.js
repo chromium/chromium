@@ -41,6 +41,11 @@ class AddSupervisionAPIServer extends PostMessageAPIServer {
     this.registerMethod('setCloseOnEscape', this.setCloseOnEscape.bind(this));
   }
 
+  /** @override */
+  onInitializationError(origin) {
+    // TODO(): Trigger an error page to be shown in this case.
+  }
+
   /**
    * Logs out of the device.
    * @param {!Array} unused Placeholder unused empty parameter.

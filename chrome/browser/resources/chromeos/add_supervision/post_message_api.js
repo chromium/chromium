@@ -65,10 +65,18 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
      */
     this.numInitializationAttempts_ = 0;
 
+    /**
+     * Indicates whether the communication channel between this server and the
+     * WebView has been established.
+     * @private {boolean}
+     */
+    this.isInitialized_ = false;
+
     // Wait for content to load before attempting to initializing the
     // message listener.
     this.clientElement_.addEventListener('contentload', () => {
       this.numInitializationAttempts_ = 0;
+      this.isInitialized_ = false;
       this.initialize();
     });
 
@@ -94,8 +102,12 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
    * Send initialization message to client element.
    */
   initialize() {
-    if (this.numInitializationAttempts_ < MAX_INITIALIZATION_ATTEMPTS &&
-        this.originMatchesFilter_(this.clientElement_.src)) {
+    if (this.isInitialized_ ||
+        !this.originMatchesFilter_(this.clientElement_.src)) {
+      return;
+    }
+
+    if (this.numInitializationAttempts_ < MAX_INITIALIZATION_ATTEMPTS) {
       // Tell the embedded webviews whose src matches our origin to initialize
       // by sending it a message, which will include a handle for it to use to
       // send messages back.
@@ -119,11 +131,20 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
 
       this.numInitializationAttempts_++;
     } else {
-      // Exponential backoff has maxed out, so restart the init attempt cycle.
-      this.numInitializationAttempts_ = 0;
-      this.initialize();
+      // Exponential backoff has maxed out. Show error page if present.
+      this.onInitializationError(this.clientElement_.src);
     }
   }
+
+  /**
+   *  Virtual method to be overridden by implementations of this class to notify
+   * them that we were unable to initialize communication channel with the
+   * `clientElement_`.
+   *
+   * @param {!string} origin The origin URL that was not able to initialize
+   *     communication.
+   */
+  onInitializationError(origin) {}
 
   /**
    * Determines if the specified origin matches the origin filter.
@@ -161,6 +182,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
     }
 
     if (event.data === 'init') {
+      this.isInitialized_ = true;
       return;
     }
 

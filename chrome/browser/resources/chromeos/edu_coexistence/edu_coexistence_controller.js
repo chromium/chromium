@@ -124,6 +124,12 @@ export class EduCoexistenceController extends PostMessageAPIServer {
     }
   }
 
+  /** @override */
+  onInitializationError(origin) {
+    this.reportError_(
+        ['Error initializing communication channel with origin:' + origin]);
+  }
+
   /**
    * Returns the hostname of the origin of the flow's URL (the one it was
    * initialized with, not its current URL).
