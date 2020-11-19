@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_service.h"
@@ -548,7 +549,16 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_Deletion) {
   EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
 }
 
-TEST_F(RepeatableQueriesServiceTest, SignedOut_DefaultSearchProviderChanged) {
+// TODO(crbug.com/1150909) Test fails on iOS simulators
+#if defined(OS_IOS)
+#define MAYBE_SignedOut_DefaultSearchProviderChanged \
+  DISABLED_SignedOut_DefaultSearchProviderChanged
+#else
+#define MAYBE_SignedOut_DefaultSearchProviderChanged \
+  SignedOut_DefaultSearchProviderChanged
+#endif
+TEST_F(RepeatableQueriesServiceTest,
+       MAYBE_SignedOut_DefaultSearchProviderChanged) {
   int original_query_age =
       history::kAutocompleteDuplicateVisitIntervalThreshold.InSeconds() + 3;
   FillURLDatabase({
