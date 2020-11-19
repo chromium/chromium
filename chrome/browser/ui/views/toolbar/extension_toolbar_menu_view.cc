@@ -46,10 +46,10 @@ ExtensionToolbarMenuView::ExtensionToolbarMenuView(
   container_ = SetContents(std::move(container));
 
   // Listen for the drop to finish so we can close the app menu, if necessary.
-  toolbar_actions_bar_observer_.Add(main->toolbar_actions_bar());
+  toolbar_actions_bar_observation_.Observe(main->toolbar_actions_bar());
 
   // Observe app menu so we know when RunMenu() is called.
-  app_menu_button_observer_.Add(app_menu_button);
+  app_menu_button_observation_.Observe(app_menu_button);
 
   // In *very* extreme cases, it's possible that there are so many overflowed
   // actions, we won't be able to show them all. Cap the height so that the
@@ -83,7 +83,8 @@ void ExtensionToolbarMenuView::set_close_menu_delay_for_testing(
 }
 
 void ExtensionToolbarMenuView::OnToolbarActionsBarDestroyed() {
-  toolbar_actions_bar_observer_.RemoveAll();
+  DCHECK(toolbar_actions_bar_observation_.IsObserving());
+  toolbar_actions_bar_observation_.RemoveObservation();
 }
 
 void ExtensionToolbarMenuView::OnToolbarActionDragDone() {

@@ -58,14 +58,15 @@ class AppMenuShowingWaiter : public AppMenuButtonObserver {
  private:
   bool observed_ = false;
   base::RunLoop run_loop_;
-  ScopedObserver<AppMenuButton, AppMenuButtonObserver> observer_{this};
+  base::ScopedObservation<AppMenuButton, AppMenuButtonObserver> observation_{
+      this};
 };
 
 AppMenuShowingWaiter::AppMenuShowingWaiter(AppMenuButton* button) {
   DCHECK(button);
   if (button->IsMenuShowing())
     observed_ = true;
-  observer_.Add(button);
+  observation_.Observe(button);
 }
 
 void AppMenuShowingWaiter::AppMenuShown() {

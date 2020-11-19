@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_EXTENSION_TOOLBAR_MENU_VIEW_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_observer.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -81,10 +81,10 @@ class ExtensionToolbarMenuView : public AppMenuButtonObserver,
   // The maximum allowed height for the view.
   int max_height_ = 0;
 
-  ScopedObserver<ToolbarActionsBar, ToolbarActionsBarObserver>
-      toolbar_actions_bar_observer_{this};
-  ScopedObserver<AppMenuButton, AppMenuButtonObserver>
-      app_menu_button_observer_{this};
+  base::ScopedObservation<ToolbarActionsBar, ToolbarActionsBarObserver>
+      toolbar_actions_bar_observation_{this};
+  base::ScopedObservation<AppMenuButton, AppMenuButtonObserver>
+      app_menu_button_observation_{this};
 
   base::WeakPtrFactory<ExtensionToolbarMenuView> weak_factory_{this};
 };
