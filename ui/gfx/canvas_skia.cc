@@ -25,13 +25,16 @@ namespace {
 // Returns a range in |text| to underline or Range::InvalidRange() if
 // underlining is not needed.
 Range StripAcceleratorChars(int flags, base::string16* text) {
-  if (flags & (Canvas::SHOW_PREFIX | Canvas::HIDE_PREFIX)) {
+  if (flags & Canvas::SHOW_PREFIX) {
     int char_pos = -1;
     int char_span = 0;
-    *text = RemoveAcceleratorChar(*text, '&', &char_pos, &char_span);
-    if ((flags & Canvas::SHOW_PREFIX) && char_pos != -1)
+    *text = LocateAndRemoveAcceleratorChar(*text, &char_pos, &char_span);
+    if (char_pos != -1)
       return Range(char_pos, char_pos + char_span);
+  } else if (flags & Canvas::HIDE_PREFIX) {
+    *text = RemoveAccelerator(*text);
   }
+
   return Range::InvalidRange();
 }
 

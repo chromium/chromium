@@ -22,6 +22,10 @@ using base::i18n::UTF16CharIterator;
 
 namespace {
 
+constexpr base::char16 kAcceleratorChar = '&';
+constexpr base::char16 kOpenParenthesisChar = '(';
+constexpr base::char16 kCloseParenthesisChar = ')';
+
 // Returns true if the specified character must be elided from a string.
 // Examples are combining marks and whitespace.
 bool IsCombiningMark(UChar32 c) {
@@ -39,10 +43,8 @@ bool IsSpace(UChar32 c) {
          char_type == U_PARAGRAPH_SEPARATOR || char_type == U_CONTROL_CHAR;
 }
 
-}  // namespace
-
-base::string16 RemoveAcceleratorChar(const base::string16& s,
-                                     base::char16 accelerator_char,
+base::string16 RemoveAcceleratorChar(bool full_removal,
+                                     const base::string16& s,
                                      int* accelerated_char_pos,
                                      int* accelerated_char_span) {
   bool escaped = false;
@@ -51,15 +53,47 @@ base::string16 RemoveAcceleratorChar(const base::string16& s,
   UTF16CharIterator chars(s);
   base::string16 accelerator_removed;
 
+  // The states of a state machine looking for a CJK-style accelerator (i.e.
+  // "(&x)"). |cjk_state| proceeds up from |kFoundNothing| through these states,
+  // resetting either when it sees a complete accelerator, or gives up because
+  // the current character doesn't match.
+  enum {
+    kFoundNothing,
+    kFoundOpenParen,
+    kFoundAcceleratorChar,
+    kFoundAccelerator
+  } cjk_state = kFoundNothing;
+  size_t pre_cjk_size = 0;
+
   accelerator_removed.reserve(s.size());
   while (!chars.end()) {
     int32_t c = chars.get();
     int array_pos = chars.array_pos();
     chars.Advance();
 
-    if (c != accelerator_char || escaped) {
+    if (full_removal) {
+      if (cjk_state == kFoundNothing && c == kOpenParenthesisChar) {
+        pre_cjk_size = array_pos;
+        cjk_state = kFoundOpenParen;
+      } else if (cjk_state == kFoundOpenParen && c == kAcceleratorChar) {
+        cjk_state = kFoundAcceleratorChar;
+      } else if (cjk_state == kFoundAcceleratorChar) {
+        // Accept any character as the accelerator.
+        cjk_state = kFoundAccelerator;
+      } else if (cjk_state == kFoundAccelerator && c == kCloseParenthesisChar) {
+        cjk_state = kFoundNothing;
+        accelerator_removed.resize(pre_cjk_size);
+        pre_cjk_size = 0;
+        escaped = false;
+        continue;
+      } else {
+        cjk_state = kFoundNothing;
+      }
+    }
+
+    if (c != kAcceleratorChar || escaped) {
       int span = chars.array_pos() - array_pos;
-      if (escaped && c != accelerator_char) {
+      if (escaped && c != kAcceleratorChar) {
         last_char_pos = accelerator_removed.size();
         last_char_span = span;
       }
@@ -71,12 +105,25 @@ base::string16 RemoveAcceleratorChar(const base::string16& s,
     }
   }
 
-  if (accelerated_char_pos)
+  if (accelerated_char_pos && !full_removal)
     *accelerated_char_pos = last_char_pos;
-  if (accelerated_char_span)
+  if (accelerated_char_span && !full_removal)
     *accelerated_char_span = last_char_span;
 
   return accelerator_removed;
+}
+
+}  // namespace
+
+base::string16 LocateAndRemoveAcceleratorChar(const base::string16& s,
+                                              int* accelerated_char_pos,
+                                              int* accelerated_char_span) {
+  return RemoveAcceleratorChar(false, s, accelerated_char_pos,
+                               accelerated_char_span);
+}
+
+base::string16 RemoveAccelerator(const base::string16& s) {
+  return RemoveAcceleratorChar(true, s, nullptr, nullptr);
 }
 
 size_t FindValidBoundaryBefore(const base::string16& text,

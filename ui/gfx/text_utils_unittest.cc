@@ -21,16 +21,6 @@
 namespace gfx {
 namespace {
 
-const base::char16 kAcceleratorChar = '&';
-
-struct RemoveAcceleratorCharData {
-  const char* input;
-  int accelerated_char_pos;
-  int accelerated_char_span;
-  const char* output;
-  const char* name;
-};
-
 TEST(TextUtilsTest, GetStringWidth) {
   FontList font_list;
   EXPECT_EQ(GetStringWidth(base::string16(), font_list), 0);
@@ -117,6 +107,15 @@ TEST(TextUtilsTest, GetFontCapHeightCenterOffset_SameSize) {
   EXPECT_EQ(0, GetFontCapHeightCenterOffset(original_font, original_font));
 }
 
+struct RemoveAcceleratorCharData {
+  const char* input;
+  int accelerated_char_pos;
+  int accelerated_char_span;
+  const char* output_locate_and_strip;
+  const char* output_full_strip;
+  const char* name;
+};
+
 class RemoveAcceleratorCharTest
     : public testing::TestWithParam<RemoveAcceleratorCharData> {
  public:
@@ -124,37 +123,62 @@ class RemoveAcceleratorCharTest
 };
 
 const RemoveAcceleratorCharData RemoveAcceleratorCharTest::kCases[] = {
-    {"", -1, 0, "", "EmptyString"},
-    {"&", -1, 0, "", "AcceleratorCharOnly"},
-    {"no accelerator", -1, 0, "no accelerator", "NoAccelerator"},
-    {"&one accelerator", 0, 1, "one accelerator", "OneAccelerator_Start"},
-    {"one &accelerator", 4, 1, "one accelerator", "OneAccelerator_Middle"},
-    {"one_accelerator&", -1, 0, "one_accelerator", "OneAccelerator_End"},
-    {"&two &accelerators", 4, 1, "two accelerators",
+    {"", -1, 0, "", "", "EmptyString"},
+    {"&", -1, 0, "", "", "AcceleratorCharOnly"},
+    {"no accelerator", -1, 0, "no accelerator", "no accelerator",
+     "NoAccelerator"},
+    {"&one accelerator", 0, 1, "one accelerator", "one accelerator",
+     "OneAccelerator_Start"},
+    {"one &accelerator", 4, 1, "one accelerator", "one accelerator",
+     "OneAccelerator_Middle"},
+    {"one accelerator&", -1, 0, "one accelerator", "one accelerator",
+     "OneAccelerator_End"},
+    {"&two &accelerators", 4, 1, "two accelerators", "two accelerators",
      "TwoAccelerators_OneAtStart"},
-    {"two &accelerators&", 4, 1, "two accelerators",
+    {"two &accelerators&", 4, 1, "two accelerators", "two accelerators",
      "TwoAccelerators_OneAtEnd"},
-    {"two& &accelerators", 4, 1, "two accelerators",
+    {"two& &accelerators", 4, 1, "two accelerators", "two accelerators",
      "TwoAccelerators_SpaceBetween"},
-    {"&&escaping", -1, 0, "&escaping", "Escape_Start"},
-    {"escap&&ing", -1, 0, "escap&ing", "Escape_Middle"},
-    {"escaping&&", -1, 0, "escaping&", "Escape_End"},
-    {"&mix&&ed", 0, 1, "mix&ed", "Mixed_EscapeAfterAccelerator"},
-    {"&&m&ix&&e&d&", 6, 1, "&mix&ed", "Mixed_MiddleAcceleratorSkipped"},
-    {"&&m&&ix&ed&&", 5, 1, "&m&ixed&", "Mixed_OneAccelerator"},
-    {"&m&&ix&ed&&", 4, 1, "m&ixed&", "Mixed_InitialAcceleratorSkipped"},
+    {"&&escaping", -1, 0, "&escaping", "&escaping", "Escape_Start"},
+    {"escap&&ing", -1, 0, "escap&ing", "escap&ing", "Escape_Middle"},
+    {"escaping&&", -1, 0, "escaping&", "escaping&", "Escape_End"},
+    {"accelerator(&A)", 12, 1, "accelerator(A)", "accelerator", "CJK_Style"},
+    {"accelerator(&A)...", 12, 1, "accelerator(A)...", "accelerator...",
+     "CJK_StyleEllipsis"},
+    {"accelerator(paren", -1, 0, "accelerator(paren", "accelerator(paren",
+     "CJK_OpenParen"},
+    {"accelerator(&paren", 12, 1, "accelerator(paren", "accelerator(paren",
+     "CJK_NoClosingParen"},
+    {"accelerator(&paren)", 12, 1, "accelerator(paren)", "accelerator(paren)",
+     "CJK_LateClosingParen"},
+    {"accelerator&paren)", 11, 1, "acceleratorparen)", "acceleratorparen)",
+     "CJK_NoOpeningParen"},
+    {"accelerator(P)", -1, 0, "accelerator(P)", "accelerator(P)",
+     "CJK_JustParens"},
+    {"accelerator(&)", 12, 1, "accelerator()", "accelerator()",
+     "CJK_MissingAccelerator"},
+    {"&mix&&ed", 0, 1, "mix&ed", "mix&ed", "Mixed_EscapeAfterAccelerator"},
+    {"&&m&ix&&e&d&", 6, 1, "&mix&ed", "&mix&ed",
+     "Mixed_MiddleAcceleratorSkipped"},
+    {"&&m&&ix&ed&&", 5, 1, "&m&ixed&", "&m&ixed&", "Mixed_OneAccelerator"},
+    {"&m&&ix&ed&&", 4, 1, "m&ixed&", "m&ixed&",
+     "Mixed_InitialAcceleratorSkipped"},
     // U+1D49C MATHEMATICAL SCRIPT CAPITAL A, which occupies two |char16|'s.
-    {"&\U0001D49C", 0, 2, "\U0001D49C", "MultibyteAccelerator_Start"},
-    {"Test&\U0001D49Cing", 4, 2, "Test\U0001D49Cing",
+    {"&\U0001D49C", 0, 2, "\U0001D49C", "\U0001D49C",
+     "MultibyteAccelerator_Start"},
+    {"Test&\U0001D49Cing", 4, 2, "Test\U0001D49Cing", "Test\U0001D49Cing",
      "MultibyteAccelerator_Middle"},
-    {"Test\U0001D49C&ing", 6, 1, "Test\U0001D49Cing",
+    {"Test\U0001D49C&ing", 6, 1, "Test\U0001D49Cing", "Test\U0001D49Cing",
      "OneAccelerator_AfterMultibyte"},
-    {"Test&\U0001D49C&ing", 6, 1, "Test\U0001D49Cing",
+    {"Test&\U0001D49C&ing", 6, 1, "Test\U0001D49Cing", "Test\U0001D49Cing",
      "MultibyteAccelerator_Skipped"},
-    {"Test&\U0001D49C&&ing", 4, 2, "Test\U0001D49C&ing",
+    {"Test&\U0001D49C&&ing", 4, 2, "Test\U0001D49C&ing", "Test\U0001D49C&ing",
      "MultibyteAccelerator_EscapeAfter"},
     {"Test&\U0001D49C&\U0001D49Cing", 6, 2, "Test\U0001D49C\U0001D49Cing",
+     "Test\U0001D49C\U0001D49Cing",
      "MultibyteAccelerator_AfterMultibyteAccelerator"},
+    {"accelerator(&\U0001D49C)", 12, 2, "accelerator(\U0001D49C)",
+     "accelerator", "MultibyteAccelerator_CJK"},
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -169,10 +193,14 @@ TEST_P(RemoveAcceleratorCharTest, RemoveAcceleratorChar) {
   RemoveAcceleratorCharData data = GetParam();
   int accelerated_char_pos;
   int accelerated_char_span;
-  base::string16 result =
-      RemoveAcceleratorChar(base::UTF8ToUTF16(data.input), kAcceleratorChar,
-                            &accelerated_char_pos, &accelerated_char_span);
-  EXPECT_EQ(result, base::UTF8ToUTF16(data.output));
+  base::string16 result_locate_and_strip = LocateAndRemoveAcceleratorChar(
+      base::UTF8ToUTF16(data.input), &accelerated_char_pos,
+      &accelerated_char_span);
+  base::string16 result_full_strip =
+      RemoveAccelerator(base::UTF8ToUTF16(data.input));
+  EXPECT_EQ(result_locate_and_strip,
+            base::UTF8ToUTF16(data.output_locate_and_strip));
+  EXPECT_EQ(result_full_strip, base::UTF8ToUTF16(data.output_full_strip));
   EXPECT_EQ(accelerated_char_pos, data.accelerated_char_pos);
   EXPECT_EQ(accelerated_char_span, data.accelerated_char_span);
 }

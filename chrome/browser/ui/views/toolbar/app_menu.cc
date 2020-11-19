@@ -315,8 +315,7 @@ class AppMenuView : public views::View {
     DCHECK(menu_);
     InMenuButton* button = new InMenuButton(
         std::move(callback),
-        gfx::RemoveAcceleratorChar(l10n_util::GetStringUTF16(string_id), '&',
-                                   nullptr, nullptr));
+        gfx::RemoveAccelerator(l10n_util::GetStringUTF16(string_id)));
     button->Init(type);
     button->SetAccessibleName(GetAccessibleNameForAppMenuItem(
         menu_model_, index, acc_string_id, add_accelerator_text));

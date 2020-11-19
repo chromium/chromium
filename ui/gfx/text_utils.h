@@ -17,15 +17,27 @@ class FontList;
 class Insets;
 class Size;
 
-// Strip the accelerator char (typically '&') from a menu string.  A double
-// accelerator char ('&&') will be converted to a single char.  The out params
+// Strips the accelerator char ('&') from a menu string. Useful for platforms
+// which use underlining to indicate accelerators.
+//
+// Single accelerator chars ('&') will be stripped from the string. Double
+// accelerator chars ('&&') will be converted to a single '&'. The out params
 // |accelerated_char_pos| and |accelerated_char_span| will be set to the index
 // and span of the last accelerated character, respectively, or -1 and 0 if
 // there was none.
-GFX_EXPORT base::string16 RemoveAcceleratorChar(const base::string16& s,
-                                                base::char16 accelerator_char,
-                                                int* accelerated_char_pos,
-                                                int* accelerated_char_span);
+GFX_EXPORT base::string16 LocateAndRemoveAcceleratorChar(
+    const base::string16& s,
+    int* accelerated_char_pos,
+    int* accelerated_char_span);
+
+// Strips all accelerator notation from a menu string. Useful for platforms
+// which use underlining to indicate accelerators, as well as situations where
+// accelerators are not indicated.
+//
+// Single accelerator chars ('&') will be stripped from the string. Double
+// accelerator chars ('&&') will be converted to a single '&'. CJK language
+// accelerators, specified as "(&x)", will be entirely removed too.
+GFX_EXPORT base::string16 RemoveAccelerator(const base::string16& s);
 
 // Returns the number of horizontal pixels needed to display the specified
 // |text| with |font_list|. |typesetter| indicates where the text will be
