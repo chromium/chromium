@@ -465,10 +465,10 @@ public class TabbedAppMenuTest {
         Assert.assertEquals("The dialog should have 2 children, one is title, another is ListView.",
                 2, addToCustomView.getChildCount());
         TextView addToTitle = (TextView) addToCustomView.getChildAt(0);
-        mRenderTestRule.render(addToTitle, "add_to_dialog_title");
+        mRenderTestRule.render(addToTitle, "menu_add_to_dialog_title");
         ListView addToList = (ListView) addToCustomView.getChildAt(1);
         Assert.assertEquals(3, addToList.getChildCount());
-        mRenderTestRule.render(addToList, "add_to_dialog_not_bookmarked");
+        mRenderTestRule.render(addToList, "items_in_add_to_dialog_not_bookmarked");
     }
 
     @Test
@@ -501,10 +501,10 @@ public class TabbedAppMenuTest {
         Assert.assertEquals("The dialog should have 2 children, one is title, another is ListView.",
                 2, addToCustomView.getChildCount());
         TextView addToTitle = (TextView) addToCustomView.getChildAt(0);
-        mRenderTestRule.render(addToTitle, "add_to_dialog_title");
+        mRenderTestRule.render(addToTitle, "menu_add_to_dialog_title");
         ListView addToList = (ListView) addToCustomView.getChildAt(1);
         Assert.assertEquals(3, addToList.getChildCount());
-        mRenderTestRule.render(addToList, "add_to_dialog_bookmarked");
+        mRenderTestRule.render(addToList, "items_in_add_to_dialog_bookmarked");
 
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
     }

@@ -99,13 +99,13 @@
             android:icon="@drawable/ic_add" >
           <menu>
                 <item android:id="@+id/add_to_bookmarks_menu_id"
-                    android:title="@string/menu_add_to_bookmarks"
+                    android:title="@string/menu_bookmarks"
                     android:icon="@drawable/btn_star" />
                 <item android:id="@+id/add_to_downloads_menu_id"
-                    android:title="@string/menu_add_to_downloads"
+                    android:title="@string/menu_downloads"
                     android:icon="@drawable/ic_file_download_white_24dp" />
                 <item android:id="@+id/add_to_homescreen_menu_id"
-                    android:title="@string/menu_add_to_homescreen"
+                    android:title="@string/menu_homescreen"
                     android:icon="@drawable/ic_add_to_home_screen" />
           </menu>
         </item>
