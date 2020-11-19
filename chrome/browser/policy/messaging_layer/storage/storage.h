@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_queue.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -36,29 +37,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
       base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>(
           Priority priority)>;
 
-  // Options class allowing to set parameters individually, e.g.:
-  // Storage::Create(Options()
-  //                     .set_directory("/var/cache/reporting"),
-  //                 callback);
-  class Options {
-   public:
-    Options() = default;
-    Options(const Options& options) = default;
-    Options& operator=(const Options& options) = default;
-    Options& set_directory(const base::FilePath& directory) {
-      directory_ = directory;
-      return *this;
-    }
-    const base::FilePath& directory() const { return directory_; }
-
-   private:
-    // Subdirectory of the location assigned for this Storage.
-    base::FilePath directory_;
-  };
-
   // Creates Storage instance, and returns it with the completion callback.
   static void Create(
-      const Options& options,
+      const StorageOptions& options,
       StartUploadCb start_upload_cb,
       scoped_refptr<EncryptionModule> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb);
@@ -98,7 +79,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
 
   // Private constructor, to be called by Create factory method only.
   // Queues need to be added afterwards.
-  Storage(const Options& options, StartUploadCb start_upload_cb);
+  Storage(const StorageOptions& options, StartUploadCb start_upload_cb);
 
   // Initializes the object by adding all queues for all priorities.
   // Must be called once and only once after construction.
@@ -111,7 +92,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // need to protect or serialize access to it.
   StatusOr<scoped_refptr<StorageQueue>> GetQueue(Priority priority);
 
-  const Options options_;
+  const StorageOptions options_;
 
   // Map priority->StorageQueue.
   base::flat_map<Priority, scoped_refptr<StorageQueue>> queues_;

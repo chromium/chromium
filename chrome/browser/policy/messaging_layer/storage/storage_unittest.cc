@@ -15,6 +15,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
@@ -231,11 +232,11 @@ class MockUploadClient : public Storage::UploaderInterface {
   Sequence test_upload_sequence_;
 };
 
-class StorageTest : public ::testing::Test {
+class StorageTest : public ::testing::TestWithParam<size_t> {
  protected:
   void SetUp() override { ASSERT_TRUE(location_.CreateUniqueTempDir()); }
 
-  void CreateStorageTestOrDie(const Storage::Options& options) {
+  void CreateStorageTestOrDie(const StorageOptions& options) {
     ASSERT_FALSE(storage_) << "StorageTest already assigned";
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
@@ -250,9 +251,10 @@ class StorageTest : public ::testing::Test {
     storage_ = std::move(storage_result.ValueOrDie());
   }
 
-  Storage::Options BuildStorageOptions() const {
-    return Storage::Options().set_directory(
-        base::FilePath(location_.GetPath()));
+  StorageOptions BuildStorageOptions() const {
+    return StorageOptions()
+        .set_directory(base::FilePath(location_.GetPath()))
+        .set_single_file_size(GetParam());
   }
 
   StatusOr<std::unique_ptr<Storage::UploaderInterface>> BuildMockUploader(
@@ -305,7 +307,7 @@ constexpr std::array<const char*, 3> data = {"Rec1111", "Rec222", "Rec33"};
 constexpr std::array<const char*, 3> more_data = {"More1111", "More222",
                                                   "More33"};
 
-TEST_F(StorageTest, WriteIntoNewStorageAndReopen) {
+TEST_P(StorageTest, WriteIntoNewStorageAndReopen) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull())).Times(0);
   CreateStorageTestOrDie(BuildStorageOptions());
   WriteStringOrDie(FAST_BATCH, data[0]);
@@ -317,7 +319,7 @@ TEST_F(StorageTest, WriteIntoNewStorageAndReopen) {
   CreateStorageTestOrDie(BuildStorageOptions());
 }
 
-TEST_F(StorageTest, WriteIntoNewStorageReopenAndWriteMore) {
+TEST_P(StorageTest, WriteIntoNewStorageReopenAndWriteMore) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull())).Times(0);
   CreateStorageTestOrDie(BuildStorageOptions());
   WriteStringOrDie(FAST_BATCH, data[0]);
@@ -332,7 +334,7 @@ TEST_F(StorageTest, WriteIntoNewStorageReopenAndWriteMore) {
   WriteStringOrDie(FAST_BATCH, more_data[2]);
 }
 
-TEST_F(StorageTest, WriteIntoNewStorageAndUpload) {
+TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
   CreateStorageTestOrDie(BuildStorageOptions());
   WriteStringOrDie(FAST_BATCH, data[0]);
   WriteStringOrDie(FAST_BATCH, data[1]);
@@ -352,7 +354,7 @@ TEST_F(StorageTest, WriteIntoNewStorageAndUpload) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-TEST_F(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
+TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
   CreateStorageTestOrDie(BuildStorageOptions());
   WriteStringOrDie(FAST_BATCH, data[0]);
   WriteStringOrDie(FAST_BATCH, data[1]);
@@ -382,7 +384,7 @@ TEST_F(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-TEST_F(StorageTest, WriteIntoNewStorageAndFlush) {
+TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
   CreateStorageTestOrDie(BuildStorageOptions());
   WriteStringOrDie(MANUAL_BATCH, data[0]);
   WriteStringOrDie(MANUAL_BATCH, data[1]);
@@ -403,7 +405,7 @@ TEST_F(StorageTest, WriteIntoNewStorageAndFlush) {
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
 }
 
-TEST_F(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
+TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
   CreateStorageTestOrDie(BuildStorageOptions());
   WriteStringOrDie(MANUAL_BATCH, data[0]);
   WriteStringOrDie(MANUAL_BATCH, data[1]);
@@ -434,7 +436,7 @@ TEST_F(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
 }
 
-TEST_F(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
+TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
   CreateStorageTestOrDie(BuildStorageOptions());
 
   WriteStringOrDie(FAST_BATCH, data[0]);
@@ -511,7 +513,7 @@ TEST_F(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-TEST_F(StorageTest, WriteAndRepeatedlyImmediateUpload) {
+TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
   CreateStorageTestOrDie(BuildStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next
@@ -549,7 +551,7 @@ TEST_F(StorageTest, WriteAndRepeatedlyImmediateUpload) {
                    data[2]);  // Immediately uploads and verifies.
 }
 
-TEST_F(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
+TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   CreateStorageTestOrDie(BuildStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next
@@ -623,7 +625,7 @@ TEST_F(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   WriteStringOrDie(IMMEDIATE, more_data[2]);
 }
 
-TEST_F(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
+TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   CreateStorageTestOrDie(BuildStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next
@@ -699,7 +701,7 @@ TEST_F(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
 }
 
-TEST_F(StorageTest, WriteEncryptFailure) {
+TEST_P(StorageTest, WriteEncryptFailure) {
   CreateStorageTestOrDie(BuildStorageOptions());
   DCHECK(test_encryption_module_);
   EXPECT_CALL(*test_encryption_module_, EncryptRecord(_, _))
@@ -711,6 +713,12 @@ TEST_F(StorageTest, WriteEncryptFailure) {
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
 }
+
+INSTANTIATE_TEST_SUITE_P(VaryingFileSize,
+                         StorageTest,
+                         testing::Values(128 * 1024LL * 1024LL,
+                                         256 /* two records in file */,
+                                         1 /* single record in file */));
 
 }  // namespace
 }  // namespace reporting

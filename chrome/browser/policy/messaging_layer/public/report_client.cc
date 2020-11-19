@@ -21,6 +21,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_module.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
@@ -442,7 +443,7 @@ void ReportingClient::InitializingContext::ConfigureStorageModule() {
 
   base::FilePath reporting_path = user_data_dir.Append(kReportingDirectory);
   StorageModule::Create(
-      Storage::Options().set_directory(reporting_path),
+      StorageOptions().set_directory(reporting_path),
       std::move(start_upload_cb_), base::MakeRefCounted<EncryptionModule>(),
       base::BindOnce(
           &ReportingClient::InitializingContext::OnStorageModuleConfigured,

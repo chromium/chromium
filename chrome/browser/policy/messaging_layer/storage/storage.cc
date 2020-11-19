@@ -16,6 +16,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_queue.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
@@ -32,13 +33,11 @@ constexpr base::FilePath::CharType immediate_queue_subdir[] =
     FILE_PATH_LITERAL("Immediate");
 constexpr base::FilePath::CharType immediate_queue_prefix[] =
     FILE_PATH_LITERAL("P_Immediate");
-const uint64_t immediate_queue_total = 4 * 1024LL;
 
 constexpr base::FilePath::CharType fast_batch_queue_subdir[] =
     FILE_PATH_LITERAL("FastBatch");
 constexpr base::FilePath::CharType fast_batch_queue_prefix[] =
     FILE_PATH_LITERAL("P_FastBatch");
-const uint64_t fast_batch_queue_total = 64 * 1024LL;
 constexpr base::TimeDelta fast_batch_upload_period =
     base::TimeDelta::FromSeconds(1);
 
@@ -46,7 +45,6 @@ constexpr base::FilePath::CharType slow_batch_queue_subdir[] =
     FILE_PATH_LITERAL("SlowBatch");
 constexpr base::FilePath::CharType slow_batch_queue_prefix[] =
     FILE_PATH_LITERAL("P_SlowBatch");
-const uint64_t slow_batch_queue_total = 16 * 1024LL * 1024LL;
 constexpr base::TimeDelta slow_batch_upload_period =
     base::TimeDelta::FromSeconds(20);
 
@@ -54,7 +52,6 @@ constexpr base::FilePath::CharType background_queue_subdir[] =
     FILE_PATH_LITERAL("Background");
 constexpr base::FilePath::CharType background_queue_prefix[] =
     FILE_PATH_LITERAL("P_Background");
-const uint64_t background_queue_total = 64 * 1024LL * 1024LL;
 constexpr base::TimeDelta background_upload_period =
     base::TimeDelta::FromMinutes(1);
 
@@ -62,47 +59,36 @@ constexpr base::FilePath::CharType manual_queue_subdir[] =
     FILE_PATH_LITERAL("Manual");
 constexpr base::FilePath::CharType manual_queue_prefix[] =
     FILE_PATH_LITERAL("P_Manual");
-const uint64_t manual_queue_total = 64 * 1024LL * 1024LL;
 constexpr base::TimeDelta manual_upload_period = base::TimeDelta::Max();
 
 // Returns vector of <priority, queue_options> for all expected queues in
 // Storage. Queues are all located under the given root directory.
-std::vector<std::pair<Priority, StorageQueue::Options>> ExpectedQueues(
-    const base::FilePath& root_directory) {
+std::vector<std::pair<Priority, QueueOptions>> ExpectedQueues(
+    const StorageOptions& options) {
   return {
-      std::make_pair(IMMEDIATE, StorageQueue::Options()
-                                    .set_directory(root_directory.Append(
-                                        immediate_queue_subdir))
-                                    .set_file_prefix(immediate_queue_prefix)
-                                    .set_total_size(immediate_queue_total)),
-      std::make_pair(
-          FAST_BATCH,
-          StorageQueue::Options()
-              .set_directory(root_directory.Append(fast_batch_queue_subdir))
-              .set_file_prefix(fast_batch_queue_prefix)
-              .set_total_size(fast_batch_queue_total)
-              .set_upload_period(fast_batch_upload_period)),
-      std::make_pair(
-          SLOW_BATCH,
-          StorageQueue::Options()
-              .set_directory(root_directory.Append(slow_batch_queue_subdir))
-              .set_file_prefix(slow_batch_queue_prefix)
-              .set_total_size(slow_batch_queue_total)
-              .set_upload_period(slow_batch_upload_period)),
-      std::make_pair(
-          BACKGROUND_BATCH,
-          StorageQueue::Options()
-              .set_directory(root_directory.Append(background_queue_subdir))
-              .set_file_prefix(background_queue_prefix)
-              .set_total_size(background_queue_total)
-              .set_upload_period(background_upload_period)),
-      std::make_pair(
-          MANUAL_BATCH,
-          StorageQueue::Options()
-              .set_directory(root_directory.Append(manual_queue_subdir))
-              .set_file_prefix(manual_queue_prefix)
-              .set_total_size(manual_queue_total)
-              .set_upload_period(manual_upload_period)),
+      std::make_pair(IMMEDIATE, QueueOptions(options)
+                                    .set_subdirectory(immediate_queue_subdir)
+                                    .set_file_prefix(immediate_queue_prefix)),
+      std::make_pair(FAST_BATCH,
+                     QueueOptions(options)
+                         .set_subdirectory(fast_batch_queue_subdir)
+                         .set_file_prefix(fast_batch_queue_prefix)
+                         .set_upload_period(fast_batch_upload_period)),
+      std::make_pair(SLOW_BATCH,
+                     QueueOptions(options)
+                         .set_subdirectory(slow_batch_queue_subdir)
+                         .set_file_prefix(slow_batch_queue_prefix)
+                         .set_upload_period(slow_batch_upload_period)),
+      std::make_pair(BACKGROUND_BATCH,
+                     QueueOptions(options)
+                         .set_subdirectory(background_queue_subdir)
+                         .set_file_prefix(background_queue_prefix)
+                         .set_upload_period(background_upload_period)),
+      std::make_pair(MANUAL_BATCH,
+                     QueueOptions(options)
+                         .set_subdirectory(manual_queue_subdir)
+                         .set_file_prefix(manual_queue_prefix)
+                         .set_upload_period(manual_upload_period)),
   };
 }
 
@@ -154,7 +140,7 @@ class Storage::QueueUploaderInterface : public StorageQueue::UploaderInterface {
 };
 
 void Storage::Create(
-    const Options& options,
+    const StorageOptions& options,
     StartUploadCb start_upload_cb,
     scoped_refptr<EncryptionModule> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb) {
@@ -163,8 +149,7 @@ void Storage::Create(
       : public TaskRunnerContext<StatusOr<scoped_refptr<Storage>>> {
    public:
     StorageInitContext(
-        const std::vector<std::pair<Priority, StorageQueue::Options>>&
-            queues_options,
+        const std::vector<std::pair<Priority, QueueOptions>>& queues_options,
         scoped_refptr<EncryptionModule> encryption_module,
         scoped_refptr<Storage> storage,
         base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> callback)
@@ -228,8 +213,7 @@ void Storage::Create(
       Response(std::move(storage_));
     }
 
-    const std::vector<std::pair<Priority, StorageQueue::Options>>
-        queues_options_;
+    const std::vector<std::pair<Priority, QueueOptions>> queues_options_;
     scoped_refptr<EncryptionModule> encryption_module_;
     scoped_refptr<Storage> storage_;
     int32_t count_;
@@ -242,12 +226,12 @@ void Storage::Create(
       base::WrapRefCounted(new Storage(options, std::move(start_upload_cb)));
 
   // Asynchronously run initialization.
-  Start<StorageInitContext>(ExpectedQueues(storage->options_.directory()),
+  Start<StorageInitContext>(ExpectedQueues(storage->options_),
                             encryption_module, std::move(storage),
                             std::move(completion_cb));
 }
 
-Storage::Storage(const Options& options, StartUploadCb start_upload_cb)
+Storage::Storage(const StorageOptions& options, StartUploadCb start_upload_cb)
     : options_(options), start_upload_cb_(std::move(start_upload_cb)) {}
 
 Storage::~Storage() = default;

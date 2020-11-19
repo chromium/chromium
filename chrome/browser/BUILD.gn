@@ -1222,6 +1222,7 @@ static_library("browser") {
     "policy/messaging_layer/public/report_queue_configuration.h",
     "policy/messaging_layer/storage/storage.cc",
     "policy/messaging_layer/storage/storage.h",
+    "policy/messaging_layer/storage/storage_configuration.h",
     "policy/messaging_layer/storage/storage_module.cc",
     "policy/messaging_layer/storage/storage_module.h",
     "policy/messaging_layer/storage/storage_queue.cc",

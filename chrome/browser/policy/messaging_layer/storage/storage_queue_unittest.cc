@@ -18,6 +18,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
@@ -261,9 +262,13 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
 
 class StorageQueueTest : public ::testing::TestWithParam<size_t> {
  protected:
-  void SetUp() override { ASSERT_TRUE(location_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(location_.CreateUniqueTempDir());
+    options_.set_directory(base::FilePath(location_.GetPath()))
+        .set_single_file_size(GetParam());
+  }
 
-  void CreateStorageQueueOrDie(const StorageQueue::Options& options) {
+  void CreateStorageQueueOrDie(const QueueOptions& options) {
     ASSERT_FALSE(storage_queue_) << "StorageQueue already assigned";
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
@@ -283,20 +288,18 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     storage_queue_->TestInjectBlockReadErrors(seq_numbers);
   }
 
-  StorageQueue::Options BuildStorageQueueOptionsImmediate() const {
-    return StorageQueue::Options()
-        .set_directory(
-            base::FilePath(location_.GetPath()).Append(FILE_PATH_LITERAL("D1")))
-        .set_file_prefix(FILE_PATH_LITERAL("F0001"))
-        .set_single_file_size(GetParam());
+  QueueOptions BuildStorageQueueOptionsImmediate() const {
+    return QueueOptions(options_)
+        .set_subdirectory(FILE_PATH_LITERAL("D1"))
+        .set_file_prefix(FILE_PATH_LITERAL("F0001"));
   }
 
-  StorageQueue::Options BuildStorageQueueOptionsPeriodic(
+  QueueOptions BuildStorageQueueOptionsPeriodic(
       base::TimeDelta upload_period = base::TimeDelta::FromSeconds(1)) const {
     return BuildStorageQueueOptionsImmediate().set_upload_period(upload_period);
   }
 
-  StorageQueue::Options BuildStorageQueueOptionsOnlyManual() const {
+  QueueOptions BuildStorageQueueOptionsOnlyManual() const {
     return BuildStorageQueueOptionsPeriodic(base::TimeDelta::Max());
   }
 
@@ -332,6 +335,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   }
 
   base::ScopedTempDir location_;
+  StorageOptions options_;
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
   scoped_refptr<StorageQueue> storage_queue_;
 
@@ -455,7 +459,7 @@ TEST_P(StorageQueueTest,
   WriteStringOrDie(data[2]);
 
   // Save copy of options.
-  const StorageQueue::Options options = storage_queue_->options();
+  const QueueOptions options = storage_queue_->options();
 
   storage_queue_.reset();
 
@@ -496,7 +500,7 @@ TEST_P(StorageQueueTest,
   WriteStringOrDie(data[2]);
 
   // Save copy of options.
-  const StorageQueue::Options options = storage_queue_->options();
+  const QueueOptions options = storage_queue_->options();
 
   storage_queue_.reset();
 

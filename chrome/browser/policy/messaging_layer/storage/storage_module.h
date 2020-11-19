@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
@@ -23,7 +24,7 @@ class StorageModule : public base::RefCountedThreadSafe<StorageModule> {
  public:
   // Factory method creates |StorageModule| object.
   static void Create(
-      const Storage::Options& options,
+      const StorageOptions& options,
       Storage::StartUploadCb start_upload_cb,
       scoped_refptr<EncryptionModule> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)>

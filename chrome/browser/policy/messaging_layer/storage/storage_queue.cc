@@ -33,6 +33,7 @@
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -77,7 +78,7 @@ struct RecordHeader {
 
 // static
 void StorageQueue::Create(
-    const Options& options,
+    const QueueOptions& options,
     StartUploadCb start_upload_cb,
     scoped_refptr<EncryptionModule> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
@@ -124,7 +125,7 @@ void StorageQueue::Create(
                                  std::move(completion_cb));
 }
 
-StorageQueue::StorageQueue(const Options& options,
+StorageQueue::StorageQueue(const QueueOptions& options,
                            StartUploadCb start_upload_cb,
                            scoped_refptr<EncryptionModule> encryption_module)
     : options_(options),
@@ -384,7 +385,7 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>> StorageQueue::AssignLastFile(
             /*size=*/0));
     DCHECK(insert_result.second);
   }
-  if (size > options_.total_size()) {
+  if (size > options_.max_record_size()) {
     return Status(error::OUT_OF_RANGE, "Too much data to be recorded at once");
   }
   scoped_refptr<SingleFile> last_file = files_.rbegin()->second;

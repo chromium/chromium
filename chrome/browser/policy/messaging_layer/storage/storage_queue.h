@@ -24,6 +24,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
@@ -36,67 +37,6 @@ namespace reporting {
 // sequencing number to be eliminated.
 class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
  public:
-  // Options class allowing to set parameters individually, e.g.:
-  // StorageQueue::Create(Options()
-  //                  .set_directory("/var/cache/reporting")
-  //                  .set_file_prefix(FILE_PATH_LITERAL("p00000001"))
-  //                  .set_total_size(128 * 1024LL * 1024LL),
-  //                 callback);
-  class Options {
-   public:
-    Options() = default;
-    Options(const Options& options) = default;
-    Options& operator=(const Options& options) = default;
-    Options& set_directory(const base::FilePath& directory) {
-      directory_ = directory;
-      return *this;
-    }
-    Options& set_file_prefix(const base::FilePath::StringType& file_prefix) {
-      file_prefix_ = file_prefix;
-      return *this;
-    }
-    Options& set_single_file_size(uint64_t single_file_size) {
-      single_file_size_ = single_file_size;
-      return *this;
-    }
-    Options& set_total_size(uint64_t total_size) {
-      total_size_ = total_size;
-      return *this;
-    }
-    Options& set_upload_period(base::TimeDelta upload_period) {
-      upload_period_ = upload_period;
-      return *this;
-    }
-    const base::FilePath& directory() const { return directory_; }
-    const base::FilePath::StringType& file_prefix() const {
-      return file_prefix_;
-    }
-    uint64_t single_file_size() const { return single_file_size_; }
-    uint64_t total_size() const { return total_size_; }
-    base::TimeDelta upload_period() const { return upload_period_; }
-
-   private:
-    // Subdirectory of the Storage location assigned for this StorageQueue.
-    base::FilePath directory_;
-    // Prefix of data files assigned for this StorageQueue.
-    base::FilePath::StringType file_prefix_;
-    // Cut-off size of an individual file in the set.
-    // When file exceeds this size, the new file is created
-    // for further records. Note that each file must have at least
-    // one record before it is closed, regardless of that record size.
-    uint64_t single_file_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
-    // Cut-off total size of all files in the set.
-    // When the storage queue exceeds this size, oldest records can be
-    // dropped.
-    uint64_t total_size_ = 256 * 256LL * 256LL;  // 256 MiB
-    // Time period the data is uploaded with.
-    // If 0, uploaded immediately after a new record is stored
-    // (this setting is intended for the immediate priority).
-    // Can be set to infinity - in that case Flush() is expected to be
-    // called from time to time.
-    base::TimeDelta upload_period_;
-  };
-
   // Interface for Upload, which must be implemented by an object returned by
   // |StartUpload| callback (see below).
   // Every time StorageQueue starts an upload (by timer or immediately after
@@ -137,7 +77,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // records - periodically or immediately after Write (and in the near future -
   // upon explicit Flush request).
   static void Create(
-      const Options& options,
+      const QueueOptions& options,
       StartUploadCb start_upload_cb,
       scoped_refptr<EncryptionModule> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
@@ -186,7 +126,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   void TestInjectBlockReadErrors(std::initializer_list<uint64_t> seq_numbers);
 
   // Access queue options.
-  const Options& options() const { return options_; }
+  const QueueOptions& options() const { return options_; }
 
   StorageQueue(const StorageQueue& other) = delete;
   StorageQueue& operator=(const StorageQueue& other) = delete;
@@ -256,7 +196,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   };
 
   // Private constructor, to be called by Create factory method only.
-  StorageQueue(const Options& options,
+  StorageQueue(const QueueOptions& options,
                StartUploadCb start_upload_cb,
                scoped_refptr<EncryptionModule> encryption_module);
 
@@ -345,7 +285,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   Status RemoveConfirmedData(uint64_t seq_number);
 
   // Immutable options, stored at the time of creation.
-  const Options options_;
+  const QueueOptions options_;
 
   // Current generation id, unique per device and queue.
   // Set up once during initialization by reading from the 'gen_id.NNNN' file

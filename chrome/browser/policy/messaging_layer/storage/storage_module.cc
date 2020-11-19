@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage.h"
+#include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_module.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -42,7 +43,7 @@ void StorageModule::ReportSuccess(
 
 // static
 void StorageModule::Create(
-    const Storage::Options& options,
+    const StorageOptions& options,
     Storage::StartUploadCb start_upload_cb,
     scoped_refptr<EncryptionModule> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)> callback) {
