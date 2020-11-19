@@ -13,11 +13,11 @@ namespace features {
 // If enabled, PartitionAllocator reserves an address space(named, giga cage)
 // initially and uses a part of the address space for each allocation.
 const Feature kPartitionAllocGigaCage{"PartitionAllocGigaCage",
-                                      FEATURE_DISABLED_BY_DEFAULT};
+                                      FEATURE_ENABLED_BY_DEFAULT};
 #else
 // If enabled, PartitionAllocator remembers allocated address space.
 const Feature kPartitionAllocGigaCage{"PartitionAllocGigaCage32bit",
-                                      FEATURE_DISABLED_BY_DEFAULT};
+                                      FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // If enabled, PCScan is turned on by default for all partitions that don't
