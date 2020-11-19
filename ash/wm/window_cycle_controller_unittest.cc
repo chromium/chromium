@@ -1168,6 +1168,55 @@ TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 }
 
+// Tests that mouse events are filtered until the mouse is actually used,
+// preventing the mouse from unexpectedly triggering events.
+// See crbug.com/1143275.
+TEST_F(InteractiveWindowCycleControllerTest, FilterMouseEventsUntilUsed) {
+  std::unique_ptr<Window> w0 = CreateTestWindow();
+  std::unique_ptr<Window> w1 = CreateTestWindow();
+  std::unique_ptr<Window> w2 = CreateTestWindow();
+  EventCounter event_count;
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+
+  // Start cycling.
+  // Current window order is [2,1,0].
+  controller->StartCycling();
+  auto item_views = GetWindowCycleItemViews();
+  item_views[2]->AddPreTargetHandler(&event_count);
+
+  // Move the mouse over to the third item and complete cycling. These mouse
+  // events shouldn't be filtered since the user has moved their mouse.
+  generator->MoveMouseTo(gfx::Point(0, 0));
+  const gfx::Point third_item_center =
+      GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint();
+  generator->MoveMouseTo(third_item_center);
+  controller->CompleteCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
+  EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
+
+  // Start cycling again while the mouse is over where the third item will be
+  // when cycling starts.
+  // Current window order is [0,2,1].
+  controller->StartCycling();
+  item_views = GetWindowCycleItemViews();
+  item_views[2]->AddPreTargetHandler(&event_count);
+
+  // Generate mouse events at the cursor's initial position. These mouse events
+  // should be filtered because the user hasn't moved their mouse yet.
+  generator->MoveMouseTo(third_item_center);
+  controller->CompleteCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
+  EXPECT_EQ(0, event_count.GetMouseEventCountAndReset());
+
+  // Start cycling again and click. This should not be filtered out.
+  // Current window order is [0,2,1].
+  controller->StartCycling();
+  generator->PressLeftButton();
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+}
+
 // When a user has the window cycle list open and clicks outside of it, it
 // should cancel cycling.
 TEST_F(InteractiveWindowCycleControllerTest,
