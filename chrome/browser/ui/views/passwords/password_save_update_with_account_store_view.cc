@@ -464,12 +464,13 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
 
     // The |username_dropdown_| should observe the animating layout manager to
     // close the dropdown menu when the animation starts.
-    observed_animating_layout_for_username_dropdown_ = std::make_unique<
-        ScopedObserver<views::AnimatingLayoutManager,
-                       views::AnimatingLayoutManager::Observer>>(
+    animating_layout_for_username_dropdown_observation_ = std::make_unique<
+        base::ScopedObservation<views::AnimatingLayoutManager,
+                                views::AnimatingLayoutManager::Observer>>(
         username_dropdown_);
-    observed_animating_layout_for_username_dropdown_->Add(animating_layout);
-    observed_animating_layout_for_iph_.Add(animating_layout);
+    animating_layout_for_username_dropdown_observation_->Observe(
+        animating_layout);
+    animating_layout_for_iph_observation_.Observe(animating_layout);
 
     // The account picker is only visible in Save bubbble, not Update bubble.
     if (destination_dropdown_)

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_AUTO_SIGN_IN_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_AUTO_SIGN_IN_VIEW_H_
 
-#include "base/scoped_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
