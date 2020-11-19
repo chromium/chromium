@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager_impl.h"
@@ -39,12 +40,18 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 
 namespace {
 
 constexpr char kMimeTypeArcUriList[] = "application/x-arc-uri-list";
 constexpr char kUriListSeparator[] = "\r\n";
+
+bool IsArcWindow(const aura::Window* window) {
+  return static_cast<ash::AppType>(window->GetProperty(
+             aura::client::kAppType)) == ash::AppType::ARC_APP;
+}
 
 storage::FileSystemContext* GetFileSystemContext() {
   // Obtains the primary profile.
@@ -112,6 +119,10 @@ class ChromeFileHelper : public exo::FileHelper {
     // file:///media/fuse/crostini_<hash>_termina_penguin/file.txt.
     std::string lines(data.begin(), data.end());
     std::vector<ui::FileInfo> filenames;
+    // Until we have mapping for other VMs, only accept from arc.
+    if (!IsArcWindow(source))
+      return filenames;
+
     base::FilePath path;
     storage::FileSystemURL url;
     for (const base::StringPiece& line : base::SplitStringPiece(
