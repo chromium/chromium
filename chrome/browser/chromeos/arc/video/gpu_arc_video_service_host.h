@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "components/arc/mojom/video.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -25,29 +26,43 @@ class ArcBridgeService;
 // VideoDecodeAccelerator or VideoEncodeAccelerator run in the GPU process.
 //
 // Lives on the UI thread.
-class GpuArcVideoServiceHost : public KeyedService,
-                               public mojom::VideoHost {
+class GpuArcVideoServiceHost : public mojom::VideoHost {
  public:
-  // Returns singleton instance for the given BrowserContext,
-  // or nullptr if the browser |context| is not allowed to use ARC.
-  static GpuArcVideoServiceHost* GetForBrowserContext(
-      content::BrowserContext* context);
-
-  GpuArcVideoServiceHost(content::BrowserContext* context,
-                         ArcBridgeService* bridge_service);
-  ~GpuArcVideoServiceHost() override;
+  static GpuArcVideoServiceHost* Get();
 
   // arc::mojom::VideoHost implementation.
   void OnBootstrapVideoAcceleratorFactory(
       OnBootstrapVideoAcceleratorFactoryCallback callback) override;
 
+  GpuArcVideoServiceHost(const GpuArcVideoServiceHost&) = delete;
+  GpuArcVideoServiceHost& operator=(const GpuArcVideoServiceHost&) = delete;
+
  private:
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  friend class base::NoDestructor<GpuArcVideoServiceHost>;
+
+  GpuArcVideoServiceHost();
+  ~GpuArcVideoServiceHost() override;
+
   std::unique_ptr<mojom::VideoAcceleratorFactory> video_accelerator_factory_;
   mojo::ReceiverSet<mojom::VideoAcceleratorFactory>
       video_accelerator_factory_receivers_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(GpuArcVideoServiceHost);
+class GpuArcVideoKeyedService : public KeyedService {
+ public:
+  // Returns singleton instance for the given BrowserContext,
+  // or nullptr if the browser |context| is not allowed to use ARC.
+  static GpuArcVideoKeyedService* GetForBrowserContext(
+      content::BrowserContext* context);
+
+  GpuArcVideoKeyedService(content::BrowserContext* context,
+                          ArcBridgeService* bridge_service);
+  GpuArcVideoKeyedService(const GpuArcVideoKeyedService&) = delete;
+  GpuArcVideoKeyedService& operator=(const GpuArcVideoKeyedService&) = delete;
+  ~GpuArcVideoKeyedService() override;
+
+ private:
+  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 
 }  // namespace arc

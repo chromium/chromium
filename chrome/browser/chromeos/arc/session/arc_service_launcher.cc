@@ -237,7 +237,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcVolumeMounterBridge::GetForBrowserContext(profile);
   ArcWakeLockBridge::GetForBrowserContext(profile);
   ArcWallpaperService::GetForBrowserContext(profile);
-  GpuArcVideoServiceHost::GetForBrowserContext(profile);
+  GpuArcVideoKeyedService::GetForBrowserContext(profile);
   apps::ArcAppsFactory::GetForProfile(profile);
   chromeos::ApkWebAppService::Get(profile);
 

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/memory/singleton.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_checker.h"
@@ -32,23 +31,24 @@ namespace arc {
 
 namespace {
 
-// Singleton factory for GpuArcVideoServiceHost.
-class GpuArcVideoServiceHostFactory
+// Singleton factory for GpuArcVideoKeyedService.
+class GpuArcVideoKeyedServiceFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
-          GpuArcVideoServiceHost,
-          GpuArcVideoServiceHostFactory> {
+          GpuArcVideoKeyedService,
+          GpuArcVideoKeyedServiceFactory> {
  public:
   // Factory name used by ArcBrowserContextKeyedServiceFactoryBase.
-  static constexpr const char* kName = "GpuArcVideoServiceHostFactory";
+  static constexpr const char* kName = "GpuArcVideoKeyedServiceFactory";
 
-  static GpuArcVideoServiceHostFactory* GetInstance() {
-    return base::Singleton<GpuArcVideoServiceHostFactory>::get();
+  static GpuArcVideoKeyedServiceFactory* GetInstance() {
+    static base::NoDestructor<GpuArcVideoKeyedServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<GpuArcVideoServiceHostFactory>;
-  GpuArcVideoServiceHostFactory() = default;
-  ~GpuArcVideoServiceHostFactory() override = default;
+  friend class base::NoDestructor<GpuArcVideoKeyedServiceFactory>;
+  GpuArcVideoKeyedServiceFactory() = default;
+  ~GpuArcVideoKeyedServiceFactory() override = default;
 };
 
 class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
@@ -91,23 +91,36 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
 }  // namespace
 
 // static
-GpuArcVideoServiceHost* GpuArcVideoServiceHost::GetForBrowserContext(
+GpuArcVideoKeyedService* GpuArcVideoKeyedService::GetForBrowserContext(
     content::BrowserContext* context) {
-  return GpuArcVideoServiceHostFactory::GetForBrowserContext(context);
+  return GpuArcVideoKeyedServiceFactory::GetForBrowserContext(context);
 }
 
-GpuArcVideoServiceHost::GpuArcVideoServiceHost(content::BrowserContext* context,
-                                               ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service),
-      video_accelerator_factory_(
-          std::make_unique<VideoAcceleratorFactoryService>()) {
+GpuArcVideoKeyedService::GpuArcVideoKeyedService(
+    content::BrowserContext* context,
+    ArcBridgeService* bridge_service)
+    : arc_bridge_service_(bridge_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  arc_bridge_service_->video()->SetHost(this);
+  arc_bridge_service_->video()->SetHost(GpuArcVideoServiceHost::Get());
 }
 
-GpuArcVideoServiceHost::~GpuArcVideoServiceHost() {
+GpuArcVideoKeyedService::~GpuArcVideoKeyedService() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->video()->SetHost(nullptr);
+}
+
+GpuArcVideoServiceHost::GpuArcVideoServiceHost()
+    : video_accelerator_factory_(
+          std::make_unique<VideoAcceleratorFactoryService>()) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+GpuArcVideoServiceHost::~GpuArcVideoServiceHost() = default;
+
+// static
+GpuArcVideoServiceHost* GpuArcVideoServiceHost::GpuArcVideoServiceHost::Get() {
+  static base::NoDestructor<GpuArcVideoServiceHost> instance;
+  return instance.get();
 }
 
 void GpuArcVideoServiceHost::OnBootstrapVideoAcceleratorFactory(
