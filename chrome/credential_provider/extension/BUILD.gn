@@ -59,6 +59,7 @@ source_set("extension_lib") {
     ":common",
     "../gaiacp:util",
     "//base:base",
+    "//net:net",
   ]
   configs += [ "//build/config/win:windowed" ]
 }

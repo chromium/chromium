@@ -12,10 +12,6 @@
 namespace credential_provider {
 namespace extension {
 
-// The configuration the task needs to run on. A way to tell task manager on how
-// to run the task.
-struct Config {};
-
 // The user, device and authentication details for task to be able to perform
 // its action.
 struct UserDeviceContext {

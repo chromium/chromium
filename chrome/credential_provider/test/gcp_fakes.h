@@ -17,6 +17,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/scoped_handle.h"
+#include "chrome/credential_provider/extension/extension_utils.h"
 #include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/extension/task_manager.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
@@ -733,16 +734,19 @@ class FakeTaskManager : public extension::TaskManager {
   FakeTaskManager();
   ~FakeTaskManager() override;
 
-  int NumOfTimesExecuted() { return num_of_times_executed_; }
+  int NumOfTimesExecuted(const std::string& task_name) {
+    return num_of_times_executed_[task_name];
+  }
 
  private:
-  void RunTasksInternal() override;
+  void ExecuteTask(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                   const std::string& task_name) override;
 
   // Original instance of TaskManager.
   extension::TaskManager* task_manager_ = nullptr;
 
-  int num_of_times_executed_;
-  base::Time start_time_;
+  // Counts the number of execution per task.
+  std::map<std::string, int> num_of_times_executed_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

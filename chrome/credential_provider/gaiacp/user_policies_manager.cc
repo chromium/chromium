@@ -59,6 +59,10 @@ const wchar_t kCloudPoliciesEnabledRegKey[] = L"cloud_policies_enabled";
 // policies.
 const char kPolicyFetchResponseKeyName[] = "policies";
 
+// The period of refreshing cloud policies.
+const base::TimeDelta kCloudPoliciesExecutionPeriod =
+    base::TimeDelta::FromHours(1);
+
 // True when cloud policies feature is enabled.
 bool g_cloud_policies_enabled = false;
 
@@ -163,8 +167,12 @@ class UserPoliciesFetchTask : public extension::Task {
   }
 
   // ESA calls this to retrieve a configuration for the task execution. Return
-  // a default config for now.
-  extension::Config GetConfig() final { return extension::Config(); }
+  // the 1 hour period for the user policies fetch.
+  extension::Config GetConfig() final {
+    extension::Config config;
+    config.execution_period = kCloudPoliciesExecutionPeriod;
+    return config;
+  }
 
   // ESA calls this to set all the user-device contexts for the execution of the
   // task.

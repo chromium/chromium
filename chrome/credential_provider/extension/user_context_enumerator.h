@@ -5,6 +5,7 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_EXTENSION_USER_CONTEXT_ENUMERATOR_H_
 #define CHROME_CREDENTIAL_PROVIDER_EXTENSION_USER_CONTEXT_ENUMERATOR_H_
 
+#include "base/win/windows_types.h"
 #include "chrome/credential_provider/extension/task.h"
 
 namespace credential_provider {
@@ -17,7 +18,7 @@ class UserContextEnumerator {
   static UserContextEnumerator* Get();
 
   // Performs the given |task| for every GCPW users on the device.
-  void PerformTask(const std::string& task_name, Task& task);
+  HRESULT PerformTask(const std::string& task_name, Task& task);
 
  private:
   UserContextEnumerator();

@@ -4,6 +4,8 @@
 
 #include "chrome/credential_provider/extension/user_context_enumerator.h"
 
+#include <windows.h>
+
 #include <map>
 #include <vector>
 
@@ -32,19 +34,26 @@ UserContextEnumerator* UserContextEnumerator::Get() {
 UserContextEnumerator::UserContextEnumerator() {}
 UserContextEnumerator::~UserContextEnumerator() {}
 
-void UserContextEnumerator::PerformTask(const std::string& task_name,
-                                        Task& task) {
+HRESULT UserContextEnumerator::PerformTask(const std::string& task_name,
+                                           Task& task) {
   base::string16 serial_number = GetSerialNumber();
 
   base::string16 machine_guid = L"";
   HRESULT hr = GetMachineGuid(&machine_guid);
   if (FAILED(hr))
-    LOGFN(ERROR) << "GetMachineGuid failed hr=" << putHR(hr);
+    LOGFN(WARNING) << "GetMachineGuid failed hr=" << putHR(hr);
 
   std::map<base::string16, UserTokenHandleInfo> sid_to_gaia_id;
   hr = GetUserTokenHandles(&sid_to_gaia_id);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     LOGFN(ERROR) << "GetUserTokenHandles failed hr=" << putHR(hr);
+    return hr;
+  }
+
+  if (sid_to_gaia_id.empty()) {
+    LOGFN(VERBOSE) << "No GCPW user exists on the device!";
+    return S_OK;
+  }
 
   std::vector<UserDeviceContext> context_info;
   for (auto const& entry : sid_to_gaia_id) {
@@ -59,15 +68,17 @@ void UserContextEnumerator::PerformTask(const std::string& task_name,
 
   hr = task.SetContext(context_info);
   if (FAILED(hr)) {
-    LOGFN(ERROR) << task_name << ":SetContext hr=" << putHR(hr);
-    return;
+    LOGFN(ERROR) << task_name << "SetContext hr=" << putHR(hr);
+    return hr;
   }
 
   hr = task.Execute();
   if (FAILED(hr)) {
-    LOGFN(ERROR) << task_name << ":Execute task hr=" << putHR(hr);
-    return;
+    LOGFN(ERROR) << task_name << "Execute task hr=" << putHR(hr);
+    return hr;
   }
+
+  return S_OK;
 }
 
 }  // namespace extension

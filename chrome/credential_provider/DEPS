@@ -6,6 +6,7 @@ include_rules = [
   "+components/crash",
   "+components/policy/proto",
   "+google_apis",
+  "+net",
   "+third_party/boringssl/src/include",
   "+third_party/re2",
 ]

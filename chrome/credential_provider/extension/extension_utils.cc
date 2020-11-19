@@ -4,6 +4,7 @@
 
 #include "chrome/credential_provider/extension/extension_utils.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/credential_provider/extension/extension_strings.h"
 #include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/extension/scoped_handle.h"
@@ -145,6 +146,10 @@ DWORD UninstallGCPWExtension() {
 
 bool IsGCPWExtensionEnabled() {
   return GetGlobalFlagOrDefault(extension::kEnableGCPWExtension, 1);
+}
+
+base::string16 GetLastSyncRegNameForTask(const base::string16& task_name) {
+  return base::ToLowerASCII(task_name) + L"_last_sync_time";
 }
 
 }  // namespace extension

@@ -4,7 +4,6 @@
 
 #include "chrome/credential_provider/extension/service.h"
 
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "chrome/credential_provider/extension/os_service_manager.h"
@@ -88,8 +87,6 @@ void Service::StartMain() {
   TaskManager::Get()->RunTasks(main_task_runner);
 
   run_loop.Run();
-
-  TaskManager::Get()->Quit();
 
   service_status_.dwCurrentState = SERVICE_STOPPED;
   service_status_.dwControlsAccepted = 0;

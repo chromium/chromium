@@ -1399,8 +1399,7 @@ DWORD FakeOSServiceManager::ChangeServiceConfig(DWORD dwServiceType,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-FakeTaskManager::FakeTaskManager()
-    : task_manager_(*GetInstanceStorage()), num_of_times_executed_(0) {
+FakeTaskManager::FakeTaskManager() : task_manager_(*GetInstanceStorage()) {
   *GetInstanceStorage() = this;
 }
 
@@ -1408,20 +1407,12 @@ FakeTaskManager::~FakeTaskManager() {
   *GetInstanceStorage() = task_manager_;
 }
 
-void FakeTaskManager::RunTasksInternal() {
-  if (start_time_.is_null()) {
-    start_time_ = base::Time::Now();
-  }
+void FakeTaskManager::ExecuteTask(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const std::string& task_name) {
+  num_of_times_executed_[task_name]++;
 
-  int64_t start_hour = start_time_.ToDeltaSinceWindowsEpoch().InHours();
-  num_of_times_executed_++;
-
-  int64_t current = base::Time::Now().ToDeltaSinceWindowsEpoch().InHours();
-
-  ASSERT_EQ(current - start_hour, (num_of_times_executed_ - 1) * 1)
-      << (current - start_hour) << " hours since first run";
-
-  TaskManager::RunTasksInternal();
+  TaskManager::ExecuteTask(task_runner, task_name);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
