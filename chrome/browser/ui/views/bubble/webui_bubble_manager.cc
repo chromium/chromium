@@ -54,7 +54,7 @@ bool WebUIBubbleManagerBase::ShowBubble() {
   bubble_view_ = WebUIBubbleDialogView::CreateWebUIBubbleDialog(
       std::make_unique<WebUIBubbleDialogView>(anchor_view_,
                                               std::move(cached_web_view_)));
-  observed_bubble_widget_.Add(bubble_view_->GetWidget());
+  bubble_widget_observation_.Observe(bubble_view_->GetWidget());
   close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
       bubble_view_.get(), BrowserList::GetInstance()->GetLastActive());
   return true;
@@ -76,7 +76,7 @@ void WebUIBubbleManagerBase::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(bubble_view_);
   DCHECK_EQ(bubble_view_->GetWidget(), widget);
   cached_web_view_ = bubble_view_->RemoveWebView();
-  observed_bubble_widget_.Remove(bubble_view_->GetWidget());
+  bubble_widget_observation_.RemoveObservation();
   DCHECK(close_bubble_helper_);
   close_bubble_helper_.reset();
   cache_timer_->Reset();

@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
@@ -77,8 +77,8 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
   // A timer controlling how long the |cached_web_view_| is cached for.
   std::unique_ptr<base::RetainingOneShotTimer> cache_timer_;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> observed_bubble_widget_{
-      this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      bubble_widget_observation_{this};
 
   // This is necessary to prevent a bug closing the active tab in the bubble.
   // See https://crbug.com/1139028.
