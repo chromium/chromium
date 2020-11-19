@@ -74722,6 +74722,20 @@ Full version information for the fingerprint enum values:
   <int value="4" label="Minor Downgrade">Minor version downgrade</int>
 </enum>
 
+<enum name="UserDataMoveResult">
+  <int value="0" label="CreateTargetFailure">
+    Failed to create a temporary directory within User Data into which the
+    contents are to be moved for subsequent deletion.
+  </int>
+  <int value="1" label="Success">
+    The contents of User Data were moved as expected.
+  </int>
+  <int value="2" label="PartialSuccess">
+    Some items in User Data could not be moved; see
+    Downgrade.UserDataDirMove.FailureCount.
+  </int>
+</enum>
+
 <enum name="UserDemographicsStatus">
   <int value="0" label="Success - user demographics are available for report"/>
   <int value="1" label="Sync is not enabled"/>

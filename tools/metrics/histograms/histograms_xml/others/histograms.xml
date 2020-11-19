@@ -4358,9 +4358,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Downgrade.UserDataDirMove.Result" enum="BooleanSuccess"
+<histogram name="Downgrade.UserDataDirMove.Result" enum="UserDataMoveResult"
     expires_after="2020-12-31">
   <owner>grt@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
   <summary>
     Indicates whether or not moving a user's User Data dir following a downgrade
     succeeded or failed.
