@@ -49,9 +49,9 @@ class FakeDiceWebSigninInterceptorDelegate
   void ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
-      base::OnceCallback<void(bool)> callback) override {
+      base::OnceCallback<void(SigninInterceptionResult)> callback) override {
     EXPECT_EQ(bubble_parameters.interception_type, expected_interception_type_);
-    std::move(callback).Run(true);
+    std::move(callback).Run(SigninInterceptionResult::kAccepted);
   }
   void ShowProfileCustomizationBubble(Browser* browser) override {
     EXPECT_FALSE(customized_browser_)

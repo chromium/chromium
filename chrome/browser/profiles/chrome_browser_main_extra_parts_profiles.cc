@@ -141,6 +141,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 #endif
 
@@ -262,6 +263,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   ConsentAuditorFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  DiceWebSigninInterceptorFactory::GetInstance();
+#endif
   DomainDiversityReporterFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   DownloadCoreServiceFactory::GetInstance();

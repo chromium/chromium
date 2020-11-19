@@ -25,7 +25,7 @@ class DiceWebSigninInterceptorDelegate
   void ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
-      base::OnceCallback<void(bool)> callback) override;
+      base::OnceCallback<void(SigninInterceptionResult)> callback) override;
   void ShowProfileCustomizationBubble(Browser* browser) override;
 
  private:
@@ -33,7 +33,7 @@ class DiceWebSigninInterceptorDelegate
   void ShowSigninInterceptionBubbleInternal(
       Browser* browser,
       const BubbleParameters& bubble_parameters,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   // Implemented in profile_customization_bubble_view.cc
   void ShowProfileCustomizationBubbleInternal(Browser* browser);

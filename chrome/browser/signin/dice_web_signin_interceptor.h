@@ -28,6 +28,10 @@ namespace content {
 class WebContents;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 struct AccountInfo;
 class Browser;
 class DiceSignedInProfileCreator;
@@ -71,8 +75,25 @@ enum class SigninInterceptionHeuristicOutcome {
   // A password update will be required for the account: the password used on
   // the form does not match the stored password.
   kAbortPasswordUpdatePending = 13,
+  // The user already declined a new profile for this account, the UI is not
+  // shown again.
+  kAbortUserDeclinedProfileForAccount = 14,
 
-  kMaxValue = kAbortPasswordUpdatePending,
+  kMaxValue = kAbortUserDeclinedProfileForAccount,
+};
+
+// User action resulting from the interception bubble.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SigninInterceptionResult {
+  kAccepted = 0,
+  kDeclined = 1,
+  kIgnored = 2,
+
+  // Used when the bubble was not shown because it's not implemented.
+  kNotDisplayed = 3,
+
+  kMaxValue = kNotDisplayed,
 };
 
 // Returns whether the heuristic outcome is a success (the signin should be
@@ -119,7 +140,7 @@ class DiceWebSigninInterceptor : public KeyedService,
     virtual void ShowSigninInterceptionBubble(
         content::WebContents* web_contents,
         const BubbleParameters& bubble_parameters,
-        base::OnceCallback<void(bool)> callback) = 0;
+        base::OnceCallback<void(SigninInterceptionResult)> callback) = 0;
 
     // Shows the profile customization bubble.
     virtual void ShowProfileCustomizationBubble(Browser* browser) = 0;
@@ -131,6 +152,8 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   DiceWebSigninInterceptor(const DiceWebSigninInterceptor&) = delete;
   DiceWebSigninInterceptor& operator=(const DiceWebSigninInterceptor&) = delete;
+
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Called when an account has been added in Chrome from the web (using the
   // DICE protocol).
@@ -191,6 +214,7 @@ class DiceWebSigninInterceptor : public KeyedService,
                            ShouldShowEnterpriseBubbleWithoutUPA);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldShowMultiUserBubble);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, PersistentHash);
 
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
@@ -212,11 +236,13 @@ class DiceWebSigninInterceptor : public KeyedService,
   void OnExtendedAccountInfoFetchTimeout();
 
   // Called after the user chose whether a new profile would be created.
-  void OnProfileCreationChoice(SkColor profile_color, bool create);
+  void OnProfileCreationChoice(const AccountInfo& account_info,
+                               SkColor profile_color,
+                               SigninInterceptionResult create);
   // Called after the user chose whether the session should continue in a new
   // profile.
   void OnProfileSwitchChoice(const base::FilePath& profile_path,
-                             bool switch_profile);
+                             SigninInterceptionResult switch_profile);
 
   // Called when the new profile is created or loaded from disk.
   // `profile_color` is set as theme color for the profile ; it should be
@@ -227,6 +253,20 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Called when the new browser is created after interception. Passed as
   // callback to `session_startup_helper_`.
   void OnNewBrowserCreated(bool show_customization_bubble);
+
+  // Returns a 8-bit hash of the email that can be persisted.
+  static std::string GetPersistentEmailHash(const std::string& email);
+
+  // Should be called when the user declines profile creation, in order to
+  // remember their decision. This information is stored in prefs. Only a hash
+  // of the email is saved, as Chrome does not need to store the actual email,
+  // but only need to compare emails. The hash has low entropy to ensure it
+  // cannot be reversed.
+  void RecordProfileCreationDeclined(const std::string& email);
+
+  // Checks if the user previously declined 3 times creating a new profile for
+  // this account.
+  bool HasUserDeclinedProfileCreation(const std::string& email) const;
 
   Profile* const profile_;
   signin::IdentityManager* const identity_manager_;

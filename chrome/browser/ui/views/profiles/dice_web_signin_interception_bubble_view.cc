@@ -47,7 +47,7 @@ DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
   if (callback_) {
     RecordInterceptionResult(bubble_parameters_, profile_,
                              SigninInterceptionResult::kIgnored);
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SigninInterceptionResult::kIgnored);
   }
 }
 
@@ -57,7 +57,7 @@ void DiceWebSigninInterceptionBubbleView::CreateBubble(
     views::View* anchor_view,
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(SigninInterceptionResult)> callback) {
   // The widget is owned by the views system.
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
       new DiceWebSigninInterceptionBubbleView(
@@ -114,7 +114,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
     views::View* anchor_view,
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
-    base::OnceCallback<void(bool)> callback)
+    base::OnceCallback<void(SigninInterceptionResult)> callback)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::TOP_RIGHT),
       profile_(profile),
@@ -147,10 +147,11 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
 }
 
 void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(bool accept) {
-  RecordInterceptionResult(bubble_parameters_, profile_,
-                           accept ? SigninInterceptionResult::kAccepted
-                                  : SigninInterceptionResult::kDeclined);
-  std::move(callback_).Run(accept);
+  SigninInterceptionResult result = accept
+                                        ? SigninInterceptionResult::kAccepted
+                                        : SigninInterceptionResult::kDeclined;
+  RecordInterceptionResult(bubble_parameters_, profile_, result);
+  std::move(callback_).Run(result);
   GetWidget()->CloseWithReason(
       accept ? views::Widget::ClosedReason::kAcceptButtonClicked
              : views::Widget::ClosedReason::kCancelButtonClicked);
@@ -162,7 +163,7 @@ void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
     Browser* browser,
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(SigninInterceptionResult)> callback) {
   DCHECK(browser);
 
   if (bubble_parameters.interception_type ==
@@ -171,9 +172,8 @@ void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
     // The bubble for profile switch is not enabled.
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
         bubble_parameters, browser->profile(),
-        DiceWebSigninInterceptionBubbleView::SigninInterceptionResult::
-            kNotDisplayed);
-    std::move(callback).Run(false);
+        SigninInterceptionResult::kNotDisplayed);
+    std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
     return;
   }
 

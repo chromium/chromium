@@ -16,9 +16,9 @@ DiceWebSigninInterceptorDelegate::~DiceWebSigninInterceptorDelegate() = default;
 void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
     content::WebContents* web_contents,
     const BubbleParameters& bubble_parameters,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(SigninInterceptionResult)> callback) {
   if (!web_contents) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
     return;
   }
   ShowSigninInterceptionBubbleInternal(
