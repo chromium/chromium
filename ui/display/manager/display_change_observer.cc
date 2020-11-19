@@ -17,6 +17,7 @@
 #include "base/cpu.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/display/display.h"
@@ -78,7 +79,7 @@ ManagedDisplayInfo::ManagedDisplayModeList GetModeListWithAllRefreshRates(
   return display_mode_list;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Constructs the raster DisplayColorSpaces out of |snapshot_color_space|,
 // including the HDR ones if present and |allow_high_bit_depth| is set.
 gfx::DisplayColorSpaces FillDisplayColorSpaces(
@@ -393,7 +394,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   if (dpi)
     new_info.set_device_dpi(dpi);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1012846): This should configure the HDR color spaces.
   gfx::DisplayColorSpaces display_color_spaces(
       snapshot->color_space(), DisplaySnapshot::PrimaryFormat());

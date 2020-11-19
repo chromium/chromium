@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_split.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_manager.h"
@@ -87,7 +88,7 @@ void DisplayManagerTestApi::ResetMaximumDisplay() {
 void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs) {
   DisplayInfoList display_info_list =
       CreateDisplayInfoListFromString(display_specs, display_manager_);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (display_info_list.size() > maximum_support_display_) {
     display_manager_->configurator()->has_unassociated_display_ = true;
     while (display_info_list.size() > maximum_support_display_)

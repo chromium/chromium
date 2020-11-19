@@ -9,6 +9,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
@@ -419,7 +420,7 @@ TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
             gfx::ColorSpace::TransferID::IEC61966_2_1);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   // TODO(crbug.com/1012846): Remove this flag and provision when HDR is fully
   // supported on ChromeOS.
@@ -481,7 +482,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          DisplayChangeObserverTest,
                          ::testing::Values(false, true));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using DisplayResolutionTest = testing::Test;
 
 TEST_F(DisplayResolutionTest, CheckEffectiveResoutionUMAIndex) {

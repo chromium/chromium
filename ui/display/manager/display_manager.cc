@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
@@ -43,7 +44,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chromeos/system/devicemode.h"
@@ -73,7 +74,7 @@ const char kMirrorModeTypesHistogram[] = "DisplayManager.MirrorModeTypes";
 const char kMirroringDisplayCountRangesHistogram[] =
     "DisplayManager.MirroringDisplayCountRanges";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The UMA historgram that logs the zoom percentage level of the intenral
 // display.
 constexpr char kInternalDisplayZoomPercentageHistogram[] =
@@ -82,7 +83,7 @@ constexpr char kInternalDisplayZoomPercentageHistogram[] =
 // Timeout in seconds after which we consider the change to the display zoom
 // is not temporary.
 constexpr int kDisplayZoomModifyTimeoutSec = 15;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 struct DisplaySortFunctor {
   bool operator()(const Display& a, const Display& b) {
@@ -147,7 +148,7 @@ bool ContainsDisplayWithId(const std::vector<Display>& displays,
   return false;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Gets the next mode in |modes| in the direction marked by |up|. If trying to
 // move past either end of |modes|, returns the same.
@@ -293,7 +294,7 @@ enum class MirrorModeTypes {
   kCount,
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnInternalDisplayZoomChanged(float zoom_factor) {
   constexpr static int kMaxValue = 300;
   constexpr static int kBucketSize = 5;
@@ -304,7 +305,7 @@ void OnInternalDisplayZoomChanged(float zoom_factor) {
       kNumBuckets, base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(std::round(zoom_factor * 100));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -326,7 +327,7 @@ DisplayManager::BeginEndNotifier::~BeginEndNotifier() {
 
 DisplayManager::DisplayManager(std::unique_ptr<Screen> screen)
     : screen_(std::move(screen)), layout_store_(new DisplayLayoutStore) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   configure_displays_ = chromeos::IsRunningAsSystemCompositor();
   change_display_upon_host_resize_ = !configure_displays_;
   unified_desktop_enabled_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -336,7 +337,7 @@ DisplayManager::DisplayManager(std::unique_ptr<Screen> screen)
 }
 
 DisplayManager::~DisplayManager() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Reset the font params.
   gfx::SetFontRenderParamsDeviceScaleFactor(1.0f);
   on_display_zoom_modify_timeout_.Cancel();
@@ -376,7 +377,7 @@ void DisplayManager::UpdateInternalDisplay(
 }
 
 void DisplayManager::RefreshFontParams() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Use the largest device scale factor among currently active displays. Non
   // internal display may have bigger scale factor in case the external display
   // is an 4K display.
@@ -387,7 +388,7 @@ void DisplayManager::RefreshFontParams() {
         largest_device_scale_factor, info.GetEffectiveDeviceScaleFactor());
   }
   gfx::SetFontRenderParamsDeviceScaleFactor(largest_device_scale_factor);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 const DisplayLayout& DisplayManager::GetCurrentDisplayLayout() const {
@@ -620,10 +621,10 @@ bool DisplayManager::SetDisplayMode(int64_t display_id,
 
   if (resolution_changed && IsInUnifiedMode())
     ReconfigureDisplays();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   else if (resolution_changed && configure_displays_)
     display_configurator_->OnConfigurationChanged();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return resolution_changed || display_property_changed;
 }
@@ -841,7 +842,7 @@ void DisplayManager::OnNativeDisplaysChanged(
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!configure_displays_ && new_display_info_list.size() > 1 &&
       hardware_mirroring_display_id_list.empty()) {
     DisplayIdList list = GenerateDisplayIdList(
@@ -1369,7 +1370,7 @@ void DisplayManager::SetMirrorMode(
   }
 
   const bool enabled = mode != MirrorMode::kOff;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (configure_displays_) {
     MultipleDisplayState new_state =
         enabled ? MULTIPLE_DISPLAY_STATE_MULTI_MIRROR
@@ -1444,7 +1445,7 @@ void DisplayManager::ToggleDisplayScaleFactor() {
   UpdateDisplaysWith(new_display_info_list);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void DisplayManager::InitConfigurator(
     std::unique_ptr<NativeDisplayDelegate> delegate) {
   display_configurator_ = std::make_unique<display::DisplayConfigurator>();
@@ -1670,7 +1671,7 @@ void DisplayManager::UpdateInternalManagedDisplayModeListForTest() {
 }
 
 bool DisplayManager::ZoomDisplay(int64_t display_id, bool up) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsInUnifiedMode()) {
     DCHECK_EQ(display_id, kUnifiedDisplayId);
     const ManagedDisplayInfo& display_info = GetDisplayInfo(display_id);

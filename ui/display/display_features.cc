@@ -5,11 +5,12 @@
 #include "ui/display/display_features.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace display {
 namespace features {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables using HDR transfer function if the monitor says it supports it.
 const base::Feature kUseHDRTransferFunction {
   "UseHDRTransferFunction",

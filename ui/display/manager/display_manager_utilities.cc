@@ -12,12 +12,13 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/statistics_provider.h"
 #endif
 
@@ -64,7 +65,7 @@ ManagedDisplayInfo::ManagedDisplayModeList CreateUnifiedManagedDisplayModeList(
 bool ForceFirstDisplayInternal() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool ret = command_line->HasSwitch(::switches::kUseFirstDisplayAsInternal);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Touch view mode is only available to internal display. We force the
   // display as internal for emulator to test touch view mode.
   ret = ret ||

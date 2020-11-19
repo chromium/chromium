@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 import("//ui/display/display.gni")
@@ -91,6 +92,7 @@ component("display") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
     "//ui/display/util",
     "//ui/gfx",
@@ -128,6 +130,7 @@ component("display_manager_test_api") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/display",
     "//ui/display/types",
   ]
@@ -232,6 +235,7 @@ test("display_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//cc/base",
     "//mojo/core/test:run_all_unittests",
     "//testing/gmock",
@@ -253,7 +257,7 @@ test("display_unittests") {
     sources += [ "display_change_notifier_unittest.cc" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/constants" ]
   }
 }

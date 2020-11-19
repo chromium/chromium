@@ -8,19 +8,20 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "third_party/cros_system_api/dbus/service_constants.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace display {
 
 class DisplaySnapshot;
 class ManagedDisplayMode;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns a string describing |state|.
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state);
 
@@ -32,7 +33,7 @@ GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
                 chromeos::DisplayPowerState state,
                 std::vector<bool>* display_power);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Determines whether |a| is within an epsilon of |b|.
 bool WithinEpsilon(float a, float b);

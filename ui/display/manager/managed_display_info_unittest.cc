@@ -4,10 +4,11 @@
 
 #include "ui/display/manager/managed_display_info.h"
 
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_switches.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/display/manager/touch_device_manager.h"
 #endif
 

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//ui/display/display.gni")
 
@@ -55,6 +56,7 @@ component("manager") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/base",
     "//ui/display/mojom:mojom",
     "//ui/display/util",
@@ -65,7 +67,7 @@ component("manager") {
 
   defines = [ "DISPLAY_MANAGER_IMPLEMENTATION" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/system" ]
   }
 }

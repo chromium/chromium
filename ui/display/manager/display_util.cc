@@ -13,12 +13,13 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/types/display_snapshot.h"
 
 namespace display {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state) {
   switch (state) {
     case chromeos::DISPLAY_POWER_ALL_ON:
@@ -56,7 +57,7 @@ int GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
   return num_on_displays;
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool WithinEpsilon(float a, float b) {
   return std::abs(a - b) < std::numeric_limits<float>::epsilon();

@@ -23,6 +23,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_observer.h"
@@ -32,7 +33,7 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/display/unified_desktop_utils.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/cancelable_callback.h"
 #include "base/optional.h"
 #include "ui/display/manager/display_configurator.h"
@@ -59,7 +60,7 @@ class DisplayManagerTestApi;
 // DisplayManager maintains the current display configurations,
 // and notifies observers when configuration changes.
 class DISPLAY_MANAGER_EXPORT DisplayManager
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     : public DisplayConfigurator::SoftwareMirroringController
 #endif
 {
@@ -108,7 +109,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   };
 
   explicit DisplayManager(std::unique_ptr<Screen> screen);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ~DisplayManager() override;
 #else
   ~DisplayManager();
@@ -135,7 +136,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Returns the display id of the first display in the outupt list.
   int64_t first_display_id() const { return first_display_id_; }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   TouchDeviceManager* touch_device_manager() const {
     return touch_device_manager_.get();
   }
@@ -434,7 +435,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
       ManagedDisplayInfo::ManagedDisplayModeList display_modes = {});
   void ToggleDisplayScaleFactor();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void InitConfigurator(std::unique_ptr<NativeDisplayDelegate> delegate);
   void ForceInitialConfigureWithObservers(
       display::DisplayChangeObserver* display_change_observer,
@@ -689,7 +690,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // OnWillProcessDisplayChanges() and OnDidProcessDisplayChanges().
   int notify_depth_ = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<display::DisplayConfigurator> display_configurator_;
 
   std::unique_ptr<TouchDeviceManager> touch_device_manager_;
