@@ -96,6 +96,15 @@
         deep-link-focus-id$="[[Setting.kFullscreenMagnifier]]">
     </settings-toggle-button>
     <template is="dom-if" if="[[prefs.settings.a11y.screen_magnifier.value]]">
+      <div class="sub-item">
+        <settings-toggle-button
+            class="sub-item"
+            pref="{{prefs.settings.a11y.screen_magnifier_focus_following}}"
+            label="$i18n{screenMagnifierFocusFollowingLabel}"
+            deep-link-focus-id$=
+                "[[Setting.kFullscreenMagnifierFocusFollowing]]">
+        </settings-toggle-button>
+      </div>
       <div class="settings-box continuation">
         <div class="start sub-item settings-box-text" aria-hidden="true">
           $i18n{screenMagnifierZoomLabel}
