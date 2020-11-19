@@ -65,7 +65,6 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
-#include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -122,7 +121,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/update_client/update_client_errors.h"
-#include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -219,18 +217,11 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-#include "media/webrtc/webrtc_switches.h"
-#include "sandbox/policy/features.h"
-#endif
-
 using content::BrowserThread;
 using testing::_;
 using testing::AtLeast;
 using testing::Mock;
 using testing::Return;
-using webrtc_event_logging::WebRtcEventLogManager;
 
 namespace policy {
 
@@ -240,11 +231,6 @@ namespace {
 const int kOneHourInMs = 60 * 60 * 1000;
 const int kThreeHoursInMs = 180 * 60 * 1000;
 #endif
-
-// Arbitrary port range for testing the WebRTC UDP port policy.
-const char kTestWebRtcUdpPortRange[] = "10000-10100";
-
-constexpr size_t kWebAppId = 42;
 
 // Downloads a file named |file| and expects it to be saved to |dir|, which
 // must be empty.
@@ -1014,92 +1000,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, TaskManagerEndProcessEnabled) {
   EXPECT_TRUE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
 }
 
-// Sets the proper policy before the browser is started.
-template <bool enable>
-class WebRtcUdpPortRangePolicyTest : public PolicyTest {
- public:
-  WebRtcUdpPortRangePolicyTest() = default;
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
-    if (enable) {
-      policies.Set(key::kWebRtcUdpPortRange, POLICY_LEVEL_MANDATORY,
-                   POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                   base::Value(kTestWebRtcUdpPortRange), nullptr);
-    }
-    provider_.UpdateChromePolicy(policies);
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcUdpPortRangePolicyTest<enable>);
-};
-
-using WebRtcUdpPortRangeEnabledPolicyTest = WebRtcUdpPortRangePolicyTest<true>;
-using WebRtcUdpPortRangeDisabledPolicyTest =
-    WebRtcUdpPortRangePolicyTest<false>;
-
-IN_PROC_BROWSER_TEST_F(WebRtcUdpPortRangeEnabledPolicyTest,
-                       WebRtcUdpPortRangeEnabled) {
-  std::string port_range;
-  const PrefService::Preference* pref =
-      user_prefs::UserPrefs::Get(browser()->profile())
-          ->FindPreference(prefs::kWebRTCUDPPortRange);
-  pref->GetValue()->GetAsString(&port_range);
-  EXPECT_EQ(kTestWebRtcUdpPortRange, port_range);
-}
-
-IN_PROC_BROWSER_TEST_F(WebRtcUdpPortRangeDisabledPolicyTest,
-                       WebRtcUdpPortRangeDisabled) {
-  std::string port_range;
-  const PrefService::Preference* pref =
-      user_prefs::UserPrefs::Get(browser()->profile())
-          ->FindPreference(prefs::kWebRTCUDPPortRange);
-  pref->GetValue()->GetAsString(&port_range);
-  EXPECT_TRUE(port_range.empty());
-}
-
-// Sets the proper policy before the browser is started.
-class WebRtcLocalIpsAllowedUrlsTest : public PolicyTest,
-                                      public testing::WithParamInterface<int> {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
-    policies.Set(key::kWebRtcLocalIpsAllowedUrls, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                 base::Value(GenerateUrlList()), nullptr);
-    provider_.UpdateChromePolicy(policies);
-  }
-
-  base::Value::ListStorage GenerateUrlList() {
-    int num_urls = GetParam();
-    base::Value::ListStorage ret;
-    for (int i = 0; i < num_urls; ++i)
-      ret.push_back(base::Value(base::NumberToString(i) + ".example.com"));
-
-    return ret;
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(WebRtcLocalIpsAllowedUrlsTest, RunTest) {
-  const PrefService::Preference* pref =
-      user_prefs::UserPrefs::Get(browser()->profile())
-          ->FindPreference(prefs::kWebRtcLocalIpsAllowedUrls);
-  EXPECT_TRUE(pref->IsManaged());
-  base::Value::ConstListView allowed_urls = pref->GetValue()->GetList();
-  const auto& expected_urls = GenerateUrlList();
-  EXPECT_EQ(expected_urls.size(), allowed_urls.size());
-  for (const auto& allowed_url : allowed_urls) {
-    auto it =
-        std::find(expected_urls.begin(), expected_urls.end(), allowed_url);
-    EXPECT_TRUE(it != expected_urls.end());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebRtcLocalIpsAllowedUrlsTest,
-                         ::testing::Range(0, 3));
-
 #if !defined(OS_CHROMEOS)
 // Similar to PolicyTest but sets the proper policy before the browser is
 // started.
@@ -1262,116 +1162,6 @@ IN_PROC_BROWSER_TEST_F(NetworkTimePolicyTest,
 }
 
 #undef MAYBE_RunTest
-
-#if !defined(OS_ANDROID)
-class WebRtcEventLogCollectionAllowedPolicyTest
-    : public PolicyTest,
-      public testing::WithParamInterface<PolicyTest::BooleanPolicy> {
- public:
-  ~WebRtcEventLogCollectionAllowedPolicyTest() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
-
-    const BooleanPolicy policy = GetParam();
-    if (policy == BooleanPolicy::kFalse || policy == BooleanPolicy::kTrue) {
-      const bool policy_bool = (policy == BooleanPolicy::kTrue);
-      policies.Set(policy::key::kWebRtcEventLogCollectionAllowed,
-                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                   policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                   base::Value(policy_bool), nullptr);
-    }
-
-    provider_.UpdateChromePolicy(policies);
-  }
-
-  const PrefService::Preference* GetPreference() const {
-    auto* service = user_prefs::UserPrefs::Get(browser()->profile());
-    return service->FindPreference(prefs::kWebRtcEventLogCollectionAllowed);
-  }
-
-  base::OnceCallback<void(bool)> BlockingBoolExpectingReply(
-      base::RunLoop* run_loop,
-      bool expected_value) {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, bool expected_value, bool value) {
-          EXPECT_EQ(expected_value, value);
-          run_loop->Quit();
-        },
-        run_loop, expected_value);
-  }
-
-  // The "extras" in question are the ID and error (only one of which may
-  // be non-null), which this test ignores (tested elsewhere).
-  base::OnceCallback<void(bool, const std::string&, const std::string&)>
-  BlockingBoolExpectingReplyWithExtras(base::RunLoop* run_loop,
-                                       bool expected_value) {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, bool expected_value, bool value,
-           const std::string& ignored_log_id,
-           const std::string& ignored_error) {
-          EXPECT_EQ(expected_value, value);
-          run_loop->Quit();
-        },
-        run_loop, expected_value);
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(WebRtcEventLogCollectionAllowedPolicyTest, RunTest) {
-  const PrefService::Preference* const pref = GetPreference();
-  const bool remote_logging_allowed = (GetParam() == BooleanPolicy::kTrue);
-  ASSERT_EQ(pref->GetValue()->GetBool(), remote_logging_allowed);
-
-  auto* webrtc_event_log_manager = WebRtcEventLogManager::GetInstance();
-  ASSERT_TRUE(webrtc_event_log_manager);
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  int render_process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
-
-  constexpr int kLid = 123;
-  const std::string kSessionId = "id";
-
-  {
-    base::RunLoop run_loop;
-    webrtc_event_log_manager->PeerConnectionAdded(
-        render_process_id, kLid, BlockingBoolExpectingReply(&run_loop, true));
-    run_loop.Run();
-  }
-
-  {
-    base::RunLoop run_loop;
-    webrtc_event_log_manager->PeerConnectionSessionIdSet(
-        render_process_id, kLid, kSessionId,
-        BlockingBoolExpectingReply(&run_loop, true));
-    run_loop.Run();
-  }
-
-  {
-    constexpr size_t kMaxFileSizeBytes = 1000 * 1000;
-    constexpr int kOutputPeriodMs = 1000;
-
-    base::RunLoop run_loop;
-
-    // Test focus - remote-bound logging allowed if and only if the policy
-    // is configured to allow it.
-    webrtc_event_log_manager->StartRemoteLogging(
-        render_process_id, kSessionId, kMaxFileSizeBytes, kOutputPeriodMs,
-        kWebAppId,
-        BlockingBoolExpectingReplyWithExtras(&run_loop,
-                                             remote_logging_allowed));
-    run_loop.Run();
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebRtcEventLogCollectionAllowedPolicyTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
-#endif  // !defined(OS_ANDROID)
 
 class PolicyTestSyncXHR : public PolicyTest {
   void SetUpInProcessBrowserTestFixture() override {
