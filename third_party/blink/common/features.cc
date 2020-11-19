@@ -84,6 +84,9 @@ const base::Feature kLayoutNG{"LayoutNG", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kLayoutNGFieldset{"LayoutNGFieldset",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kLayoutNGTextControl{"LayoutNGTextControl",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kFragmentItem{"FragmentItem",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 

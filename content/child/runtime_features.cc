@@ -360,6 +360,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"LayoutNG", blink::features::kLayoutNG},
           {"LayoutNGFieldset", blink::features::kLayoutNGFieldset},
           {"LayoutNGFragmentItem", blink::features::kFragmentItem},
+          {"LayoutNGTextControl", blink::features::kLayoutNGTextControl},
           {"LegacyWindowsDWriteFontFallback",
            features::kLegacyWindowsDWriteFontFallback},
           {"LinkDisabledNewSpecBehavior",

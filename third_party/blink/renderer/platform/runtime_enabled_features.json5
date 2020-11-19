@@ -1093,7 +1093,8 @@
     {
       name: "LayoutNGTextControl",
       depends_on: ["EditingNG"],
-      status: "experimental",
+      // In Chrome, the flag is managed by Finch.
+      status: "test",
     },
     {
       name: "LayoutNGWebkitBox",
