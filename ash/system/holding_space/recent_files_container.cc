@@ -54,11 +54,20 @@ bool BelongsToDownloadsSection(HoldingSpaceItem::Type type) {
          type == HoldingSpaceItem::Type::kNearbyShare;
 }
 
+// Returns if an item of the specified `type` belongs in the screen captures
+// section.
+bool BelongsToScreenCaptureSection(HoldingSpaceItem::Type type) {
+  return type == HoldingSpaceItem::Type::kScreenshot ||
+         type == HoldingSpaceItem::Type::kScreenRecording;
+}
+
 // Returns if items of the specified types belong to the same section.
 bool BelongToSameSection(HoldingSpaceItem::Type type,
                          HoldingSpaceItem::Type other_type) {
-  return type == other_type || (BelongsToDownloadsSection(type) &&
-                                BelongsToDownloadsSection(other_type));
+  return (BelongsToScreenCaptureSection(type) &&
+          BelongsToScreenCaptureSection(other_type)) ||
+         (BelongsToDownloadsSection(type) &&
+          BelongsToDownloadsSection(other_type));
 }
 
 // DownloadsHeader--------------------------------------------------------------
@@ -165,7 +174,7 @@ void RecentFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
                                                    bool due_to_finalization) {
   DCHECK(item->IsFinalized());
 
-  if (item->type() != HoldingSpaceItem::Type::kScreenshot &&
+  if (!BelongsToScreenCaptureSection(item->type()) &&
       !BelongsToDownloadsSection(item->type())) {
     return;
   }
@@ -185,7 +194,7 @@ void RecentFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
     }
   }
 
-  if (item->type() == HoldingSpaceItem::Type::kScreenshot)
+  if (BelongsToScreenCaptureSection(item->type()))
     AddHoldingSpaceScreenCaptureView(item, index);
   else if (BelongsToDownloadsSection(item->type()))
     AddHoldingSpaceDownloadView(item, index);
@@ -199,7 +208,7 @@ void RecentFilesContainer::RemoveAllHoldingSpaceItemViews() {
 
 void RecentFilesContainer::RemoveHoldingSpaceItemView(
     const HoldingSpaceItem* item) {
-  if (item->type() == HoldingSpaceItem::Type::kScreenshot)
+  if (BelongsToScreenCaptureSection(item->type()))
     RemoveHoldingSpaceScreenCaptureView(item);
   else if (BelongsToDownloadsSection(item->type()))
     RemoveHoldingSpaceDownloadView(item);
@@ -208,7 +217,7 @@ void RecentFilesContainer::RemoveHoldingSpaceItemView(
 void RecentFilesContainer::AddHoldingSpaceScreenCaptureView(
     const HoldingSpaceItem* item,
     size_t index) {
-  DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kScreenshot);
+  DCHECK(BelongsToScreenCaptureSection(item->type()));
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
 
   if (index >= kMaxScreenCaptures)
@@ -231,7 +240,7 @@ void RecentFilesContainer::AddHoldingSpaceScreenCaptureView(
 
 void RecentFilesContainer::RemoveHoldingSpaceScreenCaptureView(
     const HoldingSpaceItem* item) {
-  DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kScreenshot);
+  DCHECK(BelongsToScreenCaptureSection(item->type()));
 
   auto it = views_by_item_id_.find(item->id());
   if (it == views_by_item_id_.end())
@@ -250,7 +259,7 @@ void RecentFilesContainer::RemoveHoldingSpaceScreenCaptureView(
   for (const auto& candidate :
        base::Reversed(HoldingSpaceController::Get()->model()->items())) {
     if (candidate->IsFinalized() &&
-        candidate->type() == HoldingSpaceItem::Type::kScreenshot &&
+        BelongsToScreenCaptureSection(item->type()) &&
         !base::Contains(views_by_item_id_, candidate->id())) {
       views_by_item_id_[candidate->id()] =
           screen_captures_container_->AddChildView(

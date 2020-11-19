@@ -71,6 +71,11 @@ void HoldingSpaceClientImpl::AddScreenshot(const base::FilePath& file_path) {
   GetHoldingSpaceKeyedService(profile_)->AddScreenshot(file_path);
 }
 
+void HoldingSpaceClientImpl::AddScreenRecording(
+    const base::FilePath& file_path) {
+  GetHoldingSpaceKeyedService(profile_)->AddScreenRecording(file_path);
+}
+
 void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
                                                   SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(

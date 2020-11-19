@@ -674,6 +674,11 @@ void CaptureModeController::OnVideoFileSaved(bool success) {
     DCHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordTime(
         (base::TimeTicks::Now() - recording_start_time_).InSeconds());
+
+    if (features::IsTemporaryHoldingSpaceEnabled()) {
+      HoldingSpaceController::Get()->client()->AddScreenRecording(
+          current_video_file_path_);
+    }
   }
 
   if (!on_file_saved_callback_.is_null())

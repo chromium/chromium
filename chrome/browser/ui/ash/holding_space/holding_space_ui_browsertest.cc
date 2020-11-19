@@ -5,14 +5,17 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "base/scoped_observer.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -505,6 +508,60 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
   run_loop.Run();
 
   // Verify that the screenshot appears in holding space UI.
+  Show();
+  ASSERT_TRUE(IsShowing());
+  EXPECT_EQ(1u, GetScreenCaptureViews().size());
+}
+
+// Base class for holding space UI browser tests that take screen recordings.
+class HoldingSpaceUiScreenCaptureBrowserTest
+    : public HoldingSpaceUiBrowserTest {
+ public:
+  HoldingSpaceUiScreenCaptureBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kCaptureMode);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that taking a screen recording adds a screen recording holding space
+// item.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiScreenCaptureBrowserTest,
+                       AddScreenRecording) {
+  // Verify that no screen recordings exist in holding space UI.
+  Show();
+  ASSERT_TRUE(IsShowing());
+  EXPECT_TRUE(GetScreenCaptureViews().empty());
+
+  Close();
+  ASSERT_FALSE(IsShowing());
+  ash::CaptureModeTestApi capture_mode_test_api;
+  capture_mode_test_api.StartForFullscreen(/*for_video=*/true);
+  capture_mode_test_api.PerformCapture();
+  // Record a 100 ms long video.
+  base::RunLoop video_recording_time;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, video_recording_time.QuitClosure(),
+      base::TimeDelta::FromMilliseconds(100));
+  video_recording_time.Run();
+  capture_mode_test_api.StopVideoRecording();
+
+  // Bind an observer to watch for updates to the holding space model.
+  testing::NiceMock<MockHoldingSpaceModelObserver> mock;
+  ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver> observer{&mock};
+  observer.Add(HoldingSpaceController::Get()->model());
+
+  base::RunLoop wait_for_item;
+  // Expect and wait for a screen recording item to be added to holding space.
+  EXPECT_CALL(mock, OnHoldingSpaceItemAdded)
+      .WillOnce([&](const HoldingSpaceItem* item) {
+        if (item->type() == HoldingSpaceItem::Type::kScreenRecording)
+          wait_for_item.Quit();
+      });
+  wait_for_item.Run();
+
+  // Verify that the screen recording appears in holding space UI.
   Show();
   ASSERT_TRUE(IsShowing());
   EXPECT_EQ(1u, GetScreenCaptureViews().size());

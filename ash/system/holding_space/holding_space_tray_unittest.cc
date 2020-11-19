@@ -1098,6 +1098,224 @@ TEST_P(HoldingSpaceTrayTest, ShouldMaybeShowContextMenuOnRightClick) {
             IsPreviewsFeatureEnabled());
 }
 
+// Tests that as screen recording files are added to the model, they show in the
+// screen capture container.
+TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainerWithScreenRecordingFiles) {
+  StartSession();
+
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  ASSERT_TRUE(test_api()->GetScreenCaptureViews().empty());
+
+  // Add a screen recording item and verify recent file container gets shown.
+  HoldingSpaceItem* item_1 = AddItem(HoldingSpaceItem::Type::kScreenRecording,
+                                     base::FilePath("/tmp/fake_1"));
+  ASSERT_TRUE(item_1->IsFinalized());
+
+  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+  ASSERT_EQ(1u, test_api()->GetScreenCaptureViews().size());
+
+  // Add a screenshot item, and verify it's also shown in the UI in the reverse
+  // order they were added.
+  HoldingSpaceItem* item_2 = AddItem(HoldingSpaceItem::Type::kScreenshot,
+                                     base::FilePath("/tmp/fake_2"));
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+  std::vector<views::View*> screen_capture_chips =
+      test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(2u, screen_capture_chips.size());
+  EXPECT_EQ(item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(item_1->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+
+  // Remove the first item, and verify the container gets updated.
+  model()->RemoveItem(item_1->id());
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+  screen_capture_chips = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(1u, screen_capture_chips.size());
+  EXPECT_EQ(item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+
+  test_api()->Close();
+}
+
+// Tests that a partially initialized screen recording item shows in the UI in
+// the reverse order from added time rather than finalization time.
+TEST_P(HoldingSpaceTrayTest,
+       PartialScreenRecordingItemWithExistingScreenshotItems) {
+  StartSession();
+  test_api()->Show();
+
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  ASSERT_TRUE(test_api()->GetScreenCaptureViews().empty());
+
+  // Add partially initialized screen recording item - verify it doesn't get
+  // shown in the UI yet.
+  HoldingSpaceItem* screen_recording_item =
+      AddPartiallyInitializedItem(HoldingSpaceItem::Type::kScreenRecording,
+                                  base::FilePath("/tmp/screen_recording"));
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+
+  // Add three screenshot items to fill up the container.
+  HoldingSpaceItem* screenshot_item_1 = AddItem(
+      HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/screenshot_1"));
+  HoldingSpaceItem* screenshot_item_2 = AddItem(
+      HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/screenshot_2"));
+  HoldingSpaceItem* screenshot_item_3 = AddItem(
+      HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/screenshot_3"));
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+  std::vector<views::View*> screen_capture_chips =
+      test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(3u, screen_capture_chips.size());
+  EXPECT_EQ(screenshot_item_3->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(screenshot_item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_EQ(screenshot_item_1->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
+
+  // Finalize the screen recording item and verify it is not shown.
+  model()->FinalizeOrRemoveItem(screen_recording_item->id(),
+                                GURL("filesystem:screen_recording"));
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+  screen_capture_chips = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(3u, screen_capture_chips.size());
+  EXPECT_EQ(screenshot_item_3->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(screenshot_item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_EQ(screenshot_item_1->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
+
+  // Remove one of the fully initialized items, and verify the screen recording
+  // item that was finalized late is shown.
+  model()->RemoveItem(screenshot_item_1->id());
+
+  screen_capture_chips = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(3u, screen_capture_chips.size());
+  EXPECT_EQ(screenshot_item_3->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(screenshot_item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_EQ(screen_recording_item->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
+
+  // Add partially initialized screen recording item - verify it doesn't get
+  // shown in the UI yet.
+  HoldingSpaceItem* screen_recording_item_last =
+      AddPartiallyInitializedItem(HoldingSpaceItem::Type::kScreenRecording,
+                                  base::FilePath("/tmp/screen_recording_last"));
+  screen_capture_chips = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(3u, screen_capture_chips.size());
+  EXPECT_EQ(screenshot_item_3->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(screenshot_item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_EQ(screen_recording_item->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
+
+  // Finalize the screen recording item and verify it is shown first.
+  model()->FinalizeOrRemoveItem(screen_recording_item_last->id(),
+                                GURL("filesystem:screen_recording"));
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+  screen_capture_chips = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(3u, screen_capture_chips.size());
+  EXPECT_EQ(screen_recording_item_last->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(screenshot_item_3->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_EQ(screenshot_item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
+
+  test_api()->Close();
+}
+
+// Tests that partially initialized screenshot item shows in the UI in the
+// reverse order from added time rather than finalization time.
+TEST_P(HoldingSpaceTrayTest,
+       PartialScreenshotItemWithExistingScreenRecordingItems) {
+  StartSession();
+  test_api()->Show();
+
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  ASSERT_TRUE(test_api()->GetScreenCaptureViews().empty());
+
+  // Add partially initialized screenshot item - verify it doesn't get shown
+  // in the UI yet.
+  HoldingSpaceItem* screenshot_item = AddPartiallyInitializedItem(
+      HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake_1"));
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+
+  // Add three screenshot recording items to fill up the container.
+  HoldingSpaceItem* screen_recording_item_1 = AddItem(
+      HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_2"));
+  HoldingSpaceItem* screen_recording_item_2 = AddItem(
+      HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_3"));
+  HoldingSpaceItem* screen_recording_item_3 = AddItem(
+      HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_4"));
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+  std::vector<views::View*> screen_capture_chips =
+      test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(3u, screen_capture_chips.size());
+  EXPECT_EQ(screen_recording_item_3->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(screen_recording_item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_EQ(screen_recording_item_1->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
+
+  // Finalize the screenshot item and verify it is not shown.
+  model()->FinalizeOrRemoveItem(screenshot_item->id(),
+                                GURL("filesystem:fake_1"));
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+  screen_capture_chips = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(3u, screen_capture_chips.size());
+  EXPECT_EQ(screen_recording_item_3->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(screen_recording_item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_EQ(screen_recording_item_1->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
+
+  // Remove one of the fully initialized items, and verify the partially
+  // initialized item is not shown.
+  model()->RemoveItem(screen_recording_item_1->id());
+
+  screen_capture_chips = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(3u, screen_capture_chips.size());
+  EXPECT_EQ(screen_recording_item_3->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
+  EXPECT_EQ(screen_recording_item_2->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
+  EXPECT_EQ(screenshot_item->id(),
+            HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
+
+  test_api()->Close();
+}
+
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());
 
 }  // namespace ash
