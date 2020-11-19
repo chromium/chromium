@@ -70616,6 +70616,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="StayVsLeave">
+  <obsolete>
+    Removed 2020 November.
+  </obsolete>
   <int value="0" label="Stay on the current page"/>
   <int value="1" label="Leave the current page"/>
 </enum>

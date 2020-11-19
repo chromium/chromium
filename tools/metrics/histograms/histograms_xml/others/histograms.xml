@@ -7293,6 +7293,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="JSDialogs.OnBeforeUnloadStayVsLeave" enum="StayVsLeave"
     expires_after="M77">
+  <obsolete>
+    Removed 2020 November.
+  </obsolete>
   <owner>avi@chromium.org</owner>
   <summary>
     For onbeforeunload dialogs, the user's choice between staying on the page
