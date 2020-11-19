@@ -232,61 +232,14 @@ void ServiceWorkerRegistry::FindRegistrationForId(
     int64_t registration_id,
     const url::Origin& origin,
     FindRegistrationCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  // Registration lookup is expected to abort when storage is disabled.
-  if (is_storage_disabled_) {
-    CompleteFindNow(nullptr, blink::ServiceWorkerStatusCode::kErrorAbort,
-                    std::move(callback));
-    return;
-  }
-
-  // Lookup live registration first.
-  base::Optional<scoped_refptr<ServiceWorkerRegistration>> registration =
-      FindFromLiveRegistrationsForId(registration_id);
-  if (registration) {
-    blink::ServiceWorkerStatusCode status =
-        registration.value() ? blink::ServiceWorkerStatusCode::kOk
-                             : blink::ServiceWorkerStatusCode::kErrorNotFound;
-    CompleteFindNow(std::move(registration.value()), status,
-                    std::move(callback));
-    return;
-  }
-
-  GetRemoteStorageControl()->FindRegistrationForId(
-      registration_id, origin,
-      base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForId,
-                     weak_factory_.GetWeakPtr(), registration_id,
-                     std::move(callback)));
+  FindRegistrationForIdInternal(registration_id, origin, std::move(callback));
 }
 
 void ServiceWorkerRegistry::FindRegistrationForIdOnly(
     int64_t registration_id,
     FindRegistrationCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  // Registration lookup is expected to abort when storage is disabled.
-  if (is_storage_disabled_) {
-    CompleteFindNow(nullptr, blink::ServiceWorkerStatusCode::kErrorAbort,
-                    std::move(callback));
-    return;
-  }
-
-  // Lookup live registration first.
-  base::Optional<scoped_refptr<ServiceWorkerRegistration>> registration =
-      FindFromLiveRegistrationsForId(registration_id);
-  if (registration) {
-    blink::ServiceWorkerStatusCode status =
-        registration.value() ? blink::ServiceWorkerStatusCode::kOk
-                             : blink::ServiceWorkerStatusCode::kErrorNotFound;
-    CompleteFindNow(std::move(registration.value()), status,
-                    std::move(callback));
-    return;
-  }
-
-  GetRemoteStorageControl()->FindRegistrationForId(
-      registration_id, /*origin=*/base::nullopt,
-      base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForId,
-                     weak_factory_.GetWeakPtr(), registration_id,
-                     std::move(callback)));
+  FindRegistrationForIdInternal(registration_id, /*origin=*/base::nullopt,
+                                std::move(callback));
 }
 
 void ServiceWorkerRegistry::GetRegistrationsForOrigin(
@@ -691,6 +644,37 @@ void ServiceWorkerRegistry::Start() {
         base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup,
                        weak_factory_.GetWeakPtr()));
   }
+}
+
+void ServiceWorkerRegistry::FindRegistrationForIdInternal(
+    int64_t registration_id,
+    const base::Optional<url::Origin>& origin,
+    FindRegistrationCallback callback) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  // Registration lookup is expected to abort when storage is disabled.
+  if (is_storage_disabled_) {
+    CompleteFindNow(nullptr, blink::ServiceWorkerStatusCode::kErrorAbort,
+                    std::move(callback));
+    return;
+  }
+
+  // Lookup live registration first.
+  base::Optional<scoped_refptr<ServiceWorkerRegistration>> registration =
+      FindFromLiveRegistrationsForId(registration_id);
+  if (registration) {
+    blink::ServiceWorkerStatusCode status =
+        registration.value() ? blink::ServiceWorkerStatusCode::kOk
+                             : blink::ServiceWorkerStatusCode::kErrorNotFound;
+    CompleteFindNow(std::move(registration.value()), status,
+                    std::move(callback));
+    return;
+  }
+
+  GetRemoteStorageControl()->FindRegistrationForId(
+      registration_id, origin,
+      base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForId,
+                     weak_factory_.GetWeakPtr(), registration_id,
+                     std::move(callback)));
 }
 
 ServiceWorkerRegistration*

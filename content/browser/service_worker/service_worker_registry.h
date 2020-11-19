@@ -251,6 +251,10 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   void Start();
 
+  void FindRegistrationForIdInternal(int64_t registration_id,
+                                     const base::Optional<url::Origin>& origin,
+                                     FindRegistrationCallback callback);
+
   ServiceWorkerRegistration* FindInstallingRegistrationForClientUrl(
       const GURL& client_url);
   ServiceWorkerRegistration* FindInstallingRegistrationForScope(
