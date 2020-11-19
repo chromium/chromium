@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.RectF;
 import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,16 +23,16 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Pane
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEventFilter;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.BrowserControlsState;
@@ -45,9 +46,9 @@ import java.util.List;
 /**
  * Controls the Overlay Panel.
  */
-public class OverlayPanel extends OverlayPanelAnimation implements ActivityStateListener,
-        EdgeSwipeHandler, GestureHandler, OverlayPanelContentFactory, SceneOverlay {
-
+public class OverlayPanel extends OverlayPanelAnimation
+        implements ActivityStateListener, SwipeHandler, GestureHandler, OverlayPanelContentFactory,
+                   SceneOverlay {
     /** The delay after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = 1000 / 60 * 4;
 
@@ -785,7 +786,7 @@ public class OverlayPanel extends OverlayPanelAnimation implements ActivityState
     }
 
     // ============================================================================================
-    // GestureHandler and EdgeSwipeHandler implementation.
+    // GestureHandler and SwipeHandler implementation.
     // ============================================================================================
 
     @Override
@@ -820,10 +821,10 @@ public class OverlayPanel extends OverlayPanelAnimation implements ActivityState
     @Override
     public void onPinch(float x0, float y0, float x1, float y1, boolean firstEvent) {}
 
-    // EdgeSwipeHandler implementation.
+    // SwipeHandler implementation.
 
     @Override
-    public void swipeStarted(@ScrollDirection int direction, float x, float y) {
+    public void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {
         if (onInterceptBarSwipe()) {
             mIgnoreSwipeEvents = true;
             return;
@@ -832,13 +833,13 @@ public class OverlayPanel extends OverlayPanelAnimation implements ActivityState
     }
 
     @Override
-    public void swipeUpdated(float x, float y, float dx, float dy, float tx, float ty) {
+    public void onSwipeUpdated(MotionEvent current, float tx, float ty, float dx, float dy) {
         if (mIgnoreSwipeEvents) return;
-        handleSwipeMove(ty);
+        handleSwipeMove(ty * mPxToDp);
     }
 
     @Override
-    public void swipeFinished() {
+    public void onSwipeFinished() {
         if (mIgnoreSwipeEvents) {
             mIgnoreSwipeEvents = false;
             return;
@@ -847,9 +848,10 @@ public class OverlayPanel extends OverlayPanelAnimation implements ActivityState
     }
 
     @Override
-    public void swipeFlingOccurred(float x, float y, float tx, float ty, float vx, float vy) {
+    public void onFling(@ScrollDirection int direction, MotionEvent current, float tx, float ty,
+            float vx, float vy) {
         if (mIgnoreSwipeEvents) return;
-        handleFling(vy);
+        handleFling(vy * mPxToDp);
     }
 
     @Override

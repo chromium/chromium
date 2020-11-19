@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.toolbar;
 
 import android.view.View;
 
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
@@ -38,7 +38,7 @@ public interface ControlContainer {
     /**
      * @param handler The swipe handler to be notified of swipe events on this container.
      */
-    void setSwipeHandler(EdgeSwipeHandler handler);
+    void setSwipeHandler(SwipeHandler handler);
 
     /**
      * @return The {@link View} associated with this container.

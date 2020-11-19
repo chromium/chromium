@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.is;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tab.TabCreationState.LIVE_IN_BACKGROUND;
+import static org.chromium.chrome.test.util.ViewUtils.createMotionEvent;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -52,8 +53,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab;
@@ -79,6 +78,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.MockTabModelDelegate;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -1047,7 +1048,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT);
 
         final Layout layout = mManager.getActiveLayout();
-        final EdgeSwipeHandler eventHandler = mManager.getToolbarSwipeHandler();
+        final SwipeHandler eventHandler = mManager.getToolbarSwipeHandler();
 
         Assert.assertNotNull("LayoutManager#getToolbarSwipeHandler() returned null", eventHandler);
         Assert.assertNotNull("LayoutManager#getActiveLayout() returned null", layout);
@@ -1056,11 +1057,12 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         final boolean scrollLeft = direction == ScrollDirection.LEFT;
         final float deltaX = MathUtils.flipSignIf(layoutWidth / 2.f, scrollLeft);
 
-        eventHandler.swipeStarted(direction, layoutWidth, 0);
+        eventHandler.onSwipeStarted(direction, createMotionEvent(layoutWidth * mDpToPx, 0));
         // Call swipeUpdated twice since the handler computes direction in that method.
         // TODO(mdjones): Update implementation of EdgeSwipeHandler to work this way by default.
-        eventHandler.swipeUpdated(deltaX, 0.f, deltaX, 0.f, deltaX, 0.f);
-        eventHandler.swipeUpdated(deltaX, 0.f, deltaX, 0.f, deltaX, 0.f);
+        MotionEvent ev = createMotionEvent(deltaX * mDpToPx, 0.f);
+        eventHandler.onSwipeUpdated(ev, deltaX * mDpToPx, 0.f, deltaX * mDpToPx, 0.f);
+        eventHandler.onSwipeUpdated(ev, deltaX * mDpToPx, 0.f, deltaX * mDpToPx, 0.f);
         Assert.assertTrue("LayoutManager#getActiveLayout() should be ToolbarSwipeLayout",
                 mManager.getActiveLayout() instanceof ToolbarSwipeLayout);
         Assert.assertTrue("LayoutManager took too long to finish the animations",
@@ -1068,10 +1070,10 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     private void finishToolbarSideSwipe() {
-        final EdgeSwipeHandler eventHandler = mManager.getToolbarSwipeHandler();
+        final SwipeHandler eventHandler = mManager.getToolbarSwipeHandler();
         Assert.assertNotNull("LayoutManager#getToolbarSwipeHandler() returned null", eventHandler);
 
-        eventHandler.swipeFinished();
+        eventHandler.onSwipeFinished();
         Assert.assertTrue("LayoutManager took too long to finish the animations",
                 simulateTime(mManager, 1000));
     }

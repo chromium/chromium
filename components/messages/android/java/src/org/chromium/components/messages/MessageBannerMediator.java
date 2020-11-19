@@ -113,7 +113,7 @@ class MessageBannerMediator implements SwipeHandler {
     // TODO(sinansahin): See if we need special handling for #onFling.
 
     @Override
-    public void onSwipeFinished(MotionEvent end) {
+    public void onSwipeFinished() {
         cancelAnyAnimations();
 
         // No need to animate if the message banner is in resting position.

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.layouts;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -22,9 +23,6 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.TitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EmptyEdgeSwipeHandler;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -43,6 +41,8 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -63,7 +63,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     protected Layout mOverviewLayout;
 
     // Event Filter Handlers
-    private final EdgeSwipeHandler mToolbarSwipeHandler;
+    private final SwipeHandler mToolbarSwipeHandler;
 
     // Internal State
     /** A {@link TitleCache} instance that stores all title/favicon bitmaps as CC resources. */
@@ -150,15 +150,15 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     /**
-     * @return The {@link EdgeSwipeHandler} responsible for processing swipe events for the toolbar.
+     * @return The {@link SwipeHandler} responsible for processing swipe events for the toolbar.
      */
     @Override
-    public EdgeSwipeHandler getToolbarSwipeHandler() {
+    public SwipeHandler getToolbarSwipeHandler() {
         return mToolbarSwipeHandler;
     }
 
     @Override
-    public EdgeSwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
+    public SwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
         return new ToolbarSwipeHandler(supportSwipeDown);
     }
 
@@ -475,9 +475,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     /**
-     * A {@link EdgeSwipeHandler} meant to respond to edge events for the toolbar.
+     * A {@link SwipeHandler} meant to respond to edge events for the toolbar.
      */
-    protected class ToolbarSwipeHandler extends EmptyEdgeSwipeHandler {
+    protected class ToolbarSwipeHandler implements SwipeHandler {
         /** The scroll direction of the current gesture. */
         private @ScrollDirection int mScrollDirection;
 
@@ -494,13 +494,20 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
 
         @Override
-        public void swipeStarted(@ScrollDirection int direction, float x, float y) {
+        public void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {
             mScrollDirection = ScrollDirection.UNKNOWN;
         }
 
         @Override
-        public void swipeUpdated(float x, float y, float dx, float dy, float tx, float ty) {
+        public void onSwipeUpdated(MotionEvent current, float tx, float ty, float dx, float dy) {
             if (mToolbarSwipeLayout == null) return;
+
+            float x = current.getRawX() * mPxToDp;
+            float y = current.getRawY() * mPxToDp;
+            dx *= mPxToDp;
+            dy *= mPxToDp;
+            tx *= mPxToDp;
+            ty *= mPxToDp;
 
             // If scroll direction has been computed, send the event to super.
             if (mScrollDirection != ScrollDirection.UNKNOWN) {
@@ -524,14 +531,21 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
 
         @Override
-        public void swipeFinished() {
+        public void onSwipeFinished() {
             if (mToolbarSwipeLayout == null || !mToolbarSwipeLayout.isActive()) return;
             mToolbarSwipeLayout.swipeFinished(time());
         }
 
         @Override
-        public void swipeFlingOccurred(float x, float y, float tx, float ty, float vx, float vy) {
+        public void onFling(@ScrollDirection int direction, MotionEvent current, float tx, float ty,
+                float vx, float vy) {
             if (mToolbarSwipeLayout == null || !mToolbarSwipeLayout.isActive()) return;
+            float x = current.getRawX() * mPxToDp;
+            float y = current.getRawX() * mPxToDp;
+            tx *= mPxToDp;
+            ty *= mPxToDp;
+            vx *= mPxToDp;
+            vy *= mPxToDp;
             mToolbarSwipeLayout.swipeFlingOccurred(time(), x, y, tx, ty, vx, vy);
         }
 

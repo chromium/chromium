@@ -75,7 +75,7 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
         /**
          * @param end The last motion event canceling the swipe.
          */
-        default void onSwipeFinished(MotionEvent end) {}
+        default void onSwipeFinished() {}
 
         /**
          * @param direction The {@link ScrollDirection} representing the swipe direction.
@@ -155,7 +155,7 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
             final int action = event.getAction();
             if ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL)
                     && mDirection != ScrollDirection.UNKNOWN) {
-                mHandler.onSwipeFinished(event);
+                mHandler.onSwipeFinished();
                 mDirection = ScrollDirection.UNKNOWN;
                 consumed = true;
             }
@@ -180,11 +180,6 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
     // ============================================================================================
     // Swipe Recognition Helpers
     // ============================================================================================
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return true;
-    }
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -216,7 +211,7 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
 
         if (mDirection != ScrollDirection.UNKNOWN) {
             mHandler.onSwipeUpdated(e2, e2.getRawX() - mMotionStartPoint.x,
-                    e2.getRawY() - mMotionStartPoint.y, distanceX, distanceY);
+                    e2.getRawY() - mMotionStartPoint.y, -distanceX, -distanceY);
             return true;
         }
 

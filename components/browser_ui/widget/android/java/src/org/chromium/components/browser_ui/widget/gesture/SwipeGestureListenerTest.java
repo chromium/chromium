@@ -88,10 +88,6 @@ public class SwipeGestureListenerTest {
             }
         }
         Assert.assertTrue("Can not found the expected first move event", found);
-
-        Mockito.verify(mHandler).onSwipeFinished(argumentCaptor.capture());
-        Assert.assertEquals(argumentCaptor.getValue().getRawX(),
-                eventStream.get(eventStream.size() - 1).getRawX(), 0.1);
     }
 
     private List<MotionEvent> buildEventStream(

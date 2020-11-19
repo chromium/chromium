@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.not;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -187,5 +188,9 @@ public class ViewUtils {
             Criteria.checkThat(
                     "The view has layout requested.", view.isLayoutRequested(), is(false));
         });
+    }
+
+    public static MotionEvent createMotionEvent(float x, float y) {
+        return MotionEvent.obtain(0, 0, 0, x, y, 0);
     }
 }

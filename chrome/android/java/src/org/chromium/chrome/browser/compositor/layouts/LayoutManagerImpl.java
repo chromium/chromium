@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.compositor.scene_layer.ScrollingBottomViewSceneLayer;
@@ -66,6 +65,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.SPenSupport;
@@ -1024,19 +1024,19 @@ public class LayoutManagerImpl implements LayoutManager, LayoutUpdateHost, Layou
     }
 
     /**
-     * @return The {@link EdgeSwipeHandler} responsible for processing swipe events for the normal
+     * @return The {@link SwipeHandler} responsible for processing swipe events for the normal
      *         toolbar. By default this returns null.
      */
-    public EdgeSwipeHandler getToolbarSwipeHandler() {
+    public SwipeHandler getToolbarSwipeHandler() {
         return null;
     }
 
     /**
-     * Creates a {@link EdgeSwipeHandler} instance.
+     * Creates a {@link SwipeHandler} instance.
      * @param supportSwipeDown Whether or not to the handler should support swipe down gesture.
-     * @return The {@link EdgeSwipeHandler} cerated.
+     * @return The {@link SwipeHandler} cerated.
      */
-    public EdgeSwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
+    public SwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
         return null;
     }
 

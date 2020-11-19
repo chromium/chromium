@@ -11,7 +11,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayoutBase;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.OverviewAnimationType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -676,41 +675,5 @@ public class OverlappingStack extends Stack {
         }
 
         mWarpSize = warp;
-    }
-
-    @Override
-    public void swipeStarted(long time, @ScrollDirection int direction, float x, float y) {
-        if (direction != ScrollDirection.DOWN) return;
-
-        // Turn off warping the tabs because we need them to track the user's finger;
-        setWarpState(false, false);
-
-        super.swipeStarted(time, direction, x, y);
-
-        // Don't let the tabs even out during this scroll.
-        mEvenOutProgress = 1.f;
-    }
-
-    @Override
-    public void swipeFinished(long time) {
-        if (!mInSwipe) return;
-
-        // Mark the tabs to even themselves out.
-        mEvenOutProgress = 0.f;
-
-        // Reset the warp state.
-        setWarpState(true, true);
-
-        super.swipeFinished(time);
-    }
-
-    @Override
-    public void swipeCancelled(long time) {
-        if (!mInSwipe) return;
-
-        mEvenOutProgress = 0.f;
-        setWarpState(true, true);
-
-        super.swipeCancelled(time);
     }
 }
