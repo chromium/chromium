@@ -54,15 +54,6 @@ void BrowsingInstance::SetDefaultProcess(RenderProcessHost* default_process) {
   default_process_->AddObserver(this);
 }
 
-bool BrowsingInstance::IsDefaultSiteInstance(
-    const SiteInstanceImpl* site_instance) const {
-  return site_instance != nullptr && site_instance == default_site_instance_;
-}
-
-bool BrowsingInstance::IsSiteInDefaultSiteInstance(const GURL& site_url) const {
-  return site_url_set_.find(site_url) != site_url_set_.end();
-}
-
 bool BrowsingInstance::HasSiteInstance(const SiteInfo& site_info) {
   return site_instance_map_.find(site_info) != site_instance_map_.end();
 }
@@ -97,25 +88,6 @@ SiteInfo BrowsingInstance::GetSiteInfoForURL(const UrlInfo& url_info,
   return ComputeSiteInfoForURL(url_info);
 }
 
-bool BrowsingInstance::TrySettingDefaultSiteInstance(
-    SiteInstanceImpl* site_instance,
-    const UrlInfo& url_info) {
-  DCHECK(!site_instance->HasSite());
-  const SiteInfo site_info = ComputeSiteInfoForURL(url_info);
-  if (default_site_instance_ ||
-      !SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
-          isolation_context_, url_info.url, site_info)) {
-    return false;
-  }
-
-  // Note: |default_site_instance_| must be set before SetSite() call to
-  // properly trigger default SiteInstance behavior inside that method.
-  default_site_instance_ = site_instance;
-  site_instance->SetSiteInfoToDefault();
-  site_url_set_.insert(site_info.site_url());
-  return true;
-}
-
 scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
     const UrlInfo& url_info,
     bool allow_default_instance) {
@@ -134,21 +106,15 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
     if (!site_instance) {
       site_instance = new SiteInstanceImpl(this);
 
-      // Keep a copy of the pointer so it can be used for other URLs. This is
-      // safe because the SiteInstanceImpl destructor will call
-      // UnregisterSiteInstance() to clear this copy when the last
-      // reference to |site_instance| is destroyed.
-      // Note: This assignment MUST happen before the SetSite() call to ensure
-      // this instance is not added to |site_instance_map_| when SetSite()
-      // calls RegisterSiteInstance().
-      default_site_instance_ = site_instance.get();
-
+      // Note: |default_site_instance_| will get set inside this call
+      // via RegisterSiteInstance().
       site_instance->SetSiteInfoToDefault();
+      DCHECK_EQ(default_site_instance_, site_instance.get());
     }
 
-    // Add |site_url| to the set so we can keep track of all the sites the
+    // Add |site_info| to the set so we can keep track of all the sites the
     // the default SiteInstance has been returned for.
-    site_url_set_.insert(site_info.site_url());
+    site_instance->AddSiteInfoToDefault(site_info);
     return site_instance;
   }
 
@@ -159,10 +125,13 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
   DCHECK(site_instance->browsing_instance_.get() == this);
   DCHECK(site_instance->HasSite());
 
-  // Explicitly prevent the |default_site_instance_| from being added since
+  // Explicitly prevent the default SiteInstance from being added since
   // the map is only supposed to contain instances that map to a single site.
-  if (site_instance == default_site_instance_)
+  if (site_instance->IsDefaultSiteInstance()) {
+    CHECK(!default_site_instance_);
+    default_site_instance_ = site_instance;
     return;
+  }
 
   const SiteInfo& site_info = site_instance->GetSiteInfo();
 

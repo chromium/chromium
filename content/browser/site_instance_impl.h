@@ -685,6 +685,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   bool IsOriginalUrlSameSite(const UrlInfo& dest_url_info,
                              bool should_compare_effective_urls);
 
+  // Add |site_info| to the set that tracks what sites have been allowed
+  // to be handled by this default SiteInstance.
+  void AddSiteInfoToDefault(const SiteInfo& site_info);
+
   // Return whether both UrlInfos must share a process to preserve script
   // relationships.  The decision is based on a variety of factors such as
   // the registered domain of the URLs (google.com, bbc.co.uk), the scheme
@@ -782,6 +786,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   SiteInstanceProcessAssignment process_assignment_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
+
+  // Contains the state that is only required for default SiteInstances.
+  class DefaultSiteInstanceState;
+  std::unique_ptr<DefaultSiteInstanceState> default_site_instance_state_;
 
   DISALLOW_COPY_AND_ASSIGN(SiteInstanceImpl);
 };
