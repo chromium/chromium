@@ -225,6 +225,15 @@ enum class InstallIphResult {
   kMaxValue = kIgnored
 };
 
+// Number of times IPH can be ignored for this app before it's muted.
+constexpr int kIphMuteAfterConsecutiveAppSpecificIgnores = 3;
+// Number of times IPH can be ignored for any app before it's muted.
+constexpr int kIphMuteAfterConsecutiveAppAgnosticIgnores = 4;
+// Number of days to mute IPH after it's ignored for this app.
+constexpr int kIphAppSpecificMuteTimeSpanDays = 90;
+// Number of days to mute IPH after it's ignored for any app.
+constexpr int kIphAppAgnosticMuteTimeSpanDays = 14;
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_CONSTANTS_H_

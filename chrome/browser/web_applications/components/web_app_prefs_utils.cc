@@ -6,15 +6,18 @@
 
 #include <memory>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
+#include "services/preferences/public/cpp/scoped_pref_update.h"
 
 namespace web_app {
 
@@ -50,6 +53,11 @@ std::unique_ptr<prefs::DictionaryValueUpdate> UpdateWebAppDictionary(
   return web_app_prefs_update;
 }
 
+// Returns whether the time occurred within X days.
+bool TimeOccurredWithinDays(base::Optional<base::Time> time, int days) {
+  return time && (base::Time::Now() - time.value()).InDays() < days;
+}
+
 }  // namespace
 
 // The stored preferences look like:
@@ -61,14 +69,24 @@ std::unique_ptr<prefs::DictionaryValueUpdate> UpdateWebAppDictionary(
 //       A double representing the number of seconds since epoch, in local time.
 //       Convert from/to using base::Time::FromDoubleT() and
 //       base::Time::ToDoubleT().
-//       "file_handling_origin_trial_expiry_time": 1580475600000
+//       "file_handling_origin_trial_expiry_time": 1580475600000,
+//       "IPH_num_of_consecutive_ignore": 2,
+//       A string-flavored base::value representing the int64_t number of
+//       microseconds since the Windows epoch, using util::TimeToValue().
+//       "IPH_last_ignore_time": "13249617864945580",
 //     },
 //     "<app_id_N>": {
 //       "was_external_app_uninstalled_by_user": false,
 //       "file_handlers_enabled": false,
 //       "file_handling_origin_trial_expiry_time": 0
 //     }
-//   }
+//   },
+//   "app_agnostic_iph_state": {
+//     "IPH_num_of_consecutive_ignore": 3,
+//     A string-flavored base::Value representing int64_t number of microseconds
+//     since the Windows epoch, using util::TimeToValue().
+//     "IPH_last_ignore_time": "13249617864945500",
+//   },
 // }
 //
 const char kWasExternalAppUninstalledByUser[] =
@@ -90,6 +108,7 @@ const char kIphLastIgnoreTime[] = "IPH_last_ignore_time";
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(::prefs::kWebAppsPreferences);
+  registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticIphState);
 }
 
 bool GetBoolWebAppPref(const PrefService* pref_service,
@@ -196,11 +215,20 @@ void RemoveWebAppPref(PrefService* pref_service,
 void RecordInstallIphIgnored(PrefService* pref_service, const AppId& app_id) {
   base::Optional<int> ignored_count =
       GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount);
-  int new_count = 1 + ignored_count.value_or(0);
+  int new_count = base::saturated_cast<int>(1 + ignored_count.value_or(0));
 
   UpdateIntWebAppPref(pref_service, app_id, kIphIgnoreCount, new_count);
   UpdateTimeWebAppPref(pref_service, app_id, kIphLastIgnoreTime,
                        base::Time::Now());
+
+  prefs::ScopedDictionaryPrefUpdate update(pref_service,
+                                           prefs::kWebAppsAppAgnosticIphState);
+  int global_count = 0;
+  update->GetInteger(kIphIgnoreCount, &global_count);
+  update->SetInteger(kIphIgnoreCount,
+                     base::saturated_cast<int>(global_count + 1));
+  update->Set(kIphLastIgnoreTime, std::make_unique<base::Value>(
+                                      util::TimeToValue(base::Time::Now())));
 }
 
 void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id) {
@@ -208,6 +236,40 @@ void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id) {
   // ignoring IPH, to help determine when IPH should be muted. Therefore
   // resetting ignored count on successful install.
   UpdateIntWebAppPref(pref_service, app_id, kIphIgnoreCount, 0);
+
+  prefs::ScopedDictionaryPrefUpdate update(pref_service,
+                                           prefs::kWebAppsAppAgnosticIphState);
+  update->SetInteger(kIphIgnoreCount, 0);
+}
+
+bool ShouldShowIph(PrefService* pref_service, const AppId& app_id) {
+  // Do not show IPH if the user ignored the last N+ promos for this app.
+  int app_ignored_count =
+      GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount).value_or(0);
+  if (app_ignored_count >= kIphMuteAfterConsecutiveAppSpecificIgnores)
+    return false;
+  // Do not show IPH if the user ignored a promo for this app within N days.
+  auto app_last_ignore =
+      GetTimeWebAppPref(pref_service, app_id, kIphLastIgnoreTime);
+  if (TimeOccurredWithinDays(app_last_ignore,
+                             kIphAppSpecificMuteTimeSpanDays)) {
+    return false;
+  }
+
+  auto* dict = pref_service->GetDictionary(prefs::kWebAppsAppAgnosticIphState);
+
+  // Do not show IPH if the user ignored the last N+ promos for any app.
+  int global_ignored_count = dict->FindIntKey(kIphIgnoreCount).value_or(0);
+  if (global_ignored_count >= kIphMuteAfterConsecutiveAppAgnosticIgnores)
+    return false;
+  // Do not show IPH if the user ignored a promo for any app within N days.
+  auto global_last_ignore =
+      util::ValueToTime(dict->FindKey(kIphLastIgnoreTime));
+  if (TimeOccurredWithinDays(global_last_ignore,
+                             kIphAppAgnosticMuteTimeSpanDays)) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace web_app

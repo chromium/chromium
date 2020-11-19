@@ -1919,6 +1919,9 @@ const char kWebAppsDailyMetricsDate[] = "web_apps.daily_metrics_date";
 // Dictionary that maps web app URLs to Chrome extension IDs.
 const char kWebAppsExtensionIDs[] = "web_apps.extension_ids";
 
+// Dictionary that stores IPH state not scoped to a particular app.
+const char kWebAppsAppAgnosticIphState[] = "web_apps.app_agnostic_iph_state";
+
 // A string representing the last version of Chrome preinstalled web apps were
 // synchronised for.
 const char kWebAppsLastPreinstallSynchronizeVersion[] =
