@@ -493,11 +493,13 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         setBackgroundColor(mCategoryView.isZoomSwitchingInEffect() && !special ? Color.TRANSPARENT
                                                                                : mBackgroundColor);
 
-        // The visibility of the unselected toggle for multi-selection mode is a little more complex
-        // because we don't want to show it when nothing is selected and also not on a blank canvas.
         boolean isSelected = mSelectionDelegate.isItemSelected(mBitmapDetails);
         mSelectedView.setVisibility(!special && isSelected ? View.VISIBLE : View.GONE);
-        boolean showUnselectedToggle = !special && !isSelected && anySelection && mImageLoaded
+        // The visibility of the unselected toggle for multi-selection mode is a little more complex
+        // because we don't want to show it when nothing is selected (unless in magnifying mode) and
+        // also not on a blank canvas.
+        boolean showUnselectedToggle = !special && !isSelected && mImageLoaded
+                && (anySelection || mCategoryView.isInMagnifyingMode())
                 && mCategoryView.isMultiSelectAllowed();
         mUnselectedView.setVisibility(showUnselectedToggle ? View.VISIBLE : View.GONE);
         mScrim.setVisibility(showUnselectedToggle ? View.VISIBLE : View.GONE);
