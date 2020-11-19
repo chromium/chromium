@@ -895,55 +895,62 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
 std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
     FrameTreeNode* frame_tree_node,
     RenderFrameHostImpl* render_frame_host,
-    const mojom::DidCommitProvisionalLoadParams& params,
-    std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     bool is_same_document,
+    const GURL& url,
+    const url::Origin& origin,
+    blink::mojom::ReferrerPtr referrer,
+    const ui::PageTransition& transition,
+    bool should_replace_current_entry,
+    const NavigationGesture& gesture,
+    const std::vector<GURL>& redirects,
+    const blink::PageState& page_state,
+    std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info) {
   // TODO(clamy): Improve the *NavigationParams and *CommitParams to avoid
   // copying so many parameters here.
   mojom::CommonNavigationParamsPtr common_params =
       mojom::CommonNavigationParams::New(
-          params.url,
+          url,
           // TODO(nasko): Investigate better value to pass for
           // |initiator_origin|.
-          params.origin,
-          blink::mojom::Referrer::New(params.referrer->url,
-                                      params.referrer->policy),
-          params.transition,
+          origin, std::move(referrer), transition,
           is_same_document ? mojom::NavigationType::SAME_DOCUMENT
                            : mojom::NavigationType::DIFFERENT_DOCUMENT,
-          NavigationDownloadPolicy(), params.should_replace_current_entry,
-          params.base_url, params.base_url,
+          NavigationDownloadPolicy(), should_replace_current_entry,
+          GURL() /* base_url_for_data_url*/,
+          GURL() /* history_url_for_data_url */,
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(),
-          params.method, nullptr, network::mojom::SourceLocation::New(),
+          "GET" /* method */, nullptr /* post_data */,
+          network::mojom::SourceLocation::New(),
           false /* started_from_context_menu */,
-          params.gesture == NavigationGestureUser,
-          false /* has_text_fragment_token */, CreateInitiatorCSPInfo(),
+          gesture == NavigationGestureUser, false /* has_text_fragment_token */,
+          CreateInitiatorCSPInfo(),
           std::vector<int>() /* initiator_origin_trial_features */,
           std::string() /* href_translate */,
           false /* is_history_navigation_in_new_child_frame */,
           base::TimeTicks::Now() /* input_start */);
   mojom::CommitNavigationParamsPtr commit_params =
       mojom::CommitNavigationParams::New(
-          params.origin, params.is_overriding_user_agent, params.redirects,
+          origin, false /* is_overriding_user_agent */, redirects,
           std::vector<network::mojom::URLResponseHeadPtr>(),
-          std::vector<net::RedirectInfo>(), std::string(),
-          params.original_request_url, params.method,
-          false /* can_load_local_resources */, params.page_state,
-          params.nav_entry_id,
+          std::vector<net::RedirectInfo>(),
+          std::string() /* redirect_response */, url /* original_url */,
+          "GET" /* original_method */, false /* can_load_local_resources */,
+          page_state, 0 /* nav_entry_id*/,
           base::flat_map<std::string, bool>() /* subframe_unique_names */,
-          params.intended_as_new_entry, -1 /* pending_history_list_offset */,
+          false /* intended_as_new_entry */,
+          -1 /* pending_history_list_offset */,
           -1 /* current_history_list_offset */,
           -1 /* current_history_list_length */, false /* was_discard */,
-          false /* is_view_source */, params.history_list_was_cleared,
-          mojom::NavigationTiming::New(), base::nullopt /* appcache_host_id; */,
+          false /* is_view_source */, false /* should_clear_history_list */,
+          mojom::NavigationTiming::New(), base::nullopt /* appcache_host_id */,
           mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create() /* navigation_token */,
           std::vector<mojom::PrefetchedSignedExchangeInfoPtr>(),
 #if defined(OS_ANDROID)
-          std::string(), /* data_url_as_string */
+          std::string() /* data_url_as_string */,
 #endif
-          false,  // is_browser_initiated
+          false /* is_browser_initiated */,
           network::mojom::IPAddressSpace::kUnknown,
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,

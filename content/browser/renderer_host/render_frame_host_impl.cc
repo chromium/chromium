@@ -8186,14 +8186,21 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
 
 std::unique_ptr<NavigationRequest>
 RenderFrameHostImpl::CreateNavigationRequestForCommit(
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const GURL& url,
+    const url::Origin& origin,
+    blink::mojom::ReferrerPtr referrer,
+    const ui::PageTransition& transition,
+    bool should_replace_current_entry,
+    const NavigationGesture& gesture,
+    const std::vector<GURL>& redirects,
+    const blink::PageState& page_state,
     bool is_same_document) {
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter;
   // We don't switch the COEP reporter on same-document navigations, so create
   // one only for cross-document navigations.
   if (!is_same_document) {
     coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-        GetProcess()->GetStoragePartition(), params.url,
+        GetProcess()->GetStoragePartition(), url,
         cross_origin_embedder_policy_.reporting_endpoint,
         cross_origin_embedder_policy_.report_only_reporting_endpoint);
   }
@@ -8206,8 +8213,10 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     web_bundle_navigation_info = web_bundle_handle_->navigation_info()->Clone();
   }
   return NavigationRequest::CreateForCommit(
-      frame_tree_node_, this, params, std::move(coep_reporter),
-      is_same_document, std::move(web_bundle_navigation_info));
+      frame_tree_node_, this, is_same_document, url, origin,
+      std::move(referrer), transition, should_replace_current_entry, gesture,
+      redirects, page_state, std::move(coep_reporter),
+      std::move(web_bundle_navigation_info));
 }
 
 void RenderFrameHostImpl::BeforeUnloadTimeout() {
@@ -8575,27 +8584,26 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     base::debug::DumpWithoutCrashing();
   }
 
-  if (!navigation_request) {
-    // A matching NavigationRequest should have been found, unless in a few very
-    // specific cases. Check if this is one of those cases.
-    bool is_commit_allowed_to_proceed = false;
+  bool is_initial_empty_commit = params->url.SchemeIs(url::kAboutScheme) &&
+                                 params->url != GURL(url::kAboutSrcdocURL) &&
+                                 !frame_tree_node_->has_committed_real_load();
 
-    // 1) This was a renderer-initiated navigation to an empty document. Most
-    // of the time: about:blank.
-    is_commit_allowed_to_proceed |= params->url.SchemeIs(url::kAboutScheme) &&
-                                    params->url != GURL(url::kAboutSrcdocURL);
-
-    // 2) This was a same-document navigation.
-    // TODO(clamy): We should enforce having a request on browser-initiated
-    // same-document navigations.
-    is_commit_allowed_to_proceed |= is_same_document_navigation;
-
-    if (!is_commit_allowed_to_proceed) {
-      bad_message::ReceivedBadMessage(
-          GetProcess(),
-          bad_message::RFH_NO_MATCHING_NAVIGATION_REQUEST_ON_COMMIT);
-      return false;
-    }
+  // A matching NavigationRequest should have been found, unless in a few very
+  // specific cases:
+  // 1) This was a renderer-initiated navigation to the initial empty
+  // document.
+  // 2) This was a renderer-initiated same-document navigation.
+  // In these cases, we will create a NavigationRequest by calling
+  // CreateNavigationRequestForCommit() further down.
+  // TODO(https://crbug.com/1131832): Make these navigation go through a
+  // separate path that does not send
+  // FrameHostMsg_DidCommitProvisionalLoad_Params at all.
+  if (!navigation_request && !is_initial_empty_commit &&
+      !is_same_document_navigation) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(),
+        bad_message::RFH_NO_MATCHING_NAVIGATION_REQUEST_ON_COMMIT);
+    return false;
   }
 
   if (!ValidateDidCommitParams(navigation_request.get(), params.get(),
@@ -8608,11 +8616,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (navigation_request &&
       navigation_request->common_params().url != params->url &&
       is_same_document_navigation) {
-    // It's possible for the committed URL to differ from the one saved in
-    // NavigationRequest when the navigation is blocked or we passed an empty
-    // URL before (see crbug.com/963396). In this case, we should recreate the
-    // NavigationRequest with CreateNavigationRequestForCommit() further down.
-    navigation_request.reset();
+    same_document_navigation_request_ = std::move(navigation_request);
   }
 
   // Set is loading to true now if it has not been set yet. This happens for
@@ -8629,12 +8633,18 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (navigation_request)
     was_discarded_ = navigation_request->commit_params().was_discarded;
 
-  // If there is no valid NavigationRequest corresponding to this commit, create
-  // one in order to properly issue DidFinishNavigation calls to
-  // WebContentsObservers.
   if (!navigation_request) {
-    navigation_request =
-        CreateNavigationRequestForCommit(*params, is_same_document_navigation);
+    // If there is no valid NavigationRequest corresponding to this commit,
+    // create one in order to properly issue DidFinishNavigation calls to
+    // WebContentsObservers.
+    DCHECK(is_initial_empty_commit || is_same_document_navigation);
+    // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
+    // depend on values known at commit time instead.
+    navigation_request = CreateNavigationRequestForCommit(
+        params->url, params->origin, params->referrer.Clone(),
+        params->transition, params->should_replace_current_entry,
+        params->gesture, params->redirects, params->page_state,
+        is_same_document_navigation);
   }
 
   DCHECK(navigation_request);
@@ -8722,6 +8732,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     RecordDocumentCreatedUkmEvent(params->origin, document_ukm_source_id,
                                   ukm_recorder);
   }
+
+  // TODO(https://crbug.com/1131832): Do not pass |params| to DidNavigate().
   frame_tree_node()->navigator().DidNavigate(this, *params,
                                              std::move(navigation_request),
                                              is_same_document_navigation);

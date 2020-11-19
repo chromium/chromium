@@ -2281,7 +2281,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Creates a NavigationRequest to use for commit. This should only be used
   // when no appropriate NavigationRequest has been found.
   std::unique_ptr<NavigationRequest> CreateNavigationRequestForCommit(
-      const mojom::DidCommitProvisionalLoadParams& params,
+      const GURL& url,
+      const url::Origin& origin,
+      blink::mojom::ReferrerPtr referrer,
+      const ui::PageTransition& transition,
+      bool should_replace_current_entry,
+      const NavigationGesture& gesture,
+      const std::vector<GURL>& redirects,
+      const blink::PageState& page_state,
       bool is_same_document);
 
   // Helper to process the beforeunload completion callback. |proceed| indicates

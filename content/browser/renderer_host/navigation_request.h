@@ -206,9 +206,16 @@ class CONTENT_EXPORT NavigationRequest
   static std::unique_ptr<NavigationRequest> CreateForCommit(
       FrameTreeNode* frame_tree_node,
       RenderFrameHostImpl* render_frame_host,
-      const mojom::DidCommitProvisionalLoadParams& params,
-      std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       bool is_same_document,
+      const GURL& url,
+      const url::Origin& origin,
+      blink::mojom::ReferrerPtr referrer,
+      const ui::PageTransition& transition,
+      bool should_replace_current_entry,
+      const NavigationGesture& gesture,
+      const std::vector<GURL>& redirects,
+      const blink::PageState& page_state,
+      std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info);
 
   static NavigationRequest* From(NavigationHandle* handle);
