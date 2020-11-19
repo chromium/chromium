@@ -114,23 +114,13 @@ void MoveCache(const base::FilePath& disk_cache_dir) {
   const base::FilePath target =
       GetTempDirNameForDelete(parent, disk_cache_dir.BaseName());
 
-  // The cache dir should have no files in use, so a simple move should suffice.
-  const bool move_result = MoveWithoutFallback(disk_cache_dir, target);
-  base::UmaHistogramBoolean("Downgrade.CacheDirMove.Result", move_result);
-  if (move_result)
+  // A simple move succeeds in approx 2/3 of attempts.
+  if (MoveWithoutFallback(disk_cache_dir, target))
     return;
 
   // The directory couldn't be moved whole-hog. Attempt a recursive move of its
-  // contents.
-  auto failure_count =
-      MoveContents(disk_cache_dir, target, ExclusionPredicate());
-  if (!failure_count || *failure_count) {
-    // Report precise values rather than an exponentially bucketed histogram.
-    // Bucket 0 means that the target directory could not be created. All other
-    // buckets are a count of files/directories left behind.
-    base::UmaHistogramExactLinear("Downgrade.CacheDirMove.FailureCount",
-                                  failure_count.value_or(0), 50);
-  }
+  // contents. This succeeds in nearly all cases.
+  MoveContents(disk_cache_dir, target, ExclusionPredicate());
 }
 
 // Deletes all subdirectories in |dir| named |name|*.CHROME_DELETE.

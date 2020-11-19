@@ -4223,6 +4223,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Downgrade.CacheDirMove.FailureCount" units="count"
     expires_after="2020-12-31">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <summary>
     The number of items within the Cache directory that could not be moved aside
@@ -4233,6 +4236,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Downgrade.CacheDirMove.Result" enum="BooleanSuccess"
     expires_after="2020-12-31">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <summary>
     Indicates whether or not moving a user's cache dir following a downgrade
