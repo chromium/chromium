@@ -59,6 +59,7 @@
    * @param {!MessagePort=} opt_messagePort
    * @private
    * @return {!MessagePort}
+   * @suppress {checkTypes}: crbug.com/1150718
    */
   createSharedWorker_(opt_messagePort) {
     if (opt_messagePort) {
@@ -70,7 +71,11 @@
       script = 'foreground/js/metadata/metadata_dispatcher.js';
     }
 
-    return new SharedWorker(script).port;
+    /** @type {!WorkerOptions} */
+    const options =
+        ContentMetadataProvider.loadAsModule ? {type: 'module'} : {};
+
+    return new SharedWorker(script, options).port;
   }
 
   /**
@@ -487,3 +492,9 @@ ContentMetadataProvider.PROPERTY_NAMES = [
 ContentMetadataProvider.WORKER_SCRIPT =
     'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
     'foreground/js/metadata/metadata_dispatcher.js';
+
+/**
+ * Sets if the SharedWorker should start as a JS Module.
+ * @public {boolean}
+ */
+ContentMetadataProvider.loadAsModule = false;

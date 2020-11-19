@@ -149,6 +149,8 @@
       ContentMetadataProvider.WORKER_SCRIPT =
           util.isAudioPlayerJsModulesEnabled() ? '/js/metadata_worker.m.js' :
                                                  '/js/metadata_worker.js';
+      ContentMetadataProvider.loadAsModule =
+          util.isAudioPlayerJsModulesEnabled();
 
       this.metadataModel_ = MetadataModel.create(this.volumeManager_);
       this.resolveMetadataModel_();
