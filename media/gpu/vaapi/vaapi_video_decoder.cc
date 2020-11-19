@@ -152,10 +152,21 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  if (cdm_context || config.is_encrypted()) {
-    VLOGF(1) << "Vaapi decoder does not support encrypted stream";
+  if (config.is_encrypted()) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
     return;
+#else
+    if (!cdm_context || !cdm_context->GetChromeOsCdmContext()) {
+      LOG(ERROR) << "Cannot support encrypted stream w/out ChromeOsCdmContext";
+      std::move(init_cb).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+      return;
+    }
+    cdm_context_ = cdm_context;
+    cdm_event_cb_registration_ = cdm_context_->RegisterEventCB(
+        base::BindRepeating(&VaapiVideoDecoder::OnCdmContextEvent,
+                            weak_this_factory_.GetWeakPtr()));
+#endif
   }
 
   // We expect the decoder to have released all output buffers (by the client
@@ -185,7 +196,12 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Initialize VAAPI wrapper.
   const VideoCodecProfile profile = config.profile();
   vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
-      VaapiWrapper::kDecode, profile,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      !cdm_context_ ? VaapiWrapper::kDecode : VaapiWrapper::kDecodeProtected,
+#else
+      VaapiWrapper::kDecode,
+#endif
+      profile,
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiVideoDecoder.VAAPIError"));
   UMA_HISTOGRAM_BOOLEAN("Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess",
@@ -216,6 +232,17 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Notify client initialization was successful.
   std::move(init_cb).Run(OkStatus());
+}
+
+void VaapiVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (event != CdmContext::Event::kHasAdditionalUsableKey)
+    return;
+
+  // Invoke the callback we'd get for a protected session update because this is
+  // the same thing, it's a trigger that there are new keys, so if we were
+  // waiting for a key we should fetch them again.
+  ProtectedSessionUpdate(true);
 }
 
 void VaapiVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -321,8 +348,8 @@ void VaapiVideoDecoder::HandleDecodeTask() {
       SetState(State::kError);
       break;
     case AcceleratedVideoDecoder::kTryAgain:
-      LOG(ERROR) << "Encrypted streams not supported";
-      SetState(State::kError);
+      DVLOG(1) << "Decoder going into the waiting for protected state";
+      SetState(State::kWaitingForProtected);
       break;
   }
 }
@@ -477,11 +504,9 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
   CHECK(format);
   auto format_fourcc = Fourcc::FromVideoPixelFormat(*format);
   CHECK(format_fourcc);
-  // TODO(jkardatzke): Pass true for the last argument when we are in protected
-  // mode.
   if (!frame_pool_->Initialize(
           *format_fourcc, pic_size, visible_rect, natural_size,
-          decoder_->GetRequiredNumOfPictures(), /*use_protected=*/false)) {
+          decoder_->GetRequiredNumOfPictures(), !!cdm_context_)) {
     DLOG(WARNING) << "Failed Initialize()ing the frame pool.";
     SetState(State::kError);
     return;
@@ -501,7 +526,12 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     // When a profile is changed, we need to re-initialize VaapiWrapper.
     profile_ = decoder_->GetProfile();
     auto new_vaapi_wrapper = VaapiWrapper::CreateForVideoCodec(
-        VaapiWrapper::kDecode, profile_,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        !cdm_context_ ? VaapiWrapper::kDecode : VaapiWrapper::kDecodeProtected,
+#else
+        VaapiWrapper::kDecode,
+#endif
+        profile_,
         base::BindRepeating(&ReportVaapiErrorToUMA,
                             "Media.VaapiVideoDecoder.VAAPIError"));
     if (!new_vaapi_wrapper.get()) {
@@ -555,6 +585,27 @@ void VaapiVideoDecoder::NotifyFrameAvailable() {
         FROM_HERE,
         base::BindOnce(&VaapiVideoDecoder::HandleDecodeTask, weak_this_));
   }
+}
+
+void VaapiVideoDecoder::ProtectedSessionUpdate(bool success) {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!success) {
+    LOG(ERROR) << "Terminating decoding after failed protected update";
+    SetState(State::kError);
+    return;
+  }
+
+  // If we were waiting for a protected update, retry the current decode task.
+  if (state_ != State::kWaitingForProtected)
+    return;
+
+  DCHECK(current_decode_task_);
+  SetState(State::kDecoding);
+  decoder_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VaapiVideoDecoder::HandleDecodeTask, weak_this_));
 }
 
 void VaapiVideoDecoder::Flush() {
@@ -702,6 +753,9 @@ void VaapiVideoDecoder::SetState(State state) {
       DCHECK(state_ == State::kUninitialized || state_ == State::kDecoding ||
              state_ == State::kResetting);
       break;
+    case State::kWaitingForProtected:
+      DCHECK(!!cdm_context_);
+      FALLTHROUGH;
     case State::kWaitingForOutput:
       DCHECK(current_decode_task_);
       DCHECK_EQ(state_, State::kDecoding);

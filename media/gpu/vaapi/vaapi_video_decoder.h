@@ -22,6 +22,8 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
+#include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/status.h"
 #include "media/base/video_codecs.h"
@@ -88,14 +90,16 @@ class VaapiVideoDecoder : public DecoderInterface,
   };
 
   enum class State {
-    kUninitialized,       // not initialized yet or initialization failed.
-    kWaitingForInput,     // waiting for input buffers.
-    kWaitingForOutput,    // waiting for output buffers.
-    kDecoding,            // decoding buffers.
-    kChangingResolution,  // need to change resolution, waiting for pipeline to
-                          // be flushed.
-    kResetting,           // resetting decoder.
-    kError,               // decoder encountered an error.
+    kUninitialized,        // not initialized yet or initialization failed.
+    kWaitingForInput,      // waiting for input buffers.
+    kWaitingForOutput,     // waiting for output buffers.
+    kWaitingForProtected,  // waiting on something related to protected content,
+                           // either setup, full sample parsing or key loading.
+    kDecoding,             // decoding buffers.
+    kChangingResolution,   // need to change resolution, waiting for pipeline to
+                           // be flushed.
+    kResetting,            // resetting decoder.
+    kError,                // decoder encountered an error.
   };
 
   VaapiVideoDecoder(
@@ -119,6 +123,9 @@ class VaapiVideoDecoder : public DecoderInterface,
   void ReleaseVideoFrame(VASurfaceID surface_id);
   // Callback for |frame_pool_| to notify of available resources.
   void NotifyFrameAvailable();
+  // Callback from accelerator to indicate the protected state has been updated
+  // so we can proceed or fail.
+  void ProtectedSessionUpdate(bool success);
 
   // Flushes |decoder_|, blocking until all pending decode tasks have been
   // executed and all frames have been output.
@@ -132,6 +139,9 @@ class VaapiVideoDecoder : public DecoderInterface,
 
   // Change the current |state_| to the specified |state|.
   void SetState(State state);
+
+  // Callback for the CDM to notify |this|.
+  void OnCdmContextEvent(CdmContext::Event event);
 
   // The video decoder's state.
   State state_ = State::kUninitialized;
@@ -174,6 +184,12 @@ class VaapiVideoDecoder : public DecoderInterface,
   // TODO(crbug.com/1040291): remove this keep-alive when using SharedImages.
   base::small_map<std::map<gfx::GpuMemoryBufferId, scoped_refptr<VASurface>>>
       allocated_va_surfaces_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // To keep the CdmContext event callback registered.
+  std::unique_ptr<CallbackRegistration> cdm_event_cb_registration_;
+#endif
+
+  CdmContext* cdm_context_ = nullptr;  // Not owned.
 
   // Platform and codec specific video decoder.
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
