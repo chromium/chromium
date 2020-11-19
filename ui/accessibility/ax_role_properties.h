@@ -86,7 +86,7 @@ AX_BASE_EXPORT bool IsImage(const ax::mojom::Role role);
 AX_BASE_EXPORT bool IsImageOrVideo(const ax::mojom::Role role);
 
 // Returns true if the provided role is item-like, specifically if it can hold
-// pos_in_set and set_size values.
+// pos_in_set and set_size values. Roles that are item-like are not set-like.
 AX_BASE_EXPORT bool IsItemLike(const ax::mojom::Role role);
 
 // Returns true if the role is a subclass of the ARIA Landmark abstract role.
@@ -145,7 +145,7 @@ AX_BASE_EXPORT bool IsSelect(const ax::mojom::Role role);
 AX_BASE_EXPORT bool IsSelectElement(const ax::mojom::Role role);
 
 // Returns true if the provided role is ordered-set like, specifically if it
-// can hold set_size values.
+// can hold set_size values. Roles that are set-like are not item-like.
 AX_BASE_EXPORT bool IsSetLike(const ax::mojom::Role role);
 
 // Returns true if the provided role belongs to a non-interactive list.

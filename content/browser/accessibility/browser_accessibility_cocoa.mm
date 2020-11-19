@@ -3558,10 +3558,11 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   // Position in set and Set size.
   // Only add these attributes for roles that use posinset and setsize.
   if (ui::IsItemLike(_owner->node()->data().role))
-    [ret addObjectsFromArray:@[ NSAccessibilityARIAPosInSetAttribute ]];
-  if (ui::IsSetLike(_owner->node()->data().role) ||
-      ui::IsItemLike(_owner->node()->data().role))
-    [ret addObjectsFromArray:@[ NSAccessibilityARIASetSizeAttribute ]];
+    [ret addObjectsFromArray:@[
+      NSAccessibilityARIAPosInSetAttribute, NSAccessibilityARIASetSizeAttribute
+    ]];
+  if (ui::IsSetLike(_owner->node()->data().role))
+    [ret addObject:NSAccessibilityARIASetSizeAttribute];
 
   // Live regions.
   if (_owner->HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus)) {

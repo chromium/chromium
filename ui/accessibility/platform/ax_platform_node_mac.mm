@@ -637,12 +637,14 @@ bool IsAXSetter(SEL selector) {
     default:
       break;
   }
-  if (_node->GetData().HasBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
-    [axAttributes addObjectsFromArray:@[ NSAccessibilitySelectedAttribute ]];
-  }
-  if (ui::IsMenuItem(_node->GetData().role)) {
-    [axAttributes addObjectsFromArray:@[ @"AXMenuItemMarkChar" ]];
-  }
+  if (_node->GetData().HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
+    [axAttributes addObject:NSAccessibilitySelectedAttribute];
+  if (ui::IsMenuItem(_node->GetData().role))
+    [axAttributes addObject:@"AXMenuItemMarkChar"];
+  if (ui::IsItemLike(_node->GetData().role))
+    [axAttributes addObjectsFromArray:@[ @"AXARIAPosInSet", @"AXARIASetSize" ]];
+  if (ui::IsSetLike(_node->GetData().role))
+    [axAttributes addObject:@"AXARIASetSize"];
   return axAttributes.autorelease();
 }
 
@@ -840,6 +842,20 @@ bool IsAXSetter(SEL selector) {
   }
 
   return @"";
+}
+
+- (NSNumber*)AXARIAPosInSet {
+  base::Optional<int> posInSet = _node->GetPosInSet();
+  if (!posInSet)
+    return nil;
+  return @(*posInSet);
+}
+
+- (NSNumber*)AXARIASetSize {
+  base::Optional<int> setSize = _node->GetSetSize();
+  if (!setSize)
+    return nil;
+  return @(*setSize);
 }
 
 // Text-specific attributes.

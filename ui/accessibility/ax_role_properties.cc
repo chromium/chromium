@@ -303,6 +303,7 @@ bool IsItemLike(const ax::mojom::Role role) {
     case ax::mojom::Role::kRadioButton:
     case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kTerm:
+      DCHECK(!IsSetLike(role)) << "Role cannot be both item-like and set-like.";
       return true;
     default:
       return false;

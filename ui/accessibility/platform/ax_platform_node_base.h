@@ -366,6 +366,12 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   //
   AXPlatformNodeDelegate* delegate_ = nullptr;
 
+  // Uses the delegate to calculate this node's PosInSet.
+  base::Optional<int> GetPosInSet() const;
+
+  // Uses the delegate to calculate this node's SetSize.
+  base::Optional<int> GetSetSize() const;
+
   bool IsDocument() const;
 
  protected:
@@ -492,9 +498,6 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
                                           size_t* start,
                                           size_t* old_len,
                                           size_t* new_len);
-
-  base::Optional<int> GetPosInSet() const;
-  base::Optional<int> GetSetSize() const;
 
   std::string GetInvalidValue() const;
 
