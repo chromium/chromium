@@ -338,6 +338,7 @@ group("unit_tests") {
     ":web_applications_unit_tests",
     "//chrome/browser/web_applications/components:unit_tests",
     "//chrome/browser/web_applications/extensions:unit_tests",
+    "//chrome/browser/web_applications/preinstalled_web_apps:unit_tests",
   ]
 }
 

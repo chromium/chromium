@@ -15,6 +15,7 @@ source_set("preinstalled_web_apps") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//chrome/browser:browser_process",
     "//chrome/browser/web_applications/components",
     "//skia",
     "//ui/base",
@@ -38,4 +39,17 @@ source_set("preinstalled_web_apps") {
 
     deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "preinstalled_web_app_utils_unittest.cc" ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/web_applications/preinstalled_web_apps",
+    "//skia",
+    "//testing/gtest",
+  ]
 }

@@ -12,6 +12,14 @@ namespace web_app {
 std::map<SquareSizePx, SkBitmap> LoadBundledIcons(
     const std::initializer_list<int>& icon_resource_ids);
 
+struct Translation {
+  const char* bcp47_locale;
+  const char* utf8_translation;
+};
+
+const char* GetTranslatedName(const char* utf8_default_name,
+                              base::span<const Translation> translations);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_PREINSTALLED_WEB_APP_UTILS_H_
