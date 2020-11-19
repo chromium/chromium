@@ -663,6 +663,7 @@ crbug.com/764031 external/wpt/css/css-tables/toggle-row-display-property-001.htm
 crbug.com/613753 external/wpt/css/css-tables/border-spacing-included-in-sizes-001.html [ Failure ]
 crbug.com/353580 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-005.html [ Failure ]
 crbug.com/1108224 external/wpt/css/css-tables/min-max-size-table-content-box.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
 
 # [css-contain]
 

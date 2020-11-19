@@ -129,6 +129,11 @@ LayoutBox* LayoutNGTableCell::CreateAnonymousBoxWithSameTypeAs(
   return LayoutObjectFactory::CreateAnonymousTableCellWithParent(*parent);
 }
 
+LayoutBlock* LayoutNGTableCell::StickyContainer() const {
+  NOT_DESTROYED();
+  return Table();
+}
+
 bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
     const PhysicalRect& local_rect) const {
   NOT_DESTROYED();

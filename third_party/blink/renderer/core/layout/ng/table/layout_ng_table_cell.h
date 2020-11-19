@@ -87,6 +87,8 @@ class CORE_EXPORT LayoutNGTableCell
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
+  LayoutBlock* StickyContainer() const override;
+
   // LayoutBlockFlow methods end.
 
   // LayoutNGTableCellInterface methods start.

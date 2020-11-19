@@ -150,6 +150,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void UpdateStickyPositionConstraints() const;
   PhysicalOffset StickyPositionOffset() const;
   bool IsSlowRepaintConstrainedObject() const;
+  virtual LayoutBlock* StickyContainer() const;
 
   PhysicalOffset OffsetForInFlowPosition() const;
 

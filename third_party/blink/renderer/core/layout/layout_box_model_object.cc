@@ -70,7 +70,7 @@ PaintLayer* FindFirstStickyBetween(LayoutObject* from, LayoutObject* to) {
     maybe_sticky_ancestor =
         maybe_sticky_ancestor->IsLayoutInline()
             ? maybe_sticky_ancestor->Container()
-            : To<LayoutBox>(maybe_sticky_ancestor)->LocationContainer();
+            : To<LayoutBox>(maybe_sticky_ancestor)->StickyContainer();
   }
   return nullptr;
 }
@@ -942,6 +942,10 @@ PhysicalOffset LayoutBoxModelObject::RelativePositionOffset() const {
   return offset;
 }
 
+LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
+  return ContainingBlock();
+}
+
 void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   NOT_DESTROYED();
   DCHECK(StyleRef().HasStickyConstrainedPosition());
@@ -950,13 +954,13 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
 
   StickyPositionScrollingConstraints constraints;
   PhysicalOffset skipped_containers_offset;
-  LayoutBlock* containing_block = ContainingBlock();
+  LayoutBlock* sticky_container = StickyContainer();
   // The location container for boxes is not always the containing block.
   LayoutObject* location_container =
       IsLayoutInline() ? Container() : To<LayoutBox>(this)->LocationContainer();
   // Skip anonymous containing blocks.
-  while (containing_block->IsAnonymous()) {
-    containing_block = containing_block->ContainingBlock();
+  while (sticky_container->IsAnonymous()) {
+    sticky_container = sticky_container->ContainingBlock();
   }
 
   // The sticky position constraint rects should be independent of the current
@@ -966,29 +970,29 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   MapCoordinatesFlags flags =
       kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
   skipped_containers_offset = location_container->LocalToAncestorPoint(
-      PhysicalOffset(), containing_block, flags);
+      PhysicalOffset(), sticky_container, flags);
   auto& scroll_ancestor =
       To<LayoutBox>(Layer()->AncestorScrollContainerLayer()->GetLayoutObject());
 
   LayoutUnit max_container_width =
-      IsA<LayoutView>(containing_block)
-          ? containing_block->LogicalWidth()
-          : containing_block->ContainingBlockLogicalWidthForContent();
+      IsA<LayoutView>(sticky_container)
+          ? sticky_container->LogicalWidth()
+          : sticky_container->ContainingBlockLogicalWidthForContent();
   // Sticky positioned element ignore any override logical width on the
   // containing block, as they don't call containingBlockLogicalWidthForContent.
   // It's unclear whether this is totally fine.
   // Compute the container-relative area within which the sticky element is
   // allowed to move.
-  LayoutUnit max_width = containing_block->AvailableLogicalWidth();
+  LayoutUnit max_width = sticky_container->AvailableLogicalWidth();
 
   // Map the containing block to the inner corner of the scroll ancestor without
   // transforms.
   PhysicalRect scroll_container_relative_padding_box_rect(
-      containing_block->LayoutOverflowRect());
-  if (containing_block != &scroll_ancestor) {
-    PhysicalRect local_rect = containing_block->PhysicalPaddingBoxRect();
+      sticky_container->LayoutOverflowRect());
+  if (sticky_container != &scroll_ancestor) {
+    PhysicalRect local_rect = sticky_container->PhysicalPaddingBoxRect();
     scroll_container_relative_padding_box_rect =
-        containing_block->LocalToAncestorRect(local_rect, &scroll_ancestor,
+        sticky_container->LocalToAncestorRect(local_rect, &scroll_ancestor,
                                               flags);
   }
 
@@ -1007,16 +1011,16 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   // It is an open issue whether the margin should collapse.
   // See https://www.w3.org/TR/css-position-3/#sticky-pos
   scroll_container_relative_containing_block_rect.ContractEdges(
-      MinimumValueForLength(containing_block->StyleRef().PaddingTop(),
+      MinimumValueForLength(sticky_container->StyleRef().PaddingTop(),
                             max_container_width) +
           MinimumValueForLength(StyleRef().MarginTop(), max_width),
-      MinimumValueForLength(containing_block->StyleRef().PaddingRight(),
+      MinimumValueForLength(sticky_container->StyleRef().PaddingRight(),
                             max_container_width) +
           MinimumValueForLength(StyleRef().MarginRight(), max_width),
-      MinimumValueForLength(containing_block->StyleRef().PaddingBottom(),
+      MinimumValueForLength(sticky_container->StyleRef().PaddingBottom(),
                             max_container_width) +
           MinimumValueForLength(StyleRef().MarginBottom(), max_width),
-      MinimumValueForLength(containing_block->StyleRef().PaddingLeft(),
+      MinimumValueForLength(sticky_container->StyleRef().PaddingLeft(),
                             max_container_width) +
           MinimumValueForLength(StyleRef().MarginLeft(), max_width));
 
@@ -1028,7 +1032,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
     sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
   } else {
     sticky_box_rect =
-        containing_block->FlipForWritingMode(To<LayoutBox>(this)->FrameRect());
+        sticky_container->FlipForWritingMode(To<LayoutBox>(this)->FrameRect());
   }
   PhysicalOffset sticky_location =
       sticky_box_rect.offset + skipped_containers_offset;
@@ -1038,8 +1042,8 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   // within the scroll ancestor if the container is not our scroll ancestor. If
   // the container is our scroll ancestor, we also need to remove the border
   // box because we want the position from within the scroller border.
-  PhysicalOffset container_border_offset(containing_block->BorderLeft(),
-                                         containing_block->BorderTop());
+  PhysicalOffset container_border_offset(sticky_container->BorderLeft(),
+                                         sticky_container->BorderTop());
   sticky_location -= container_border_offset;
   constraints.scroll_container_relative_sticky_box_rect = PhysicalRect(
       scroll_container_relative_padding_box_rect.offset + sticky_location,
@@ -1052,12 +1056,12 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   // The respective search ranges are [container, containingBlock) and
   // [containingBlock, scrollAncestor).
   constraints.nearest_sticky_layer_shifting_sticky_box =
-      FindFirstStickyBetween(location_container, containing_block);
+      FindFirstStickyBetween(location_container, sticky_container);
   // We cannot use |scrollAncestor| here as it disregards the root
   // ancestorOverflowLayer(), which we should include.
   constraints.nearest_sticky_layer_shifting_containing_block =
       FindFirstStickyBetween(
-          containing_block,
+          sticky_container,
           &Layer()->AncestorScrollContainerLayer()->GetLayoutObject());
 
   // We skip the right or top sticky offset if there is not enough space to

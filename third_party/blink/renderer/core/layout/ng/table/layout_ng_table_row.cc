@@ -105,6 +105,11 @@ LayoutBox* LayoutNGTableRow::CreateAnonymousBoxWithSameTypeAs(
   return LayoutObjectFactory::CreateAnonymousTableRowWithParent(*parent);
 }
 
+LayoutBlock* LayoutNGTableRow::StickyContainer() const {
+  NOT_DESTROYED();
+  return Table();
+}
+
 // This is necessary because TableRow paints beyond border box if it contains
 // rowspanned cells.
 void LayoutNGTableRow::AddVisualOverflowFromBlockChildren() {
