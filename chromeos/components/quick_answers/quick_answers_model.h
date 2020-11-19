@@ -124,6 +124,9 @@ struct QuickAnswer {
 struct DeviceProperties {
   // Device language code.
   std::string language;
+
+  // List (separated by comma) of user preferred languages.
+  std::string preferred_languages;
 };
 
 struct IntentInfo {

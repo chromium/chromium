@@ -8,6 +8,7 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
@@ -108,6 +109,14 @@ bool ShouldSkipDefinition(const std::string& text) {
   return false;
 }
 
+bool IsPreferredLanguage(const std::string& detected_locale,
+                         const std::string& preferred_languages_string) {
+  auto preferred_languages =
+      base::SplitString(preferred_languages_string, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  return base::Contains(preferred_languages, detected_locale);
+}
+
 }  // namespace
 
 IntentGenerator::IntentGenerator(IntentGeneratorCallback complete_callback)
@@ -184,9 +193,14 @@ void IntentGenerator::LanguageDetectorCallback(
     const QuickAnswersRequest& request,
     base::Optional<std::string> detected_locale) {
   language_detector_.reset();
+
+  // Generate translation intent if the detected language is different to the
+  // system language and is not one of the preferred languages.
   if (detected_locale.has_value() &&
-      !request.context.device_properties.language.empty() &&
-      detected_locale.value() != request.context.device_properties.language) {
+      detected_locale.value() != request.context.device_properties.language &&
+      !IsPreferredLanguage(
+          detected_locale.value(),
+          request.context.device_properties.preferred_languages)) {
     MaybeGenerateTranslationIntent(request, detected_locale.value());
     return;
   }
@@ -219,8 +233,9 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
     return;
   }
 
-  // Don't do language detection if no device language is provided or the length
-  // of selected text is above the threshold. Returns unknown intent type.
+  // Don't generate translation intent if no device language is provided or the
+  // length of selected text is above the threshold. Returns unknown intent
+  // type.
   if (request.context.device_properties.language.empty() ||
       request.selected_text.length() > kTranslationTextLengthThreshold) {
     std::move(complete_callback_)
