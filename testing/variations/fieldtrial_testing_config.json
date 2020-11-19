@@ -5224,6 +5224,21 @@
             ]
         }
     ],
+    "PasswordEditingInSettingsIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EditPasswordsInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordScriptsFetching": [
         {
             "platforms": [
