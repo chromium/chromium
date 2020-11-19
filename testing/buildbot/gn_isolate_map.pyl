@@ -151,6 +151,11 @@
     "type": "script",
     "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
   },
+  "angle_deqp_khr_gles32_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_khr_gles32_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
   "angle_deqp_gles3_rotate180_tests": {
     "label": "//third_party/angle/src/tests:angle_deqp_gles3_rotate180_tests",
     "type": "script",

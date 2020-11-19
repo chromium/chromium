@@ -2134,6 +2134,24 @@
       },
     },
 
+    'gpu_angle_deqp_khr_gles32_vulkan_gtests': {
+      'angle_deqp_khr_gles32_vulkan_tests': {
+        'args': [
+          'angle_deqp_khr_gles32_tests',
+          '--use-angle=vulkan',
+        ],
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'test': 'angle_deqp_khr_gles32_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
     'gpu_angle_deqp_khr_gles3_vulkan_gtests': {
       'angle_deqp_khr_gles3_vulkan_tests': {
         'args': [
@@ -5459,6 +5477,7 @@
       'gpu_angle_deqp_gles3_vulkan_gtests',
       'gpu_angle_deqp_khr_gles2_vulkan_gtests',
       'gpu_angle_deqp_khr_gles31_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles32_vulkan_gtests',
       'gpu_angle_deqp_khr_gles3_vulkan_gtests',
     ],
 
@@ -5479,6 +5498,7 @@
       'gpu_angle_deqp_gles3_vulkan_rotate90_gtests',
       'gpu_angle_deqp_khr_gles2_vulkan_gtests',
       'gpu_angle_deqp_khr_gles31_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles32_vulkan_gtests',
       'gpu_angle_deqp_khr_gles3_vulkan_gtests',
     ],
 
@@ -5528,6 +5548,7 @@
       'gpu_angle_deqp_gles3_vulkan_rotate90_gtests',
       'gpu_angle_deqp_khr_gles2_vulkan_gtests',
       'gpu_angle_deqp_khr_gles31_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles32_vulkan_gtests',
       'gpu_angle_deqp_khr_gles3_vulkan_gtests',
     ],
 
