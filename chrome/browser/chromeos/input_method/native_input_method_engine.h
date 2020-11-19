@@ -85,8 +85,6 @@ class NativeInputMethodEngine : public InputMethodEngine {
                                   int cursor_pos,
                                   int anchor_pos,
                                   int offset_pos) override;
-    void OnInputContextUpdate(
-        const IMEEngineHandlerInterface::InputContext& context) override;
     void OnCandidateClicked(
         const std::string& component_id,
         int candidate_id,

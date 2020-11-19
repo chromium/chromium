@@ -102,8 +102,6 @@ class TestObserver : public InputMethodEngineBase::Observer {
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
     std::move(callback).Run(/* handled */ true);
   }
-  void OnInputContextUpdate(
-      const ui::IMEEngineHandlerInterface::InputContext& context) override {}
   void OnCandidateClicked(
       const std::string& engine_id,
       int candidate_id,

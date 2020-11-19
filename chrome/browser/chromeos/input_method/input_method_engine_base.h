@@ -108,10 +108,6 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
                                           int anchor_pos,
                                           int offset_pos) = 0;
 
-    // Called when an InputContext's properties change while it is focused.
-    virtual void OnInputContextUpdate(
-        const IMEEngineHandlerInterface::InputContext& context) = 0;
-
     // Called when the user clicks on an item in the candidate list.
     virtual void OnCandidateClicked(
         const std::string& component_id,

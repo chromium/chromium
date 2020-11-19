@@ -333,11 +333,6 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
                                            anchor_pos, offset_pos);
 }
 
-void NativeInputMethodEngine::ImeObserver::OnInputContextUpdate(
-    const IMEEngineHandlerInterface::InputContext& context) {
-  base_observer_->OnInputContextUpdate(context);
-}
-
 void NativeInputMethodEngine::ImeObserver::OnCandidateClicked(
     const std::string& component_id,
     int candidate_id,

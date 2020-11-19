@@ -162,25 +162,6 @@ class ImeObserverChromeOS : public ui::ImeObserver {
   ~ImeObserverChromeOS() override = default;
 
   // chromeos::InputMethodEngineBase::Observer overrides.
-  void OnInputContextUpdate(
-      const IMEEngineHandlerInterface::InputContext& context) override {
-    if (extension_id_.empty() ||
-        !HasListener(input_ime::OnInputContextUpdate::kEventName))
-      return;
-
-    input_ime::InputContext context_value;
-    context_value.context_id = context.id;
-    context_value.type =
-        input_ime::ParseInputContextType(ConvertInputContextType(context));
-
-    std::unique_ptr<base::ListValue> args(
-        input_ime::OnInputContextUpdate::Create(context_value));
-
-    DispatchEventToExtension(
-        extensions::events::INPUT_IME_ON_INPUT_CONTEXT_UPDATE,
-        input_ime::OnInputContextUpdate::kEventName, std::move(args));
-  }
-
   void OnCandidateClicked(
       const std::string& component_id,
       int candidate_id,

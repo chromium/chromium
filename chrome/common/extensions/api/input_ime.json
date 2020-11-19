@@ -719,6 +719,7 @@
           }
         ]
       },
+      // TODO(crbug.com/1148579): Deprecate onInputContextUpdate.
       {
         "name": "onInputContextUpdate",
         "type": "function",

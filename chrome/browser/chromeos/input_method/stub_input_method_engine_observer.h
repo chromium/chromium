@@ -26,8 +26,6 @@ class StubInputMethodEngineObserver : public InputMethodEngineBase::Observer {
       const std::string& engine_id,
       const InputMethodEngineBase::KeyboardEvent& event,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {}
-  void OnInputContextUpdate(
-      const ui::IMEEngineHandlerInterface::InputContext& context) override {}
   void OnCandidateClicked(
       const std::string& engine_id,
       int candidate_id,

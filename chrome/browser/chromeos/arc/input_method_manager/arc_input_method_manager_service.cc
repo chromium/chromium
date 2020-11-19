@@ -229,10 +229,6 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
                                 int offset_pos) override {
     owner_->UpdateTextInputState();
   }
-  void OnInputContextUpdate(
-      const ui::IMEEngineHandlerInterface::InputContext& context) override {
-    owner_->UpdateTextInputState();
-  }
   void OnCandidateClicked(
       const std::string& component_id,
       int candidate_id,
