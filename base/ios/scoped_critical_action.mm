@@ -46,12 +46,6 @@ void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core,
     return;
   }
 
-  NSTimeInterval time = application.backgroundTimeRemaining;
-  if (time != DBL_MAX && time > 0) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("IOS.CriticalActionBackgroundTimeRemaining",
-                               base::TimeDelta::FromSeconds(time));
-  }
-
   AutoLock lock_scope(core->background_task_id_lock_);
   NSString* task_string =
       !task_name.empty() ? base::SysUTF8ToNSString(task_name) : nil;
