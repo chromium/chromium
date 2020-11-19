@@ -18,10 +18,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace aura {
-class Window;
-}  // namespace aura
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -208,8 +204,6 @@ void UpdateContainerPref(Profile* profile,
                          base::Value value);
 
 const ContainerId& DefaultContainerId();
-
-bool IsCrostiniWindow(aura::Window* window);
 
 }  // namespace crostini
 

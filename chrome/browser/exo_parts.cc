@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager_impl.h"
@@ -22,42 +21,41 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_files.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/exo/file_helper.h"
 #include "components/exo/server/wayland_server_controller.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/drop_data.h"
 #include "net/base/filename_util.h"
-#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 
 namespace {
 
 constexpr char kMimeTypeArcUriList[] = "application/x-arc-uri-list";
-constexpr char kMimeTypeTextUriList[] = "text/uri-list";
 constexpr char kUriListSeparator[] = "\r\n";
 
-bool IsArcWindow(const aura::Window* window) {
-  return static_cast<ash::AppType>(window->GetProperty(
-             aura::client::kAppType)) == ash::AppType::ARC_APP;
-}
-
 storage::FileSystemContext* GetFileSystemContext() {
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  // Obtains the primary profile.
+  if (!user_manager::UserManager::IsInitialized())
+    return nullptr;
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user)
+    return nullptr;
+  Profile* primary_profile =
+      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
   if (!primary_profile)
     return nullptr;
 
@@ -99,72 +97,6 @@ void SendArcUrls(exo::FileHelper::SendDataCallback callback,
   std::move(callback).Run(base::RefCountedString16::TakeString(&data));
 }
 
-void SendAfterShare(exo::FileHelper::SendDataCallback callback,
-                    scoped_refptr<base::RefCountedMemory> data,
-                    bool success,
-                    const std::string& failure_reason) {
-  if (!success)
-    LOG(ERROR) << "Error sharing paths for drag and drop: " << failure_reason;
-
-  // Still send the data, even if sharing failed.
-  std::move(callback).Run(data);
-}
-
-struct FileInfo {
-  base::FilePath path;
-  storage::FileSystemURL url;
-};
-
-void ShareAndSend(aura::Window* target,
-                  std::vector<FileInfo> files,
-                  exo::FileHelper::SendDataCallback callback) {
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-
-  aura::Window* toplevel = target->GetToplevelWindow();
-  bool is_crostini = crostini::IsCrostiniWindow(toplevel);
-  bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
-
-  base::FilePath vm_mount;
-  std::string vm_name;
-  if (is_crostini) {
-    vm_mount = crostini::ContainerChromeOSBaseDirectory();
-    vm_name = crostini::kCrostiniDefaultVmName;
-  } else if (is_plugin_vm) {
-    vm_mount = plugin_vm::ChromeOSBaseDirectory();
-    vm_name = plugin_vm::kPluginVmName;
-  }
-
-  std::vector<std::string> lines_to_send;
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(primary_profile);
-  std::vector<base::FilePath> paths_to_share;
-
-  for (auto& info : files) {
-    // Crostini and PluginVm converts to path inside VM. For other app types, or
-    // if we fail to convert, we just keep the original path.
-    base::FilePath path_to_send = info.path;
-    if ((is_crostini || is_plugin_vm) &&
-        file_manager::util::ConvertFileSystemURLToPathInsideVM(
-            primary_profile, info.url, vm_mount,
-            /*map_crostini_home=*/is_crostini, &path_to_send) &&
-        !share_path->IsPathShared(vm_name, info.path)) {
-      // Keep a record of any paths which are not yet shared.
-      paths_to_share.emplace_back(info.path);
-    }
-    lines_to_send.emplace_back(net::FilePathToFileURL(path_to_send).spec());
-  }
-
-  std::string joined = base::JoinString(lines_to_send, kUriListSeparator);
-  auto data = base::RefCountedString::TakeString(&joined);
-  if (!paths_to_share.empty()) {
-    share_path->SharePaths(
-        vm_name, std::move(paths_to_share),
-        /*persist=*/false,
-        base::BindOnce(&SendAfterShare, std::move(callback), std::move(data)));
-  } else {
-    std::move(callback).Run(std::move(data));
-  }
-}
-
 class ChromeFileHelper : public exo::FileHelper {
  public:
   ChromeFileHelper() = default;
@@ -174,10 +106,10 @@ class ChromeFileHelper : public exo::FileHelper {
   std::vector<ui::FileInfo> GetFilenames(
       aura::Window* source,
       const std::vector<uint8_t>& data) const override {
-    Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-    aura::Window* toplevel = source->GetToplevelWindow();
-    bool is_crostini = crostini::IsCrostiniWindow(toplevel);
-    bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
+    // TODO(crbug.com/1144138): We must translate the path if this was received
+    // from a VM. E.g. if this was from crostini as
+    // file:///home/username/file.txt, we translate to
+    // file:///media/fuse/crostini_<hash>_termina_penguin/file.txt.
     std::string lines(data.begin(), data.end());
     std::vector<ui::FileInfo> filenames;
     base::FilePath path;
@@ -186,62 +118,29 @@ class ChromeFileHelper : public exo::FileHelper {
              lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
       if (!net::FileURLToFilePath(GURL(line), &path))
         continue;
-
-      if (is_crostini &&
-          file_manager::util::ConvertPathInsideVMToFileSystemURL(
-              primary_profile, path, crostini::ContainerChromeOSBaseDirectory(),
-              /*map_crostini_home=*/true, &url)) {
-        path = url.path();
-      } else if (is_plugin_vm &&
-                 file_manager::util::ConvertPathInsideVMToFileSystemURL(
-                     primary_profile, path, plugin_vm::ChromeOSBaseDirectory(),
-                     /*map_crostini_home=*/false, &url)) {
-        path = url.path();
-      }
       filenames.emplace_back(ui::FileInfo(path, base::FilePath()));
     }
     return filenames;
   }
 
   std::string GetMimeTypeForUriList(aura::Window* target) const override {
-    return IsArcWindow(target->GetToplevelWindow()) ? kMimeTypeArcUriList
-                                                    : kMimeTypeTextUriList;
+    return kMimeTypeArcUriList;
   }
 
   void SendFileInfo(aura::Window* target,
                     const std::vector<ui::FileInfo>& files,
                     exo::FileHelper::SendDataCallback callback) const override {
-    // ARC converts to ArcUrl and uses utf-16.
-    if (IsArcWindow(target->GetToplevelWindow())) {
-      std::vector<std::string> lines;
-      GURL url;
-      for (const auto& info : files) {
-        if (file_manager::util::ConvertPathToArcUrl(info.path, &url)) {
-          lines.emplace_back(url.spec());
-        }
-      }
-      base::string16 data =
-          base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
-      std::move(callback).Run(base::RefCountedString16::TakeString(&data));
-      return;
-    }
-
-    storage::ExternalMountPoints* mount_points =
-        storage::ExternalMountPoints::GetSystemInstance();
-    base::FilePath virtual_path;
-    std::vector<FileInfo> list;
-
+    // TODO(crbug.com/1144138): Translate path and possibly share files with VM.
+    std::vector<std::string> lines;
+    GURL url;
     for (const auto& info : files) {
-      // Convert absolute host path to FileSystemURL if possible.
-      storage::FileSystemURL url;
-      if (mount_points->GetVirtualPath(info.path, &virtual_path)) {
-        url = mount_points->CreateCrackedFileSystemURL(
-            url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+      if (file_manager::util::ConvertPathToArcUrl(info.path, &url)) {
+        lines.emplace_back(url.spec());
       }
-      list.push_back({info.path, std::move(url)});
     }
-
-    ShareAndSend(target, std::move(list), std::move(callback));
+    base::string16 data =
+        base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
+    std::move(callback).Run(base::RefCountedString16::TakeString(&data));
   }
 
   bool HasUrlsInPickle(const base::Pickle& pickle) const override {
@@ -253,25 +152,15 @@ class ChromeFileHelper : public exo::FileHelper {
   void SendPickle(aura::Window* target,
                   const base::Pickle& pickle,
                   exo::FileHelper::SendDataCallback callback) override {
+    // TODO(crbug.com/1144138): Translate path and possibly share files with VM.
     std::vector<storage::FileSystemURL> file_system_urls;
     GetFileSystemUrlsFromPickle(pickle, &file_system_urls);
-
-    // ARC FileSystemURLs are converted to Content URLs.
-    if (IsArcWindow(target->GetToplevelWindow())) {
-      if (file_system_urls.empty()) {
-        std::move(callback).Run(nullptr);
-        return;
-      }
-      file_manager::util::ConvertToContentUrls(
-          file_system_urls, base::BindOnce(&SendArcUrls, std::move(callback)));
+    if (file_system_urls.empty()) {
+      std::move(callback).Run(nullptr);
       return;
     }
-
-    std::vector<FileInfo> list;
-    for (const auto& url : file_system_urls)
-      list.push_back({url.path(), url});
-
-    ShareAndSend(target, std::move(list), std::move(callback));
+    file_manager::util::ConvertToContentUrls(
+        file_system_urls, base::BindOnce(&SendArcUrls, std::move(callback)));
   }
 };
 
