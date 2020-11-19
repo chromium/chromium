@@ -10,8 +10,9 @@
 /**
  * @typedef {{url: string,
  *            label: string,
- *            isGaiaAvatar: (boolean|undefined),
- *            selected: (boolean|undefined)}}
+ *            index: (number),
+ *            isGaiaAvatar: (boolean),
+ *            selected: (boolean)}}
  */
 /* #export */ let AvatarIcon;
 

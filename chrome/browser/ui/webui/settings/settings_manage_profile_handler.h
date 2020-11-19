@@ -31,22 +31,25 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
 
   // ProfileAttributesStorage::Observer:
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
-
-  // ProfileAttributesStorage::Observer:
   void OnProfileHighResAvatarLoaded(
       const base::FilePath& profile_path) override;
+  void OnProfileThemeColorsChanged(const base::FilePath& profile_path) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
                            HandleSetProfileIconToGaiaAvatar);
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
-                           HandleSetProfileIconToDefaultAvatar);
+                           GetAvailableIconsSignedInProfile);
+  FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
+                           GetAvailableIconsLocalProfile);
+  FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
+                           HandleSetProfileIconToDefaultCustomAvatar);
+  FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
+                           HandleSetProfileIconToDefaultGenericAvatar);
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest, HandleSetProfileName);
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest, HandleGetAvailableIcons);
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
                            HandleGetAvailableIconsOldIconSelected);
-  FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
-                           HandleGetAvailableIconsGaiaAvatarSelected);
 
   // Callback for the "getAvailableIcons" message.
   // Sends the array of default profile icon URLs and profile names to WebUI.

@@ -34,6 +34,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
@@ -551,7 +552,7 @@ const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
      IDS_DEFAULT_AVATAR_LABEL_25},
 #endif
     // Placeholder avatar icon:
-    {IDR_PROFILE_AVATAR_26, NULL, -1},
+    {IDR_PROFILE_AVATAR_26, nullptr, IDS_DEFAULT_AVATAR_LABEL_26},
 
 #if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
     // Modern avatar icons:
@@ -663,7 +664,6 @@ std::string GetDefaultAvatarIconUrl(size_t index) {
 }
 
 int GetDefaultAvatarLabelResourceIDAtIndex(size_t index) {
-  CHECK_NE(index, kPlaceholderAvatarIndex);
   return GetDefaultAvatarIconResourceInfo(index)->label_id;
 }
 
@@ -691,22 +691,49 @@ bool IsDefaultAvatarIconUrl(const std::string& url, size_t* icon_index) {
   return false;
 }
 
-std::unique_ptr<base::ListValue> GetDefaultProfileAvatarIconsAndLabels(
+std::unique_ptr<base::DictionaryValue> GetAvatarIconAndLabelDict(
+    const std::string& url,
+    const base::string16& label,
+    size_t index,
+    bool selected,
+    bool is_gaia_avatar) {
+  std::unique_ptr<base::DictionaryValue> avatar_info(
+      new base::DictionaryValue());
+  avatar_info->SetStringPath("url", url);
+  avatar_info->SetStringPath("label", label);
+  avatar_info->SetIntPath("index", index);
+  avatar_info->SetBoolPath("selected", selected);
+  avatar_info->SetBoolPath("isGaiaAvatar", is_gaia_avatar);
+  return avatar_info;
+}
+
+std::unique_ptr<base::DictionaryValue> GetDefaultProfileAvatarIconAndLabel(
+    SkColor fill_color,
+    SkColor stroke_color,
+    bool selected) {
+  std::unique_ptr<base::DictionaryValue> avatar_info(
+      new base::DictionaryValue());
+  gfx::Image icon = profiles::GetPlaceholderAvatarIconWithColors(
+      fill_color, stroke_color, kAvatarIconSize);
+  size_t index = profiles::GetPlaceholderAvatarIndex();
+  return GetAvatarIconAndLabelDict(
+      webui::GetBitmapDataUrl(icon.AsBitmap()),
+      l10n_util::GetStringUTF16(
+          profiles::GetDefaultAvatarLabelResourceIDAtIndex(index)),
+      index, selected, /*is_gaia_avatar=*/false);
+}
+
+std::unique_ptr<base::ListValue> GetCustomProfileAvatarIconsAndLabels(
     size_t selected_avatar_idx) {
   std::unique_ptr<base::ListValue> avatars(new base::ListValue());
 
   for (size_t i = GetModernAvatarIconStartIndex();
        i < GetDefaultAvatarIconCount(); ++i) {
-    std::unique_ptr<base::DictionaryValue> avatar_info(
-        new base::DictionaryValue());
-    avatar_info->SetString("url", profiles::GetDefaultAvatarIconUrl(i));
-    avatar_info->SetString(
-        "label", l10n_util::GetStringUTF16(
-                     profiles::GetDefaultAvatarLabelResourceIDAtIndex(i)));
-    if (i == selected_avatar_idx)
-      avatar_info->SetBoolean("selected", true);
-
-    avatars->Append(std::move(avatar_info));
+    avatars->Append(GetAvatarIconAndLabelDict(
+        profiles::GetDefaultAvatarIconUrl(i),
+        l10n_util::GetStringUTF16(
+            profiles::GetDefaultAvatarLabelResourceIDAtIndex(i)),
+        i, i == selected_avatar_idx, /*is_gaia_avatar=*/false));
   }
   return avatars;
 }

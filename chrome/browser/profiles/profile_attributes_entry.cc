@@ -607,11 +607,6 @@ void ProfileAttributesEntry::SetIsAuthError(bool value) {
 }
 
 void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
-  if (!profiles::IsDefaultAvatarIconIndex(icon_index)) {
-    DLOG(WARNING) << "Unknown avatar icon index: " << icon_index;
-    // switch to generic avatar
-    icon_index = 0;
-  }
   std::string default_avatar_icon_url =
       profiles::GetDefaultAvatarIconUrl(icon_index);
   if (default_avatar_icon_url == GetString(kAvatarIconKey)) {

@@ -176,7 +176,8 @@ Polymer({
     if (this.profileAvatar_.isGaiaAvatar) {
       this.browserProxy_.setProfileIconToGaiaAvatar();
     } else {
-      this.browserProxy_.setProfileIconToDefaultAvatar(this.profileAvatar_.url);
+      this.browserProxy_.setProfileIconToDefaultAvatar(
+          this.profileAvatar_.index);
     }
   },
 

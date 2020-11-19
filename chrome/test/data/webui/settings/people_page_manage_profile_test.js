@@ -35,8 +35,8 @@ class TestManageProfileBrowserProxy extends TestBrowserProxy {
   getAvailableIcons() {
     this.methodCalled('getAvailableIcons');
     return Promise.resolve([
-      {url: 'fake-icon-1.png', label: 'fake-icon-1'},
-      {url: 'fake-icon-2.png', label: 'fake-icon-2', selected: true},
+      {url: 'fake-icon-1.png', label: 'fake-icon-1', index: 1},
+      {url: 'fake-icon-2.png', label: 'fake-icon-2', index: 2, selected: true},
       {url: 'gaia-icon.png', label: 'gaia-icon', isGaiaAvatar: true},
     ]);
   }
@@ -47,8 +47,8 @@ class TestManageProfileBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  setProfileIconToDefaultAvatar(iconUrl) {
-    this.methodCalled('setProfileIconToDefaultAvatar', [iconUrl]);
+  setProfileIconToDefaultAvatar(index) {
+    this.methodCalled('setProfileIconToDefaultAvatar', [index]);
   }
 
   /** @override */
@@ -130,7 +130,7 @@ suite('ManageProfileTests', function() {
       items[1].click();
       const args =
           await browserProxy.whenCalled('setProfileIconToDefaultAvatar');
-      assertEquals('fake-icon-2.png', args[0]);
+      assertEquals(2, args[0]);
 
       items[2].click();
       await browserProxy.whenCalled('setProfileIconToGaiaAvatar');

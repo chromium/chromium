@@ -123,7 +123,7 @@ void SigninCreateProfileHandler::RequestDefaultProfileIcons(
     const base::ListValue* args) {
   web_ui()->CallJavascriptFunctionUnsafe(
       "cr.webUIListenerCallback", base::Value("profile-icons-received"),
-      *profiles::GetDefaultProfileAvatarIconsAndLabels());
+      *profiles::GetCustomProfileAvatarIconsAndLabels());
 }
 
 void SigninCreateProfileHandler::CreateProfile(const base::ListValue* args) {
