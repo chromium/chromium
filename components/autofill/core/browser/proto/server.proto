@@ -407,6 +407,7 @@ message AutofillUploadContents {
     DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD = 8;            // unused
     DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD = 9;  // unused
     PROBABLE_FORM_SUBMISSION = 10;
+    CHANGE_PASSWORD_FORM_CLEARED = 11;
   }
 
   // The type of the event that was taken as an indication that the form has

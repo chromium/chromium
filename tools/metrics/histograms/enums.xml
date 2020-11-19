@@ -70752,6 +70752,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="(obsolete) Filled form on start provisional load"/>
   <int value="9"
       label="(obsolete) Filled input elements on start provisional load"/>
+  <int value="10" label="Probable form submission"/>
+  <int value="11" label="Change password form cleared"/>
 </enum>
 
 <enum name="SubmittedPasswordFormFrame">

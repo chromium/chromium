@@ -1228,9 +1228,6 @@ void PasswordManager::ResetPendingCredentials() {
   owned_submitted_form_manager_.reset();
 }
 
-// TODO(crbug.com/1147363): Make sure metrics are tracking this kind of form
-// submission properly (create SubmissionIndicatorEvent and ensure it's recorded
-// correctly).
 void PasswordManager::OnPasswordFormCleared(
     PasswordManagerDriver* driver,
     const autofill::FormData& form_data) {
@@ -1241,6 +1238,9 @@ void PasswordManager::OnPasswordFormCleared(
   });
   if (it != form_managers_.end() && (*it)->is_submitted() &&
       (*it)->GetSubmittedForm()->IsPossibleChangePasswordForm()) {
+    (*it)->UpdateSubmissionIndicatorEvent(
+        autofill::mojom::SubmissionIndicatorEvent::
+            CHANGE_PASSWORD_FORM_CLEARED);
     OnLoginSuccessful();
   }
 }
