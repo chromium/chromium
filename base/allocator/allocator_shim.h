@@ -152,6 +152,10 @@ BASE_EXPORT void InitializeAllocatorShim();
 #endif  // defined(OS_APPLE)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT void EnablePCScanIfNeeded();
 #endif
 

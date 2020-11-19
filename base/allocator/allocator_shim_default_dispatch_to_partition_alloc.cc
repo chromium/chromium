@@ -5,6 +5,7 @@
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #include "base/allocator/allocator_shim_internals.h"
+#include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
@@ -224,6 +225,17 @@ ThreadSafePartitionRoot* PartitionAllocMalloc::AlignedAllocator() {
 
 namespace base {
 namespace allocator {
+
+void EnablePartitionAllocMemoryReclaimer() {
+  // Allocator() and AlignedAllocator() do not register their PartitionRoots to
+  // the memory reclaimer because the memory reclaimer allocates memory.  Thus,
+  // the registration to the memory reclaimer should be done sometime later.
+  // This function will be called sometime appropriate after PartitionRoots are
+  // initialized.
+  PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(Allocator());
+  PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
+      AlignedAllocator());
+}
 
 void EnablePCScanIfNeeded() {
   if (!features::IsPartitionAllocPCScanEnabled())

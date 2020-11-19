@@ -690,147 +690,150 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   TRACE_EVENT0("startup,benchmark,rail", "ContentMainRunnerImpl::Initialize");
 #endif  // !OS_ANDROID
 
-    // If we are on a platform where the default allocator is overridden (shim
-    // layer on windows, tcmalloc on Linux Desktop) smoke-tests that the
-    // overriding logic is working correctly. If not causes a hard crash, as its
-    // unexpected absence has security implications.
-    CHECK(base::allocator::IsAllocatorInitialized());
-
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
-    if (!process_type.empty()) {
-      // When you hit Ctrl-C in a terminal running the browser
-      // process, a SIGINT is delivered to the entire process group.
-      // When debugging the browser process via gdb, gdb catches the
-      // SIGINT for the browser process (and dumps you back to the gdb
-      // console) but doesn't for the child processes, killing them.
-      // The fix is to have child processes ignore SIGINT; they'll die
-      // on their own when the browser process goes away.
-      //
-      // Note that we *can't* rely on BeingDebugged to catch this case because
-      // we are the child process, which is not being debugged.
-      // TODO(evanm): move this to some shared subprocess-init function.
-      if (!base::debug::BeingDebugged())
-        signal(SIGINT, SIG_IGN);
-    }
+  // If we are on a platform where the default allocator is overridden (shim
+  // layer on windows, tcmalloc on Linux Desktop) smoke-tests that the
+  // overriding logic is working correctly. If not causes a hard crash, as its
+  // unexpected absence has security implications.
+  CHECK(base::allocator::IsAllocatorInitialized());
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  base::allocator::EnablePartitionAllocMemoryReclaimer();
 #endif
 
-    RegisterPathProvider();
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+  if (!process_type.empty()) {
+    // When you hit Ctrl-C in a terminal running the browser
+    // process, a SIGINT is delivered to the entire process group.
+    // When debugging the browser process via gdb, gdb catches the
+    // SIGINT for the browser process (and dumps you back to the gdb
+    // console) but doesn't for the child processes, killing them.
+    // The fix is to have child processes ignore SIGINT; they'll die
+    // on their own when the browser process goes away.
+    //
+    // Note that we *can't* rely on BeingDebugged to catch this case because
+    // we are the child process, which is not being debugged.
+    // TODO(evanm): move this to some shared subprocess-init function.
+    if (!base::debug::BeingDebugged())
+      signal(SIGINT, SIG_IGN);
+  }
+#endif
+
+  RegisterPathProvider();
 
 #if defined(OS_ANDROID) && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
-    // On Android, we have two ICU data files. A main one with most languages
-    // that is expected to always be available and an extra one that is
-    // installed separately via a dynamic feature module. If the extra ICU data
-    // file is available we have to apply it _before_ the main ICU data file.
-    // Otherwise, the languages of the extra ICU file will be overridden.
-    if (process_type.empty()) {
-      TRACE_EVENT0("startup", "InitializeICU");
-      // In browser process load ICU data files from disk.
-      std::string split_name;
-      if (GetContentClient()->browser()->ShouldLoadExtraIcuDataFile(
-              &split_name)) {
-        if (!base::i18n::InitializeExtraICU(split_name)) {
-          return TerminateForFatalInitializationError();
-        }
-      }
-      if (!base::i18n::InitializeICU()) {
-        return TerminateForFatalInitializationError();
-      }
-    } else {
-      // In child process map ICU data files loaded by browser process.
-      int icu_extra_data_fd = g_fds->MaybeGet(kAndroidICUExtraDataDescriptor);
-      if (icu_extra_data_fd != -1) {
-        auto icu_extra_data_region =
-            g_fds->GetRegion(kAndroidICUExtraDataDescriptor);
-        if (!base::i18n::InitializeExtraICUWithFileDescriptor(
-                icu_extra_data_fd, icu_extra_data_region)) {
-          return TerminateForFatalInitializationError();
-        }
-      }
-      int icu_data_fd = g_fds->MaybeGet(kAndroidICUDataDescriptor);
-      if (icu_data_fd == -1) {
-        return TerminateForFatalInitializationError();
-      }
-      auto icu_data_region = g_fds->GetRegion(kAndroidICUDataDescriptor);
-      if (!base::i18n::InitializeICUWithFileDescriptor(icu_data_fd,
-                                                       icu_data_region)) {
+  // On Android, we have two ICU data files. A main one with most languages
+  // that is expected to always be available and an extra one that is
+  // installed separately via a dynamic feature module. If the extra ICU data
+  // file is available we have to apply it _before_ the main ICU data file.
+  // Otherwise, the languages of the extra ICU file will be overridden.
+  if (process_type.empty()) {
+    TRACE_EVENT0("startup", "InitializeICU");
+    // In browser process load ICU data files from disk.
+    std::string split_name;
+    if (GetContentClient()->browser()->ShouldLoadExtraIcuDataFile(
+            &split_name)) {
+      if (!base::i18n::InitializeExtraICU(split_name)) {
         return TerminateForFatalInitializationError();
       }
     }
-#else
-    if (!base::i18n::InitializeICU())
+    if (!base::i18n::InitializeICU()) {
       return TerminateForFatalInitializationError();
+    }
+  } else {
+    // In child process map ICU data files loaded by browser process.
+    int icu_extra_data_fd = g_fds->MaybeGet(kAndroidICUExtraDataDescriptor);
+    if (icu_extra_data_fd != -1) {
+      auto icu_extra_data_region =
+          g_fds->GetRegion(kAndroidICUExtraDataDescriptor);
+      if (!base::i18n::InitializeExtraICUWithFileDescriptor(
+              icu_extra_data_fd, icu_extra_data_region)) {
+        return TerminateForFatalInitializationError();
+      }
+    }
+    int icu_data_fd = g_fds->MaybeGet(kAndroidICUDataDescriptor);
+    if (icu_data_fd == -1) {
+      return TerminateForFatalInitializationError();
+    }
+    auto icu_data_region = g_fds->GetRegion(kAndroidICUDataDescriptor);
+    if (!base::i18n::InitializeICUWithFileDescriptor(icu_data_fd,
+                                                     icu_data_region)) {
+      return TerminateForFatalInitializationError();
+    }
+  }
+#else
+  if (!base::i18n::InitializeICU())
+    return TerminateForFatalInitializationError();
 #endif  // OS_ANDROID && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
 
-    InitializeV8IfNeeded(command_line, process_type);
+  InitializeV8IfNeeded(command_line, process_type);
 
-    blink::TrialTokenValidator::SetOriginTrialPolicyGetter(
-        base::BindRepeating([]() -> blink::OriginTrialPolicy* {
-          if (auto* client = GetContentClient())
-            return client->GetOriginTrialPolicy();
-          return nullptr;
-        }));
+  blink::TrialTokenValidator::SetOriginTrialPolicyGetter(
+      base::BindRepeating([]() -> blink::OriginTrialPolicy* {
+        if (auto* client = GetContentClient())
+          return client->GetOriginTrialPolicy();
+        return nullptr;
+      }));
 
 #if !defined(OFFICIAL_BUILD)
 #if defined(OS_WIN)
-    bool should_enable_stack_dump = !process_type.empty();
+  bool should_enable_stack_dump = !process_type.empty();
 #else
-    bool should_enable_stack_dump = true;
+  bool should_enable_stack_dump = true;
 #endif
-    // Print stack traces to stderr when crashes occur. This opens up security
-    // holes so it should never be enabled for official builds. This needs to
-    // happen before crash reporting is initialized (which for chrome happens in
-    // the call to PreSandboxStartup() on the delegate below), because otherwise
-    // this would interfere with signal handlers used by crash reporting.
-    if (should_enable_stack_dump &&
-        !command_line.HasSwitch(switches::kDisableInProcessStackTraces)) {
-      base::debug::EnableInProcessStackDumping();
-    }
+  // Print stack traces to stderr when crashes occur. This opens up security
+  // holes so it should never be enabled for official builds. This needs to
+  // happen before crash reporting is initialized (which for chrome happens in
+  // the call to PreSandboxStartup() on the delegate below), because otherwise
+  // this would interfere with signal handlers used by crash reporting.
+  if (should_enable_stack_dump &&
+      !command_line.HasSwitch(switches::kDisableInProcessStackTraces)) {
+    base::debug::EnableInProcessStackDumping();
+  }
 
-    base::debug::VerifyDebugger();
+  base::debug::VerifyDebugger();
 #endif  // !defined(OFFICIAL_BUILD)
 
-    delegate_->PreSandboxStartup();
+  delegate_->PreSandboxStartup();
 
 #if defined(OS_WIN)
-    if (!InitializeSandbox(
-            sandbox::policy::SandboxTypeFromCommandLine(command_line),
-            params.sandbox_info))
-      return TerminateForFatalInitializationError();
+  if (!InitializeSandbox(
+          sandbox::policy::SandboxTypeFromCommandLine(command_line),
+          params.sandbox_info))
+    return TerminateForFatalInitializationError();
 #elif defined(OS_MAC)
-    // Only the GPU process still runs the V1 sandbox.
-    bool v2_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
-        sandbox::switches::kSeatbeltClientName);
+  // Only the GPU process still runs the V1 sandbox.
+  bool v2_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      sandbox::switches::kSeatbeltClientName);
 
-    if (!v2_enabled && process_type == switches::kGpuProcess) {
-      if (!InitializeSandbox()) {
-        return TerminateForFatalInitializationError();
-      }
-    } else if (v2_enabled) {
-      CHECK(sandbox::Seatbelt::IsSandboxed());
+  if (!v2_enabled && process_type == switches::kGpuProcess) {
+    if (!InitializeSandbox()) {
+      return TerminateForFatalInitializationError();
     }
+  } else if (v2_enabled) {
+    CHECK(sandbox::Seatbelt::IsSandboxed());
+  }
 #endif
 
-    delegate_->SandboxInitialized(process_type);
+  delegate_->SandboxInitialized(process_type);
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-    if (process_type.empty()) {
-      // The sandbox host needs to be initialized before forking a thread to
-      // start the ServiceManager, and after setting up the sandbox and invoking
-      // SandboxInitialized().
-      InitializeZygoteSandboxForBrowserProcess(
-          *base::CommandLine::ForCurrentProcess());
+  if (process_type.empty()) {
+    // The sandbox host needs to be initialized before forking a thread to
+    // start the ServiceManager, and after setting up the sandbox and invoking
+    // SandboxInitialized().
+    InitializeZygoteSandboxForBrowserProcess(
+        *base::CommandLine::ForCurrentProcess());
 
-      // We can only enable startup tracing after
-      // InitializeZygoteSandboxForBrowserProcess(), because the latter may fork
-      // and run code that calls trace event macros in the forked process (which
-      // could cause all sorts of issues, like writing to the same tracing SMB
-      // from two processes).
-      tracing::EnableStartupTracingIfNeeded();
-    }
+    // We can only enable startup tracing after
+    // InitializeZygoteSandboxForBrowserProcess(), because the latter may fork
+    // and run code that calls trace event macros in the forked process (which
+    // could cause all sorts of issues, like writing to the same tracing SMB
+    // from two processes).
+    tracing::EnableStartupTracingIfNeeded();
+  }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-    // Return -1 to indicate no early termination.
-    return -1;
+  // Return -1 to indicate no early termination.
+  return -1;
 }
 
 int ContentMainRunnerImpl::Run(bool start_service_manager_only) {
