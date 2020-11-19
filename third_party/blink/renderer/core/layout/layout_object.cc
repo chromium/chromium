@@ -148,6 +148,26 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
   return nullptr;
 }
 
+// Returns the parent LayoutObject, or nullptr. If this LayoutObject is a
+// LayoutView, it will return the owning LayoutObject in the containing frame,
+// with the exception that it will not traverse from the LayoutView in a frame
+// which would be throttled during a full lifecycle update, to the owning
+// LayoutObject in the containing frame. This is an optimization to avoid
+// propagating paint invalidation flags into the parent frame; it's unnecessary
+// because the to-be-throttled frame won't paint.
+LayoutObject* ParentCrossingFramesForPaintInvalidation(
+    const LayoutObject* object) {
+  if (IsA<LayoutView>(object)) {
+    LocalFrameView* frame_view = object->GetFrameView();
+    if (frame_view->CanThrottleRendering()) {
+      frame_view->SetPrePaintSkippedWhileThrottled();
+      return nullptr;
+    }
+    return object->GetFrame()->OwnerLayoutObject();
+  }
+  return object->Parent();
+}
+
 }  // namespace
 
 static int g_allow_destroying_layout_object_in_finalizer = 0;
@@ -817,14 +837,15 @@ PaintLayer* LayoutObject::PaintingLayer() const {
   auto FindContainer = [](const LayoutObject& object) -> const LayoutObject* {
     if (object.IsRenderedLegend())
       return LayoutFieldset::FindLegendContainingBlock(To<LayoutBox>(object));
-    // Use ContainingBlock() instead of ParentCrossingFrames() for floating
-    // objects to omit any self-painting layers of inline objects that don't
-    // paint the floating object. This is only needed for inline-level floats
-    // not managed by LayoutNG. LayoutNG floats are painted by the correct
-    // painting layer.
+    // Use ContainingBlock() instead of Parent() for floating objects to omit
+    // any self-painting layers of inline objects that don't paint the floating
+    // object. This is only needed for inline-level floats not managed by
+    // LayoutNG. LayoutNG floats are painted by the correct painting layer.
     if (object.IsFloating() && !object.IsInLayoutNGInlineFormattingContext())
       return object.ContainingBlock();
-    return object.ParentCrossingFrames();
+    if (IsA<LayoutView>(object))
+      return object.GetFrame()->OwnerLayoutObject();
+    return object.Parent();
   };
 
   for (const LayoutObject* current = this; current;
@@ -3406,13 +3427,6 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
   return Parent();
 }
 
-inline LayoutObject* LayoutObject::ParentCrossingFrames() const {
-  NOT_DESTROYED();
-  if (IsA<LayoutView>(this))
-    return GetFrame()->OwnerLayoutObject();
-  return Parent();
-}
-
 inline void LayoutObject::ClearLayoutRootIfNeeded() const {
   NOT_DESTROYED();
   if (LocalFrameView* view = GetFrameView()) {
@@ -3615,7 +3629,7 @@ void LayoutObject::SetNeedsPaintPropertyUpdatePreservingCachedRects() {
   GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
 
   bitfields_.SetNeedsPaintPropertyUpdate(true);
-  if (auto* ancestor = ParentCrossingFrames())
+  if (auto* ancestor = ParentCrossingFramesForPaintInvalidation(this))
     ancestor->SetDescendantNeedsPaintPropertyUpdate();
 }
 
@@ -3623,17 +3637,17 @@ void LayoutObject::SetDescendantNeedsPaintPropertyUpdate() {
   NOT_DESTROYED();
   for (auto* ancestor = this;
        ancestor && !ancestor->DescendantNeedsPaintPropertyUpdate();
-       ancestor = ancestor->ParentCrossingFrames()) {
+       ancestor = ParentCrossingFramesForPaintInvalidation(ancestor)) {
     ancestor->bitfields_.SetDescendantNeedsPaintPropertyUpdate(true);
   }
 }
 
 void LayoutObject::SetAncestorsNeedPaintPropertyUpdateForMainThreadScrolling() {
   NOT_DESTROYED();
-  LayoutObject* ancestor = ParentCrossingFrames();
+  LayoutObject* ancestor = ParentCrossingFramesForPaintInvalidation(this);
   while (ancestor) {
     ancestor->SetNeedsPaintPropertyUpdate();
-    ancestor = ancestor->ParentCrossingFrames();
+    ancestor = ParentCrossingFramesForPaintInvalidation(ancestor);
   }
 }
 
@@ -4274,10 +4288,10 @@ inline void LayoutObject::SetShouldCheckGeometryForPaintInvalidation() {
   NOT_DESTROYED();
   DCHECK(ShouldCheckForPaintInvalidation());
   bitfields_.SetShouldCheckGeometryForPaintInvalidation(true);
-  for (auto* ancestor = ParentCrossingFrames();
+  for (auto* ancestor = ParentCrossingFramesForPaintInvalidation(this);
        ancestor &&
        !ancestor->DescendantShouldCheckGeometryForPaintInvalidation();
-       ancestor = ancestor->ParentCrossingFrames()) {
+       ancestor = ParentCrossingFramesForPaintInvalidation(ancestor)) {
     ancestor->bitfields_.SetDescendantShouldCheckGeometryForPaintInvalidation(
         true);
   }
@@ -4343,9 +4357,9 @@ void LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange() {
   GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
   bitfields_.SetShouldCheckForPaintInvalidation(true);
-  for (LayoutObject* parent = ParentCrossingFrames();
+  for (LayoutObject* parent = ParentCrossingFramesForPaintInvalidation(this);
        parent && !parent->ShouldCheckForPaintInvalidation();
-       parent = parent->ParentCrossingFrames()) {
+       parent = ParentCrossingFramesForPaintInvalidation(parent)) {
     parent->bitfields_.SetShouldCheckForPaintInvalidation(true);
   }
 }
@@ -4521,13 +4535,13 @@ void LayoutObject::MarkEffectiveAllowedTouchActionChanged() {
     return;
   }
 
-  LayoutObject* obj = ParentCrossingFrames();
+  LayoutObject* obj = ParentCrossingFramesForPaintInvalidation(this);
   while (obj && !obj->DescendantEffectiveAllowedTouchActionChanged()) {
     obj->bitfields_.SetDescendantEffectiveAllowedTouchActionChanged(true);
     if (obj->ChildPrePaintBlockedByDisplayLock())
       break;
 
-    obj = obj->ParentCrossingFrames();
+    obj = ParentCrossingFramesForPaintInvalidation(obj);
   }
 }
 
@@ -4542,13 +4556,13 @@ void LayoutObject::MarkBlockingWheelEventHandlerChanged() {
     return;
   }
 
-  LayoutObject* obj = ParentCrossingFrames();
+  LayoutObject* obj = ParentCrossingFramesForPaintInvalidation(this);
   while (obj && !obj->DescendantBlockingWheelEventHandlerChanged()) {
     obj->bitfields_.SetDescendantBlockingWheelEventHandlerChanged(true);
     if (obj->ChildPrePaintBlockedByDisplayLock())
       break;
 
-    obj = obj->ParentCrossingFrames();
+    obj = ParentCrossingFramesForPaintInvalidation(obj);
   }
 }
 

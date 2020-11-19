@@ -248,7 +248,6 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
   if (frame_view.ShouldThrottleRendering()) {
     // Skip the throttled frame, and set dirty bits that will be applied when it
     // becomes unthrottled.
-    frame_view.SetPrePaintSkippedWhileThrottled();
     if (LayoutView* layout_view = frame_view.GetLayoutView()) {
       if (needs_tree_builder_context_update) {
         layout_view->AddSubtreePaintPropertyUpdateReason(

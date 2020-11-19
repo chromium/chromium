@@ -411,14 +411,15 @@ TEST_P(PaintPropertyTreeUpdateTest, BuildingStopsAtThrottledFrames) {
   auto* iframe_transform =
       ChildDocument().getElementById("iframeTransform")->GetLayoutObject();
 
-  // Invalidate properties in the iframe; invalidations will be propagated from
-  // the throttled frame into the embedding document.
+  // Invalidate properties in the iframe; invalidations will not be propagated
+  // into the embedding document while the iframe is throttle-able.
   iframe_transform->SetNeedsPaintPropertyUpdate();
   iframe_transform->SetShouldCheckForPaintInvalidation();
   EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
-  EXPECT_TRUE(GetDocument().GetLayoutView()->ShouldCheckForPaintInvalidation());
+  EXPECT_FALSE(
+      GetDocument().GetLayoutView()->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->DescendantNeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->ShouldCheckForPaintInvalidation());
@@ -438,16 +439,14 @@ TEST_P(PaintPropertyTreeUpdateTest, BuildingStopsAtThrottledFrames) {
   EXPECT_FALSE(transform->DescendantNeedsPaintPropertyUpdate());
 
   // A full lifecycle update with the iframe throttled will clear flags in the
-  // top document, but not in the throttled iframe. The iframe's LayoutView
-  // will be marked for paint property update because it was skipped while
-  // paint properties were updated in the embedding document.
+  // top document, but not in the throttled iframe.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->DescendantNeedsPaintPropertyUpdate());
-  EXPECT_TRUE(iframe_layout_view->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(iframe_layout_view->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(iframe_layout_view->DescendantNeedsPaintPropertyUpdate());
   EXPECT_TRUE(iframe_layout_view->ShouldCheckForPaintInvalidation());
   EXPECT_TRUE(iframe_transform->NeedsPaintPropertyUpdate());

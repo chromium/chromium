@@ -3599,10 +3599,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
   static bool IsAllowedToModifyLayoutTreeStructure(Document&);
 
-  // Returns the parent LayoutObject, or nullptr. This has a special case for
-  // LayoutView to return the owning LayoutObject in the containing frame.
-  inline LayoutObject* ParentCrossingFrames() const;
-
   void UpdateImageObservers(const ComputedStyle* old_style,
                             const ComputedStyle* new_style);
   void UpdateFirstLineImageObservers(const ComputedStyle* new_style);
