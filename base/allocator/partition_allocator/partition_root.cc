@@ -370,6 +370,19 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // the beginning of the slot.
   allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
 
+  size_t size = 0, offset = 0;
+  if (allow_extras) {
+    size += internal::kPartitionTagSizeAdjustment;
+    size += internal::kPartitionCookieSizeAdjustment;
+    size += internal::kPartitionRefCountSizeAdjustment;
+
+    offset += internal::kPartitionTagOffsetAdjustment;
+    offset += internal::kPartitionCookieOffsetAdjustment;
+    offset += internal::kPartitionRefCountOffsetAdjustment;
+  }
+  extras_size = static_cast<uint32_t>(size);
+  extras_offset = static_cast<uint32_t>(offset);
+
   scannable = (opts.pcscan != PartitionOptions::PCScan::kAlwaysDisabled);
   // Concurrent freeing in PCScan can only safely work on thread-safe
   // partitions.
@@ -437,8 +450,7 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
     size_t requested_size) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
 
-  size_t raw_size =
-      internal::PartitionSizeAdjustAdd(allow_extras, requested_size);
+  size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   // Note that the new size isn't a bucketed size; this function is called
   // whenever we're reallocating a direct mapped allocation.
   size_t new_slot_size = GetDirectMapSlotSize(raw_size);
@@ -537,8 +549,8 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
         &actual_old_size, ptr);
   }
   if (LIKELY(!overridden)) {
-    auto* slot_span = SlotSpan::FromPointer(
-        internal::PartitionPointerAdjustSubtract(allow_extras, ptr));
+    auto* slot_span =
+        SlotSpan::FromPointer(AdjustPointerForExtrasSubtract(ptr));
     bool success = false;
     {
       internal::ScopedGuard<thread_safe> guard{lock_};
@@ -571,8 +583,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
       // the same size as the one we've already got, so re-use the allocation
       // after updating statistics (and cookies, if present).
       if (slot_span->CanStoreRawSize()) {
-        size_t new_raw_size =
-            internal::PartitionSizeAdjustAdd(allow_extras, new_size);
+        size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
         slot_span->SetRawSize(new_raw_size);
 #if DCHECK_IS_ON()
         // Write a new trailing cookie only when it is possible to keep track

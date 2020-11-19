@@ -40,29 +40,9 @@ static constexpr size_t kPartitionTagOffset =
 static constexpr size_t kPartitionTagOffset = kInSlotTagBufferSize;
 #endif
 
-ALWAYS_INLINE size_t PartitionTagSizeAdjustAdd(size_t size) {
-  PA_DCHECK(size + kInSlotTagBufferSize > size);
-  return size + kInSlotTagBufferSize;
-}
-
-ALWAYS_INLINE size_t PartitionTagSizeAdjustSubtract(size_t size) {
-  PA_DCHECK(size >= kInSlotTagBufferSize);
-  return size - kInSlotTagBufferSize;
-}
-
 ALWAYS_INLINE PartitionTag* PartitionTagPointer(void* ptr) {
   return reinterpret_cast<PartitionTag*>(reinterpret_cast<char*>(ptr) -
                                          kPartitionTagOffset);
-}
-
-ALWAYS_INLINE void* PartitionTagPointerAdjustSubtract(void* ptr) {
-  return reinterpret_cast<void*>(reinterpret_cast<char*>(ptr) -
-                                 kInSlotTagBufferSize);
-}
-
-ALWAYS_INLINE void* PartitionTagPointerAdjustAdd(void* ptr) {
-  return reinterpret_cast<void*>(reinterpret_cast<char*>(ptr) +
-                                 kInSlotTagBufferSize);
 }
 
 ALWAYS_INLINE void PartitionTagSetValue(void* ptr, size_t, PartitionTag value) {
@@ -90,14 +70,6 @@ static_assert(
 
 static constexpr size_t kInSlotTagBufferSize = 0;
 
-ALWAYS_INLINE size_t PartitionTagSizeAdjustAdd(size_t size) {
-  return size;
-}
-
-ALWAYS_INLINE size_t PartitionTagSizeAdjustSubtract(size_t size) {
-  return size;
-}
-
 ALWAYS_INLINE PartitionTag* PartitionTagPointer(void* ptr) {
   // See the comment explaining the layout in partition_tag_bitmap.h.
   uintptr_t pointer_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
@@ -114,14 +86,6 @@ ALWAYS_INLINE PartitionTag* PartitionTagPointer(void* ptr) {
                          tag_bitmap::kBytesPerPartitionTagShift
                              << tag_bitmap::kPartitionTagSizeShift;
   return reinterpret_cast<PartitionTag* const>(bitmap_base + bitmap_offset);
-}
-
-ALWAYS_INLINE void* PartitionTagPointerAdjustSubtract(void* ptr) {
-  return ptr;
-}
-
-ALWAYS_INLINE void* PartitionTagPointerAdjustAdd(void* ptr) {
-  return ptr;
 }
 
 ALWAYS_INLINE void PartitionTagSetValue(void* ptr,
@@ -184,24 +148,8 @@ extern BASE_EXPORT PartitionTagWrapper g_checked_ptr_single_tag;
 
 static constexpr size_t kInSlotTagBufferSize = 0;
 
-ALWAYS_INLINE size_t PartitionTagSizeAdjustAdd(size_t size) {
-  return size;
-}
-
-ALWAYS_INLINE size_t PartitionTagSizeAdjustSubtract(size_t size) {
-  return size;
-}
-
 ALWAYS_INLINE PartitionTag* PartitionTagPointer(void*) {
   return &g_checked_ptr_single_tag.partition_tag;
-}
-
-ALWAYS_INLINE void* PartitionTagPointerAdjustSubtract(void* ptr) {
-  return ptr;
-}
-
-ALWAYS_INLINE void* PartitionTagPointerAdjustAdd(void* ptr) {
-  return ptr;
 }
 
 ALWAYS_INLINE void PartitionTagSetValue(void*, size_t, PartitionTag) {}
@@ -219,25 +167,9 @@ using PartitionTag = uint8_t;
 
 static constexpr size_t kInSlotTagBufferSize = 0;
 
-ALWAYS_INLINE size_t PartitionTagSizeAdjustAdd(size_t size) {
-  return size;
-}
-
-ALWAYS_INLINE size_t PartitionTagSizeAdjustSubtract(size_t size) {
-  return size;
-}
-
 ALWAYS_INLINE PartitionTag* PartitionTagPointer(void* ptr) {
   NOTREACHED();
   return nullptr;
-}
-
-ALWAYS_INLINE void* PartitionTagPointerAdjustSubtract(void* ptr) {
-  return ptr;
-}
-
-ALWAYS_INLINE void* PartitionTagPointerAdjustAdd(void* ptr) {
-  return ptr;
 }
 
 ALWAYS_INLINE void PartitionTagSetValue(void*, size_t, PartitionTag) {}
@@ -250,6 +182,9 @@ ALWAYS_INLINE void PartitionTagClearValue(void* ptr, size_t) {}
 
 #endif  // !ENABLE_TAG_FOR_CHECKED_PTR2 && !ENABLE_TAG_FOR_MTE_CHECKED_PTR &&
         // !ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR
+
+constexpr size_t kPartitionTagSizeAdjustment = kInSlotTagBufferSize;
+constexpr size_t kPartitionTagOffsetAdjustment = kInSlotTagBufferSize;
 
 }  // namespace internal
 }  // namespace base

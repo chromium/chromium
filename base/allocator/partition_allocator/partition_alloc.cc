@@ -131,14 +131,14 @@ void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {
 // having the same layout, which is enforced by static_assert().
 BASE_EXPORT size_t PartitionAllocGetSlotOffset(void* ptr) {
   internal::DCheckIfManagedByPartitionAllocNormalBuckets(ptr);
-  // The only allocations that don't use tag are allocated outside of GigaCage,
-  // hence we'd never get here in the use_tag=false case.
-  ptr = internal::PartitionPointerAdjustSubtract(true /* use_tag */, ptr);
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           ptr);
-  PA_DCHECK(PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span)
-                ->allow_extras);
+  auto* root = PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span);
+  // The only allocations that don't use tag/ref-count are allocated outside of
+  // GigaCage, hence we'd never get here in the `allow_extras = false` case.
+  PA_DCHECK(root->allow_extras);
+  ptr = root->AdjustPointerForExtrasSubtract(ptr);
 
   // Get the offset from the beginning of the slot span.
   uintptr_t ptr_addr = reinterpret_cast<uintptr_t>(ptr);

@@ -76,7 +76,8 @@ void ReportStats(size_t swept_bytes, size_t last_size, size_t new_size) {
 }
 
 template <bool thread_safe>
-uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr, bool allow_extras) {
+uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
+                                    const PartitionRoot<thread_safe>& root) {
   char* allocation_start =
       GetSlotStartInSuperPage<thread_safe>(reinterpret_cast<char*>(maybe_ptr));
   if (!allocation_start) {
@@ -84,7 +85,7 @@ uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr, bool allow_extras) {
     return 0;
   }
   return reinterpret_cast<uintptr_t>(
-      PartitionPointerAdjustAdd(allow_extras, allocation_start));
+      root.AdjustPointerForExtrasAdd(allocation_start));
 }
 
 }  // namespace
@@ -203,7 +204,7 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
 
   // Check if pointer was in the quarantine bitmap.
   const uintptr_t base =
-      GetObjectStartInSuperPage<thread_safe>(maybe_ptr, root_.allow_extras);
+      GetObjectStartInSuperPage<thread_safe>(maybe_ptr, root_);
   if (!bitmap->CheckBit(base))
     return 0;
 
@@ -214,8 +215,8 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
   PA_DCHECK(&root_ ==
             PartitionRoot<thread_safe>::FromSlotSpan(target_slot_span));
 
-  const size_t usable_size = PartitionSizeAdjustSubtract(
-      root_.allow_extras, target_slot_span->GetUtilizedSlotSize());
+  const size_t usable_size = root_.AdjustSizeForExtrasSubtract(
+      target_slot_span->GetUtilizedSlotSize());
   // Range check for inner pointers.
   if (maybe_ptr >= base + usable_size)
     return 0;
@@ -232,19 +233,18 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
 
 template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
-  const bool allow_extras = root_.allow_extras;
   for (auto super_page : super_pages_) {
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
         reinterpret_cast<char*>(super_page));
-    bitmap->Iterate([allow_extras](uintptr_t ptr) {
+    bitmap->Iterate([&](uintptr_t ptr) {
       auto* object = reinterpret_cast<void*>(ptr);
       auto* slot_span = SlotSpan::FromPointerNoAlignmentCheck(object);
       // Use zero as a zapping value to speed up the fast bailout check in
       // ScanPartition.
-      memset(object, 0,
-             PartitionSizeAdjustSubtract(allow_extras,
-                                         slot_span->GetUtilizedSlotSize()));
+      memset(
+          object, 0,
+          root_.AdjustSizeForExtrasSubtract(slot_span->GetUtilizedSlotSize()));
     });
   }
 }

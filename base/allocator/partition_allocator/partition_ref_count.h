@@ -75,15 +75,6 @@ static constexpr size_t kPartitionRefCountOffset =
 static constexpr size_t kPartitionRefCountOffset = kInSlotRefCountBufferSize;
 #endif
 
-ALWAYS_INLINE size_t PartitionRefCountSizeAdjustAdd(size_t size) {
-  PA_DCHECK(size + kInSlotRefCountBufferSize > size);
-  return size + kInSlotRefCountBufferSize;
-}
-
-ALWAYS_INLINE size_t PartitionRefCountSizeAdjustSubtract(size_t size) {
-  PA_DCHECK(size >= kInSlotRefCountBufferSize);
-  return size - kInSlotRefCountBufferSize;
-}
 
 ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* ptr) {
   return reinterpret_cast<PartitionRefCount*>(reinterpret_cast<char*>(ptr) -
@@ -98,37 +89,14 @@ ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointerNoOffset(void* ptr) {
                                               kPartitionRefCountOffset);
 }
 
-ALWAYS_INLINE void* PartitionRefCountPointerAdjustSubtract(void* ptr) {
-  return reinterpret_cast<void*>(reinterpret_cast<char*>(ptr) -
-                                 kInSlotRefCountBufferSize);
-}
-
-ALWAYS_INLINE void* PartitionRefCountPointerAdjustAdd(void* ptr) {
-  return reinterpret_cast<void*>(reinterpret_cast<char*>(ptr) +
-                                 kInSlotRefCountBufferSize);
-}
-
 #else  // ENABLE_REF_COUNTER_FOR_BACKUP_REF_PTR
 
 static constexpr size_t kInSlotRefCountBufferSize = 0;
 
-ALWAYS_INLINE size_t PartitionRefCountSizeAdjustAdd(size_t size) {
-  return size;
-}
-
-ALWAYS_INLINE size_t PartitionRefCountSizeAdjustSubtract(size_t size) {
-  return size;
-}
-
-ALWAYS_INLINE void* PartitionRefCountPointerAdjustSubtract(void* ptr) {
-  return ptr;
-}
-
-ALWAYS_INLINE void* PartitionRefCountPointerAdjustAdd(void* ptr) {
-  return ptr;
-}
-
 #endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+
+constexpr size_t kPartitionRefCountSizeAdjustment = kInSlotRefCountBufferSize;
+constexpr size_t kPartitionRefCountOffsetAdjustment = kInSlotRefCountBufferSize;
 
 }  // namespace internal
 }  // namespace base

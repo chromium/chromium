@@ -142,6 +142,9 @@ struct BASE_EXPORT PartitionRoot {
   bool scannable = false;
   bool initialized = false;
 
+  uint32_t extras_size;
+  uint32_t extras_offset;
+
 #if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR
   internal::PartitionTag current_partition_tag = 0;
 #endif
@@ -352,6 +355,25 @@ struct BASE_EXPORT PartitionRoot {
 #endif
     return bits::Align(raw_size + GetDirectMapMetadataAndGuardPagesSize(),
                        alignment);
+  }
+
+  ALWAYS_INLINE size_t AdjustSizeForExtrasAdd(size_t size) const {
+    PA_DCHECK(size + extras_size >= size);
+    return size + extras_size;
+  }
+
+  ALWAYS_INLINE size_t AdjustSizeForExtrasSubtract(size_t size) const {
+    return size - extras_size;
+  }
+
+  ALWAYS_INLINE void* AdjustPointerForExtrasAdd(void* ptr) const {
+    return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(ptr) +
+                                   extras_offset);
+  }
+
+  ALWAYS_INLINE void* AdjustPointerForExtrasSubtract(void* ptr) const {
+    return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(ptr) -
+                                   extras_offset);
   }
 
  private:
@@ -619,8 +641,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #endif
   if (allow_extras) {
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR || DCHECK_IS_ON()
-    size_t usable_size = internal::PartitionSizeAdjustSubtract(
-        true /* allow_extras */, utilized_slot_size);
+    size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
 #endif
 #if DCHECK_IS_ON()
     // Verify 2 cookies surrounding the allocated region.
@@ -636,8 +657,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
       // bytes-aligned) when MTECheckedPtr is enabled. However,
       // utilized_slot_size may not be aligned for single-slot slot spans. So we
       // need the bucket's slot_size.
-      size_t slot_size_with_no_extras = internal::PartitionSizeAdjustSubtract(
-          true, slot_span->bucket->slot_size);
+      size_t slot_size_with_no_extras =
+          AdjustSizeForExtrasSubtract(slot_span->bucket->slot_size);
 #if ENABLE_TAG_FOR_MTE_CHECKED_PTR && MTE_CHECKED_PTR_SET_TAG_AT_FREE
       internal::PartitionTagIncrementValue(ptr, slot_size_with_no_extras);
 #else
@@ -663,8 +684,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     }
 
     // Shift ptr to the beginning of the slot.
-    ptr =
-        internal::PartitionPointerAdjustSubtract(true /* allow_extras */, ptr);
+    ptr = AdjustPointerForExtrasSubtract(ptr);
   }  // if (allow_extras)
 
 #if DCHECK_IS_ON()
@@ -777,7 +797,7 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
 
   size_t size = slot_span->GetUtilizedSlotSize();
   // Adjust back by subtracing extras (if any).
-  size = internal::PartitionSizeAdjustSubtract(root->allow_extras, size);
+  size = root->AdjustSizeForExtrasSubtract(size);
   return size;
 }
 
@@ -786,11 +806,10 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
 // within the first partition page.
 template <bool thread_safe>
 ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetSize(void* ptr) const {
-  ptr = internal::PartitionPointerAdjustSubtract(allow_extras, ptr);
+  ptr = AdjustPointerForExtrasSubtract(ptr);
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<thread_safe>(ptr);
-  size_t size = internal::PartitionSizeAdjustSubtract(
-      allow_extras, slot_span->bucket->slot_size);
+  size_t size = AdjustSizeForExtrasSubtract(slot_span->bucket->slot_size);
   return size;
 }
 
@@ -863,8 +882,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   a. Call to the thread cache, if it succeeds, go to step 3.
   //   b. Otherwise, call the "raw" allocator <-- Locking
   // 3. Handle cookies/tags, zero allocation if required
-  size_t raw_size =
-      internal::PartitionSizeAdjustAdd(allow_extras, requested_size);
+  size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
   uint16_t bucket_index = SizeToBucketIndex(raw_size);
@@ -957,10 +975,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   to save raw_size, i.e. only for large allocations. For small allocations,
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
-  size_t usable_size =
-      internal::PartitionSizeAdjustSubtract(allow_extras, utilized_slot_size);
+  size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
   // The value given to the application is just after the tag and cookie.
-  ret = internal::PartitionPointerAdjustAdd(allow_extras, ret);
+  ret = AdjustPointerForExtrasAdd(ret);
 
 #if DCHECK_IS_ON()
   // Surround the region with 2 cookies.
@@ -991,8 +1008,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     // tag_bitmap::kBytesPerPartitionTag-aligned (currently 16 bytes-aligned)
     // when MTECheckedPtr is enabled. However, utilized_slot_size may not be
     // aligned for single-slot slot spans. So we need the bucket's slot_size.
-    size_t slot_size_with_no_extras = internal::PartitionSizeAdjustSubtract(
-        allow_extras, buckets[bucket_index].slot_size);
+    size_t slot_size_with_no_extras =
+        AdjustSizeForExtrasSubtract(buckets[bucket_index].slot_size);
     internal::PartitionTagSetValue(ret, slot_size_with_no_extras,
                                    GetNewPartitionTag());
 #endif  // !ENABLE_TAG_FOR_MTE_CHECKED_PTR || !MTE_CHECKED_PTR_SET_TAG_AT_FREE
@@ -1094,7 +1111,7 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::ActualSize(size_t size) {
   return size;
 #else
   PA_DCHECK(PartitionRoot<thread_safe>::initialized);
-  size = internal::PartitionSizeAdjustAdd(allow_extras, size);
+  size = AdjustSizeForExtrasAdd(size);
   auto& bucket = buckets[SizeToBucketIndex(size)];
   PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
   PA_DCHECK(!(bucket.slot_size % kSmallestBucket));
@@ -1106,7 +1123,7 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::ActualSize(size_t size) {
   } else {
     size = GetDirectMapSlotSize(size);
   }
-  size = internal::PartitionSizeAdjustSubtract(allow_extras, size);
+  size = AdjustSizeForExtrasSubtract(size);
   return size;
 #endif
 }

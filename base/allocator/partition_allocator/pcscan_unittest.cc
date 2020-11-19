@@ -59,7 +59,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
                                        size_t object_size) {
   CHECK_EQ(0u, root.get_total_size_of_committed_pages());
 
-  const size_t size_with_extra = PartitionSizeAdjustAdd(true, object_size);
+  const size_t size_with_extra = root.AdjustSizeForExtrasAdd(object_size);
   const size_t bucket_index = root.SizeToBucketIndex(size_with_extra);
   ThreadSafePartitionRoot::Bucket& bucket = root.buckets[bucket_index];
   const size_t num_slots = (bucket.get_bytes_per_span()) / bucket.slot_size;
@@ -70,9 +70,9 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
     void* ptr = root.AllocFlagsNoHooks(0, object_size);
     EXPECT_TRUE(ptr);
     if (i == 0)
-      first = PartitionPointerAdjustSubtract(true, ptr);
+      first = root.AdjustPointerForExtrasSubtract(ptr);
     else if (i == num_slots - 1)
-      last = PartitionPointerAdjustSubtract(true, ptr);
+      last = root.AdjustPointerForExtrasSubtract(ptr);
   }
 
   EXPECT_EQ(SlotSpan::FromPointer(first), SlotSpan::FromPointer(last));
@@ -86,8 +86,8 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   EXPECT_TRUE(bucket.active_slot_spans_head !=
               SlotSpan::get_sentinel_slot_span());
 
-  return {bucket.active_slot_spans_head, PartitionPointerAdjustAdd(true, first),
-          PartitionPointerAdjustAdd(true, last)};
+  return {bucket.active_slot_spans_head, root.AdjustPointerForExtrasAdd(first),
+          root.AdjustPointerForExtrasAdd(last)};
 }
 
 bool IsInFreeList(void* object) {
@@ -182,7 +182,7 @@ void TestDanglingReference(PCScanTest& test,
     // Check that the object is no longer in the quarantine.
     EXPECT_FALSE(test.IsInQuarantine(value));
     // Check that the object is in the freelist now.
-    EXPECT_TRUE(IsInFreeList(PartitionPointerAdjustSubtract(true, value)));
+    EXPECT_TRUE(IsInFreeList(root.AdjustPointerForExtrasSubtract(value)));
   }
 }
 
@@ -218,9 +218,8 @@ TEST_F(PCScanTest, DanglingReferenceSameSlotSpanButDifferentPages) {
       static_cast<size_t>(PartitionPageSize() * 0.75);
 
   FullSlotSpanAllocation full_slot_span = GetFullSlotSpan(
-      root(),
-      PartitionSizeAdjustSubtract(
-          true, kObjectSizeForSlotSpanConsistingOfMultiplePartitionPages));
+      root(), root().AdjustSizeForExtrasSubtract(
+                  kObjectSizeForSlotSpanConsistingOfMultiplePartitionPages));
 
   // Assert that the first and the last objects are in the same slot span but on
   // different partition pages.

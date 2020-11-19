@@ -26,8 +26,7 @@ void PartitionRefCount::Free() {
   // PartitionRefCount is required to be allocated inside a `PartitionRoot` that
   // supports extras.
   PA_DCHECK(root->allow_extras);
-  size_t usable_size = internal::PartitionSizeAdjustSubtract(
-      /* allow_extras= */ true, utilized_slot_size);
+  size_t usable_size = root->AdjustSizeForExtrasSubtract(utilized_slot_size);
   ASAN_UNPOISON_MEMORY_REGION(this, usable_size);
 #endif
 
