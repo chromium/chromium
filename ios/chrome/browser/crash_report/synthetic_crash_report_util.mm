@@ -122,9 +122,11 @@ void CreateSyntheticCrashReportForUte(
                  base::NumberToString(static_cast<long>(uptime * 1000)));
   }
 
-  AppendConfigWithBreakpadServerParam(
-      config, "memory_footprint",
-      base::NumberToString(previous_session.memoryFootprint));
+  if (previous_session.memoryFootprint) {
+    AppendConfigWithBreakpadServerParam(
+        config, "memory_footprint",
+        base::NumberToString(previous_session.memoryFootprint));
+  }
 
   // Write empty minidump file, as Breakpad can't upload config without the
   // minidump.
