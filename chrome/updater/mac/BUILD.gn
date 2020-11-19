@@ -121,8 +121,7 @@ source_set("updater_setup_sources") {
   ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("updater_install_script") {
+action("updater_install_script") {
   script = "embed_variables.py"
 
   inputs = [
@@ -142,8 +141,7 @@ python2_action("updater_install_script") {
   ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("browser_install_script") {
+action("browser_install_script") {
   script = "embed_variables.py"
 
   inputs = [

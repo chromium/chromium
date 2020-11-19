@@ -94,13 +94,17 @@ def Interpolate(value, substitutions):
 
 def LoadPList(path):
   """Loads Plist at |path| and returns it as a dictionary."""
-  fd, name = tempfile.mkstemp()
-  try:
-    subprocess.check_call(['plutil', '-convert', 'xml1', '-o', name, path])
-    with os.fdopen(fd, 'rb') as f:
-      return plistlib.readPlist(f)
-  finally:
-    os.unlink(name)
+  if sys.version_info.major == 2:
+    fd, name = tempfile.mkstemp()
+    try:
+      subprocess.check_call(['plutil', '-convert', 'xml1', '-o', name, path])
+      with os.fdopen(fd, 'rb') as f:
+        return plistlib.readPlist(f)
+    finally:
+      os.unlink(name)
+  else:
+    with open(path, 'rb') as f:
+      return plistlib.load(f)
 
 
 def SavePList(path, format, data):
@@ -114,7 +118,10 @@ def SavePList(path, format, data):
     if os.path.exists(path):
       os.unlink(path)
     with os.fdopen(fd, 'wb') as f:
-      plistlib.writePlist(data, f)
+      if sys.version_info.major == 2:
+        plistlib.writePlist(data, f)
+      else:
+        plistlib.dump(data, f)
     subprocess.check_call(['plutil', '-convert', format, '-o', path, name])
   finally:
     os.unlink(name)

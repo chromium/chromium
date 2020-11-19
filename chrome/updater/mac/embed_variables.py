@@ -2,12 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import ConfigParser
-import glob
 import optparse
 import os
-import shutil
-import subprocess
 import sys
 
 
@@ -28,7 +24,7 @@ def embed_version(input_file, output_file, version, product_full_name):
     fin.close()
     fout.close()
 
-    os.chmod(output_file, 0755)
+    os.chmod(output_file, 0o755)
 
 
 def parse_options():

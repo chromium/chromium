@@ -4,8 +4,7 @@
 
 import("//build/config/python.gni")
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action_foreach("package_sb_files") {
+action_foreach("package_sb_files") {
   script = "package_sb_file.py"
   sources = [
     "audio.sb",

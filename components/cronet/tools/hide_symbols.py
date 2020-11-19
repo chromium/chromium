@@ -12,10 +12,13 @@
 # This way, we can reduce risk of symbol conflict when linking it into apps
 # by exposing internal symbols, especially in third-party libraries.
 
+from __future__ import print_function
+
 import glob
 import optparse
 import os
 import subprocess
+import sys
 
 
 # Mapping from GN's target_cpu attribute to ld's -arch parameter.
@@ -59,12 +62,12 @@ def main():
   assert not args
 
   developer_dir = subprocess.check_output(
-      ['xcode-select', '--print-path']).strip()
+      ['xcode-select', '--print-path'], universal_newlines=True).strip()
 
   xctoolchain_libs = glob.glob(developer_dir
       + '/Toolchains/XcodeDefault.xctoolchain/usr/lib'
       + '/clang/*/lib/darwin/*.ios.a')
-  print "Adding xctoolchain_libs: ", xctoolchain_libs
+  print("Adding xctoolchain_libs: ", xctoolchain_libs)
 
   # ld -r concatenates multiple .o files and .a files into a single .o file,
   # while "hiding" symbols not marked as visible.
@@ -131,9 +134,9 @@ def main():
     ret = os.system('xcrun nm -u "' + options.output_obj +
                     '" | grep ___cxa_pure_virtual')
     if ret == 0:
-      print "ERROR: Found undefined libc++ symbols, " + \
-          "is libc++ indcluded in dependencies?"
-      exit(2)
+      print("ERROR: Found undefined libc++ symbols, "
+            "is libc++ included in dependencies?")
+      sys.exit(2)
 
 
 if __name__ == "__main__":

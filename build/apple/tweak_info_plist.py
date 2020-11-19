@@ -301,10 +301,14 @@ def Main(argv):
   # Read the plist into its parsed format. Convert the file to 'xml1' as
   # plistlib only supports that format in Python 2.7.
   with tempfile.NamedTemporaryFile() as temp_info_plist:
-    retcode = _ConvertPlist(options.plist_path, temp_info_plist.name, 'xml1')
-    if retcode != 0:
-      return retcode
-    plist = plistlib.readPlist(temp_info_plist.name)
+    if sys.version_info.major == 2:
+      retcode = _ConvertPlist(options.plist_path, temp_info_plist.name, 'xml1')
+      if retcode != 0:
+        return retcode
+      plist = plistlib.readPlist(temp_info_plist.name)
+    else:
+      with open(options.plist_path, 'rb') as f:
+        plist = plistlib.load(f)
 
   # Convert overrides.
   overrides = {}
@@ -398,7 +402,11 @@ def Main(argv):
 
   # Now that all keys have been mutated, rewrite the file.
   with tempfile.NamedTemporaryFile() as temp_info_plist:
-    plistlib.writePlist(plist, temp_info_plist.name)
+    if sys.version_info.major == 2:
+      plistlib.writePlist(plist, temp_info_plist.name)
+    else:
+      with open(temp_info_plist.name, 'wb') as f:
+        plist = plistlib.dump(plist, f)
 
     # Convert Info.plist to the format requested by the --format flag. Any
     # format would work on Mac but iOS requires specific format.

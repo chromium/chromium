@@ -58,9 +58,13 @@ def LoadPlistFile(plist_path):
   Returns:
     The content of the property list file as a python object.
   """
-  return ReadPlistFromString(
-      subprocess.check_output(
-          ['xcrun', 'plutil', '-convert', 'xml1', '-o', '-', plist_path]))
+  if sys.version_info.major == 2:
+    return plistlib.readPlistFromString(
+        subprocess.check_output(
+            ['xcrun', 'plutil', '-convert', 'xml1', '-o', '-', plist_path]))
+  else:
+    with open(plist_path) as fp:
+      return plistlib.load(fp)
 
 
 def CreateSymlink(value, location):
@@ -262,7 +266,11 @@ class Entitlements(object):
         self._data[key] = value
 
   def WriteTo(self, target_path):
-    plistlib.writePlist(self._data, target_path)
+    with open(target_path, 'wb') as fp:
+      if sys.version_info.major == 2:
+        plistlib.writePlist(self._data, fp)
+      else:
+        plistlib.dump(self._data, fp)
 
 
 def FindProvisioningProfile(bundle_identifier, required):
@@ -317,9 +325,11 @@ def FindProvisioningProfile(bundle_identifier, required):
 
 
 def CodeSignBundle(bundle_path, identity, extra_args):
-  process = subprocess.Popen(['xcrun', 'codesign', '--force', '--sign',
-      identity, '--timestamp=none'] + list(extra_args) + [bundle_path],
-      stderr=subprocess.PIPE)
+  process = subprocess.Popen(
+      ['xcrun', 'codesign', '--force', '--sign', identity, '--timestamp=none'] +
+      list(extra_args) + [bundle_path],
+      stderr=subprocess.PIPE,
+      universal_newlines=True)
   _, stderr = process.communicate()
   if process.returncode:
     sys.stderr.write(stderr)
