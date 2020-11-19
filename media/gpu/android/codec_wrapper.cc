@@ -125,7 +125,10 @@ CodecOutputBuffer::~CodecOutputBuffer() {
 
 bool CodecOutputBuffer::ReleaseToSurface() {
   was_rendered_ = true;
-  return codec_->ReleaseCodecOutputBuffer(id_, true);
+  auto result = codec_->ReleaseCodecOutputBuffer(id_, true);
+  if (render_cb_)
+    std::move(render_cb_).Run();
+  return result;
 }
 
 CodecWrapperImpl::CodecWrapperImpl(

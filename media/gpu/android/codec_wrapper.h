@@ -44,6 +44,12 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   // The size of the image.
   gfx::Size size() const { return size_; }
 
+  // Sets a callback that will be called when we're released to the surface.
+  // Will not be called if we're dropped.
+  void set_render_cb(base::OnceClosure render_cb) {
+    render_cb_ = std::move(render_cb);
+  }
+
   // Note that you can't use the first ctor, since CodecWrapperImpl isn't
   // defined here.  Use the second, and it'll be nullptr.
   template <typename... Args>
@@ -67,6 +73,7 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   int64_t id_;
   bool was_rendered_ = false;
   gfx::Size size_;
+  base::OnceClosure render_cb_;
   DISALLOW_COPY_AND_ASSIGN(CodecOutputBuffer);
 };
 

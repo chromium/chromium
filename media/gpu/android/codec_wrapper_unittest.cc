@@ -355,4 +355,22 @@ TEST_F(CodecWrapperTest, CodecWrapperPostsReleaseToProvidedThread) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(CodecWrapperTest, RenderCallbackCalledIfRendered) {
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  bool flag = false;
+  codec_buffer->set_render_cb(base::BindOnce([](bool* flag) { *flag = true; },
+                                             base::Unretained(&flag)));
+  codec_buffer->ReleaseToSurface();
+  EXPECT_TRUE(flag);
+}
+
+TEST_F(CodecWrapperTest, RenderCallbackIsNotCalledIfNotRendered) {
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  bool flag = false;
+  codec_buffer->set_render_cb(base::BindOnce([](bool* flag) { *flag = true; },
+                                             base::Unretained(&flag)));
+  codec_buffer.reset();
+  EXPECT_FALSE(flag);
+}
+
 }  // namespace media
