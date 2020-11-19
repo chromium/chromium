@@ -33,11 +33,12 @@ cr.define('cr.ui', function() {
 
   /**
    * Called when focus is returned from ash::SystemTray.
+   * @param {boolean} reverse Is focus returned in reverse order?
    */
-  Oobe.focusReturned = function() {
+  Oobe.focusReturned = function(reverse) {
     if (Oobe.getInstance().currentScreen &&
         Oobe.getInstance().currentScreen.onFocusReturned) {
-      Oobe.getInstance().currentScreen.onFocusReturned();
+      Oobe.getInstance().currentScreen.onFocusReturned(reverse);
     }
   };
 

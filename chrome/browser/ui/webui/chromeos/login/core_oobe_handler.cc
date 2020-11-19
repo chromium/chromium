@@ -173,6 +173,10 @@ void CoreOobeHandler::ShowDeviceResetScreen() {
   LaunchResetScreen();
 }
 
+void CoreOobeHandler::FocusReturned(bool reverse) {
+  CallJS("cr.ui.Oobe.focusReturned", reverse);
+}
+
 void CoreOobeHandler::ResetSignInUI(bool force_online) {
   CallJS("cr.ui.Oobe.resetSigninUI", force_online);
 }

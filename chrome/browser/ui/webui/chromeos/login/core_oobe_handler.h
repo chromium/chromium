@@ -66,6 +66,7 @@ class CoreOobeView {
   virtual void SetDialogPaddingMode(DialogPaddingMode mode) = 0;
   virtual void ShowDeviceResetScreen() = 0;
   virtual void UpdateKeyboardState() = 0;
+  virtual void FocusReturned(bool reverse) = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
@@ -136,6 +137,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void SetShelfHeight(int height) override;
   void SetDialogPaddingMode(CoreOobeView::DialogPaddingMode mode) override;
   void ShowDeviceResetScreen() override;
+  void FocusReturned(bool reverse) override;
 
   void UpdateKeyboardState() override;
 

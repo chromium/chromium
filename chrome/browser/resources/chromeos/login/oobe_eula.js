@@ -491,9 +491,15 @@ Polymer({
 
   /**
    * Called when focus is returned.
+   * @param {boolean} reverse Is focus returned in reverse order?
    */
-  onFocusReturned() {
-    this.focus();
+  onFocusReturned(reverse) {
+    // We need to explicitly adjust focus inside the webview part when focus is
+    // returned from the system tray in regular order. Because the webview is
+    // the first focusable element of the screen and we want to eliminate extra
+    // tab. Reverse tab doesn't need any adjustments here.
+    if (!reverse)
+      this.focus();
   },
 });
 })();
