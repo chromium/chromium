@@ -91,16 +91,10 @@ void PwaInstallView::UpdateImpl() {
     FeaturePromoControllerViews* controller =
         FeaturePromoControllerViews::GetForView(this);
     if (controller) {
-      FeaturePromoBubbleParams params;
-      params.body_string_specifier = IDS_DESKTOP_PWA_INSTALL_PROMO;
-      params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
-      params.feature_command_id = IDC_INSTALL_PWA;
-      params.anchor_view = this;
-
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;
-      controller->MaybeShowPromoWithParams(
-          feature_engagement::kIPHDesktopPwaInstallFeature, params,
+      controller->MaybeShowPromo(
+          feature_engagement::kIPHDesktopPwaInstallFeature,
           base::Bind(&PwaInstallView::OnIphClosed,
                      weak_ptr_factory_.GetWeakPtr()));
     }
