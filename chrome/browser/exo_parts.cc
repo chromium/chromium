@@ -19,6 +19,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,6 +51,7 @@ namespace {
 constexpr char kMimeTypeArcUriList[] = "application/x-arc-uri-list";
 constexpr char kMimeTypeTextUriList[] = "text/uri-list";
 constexpr char kUriListSeparator[] = "\r\n";
+constexpr char kVmFileScheme[] = "vmfile";
 
 bool IsArcWindow(const aura::Window* window) {
   return static_cast<ash::AppType>(window->GetProperty(
@@ -134,21 +136,30 @@ void ShareAndSend(aura::Window* target,
     vm_name = plugin_vm::kPluginVmName;
   }
 
+  const std::string vm_prefix =
+      base::StrCat({kVmFileScheme, ":", vm_name, ":"});
   std::vector<std::string> lines_to_send;
   auto* share_path = guest_os::GuestOsSharePath::GetForProfile(primary_profile);
   std::vector<base::FilePath> paths_to_share;
 
   for (auto& info : files) {
-    // Crostini and PluginVm converts to path inside VM. For other app types, or
-    // if we fail to convert, we just keep the original path.
     base::FilePath path_to_send = info.path;
-    if ((is_crostini || is_plugin_vm) &&
-        file_manager::util::ConvertFileSystemURLToPathInsideVM(
-            primary_profile, info.url, vm_mount,
-            /*map_crostini_home=*/is_crostini, &path_to_send) &&
-        !share_path->IsPathShared(vm_name, info.path)) {
-      // Keep a record of any paths which are not yet shared.
-      paths_to_share.emplace_back(info.path);
+    if (is_crostini || is_plugin_vm) {
+      // Check if it is a path inside the VM: 'vmfile:<vm_name>:'.
+      if (base::StartsWith(info.path.value(), vm_prefix,
+                           base::CompareCase::SENSITIVE)) {
+        path_to_send =
+            base::FilePath(info.path.value().substr(vm_prefix.size()));
+      } else if (file_manager::util::ConvertFileSystemURLToPathInsideVM(
+                     primary_profile, info.url, vm_mount,
+                     /*map_crostini_home=*/is_crostini, &path_to_send)) {
+        // Convert to path inside the VM and check if the path needs sharing.
+        if (!share_path->IsPathShared(vm_name, info.path))
+          paths_to_share.emplace_back(info.path);
+      } else {
+        LOG(WARNING) << "Could not convert path " << info.path;
+        continue;
+      }
     }
     lines_to_send.emplace_back(net::FilePathToFileURL(path_to_send).spec());
   }
@@ -178,11 +189,19 @@ class ChromeFileHelper : public exo::FileHelper {
     aura::Window* toplevel = source->GetToplevelWindow();
     bool is_crostini = crostini::IsCrostiniWindow(toplevel);
     bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
+
+    base::FilePath vm_mount;
+    std::string vm_name;
+    if (is_crostini) {
+      vm_mount = crostini::ContainerChromeOSBaseDirectory();
+      vm_name = crostini::kCrostiniDefaultVmName;
+    } else if (is_plugin_vm) {
+      vm_mount = plugin_vm::ChromeOSBaseDirectory();
+      vm_name = plugin_vm::kPluginVmName;
+    }
+
     std::string lines(data.begin(), data.end());
     std::vector<ui::FileInfo> filenames;
-    // Until we have mapping for other VMs, only accept from arc.
-    if (!IsArcWindow(source))
-      return filenames;
 
     base::FilePath path;
     storage::FileSystemURL url;
@@ -191,16 +210,19 @@ class ChromeFileHelper : public exo::FileHelper {
       if (!net::FileURLToFilePath(GURL(line), &path))
         continue;
 
-      if (is_crostini &&
-          file_manager::util::ConvertPathInsideVMToFileSystemURL(
-              primary_profile, path, crostini::ContainerChromeOSBaseDirectory(),
-              /*map_crostini_home=*/true, &url)) {
-        path = url.path();
-      } else if (is_plugin_vm &&
-                 file_manager::util::ConvertPathInsideVMToFileSystemURL(
-                     primary_profile, path, plugin_vm::ChromeOSBaseDirectory(),
-                     /*map_crostini_home=*/false, &url)) {
-        path = url.path();
+      // Convert the VM path to a path in the host if possible (in homedir or
+      // /mnt/chromeos for crostini; in //ChromeOS for Plugin VM), otherwise
+      // prefix with 'vmfile:<vm_name>:' to avoid VMs spoofing host paths.
+      // E.g. crostini /etc/mime.types => vmfile:termina:/etc/mime.types.
+      if (is_crostini || is_plugin_vm) {
+        if (file_manager::util::ConvertPathInsideVMToFileSystemURL(
+                primary_profile, path, vm_mount,
+                /*map_crostini_home=*/is_crostini, &url)) {
+          path = url.path();
+        } else {
+          path = base::FilePath(
+              base::StrCat({kVmFileScheme, ":", vm_name, ":", path.value()}));
+        }
       }
       filenames.emplace_back(ui::FileInfo(path, base::FilePath()));
     }
