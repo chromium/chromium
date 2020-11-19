@@ -564,13 +564,12 @@ bool TopSitesDatabase::RemoveURLNoTransaction(const MostVisitedURL& url) {
 }
 
 sql::Database* TopSitesDatabase::CreateDB(const base::FilePath& db_name) {
-  std::unique_ptr<sql::Database> db(new sql::Database());
   // Settings copied from FaviconDatabase.
+  auto db = std::make_unique<sql::Database>(sql::DatabaseOptions{
+      .exclusive_locking = false, .page_size = 4096, .cache_size = 32});
   db->set_histogram_tag("TopSites");
   db->set_error_callback(
       base::BindRepeating(&DatabaseErrorCallback, db.get(), db_name));
-  db->set_page_size(4096);
-  db->set_cache_size(32);
 
   if (!db->Open(db_name))
     return nullptr;
