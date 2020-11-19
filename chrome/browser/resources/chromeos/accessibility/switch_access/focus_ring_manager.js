@@ -65,13 +65,13 @@ class FocusRingManager {
       // Clear the dashed ring between transitions, as the animation is
       // distracting.
       manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [];
-      manager.updateFocusRings_();
+      manager.updateFocusRings_(node, null);
 
       // The dashed focus ring should not be shown around the menu when exiting.
       if (!MenuManager.isMenuOpen()) {
         manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects =
             [backButton.group.location];
-        manager.updateFocusRings_();
+        manager.updateFocusRings_(node, null);
       }
       return;
     }
@@ -91,7 +91,6 @@ class FocusRingManager {
       // Clear the dashed ring between transitions, as the animation is
       // distracting.
       manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [];
-      manager.updateFocusRings_();
 
       let focusRect = node.location;
       const childRect = firstChild ? firstChild.location : null;
@@ -103,20 +102,33 @@ class FocusRingManager {
         manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [childRect];
       }
       manager.rings_.get(SAConstants.Focus.ID.PRIMARY).rects = [focusRect];
-      manager.updateFocusRings_();
+      manager.updateFocusRings_(node, firstChild);
       return;
     }
 
     manager.rings_.get(SAConstants.Focus.ID.PRIMARY).rects = [node.location];
     manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [];
-    manager.updateFocusRings_();
+    manager.updateFocusRings_(node, null);
   }
 
   /** Clears all focus rings. */
   static clearAll() {
     const manager = FocusRingManager.instance;
-    manager.rings_.forEach((ring) => ring.rects = []);
-    manager.updateFocusRings_();
+    manager.rings_.forEach((ring) => {
+      ring.rects = [];
+    });
+    manager.updateFocusRings_(null, null);
+  }
+
+  /**
+   * Set an observer that will be called every time the focus rings
+   * are updated. It will be called with two arguments: the node for
+   * the primary ring, and the node for the preview ring. Either may
+   * be null.
+   * @param {function(SAChildNode, SAChildNode)} observer
+   */
+  static setObserver(observer) {
+    FocusRingManager.instance.observer_ = observer;
   }
 
   /**
@@ -151,12 +163,20 @@ class FocusRingManager {
 
   /**
    * Updates all focus rings to reflect new location, color, style, or other
-   * changes.
+   * changes. Enables observers to monitor what's focused.
    * @private
    */
-  updateFocusRings_() {
+  updateFocusRings_(primaryRingNode, previewRingNode) {
     const focusRings = [];
     this.rings_.forEach((ring) => focusRings.push(ring));
     chrome.accessibilityPrivate.setFocusRings(focusRings);
+
+    const observer = FocusRingManager.instance.observer_;
+    if (observer) {
+      observer(primaryRingNode, previewRingNode);
+    }
   }
 }
+
+// Needed for switch_access_browsertest.cc
+window.FocusRingManager = FocusRingManager;

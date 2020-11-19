@@ -1636,12 +1636,25 @@ void AccessibilityManager::SetCaretBoundsObserverForTest(
 }
 
 void AccessibilityManager::SetSwitchAccessKeysForTest(
-    const std::vector<int>& keys) {
-  // Sets all keys to "Select" command.
-  ListPrefUpdate update(profile_->GetPrefs(),
-                        ash::prefs::kAccessibilitySwitchAccessSelectKeyCodes);
-  for (int key : keys)
-    update->AppendInteger(key);
+    const std::set<int>& select_keys,
+    const std::set<int>& next_keys,
+    const std::set<int>& previous_keys) {
+  ListPrefUpdate select_update(
+      profile_->GetPrefs(),
+      ash::prefs::kAccessibilitySwitchAccessSelectKeyCodes);
+  for (int key : select_keys)
+    select_update->AppendInteger(key);
+
+  ListPrefUpdate next_update(
+      profile_->GetPrefs(), ash::prefs::kAccessibilitySwitchAccessNextKeyCodes);
+  for (int key : next_keys)
+    next_update->AppendInteger(key);
+
+  ListPrefUpdate previous_update(
+      profile_->GetPrefs(),
+      ash::prefs::kAccessibilitySwitchAccessPreviousKeyCodes);
+  for (int key : previous_keys)
+    previous_update->AppendInteger(key);
 
   profile_->GetPrefs()->CommitPendingWrite();
 }
