@@ -8,7 +8,6 @@ import static junit.framework.Assert.assertNull;
 
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -26,7 +25,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
@@ -85,9 +83,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnTabLoadingNtp() {
-        NewTabPage ntp = mock(NewTabPage.class);
-        mMediator.onTabLoadingNTP(ntp);
-        verify(ntp).setFakeboxDelegate(mMediator);
-        verify(mLocationBarLayout).onTabLoadingNTP(ntp);
+        mMediator.onNtpStartedLoading();
+        verify(mLocationBarLayout).onNtpStartedLoading();
     }
 }

@@ -748,6 +748,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void onIncognitoStateChanged() {}
 
         @Override
+        public void onNtpStartedLoading() {}
+
+        @Override
         public void updateLoadingState(boolean updateUrl) {
             if (updateUrl) onUrlChanged();
             updateStatusIcon();

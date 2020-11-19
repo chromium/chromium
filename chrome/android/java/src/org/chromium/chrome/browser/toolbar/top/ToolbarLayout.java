@@ -84,7 +84,6 @@ public abstract class ToolbarLayout
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
     private Callback<Boolean> mOverlayVisibilityCallback;
-    private Runnable mTabOrModelChangeRunnable;
 
     /**
      * Basic constructor for {@link ToolbarLayout}.
@@ -116,12 +115,10 @@ public abstract class ToolbarLayout
      */
     @CallSuper
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
-            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
-            Runnable tabOrModelChangeRunnable) {
+            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
-        mTabOrModelChangeRunnable = tabOrModelChangeRunnable;
     }
 
     /**
@@ -523,9 +520,7 @@ public abstract class ToolbarLayout
      * tabs but no normal tabs will still allow you to select the normal model), this should
      * not guarantee that the model's current tab is non-null.
      */
-    void onTabOrModelChanged() {
-        mTabOrModelChangeRunnable.run();
-    }
+    void onTabOrModelChanged() {}
 
     /**
      * For extending classes to override and carry out the changes related with the primary color
@@ -573,9 +568,7 @@ public abstract class ToolbarLayout
     /**
      * Triggered when the content view for the specified tab has changed.
      */
-    void onTabContentViewChanged() {
-        mTabOrModelChangeRunnable.run();
-    }
+    void onTabContentViewChanged() {}
 
     boolean isReadyForTextureCapture() {
         return true;

@@ -14,7 +14,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
@@ -93,6 +92,11 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
         mLocationBarLayout.updateMicButtonState();
     }
 
+    @Override
+    public void onNtpStartedLoading() {
+        mLocationBarLayout.onNtpStartedLoading();
+    }
+
     // LocationBar implementation.
 
     @Override
@@ -105,12 +109,6 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
         }
         mLocationBarDataProvider.removeObserver(this);
         mLocationBarDataProvider = null;
-    }
-
-    @Override
-    public void onTabLoadingNTP(NewTabPage ntp) {
-        ntp.setFakeboxDelegate(this);
-        mLocationBarLayout.onTabLoadingNTP(ntp);
     }
 
     @Override

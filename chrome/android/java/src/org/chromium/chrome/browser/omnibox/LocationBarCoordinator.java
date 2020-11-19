@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -188,11 +187,6 @@ public final class LocationBarCoordinator
     public void onDeferredStartup() {
         assert mNativeInitialized;
         startAutocompletePrefetch();
-    }
-
-    @Override
-    public void onTabLoadingNTP(NewTabPage ntp) {
-        mLocationBarMediator.onTabLoadingNTP(ntp);
     }
 
     @Override

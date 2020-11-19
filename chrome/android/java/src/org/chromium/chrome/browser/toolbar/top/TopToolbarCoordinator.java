@@ -121,7 +121,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> homeButtonVisibilitySupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier, Runnable tabOrModelChangeRunnable,
+            OneshotSupplier<StartSurface> startSurfaceSupplier,
             Supplier<ResourceManager> resourceManagerSupplier) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
@@ -150,8 +150,7 @@ public class TopToolbarCoordinator implements Toolbar {
             }
         }
         controlContainer.setToolbar(this);
-        mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator,
-                tabOrModelChangeRunnable);
+        mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator);
 
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;

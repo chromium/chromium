@@ -460,7 +460,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (tab == null) return;
 
                 refreshSelectedTab(tab);
-                mToolbar.onTabOrModelChanged();
+                onTabOrModelChanged();
             }
 
             @Override
@@ -516,6 +516,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onContentChanged(Tab tab) {
                 if (tab.isNativePage()) TabThemeColorHelper.get(tab).updateIfNeeded(false);
+                checkIfNtpLoaded();
                 mToolbar.onTabContentViewChanged();
                 if (shouldShowCursorInLocationBar()) {
                     mLocationBar.showUrlBarCursorWithoutFocusAnimations();
@@ -537,7 +538,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (!UrlUtilities.isNTPUrl(params.getUrl())
                         && loadType != TabLoadStatus.PAGE_LOAD_FAILED) {
                     ntp.setUrlFocusAnimationsDisabled(true);
-                    mToolbar.onTabOrModelChanged();
+                    onTabOrModelChanged();
                 }
             }
 
@@ -594,7 +595,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     if (ntp == null) return;
 
                     ntp.setUrlFocusAnimationsDisabled(false);
-                    mToolbar.onTabOrModelChanged();
+                    onTabOrModelChanged();
                 }
             }
 
@@ -766,10 +767,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                         client.run();
                     }
                 }, () -> identityDiscController.getForStartSurface(mStartSurfaceState),
-                startSurfaceSupplier, () -> {
-                    NewTabPage ntp = getNewTabPageForCurrentTab();
-                    if (ntp != null) mLocationBar.onTabLoadingNTP(ntp);
-                }, () -> mLayoutManager.getResourceManager());
+                startSurfaceSupplier,
+                () -> mLayoutManager.getResourceManager());
         // clang-format on
         mHomepageStateListener = () -> {
             mHomeButtonVisibilitySupplier.set(HomepageManager.isHomepageEnabled());
@@ -1555,7 +1554,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     tab != null ? TabThemeColorHelper.getColor(tab) : defaultPrimaryColor;
             onThemeColorChanged(primaryColor, false);
 
-            mToolbar.onTabOrModelChanged();
+            onTabOrModelChanged();
 
             if (tab != null) {
                 mToolbar.onNavigatedToDifferentPage();
@@ -1574,6 +1573,19 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
 
         updateButtonStatus();
+    }
+
+    private void onTabOrModelChanged() {
+        mToolbar.onTabOrModelChanged();
+        checkIfNtpLoaded();
+    }
+
+    private void checkIfNtpLoaded() {
+        NewTabPage ntp = getNewTabPageForCurrentTab();
+        if (ntp != null) {
+            ntp.setFakeboxDelegate(mLocationBar.getFakeboxDelegate());
+            mLocationBarModel.notifyNtpStartedLoading();
+        }
     }
 
     private void setBookmarkBridge(BookmarkBridge bookmarkBridge) {

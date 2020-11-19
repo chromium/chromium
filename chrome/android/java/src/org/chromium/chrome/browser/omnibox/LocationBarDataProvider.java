@@ -33,8 +33,9 @@ public interface LocationBarDataProvider {
         void onTitleChanged();
         void onUrlChanged();
         void onIncognitoStateChanged();
+        void onNtpStartedLoading();
         // TODO(https://crbug.com/1139481): Add methods for other LocationBarDataProvider
-        // data, e.g. NTP and security state.
+        // data, e.g. security state.
     }
 
     /** Adds an observer of changes to LocationBarDataProvider's data. */

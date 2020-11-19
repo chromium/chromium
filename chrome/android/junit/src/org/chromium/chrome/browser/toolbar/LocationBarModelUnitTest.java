@@ -167,4 +167,15 @@ public class LocationBarModelUnitTest {
         regularLocationBarModel.notifyUrlChanged();
         verify(mLocationBarDataObserver, times(2)).onUrlChanged();
     }
+
+    @Test
+    @MediumTest
+    public void testObserversNotified_ntpLoaded() {
+        LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(null);
+        regularLocationBarModel.addObserver(mLocationBarDataObserver);
+        verify(mLocationBarDataObserver, never()).onNtpStartedLoading();
+
+        regularLocationBarModel.notifyNtpStartedLoading();
+        verify(mLocationBarDataObserver).onNtpStartedLoading();
+    }
 }

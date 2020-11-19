@@ -172,6 +172,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return mNtpDelegate;
     }
 
+    void notifyNtpStartedLoading() {
+        for (Observer observer : mLocationBarDataObservers) {
+            observer.onNtpStartedLoading();
+        }
+    }
+
     @Override
     public UrlBarData getUrlBarData() {
         if (!hasTab()) return UrlBarData.EMPTY;

@@ -16,7 +16,6 @@ import android.widget.FrameLayout;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 import java.util.List;
@@ -187,8 +186,8 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     @Override
-    void onTabLoadingNTP(NewTabPage ntp) {
-        super.onTabLoadingNTP(ntp);
+    protected void onNtpStartedLoading() {
+        super.onNtpStartedLoading();
         updateStatusVisibility();
     }
 

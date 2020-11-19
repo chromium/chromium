@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -21,9 +20,6 @@ import org.chromium.chrome.browser.tab.Tab;
 public interface LocationBar extends Destroyable {
     /** Handle all necessary tasks that can be delayed until initialization completes. */
     default void onDeferredStartup() {}
-
-    /** Triggered when the current tab has changed to a {@link NewTabPage}. */
-    default void onTabLoadingNTP(NewTabPage ntp) {}
 
     /**
      * Call to force the UI to update the state of various buttons based on whether or not the

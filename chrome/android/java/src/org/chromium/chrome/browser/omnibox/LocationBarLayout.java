@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -633,8 +632,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         }
     }
 
-    @CallSuper
-    /* package */ void onTabLoadingNTP(NewTabPage ntp) {}
+    protected void onNtpStartedLoading() {}
 
     public View getContainerView() {
         return this;
