@@ -16,8 +16,6 @@ blink_modules_sources("cookie_store") {
     "extendable_cookie_change_event.h",
     "global_cookie_store.cc",
     "global_cookie_store.h",
-    "service_worker_registration_cookies.cc",
-    "service_worker_registration_cookies.h",
   ]
 
   deps = [ "//third_party/blink/renderer/platform" ]

@@ -85,15 +85,31 @@ KURL DefaultCookieURL(ServiceWorkerRegistration* registration) {
 
 }  // namespace
 
-CookieStoreManager::CookieStoreManager(
-    ServiceWorkerRegistration* registration,
-    HeapMojoRemote<mojom::blink::CookieStore,
-                   HeapMojoWrapperMode::kWithoutContextObserver> backend)
-    : registration_(registration),
-      backend_(std::move(backend)),
-      default_cookie_url_(DefaultCookieURL(registration)) {
-  DCHECK(registration_);
-  DCHECK(backend_.is_bound());
+// static
+const char CookieStoreManager::kSupplementName[] = "CookieStoreManager";
+
+// static
+CookieStoreManager* CookieStoreManager::cookies(
+    ServiceWorkerRegistration& registration) {
+  auto* supplement =
+      Supplement<ServiceWorkerRegistration>::From<CookieStoreManager>(
+          registration);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<CookieStoreManager>(registration);
+    ProvideTo(registration, supplement);
+  }
+  return supplement;
+}
+
+CookieStoreManager::CookieStoreManager(ServiceWorkerRegistration& registration)
+    : Supplement<ServiceWorkerRegistration>(registration),
+      registration_(&registration),
+      backend_(registration.GetExecutionContext()),
+      default_cookie_url_(DefaultCookieURL(&registration)) {
+  auto* execution_context = registration.GetExecutionContext();
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
+      backend_.BindNewPipeAndPassReceiver(
+          execution_context->GetTaskRunner(TaskType::kDOMManipulation)));
 }
 
 ScriptPromise CookieStoreManager::subscribe(
@@ -166,6 +182,7 @@ ScriptPromise CookieStoreManager::getSubscriptions(
 void CookieStoreManager::Trace(Visitor* visitor) const {
   visitor->Trace(registration_);
   visitor->Trace(backend_);
+  Supplement<ServiceWorkerRegistration>::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -22,14 +23,17 @@ class ExceptionState;
 class ScriptPromiseResolver;
 class ScriptState;
 
-class CookieStoreManager final : public ScriptWrappable {
+class CookieStoreManager final : public ScriptWrappable,
+                                 public Supplement<ServiceWorkerRegistration> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CookieStoreManager(
-      ServiceWorkerRegistration* registration,
-      HeapMojoRemote<mojom::blink::CookieStore,
-                     HeapMojoWrapperMode::kWithoutContextObserver> backend);
+  static const char kSupplementName[];
+  // Web Exposed as registration.cookies
+  static CookieStoreManager* cookies(ServiceWorkerRegistration& registration);
+
+  explicit CookieStoreManager(ServiceWorkerRegistration& registration);
+
   ~CookieStoreManager() override = default;
 
   ScriptPromise subscribe(
