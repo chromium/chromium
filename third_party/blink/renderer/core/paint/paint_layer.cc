@@ -1597,22 +1597,24 @@ bool PaintLayer::RequiresScrollableArea() const {
 }
 
 void PaintLayer::UpdateScrollableArea() {
-  if (RequiresScrollableArea() && !scrollable_area_) {
+  if (RequiresScrollableArea() == !!scrollable_area_)
+    return;
+
+  if (!scrollable_area_) {
     scrollable_area_ = MakeGarbageCollected<PaintLayerScrollableArea>(*this);
-    if (Compositor()) {
-      Compositor()->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-    }
-    GetLayoutObject().SetNeedsPaintPropertyUpdate();
-  } else if (!RequiresScrollableArea() && scrollable_area_) {
+  } else {
     scrollable_area_->Dispose();
     scrollable_area_.Clear();
-    if (Compositor()) {
-      Compositor()->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-    }
     GetLayoutObject().SetBackgroundPaintLocation(
         kBackgroundPaintInGraphicsLayer);
-    GetLayoutObject().SetNeedsPaintPropertyUpdate();
   }
+
+  GetLayoutObject().SetNeedsPaintPropertyUpdate();
+  // Need to update z-ordering of overlay overflow controls.
+  if (!scrollable_area_ || NeedsReorderOverlayOverflowControls())
+    DirtyStackingContextZOrderLists();
+  if (auto* compositor = Compositor())
+    compositor->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
 }
 
 bool PaintLayer::HasOverflowControls() const {
