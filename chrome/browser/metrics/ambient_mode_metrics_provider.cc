@@ -34,11 +34,15 @@ AmbientModeMetricsProvider::~AmbientModeMetricsProvider() = default;
 
 void AmbientModeMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto_unused) {
-  if (!chromeos::features::IsAmbientModeEnabled() ||
-      !ash::AmbientClient::Get()->IsAmbientModeAllowed()) {
+  if (!chromeos::features::IsAmbientModeEnabled())
     return;
-  }
 
+  auto* ambient_client = ash::AmbientClient::Get();
+  if (!ambient_client || !ambient_client->IsAmbientModeAllowed())
+    return;
+
+  // |IsAmbientModeAllowed| guarantees a valid profile exists for the active
+  // user.
   PrefService* pref_service =
       ProfileManager::GetActiveUserProfile()->GetPrefs();
   DCHECK(pref_service);
