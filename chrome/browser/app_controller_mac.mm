@@ -35,6 +35,7 @@
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
 #include "chrome/browser/background/background_application_list_model.h"
 #include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/command_updater_impl.h"
@@ -50,6 +51,8 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -266,7 +269,9 @@ void ConfigureNSAppForKioskMode() {
 - (BOOL)isProfileReady;
 @end
 
-class AppControllerProfileObserver : public ProfileAttributesStorage::Observer {
+class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
+                                     public ProfileManagerObserver,
+                                     public ProfileObserver {
  public:
   AppControllerProfileObserver(
       ProfileManager* profile_manager, AppController* app_controller)
@@ -274,17 +279,28 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer {
         app_controller_(app_controller) {
     DCHECK(profile_manager_);
     DCHECK(app_controller_);
-    profile_manager_->GetProfileAttributesStorage().AddObserver(this);
+    // Listen to different events, depending on whether the
+    // kDestroyProfileOnBrowserClose experiment is disabled or not.
+    if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+      profile_manager_->AddObserver(this);
+      for (Profile* profile : profile_manager_->GetLoadedProfiles())
+        profile->AddObserver(this);
+    } else {
+      profile_manager_->GetProfileAttributesStorage().AddObserver(this);
+    }
   }
 
   ~AppControllerProfileObserver() override {
     DCHECK(profile_manager_);
-    profile_manager_->GetProfileAttributesStorage().RemoveObserver(this);
+    if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+      profile_manager_->RemoveObserver(this);
+    } else {
+      profile_manager_->GetProfileAttributesStorage().RemoveObserver(this);
+    }
   }
 
  private:
   // ProfileAttributesStorage::Observer implementation:
-
   void OnProfileAdded(const base::FilePath& profile_path) override {}
 
   void OnProfileWasRemoved(const base::FilePath& profile_path,
@@ -300,6 +316,15 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer {
                             const base::string16& old_profile_name) override {}
 
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override {}
+
+  // ProfileManager::Observer implementation:
+  void OnProfileAdded(Profile* profile) override { profile->AddObserver(this); }
+
+  // ProfileObserver implementation:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    profile->RemoveObserver(this);
+    [app_controller_ profileWasRemoved:profile->GetPath()];
+  }
 
   ProfileManager* profile_manager_;
 
@@ -551,6 +576,13 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 }
 
 - (void)didEndMainMessageLoop {
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    // With DestroyProfileOnBrowserClose, Profiles get deleted earlier. So
+    // _lastProfile is already null, and [self lastProfile] below would load it
+    // from disk (which we can't do).
+    DCHECK_EQ(nullptr, _lastProfile);
+    return;
+  }
   DCHECK_EQ(0u, chrome::GetBrowserCount([self lastProfile]));
   if (!chrome::GetBrowserCount([self lastProfile])) {
     // As we're shutting down, we need to nuke the TabRestoreService, which
@@ -922,8 +954,16 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     // Force windowChangedToProfile: to set the lastProfile_ and also update the
     // relevant menuBridge objects.
     _lastProfile = nullptr;
-    [self windowChangedToProfile:g_browser_process->profile_manager()->
-        GetLastUsedProfile()];
+    // Check that the Profile is already loaded, in case it was deleted by
+    // DestroyProfileOnBrowserClose.
+    auto* profile_manager = g_browser_process->profile_manager();
+    const base::FilePath last_used_path =
+        profile_manager->GetLastUsedProfileDir(
+            profile_manager->user_data_dir());
+    Profile* last_used_profile =
+        profile_manager->GetProfileByPath(last_used_path);
+    if (last_used_profile)
+      [self windowChangedToProfile:last_used_profile];
   }
 
   _profileBookmarkMenuBridgeMap.erase(profilePath);
