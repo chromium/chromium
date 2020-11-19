@@ -35,7 +35,7 @@ def GenerateSwaMainHtml(source, target, root):
         sys.stdout.write(line.replace('href="', href))
       else:
         sys.stdout.write(line)
-    # Remove files app foreground/js <script> tags: SWA app must lazy-load
+    # Remove files app foreground/js <script> tags: SWA app must load
     # them after the SWA app has initialized needed resources.
     elif line.find('<script src="foreground/js/') == -1:
       sys.stdout.write(line)
