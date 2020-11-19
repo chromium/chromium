@@ -55662,6 +55662,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="SingleOnTop"/>
   <int value="4" label="Underlay"/>
   <int value="5" label="Underlay Cast"/>
+  <int value="6" label="All overlays failed"/>
 </enum>
 
 <enum name="OverlaySupportFlag">

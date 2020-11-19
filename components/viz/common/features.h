@@ -13,6 +13,7 @@
 
 namespace features {
 
+VIZ_COMMON_EXPORT extern const base::Feature kEnableOverlayPrioritization;
 VIZ_COMMON_EXPORT extern const base::Feature kForcePreferredIntervalForVideo;
 VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaRenderer;
 VIZ_COMMON_EXPORT extern const base::Feature kRecordSkPicture;
@@ -39,6 +40,7 @@ VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();
 #if defined(OS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
+VIZ_COMMON_EXPORT bool IsOverlayPrioritizationEnabled();
 VIZ_COMMON_EXPORT bool IsUsingFastPathForSolidColorQuad();
 VIZ_COMMON_EXPORT bool IsUsingVizForWebView();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();

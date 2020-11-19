@@ -101,15 +101,33 @@ bool HasOccludingDamage(const SharedQuadState* shared_quad_state,
       return true;  // A damaged surface on top is found.
   }
 
-  return false;  // No occluding damges
+  return false;  // No occluding damages
 }
 
-gfx::Rect GetDamageRect(const SharedQuadState* shared_quad_state,
+gfx::Rect GetDamageRect(const DrawQuad* quad,
                         SurfaceDamageRectList* surface_damage_rect_list) {
-  if (!shared_quad_state->overlay_damage_index.has_value())
-    return gfx::Rect();
+  const SharedQuadState* sqs = quad->shared_quad_state;
+  auto& transform = sqs->quad_to_target_transform;
+  gfx::RectF display_rect = gfx::RectF(quad->rect);
+  transform.TransformRect(&display_rect);
+  if (!sqs->overlay_damage_index.has_value()) {
+    gfx::Rect display_rect_int = gfx::ToRoundedRect(display_rect);
+    // This is a special case where an overlay candidate may have damage but it
+    // does not have a damage index since it was not the only quad in the
+    // original surface. Here the union of all |surface_damage_rect_list| will
+    // be in effect the full damage for this display.
+    auto full_display_damage = gfx::Rect();
+    for (auto& each : *surface_damage_rect_list) {
+      full_display_damage.Union(each);
+    }
 
-  size_t overlay_damage_index = shared_quad_state->overlay_damage_index.value();
+    // We limit the damage to the candidates quad rect in question.
+    gfx::Rect intersection = display_rect_int;
+    intersection.Intersect(full_display_damage);
+    return intersection;
+  }
+
+  size_t overlay_damage_index = sqs->overlay_damage_index.value();
   // Invalid index.
   if (overlay_damage_index >= surface_damage_rect_list->size()) {
     DCHECK(false);
@@ -228,8 +246,7 @@ int OverlayCandidate::EstimateVisibleDamage(
     SurfaceDamageRectList* surface_damage_rect_list,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end) {
-  gfx::Rect quad_damage =
-      GetDamageRect(quad->shared_quad_state, surface_damage_rect_list);
+  gfx::Rect quad_damage = GetDamageRect(quad, surface_damage_rect_list);
   int occluded_damage_estimate_total = 0;
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
@@ -327,9 +344,7 @@ bool OverlayCandidate::FromDrawQuadResource(
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
   candidate->damage_area_estimate =
-      GetDamageRect(quad->shared_quad_state, surface_damage_rect_list)
-          .size()
-          .GetArea();
+      GetDamageRect(quad, surface_damage_rect_list).size().GetArea();
   candidate->resource_id = resource_id;
   candidate->transform = overlay_transform;
   candidate->mailbox = resource_provider->GetMailbox(resource_id);
@@ -360,9 +375,7 @@ bool OverlayCandidate::FromVideoHoleQuad(
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
   candidate->damage_area_estimate =
-      GetDamageRect(quad->shared_quad_state, surface_damage_rect_list)
-          .size()
-          .GetArea();
+      GetDamageRect(quad, surface_damage_rect_list).size().GetArea();
   candidate->requires_overlay = OverlayCandidate::RequiresOverlay(quad);
   return true;
 }

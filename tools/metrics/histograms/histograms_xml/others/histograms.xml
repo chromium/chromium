@@ -16131,12 +16131,33 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="Viz.DisplayCompositor.OverlayNumProposedCandidates"
+    units="units" expires_after="2021-07-01">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    A count of the number of proposed overlay candidates available for overlay
+    selection. Recorded every time a frame is rendered by the display
+    compositor.
+  </summary>
+</histogram>
+
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
     enum="OverlayStrategies" expires_after="2021-07-01">
   <owner>dcastagna@chromium.org</owner>
   <owner>hoegsberg@chromium.org</owner>
   <summary>
     Overlay strategies used to promote Hardware Overlays, per frame. Recorded
+    every time a frame is rendered by the display compositor.
+  </summary>
+</histogram>
+
+<histogram name="Viz.DisplayCompositor.OverlaySwitchInterval" units="ms"
+    expires_after="2021-07-01">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    The time, in milliseconds, since the change in overlay selection. Recorded
     every time a frame is rendered by the display compositor.
   </summary>
 </histogram>

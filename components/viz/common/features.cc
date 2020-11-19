@@ -18,6 +18,9 @@
 
 namespace features {
 
+const base::Feature kEnableOverlayPrioritization{
+    "EnableOverlayPrioritization", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kForcePreferredIntervalForVideo{
     "ForcePreferredIntervalForVideo", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -91,6 +94,10 @@ const base::FeatureParam<int> kNumOfFramesToToggleInterval{
 const base::Feature kUseSetPresentDuration{"UseSetPresentDuration",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // OS_WIN
+
+bool IsOverlayPrioritizationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
+}
 
 bool IsForcePreferredIntervalForVideoEnabled() {
   return base::FeatureList::IsEnabled(kForcePreferredIntervalForVideo);

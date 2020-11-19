@@ -294,6 +294,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   int64_t last_presented_trace_id_ = 0;
   int pending_swaps_ = 0;
 
+  uint64_t frame_sequence_number_ = 0;
   // The height of the top-controls in the previously drawn frame.
   float last_top_controls_visible_height_ = 0.f;
 

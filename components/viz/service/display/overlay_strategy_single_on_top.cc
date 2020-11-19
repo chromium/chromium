@@ -75,6 +75,52 @@ bool OverlayStrategySingleOnTop::Attempt(
   }
 }
 
+void OverlayStrategySingleOnTop::ProposePrioritized(
+    const SkMatrix44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_pass_list,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const PrimaryPlane* primary_plane,
+    OverlayProposedCandidateList* candidates,
+    std::vector<gfx::Rect>* content_bounds) {
+  auto* render_pass = render_pass_list->back().get();
+  QuadList* quad_list = &render_pass->quad_list;
+  // Build a list of candidates with the associated quad.
+  OverlayCandidate best_candidate;
+  auto best_quad_it = quad_list->end();
+  for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
+    OverlayCandidate candidate;
+    if (OverlayCandidate::FromDrawQuad(resource_provider,
+                                       surface_damage_rect_list,
+                                       output_color_matrix, *it, &candidate) &&
+        !OverlayCandidate::IsOccluded(candidate, quad_list->cbegin(), it)) {
+      candidates->push_back({it, candidate, this});
+    }
+  }
+}
+
+bool OverlayStrategySingleOnTop::AttemptPrioritized(
+    const SkMatrix44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_pass_list,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const PrimaryPlane* primary_plane,
+    OverlayCandidateList* candidate_list,
+    std::vector<gfx::Rect>* content_bounds,
+    OverlayProposedCandidate* proposed_candidate) {
+  // Before we attempt an overlay strategy, we shouldn't have a candidate.
+  DCHECK(candidate_list->empty());
+  auto* render_pass = render_pass_list->back().get();
+  QuadList* quad_list = &render_pass->quad_list;
+  return TryOverlay(quad_list, primary_plane, candidate_list,
+                    proposed_candidate->candidate,
+                    proposed_candidate->quad_iter);
+}
+
 bool OverlayStrategySingleOnTop::TryOverlay(
     QuadList* quad_list,
     const PrimaryPlane* primary_plane,

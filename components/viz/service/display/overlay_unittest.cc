@@ -17,6 +17,7 @@
 #include "cc/test/geometry_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -77,7 +78,12 @@ const gfx::BufferFormat kDefaultBufferFormat = gfx::BufferFormat::RGBA_8888;
 class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
  public:
   using PrimaryPlane = OverlayProcessorInterface::OutputSurfaceOverlayPlane;
-  TestOverlayProcessor() : OverlayProcessorUsingStrategy() {}
+  TestOverlayProcessor() {
+    // By default the prioritization thresholding features are disabled for all
+    // tests.
+    prioritization_config_.changing_threshold = false;
+    prioritization_config_.damage_rate_threshold = false;
+  }
   ~TestOverlayProcessor() override = default;
 
   bool IsOverlaySupported() const override { return true; }
@@ -89,7 +95,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
 
 class FullscreenOverlayProcessor : public TestOverlayProcessor {
  public:
-  FullscreenOverlayProcessor() : TestOverlayProcessor() {
+  FullscreenOverlayProcessor() {
     strategies_.push_back(std::make_unique<OverlayStrategyFullscreen>(this));
   }
   bool NeedsSurfaceDamageRectList() const override { return true; }
@@ -101,8 +107,7 @@ class FullscreenOverlayProcessor : public TestOverlayProcessor {
 
 class DefaultOverlayProcessor : public TestOverlayProcessor {
  public:
-  DefaultOverlayProcessor()
-      : TestOverlayProcessor(), expected_rects_(1, gfx::RectF(kOverlayRect)) {}
+  DefaultOverlayProcessor() : expected_rects_(1, gfx::RectF(kOverlayRect)) {}
 
   bool NeedsSurfaceDamageRectList() const override { return true; }
   void CheckOverlaySupport(const PrimaryPlane* primary_plane,
@@ -154,6 +159,9 @@ class SingleOnTopOverlayProcessor : public DefaultOverlayProcessor {
  public:
   SingleOnTopOverlayProcessor() : DefaultOverlayProcessor() {
     strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
+    // To reduce the complexity of this test for the prioritization feature the
+    // |damage_rate_threshold| is set to zero to make all opaque power positive.
+    tracker_config_.damage_rate_threshold = 0.f;
   }
 };
 
@@ -161,6 +169,9 @@ class UnderlayOverlayProcessor : public DefaultOverlayProcessor {
  public:
   UnderlayOverlayProcessor() : DefaultOverlayProcessor() {
     strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
+    prioritization_config_.changing_threshold = false;
+    prioritization_config_.damage_rate_threshold = false;
+    prioritization_config_.power_gain_sort = false;
   }
 };
 
@@ -176,6 +187,32 @@ class UnderlayCastOverlayProcessor : public DefaultOverlayProcessor {
  public:
   UnderlayCastOverlayProcessor() : DefaultOverlayProcessor() {
     strategies_.push_back(std::make_unique<OverlayStrategyUnderlayCast>(this));
+  }
+};
+
+class ChangeThresholdOnTopOverlayProcessor : public DefaultOverlayProcessor {
+ public:
+  ChangeThresholdOnTopOverlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
+    prioritization_config_.damage_rate_threshold = false;
+    prioritization_config_.changing_threshold = true;
+  }
+
+  // To keep this test consistent we need to expose the config for how long it
+  // takes for the system to threshold a unchanging candidate.
+  const OverlayCandidateTemporalTracker::Config& TrackerConfigAccessor() {
+    return tracker_config_;
+  }
+};
+
+class FullThresholdUnderlayOverlayProcessor : public DefaultOverlayProcessor {
+ public:
+  FullThresholdUnderlayOverlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
+    // Disable this feature as it is tested in
+    // |ChangeThresholdOnTopOverlayProcessor|.
+    prioritization_config_.changing_threshold = false;
+    prioritization_config_.damage_rate_threshold = true;
   }
 };
 
@@ -520,6 +557,8 @@ class OverlayTest : public testing::Test {
 
 using FullscreenOverlayTest = OverlayTest<FullscreenOverlayProcessor>;
 using SingleOverlayOnTopTest = OverlayTest<SingleOnTopOverlayProcessor>;
+using ChangeSingleOnTopTest = OverlayTest<ChangeThresholdOnTopOverlayProcessor>;
+using FullThresholdTest = OverlayTest<FullThresholdUnderlayOverlayProcessor>;
 using UnderlayTest = OverlayTest<UnderlayOverlayProcessor>;
 using TransparentUnderlayTest =
     OverlayTest<TransparentUnderlayOverlayProcessor>;
@@ -839,9 +878,11 @@ TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   AggregatedRenderPassList pass_list;
   AggregatedRenderPass* main_pass = pass.get();
-  pass_list.push_back(std::move(pass));
   SurfaceDamageRectList surface_damage_rect_list;
-
+  // Simplify by adding full root damage.
+  surface_damage_rect_list.push_back(pass->output_rect);
+  pass_list.push_back(std::move(pass));
+  overlay_processor_->SetFrameSequenceNumber(1);
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
@@ -1627,12 +1668,21 @@ TEST_F(SingleOverlayOnTopTest, RejectTransparentColorOnTopWithoutBlending) {
   EXPECT_EQ(0U, candidate_list.size());
 }
 
-TEST_F(SingleOverlayOnTopTest, DoNotPromoteIfContentsDontChange) {
+TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
   // Resource ID for the repeated quads. Value should be equivalent to
   // OverlayStrategySingleOnTop::kMaxFrameCandidateWithSameResourceId.
-  constexpr size_t kFramesSkippedBeforeNotPromoting = 3;
-  ResourceId previous_resource_id;
+  size_t kFramesSkippedBeforeNotPromoting = 3;
 
+  // The overlay prioritization feature supports overlay demotion for unchanging
+  // overlays however the timing is slightly different as prioritization is
+  // frame counter based.
+  if (features::IsOverlayPrioritizationEnabled()) {
+    kFramesSkippedBeforeNotPromoting =
+        overlay_processor_->TrackerConfigAccessor().max_frames_inactive;
+  }
+
+  ResourceId previous_resource_id;
+  int64_t frame_counter = 0;
   for (size_t i = 0; i < 3 + kFramesSkippedBeforeNotPromoting; ++i) {
     auto pass = CreateRenderPass();
     AggregatedRenderPass* main_pass = pass.get();
@@ -1675,21 +1725,110 @@ TEST_F(SingleOverlayOnTopTest, DoNotPromoteIfContentsDontChange) {
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
+    overlay_processor_->SetFrameSequenceNumber(frame_counter);
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
+        &content_bounds_);
+    frame_counter++;
+    if (i <= kFramesSkippedBeforeNotPromoting) {
+      EXPECT_EQ(1U, candidate_list.size());
+      if (candidate_list.size()) {
+        // Check that the right resource id got extracted.
+        EXPECT_EQ(resource_id, candidate_list.back().resource_id);
+      }
+      // Check that the quad is gone.
+      EXPECT_EQ(1U, main_pass->quad_list.size());
+    } else {
+      // Check nothing has been promoted.
+      EXPECT_EQ(2U, main_pass->quad_list.size());
+    }
+  }
+}
+
+TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
+  // This test is specific to the prioritized version of the overlay strategies.
+  // The thresholds of damage and frame rate are only features of
+  // prioritization.
+  if (!features::IsOverlayPrioritizationEnabled()) {
+    return;
+  }
+
+  int64_t frame_counter = 0;
+  // This is a helper function to simulate framerates.
+
+  auto wait_1_frame = [&]() { frame_counter++; };
+
+  auto wait_4_frames = [&]() { frame_counter += 4; };
+
+  // This test uses many iterations to test prioritization threshold features
+  // due to frame averaging over samples.
+  constexpr size_t kDamageFrameTestStart =
+      OverlayCandidateTemporalTracker::kNumRecords;
+  constexpr size_t kDamageFrameTestEnd =
+      kDamageFrameTestStart + OverlayCandidateTemporalTracker::kNumRecords;
+  constexpr size_t kSlowFrameTestStart =
+      kDamageFrameTestEnd + OverlayCandidateTemporalTracker::kNumRecords;
+  constexpr size_t kSlowFrameTestEnd =
+      kSlowFrameTestStart + OverlayCandidateTemporalTracker::kNumRecords;
+
+  // This quad is used to occlude the damage of the overlay candidate to the
+  // point that the damage is no longer considered significant.
+  auto nearly_occluding_quad = kOverlayRect;
+  nearly_occluding_quad.Inset(1, 1);
+
+  for (size_t i = 0; i < kSlowFrameTestEnd; ++i) {
+    if (i >= kSlowFrameTestStart && i < kSlowFrameTestEnd) {
+      wait_4_frames();
+    } else {
+      wait_1_frame();
+    }
+
+    auto pass = CreateRenderPass();
+    AggregatedRenderPass* main_pass = pass.get();
+
+    bool nearly_occluded =
+        i >= kDamageFrameTestStart && i < kDamageFrameTestEnd;
+    CreateSolidColorQuadAt(
+        pass->shared_quad_state_list.back(), SK_ColorBLACK, pass.get(),
+        nearly_occluded ? nearly_occluding_quad : kOverlayTopLeftRect);
+
+    // Create a quad with the resource ID selected above.
+    TextureDrawQuad* quad_candidate = CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        kOverlayRect);
+
+    quad_candidate->set_resource_size_in_pixels(pass->output_rect.size());
+
+    // Add something behind it.
+    CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                               pass->shared_quad_state_list.back(), main_pass);
+
+    // Check for potential candidates.
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+    surface_damage_rect_list.push_back(kOverlayRect);
+    overlay_processor_->SetFrameSequenceNumber(frame_counter);
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
         &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
         &content_bounds_);
 
-    if (i <= kFramesSkippedBeforeNotPromoting) {
+    EXPECT_EQ(3u, main_pass->quad_list.size());
+
+    if (i == kDamageFrameTestStart - 1 || i == kSlowFrameTestStart - 1) {
+      // Test to make sure an overlay was promoted.
       EXPECT_EQ(1U, candidate_list.size());
-      // Check that the right resource id got extracted.
-      EXPECT_EQ(resource_id, candidate_list.back().resource_id);
-      // Check that the quad is gone.
-      EXPECT_EQ(1U, main_pass->quad_list.size());
-    } else {
-      // Check nothing has been promoted.
-      EXPECT_EQ(2U, main_pass->quad_list.size());
+    } else if (i == kDamageFrameTestEnd - 1 || i == kSlowFrameTestEnd - 1) {
+      // Test to make sure no overlay was promoted
+      EXPECT_EQ(0u, candidate_list.size());
     }
   }
 }
@@ -2068,122 +2207,137 @@ TEST_F(UnderlayTest, UpdateDamageWhenChangingUnderlays) {
 
 TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   unsigned id_counter = 0;
+  uint64_t frame_counter = 0;
   // Function to fake unique resource ids so the system sees them as changing.
   auto get_id = [&] { return ++id_counter; };
 
   // Test the default configuration.
   OverlayCandidateTemporalTracker::Config config;
-  constexpr float kEpsilon = 0.01f;
-  float kBelowLowDamage = config.damage_low_threshold - kEpsilon;
-  float kAboveHighDamage = config.damage_high_threshold + kEpsilon;
-
-  base::TimeTicks tick_start = base::TimeTicks::Now();
+  float kDamageEpsilon = config.damage_rate_hysteresis_range;
+  float kBelowLowDamage = config.damage_rate_threshold - kDamageEpsilon;
+  float kAboveHighDamage = config.damage_rate_threshold + kDamageEpsilon;
+  float kFullDamage = 1.0f;
   // This is a helper function to simulate framerates.
-  auto wait_17ms = [&]() {
-    while ((base::TimeTicks::Now() - tick_start).InMilliseconds() < 17) {
-    }
-    tick_start = base::TimeTicks::Now();
+  auto wait_1_frame = [&]() { frame_counter++; };
+
+  auto wait_inactive_frames = [&]() {
+    frame_counter += config.max_frames_inactive + 1;
   };
 
-  auto wait_66ms = [&]() {
-    while ((base::TimeTicks::Now() - tick_start).InMilliseconds() < 66) {
-    }
-    tick_start = base::TimeTicks::Now();
-  };
   OverlayCandidateTemporalTracker tracker;
-
+  int fake_display_area = 256 * 256;
   // We test internal hysteresis state by running this test twice.
   for (int j = 0; j < 2; j++) {
     // First setup a 60fps high damage candidate.
     for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
-      tracker.AddRecord(base::TimeTicks::Now(), kAboveHighDamage, get_id(),
-                        config);
-      wait_17ms();
+      wait_1_frame();
+      tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
     }
 
-    OverlayCandidateTemporalTracker tracker_not_active_changing = tracker;
+    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
+    auto opaque_power_gain_60_full =
+        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
 
-    EXPECT_TRUE(tracker.HasSignificantDamage());
-    ASSERT_EQ(tracker.GetFPSCategory(),
-              OverlayCandidateTemporalTracker::kFrameRate60fps);
+    EXPECT_FLOAT_EQ(tracker.MeanFrameRatioRate(config), 1.0f);
+    EXPECT_GT(opaque_power_gain_60_full, 0);
 
-    // Test the hysteresis by checking that a few 30fps low damage updates do
-    // not change the categorization state.
-    wait_17ms();
-    wait_17ms();
-    tracker.AddRecord(base::TimeTicks::Now(), kBelowLowDamage, get_id(),
-                      config);
-    wait_17ms();
-    wait_17ms();
-    tracker.AddRecord(base::TimeTicks::Now(), kBelowLowDamage, get_id(),
-                      config);
-    EXPECT_TRUE(tracker.HasSignificantDamage());
-    ASSERT_EQ(tracker.GetFPSCategory(),
-              OverlayCandidateTemporalTracker::kFrameRate60fps);
+    // Test our hysteresis categorization of power by ensuring a single frame
+    // drop does not change the end power categorization.
+    wait_1_frame();
+    wait_1_frame();
+    tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
 
-    // Now simulate a overaly candidate with 30fps and low damage.
+    auto opaque_power_gain_60_stutter =
+        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+
+    // A single frame drop even at 60fps should not change our power
+    // categorization.
+    ASSERT_EQ(opaque_power_gain_60_full, opaque_power_gain_60_stutter);
+
+    wait_inactive_frames();
+    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
+    tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
+
+    auto opaque_power_gain_60_inactive =
+        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    // Simple test to make sure that power categorization is not completely
+    // invalidated when candidate becomes inactive.
+    EXPECT_GT(opaque_power_gain_60_inactive, 0);
+
+    // Now simulate a overlay candidate with 30fps full damage.
     for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
-      wait_17ms();
-      wait_17ms();
-      tracker.AddRecord(base::TimeTicks::Now(), kBelowLowDamage, get_id(),
-                        config);
+      wait_1_frame();
+      wait_1_frame();
+      tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
     }
-    // Check that it has reached the applied state.
-    EXPECT_FALSE(tracker.HasSignificantDamage());
-    ASSERT_EQ(tracker.GetFPSCategory(),
-              OverlayCandidateTemporalTracker::kFrameRate30fps);
 
-    OverlayCandidateTemporalTracker tracker_saved_30fps = tracker;
+    auto opaque_power_gain_30_full =
+        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
 
-    // Test hysteresis for this new state by adding in a few high damage 60fps
-    // frames.
-    wait_17ms();
-    tracker.AddRecord(base::TimeTicks::Now(), kAboveHighDamage, get_id(),
-                      config);
-    wait_17ms();
-    tracker.AddRecord(base::TimeTicks::Now(), kAboveHighDamage, get_id(),
-                      config);
-    EXPECT_FALSE(tracker.HasSignificantDamage());
-    ASSERT_EQ(tracker.GetFPSCategory(),
-              OverlayCandidateTemporalTracker::kFrameRate30fps);
+    EXPECT_FLOAT_EQ(tracker.MeanFrameRatioRate(config), 0.5f);
+    EXPECT_GT(opaque_power_gain_30_full, 0);
+    EXPECT_GT(opaque_power_gain_60_full, opaque_power_gain_30_full);
 
-    EXPECT_TRUE(tracker.IsActivelyChanging(base::TimeTicks::Now(), config));
+    // Test the hysteresis by checking that a stuttering frame will not change
+    // power categorization.
+    wait_1_frame();
+    wait_1_frame();
+    wait_1_frame();
+    tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
 
-    // Test hysteresis for 30fps to lowfps state by inserting lowfps frames and
-    // asserting that the tracker is still in the 30fps state.
-    wait_66ms();
-    tracker_saved_30fps.AddRecord(base::TimeTicks::Now(), kAboveHighDamage,
-                                  get_id(), config);
-    wait_66ms();
-    tracker_saved_30fps.AddRecord(base::TimeTicks::Now(), kAboveHighDamage,
-                                  get_id(), config);
-    ASSERT_EQ(tracker.GetFPSCategory(),
-              OverlayCandidateTemporalTracker::kFrameRate30fps);
+    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
+    auto opaque_power_gain_30_stutter =
+        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+
+    EXPECT_TRUE(opaque_power_gain_30_stutter == opaque_power_gain_30_full);
+
+    wait_inactive_frames();
+    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
+    tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
+
+    auto opaque_power_gain_30_inactive =
+        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    // Simple test to make sure that power categorization is not completely
+    // invalidated when candidate becomes inactive.
+    EXPECT_GT(opaque_power_gain_30_inactive, 0);
+
+    // Test low and high damage thresholds.
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+      wait_1_frame();
+      tracker.AddRecord(frame_counter, kAboveHighDamage, get_id(), config);
+    }
+
+    auto opaque_power_gain_high_damage =
+        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+
+    EXPECT_GT(opaque_power_gain_high_damage, 0);
+    EXPECT_GE(opaque_power_gain_60_full, opaque_power_gain_high_damage);
 
     for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
-      wait_66ms();
-      tracker_saved_30fps.AddRecord(base::TimeTicks::Now(), kBelowLowDamage,
-                                    get_id(), config);
+      wait_1_frame();
+      tracker.AddRecord(frame_counter, kBelowLowDamage, get_id(), config);
     }
-    // make sure our we have moved into the |kFrameRateLow| category.
-    ASSERT_EQ(tracker_saved_30fps.GetFPSCategory(),
-              OverlayCandidateTemporalTracker::kFrameRateLow);
 
-    // The current design only updates frame rate categorization on record
-    // insertion ('AddRecord()'). We test this assumption by asserting that a
-    // tracker that is not actively changing still has its original 60fps
-    // category.
-    EXPECT_FALSE(tracker_not_active_changing.IsActivelyChanging(
-        base::TimeTicks::Now(), config));
+    auto opaque_power_gain_low_damage =
+        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    EXPECT_LT(opaque_power_gain_low_damage, 0);
 
-    ASSERT_EQ(tracker_not_active_changing.GetFPSCategory(),
-              OverlayCandidateTemporalTracker::kFrameRate60fps);
-    // Finally we test that the categorization changes on the addition of a new
-    // record of very large time interval.
-    tracker_not_active_changing.AddRecord(base::TimeTicks::Now(),
-                                          kAboveHighDamage, get_id(), config);
-    ASSERT_EQ(tracker_not_active_changing.GetFPSCategory(),
-              OverlayCandidateTemporalTracker::kFrameRateLow);
+    // Test our mean damage ratio computations for our tacker.
+    float expected_mean = 0.0f;
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+      wait_1_frame();
+      // Please note that this first iter frame damage will not get included in
+      // the mean as the mean is computed between timing intervals. This means 6
+      // timing intervals only gives 5 values.
+      float dynamic_damage_ratio = static_cast<float>(i);
+      expected_mean += dynamic_damage_ratio;
+      tracker.AddRecord(frame_counter, dynamic_damage_ratio, get_id(), config);
+    }
+
+    expected_mean =
+        expected_mean / (OverlayCandidateTemporalTracker::kNumRecords - 1);
+
+    EXPECT_FLOAT_EQ(expected_mean, tracker.MeanFrameRatioRate(config));
   }
 
   EXPECT_FALSE(tracker.IsAbsent());
@@ -2191,8 +2345,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   // return true; indicating this tracker is no longer active.
   EXPECT_TRUE(tracker.IsAbsent());
 
-  wait_17ms();
-  tracker.AddRecord(base::TimeTicks::Now(), 0.0f, get_id(), config);
+  wait_1_frame();
+  tracker.AddRecord(frame_counter, 0.0f, get_id(), config);
   EXPECT_FALSE(tracker.IsAbsent());
 }
 
@@ -3493,29 +3647,49 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
   AddQuad(gfx::Rect(150, 150, kOccluderWidth, kOccluderWidth), identity,
           pass.get());
 
-  const int kCandidateSmallWidth = 50;
-  const int kCandidateLargeWidth = 100;
+  const int kCandidateSmall = 50;
+  const int kCandidateLarge = 100;
   const gfx::Rect kCandidateRects[] = {
-      gfx::Rect(0, 0, kCandidateSmallWidth, kCandidateSmallWidth),
-      gfx::Rect(100, 100, kCandidateSmallWidth, kCandidateSmallWidth),
-      gfx::Rect(100, 100, kCandidateLargeWidth, kCandidateLargeWidth)};
+      gfx::Rect(0, 0, kCandidateSmall, kCandidateSmall),
+      gfx::Rect(100, 100, kCandidateSmall, kCandidateSmall),
+      gfx::Rect(100, 100, kCandidateLarge, kCandidateLarge), kOverlayRect};
 
-  const int kExpectedDamages[] = {kCandidateSmallWidth * kCandidateSmallWidth,
-                                  kCandidateSmallWidth * kCandidateSmallWidth -
-                                      kOccluderWidth * kOccluderWidth,
-                                  kCandidateLargeWidth * kCandidateLargeWidth -
-                                      kOccluderWidth * kOccluderWidth * 2};
+  const bool kCandidateUseSurfaceIndex[] = {true, true, true, false};
+
+  const int kExpectedDamages[] = {
+      kCandidateSmall * kCandidateSmall,
+      kCandidateSmall * kCandidateSmall - kOccluderWidth * kOccluderWidth,
+      kCandidateLarge * kCandidateLarge - kOccluderWidth * kOccluderWidth * 2,
+      kCandidateLarge * kCandidateLarge * 4 -
+          kOccluderWidth * kOccluderWidth * 2};
+
+  static_assert(
+      base::size(kCandidateRects) == base::size(kCandidateUseSurfaceIndex),
+      "Number of elements in each list should be the identical.");
+  static_assert(base::size(kCandidateRects) == base::size(kExpectedDamages),
+                "Number of elements in each list should be the identical.");
+
   QuadList& quad_list = pass->quad_list;
   auto occluder_iter_count = quad_list.size();
 
+  SurfaceDamageRectList surface_damage_rect_list;
   for (size_t i = 0; i < base::size(kCandidateRects); ++i) {
-    SurfaceDamageRectList surface_damage_rect_list;
     // Create fake surface damage for this candidate.
     SharedQuadState* damaged_shared_quad_state =
         pass->shared_quad_state_list.AllocateAndCopyFrom(
             pass->shared_quad_state_list.back());
-    damaged_shared_quad_state->overlay_damage_index = 0;
-    surface_damage_rect_list.emplace_back(kCandidateRects[i]);
+    // We want to test what happens when an overlay candidate does not have an
+    // associated damage index. An estimate damage for this candidate will still
+    // be computed but it will be derived from a union of all surface damages.
+    // TODO(petermcneeley): Update this code when surface damage is made more
+    // reliable.
+    if (kCandidateUseSurfaceIndex[i]) {
+      damaged_shared_quad_state->overlay_damage_index =
+          surface_damage_rect_list.size();
+      surface_damage_rect_list.emplace_back(kCandidateRects[i]);
+    } else {
+      damaged_shared_quad_state->overlay_damage_index.reset();
+    }
 
     auto* quad_candidate = CreateCandidateQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -3530,8 +3704,15 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
 
     // Before the 'EstimateOccludedDamage' function is called the damage area
     // will just be whatever comes from the |surface_damage_rect_list|.
-    ASSERT_EQ(kCandidateRects[i].size().GetArea(),
-              candidate.damage_area_estimate);
+    if (kCandidateUseSurfaceIndex[i]) {
+      ASSERT_EQ(kCandidateRects[i].size().GetArea(),
+                candidate.damage_area_estimate);
+    } else {
+      // In the special case where we have no surface damage index the candidate
+      // area will not simply be the |damage_area_estimate|.
+      ASSERT_FALSE(
+          quad_candidate->shared_quad_state->overlay_damage_index.has_value());
+    }
 
     // We have to find the occluder end of our list as it changes each
     // iteration.
@@ -3545,6 +3726,7 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
     candidate.damage_area_estimate = OverlayCandidate::EstimateVisibleDamage(
         quad_candidate, &surface_damage_rect_list, quad_list.begin(),
         iter_occluder_end);
+
     ASSERT_EQ(kExpectedDamages[i], candidate.damage_area_estimate);
   }
 }

@@ -26,28 +26,36 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // experiments.
   class VIZ_SERVICE_EXPORT Config {
    public:
-    // Mean damage above |kDamageHighThreshold| is considered significant. An
-    // example of this is a youtube video.
-    float damage_high_threshold = 0.3f;
-    // Mean damage below |kDamageLowThreshold| is considered insignificant. An
-    // example of this is a blinking cursor.
-    float damage_low_threshold = 0.1f;
+    // This is the only heuristic input constant to our power model. It
+    // effectively determines the threshold for positive power gain.
+    float damage_rate_threshold = 0.3f;
 
-    // |sMaxMsActive| is a millisecond the cutoff for when an unchanging
+    // The hysteresis value for damage rate is kept constant within the range of
+    // |damage_rate_hysteresis_range|
+    float damage_rate_hysteresis_range = 0.15f;
+
+    // |max_frames_inactive| is the frame count cutoff for when an unchanging
     // candidate is considered to be inactive. see 'IsActivelyChanging()'
-    int64_t max_ms_active = 100;
+    uint64_t max_frames_inactive = 6;
   };
 
-  enum FrameRateCategory { kFrameRate60fps, kFrameRate30fps, kFrameRateLow };
-  enum DamageCategory { kDamageHigh, kDamageLow };
+  // This function returns an opaque but comparable value representing the
+  // power improvement by promoting the tracked candidate to an overlay.
+  // Negative values indicate that the model suggests a power degradation if the
+  // candidate is promoted to overlay.
+  int GetModeledPowerGain(uint64_t curr_frame,
+                          const OverlayCandidateTemporalTracker::Config& config,
+                          int display_area);
 
   // This function returns true when the time since the |resource_id| changed
   // exceeds a specific threshold.
-  bool IsActivelyChanging(base::TimeTicks curr_tick, const Config& config);
+  bool IsActivelyChanging(uint64_t curr_frame, const Config& config) const;
+
+  void Reset();
 
   // This function adds a new record to the tracker if the |resource_id| has
   // changed since last update.
-  void AddRecord(base::TimeTicks curr_tick,
+  void AddRecord(uint64_t curr_frame,
                  float damage_area_ratio,
                  unsigned resource_id,
                  const Config& config);
@@ -57,29 +65,21 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // overlay candidate is no longer present since we are tracking across frames.
   bool IsAbsent();
 
-  void Reset();
-
-  FrameRateCategory GetFPSCategory() const { return fps_category; }
-  bool HasSignificantDamage() { return damage_category == kDamageHigh; }
-
   // The functions and data below are used internally but also can be used for
   // diagnosis and testing.
-  int64_t MeanFrameMs() const;
-  float MeanDamageAreaRatio() const;
-  int64_t LastChangeMs(base::TimeTicks curr_tick) const;
-
+  float MeanFrameRatioRate(const Config& config) const;
+  float GetDamageRatioRate() const { return ratio_rate_category; }
+  uint64_t LastChangeFrameCount(uint64_t curr_frame) const;
   // Categorization can happen over a series of |KNumRecords| frames.
   // The more records the smoother the categorization but the worse the latency.
   static constexpr int kNumRecords = 6;
 
  private:
-  void CategorizeFrameRate(base::TimeTicks curr_tick);
-  void CategorizeDamageRatio(const Config& config);
-
+  void CategorizeDamageRatioRate(uint64_t curr_frame, const Config& config);
   unsigned prev_resource_id = kInvalidResourceId;
-  FrameRateCategory fps_category = kFrameRateLow;
-  DamageCategory damage_category = kDamageLow;
-  // Next empty slot index
+
+  float ratio_rate_category = 0.0f;
+  // Next empty slot index. Used for circular samples buffer.
   int next_index = 0;
 
   // The state of this absent bool is as follows:
@@ -90,7 +90,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // 'IsAbsent()' returns true  because |absent| was never reset to false. This
   // indicating this tracker should be removed.
   bool absent = false;
-  base::TimeTicks tick_record[kNumRecords] = {};
+  uint64_t frame_record[kNumRecords] = {};
   float damage_record[kNumRecords] = {};
 };
 

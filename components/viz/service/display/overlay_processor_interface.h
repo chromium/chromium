@@ -165,6 +165,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   virtual void SetDisplayTransformHint(gfx::OverlayTransform transform) {}
   virtual void SetViewportSize(const gfx::Size& size) {}
 
+  // Overlay processor uses a frame counter to determine the potential power
+  // benefits of individual overlay candidates.
+  virtual void SetFrameSequenceNumber(uint64_t frame_sequence_number) {}
+
  protected:
   OverlayProcessorInterface() {}
 

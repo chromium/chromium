@@ -770,6 +770,7 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
 
     draw_timer.emplace();
     renderer_->DecideRenderPassAllocationsForFrame(frame.render_pass_list);
+    overlay_processor_->SetFrameSequenceNumber(frame_sequence_number_);
     renderer_->DrawFrame(&frame.render_pass_list, device_scale_factor_,
                          current_surface_size, display_color_spaces_,
                          &frame.surface_damage_rect_list_);
@@ -868,7 +869,6 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
   }
 
   client_->DisplayDidDrawAndSwap();
-
   // Garbage collection can lead to sync IPCs to the GPU service to verify sync
   // tokens. We defer garbage collection until the end of DrawAndSwap to avoid
   // stalling the critical path for compositing.
@@ -1009,6 +1009,8 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
       !renderer_->GetDelegatedInkTrailDamageRect().IsEmpty()) {
     scheduler_->SetNeedsOneBeginFrame(true);
   }
+
+  frame_sequence_number_ = ack.frame_id.sequence_number;
 }
 
 const SurfaceId& Display::CurrentSurfaceId() {
