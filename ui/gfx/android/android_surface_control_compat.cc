@@ -11,6 +11,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/debug/crash_logging.h"
+#include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -282,6 +283,12 @@ struct TransactionAckCtx {
   SurfaceControl::Transaction::OnCompleteCb callback;
 };
 
+uint64_t GetTraceIdForTransaction(int transaction_id) {
+  constexpr uint64_t kMask =
+      base::MD5Hash64Constexpr("SurfaceControl::Transaction");
+  return kMask ^ transaction_id;
+}
+
 // Note that the framework API states that this callback can be dispatched on
 // any thread (in practice it should be the binder thread).
 void OnTransactionCompletedOnAnyThread(void* context,
@@ -290,6 +297,9 @@ void OnTransactionCompletedOnAnyThread(void* context,
   auto transaction_stats = ToTransactionStats(stats);
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,benchmark", "SurfaceControlTransaction",
                                   ack_ctx->id);
+  TRACE_EVENT_WITH_FLOW0(
+      "toplevel.flow", "gfx::SurfaceControlTransaction completed",
+      GetTraceIdForTransaction(ack_ctx->id), TRACE_EVENT_FLAG_FLOW_IN);
 
   if (ack_ctx->task_runner) {
     ack_ctx->task_runner->PostTask(
@@ -301,6 +311,7 @@ void OnTransactionCompletedOnAnyThread(void* context,
 
   delete ack_ctx;
 }
+
 }  // namespace
 
 // static
@@ -472,6 +483,9 @@ void SurfaceControl::Transaction::SetFrameRate(const Surface& surface,
 void SurfaceControl::Transaction::SetOnCompleteCb(
     OnCompleteCb cb,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  TRACE_EVENT_WITH_FLOW0(
+      "toplevel.flow", "gfx::SurfaceControl::Transaction::SetOnCompleteCb",
+      GetTraceIdForTransaction(id_), TRACE_EVENT_FLAG_FLOW_OUT);
   TransactionAckCtx* ack_ctx = new TransactionAckCtx;
   ack_ctx->callback = std::move(cb);
   ack_ctx->task_runner = std::move(task_runner);
