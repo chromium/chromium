@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -112,16 +113,22 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private static boolean isForPaymentsFlow(Intent intent) {
         final int requestedUiType =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
-        return (isTrustedIntent(intent) && (requestedUiType == CustomTabsUiType.PAYMENT_REQUEST));
+        return (isIntentFromChrome(intent)
+                && (requestedUiType == CustomTabsUiType.PAYMENT_REQUEST));
     }
 
     private static boolean isForReaderMode(Intent intent) {
         final int requestedUiType =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
-        return (isTrustedIntent(intent) && (requestedUiType == CustomTabsUiType.READER_MODE));
+        return (isIntentFromChrome(intent) && (requestedUiType == CustomTabsUiType.READER_MODE));
     }
 
-    private static boolean isVerifiedFirstPartyIntent(Intent intent) {
+    private static boolean isIntentFromThirdPartyAllowed() {
+        return CachedFeatureFlags.isEnabled(
+                ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY);
+    }
+
+    private static boolean isIntentFromFirstParty(Intent intent) {
         CustomTabsSessionToken sessionToken =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         String sendersPackageName =
@@ -131,9 +138,13 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                         sendersPackageName);
     }
 
+    private static boolean isIntentFromChrome(Intent intent) {
+        return IntentHandler.wasIntentSenderChrome(intent);
+    }
+
     private static boolean isTrustedIntent(Intent intent) {
-        if (IntentHandler.wasIntentSenderChrome(intent)) return true;
-        return isVerifiedFirstPartyIntent(intent);
+        if (isIntentFromChrome(intent)) return true;
+        return isIntentFromFirstParty(intent) || isIntentFromThirdPartyAllowed();
     }
 
     private static boolean isAllowedToAddCustomMenuItem(Intent intent) {
