@@ -255,7 +255,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleTLD) {
 }
 
 // Tests that the Mirror request is returned when the target is the domain
-// google.com, and that the GAIA Id is only attached for the cookie.
+// google.com and GAIA Id is not attached.
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleCom) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
@@ -263,10 +263,9 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleCom) {
       /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
-  CheckMirrorCookieRequest(
-      GURL("https://www.google.com"), "0123456789",
-      "id=0123456789:mode=0:enable_account_consistency=true:"
-      "consistency_enabled_by_default=false");
+  CheckMirrorCookieRequest(GURL("https://www.google.com"), "0123456789",
+                           "mode=0:enable_account_consistency=true:"
+                           "consistency_enabled_by_default=false");
 }
 
 // Tests that no header sent when mirror account consistency is nor requested.
@@ -331,10 +330,9 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGaiaURL) {
       /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false");
-  CheckMirrorCookieRequest(
-      GURL("https://accounts.google.com"), "0123456789",
-      "id=0123456789:mode=0:enable_account_consistency=false:"
-      "consistency_enabled_by_default=false");
+  CheckMirrorCookieRequest(GURL("https://accounts.google.com"), "0123456789",
+                           "mode=0:enable_account_consistency=false:"
+                           "consistency_enabled_by_default=false");
 }
 
 // Tests Dice requests.
@@ -449,10 +447,9 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestDrive) {
       /*is_child_account=*/base::nullopt,
       "source=TestSource,id=0123456789,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false");
-  CheckMirrorCookieRequest(
-      GURL("https://drive.google.com/drive"), "0123456789",
-      "id=0123456789:mode=0:enable_account_consistency=false:"
-      "consistency_enabled_by_default=false");
+  CheckMirrorCookieRequest(GURL("https://drive.google.com/drive"), "0123456789",
+                           "mode=0:enable_account_consistency=false:"
+                           "consistency_enabled_by_default=false");
 
   // Enable Account Consistency will override the disable.
   account_consistency_ = AccountConsistencyMethod::kMirror;
@@ -461,10 +458,9 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestDrive) {
       /*is_child_account=*/base::nullopt,
       "source=TestSource,id=0123456789,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
-  CheckMirrorCookieRequest(
-      GURL("https://drive.google.com/drive"), "0123456789",
-      "id=0123456789:mode=0:enable_account_consistency=true:"
-      "consistency_enabled_by_default=false");
+  CheckMirrorCookieRequest(GURL("https://drive.google.com/drive"), "0123456789",
+                           "mode=0:enable_account_consistency=true:"
+                           "consistency_enabled_by_default=false");
 }
 
 TEST_F(SigninHeaderHelperTest, TestDiceInvalidResponseParams) {

@@ -129,20 +129,12 @@ bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
 bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(
     const GURL& url,
     bool is_header_request) {
-  if (is_header_request) {
-    // Gaia ID is only necessary for Drive. Don't set it otherwise.
-    return IsDriveOrigin(url.GetOrigin());
-  }
-
-  // Cookie requests don't have the granularity to only include the Gaia ID for
-  // Drive origin. Set it on all google.com instead.
-  if (!url.SchemeIsCryptographic())
-    return false;
-
-  const std::string kGoogleDomain = "google.com";
-  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-      url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-  return domain == kGoogleDomain;
+  // Gaia ID is only used by Google Drive on desktop to auto-enable offline
+  // mode. As Gaia ID  is personal identifiable information, we restrict its
+  // usage:
+  // * Avoid sending it in the cookie as not needed on iOS.
+  // * Only send it in the header to Drive URLs.
+  return is_header_request ? IsDriveOrigin(url.GetOrigin()) : false;
 }
 
 bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
