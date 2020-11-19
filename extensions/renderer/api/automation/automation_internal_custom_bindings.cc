@@ -1706,8 +1706,6 @@ void AutomationInternalCustomBindings::Invalidate() {
   tree_id_to_tree_wrapper_map_.clear();
 }
 
-// http://crbug.com/784266
-// clang-format off
 void AutomationInternalCustomBindings::OnMessageReceived(
     const IPC::Message& message) {
   IPC_BEGIN_MESSAGE_MAP(AutomationInternalCustomBindings, message)
@@ -1716,7 +1714,7 @@ void AutomationInternalCustomBindings::OnMessageReceived(
     IPC_MESSAGE_HANDLER(ExtensionMsg_AccessibilityLocationChange,
                         OnAccessibilityLocationChange)
   IPC_END_MESSAGE_MAP()
-}  // clang-format on
+}
 
 AutomationAXTreeWrapper* AutomationInternalCustomBindings::
     GetAutomationAXTreeWrapperFromTreeID(ui::AXTreeID tree_id) const {
