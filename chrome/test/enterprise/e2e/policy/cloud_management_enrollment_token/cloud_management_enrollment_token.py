@@ -44,6 +44,6 @@ class CloudManagementEnrollmentTokenTest(ChromeEnterpriseTestCase):
         os.path.join(local_dir, 'cloud_enrollment_webdriver.py'))
     # Verify CBCM status legend
     self.assertIn('Machine policies', output)
-    self.assertIn('CLIENT2019', output)
+    self.assertIn('CLIENT2016', output)
     self.assertIn(token, output)
     self.assertIn('Policy cache OK', output)
