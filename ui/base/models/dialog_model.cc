@@ -120,7 +120,7 @@ DialogModelField* DialogModel::GetFieldByUniqueId(int unique_id) {
     if (field->unique_id_ == unique_id)
       return field.get();
   }
-  NOTREACHED();
+  NOTREACHED() << "No field with unique_id: " << unique_id;
   return nullptr;
 }
 

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/strings/string16.h"
 #include "base/types/pass_key.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -138,6 +139,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
 
  private:
   friend class DialogModel;
+  FRIEND_TEST_ALL_PREFIXES(DialogModelButtonTest, UsesParamsUniqueId);
 
   DialogModel* const model_;
   const Type type_;

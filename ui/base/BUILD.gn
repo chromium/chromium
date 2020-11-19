@@ -719,6 +719,7 @@ static_library("test_support") {
       "accelerators/test_accelerator_target.h",
       "test/mock_base_window.cc",
       "test/mock_base_window.h",
+      "test/test_dialog_model_host.h",
       "test/ui_controls.h",
       "test/view_tree_validator.h",
     ]
@@ -966,6 +967,7 @@ test("ui_base_unittests") {
       "accelerators/accelerator_unittest.cc",
       "accelerators/menu_label_accelerator_util_unittest.cc",
       "accelerators/system_media_controls_media_keys_listener_unittest.cc",
+      "models/dialog_model_unittest.cc",
       "models/list_model_unittest.cc",
       "models/list_selection_model_unittest.cc",
       "models/tree_node_model_unittest.cc",
