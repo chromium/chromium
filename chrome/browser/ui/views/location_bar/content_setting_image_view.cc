@@ -189,7 +189,7 @@ bool ContentSettingImageView::ShowBubbleImpl() {
     bubble_view_->SetHighlightedButton(this);
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
-    observer_.Add(bubble_widget);
+    observation_.Observe(bubble_widget);
     bubble_widget->Show();
     delegate_->OnContentSettingImageBubbleShown(
         content_setting_image_model_->image_type());
@@ -211,7 +211,8 @@ void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
   if (!bubble_view_ || bubble_view_->GetWidget() != widget)
     return;
 
-  observer_.Remove(widget);
+  DCHECK(observation_.IsObservingSource(widget));
+  observation_.RemoveObservation();
   bubble_view_ = nullptr;
   UnpauseAnimation();
 }

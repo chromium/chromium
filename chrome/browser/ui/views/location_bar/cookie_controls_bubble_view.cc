@@ -109,7 +109,7 @@ CookieControlsBubbleView::CookieControlsBubbleView(
       controller_(controller) {
   SetShowTitle(true);
   SetShowCloseButton(true);
-  controller_observer_.Add(controller);
+  controller_observation_.Observe(controller);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 }
 
@@ -131,7 +131,7 @@ void CookieControlsBubbleView::UpdateUi() {
     text_->SetText(
         l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_NOT_WORKING_DESCRIPTION));
     auto tooltip_icon = CreateInfoIcon();
-    tooltip_observer_.Add(tooltip_icon.get());
+    tooltip_observation_.Observe(tooltip_icon.get());
     extra_view_ = SetExtraView(std::move(tooltip_icon));
     show_cookies_link_->SetVisible(true);
   } else if (status_ == CookieControlsStatus::kEnabled) {
@@ -298,5 +298,6 @@ void CookieControlsBubbleView::OnTooltipBubbleShown(views::TooltipIcon* icon) {
 
 void CookieControlsBubbleView::OnTooltipIconDestroying(
     views::TooltipIcon* icon) {
-  tooltip_observer_.Remove(icon);
+  DCHECK(tooltip_observation_.IsObservingSource(icon));
+  tooltip_observation_.RemoveObservation();
 }

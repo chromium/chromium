@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/pointer/touch_ui_controller.h"

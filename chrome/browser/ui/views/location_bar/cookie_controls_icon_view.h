@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
@@ -48,9 +48,9 @@ class CookieControlsIconView : public PageActionIconView,
   bool has_blocked_cookies_ = false;
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
-  ScopedObserver<content_settings::CookieControlsController,
-                 content_settings::CookieControlsView>
-      observer_{this};
+  base::ScopedObservation<content_settings::CookieControlsController,
+                          content_settings::CookieControlsView>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CookieControlsIconView);
 };

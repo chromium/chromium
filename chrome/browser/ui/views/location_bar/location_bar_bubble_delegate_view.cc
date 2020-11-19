@@ -56,7 +56,7 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
     // |browser| can be null in tests.
     if (browser)
-      fullscreen_observer_.Add(
+      fullscreen_observation_.Observe(
           browser->exclusive_access_manager()->fullscreen_controller());
   }
 }

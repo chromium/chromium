@@ -97,7 +97,8 @@ class ContentSettingImageView : public IconLabelBubbleView,
   base::Optional<SkColor> icon_color_;
 
   // Observes destruction of bubble's Widgets spawned by this ImageView.
-  ScopedObserver<views::Widget, views::WidgetObserver> observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
   bool can_animate_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSettingImageView);

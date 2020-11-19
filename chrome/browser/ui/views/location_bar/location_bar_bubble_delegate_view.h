@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_BUBBLE_DELEGATE_VIEW_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -103,8 +103,8 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   }
 
  private:
-  ScopedObserver<FullscreenController, FullscreenObserver> fullscreen_observer_{
-      this};
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      fullscreen_observation_{this};
 
   // A flag controlling bubble closure when the main frame navigates to a
   // different origin.

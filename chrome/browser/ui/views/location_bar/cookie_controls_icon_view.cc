@@ -43,7 +43,7 @@ void CookieControlsIconView::UpdateImpl() {
               profile->IsOffTheRecord() ? CookieSettingsFactory::GetForProfile(
                                               profile->GetOriginalProfile())
                                         : nullptr);
-      observer_.Add(controller_.get());
+      observation_.Observe(controller_.get());
     }
     controller_->Update(web_contents);
   }
