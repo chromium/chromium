@@ -44399,6 +44399,7 @@ from previous Chrome versions.
   <int value="259633436" label="AutofillDropdownLayout:disabled"/>
   <int value="259812169" label="OmniboxSuggestionsWrapAround:disabled"/>
   <int value="262382944" label="GuestViewCrossProcessFrames:disabled"/>
+  <int value="265140282" label="Prerender2:disabled"/>
   <int value="265830810" label="BackgroundTaskComponentUpdate:enabled"/>
   <int value="266322815" label="ChromeModernDesign:disabled"/>
   <int value="266702296" label="disable-plugin-power-saver"/>
@@ -44759,6 +44760,7 @@ from previous Chrome versions.
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
   <int value="603326800" label="UsePasswordSeparatedSigninFlow:enabled"/>
   <int value="603988014" label="NetworkService:enabled"/>
+  <int value="604334859" label="Prerender2:enabled"/>
   <int value="605150752" label="WebUSB:disabled"/>
   <int value="606061406"
       label="UpdateNotificationSchedulingIntegration:disabled"/>

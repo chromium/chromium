@@ -1826,6 +1826,11 @@ const char kPointerLockOptionsDescription[] =
     "to true, pointer movements wil not be affected by the underlying platform "
     "modications such as mouse accelaration.";
 
+const char kPrerender2Name[] = "Prerender2";
+const char kPrerender2Description[] =
+    "Enables the new prerenderer implementation for <link rel=prerender> "
+    "instead of NoStatePrefetch.";
+
 const char kPreviewsAllowedName[] = "Previews Allowed";
 const char kPreviewsAllowedDescription[] =
     "Allows previews to be shown subject to specific preview types being "

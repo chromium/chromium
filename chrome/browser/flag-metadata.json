@@ -1999,6 +1999,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-prerender2",
+    "owners": [ "//content/browser/prerender/OWNERS" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "enable-previews-coin-flip",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     "expiry_milestone": 90

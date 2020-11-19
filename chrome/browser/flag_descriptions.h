@@ -1063,6 +1063,9 @@ extern const char kPermissionPredictionsDescription[];
 extern const char kPointerLockOptionsName[];
 extern const char kPointerLockOptionsDescription[];
 
+extern const char kPrerender2Name[];
+extern const char kPrerender2Description[];
+
 extern const char kPreviewsAllowedName[];
 extern const char kPreviewsAllowedDescription[];
 

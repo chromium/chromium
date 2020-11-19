@@ -20,14 +20,28 @@
 namespace content {
 namespace {
 
-class PrerenderBrowserTest : public ContentBrowserTest {
+class PrerenderBrowserTest : public ContentBrowserTest,
+                             public testing::WithParamInterface<bool> {
  public:
   PrerenderBrowserTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+    std::map<std::string, std::string> parameters;
+    if (IsActivationDisabled())
+      parameters["activation"] = "disabled";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrerender2, parameters);
   }
   ~PrerenderBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    // Make sure the feature param is correctly set before testing.
+    if (IsActivationDisabled()) {
+      ASSERT_EQ(blink::features::kPrerender2Param.Get(),
+                blink::features::Prerender2ActivationMode::kDisabled);
+    } else {
+      ASSERT_EQ(blink::features::kPrerender2Param.Get(),
+                blink::features::Prerender2ActivationMode::kEnabled);
+    }
+
     host_resolver()->AddRule("*", "127.0.0.1");
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.SetSSLConfig(
@@ -60,6 +74,8 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     return request_count_by_path_[url.PathForRequest()];
   }
 
+  bool IsActivationDisabled() const { return GetParam(); }
+
  private:
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
@@ -72,7 +88,9 @@ class PrerenderBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender) {
+INSTANTIATE_TEST_SUITE_P(All, PrerenderBrowserTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
   const GURL kInitialUrl = GetUrl("/prerender/single_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -107,11 +125,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender) {
   // PrerenderHost for `kPrerenderingUrl` should be consumed.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
-  // Activating the prerendered page should not issue a request.
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  if (IsActivationDisabled()) {
+    // Activation is disabled. The navigation should issue a request again.
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
+  } else {
+    // Activating the prerendered page should not issue a request.
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   const GURL kInitialUrl = GetUrl("/prerender/multiple_prerenders.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
@@ -154,12 +177,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
-  // Activating the prerendered page should not issue a request.
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
+  if (IsActivationDisabled()) {
+    // Activation is disabled. The navigation should issue a request again.
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 2);
+  } else {
+    // Activating the prerendered page should not issue a request.
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   const GURL kInitialUrl = GetUrl("/prerender/duplicate_prerenders.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
@@ -202,9 +231,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
-  // Activating the prerendered page should not issue a request.
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
+  if (IsActivationDisabled()) {
+    // Activation is disabled. The navigation should issue a request again.
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 2);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
+  } else {
+    // Activating the prerendered page should not issue a request.
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
+  }
 }
 
 // TODO(https://crbug.com/1132746): Test canceling prerendering.
