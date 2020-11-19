@@ -2008,8 +2008,7 @@ const char kDisableAuthNegotiateCnameLookup[] =
 const char kEnableAuthNegotiatePort[] = "auth.enable_negotiate_port";
 
 // Allowlist containing servers for which Integrated Authentication is enabled.
-// Note that this used to be `kAuthServerWhitelist`, hence the difference
-// between the variable name and the string value.
+// This pref should match |android_webview::prefs::kAuthServerAllowlist|.
 const char kAuthServerAllowlist[] = "auth.server_allowlist";
 
 // Allowlist containing servers Chrome is allowed to do Kerberos delegation

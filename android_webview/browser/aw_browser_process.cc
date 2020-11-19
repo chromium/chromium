@@ -29,6 +29,7 @@ const char kAuthAndroidNegotiateAccountType[] =
     "auth.android_negotiate_account_type";
 
 // Allowlist containing servers for which Integrated Authentication is enabled.
+// This pref should match |prefs::kAuthServerAllowlist|.
 const char kAuthServerAllowlist[] = "auth.server_allowlist";
 
 }  // namespace prefs
