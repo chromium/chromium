@@ -153,8 +153,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
   base::OnceClosure quit_loop_closure_;
 
-  // Tells if the current drag event should be processedc. E.g: received through
-  // wl_data_device::motion wayland event.
+  // Tells if the current drag event should be processed. Buggy compositors may
+  // send wl_pointer::motion events, for example, while a DND session is still
+  // in progress, which leads to issues in window dragging sessions, this flag
+  // is used to make window drag controller resistant to such scenarios.
   bool should_process_drag_event_ = false;
 
   base::WeakPtrFactory<WaylandWindowDragController> weak_factory_{this};
