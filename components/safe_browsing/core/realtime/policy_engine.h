@@ -27,14 +27,6 @@ namespace safe_browsing {
 
 enum class ResourceType;
 
-#if defined(OS_ANDROID)
-// A parameter controlled by finch experiment.
-// On Android, performs real time URL lookup only if |kRealTimeUrlLookupEnabled|
-// is enabled, and system memory is larger than threshold.
-const char kRealTimeUrlLookupMemoryThresholdMb[] =
-    "SafeBrowsingRealTimeUrlLookupMemoryThresholdMb";
-#endif
-
 // This class implements the logic to decide whether the real time lookup
 // feature is enabled for a given user/profile.
 // TODO(crbug.com/1050859): To make this class build in IOS, remove

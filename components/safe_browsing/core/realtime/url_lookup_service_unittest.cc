@@ -24,12 +24,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/platform_test.h"
 
-#if defined(OS_ANDROID)
-#include "base/strings/string_number_conversions.h"
-#include "base/system/sys_info.h"
-#include "components/safe_browsing/core/realtime/policy_engine.h"
-#endif
-
 using ::testing::_;
 
 namespace safe_browsing {
@@ -137,31 +131,6 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     test_pref_service_.SetUserPref(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         std::make_unique<base::Value>(true));
-#if defined(OS_ANDROID)
-    int system_memory_size = base::SysInfo::AmountOfPhysicalMemoryMB();
-    int memory_size_threshold = system_memory_size - 1;
-    if (is_with_token_enabled) {
-      feature_list_.InitWithFeaturesAndParameters(
-          /* enabled_features */ {{kRealTimeUrlLookupEnabled,
-                                   { {
-                                     kRealTimeUrlLookupMemoryThresholdMb,
-                                     base::NumberToString(memory_size_threshold)
-                                   } }},
-                                  { kRealTimeUrlLookupEnabledWithToken,
-                                    {} }},
-          /* disabled_features */ {});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          /* enabled_features */ {{
-            kRealTimeUrlLookupEnabled,
-            {
-              { kRealTimeUrlLookupMemoryThresholdMb,
-                base::NumberToString(memory_size_threshold) }
-            }
-          }},
-          /* disabled_features */ {});
-    }
-#else
     if (is_with_token_enabled) {
       feature_list_.InitWithFeatures(
           {kRealTimeUrlLookupEnabled, kRealTimeUrlLookupEnabledWithToken}, {});
@@ -169,7 +138,6 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
       feature_list_.InitWithFeatures({kRealTimeUrlLookupEnabled},
                                      {kRealTimeUrlLookupEnabledWithToken});
     }
-#endif
   }
 
   void SetupPrimaryAccount() {

@@ -97,10 +97,6 @@ const base::Feature kRealTimeUrlLookupEnabled{
 #endif
 };
 
-const base::Feature kRealTimeUrlLookupEnabledForAllAndroidDevices{
-    "SafeBrowsingRealTimeUrlLookupEnabledForAllAndroidDevices",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kRealTimeUrlLookupEnabledForEnterprise{
     "SafeBrowsingRealTimeUrlLookupEnabledForEnterprise",
     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -174,7 +170,6 @@ constexpr struct {
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPromptAppForDeepScanning, true},
     {&kRealTimeUrlLookupEnabled, true},
-    {&kRealTimeUrlLookupEnabledForAllAndroidDevices, true},
     {&kRealTimeUrlLookupEnabledForEP, true},
     {&kRealTimeUrlLookupEnabledForEnterprise, true},
     {&kRealTimeUrlLookupEnabledForEPWithToken, true},

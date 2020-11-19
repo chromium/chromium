@@ -30,10 +30,6 @@
 
 namespace safe_browsing {
 
-#if defined(OS_ANDROID)
-const int kDefaultMemoryThresholdMb = 4096;
-#endif
-
 // static
 bool RealTimePolicyEngine::IsInExcludedCountry(
     const std::string& country_code) {
@@ -42,24 +38,7 @@ bool RealTimePolicyEngine::IsInExcludedCountry(
 
 // static
 bool RealTimePolicyEngine::IsUrlLookupEnabled() {
-  if (!base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabled))
-    return false;
-#if defined(OS_ANDROID)
-  // On Android, performs real time URL lookup only if
-  // |kRealTimeUrlLookupEnabled| is enabled, and system memory is larger than
-  // threshold, or the feature flag
-  // |kRealTimeUrlLookupEnabledForAllAndroidDevices| is enabled.
-  int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
-      kRealTimeUrlLookupEnabled, kRealTimeUrlLookupMemoryThresholdMb,
-      kDefaultMemoryThresholdMb);
-  bool is_high_end_device =
-      base::SysInfo::AmountOfPhysicalMemoryMB() >= memory_threshold_mb;
-  return is_high_end_device ||
-         base::FeatureList::IsEnabled(
-             kRealTimeUrlLookupEnabledForAllAndroidDevices);
-#else
-  return true;
-#endif
+  return base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabled);
 }
 
 // static

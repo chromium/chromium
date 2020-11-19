@@ -83,10 +83,6 @@ extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 // Controls whether the real time URL lookup is enabled.
 extern const base::Feature kRealTimeUrlLookupEnabled;
 
-// Controls whether the real time URL lookup is enabled for all Android devices.
-// This flag is in effect only if |kRealTimeUrlLookupEnabled| is true.
-extern const base::Feature kRealTimeUrlLookupEnabledForAllAndroidDevices;
-
 // Controls whether to do real time URL lookup for enterprise users. If both
 // this feature and the enterprise policies are enabled, the enterprise real
 // time URL lookup will be enabled and the consumer real time URL lookup will be
