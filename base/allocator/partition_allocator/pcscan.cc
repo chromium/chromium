@@ -205,7 +205,7 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
   // Check if pointer was in the quarantine bitmap.
   const uintptr_t base =
       GetObjectStartInSuperPage<thread_safe>(maybe_ptr, root_);
-  if (!bitmap->CheckBit(base))
+  if (!base || !bitmap->CheckBit(base))
     return 0;
 
   PA_DCHECK((maybe_ptr & kSuperPageBaseMask) == (base & kSuperPageBaseMask));
