@@ -119,7 +119,6 @@ void OsIntegrationManager::InstallOsHooks(
     InstallOsHooksCallback callback,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     InstallOsHooksOptions options) {
-  DCHECK(shortcut_manager_);
   if (g_suppress_os_hooks_for_testing_) {
     OsHooksResults os_hooks_results{true};
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -141,7 +140,7 @@ void OsIntegrationManager::InstallOsHooks(
 
   // TODO(ortuno): Make adding a shortcut to the applications menu independent
   // from adding a shortcut to desktop.
-  if (options.os_hooks[OsHookType::kShortcuts] && CanCreateShortcuts()) {
+  if (options.os_hooks[OsHookType::kShortcuts]) {
     CreateShortcuts(app_id, options.add_to_desktop,
                     std::move(shortcuts_callback));
   } else {
@@ -162,7 +161,6 @@ void OsIntegrationManager::UninstallAllOsHooks(
 void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
                                             const OsHooksResults& os_hooks,
                                             UninstallOsHooksCallback callback) {
-  DCHECK(shortcut_manager_);
 
   if (g_suppress_os_hooks_for_testing_) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -239,14 +237,6 @@ void OsIntegrationManager::UpdateOsHooks(
   }
 }
 
-bool OsIntegrationManager::CanCreateShortcuts() const {
-  if (suppress_os_managers_for_testing_)
-    return true;
-
-  DCHECK(shortcut_manager_);
-  return shortcut_manager_->CanCreateShortcuts();
-}
-
 void OsIntegrationManager::GetShortcutInfoForApp(
     const AppId& app_id,
     AppShortcutManager::GetShortcutInfoCallback callback) {
@@ -310,10 +300,6 @@ ScopedOsHooksSuppress OsIntegrationManager::ScopedSuppressOsHooksForTesting() {
 #endif
 }
 
-void OsIntegrationManager::SuppressOsManagersForTesting() {
-  suppress_os_managers_for_testing_ = true;
-}
-
 TestOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
   return nullptr;
 }
@@ -321,22 +307,18 @@ TestOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
 void OsIntegrationManager::CreateShortcuts(const AppId& app_id,
                                            bool add_to_desktop,
                                            CreateShortcutsCallback callback) {
-  if (suppress_os_managers_for_testing_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true));
-    return;
+  if (shortcut_manager_->CanCreateShortcuts()) {
+    shortcut_manager_->CreateShortcuts(app_id, add_to_desktop,
+                                       std::move(callback));
+  } else {
+    std::move(callback).Run(false);
   }
-
-  shortcut_manager_->CreateShortcuts(app_id, add_to_desktop,
-                                     std::move(callback));
 }
 
 void OsIntegrationManager::RegisterFileHandlers(
     const AppId& app_id,
     base::OnceCallback<void(bool success)> callback) {
-  if (suppress_os_managers_for_testing_)
-    return;
-
+  DCHECK(file_handler_manager_);
   file_handler_manager_->EnableAndRegisterOsFileHandlers(app_id);
 
   // TODO(crbug.com/1087219): callback should be run after all hooks are
@@ -350,8 +332,6 @@ void OsIntegrationManager::RegisterShortcutsMenu(
         shortcuts_menu_item_infos,
     const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps,
     base::OnceCallback<void(bool success)> callback) {
-  if (suppress_os_managers_for_testing_)
-    return;
 
   shortcut_manager_->RegisterShortcutsMenuWithOs(
       app_id, shortcuts_menu_item_infos, shortcuts_menu_icons_bitmaps);
@@ -364,11 +344,6 @@ void OsIntegrationManager::RegisterShortcutsMenu(
 void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
     const AppId& app_id,
     base::OnceCallback<void(bool success)> callback) {
-  if (suppress_os_managers_for_testing_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true));
-    return;
-  }
   shortcut_manager_->ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
       app_id, std::move(callback));
 }
@@ -376,11 +351,6 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
 void OsIntegrationManager::RegisterRunOnOsLogin(
     const AppId& app_id,
     RegisterRunOnOsLoginCallback callback) {
-  if (suppress_os_managers_for_testing_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true));
-    return;
-  }
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   shortcut_manager_->GetShortcutInfoForApp(
@@ -392,20 +362,23 @@ void OsIntegrationManager::RegisterRunOnOsLogin(
 
 void OsIntegrationManager::MacAppShimOnAppInstalledForProfile(
     const AppId& app_id) {
-  if (suppress_os_managers_for_testing_)
-    return;
 #if defined(OS_MAC)
   AppShimRegistry::Get()->OnAppInstalledForProfile(app_id, profile_->GetPath());
 #endif
 }
 
 void OsIntegrationManager::AddAppToQuickLaunchBar(const AppId& app_id) {
-  if (suppress_os_managers_for_testing_)
-    return;
-
   DCHECK(ui_manager_);
   if (ui_manager_->CanAddAppToQuickLaunchBar()) {
     ui_manager_->AddAppToQuickLaunchBar(app_id);
+  }
+}
+
+void OsIntegrationManager::RegisterWebAppOsUninstallation(
+    const AppId& app_id,
+    const std::string& name) {
+  if (ShouldRegisterUninstallationViaOsSettingsWithOs()) {
+    RegisterUninstallationViaOsSettingsWithOs(app_id, name, profile_);
   }
 }
 
@@ -415,7 +388,6 @@ void OsIntegrationManager::OnShortcutsCreated(
     InstallOsHooksOptions options,
     scoped_refptr<OsHooksBarrier> barrier,
     bool shortcuts_created) {
-  DCHECK(file_handler_manager_);
 
   bool shortcut_creation_failure =
       !shortcuts_created && options.os_hooks[OsHookType::kShortcuts];
@@ -456,10 +428,8 @@ void OsIntegrationManager::OnShortcutsCreated(
 
   if (options.os_hooks[OsHookType::kUninstallationViaOsSettings] &&
       base::FeatureList::IsEnabled(
-          features::kEnableWebAppUninstallFromOsSettings) &&
-      ShouldRegisterUninstallationViaOsSettingsWithOs()) {
-    RegisterUninstallationViaOsSettingsWithOs(
-        app_id, registrar_->GetAppShortName(app_id), profile_);
+          features::kEnableWebAppUninstallFromOsSettings)) {
+    RegisterWebAppOsUninstallation(app_id, registrar_->GetAppShortName(app_id));
   }
 }
 

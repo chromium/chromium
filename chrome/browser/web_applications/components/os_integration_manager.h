@@ -110,7 +110,6 @@ class OsIntegrationManager {
                              const WebApplicationInfo& web_app_info);
 
   // Proxy calls for AppShortcutManager.
-  bool CanCreateShortcuts() const;
   void GetShortcutInfoForApp(
       const AppId& app_id,
       AppShortcutManager::GetShortcutInfoCallback callback);
@@ -131,9 +130,6 @@ class OsIntegrationManager {
   FileHandlerManager& file_handler_manager_for_testing();
 
   static ScopedOsHooksSuppress ScopedSuppressOsHooksForTesting();
-
-  // Suppress calling individual OS managers for testing.
-  void SuppressOsManagersForTesting();
 
   virtual TestOsIntegrationManager* AsTestOsIntegrationManager();
 
@@ -171,6 +167,8 @@ class OsIntegrationManager {
                                     RegisterRunOnOsLoginCallback callback);
   virtual void MacAppShimOnAppInstalledForProfile(const AppId& app_id);
   virtual void AddAppToQuickLaunchBar(const AppId& app_id);
+  virtual void RegisterWebAppOsUninstallation(const AppId& app_id,
+                                              const std::string& name);
 
  private:
   class OsHooksBarrier;
@@ -195,7 +193,6 @@ class OsIntegrationManager {
 
   std::unique_ptr<AppShortcutManager> shortcut_manager_;
   std::unique_ptr<FileHandlerManager> file_handler_manager_;
-  bool suppress_os_managers_for_testing_ = false;
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };
