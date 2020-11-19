@@ -2094,6 +2094,107 @@ TEST_P(MultipleRulesetsGlobalRulesTest, GetAvailableStaticRuleCount) {
   VerifyGetAvailableStaticRuleCountFunction(*second_extension.get(), 0);
 }
 
+// Test that an extension's allocation is reclaimed when unloaded in certain
+// scenarios.
+TEST_P(MultipleRulesetsGlobalRulesTest, ReclaimAllocationOnUnload) {
+  const size_t ext_1_allocation = 50;
+
+  AddRuleset(CreateRuleset(
+      kId1, GetStaticGuaranteedMinimumRuleCount() + ext_1_allocation, 0, true));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess(GetStaticGuaranteedMinimumRuleCount() +
+                       ext_1_allocation);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+  ExtensionId first_extension_id = extension()->id();
+
+  // The |ext_1_allocation| rules that contribute to the global pool should be
+  // tracked.
+  GlobalRulesTracker& global_rules_tracker =
+      RulesMonitorService::Get(browser_context())->global_rules_tracker();
+  EXPECT_EQ(ext_1_allocation,
+            global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+
+  // An entry for these |ext_1_allocation| rules should be persisted for the
+  // extension in prefs.
+  CheckExtensionAllocationInPrefs(first_extension_id, ext_1_allocation);
+
+  auto disable_extension_and_check_allocation =
+      [this, &ext_1_allocation, &global_rules_tracker, &ruleset_waiter,
+       &first_extension_id](int disable_reasons,
+                            bool expect_allocation_released) {
+        service()->DisableExtension(first_extension_id, disable_reasons);
+        ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
+
+        size_t expected_tracker_allocation =
+            expect_allocation_released ? 0 : ext_1_allocation;
+        base::Optional<size_t> expected_pref_allocation =
+            expect_allocation_released
+                ? base::nullopt
+                : base::make_optional<size_t>(ext_1_allocation);
+        EXPECT_EQ(expected_tracker_allocation,
+                  global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+        CheckExtensionAllocationInPrefs(first_extension_id,
+                                        expected_pref_allocation);
+
+        service()->EnableExtension(first_extension_id);
+        ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+        EXPECT_EQ(ext_1_allocation,
+                  global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+        CheckExtensionAllocationInPrefs(first_extension_id, ext_1_allocation);
+      };
+
+  // Test some DisableReasons that shouldn't cause the allocation to be
+  // released.
+  disable_extension_and_check_allocation(disable_reason::DISABLE_USER_ACTION,
+                                         false);
+
+  disable_extension_and_check_allocation(
+      disable_reason::DISABLE_PERMISSIONS_INCREASE |
+          disable_reason::DISABLE_GREYLIST,
+      false);
+
+  // Test the DisableReasons that should cause the allocation to be released.
+  disable_extension_and_check_allocation(
+      disable_reason::DISABLE_BLOCKED_BY_POLICY, true);
+
+  disable_extension_and_check_allocation(
+      disable_reason::DISABLE_REMOTELY_FOR_MALWARE, true);
+
+  disable_extension_and_check_allocation(
+      disable_reason::DISABLE_REMOTELY_FOR_MALWARE |
+          disable_reason::DISABLE_USER_ACTION,
+      true);
+
+  // We should reclaim the extension's allocation if it is blocklisted.
+  service()->BlocklistExtensionForTest(first_extension_id);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
+  EXPECT_EQ(0u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(first_extension_id, base::nullopt);
+
+  // Load another extension, only to have it be terminated.
+  const size_t ext_2_allocation = 50;
+  UpdateExtensionLoaderAndPath(
+      temp_dir().GetPath().Append(FILE_PATH_LITERAL("test_extension_2")));
+  ClearRulesets();
+
+  AddRuleset(CreateRuleset(
+      kId2, GetStaticGuaranteedMinimumRuleCount() + ext_2_allocation, 0, true));
+  LoadAndExpectSuccess(GetStaticGuaranteedMinimumRuleCount() +
+                       ext_2_allocation);
+
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+  ExtensionId second_extension_id = extension()->id();
+
+  // The extension should have its allocation kept when it is terminated.
+  service()->TerminateExtension(second_extension_id);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
+  EXPECT_EQ(ext_2_allocation,
+            global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(second_extension_id, ext_2_allocation);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SingleRulesetTest,
                          ::testing::Values(ExtensionLoadType::PACKED,

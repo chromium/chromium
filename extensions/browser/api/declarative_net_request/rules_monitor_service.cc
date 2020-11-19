@@ -30,6 +30,7 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -62,6 +63,24 @@ bool RulesetInfoCompareByID(const RulesetInfo& lhs, const RulesetInfo& rhs) {
 
 void LogLoadRulesetResult(LoadRulesetResult result) {
   UMA_HISTOGRAM_ENUMERATION(kLoadRulesetResultHistogram, result);
+}
+
+// Returns whether the extension's allocation should be released. This would
+// return true for cases where we expect the extension to be unloaded for a
+// while.
+bool ShouldReleaseAllocationOnUnload(const ExtensionPrefs* prefs,
+                                     const ExtensionId& extension_id,
+                                     UnloadedExtensionReason reason) {
+  if (reason == UnloadedExtensionReason::DISABLE) {
+    static constexpr int kReleaseAllocationDisableReasons =
+        disable_reason::DISABLE_BLOCKED_BY_POLICY |
+        disable_reason::DISABLE_REMOTELY_FOR_MALWARE;
+
+    return (prefs->GetDisableReasons(extension_id) &
+            kReleaseAllocationDisableReasons) != 0;
+  }
+
+  return reason == UnloadedExtensionReason::BLOCKLIST;
 }
 
 }  // namespace
@@ -352,13 +371,16 @@ void RulesMonitorService::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   DCHECK_EQ(context_, browser_context);
 
-  // If the extension is unloaded for any reason other than an update, the
-  // unused rule allocation should not be kept for this extension the next time
-  // its rulesets are loaded, as it is no longer "the first load after an
-  // update".
-  if (base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules) &&
-      reason != UnloadedExtensionReason::UPDATE) {
-    prefs_->SetDNRKeepExcessAllocation(extension->id(), false);
+  if (base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules)) {
+    // If the extension is unloaded for any reason other than an update, the
+    // unused rule allocation should not be kept for this extension the next
+    // time its rulesets are loaded, as it is no longer "the first load after an
+    // update".
+    if (reason != UnloadedExtensionReason::UPDATE)
+      prefs_->SetDNRKeepExcessAllocation(extension->id(), false);
+
+    if (ShouldReleaseAllocationOnUnload(prefs_, extension->id(), reason))
+      global_rules_tracker_.ClearExtensionAllocation(extension->id());
   }
 
   // Return early if the extension does not have an active indexed ruleset.
