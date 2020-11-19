@@ -41,6 +41,10 @@ def build_locale_strings():
         '-i',
         'strings/camera_strings.grd',
         'build',
+        '-E',
+        'out_camera_app_dir=platform',
+        '-E',
+        'gen_camera_app_dir=swa',
         '-o',
         'build/strings',
     ]
@@ -166,7 +170,7 @@ def build_cca(overlay=None, key=None):
     mojo_files = ['mojo_bindings_lite.js'] + mojom_bindings
 
     # TODO(shik): Check mtime and rebuild them if the source is updated.
-    if not os.path.exists('build/strings'):
+    if not os.path.exists('build/strings/platform'):
         build_locale_strings()
     if any(not os.path.exists(os.path.join('build/mojo', f))
            for f in mojo_files):
@@ -176,7 +180,7 @@ def build_cca(overlay=None, key=None):
 
     dir_list = [src for src in os.listdir('.') if os.path.isdir(src)]
     for d in dir_list:
-        if d == 'build':
+        if d in ['build', 'node_modules', 'strings']:
             continue
         dir_util.copy_tree(d, os.path.join('build/camera', d))
     build_preload_images_js()
@@ -184,7 +188,7 @@ def build_cca(overlay=None, key=None):
 
     for f in mojo_files:
         shutil.copy2(os.path.join('build/mojo', f), 'build/camera/js/mojo')
-    dir_util.copy_tree('build/strings', 'build/camera')
+    dir_util.copy_tree('build/strings/platform', 'build/camera')
 
     if overlay == 'dev':
         dir_util.copy_tree('utils/dev', 'build/camera')
