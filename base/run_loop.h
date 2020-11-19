@@ -209,7 +209,8 @@ class BASE_EXPORT RunLoop {
 
    protected:
     // Returns the result of this Delegate's |should_quit_when_idle_callback_|.
-    // "protected" so it can be invoked only by the Delegate itself.
+    // "protected" so it can be invoked only by the Delegate itself. The
+    // Delegate is expected to quit Run() if this returns true.
     bool ShouldQuitWhenIdle();
 
    private:
