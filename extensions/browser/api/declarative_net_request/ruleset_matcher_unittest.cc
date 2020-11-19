@@ -166,8 +166,7 @@ TEST_F(RulesetMatcherTest, FailedVerification) {
   ASSERT_EQ(static_cast<int>(data.size()),
             base::WriteFile(source.indexed_path(), data.c_str(), data.size()));
   EXPECT_EQ(LoadRulesetResult::kErrorVersionMismatch,
-            RulesetMatcher::CreateVerifiedMatcher(source, expected_checksum,
-                                                  &matcher));
+            source.CreateVerifiedMatcher(expected_checksum, &matcher));
 
   // Now, persist invalid data to the ruleset file, while maintaining the
   // correct version header. Ensure that it fails verification due to checksum
@@ -176,8 +175,7 @@ TEST_F(RulesetMatcherTest, FailedVerification) {
   ASSERT_EQ(static_cast<int>(data.size()),
             base::WriteFile(source.indexed_path(), data.c_str(), data.size()));
   EXPECT_EQ(LoadRulesetResult::kErrorChecksumMismatch,
-            RulesetMatcher::CreateVerifiedMatcher(source, expected_checksum,
-                                                  &matcher));
+            source.CreateVerifiedMatcher(expected_checksum, &matcher));
 }
 
 TEST_F(RulesetMatcherTest, ModifyHeaders_IsExtraHeaderMatcher) {

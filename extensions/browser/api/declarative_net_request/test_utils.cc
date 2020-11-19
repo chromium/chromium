@@ -317,7 +317,7 @@ bool AreAllIndexedStaticRulesetsValid(
       FileBackedRulesetSource::CreateStatic(extension);
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
-  for (FileBackedRulesetSource& source : sources) {
+  for (const auto& source : sources) {
     if (prefs->ShouldIgnoreDNRRuleset(extension.id(), source.id()))
       continue;
 
@@ -328,8 +328,7 @@ bool AreAllIndexedStaticRulesetsValid(
     }
 
     std::unique_ptr<RulesetMatcher> matcher;
-    if (RulesetMatcher::CreateVerifiedMatcher(std::move(source),
-                                              expected_checksum, &matcher) !=
+    if (source.CreateVerifiedMatcher(expected_checksum, &matcher) !=
         LoadRulesetResult::kSuccess) {
       return false;
     }
@@ -365,9 +364,8 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
   if (expected_checksum)
     *expected_checksum = result.ruleset_checksum;
 
-  // Create verified matcher.
-  LoadRulesetResult load_result = RulesetMatcher::CreateVerifiedMatcher(
-      source, result.ruleset_checksum, matcher);
+  LoadRulesetResult load_result =
+      source.CreateVerifiedMatcher(result.ruleset_checksum, matcher);
   return load_result == LoadRulesetResult::kSuccess;
 }
 

@@ -80,12 +80,6 @@ std::string GetVersionHeader() {
 
 }  // namespace
 
-bool IsValidRulesetData(base::span<const uint8_t> data, int expected_checksum) {
-  flatbuffers::Verifier verifier(data.data(), data.size());
-  return expected_checksum == GetChecksum(data) &&
-         flat::VerifyExtensionIndexedRulesetBuffer(verifier);
-}
-
 std::string GetVersionHeaderForTesting() {
   return GetVersionHeader();
 }
@@ -129,10 +123,7 @@ void OverrideGetChecksumForTest(int checksum) {
 }
 
 bool PersistIndexedRuleset(const base::FilePath& path,
-                           base::span<const uint8_t> data,
-                           int* ruleset_checksum) {
-  DCHECK(ruleset_checksum);
-
+                           base::span<const uint8_t> data) {
   // Create the directory corresponding to |path| if it does not exist.
   if (!base::CreateDirectory(path.DirName()))
     return false;
@@ -159,7 +150,6 @@ bool PersistIndexedRuleset(const base::FilePath& path,
     return false;
   }
 
-  *ruleset_checksum = GetChecksum(data);
   return true;
 }
 

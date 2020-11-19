@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
-#include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 
 namespace content {
@@ -36,6 +35,7 @@ struct Rule;
 
 namespace declarative_net_request {
 class ParseInfo;
+class RulesetMatcher;
 
 struct IndexAndPersistJSONRulesetResult {
  public:
@@ -134,7 +134,9 @@ struct ReadJSONRulesResult {
   DISALLOW_COPY_AND_ASSIGN(ReadJSONRulesResult);
 };
 
-// A Ruleset source which is backed on disk.
+// A Ruleset source which is backed on disk. The indexed version of such a
+// ruleset undergoes checksum verification on each load and also includes a
+// header to recognise the indexed schema version.
 class FileBackedRulesetSource : public RulesetSource {
  public:
   // Creates FileBackedRulesetSources corresponding to the static rulesets in
@@ -203,6 +205,13 @@ class FileBackedRulesetSource : public RulesetSource {
   // Serializes and writes |rules| to the json path. Returns false on failure.
   bool WriteRulesToJSON(
       const std::vector<api::declarative_net_request::Rule>& rules) const;
+
+  // Creates a verified RulesetMatcher corresponding to indexed ruleset on disk.
+  // Returns kSuccess on success along with the ruleset |matcher|. Must be
+  // called on a sequence which supports file IO.
+  LoadRulesetResult CreateVerifiedMatcher(
+      int expected_ruleset_checksum,
+      std::unique_ptr<RulesetMatcher>* matcher) const;
 
  private:
   FileBackedRulesetSource(base::FilePath json_path,

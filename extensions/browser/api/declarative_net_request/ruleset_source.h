@@ -5,11 +5,18 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_SOURCE_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_SOURCE_H_
 
+#include <memory>
+#include <string>
+
+#include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
 namespace declarative_net_request {
+class ParseInfo;
+class RulesetMatcher;
 
 // Encapsulates information for a single extension ruleset.
 class RulesetSource {
@@ -36,6 +43,16 @@ class RulesetSource {
   // Whether the ruleset is enabled by default (as specified in the extension
   // manifest for a static ruleset). Always true for a dynamic ruleset.
   bool enabled_by_default() const { return enabled_by_default_; }
+
+  // Indexes the given |rules| in indexed/flatbuffer format.
+  ParseInfo IndexRules(
+      std::vector<api::declarative_net_request::Rule> rules) const;
+
+  // Creates a verified RulesetMatcher corresponding to the buffer in |data|.
+  // Returns kSuccess on success along with the ruleset |matcher|.
+  LoadRulesetResult CreateVerifiedMatcher(
+      std::string data,
+      std::unique_ptr<RulesetMatcher>* matcher) const;
 
  private:
   RulesetID id_;

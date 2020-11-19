@@ -353,8 +353,8 @@ void RulesetInfo::CreateVerifiedMatcher() {
   // returns true, we should already have a valid RulesetMatcher.
   DCHECK(!did_load_successfully());
 
-  load_ruleset_result_ = RulesetMatcher::CreateVerifiedMatcher(
-      source_, *expected_checksum_, &matcher_);
+  load_ruleset_result_ =
+      source_.CreateVerifiedMatcher(*expected_checksum_, &matcher_);
 }
 
 LoadRequestData::LoadRequestData(ExtensionId extension_id)

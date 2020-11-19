@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/optional.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -22,8 +24,9 @@ class ParseInfo {
   // Constructor to be used on success.
   ParseInfo(size_t rules_count,
             size_t regex_rules_count,
-            int ruleset_checksum,
-            std::vector<int> regex_limit_exceeded_rules);
+            std::vector<int> regex_limit_exceeded_rules,
+            flatbuffers::DetachedBuffer buffer,
+            int ruleset_checksum);
 
   // Constructor to be used on error.
   ParseInfo(ParseResult error_reason, const int* rule_id);
@@ -65,6 +68,10 @@ class ParseInfo {
     return ruleset_checksum_;
   }
 
+  base::span<const uint8_t> GetBuffer() const {
+    return base::make_span(buffer_.data(), buffer_.size());
+  }
+
  private:
   bool has_error_ = false;
 
@@ -75,8 +82,9 @@ class ParseInfo {
   // Only valid iff |has_error_| is false.
   size_t rules_count_ = 0;
   size_t regex_rules_count_ = 0;
-  int ruleset_checksum_ = -1;
   std::vector<int> regex_limit_exceeded_rules_;
+  flatbuffers::DetachedBuffer buffer_;
+  int ruleset_checksum_ = -1;
 };
 
 }  // namespace declarative_net_request

@@ -9,12 +9,8 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/timer/elapsed_timer.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
-#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request/utils.h"
@@ -22,44 +18,20 @@
 namespace extensions {
 namespace declarative_net_request {
 
-// static
-LoadRulesetResult RulesetMatcher::CreateVerifiedMatcher(
-    const FileBackedRulesetSource& source,
-    int expected_ruleset_checksum,
-    std::unique_ptr<RulesetMatcher>* matcher) {
-  DCHECK(matcher);
-  DCHECK(IsAPIAvailable());
-
-  base::ElapsedTimer timer;
-
-  if (!base::PathExists(source.indexed_path()))
-    return LoadRulesetResult::kErrorInvalidPath;
-
-  std::string ruleset_data;
-  if (!base::ReadFileToString(source.indexed_path(), &ruleset_data))
-    return LoadRulesetResult::kErrorCannotReadFile;
-
-  if (!StripVersionHeaderAndParseVersion(&ruleset_data))
-    return LoadRulesetResult::kErrorVersionMismatch;
-
-  // This guarantees that no memory access will end up outside the buffer.
-  if (!IsValidRulesetData(
-          base::make_span(reinterpret_cast<const uint8_t*>(ruleset_data.data()),
-                          ruleset_data.size()),
-          expected_ruleset_checksum)) {
-    return LoadRulesetResult::kErrorChecksumMismatch;
-  }
-
-  UMA_HISTOGRAM_TIMES(
-      "Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime",
-      timer.Elapsed());
-
-  // Using WrapUnique instead of make_unique since this class has a private
-  // constructor.
-  *matcher = base::WrapUnique(new RulesetMatcher(
-      std::move(ruleset_data), source.id(), source.extension_id()));
-  return LoadRulesetResult::kSuccess;
-}
+RulesetMatcher::RulesetMatcher(std::string ruleset_data,
+                               RulesetID id,
+                               const ExtensionId& extension_id)
+    : ruleset_data_(std::move(ruleset_data)),
+      root_(flat::GetExtensionIndexedRuleset(ruleset_data_.data())),
+      id_(id),
+      url_pattern_index_matcher_(extension_id,
+                                 id,
+                                 root_->index_list(),
+                                 root_->extension_metadata()),
+      regex_matcher_(extension_id,
+                     id,
+                     root_->regex_rules(),
+                     root_->extension_metadata()) {}
 
 RulesetMatcher::~RulesetMatcher() = default;
 
@@ -123,21 +95,6 @@ RulesetMatcher::GetAllowlistedFrameActionForTesting(
       url_pattern_index_matcher_.GetAllowlistedFrameActionForTesting(host),
       regex_matcher_.GetAllowlistedFrameActionForTesting(host));
 }
-
-RulesetMatcher::RulesetMatcher(std::string ruleset_data,
-                               RulesetID id,
-                               const ExtensionId& extension_id)
-    : ruleset_data_(std::move(ruleset_data)),
-      root_(flat::GetExtensionIndexedRuleset(ruleset_data_.data())),
-      id_(id),
-      url_pattern_index_matcher_(extension_id,
-                                 id,
-                                 root_->index_list(),
-                                 root_->extension_metadata()),
-      regex_matcher_(extension_id,
-                     id,
-                     root_->regex_rules(),
-                     root_->extension_metadata()) {}
 
 }  // namespace declarative_net_request
 }  // namespace extensions

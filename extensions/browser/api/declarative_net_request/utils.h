@@ -31,10 +31,6 @@ struct WebRequestInfo;
 namespace declarative_net_request {
 class CompositeMatcher;
 
-// Returns true if |data| represents a valid data buffer containing indexed
-// ruleset data with |expected_checksum|.
-bool IsValidRulesetData(base::span<const uint8_t> data, int expected_checksum);
-
 // Returns the version header used for indexed ruleset files. Only exposed for
 // testing.
 std::string GetVersionHeaderForTesting();
@@ -62,12 +58,9 @@ void OverrideGetChecksumForTest(int checksum);
 
 // Helper function to persist the indexed ruleset |data| at the given |path|.
 // The ruleset is composed of a version header corresponding to the current
-// ruleset format version, followed by the actual ruleset data. Note: The
-// checksum only corresponds to this ruleset data and does not include the
-// version header.
+// ruleset format version, followed by the actual ruleset data.
 bool PersistIndexedRuleset(const base::FilePath& path,
-                           base::span<const uint8_t> data,
-                           int* ruleset_checksum);
+                           base::span<const uint8_t> data);
 
 // Helper to clear each renderer's in-memory cache the next time it navigates.
 void ClearRendererCacheOnNavigation();

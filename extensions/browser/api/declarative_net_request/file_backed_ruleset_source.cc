@@ -12,12 +12,12 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -27,21 +27,16 @@
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
-#include "extensions/browser/api/declarative_net_request/flat_ruleset_indexer.h"
-#include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/api/declarative_net_request/utils.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_resource.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/install_warning.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "tools/json_schema_compiler/util.h"
-#include "url/gurl.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -436,55 +431,16 @@ void FileBackedRulesetSource::IndexAndPersistJSONRuleset(
 
 ParseInfo FileBackedRulesetSource::IndexAndPersistRules(
     std::vector<dnr_api::Rule> rules) const {
-  DCHECK_LE(rules.size(), rule_count_limit());
-  DCHECK(IsAPIAvailable());
+  ParseInfo info = IndexRules(std::move(rules));
+  if (info.has_error())
+    return info;
 
-  FlatRulesetIndexer indexer;
-
-  size_t rules_count = 0;
-  size_t regex_rules_count = 0;
-  int ruleset_checksum = -1;
-  std::vector<int> large_regex_rule_ids;
-  {
-    std::set<int> id_set;  // Ensure all ids are distinct.
-    const GURL base_url = Extension::GetBaseURLFromExtensionId(extension_id());
-    for (auto& rule : rules) {
-      int rule_id = rule.id;
-      bool inserted = id_set.insert(rule_id).second;
-      if (!inserted)
-        return ParseInfo(ParseResult::ERROR_DUPLICATE_IDS, &rule_id);
-
-      IndexedRule indexed_rule;
-      ParseResult parse_result = IndexedRule::CreateIndexedRule(
-          std::move(rule), base_url, &indexed_rule);
-
-      if (parse_result == ParseResult::ERROR_REGEX_TOO_LARGE) {
-        large_regex_rule_ids.push_back(rule_id);
-        continue;
-      }
-
-      if (parse_result != ParseResult::SUCCESS)
-        return ParseInfo(parse_result, &rule_id);
-
-      indexer.AddUrlRule(indexed_rule);
-      rules_count++;
-
-      if (indexed_rule.url_pattern_type ==
-          url_pattern_index::flat::UrlPatternType_REGEXP) {
-        regex_rules_count++;
-      }
-    }
-  }
-  flatbuffers::DetachedBuffer buffer = indexer.FinishAndReleaseBuffer();
-  if (!PersistIndexedRuleset(indexed_path_,
-                             base::make_span(buffer.data(), buffer.size()),
-                             &ruleset_checksum)) {
+  if (!PersistIndexedRuleset(indexed_path_, info.GetBuffer())) {
     return ParseInfo(ParseResult::ERROR_PERSISTING_RULESET,
                      nullptr /* rule_id */);
   }
 
-  return ParseInfo(rules_count, regex_rules_count, ruleset_checksum,
-                   std::move(large_regex_rule_ids));
+  return info;
 }
 
 ReadJSONRulesResult FileBackedRulesetSource::ReadJSONRulesUnsafe() const {
@@ -534,6 +490,40 @@ bool FileBackedRulesetSource::WriteRulesToJSON(
   int data_size = static_cast<int>(json_contents.size());
   return base::WriteFile(json_path_, json_contents.data(), data_size) ==
          data_size;
+}
+
+LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(
+    int expected_ruleset_checksum,
+    std::unique_ptr<RulesetMatcher>* matcher) const {
+  DCHECK(matcher);
+
+  base::ElapsedTimer timer;
+
+  if (!base::PathExists(indexed_path()))
+    return LoadRulesetResult::kErrorInvalidPath;
+
+  std::string ruleset_data;
+  if (!base::ReadFileToString(indexed_path(), &ruleset_data))
+    return LoadRulesetResult::kErrorCannotReadFile;
+
+  if (!StripVersionHeaderAndParseVersion(&ruleset_data))
+    return LoadRulesetResult::kErrorVersionMismatch;
+
+  if (expected_ruleset_checksum !=
+      GetChecksum(
+          base::make_span(reinterpret_cast<const uint8_t*>(ruleset_data.data()),
+                          ruleset_data.size()))) {
+    return LoadRulesetResult::kErrorChecksumMismatch;
+  }
+
+  LoadRulesetResult result =
+      RulesetSource::CreateVerifiedMatcher(std::move(ruleset_data), matcher);
+  if (result == LoadRulesetResult::kSuccess) {
+    UMA_HISTOGRAM_TIMES(
+        "Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime",
+        timer.Elapsed());
+  }
+  return result;
 }
 
 FileBackedRulesetSource::FileBackedRulesetSource(base::FilePath json_path,
