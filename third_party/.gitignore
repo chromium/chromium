@@ -69,7 +69,7 @@
 /devtools-frontend/src
 /directxsdk
 /dom_distiller_js/dist
-/eigen/src
+/eigen3/src
 /elfutils/src
 /emoji-segmenter/src
 /espresso/lib/
