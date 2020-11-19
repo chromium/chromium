@@ -173,6 +173,9 @@ class CronetURLRequestContext;
 namespace dbus {
 class Bus;
 }
+namespace device {
+class UsbContext;
+}
 namespace disk_cache {
 class BackendImpl;
 class InFlightIO;
@@ -454,6 +457,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessSubThread;
   friend class content::ServiceWorkerContextClient;
+  friend class device::UsbContext;
   friend class functions::ExecScriptScopedAllowBaseSyncPrimitives;
   friend class history_report::HistoryReportJniBridge;
   friend class internal::TaskTracker;

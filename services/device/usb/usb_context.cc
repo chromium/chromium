@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/threading/simple_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "services/device/usb/usb_error.h"
 #include "third_party/libusb/src/libusb/interrupt.h"
 #include "third_party/libusb/src/libusb/libusb.h"
@@ -69,6 +70,13 @@ UsbContext::UsbContext(PlatformUsbContext context) : context_(context) {
 
 UsbContext::~UsbContext() {
   event_handler_->Stop();
+
+  // Temporary workaround for https://crbug.com/1150182 until the libusb backend
+  // is removed in https://crbug.com/1096743. The last outstanding transfer can
+  // cause this class to be released on a worker thread where blocking is not
+  // typically allowed. Make an exception here as this will only occur during
+  // shutdown.
+  base::ScopedAllowBaseSyncPrimitives allow_sync;
   event_handler_->Join();
 }
 
