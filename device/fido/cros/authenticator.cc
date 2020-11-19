@@ -98,6 +98,8 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   req.set_rp_id(request.rp.id);
   req.set_user_id(
       std::string(request.user.id.begin(), request.user.id.end()));
+  if (request.user.display_name.has_value())
+    req.set_user_display_name(request.user.display_name.value());
   req.set_resident_credential(request.resident_key_required);
   DCHECK(generate_request_id_callback_);
   req.set_request_id(generate_request_id_callback_.Run());
