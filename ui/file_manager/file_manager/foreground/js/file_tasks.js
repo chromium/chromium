@@ -693,7 +693,7 @@ class FileTasks {
 
                 this.fileTransferController_.executePaste(
                     new FileTransferController.PastePlan(
-                        this.entries_.map(e => e.toURL()), pvmDir,
+                        this.entries_.map(e => e.toURL()), [], pvmDir,
                         assert(this.volumeManager_.getLocationInfo(pvmDir)),
                         toMove));
                 this.directoryModel_.changeDirectoryEntry(pvmDir);

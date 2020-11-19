@@ -9,7 +9,7 @@
 // #import * as wrappedVolumeManagerFactory from './volume_manager_factory.m.js'; const {volumeManagerFactory} = wrappedVolumeManagerFactory;
 // #import {VolumeManagerImpl} from './volume_manager_impl.m.js';
 // #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {MockFileSystem} from '../../common/js/mock_entry.m.js';
+// #import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
 // #import * as wrappedUtil from '../../common/js/util.m.js'; const {util} = wrappedUtil;
 // #import {str} from '../../common/js/util.m.js';
 // #import {EntryLocation} from '../../../externs/entry_location.m.js';
@@ -258,3 +258,43 @@ MockVolumeManager.prototype.findByDevicePath =
 /** @override */
 MockVolumeManager.prototype.whenVolumeInfoReady =
     VolumeManagerImpl.prototype.whenVolumeInfoReady;
+
+/**
+ * Used to override window.webkitResolveLocalFileSystemURL for testing. This
+ * emulates the real function by parsing `url` and finding the matching entry
+ * in `volumeManager`. E.g. filesystem:downloads/dir/file.txt will look up the
+ * 'downloads' volume for /dir/file.txt.
+ *
+ * @param {VolumeManager} volumeManager VolumeManager to resolve URLs with.
+ * @param {string} url URL to resolve.
+ * @param {function(!MockEntry)} successCallback Success callback.
+ * @param {function(!FileError)=} errorCallback Error callback.
+ */
+MockVolumeManager.resolveLocalFileSystemURL =
+    (volumeManager, url, successCallback, errorCallback) => {
+      const match = url.match(/^filesystem:(\w+)(\/.*)/);
+      if (match) {
+        const volumeType =
+            /** @type {VolumeManagerCommon.VolumeType} */ (match[1]);
+        let path = match[2];
+        const volume = volumeManager.getCurrentProfileVolumeInfo(volumeType);
+        if (volume) {
+          // Decode URI in file paths.
+          path = path.split('/').map(decodeURIComponent).join('/');
+          const entry = volume.fileSystem.entries[path];
+          if (entry) {
+            setTimeout(successCallback, 0, entry);
+            return;
+          }
+        }
+      }
+      const message =
+          `MockVolumeManager.resolveLocalFileSystemURL not found: ${url}`;
+      console.warn(message);
+      const error = new DOMException(message, 'NotFoundError');
+      if (errorCallback) {
+        setTimeout(errorCallback, 0, error);
+      } else {
+        throw error;
+      }
+    };

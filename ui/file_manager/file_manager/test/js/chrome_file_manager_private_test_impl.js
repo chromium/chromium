@@ -316,35 +316,5 @@ chrome.fileSystem = {
   },
 };
 
-/**
- * Override webkitResolveLocalFileSystemURL for testing.
- * @param {string} url URL to resolve.
- * @param {function(!MockEntry)} successCallback Success callback.
- * @param {function(!Error)} errorCallback Error callback.
- */
-// eslint-disable-next-line
-var webkitResolveLocalFileSystemURL = (url, successCallback, errorCallback) => {
-  const match = url.match(/^filesystem:(\w+)(\/.*)/);
-  if (match) {
-    const volumeType = /** @type {VolumeManagerCommon.VolumeType} */ (match[1]);
-    let path = match[2];
-    const volume = mockVolumeManager.getCurrentProfileVolumeInfo(volumeType);
-    if (volume) {
-      // Decode URI in file paths.
-      path = path.split('/').map(decodeURIComponent).join('/');
-      const entry = volume.fileSystem.entries[path];
-      if (entry) {
-        setTimeout(successCallback, 0, entry);
-        return;
-      }
-    }
-  }
-  const message = `webkitResolveLocalFileSystemURL not found: ${url}`;
-  console.warn(message);
-  const error = new DOMException(message, 'NotFoundError');
-  if (errorCallback) {
-    setTimeout(errorCallback, 0, error);
-  } else {
-    throw error;
-  }
-};
+window.webkitResolveLocalFileSystemURL =
+    MockVolumeManager.resolveLocalFileSystemURL.bind(null, mockVolumeManager);
