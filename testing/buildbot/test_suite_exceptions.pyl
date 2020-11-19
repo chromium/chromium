@@ -133,7 +133,6 @@
   },
   'blink_web_tests': {
     'remove_from': [
-      'Mac10.10 Tests',
       'Mac10.11 Tests',
       'Win 7 Tests x64 (1)',  # 64-bit win is unsupported by the layout tests.
       'Win10 Tests x64 (dbg)',
@@ -158,18 +157,6 @@
         ],
         'swarming': {
           'shards': 20,
-        },
-      },
-      'Mac10.10 Tests': {
-        # TODO(kbr): this is essentially redundant.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'gpu': 'none',
-              'os': 'Mac-10.10.5',
-            },
-          ],
-          'shards': 25,
         },
       },
       'Mac10.11 Tests': {
@@ -436,7 +423,6 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
       'linux-win_cross-rel',
       'ToTLinuxTSan',  # https://crbug.com/368525
-      'Mac10.10 Tests',  # https://crbug.com/828031
       'Mac10.13 Tests',  # https://crbug.com/1042757
       'Linux TSan Tests',  # https://crbug.com/368525
       'Win10 Tests x64 (dbg)',
@@ -1111,7 +1097,6 @@
   },
   'content_shell_crash_test': {
     'remove_from': [
-      'Mac10.10 Tests',  # crbug.com/1138050
       'Mac10.11 Tests',  # crbug.com/1138050
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1084353
     ],
@@ -1867,7 +1852,6 @@
       'Win7 Tests (1)',  # For swarming capacity reasons.
       'Win10 Tests x64 (dbg)',  # Matches browser_tests.
       # Only run network service tests on Mac 10.12 for capacity reasons.
-      'Mac10.10 Tests',
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
@@ -1903,7 +1887,6 @@
       'Win7 Tests (1)',  # For swarming capacity reasons.
       'Win10 Tests x64 (dbg)',  # Matches components_browsertests.
       # Only run network service tests on Mac 10.12 for capacity reasons.
-      'Mac10.10 Tests',
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
@@ -1920,7 +1903,6 @@
       'Win7 Tests (1)',  # For swarming capacity reasons.
       'Win10 Tests x64 (dbg)',  # flaky: https://crbug.com/852786
       # Only run network service tests on Mac 10.12 for capacity reasons.
-      'Mac10.10 Tests',
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
@@ -1936,7 +1918,6 @@
       'Win7 Tests (1)',  # For swarming capacity reasons.
       'Win10 Tests x64 (dbg)',  # Matches extensions_browsertests.
       # Only run network service tests on Mac 10.12 for capacity reasons.
-      'Mac10.10 Tests',
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
@@ -1957,7 +1938,6 @@
       'Linux TSan Tests',  # No capacity, https://crbug.com/852442
       'Win7 Tests (1)',  # For swarming capacity reasons.
       # Only run network service tests on Mac 10.12 for capacity reasons.
-      'Mac10.10 Tests',
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
@@ -2583,11 +2563,6 @@
         ],
       },
       # Disable parallelism on all Mac bots.
-      'Mac10.10 Tests': {
-        'args': [
-          '--jobs=1',
-        ],
-      },
       'Mac10.11 Tests': {
         'args': [
           '--jobs=1',
@@ -2628,7 +2603,6 @@
       'android-nougat-arm64-rel', # crbug.com/1108124
       'android-pie-arm64-rel',
       # crbug.com/936540
-      'Mac10.10 Tests',
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
@@ -2650,7 +2624,6 @@
     },
     'remove_from': [
       # crbug.com/936540
-      'Mac10.10 Tests',
       'Mac10.11 Tests',
 
       'Win10 Tests x64',
