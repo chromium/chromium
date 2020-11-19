@@ -407,16 +407,6 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
         'ink_sdk/com/google/protobuf/MessageLite',
         'com/google/protobuf/GeneratedMessageLite$GeneratedExtension',
 
-        # Definition and usage in currently unused lens sdk in doubledown.
-        ('com/google/android/apps/gsa/search/shared/service/proto/'
-         'PublicStopClientEvent'),
-
-        # Referenced from GeneratedExtensionRegistryLite.
-        # Exists only for Chrome Modern (not Monochrome nor Trichrome).
-        # TODO(agrieve): Figure out why. Perhaps related to Feed V2.
-        ('com/google/wireless/android/play/playlog/proto/ClientAnalytics$'
-         'ClientInfo'),
-
         # TODO(agrieve): Exclude these only when use_jacoco_coverage=true.
         'Ljava/lang/instrument/ClassFileTransformer',
         'Ljava/lang/instrument/IllegalClassFormatException',
