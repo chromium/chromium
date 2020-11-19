@@ -103,7 +103,7 @@ bool ParseProtoFromFile(const base::FilePath& file_path,
 
 enum class AutoEnrollmentProtocol { kFRE = 0, kInitialEnrollment = 1 };
 
-enum class PrivateSetMembershipStatus { kEnabled = 0, kDisabled = 1 };
+enum class PrivateSetMembershipState { kEnabled = 0, kDisabled = 1 };
 
 // Holds the state of the AutoEnrollmentClientImplTest and its subclass i.e.
 // PrivateSetMembershipHelperTest. It will be used to run their tests with
@@ -111,12 +111,12 @@ enum class PrivateSetMembershipStatus { kEnabled = 0, kDisabled = 1 };
 struct AutoEnrollmentClientImplTestState final {
   AutoEnrollmentClientImplTestState(
       AutoEnrollmentProtocol auto_enrollment_protocol,
-      PrivateSetMembershipStatus private_set_membership_status)
+      PrivateSetMembershipState private_set_membership_state)
       : auto_enrollment_protocol(auto_enrollment_protocol),
-        private_set_membership_status(private_set_membership_status) {}
+        private_set_membership_state(private_set_membership_state) {}
 
   AutoEnrollmentProtocol auto_enrollment_protocol;
-  PrivateSetMembershipStatus private_set_membership_status;
+  PrivateSetMembershipState private_set_membership_state;
 };
 
 // The integer parameter represents the index of private set membership test
@@ -146,8 +146,8 @@ class AutoEnrollmentClientImplTest
     return std::get<0>(GetParam()).auto_enrollment_protocol;
   }
 
-  PrivateSetMembershipStatus GetPrivateSetMembershipStatus() {
-    return std::get<0>(GetParam()).private_set_membership_status;
+  PrivateSetMembershipState GetPrivateSetMembershipState() {
+    return std::get<0>(GetParam()).private_set_membership_state;
   }
 
   int GetPrivateSetMembershipTestCaseIndex() { return std::get<1>(GetParam()); }
@@ -1139,7 +1139,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(AutoEnrollmentClientImplTestState(
             AutoEnrollmentProtocol::kFRE,
-            PrivateSetMembershipStatus::kDisabled)),
+            PrivateSetMembershipState::kDisabled)),
         testing::Values(kInvalidPrivateSetMembershipTestCaseIndex)));
 
 // Private set membership is disabed to test only initial enrollment case
@@ -1151,7 +1151,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(AutoEnrollmentClientImplTestState(
             AutoEnrollmentProtocol::kInitialEnrollment,
-            PrivateSetMembershipStatus::kDisabled)),
+            PrivateSetMembershipState::kDisabled)),
         testing::Values(kInvalidPrivateSetMembershipTestCaseIndex)));
 
 using AutoEnrollmentClientImplFREToInitialEnrollmentTest =
@@ -1258,11 +1258,11 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(AutoEnrollmentClientImplTestState(
             AutoEnrollmentProtocol::kFRE,
-            PrivateSetMembershipStatus::kDisabled)),
+            PrivateSetMembershipState::kDisabled)),
         testing::Values(kInvalidPrivateSetMembershipTestCaseIndex)));
 
 // This class is used to test any private set membership related test cases
-// only. Therefore, the PrivateSetMembershipStatus param has to be kEnabled.
+// only. Therefore, the PrivateSetMembershipState param has to be kEnabled.
 class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
  protected:
   // Indicates the state of the private set membership protocol.
@@ -1284,11 +1284,11 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
   }
 
   void SetUp() override {
-    // Verify that PrivateSetMembershipStatus has value kEnabled, then enable
+    // Verify that PrivateSetMembershipState has value kEnabled, then enable
     // private set membership switch
     // prefs::kEnterpriseEnablePrivateSetMembership.
-    ASSERT_EQ(GetPrivateSetMembershipStatus(),
-              PrivateSetMembershipStatus::kEnabled);
+    ASSERT_EQ(GetPrivateSetMembershipState(),
+              PrivateSetMembershipState::kEnabled);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         chromeos::switches::kEnterpriseEnablePrivateSetMembership, "always");
 
@@ -1642,7 +1642,7 @@ INSTANTIATE_TEST_SUITE_P(
     PrivateSetMembershipHelperTest,
     testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
                          AutoEnrollmentProtocol::kInitialEnrollment,
-                         PrivateSetMembershipStatus::kEnabled)),
+                         PrivateSetMembershipState::kEnabled)),
                      ::testing::Range(0,
                                       kNumberOfPrivateSetMembershipTestCases)));
 
@@ -1937,7 +1937,7 @@ INSTANTIATE_TEST_SUITE_P(
     PrivateSetMembershipHelperAndHashDanceTest,
     testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
                          AutoEnrollmentProtocol::kInitialEnrollment,
-                         PrivateSetMembershipStatus::kEnabled)),
+                         PrivateSetMembershipState::kEnabled)),
                      ::testing::Range(0,
                                       kNumberOfPrivateSetMembershipTestCases)));
 }  // namespace

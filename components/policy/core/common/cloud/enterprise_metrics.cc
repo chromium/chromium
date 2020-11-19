@@ -186,4 +186,11 @@ const char kMetricCBCMRemoteCommandExecutedTemplate[] =
 const char kMetricCBCMUnsignedRemoteCommandExecutedTemplate[] =
     "Enterprise.CBCMRemoteCommand.Executed.Unsigned.%s";
 
+const char kUMAPrivateSetMembershipHashDanceComparison[] =
+    "Enterprise.AutoEnrollmentPrivateSetMembershipHashDanceComparison";
+const char kUMAPrivateSetMembershipSuccessTime[] =
+    "Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime";
+const char kUMAPrivateSetMembershipRequestStatus[] =
+    "Enterprise.AutoEnrollmentPrivateSetMembershipRequestStatus";
+
 }  // namespace policy

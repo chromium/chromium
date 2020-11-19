@@ -23,6 +23,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -50,15 +51,9 @@ using EnrollmentCheckType =
 constexpr base::TimeDelta kPrivateSetMembershipTimeout =
     base::TimeDelta::FromSeconds(15);
 
-// UMA histogram names.
+// Hash dance success time UMA histogram.
 constexpr char kUMAHashDanceSuccessTime[] =
     "Enterprise.AutoEnrollmentHashDanceSuccessTime";
-constexpr char kUMAPrivateSetMembershipHashDanceComparison[] =
-    "Enterprise.AutoEnrollmentPrivateSetMembershipHashDanceComparison";
-constexpr char kUMAPrivateSetMembershipSuccessTime[] =
-    "Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime";
-constexpr char kUMAPrivateSetMembershipRequestStatus[] =
-    "Enterprise.AutoEnrollmentPrivateSetMembershipRequestStatus";
 
 // The following histogram names where added before private set membership
 // existed. They are only recorded for hash dance.
