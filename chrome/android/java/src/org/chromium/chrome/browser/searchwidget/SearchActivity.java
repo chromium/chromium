@@ -251,7 +251,8 @@ public class SearchActivity extends AsyncInitializationActivity
             }
         };
 
-        WebContents webContents = WebContentsFactory.createWebContents(false, false);
+        WebContents webContents =
+                WebContentsFactory.createWebContents(Profile.getLastUsedRegularProfile(), false);
         mTab = new TabBuilder()
                        .setWindow(getWindowAndroid())
                        .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)

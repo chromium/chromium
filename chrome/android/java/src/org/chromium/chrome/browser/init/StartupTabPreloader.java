@@ -197,7 +197,8 @@ public class StartupTabPreloader implements ProfileManager.Observer, Destroyable
 
         ChromeTabCreator chromeTabCreator =
                 (ChromeTabCreator) mTabCreatorManager.getTabCreator(false);
-        WebContents webContents = WebContentsFactory.createWebContents(false, false);
+        WebContents webContents =
+                WebContentsFactory.createWebContents(Profile.getLastUsedRegularProfile(), false);
 
         mLoadUrlParams = new LoadUrlParams(url.getValidSpecOrEmpty());
         String referrer = IntentHandler.getReferrerUrlIncludingExtraHeaders(intent);

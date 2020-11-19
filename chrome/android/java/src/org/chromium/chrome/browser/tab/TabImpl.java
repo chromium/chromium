@@ -32,10 +32,12 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -485,7 +487,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(
                     isIncognito(), isHidden(), isCustomTab());
             if (webContents == null) {
-                webContents = WebContentsFactory.createWebContents(isIncognito(), isHidden());
+                Profile profile =
+                        IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
+                webContents = WebContentsFactory.createWebContents(profile, isHidden());
             }
             initWebContents(webContents);
             loadUrl(mPendingLoadParams);
@@ -831,8 +835,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 webContents = WarmupManager.getInstance().takeSpareWebContents(
                         isIncognito(), initiallyHidden, isCustomTab());
                 if (webContents == null) {
-                    webContents =
-                            WebContentsFactory.createWebContents(isIncognito(), initiallyHidden);
+                    Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
+                            mWindowAndroid, isIncognito());
+                    webContents = WebContentsFactory.createWebContents(profile, initiallyHidden);
                 }
             }
 
@@ -1450,7 +1455,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 // State restore failed, just create a new empty web contents as that is the best
                 // that can be done at this point. TODO(jcivelli) http://b/5910521 - we should show
                 // an error page instead of a blank page in that case (and the last loaded URL).
-                webContents = WebContentsFactory.createWebContents(isIncognito(), isHidden());
+                Profile profile =
+                        IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
+                webContents = WebContentsFactory.createWebContents(profile, isHidden());
                 for (TabObserver observer : mObservers) observer.onRestoreFailed(this);
                 restored = false;
             }

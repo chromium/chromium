@@ -8,7 +8,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -67,9 +69,10 @@ public class PaymentHandlerCoordinator {
         assert paymentRequestWebContents != null;
         ChromeActivity activity = ChromeActivity.fromWebContents(paymentRequestWebContents);
         if (activity == null) return null;
-
+        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
+                activity.getWindowAndroid(), isIncognito);
         mPaymentHandlerWebContents =
-                WebContentsFactory.createWebContents(isIncognito, /*initiallyHidden=*/false);
+                WebContentsFactory.createWebContents(profile, /*initiallyHidden=*/false);
         ContentView webContentView = ContentView.createContentView(
                 activity, null /* eventOffsetHandler */, mPaymentHandlerWebContents);
         initializeWebContents(activity, webContentView, url);

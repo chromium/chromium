@@ -176,6 +176,45 @@ public class IncognitoUtils {
     }
 
     /**
+     * Returns either a regular profile or a (primary/non-primary) Incognito profile.
+     *
+     * <p>
+     * Note, {@link WindowAndroid} is keyed only to non-primary Incognito profile, in default cases
+     * primary Incognito profile would be returned.
+     * <p>
+     *
+     * @param windowAndroid {@link WindowAndroid} object.
+     * @param isIncognito A boolean to indicate if an Incognito profile should be fetched.
+     *
+     * @return A regular {@link Profile} object if |isIncognito| is false or an Incognito {@link
+     *         Profile} object otherwise.
+     */
+    public static Profile getProfileFromWindowAndroid(
+            WindowAndroid windowAndroid, boolean isIncognito) {
+        if (!isIncognito) return Profile.getLastUsedRegularProfile();
+        return getIncognitoProfileFromWindowAndroid(windowAndroid);
+    }
+
+    /**
+     * Returns either the non-primary OTR profile if any that is associated with a |windowAndroid|
+     * instance, otherwise the primary OTR profile.
+     * <p>
+     * A non primary OTR profile is associated only for the case of incognito CustomTabActivity.
+     * <p>
+     * @param windowAndroid The {@link WindowAndroid} instance for which the non primary OTR
+     *         profile is queried.
+     *
+     * @return A non-primary or a primary OTR {@link Profile}.
+     */
+    public static Profile getIncognitoProfileFromWindowAndroid(
+            @Nullable WindowAndroid windowAndroid) {
+        Profile incognitoProfile = getNonPrimaryOTRProfileFromWindowAndroid(windowAndroid);
+        return (incognitoProfile != null)
+                ? incognitoProfile
+                : Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
+    }
+
+    /**
      * Returns the non primary OTR profile if any that is associated with a |windowAndroid|
      * instance, otherwise null.
      * <p>

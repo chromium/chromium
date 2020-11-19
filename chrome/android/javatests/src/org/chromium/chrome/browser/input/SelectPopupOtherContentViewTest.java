@@ -20,6 +20,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -84,7 +85,8 @@ public class SelectPopupOtherContentViewTest {
 
         // Now create and destroy a different WebContents.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebContents webContents = WebContentsFactory.createWebContents(false, false);
+            WebContents webContents = WebContentsFactory.createWebContents(
+                    Profile.getLastUsedRegularProfile(), false);
             ChromeActivity activity = mActivityTestRule.getActivity();
 
             ContentView cv = ContentView.createContentView(

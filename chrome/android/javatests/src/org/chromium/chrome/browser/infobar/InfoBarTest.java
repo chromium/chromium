@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
@@ -535,7 +536,8 @@ public class InfoBarTest {
         InfoBarTestAnimationListener removeListener = new InfoBarTestAnimationListener();
         mActivityTestRule.getInfoBarContainer().addAnimationListener(removeListener);
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            WebContents newContents = WebContentsFactory.createWebContents(false, false);
+            WebContents newContents = WebContentsFactory.createWebContents(
+                    Profile.getLastUsedRegularProfile(), false);
             TabTestUtils.swapWebContents(
                     mActivityTestRule.getActivity().getActivityTab(), newContents, false, false);
         });

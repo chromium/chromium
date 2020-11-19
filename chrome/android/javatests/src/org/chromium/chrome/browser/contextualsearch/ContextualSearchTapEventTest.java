@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -100,7 +101,8 @@ public class ContextualSearchTapEventTest {
             super(activity, null, activity.getRootUiCoordinatorForTesting().getScrimCoordinator(),
                     activity.getActivityTabProvider());
             setSelectionController(new MockCSSelectionController(activity, this));
-            WebContents webContents = WebContentsFactory.createWebContents(false, false);
+            WebContents webContents = WebContentsFactory.createWebContents(
+                    Profile.getLastUsedRegularProfile(), false);
             ContentView cv = ContentView.createContentView(
                     activity, null /* eventOffsetHandler */, webContents);
             webContents.initialize(null, ViewAndroidDelegate.createBasicDelegate(cv), null,
