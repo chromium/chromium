@@ -804,26 +804,30 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
 
   input_frame_coded_size_ = input_coded_size;
 
-  for (unsigned int i = 0; i < input_count + kInputBufferExtraCount; ++i) {
-    base::UnsafeSharedMemoryRegion shm = base::UnsafeSharedMemoryRegion::Create(
-        media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420,
-                                          input_coded_size));
-    if (!shm.IsValid()) {
-      LogAndNotifyError(FROM_HERE, "failed to create input buffer ",
-                        media::VideoEncodeAccelerator::kPlatformFailureError);
-      return;
+  // |input_buffers_| is only needed in non import mode.
+  if (!use_native_input_) {
+    for (unsigned int i = 0; i < input_count + kInputBufferExtraCount; ++i) {
+      base::UnsafeSharedMemoryRegion shm =
+          base::UnsafeSharedMemoryRegion::Create(
+              media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420,
+                                                input_coded_size));
+      if (!shm.IsValid()) {
+        LogAndNotifyError(FROM_HERE, "failed to create input buffer ",
+                          media::VideoEncodeAccelerator::kPlatformFailureError);
+        return;
+      }
+      base::WritableSharedMemoryMapping mapping = shm.Map();
+      if (!mapping.IsValid()) {
+        LogAndNotifyError(FROM_HERE, "failed to create input buffer ",
+                          media::VideoEncodeAccelerator::kPlatformFailureError);
+        return;
+      }
+      input_buffers_.push_back(
+          std::make_unique<std::pair<base::UnsafeSharedMemoryRegion,
+                                     base::WritableSharedMemoryMapping>>(
+              std::move(shm), std::move(mapping)));
+      input_buffers_free_.push_back(i);
     }
-    base::WritableSharedMemoryMapping mapping = shm.Map();
-    if (!mapping.IsValid()) {
-      LogAndNotifyError(FROM_HERE, "failed to create input buffer ",
-                        media::VideoEncodeAccelerator::kPlatformFailureError);
-      return;
-    }
-    input_buffers_.push_back(
-        std::make_unique<std::pair<base::UnsafeSharedMemoryRegion,
-                                   base::WritableSharedMemoryMapping>>(
-            std::move(shm), std::move(mapping)));
-    input_buffers_free_.push_back(i);
   }
 
   for (int i = 0; i < kOutputBufferCount; ++i) {
@@ -1127,6 +1131,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
 void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
   DVLOG(3) << "Impl::EncodeOneFrameWithNativeInput()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(input_buffers_.IsEmpty() && input_buffers_free_.IsEmpty());
   DCHECK(input_next_frame_);
 
   // EncodeOneFrameWithNativeInput() may re-enter EncodeFrameFinished() if
