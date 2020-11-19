@@ -98,20 +98,21 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
       image.get(), decode_mode, dest_rect, &src_rect,
       layout_svg_image_.StyleRef().HasFilterInducingProperty(),
       SkBlendMode::kSrcOver, respect_orientation);
-  if (image_content && image_content->IsLoaded()) {
-    LocalDOMWindow* window = layout_svg_image_.GetDocument().domWindow();
-    DCHECK(window);
-    DCHECK(paint_info.PaintContainer());
-    ImageElementTiming::From(*window).NotifyImagePainted(
-        &layout_svg_image_, image_content,
+  if (image_content) {
+    if (image_content->IsLoaded()) {
+      LocalDOMWindow* window = layout_svg_image_.GetDocument().domWindow();
+      DCHECK(window);
+      DCHECK(paint_info.PaintContainer());
+      ImageElementTiming::From(*window).NotifyImagePainted(
+          layout_svg_image_, *image_content,
+          paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
+          EnclosingIntRect(dest_rect));
+    }
+    PaintTimingDetector::NotifyImagePaint(
+        layout_svg_image_, image->Size(), *image_content,
         paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
         EnclosingIntRect(dest_rect));
   }
-
-  PaintTimingDetector::NotifyImagePaint(
-      layout_svg_image_, image->Size(), image_content,
-      paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
-      EnclosingIntRect(dest_rect));
   PaintTiming& timing = PaintTiming::From(
       layout_svg_image_.GetElement()->GetDocument().TopDocument());
   timing.MarkFirstContentfulPaint();

@@ -23,9 +23,8 @@ namespace internal {
 
 // "CORE_EXPORT" is needed to make this function visible to tests.
 bool CORE_EXPORT
-IsExplicitlyRegisteredForTiming(const LayoutObject* layout_object) {
-  DCHECK(layout_object);
-  const auto* element = DynamicTo<Element>(layout_object->GetNode());
+IsExplicitlyRegisteredForTiming(const LayoutObject& layout_object) {
+  const auto* element = DynamicTo<Element>(layout_object.GetNode());
   if (!element)
     return false;
 
@@ -63,7 +62,7 @@ ImageElementTiming::ImageElementTiming(LocalDOMWindow& window)
 void ImageElementTiming::NotifyImageFinished(
     const LayoutObject& layout_object,
     const ImageResourceContent* cached_image) {
-  if (!internal::IsExplicitlyRegisteredForTiming(&layout_object))
+  if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
     return;
 
   const auto& insertion_result = images_notified_.insert(
@@ -86,28 +85,28 @@ base::TimeTicks ImageElementTiming::GetBackgroundImageLoadTime(
 }
 
 void ImageElementTiming::NotifyImagePainted(
-    const LayoutObject* layout_object,
-    const ImageResourceContent* cached_image,
+    const LayoutObject& layout_object,
+    const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const IntRect& image_border) {
-  DCHECK(layout_object);
-
   if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
     return;
 
-  auto it = images_notified_.find(std::make_pair(layout_object, cached_image));
+  auto it =
+      images_notified_.find(std::make_pair(&layout_object, &cached_image));
   // It is possible that the pair is not in |images_notified_|. See
   // https://crbug.com/1027948
-  if (it != images_notified_.end() && !it->value.is_painted_ && cached_image) {
+  if (it != images_notified_.end() && !it->value.is_painted_) {
     it->value.is_painted_ = true;
-    NotifyImagePaintedInternal(layout_object->GetNode(), *layout_object,
-                               *cached_image, current_paint_chunk_properties,
+    DCHECK(layout_object.GetNode());
+    NotifyImagePaintedInternal(*layout_object.GetNode(), layout_object,
+                               cached_image, current_paint_chunk_properties,
                                it->value.load_time_, image_border);
   }
 }
 
 void ImageElementTiming::NotifyImagePaintedInternal(
-    Node* node,
+    Node& node,
     const LayoutObject& layout_object,
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
@@ -115,7 +114,6 @@ void ImageElementTiming::NotifyImagePaintedInternal(
     const IntRect& image_border) {
   LocalFrame* frame = GetSupplementable()->GetFrame();
   DCHECK(frame == layout_object.GetDocument().GetFrame());
-  DCHECK(node);
   // Background images could cause |node| to not be an element. For example,
   // style applied to body causes this node to be a Document Node. Therefore,
   // bail out if that is the case.
@@ -127,7 +125,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   // something once the discussions at
   // https://github.com/WICG/element-timing/issues/3 and
   // https://github.com/w3c/webcomponents/issues/816 have been resolved.
-  if (node->IsInShadowTree())
+  if (node.IsInShadowTree())
     return;
 
   // Do not expose elements which should have effective zero opacity.
@@ -189,25 +187,22 @@ void ImageElementTiming::NotifyImagePaintedInternal(
 }
 
 void ImageElementTiming::NotifyBackgroundImagePainted(
-    Node* node,
-    const StyleFetchedImage* background_image,
+    Node& node,
+    const StyleFetchedImage& background_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const IntRect& image_border) {
-  DCHECK(node);
-  DCHECK(background_image);
-
-  const LayoutObject* layout_object = node->GetLayoutObject();
+  const LayoutObject* layout_object = node.GetLayoutObject();
   if (!layout_object)
     return;
 
-  if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
+  if (!internal::IsExplicitlyRegisteredForTiming(*layout_object))
     return;
 
-  const ImageResourceContent* cached_image = background_image->CachedImage();
+  const ImageResourceContent* cached_image = background_image.CachedImage();
   if (!cached_image || !cached_image->IsLoaded())
     return;
 
-  auto it = background_image_timestamps_.find(background_image);
+  auto it = background_image_timestamps_.find(&background_image);
   DCHECK(it != background_image_timestamps_.end());
 
   ImageInfo& info =
@@ -216,9 +211,9 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
           .stored_value->value;
   if (!info.is_painted_) {
     info.is_painted_ = true;
-    NotifyImagePaintedInternal(layout_object->GetNode(), *layout_object,
-                               *cached_image, current_paint_chunk_properties,
-                               it->value, image_border);
+    NotifyImagePaintedInternal(node, *layout_object, *cached_image,
+                               current_paint_chunk_properties, it->value,
+                               image_border);
   }
 }
 

@@ -119,15 +119,15 @@ class CORE_EXPORT PaintTimingDetector
   PaintTimingDetector(LocalFrameView*);
 
   static void NotifyBackgroundImagePaint(
-      const Node*,
-      const Image*,
-      const StyleFetchedImage*,
+      const Node&,
+      const Image&,
+      const StyleFetchedImage&,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const IntRect& image_border);
   static void NotifyImagePaint(
       const LayoutObject&,
       const IntSize& intrinsic_size,
-      const ImageResourceContent* cached_image,
+      const ImageResourceContent& cached_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const IntRect& image_border);
   inline static void NotifyTextPaint(const IntRect& text_visual_rect);

@@ -655,17 +655,16 @@ inline bool PaintFastBottomLayer(const Document* document,
       node && node->ComputedStyleRef().HasFilterInducingProperty(),
       composite_op, info.respect_image_orientation);
 
-  if (info.image && info.image->IsImageResource()) {
+  if (node && info.image && info.image->IsImageResource()) {
     PaintTimingDetector::NotifyBackgroundImagePaint(
-        node, image, To<StyleFetchedImage>(info.image),
+        *node, *image, To<StyleFetchedImage>(*info.image),
         paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
         RoundedIntRect(image_border.Rect()));
-  }
-  if (node && info.image && info.image->IsImageResource()) {
+
     LocalDOMWindow* window = node->GetDocument().domWindow();
     DCHECK(window);
     ImageElementTiming::From(*window).NotifyBackgroundImagePainted(
-        node, To<StyleFetchedImage>(info.image),
+        *node, To<StyleFetchedImage>(*info.image),
         context.GetPaintController().CurrentPaintChunkProperties(),
         RoundedIntRect(image_border.Rect()));
   }
@@ -797,17 +796,16 @@ void PaintFillLayerBackground(const Document* document,
         FloatSize(geometry.SpaceSize()),
         node && node->ComputedStyleRef().HasFilterInducingProperty(),
         info.respect_image_orientation);
-    if (info.image && info.image->IsImageResource()) {
+    if (node && info.image && info.image->IsImageResource()) {
       PaintTimingDetector::NotifyBackgroundImagePaint(
-          node, image, To<StyleFetchedImage>(info.image),
+          *node, *image, To<StyleFetchedImage>(*info.image),
           context.GetPaintController().CurrentPaintChunkProperties(),
           EnclosingIntRect(geometry.SnappedDestRect()));
-    }
-    if (node && info.image && info.image->IsImageResource()) {
+
       LocalDOMWindow* window = node->GetDocument().domWindow();
       DCHECK(window);
       ImageElementTiming::From(*window).NotifyBackgroundImagePainted(
-          node, To<StyleFetchedImage>(info.image),
+          *node, To<StyleFetchedImage>(*info.image),
           context.GetPaintController().CurrentPaintChunkProperties(),
           EnclosingIntRect(geometry.SnappedDestRect()));
     }

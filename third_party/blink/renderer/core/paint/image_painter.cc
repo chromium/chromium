@@ -267,19 +267,21 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
                     layout_image_.StyleRef().HasFilterInducingProperty(),
                     SkBlendMode::kSrcOver, respect_orientation);
 
-  if ((IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node)) &&
-      image_content && image_content->IsLoaded()) {
-    LocalDOMWindow* window = layout_image_.GetDocument().domWindow();
-    DCHECK(window);
-    ImageElementTiming::From(*window).NotifyImagePainted(
-        &layout_image_, image_content,
+  if (image_content) {
+    if ((IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node)) &&
+        image_content->IsLoaded()) {
+      LocalDOMWindow* window = layout_image_.GetDocument().domWindow();
+      DCHECK(window);
+      ImageElementTiming::From(*window).NotifyImagePainted(
+          layout_image_, *image_content,
+          context.GetPaintController().CurrentPaintChunkProperties(),
+          pixel_snapped_dest_rect);
+    }
+    PaintTimingDetector::NotifyImagePaint(
+        layout_image_, image->Size(), *image_content,
         context.GetPaintController().CurrentPaintChunkProperties(),
         pixel_snapped_dest_rect);
   }
-  PaintTimingDetector::NotifyImagePaint(
-      layout_image_, image->Size(), image_content,
-      context.GetPaintController().CurrentPaintChunkProperties(),
-      pixel_snapped_dest_rect);
 }
 
 }  // namespace blink

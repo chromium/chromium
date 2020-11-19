@@ -50,14 +50,14 @@ class CORE_EXPORT ImageElementTiming final
   // Called when the LayoutObject has been painted. This method might queue a
   // swap promise to compute and report paint timestamps.
   void NotifyImagePainted(
-      const LayoutObject*,
-      const ImageResourceContent* cached_image,
+      const LayoutObject&,
+      const ImageResourceContent& cached_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const IntRect& image_border);
 
   void NotifyBackgroundImagePainted(
-      Node*,
-      const StyleFetchedImage* background_image,
+      Node&,
+      const StyleFetchedImage& background_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const IntRect& image_border);
 
@@ -70,7 +70,7 @@ class CORE_EXPORT ImageElementTiming final
   friend class ImageElementTimingTest;
 
   void NotifyImagePaintedInternal(
-      Node*,
+      Node&,
       const LayoutObject&,
       const ImageResourceContent& cached_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
