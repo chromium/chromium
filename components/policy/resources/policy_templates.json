@@ -6052,7 +6052,7 @@
 
       URL patterns must not conflict with <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME">WebUsbAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'WebUsbBlockedForUrls',
@@ -6077,7 +6077,7 @@
 
       URL patterns can't conflict with <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME">WebUsbAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'DefaultSerialGuardSetting',
@@ -6138,7 +6138,7 @@
 
       URL patterns must not conflict with <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'SerialBlockedForUrls',
@@ -6165,7 +6165,7 @@
 
       URL patterns can't conflict with <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'DefaultFileSystemReadGuardSetting',
@@ -6258,7 +6258,7 @@
 
       URL patterns must not conflict with <ph name="FILE_SYSTEM_READ_BLOCKED_FOR_URLS_POLICY_NAME">FileSystemReadBlockedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'FileSystemReadBlockedForUrls',
@@ -6283,7 +6283,7 @@
 
       URL patterns can't conflict with <ph name="FILE_SYSTEM_READ_ASK_FOR_URLS_POLICY_NAME">FileSystemReadAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'FileSystemWriteAskForUrls',
@@ -6308,7 +6308,7 @@
 
       URL patterns must not conflict with <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME">FileSystemWriteBlockedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'FileSystemWriteBlockedForUrls',
@@ -6333,7 +6333,7 @@
 
       URL patterns can't conflict with <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME">FileSystemWriteAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'AutoSelectCertificateForUrls',
@@ -6477,11 +6477,11 @@
       'tags': [],
       'desc': '''Allows you to set a list of url patterns that specify sites which are allowed to set cookies.
 
-          If this policy is left not set the global default value will be used for all sites either from the 'DefaultCookiesSetting' policy if it is set, or the user's personal configuration otherwise.
+          If this policy is left not set the global default value will be used for all sites either from the <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME">DefaultCookiesSetting</ph> policy if it is set, or the user's personal configuration otherwise.
 
-          See also policies 'CookiesBlockedForUrls' and 'CookiesSessionOnlyForUrls'. Note that there must be no conflicting URL patterns between these three policies - it is unspecified which policy takes precedence.
+          See also policies <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME">CookiesBlockedForUrls</ph> and <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS">CookiesSessionOnlyForUrls</ph>. Note that there must be no conflicting URL patterns between these three policies - it is unspecified which policy takes precedence.
 
-          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'CookiesBlockedForUrls',
@@ -6508,9 +6508,9 @@
 
       Leaving the policy unset results in the use of <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME">DefaultCookiesSetting</ph> for all sites, if it's set. If not, the user's personal setting applies.
 
-      While no specific policy takes precedence, see <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME">CookiesBlockedForUrls</ph> and <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME">CookiesSessionOnlyForUrls</ph>. URL patterns among these 3 policies must not conflict.
+      While no specific policy takes precedence, see <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME">CookiesAllowedForUrls</ph> and <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME">CookiesSessionOnlyForUrls</ph>. URL patterns among these 3 policies must not conflict.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'CookiesSessionOnlyForUrls',
@@ -6541,7 +6541,7 @@
 
       While no specific policy takes precedence, see <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME">CookiesBlockedForUrls</ph> and <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME">CookiesAllowedForUrls</ph>. URL patterns among these 3 policies must not conflict.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'ImagesAllowedForUrls',
@@ -6564,7 +6564,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME">DefaultImagesSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
 
       Note that previously this policy was erroneously enabled on Android, but this functionality has never been fully supported on Android.''',
     },
@@ -6589,7 +6589,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME">DefaultImagesSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-       For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+       For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
 
        Note that previously this policy was erroneously enabled on Android, but this functionality has never been fully supported on Android.''',
     },
@@ -6614,7 +6614,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME">DefaultJavaScriptSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'JavaScriptBlockedForUrls',
@@ -6637,7 +6637,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME">DefaultJavaScriptSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'KeygenAllowedForUrls',
@@ -6661,7 +6661,7 @@
 
           If this policy is left not set the global default value will be used for all sites either from the 'DefaultKeygenSetting' policy if it is set, or the user's personal configuration otherwise.
 
-          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'KeygenBlockedForUrls',
@@ -6685,7 +6685,7 @@
 
           If this policy is left not set the global default value will be used for all sites either from the 'DefaultKeygenSetting' policy if it is set, or the user's personal configuration otherwise.
 
-          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'LegacySameSiteCookieBehaviorEnabled',
@@ -6899,7 +6899,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME">DefaultPopupsSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'RegisteredProtocolHandlers',
@@ -6968,7 +6968,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME">DefaultPopupsSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'NotificationsAllowedForUrls',
@@ -6991,7 +6991,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME">DefaultJavaScriptSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'NotificationsBlockedForUrls',
@@ -7014,7 +7014,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME">DefaultJavaScriptSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'SensorsAllowedForUrls',
@@ -7039,7 +7039,7 @@
 
       If the same URL pattern exists in both this policy and the <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME">SensorsBlockedForUrls</ph> policy, the latter is prioritized and access to motion or light sensors will be blocked.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'SensorsBlockedForUrls',
@@ -7064,7 +7064,7 @@
 
       If the same URL pattern exists in both this policy and the <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME">SensorsAllowedForUrls</ph> policy, this policy is prioritized and access to motion or light sensors will be blocked.
 
-      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'NativeMessagingBlacklist',
@@ -22091,7 +22091,7 @@
 
           If this policy is left not set blockable mixed content will be blocked and optionally blockable mixed content will be upgraded, and users will be allowed to set exceptions to allow it for specific sites.
 
-          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'InsecureContentBlockedForUrls',
@@ -22114,7 +22114,7 @@
 
           If this policy is left not set blockable mixed content will be blocked and optionally blockable mixed content will be upgraded, but users will be allowed to set exceptions to allow it for specific sites.
 
-          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'DeviceWebBasedAttestationAllowedUrls',
