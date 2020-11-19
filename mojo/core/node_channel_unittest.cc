@@ -102,6 +102,8 @@ TEST_F(NodeChannelTest, MessagesCannotBeSmallerThanOldestVersion) {
   auto message =
       std::make_unique<Channel::Message>(capacity, capacity, /*num_handles=*/0);
 
+  memset(message->mutable_payload(), 0, capacity);
+
   // Set the type of this message as REQUEST_PORT_MERGE (6)
   *reinterpret_cast<uint32_t*>(message->mutable_payload()) = 6;
 
