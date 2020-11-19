@@ -2530,7 +2530,7 @@
                     "name": "Enabled",
                     "params": {
                         "BlockExtensionList": "",
-                        "SilentBlockExtensionList": "png,gif,jpg,jpeg,tif,tiff,bmp,svg,webp,ico,mp3,wav,wma,m3u,ogg,oga,aiff,m4a,aac,flac,m4b,webm,mp4,mov,wmv,avi,txt",
+                        "SilentBlockExtensionList": "",
                         "TreatBlockListAsAllowlist": "false",
                         "TreatSilentBlockListAsAllowlist": "true",
                         "TreatWarnListAsAllowlist": "false",
@@ -2553,11 +2553,11 @@
                     "name": "Enabled",
                     "params": {
                         "BlockExtensionList": "",
-                        "SilentBlockExtensionList": "exe,scr,msi,vb,dmg,pkg,crx,zip,iso,rar,7z,tar,gz,bz2",
+                        "SilentBlockExtensionList": "",
                         "TreatBlockListAsAllowlist": "false",
-                        "TreatSilentBlockListAsAllowlist": "false",
-                        "TreatWarnListAsAllowlist": "true",
-                        "WarnExtensionList": "png,gif,jpg,jpeg,tif,tiff,bmp,svg,webp,ico,mp3,wav,wma,m3u,ogg,oga,aiff,m4a,aac,flac,m4b,webm,mp4,mov,wmv,avi,txt"
+                        "TreatSilentBlockListAsAllowlist": "true",
+                        "TreatWarnListAsAllowlist": "false",
+                        "WarnExtensionList": ""
                     },
                     "enable_features": [
                         "TreatUnsafeDownloadsAsActive"
