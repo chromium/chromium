@@ -53,11 +53,11 @@ class FilteredServiceDirectory;
 //   test_context.AddServices({fuchsia::memorypressure::Provider::Name_, ...});
 //   // ... Execute tests which use fuchsia.memorypressure.Provider ...
 //
-// Alternatively InitialState::kEmpty can be passed to the constructor to expose
-// all services listed in /svc, e.g.:
+// Alternatively InitialState::kCloneAll can be passed to the constructor to
+// expose all services listed in /svc, e.g.:
 //
 //   TestComponentContextForProcess test_context(
-//       TestComponentContextForProcess::InitialState::kEmpty);
+//       TestComponentContextForProcess::InitialState::kCloneAll);
 //
 // Fake/mock implementations can be exposed via additional_services():
 //
@@ -79,7 +79,7 @@ class BASE_EXPORT TestComponentContextForProcess {
     kCloneAll,
   };
 
-  TestComponentContextForProcess(
+  explicit TestComponentContextForProcess(
       InitialState initial_state = InitialState::kEmpty);
   ~TestComponentContextForProcess();
 
