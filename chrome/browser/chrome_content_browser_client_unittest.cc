@@ -738,20 +738,20 @@ TEST(ChromeContentBrowserClientTest, GenerateBrandVersionList) {
   metadata.brand_version_list =
       GenerateBrandVersionList(84, base::nullopt, "84");
   std::string brand_list = metadata.SerializeBrandVersionList();
-  EXPECT_EQ(R"("\\Not\"A;Brand";v="99", "Chromium";v="84")", brand_list);
+  EXPECT_EQ(R"(" Not A;Brand";v="99", "Chromium";v="84")", brand_list);
 
   metadata.brand_version_list =
       GenerateBrandVersionList(85, base::nullopt, "85");
   std::string brand_list_diff = metadata.SerializeBrandVersionList();
   // Make sure the lists are different for different seeds
-  EXPECT_EQ(R"("Chromium";v="85", "\\Not;A\"Brand";v="99")", brand_list_diff);
+  EXPECT_EQ(R"("Chromium";v="85", " Not;A Brand";v="99")", brand_list_diff);
   EXPECT_NE(brand_list, brand_list_diff);
 
   metadata.brand_version_list =
       GenerateBrandVersionList(84, "Totally A Brand", "84");
   std::string brand_list_w_brand = metadata.SerializeBrandVersionList();
   EXPECT_EQ(
-      R"("\\Not\"A;Brand";v="99", "Chromium";v="84", "Totally A Brand";v="84")",
+      R"(" Not A;Brand";v="99", "Chromium";v="84", "Totally A Brand";v="84")",
       brand_list_w_brand);
 
   // Should DCHECK on negative numbers
