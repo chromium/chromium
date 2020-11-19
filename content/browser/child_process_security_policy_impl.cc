@@ -1640,9 +1640,16 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         // BrowsingInstances are registered in the process. Allow this for now,
         // to maintain legacy behavior, until we rule out all the ways it can
         // happen.
-        failure_reason =
-            base::StringPrintf("no BrowsingInstanceIds (max count %d)",
-                               security_state->max_browsing_instance_count());
+        // Since |security_state| is non-null (see above), and if it's not in
+        // the list |security_state_|, then it must have been moved to
+        // |pending_remove_state_| which indicates the associated process is
+        // being shut down.
+        bool shutting_down =
+            security_state_.find(child_id) == security_state_.end();
+        failure_reason = base::StringPrintf(
+            "no BrowsingInstanceIds (max count %d) shutdown:%s",
+            security_state->max_browsing_instance_count(),
+            shutting_down ? "y" : "n");
         LogCanAccessDataForOriginCrashKeys(
             expected_process_lock.ToString(),
             GetKilledProcessOriginLock(security_state), url.GetOrigin().spec(),
