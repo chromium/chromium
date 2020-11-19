@@ -1327,7 +1327,7 @@ deps = {
               'version': 'b1b61a39e3ab0935cd030f27e01740578b04b967'
           },
       ],
-      'condition': 'host_os == "linux" and (checkout_fuchsia and checkout_fuchsia_for_arm64_host)',
+      'condition': 'host_os == "linux" and checkout_fuchsia and checkout_fuchsia_for_arm64_host',
       'dep_type': 'cipd',
   },
 
@@ -1375,7 +1375,18 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/zstd': {
+  'src/third_party/zstd-linux-arm64': {
+      'packages': [
+          {
+              'package': 'fuchsia/third_party/zstd/linux-arm64',
+              'version': '3_wH3L3VWelJ8aIDSabZ0P9oMqHrKnuVUyXVBvjaE9UC'
+          },
+      ],
+      'condition': 'host_os == "linux" and checkout_fuchsia and checkout_fuchsia_for_arm64_host',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/zstd-linux-x64': {
       'packages': [
           {
               'package': 'fuchsia/third_party/zstd/linux-amd64',
