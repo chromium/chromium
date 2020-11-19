@@ -68,3 +68,8 @@ bool SearchPrefetchShouldCancelUneededInflightRequests() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kSearchPrefetchServicePrefetching, "cancel_inflight_unneeded", true);
 }
+
+bool StreamSearchPrefetchResponses() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kSearchPrefetchServicePrefetching, "stream_responses", true);
+}

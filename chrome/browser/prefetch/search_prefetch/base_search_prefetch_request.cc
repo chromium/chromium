@@ -9,6 +9,8 @@
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/common/content_constants.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -75,4 +77,40 @@ void BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
 
   StartPrefetchRequestInternal(profile, std::move(resource_request),
                                network_traffic_annotation);
+}
+
+void BaseSearchPrefetchRequest::CancelPrefetch() {
+  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight);
+  current_status_ = SearchPrefetchStatus::kRequestCancelled;
+  StopPrefetch();
+}
+
+void BaseSearchPrefetchRequest::ErrorEncountered() {
+  DCHECK(!report_error_callback_.is_null());
+  // A streaming response can still encounter an error after the headers, so
+  // both these states are possible.
+  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
+         current_status_ == SearchPrefetchStatus::kCanBeServed);
+  current_status_ = SearchPrefetchStatus::kRequestFailed;
+  std::move(report_error_callback_).Run();
+  StopPrefetch();
+}
+
+void BaseSearchPrefetchRequest::MarkPrefetchAsServable() {
+  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight);
+  current_status_ = SearchPrefetchStatus::kCanBeServed;
+}
+
+bool BaseSearchPrefetchRequest::CanServePrefetchRequest(
+    const scoped_refptr<net::HttpResponseHeaders> headers) {
+  if (!headers)
+    return false;
+
+  // Any 200 response can be served.
+  if (headers->response_code() >= net::HTTP_OK &&
+      headers->response_code() < net::HTTP_MULTIPLE_CHOICES) {
+    return true;
+  }
+
+  return false;
 }

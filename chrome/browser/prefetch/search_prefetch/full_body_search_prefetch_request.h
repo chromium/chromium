@@ -34,7 +34,7 @@ class FullBodySearchPrefetchRequest : public BaseSearchPrefetchRequest {
       std::unique_ptr<network::ResourceRequest> resource_request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation)
       override;
-  void CancelPrefetch() override;
+  void StopPrefetch() override;
   std::unique_ptr<SearchPrefetchURLLoader> TakeSearchPrefetchURLLoader()
       override;
 

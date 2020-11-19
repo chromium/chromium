@@ -11,6 +11,7 @@
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/full_body_search_prefetch_request.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
+#include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
@@ -96,10 +97,20 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
     return false;
   }
 
-  prefetches_.emplace(
-      search_terms, std::make_unique<FullBodySearchPrefetchRequest>(
-                        url, base::BindOnce(&SearchPrefetchService::ReportError,
-                                            base::Unretained(this))));
+  std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request = nullptr;
+  if (StreamSearchPrefetchResponses()) {
+    prefetch_request = std::make_unique<StreamingSearchPrefetchRequest>(
+        url, base::BindOnce(&SearchPrefetchService::ReportError,
+                            base::Unretained(this)));
+  } else {
+    prefetch_request = std::make_unique<FullBodySearchPrefetchRequest>(
+        url, base::BindOnce(&SearchPrefetchService::ReportError,
+                            base::Unretained(this)));
+  }
+
+  DCHECK(prefetch_request);
+
+  prefetches_.emplace(search_terms, std::move(prefetch_request));
   prefetches_[search_terms]->StartPrefetchRequest(profile_);
   prefetch_expiry_timers_.emplace(search_terms,
                                   std::make_unique<base::OneShotTimer>());
@@ -149,8 +160,7 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
     return nullptr;
   }
 
-  if (iter->second->current_status() !=
-      SearchPrefetchStatus::kSuccessfullyCompleted) {
+  if (iter->second->current_status() != SearchPrefetchStatus::kCanBeServed) {
     return nullptr;
   }
 

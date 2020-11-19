@@ -21,7 +21,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_constants.h"
 #include "net/base/load_flags.h"
-#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -55,29 +54,22 @@ void FullBodySearchPrefetchRequest::StartPrefetchRequestInternal(
 
 void FullBodySearchPrefetchRequest::LoadDone(
     std::unique_ptr<std::string> response_body) {
-  DCHECK(!report_error_callback_.is_null());
-  bool success = simple_loader_->NetError() == net::OK;
-  // TODO(ryansturm): Handle these errors more robustly by reporting them to the
-  // service. We need to prevent prefetches for x amount of time based on the
-  // error. https://crbug.com/1138641
-  if (!success || response_body->empty()) {
-    current_status_ = SearchPrefetchStatus::kRequestFailed;
-    std::move(report_error_callback_).Run();
-    return;
+  bool should_continue = false;
+  if (simple_loader_->NetError() == net::OK && !response_body->empty() &&
+      simple_loader_->ResponseInfo()) {
+    should_continue =
+        CanServePrefetchRequest(simple_loader_->ResponseInfo()->headers);
   }
-  if (!simple_loader_->ResponseInfo() ||
-      !simple_loader_->ResponseInfo()->headers ||
-      simple_loader_->ResponseInfo()->headers->response_code() !=
-          net::HTTP_OK) {
-    current_status_ = SearchPrefetchStatus::kRequestFailed;
-    std::move(report_error_callback_).Run();
-    return;
-  }
-  current_status_ = SearchPrefetchStatus::kSuccessfullyCompleted;
 
+  // Don't do anything, as |StopPrefetch()| is guaranteed to be called.
+  if (!should_continue) {
+    ErrorEncountered();
+    return;
+  }
+
+  MarkPrefetchAsServable();
   prefetch_response_container_ = std::make_unique<PrefetchedResponseContainer>(
       simple_loader_->ResponseInfo()->Clone(), std::move(response_body));
-
   simple_loader_.reset();
 }
 
@@ -87,9 +79,6 @@ FullBodySearchPrefetchRequest::TakeSearchPrefetchURLLoader() {
       std::move(prefetch_response_container_));
 }
 
-void FullBodySearchPrefetchRequest::CancelPrefetch() {
-  DCHECK_EQ(current_status_, SearchPrefetchStatus::kInFlight);
-  current_status_ = SearchPrefetchStatus::kRequestCancelled;
-
+void FullBodySearchPrefetchRequest::StopPrefetch() {
   simple_loader_.reset();
 }

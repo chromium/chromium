@@ -36,4 +36,9 @@ bool SearchPrefetchOnlyFetchDefaultMatch();
 // the request is canceled or allowed to finish.
 bool SearchPrefetchShouldCancelUneededInflightRequests();
 
+// Whether Search Prefetch should use a streaming model to serve requests or
+// wait for the entire response to be streamed before being able to serve
+// requests.
+bool StreamSearchPrefetchResponses();
+
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

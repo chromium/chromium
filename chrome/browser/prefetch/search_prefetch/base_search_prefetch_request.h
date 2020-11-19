@@ -12,6 +12,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 class Profile;
 class SearchPrefetchURLLoader;
 
@@ -22,11 +26,12 @@ enum class SearchPrefetchStatus {
   kNotStarted = 0,
   // The request is on the network and may move to any other state.
   kInFlight = 1,
-  // The request received all the data and is ready to serve.
-  kSuccessfullyCompleted = 2,
-  // The request hit an error and cannot be served.
+  // The request can be served to the navigation stack, but may still encounter
+  // errors and move to |kRequestFailed|.
+  kCanBeServed = 2,
+  // The request hit an error and cannot be served. This is a terminal state.
   kRequestFailed = 3,
-  // The request was cancelled before completion.
+  // The request was cancelled before completion. This is terminal state.
   kRequestCancelled = 4,
 };
 
@@ -47,15 +52,28 @@ class BaseSearchPrefetchRequest {
   // on a resource request and calls |StartPrefetchRequestInternal()|.
   void StartPrefetchRequest(Profile* profile);
 
+  // Marks a prefetch as canceled and stops any ongoing fetch.
+  void CancelPrefetch();
+
+  // Called when the prefetch encounters an error.
+  void ErrorEncountered();
+
+  // Update the status when the request is serveable.
+  void MarkPrefetchAsServable();
+
+  // Whether the prefetch should be served based on |headers|.
+  bool CanServePrefetchRequest(
+      const scoped_refptr<net::HttpResponseHeaders> headers);
+
   // Starts and begins processing |resource_request|.
   virtual void StartPrefetchRequestInternal(
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) = 0;
 
-  // Cancels the on-going prefetch and should mark |current_status_|
+  // Stops the on-going prefetch and should mark |current_status_|
   // appropriately.
-  virtual void CancelPrefetch() = 0;
+  virtual void StopPrefetch() = 0;
 
   SearchPrefetchStatus current_status() const { return current_status_; }
 
