@@ -5,8 +5,11 @@
 package org.chromium.base;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
+import androidx.annotation.Nullable;
 
 import dalvik.system.BaseDexClassLoader;
 
@@ -98,12 +101,53 @@ public final class BundleUtils {
 
     /* Returns absolute path to a native library in a feature module. */
     @CalledByNative
-    public static String getNativeLibraryPath(String libraryName) {
+    @Nullable
+    public static String getNativeLibraryPath(String libraryName, String splitName) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             // Due to b/171269960 isolated split class loaders have an empty library path, so check
-            // the base module class loader which loaded BundleUtils.
-            return ((BaseDexClassLoader) BundleUtils.class.getClassLoader())
-                    .findLibrary(libraryName);
+            // the base module class loader first which loaded BundleUtils. If the library is not
+            // found there, attempt to construct the correct library path from the split.
+            String path = ((BaseDexClassLoader) BundleUtils.class.getClassLoader())
+                                  .findLibrary(libraryName);
+            if (path != null) {
+                return path;
+            }
+            return getSplitApkLibraryPath(libraryName, splitName);
+        }
+    }
+
+    // TODO(crbug.com/1150459): Remove this once //clank callers have been converted to the new
+    // version.
+    @Nullable
+    public static String getNativeLibraryPath(String libraryName) {
+        return getNativeLibraryPath(libraryName, "");
+    }
+
+    @Nullable
+    private static String getSplitApkLibraryPath(String libraryName, String splitName) {
+        // If isolated splits aren't supported, the library should have already been found.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return null;
+        }
+
+        ApplicationInfo info = ContextUtils.getApplicationContext().getApplicationInfo();
+        String[] splitNames = ApiHelperForO.getSplitNames(info);
+        if (splitNames == null) {
+            return null;
+        }
+
+        int idx = Arrays.binarySearch(splitNames, splitName);
+        if (idx < 0) {
+            return null;
+        }
+
+        try {
+            String primaryCpuAbi = (String) info.getClass().getField("primaryCpuAbi").get(info);
+            // This matches the logic LoadedApk.java uses to construct library paths.
+            return info.splitSourceDirs[idx] + "!/lib/" + primaryCpuAbi + "/"
+                    + System.mapLibraryName(libraryName);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
     }
 }

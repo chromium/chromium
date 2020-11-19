@@ -35,7 +35,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         mImageFetchClient = new FeedImageFetchClient();
         if (BundleUtils.isIsolatedSplitInstalled(mContext, FEED_SPLIT_NAME)) {
             mLibraryResolver = (libName) -> {
-                return BundleUtils.getNativeLibraryPath(libName);
+                return BundleUtils.getNativeLibraryPath(libName, FEED_SPLIT_NAME);
             };
         }
     }

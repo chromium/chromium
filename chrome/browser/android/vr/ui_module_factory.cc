@@ -45,7 +45,7 @@ std::unique_ptr<UiInterface> UiModuleFactory::Create(
   for (const auto& library_name : library_name_possibilities) {
     ui_library_handle =
         base::android::BundleUtils::DlOpenModuleLibraryPartition(
-            library_name, partition_name);
+            library_name, partition_name, "vr");
     if (ui_library_handle != nullptr) {
       break;
     }
