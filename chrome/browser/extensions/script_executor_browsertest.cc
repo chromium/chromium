@@ -175,8 +175,10 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
   //   frame3
   content::RenderFrameHost* frame1 = GetFrameByName(web_contents, "frame1");
   ASSERT_TRUE(frame1);
+  const int frame1_id = ExtensionApiFrameIdMap::GetFrameId(frame1);
   content::RenderFrameHost* frame2 = GetFrameByName(web_contents, "frame2");
   ASSERT_TRUE(frame2);
+  const int frame2_id = ExtensionApiFrameIdMap::GetFrameId(frame2);
   content::RenderFrameHost* frame3 = GetFrameByName(web_contents, "frame3");
   ASSERT_TRUE(frame3);
   content::RenderFrameHost* frame2_child =
@@ -188,16 +190,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
   // execution result as an indication that it ran.
   constexpr char kCode[] = "document.title;";
 
-  std::vector<int> frame_ids = {ExtensionApiFrameIdMap::GetFrameId(frame1),
-                                ExtensionApiFrameIdMap::GetFrameId(frame2)};
-
   {
     // Execute in frames 1 and 2. These are the only frames for which we should
     // get a result.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
         HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::SPECIFIED_FRAMES, frame_ids,
+        kCode, ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
         GURL() /* script_url */, false /* user_gesture */,
@@ -220,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
         HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::INCLUDE_SUB_FRAMES, frame_ids,
+        kCode, ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
         GURL() /* script_url */, false /* user_gesture */,
@@ -237,6 +236,58 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
                     ::testing::Eq(std::cref(frame1_result)),
                     ::testing::Eq(std::cref(frame2_result)),
                     ::testing::Eq(std::cref(frame2_child_result))));
+  }
+
+  // Note: we don't use ExtensionApiFrameIdMap::kInvalidFrameId because we want
+  // to target a "potentially valid" frame (emulating a frame that used to
+  // exist, but no longer does).
+  constexpr int kNonExistentFrameId = 99999;
+  EXPECT_EQ(nullptr, ExtensionApiFrameIdMap::GetRenderFrameHostById(
+                         web_contents, kNonExistentFrameId));
+
+  {
+    // Try injecting into multiple frames when one of the specified frames
+    // doesn't exist.
+    ScriptExecutorHelper helper;
+    script_executor.ExecuteScript(
+        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
+        kCode, ScriptExecutor::SPECIFIED_FRAMES,
+        {frame1_id, frame2_id, kNonExistentFrameId},
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
+        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
+        GURL() /* script_url */, false /* user_gesture */,
+        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
+        helper.GetCallback());
+    helper.Wait();
+
+    // When specifying multiple frames, if one doesn't exist, the rest of the
+    // injections should succeed and there should be no error.
+    EXPECT_EQ("", helper.error());
+    base::Value frame1_result("Frame 1");
+    base::Value frame2_result("Frame 2");
+    EXPECT_THAT(
+        helper.result().GetList(),
+        testing::UnorderedElementsAre(::testing::Eq(std::cref(frame1_result)),
+                                      ::testing::Eq(std::cref(frame2_result))));
+  }
+
+  {
+    // Try injecting into a single non-existent frame.
+    ScriptExecutorHelper helper;
+    script_executor.ExecuteScript(
+        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
+        kCode, ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
+        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
+        GURL() /* script_url */, false /* user_gesture */,
+        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
+        helper.GetCallback());
+    helper.Wait();
+
+    // If only a single frame was specified and it doesn't exist, the call
+    // should return an error.
+    EXPECT_EQ("The frame was removed.", helper.error());
+    EXPECT_TRUE(helper.result().GetList().empty());
   }
 }
 

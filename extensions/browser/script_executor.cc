@@ -70,6 +70,9 @@ class Handler : public content::WebContentsObserver {
       content::RenderFrameHost* frame =
           ExtensionApiFrameIdMap::GetRenderFrameHostById(web_contents,
                                                          frame_id);
+      if (!frame)
+        continue;
+
       DCHECK(!base::Contains(pending_render_frames_, frame));
       if (frame->IsRenderFrameLive())
         pending_render_frames_.push_back(frame);
@@ -168,6 +171,7 @@ class Handler : public content::WebContentsObserver {
     size_t erased = base::Erase(pending_render_frames_, render_frame_host);
     DCHECK_EQ(1u, erased);
     bool is_root_frame = root_rfh_ == render_frame_host;
+    finished_any_execution_ = true;
 
     // Set the result, if there is one.
     const base::Value* script_value = nullptr;
@@ -196,6 +200,9 @@ class Handler : public content::WebContentsObserver {
       root_frame_error_ =
           root_is_main_frame_ ? kRendererDestroyed : kFrameRemoved;
       results_.Clear();
+    } else if (!finished_any_execution_) {
+      // We never executed in any frame.
+      root_frame_error_ = kFrameRemoved;
     }
 
     if (observer_ && root_frame_error_.empty() &&
@@ -223,6 +230,9 @@ class Handler : public content::WebContentsObserver {
 
   // Whether |root_rfh_| is the main frame of a tab.
   bool root_is_main_frame_ = false;
+
+  // Whether execution has finished in any frame.
+  bool finished_any_execution_ = false;
 
   // The hosts of the still-running injections. Note: this is a vector because
   // order matters (some tests - and therefore perhaps some extensions - rely on
