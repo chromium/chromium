@@ -682,31 +682,35 @@ TEST_F(TtsControllerTest, SpeakWhenPausedAndCannotEnqueueUtterance) {
   controller()->Pause();
   EXPECT_TRUE(controller()->IsPausedForTesting());
 
-  // Speak an utterance while controller is paused. The utterance cannot be
-  // queued and should be dropped.
+  // Speak an utterance while controller is paused. The utterance clears the
+  // queue and is enqueued itself.
   controller()->SpeakOrEnqueue(std::move(utterance1));
-  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(IsUtteranceListEmpty());
+  EXPECT_EQ(1, controller()->QueueSize());
   EXPECT_FALSE(TtsControllerCurrentUtterance());
 
   // Speak an utterance that can be queued. The controller should stay paused
-  // and the second utterance must be queued.
+  // and the second utterance must be queued with the first also queued.
   std::unique_ptr<TtsUtteranceImpl> utterance2 =
       CreateUtteranceImpl(web_contents.get());
   utterance2->SetCanEnqueue(true);
 
   controller()->SpeakOrEnqueue(std::move(utterance2));
   EXPECT_TRUE(controller()->IsPausedForTesting());
+  EXPECT_EQ(2, controller()->QueueSize());
   EXPECT_FALSE(IsUtteranceListEmpty());
   EXPECT_FALSE(TtsControllerCurrentUtterance());
 
-  // Speak an utterance that cannot be queued should clear the queue.
+  // Speak an utterance that cannot be queued should clear the queue, then
+  // enqueue the new utterance.
   std::unique_ptr<TtsUtteranceImpl> utterance3 =
       CreateUtteranceImpl(web_contents.get());
   utterance3->SetCanEnqueue(false);
 
   controller()->SpeakOrEnqueue(std::move(utterance3));
   EXPECT_TRUE(controller()->IsPausedForTesting());
-  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(IsUtteranceListEmpty());
+  EXPECT_EQ(1, controller()->QueueSize());
   EXPECT_FALSE(TtsControllerCurrentUtterance());
 
   // Resume the controller.
