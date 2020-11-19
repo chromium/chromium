@@ -1,7 +1,7 @@
 ## Permissions Policy Guide (Previously Feature Policy)
 Permissions policy is the new name for feature policy with a new HTTP header which uses [structured header](https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html) syntax. Code currently under feature_policy directory in chromium repository has not been renamed yet.
 
-### How to add a new feature to permissions poy
+### How to add a new feature to permissions policy
 
 Permissions policy (see [spec](https://w3c.github.io/webappsec-permissions-policy/)) is a
 mechanism that allows developers to selectively enable and disable various
