@@ -47,7 +47,9 @@ class BaseParameterOptimizer(object):
     self._goldctl_binary = None
     self._working_dir = None
     self._expectations = None
-    self._gold_url = 'https://%s-gold.skia.org' % args.gold_instance
+    # TODO(skbug.com/10610): Switch away from the public instance once
+    # authentication is fixed for the non-public instance.
+    self._gold_url = 'https://%s-public-gold.skia.org' % args.gold_instance
     self._pool = multiprocessing.Pool()
     # A map of strings, denoting a resolution or trace, to an iterable of
     # strings, denoting images that are that dimension or belong to that
@@ -79,10 +81,9 @@ class BaseParameterOptimizer(object):
         help='The name of a test to find parameter values for, as reported in '
         'the Skia Gold UI. Can be passed multiple times to run optimizations '
         'for multiple tests.')
-    common_group.add_argument(
-        '--gold-instance',
-        default='chrome-gpu',
-        help='The Skia Gold instance to interact with.')
+    common_group.add_argument('--gold-instance',
+                              default='chrome',
+                              help='The Skia Gold instance to interact with.')
     common_group.add_argument(
         '--corpus',
         default='chrome-gpu',

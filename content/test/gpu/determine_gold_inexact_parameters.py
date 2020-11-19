@@ -43,13 +43,12 @@ def CreateArgumentParser():
   parser = argparse.ArgumentParser(
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   script_parser = parser.add_argument_group('Script Arguments')
-  script_parser.add_argument(
-      '-v',
-      '--verbose',
-      dest='verbose_count',
-      default=0,
-      action='count',
-      help='Verbose level (multiple times for more')
+  script_parser.add_argument('-v',
+                             '--verbose',
+                             dest='verbose_count',
+                             default=0,
+                             action='count',
+                             help='Verbose level (multiple times for more')
 
   subparsers = parser.add_subparsers(help='Optimization algorithm')
 
