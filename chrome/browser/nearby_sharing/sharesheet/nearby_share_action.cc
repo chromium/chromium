@@ -132,5 +132,4 @@ void NearbyShareAction::OnClosing(
     nearby_ui_->RemoveObserver(this);
     nearby_ui_ = nullptr;
   }
-  controller_ = nullptr;
 }
