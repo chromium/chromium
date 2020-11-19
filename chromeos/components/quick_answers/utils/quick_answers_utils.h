@@ -27,6 +27,10 @@ std::string BuildTranslationTitleText(const IntentInfo& intent_info);
 std::string BuildTranslationTitleText(const std::string& query_text,
                                       const std::string& locale_name);
 
+// Unescapes the following ampersand character codes from |string|:
+// &lt; &gt; &amp; &quot; &#39;
+std::string UnescapeStringForHTML(const std::string& string);
+
 }  // namespace quick_answers
 }  // namespace chromeos
 

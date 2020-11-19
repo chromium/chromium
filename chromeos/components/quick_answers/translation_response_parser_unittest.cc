@@ -74,6 +74,30 @@ TEST_F(TranslationResponseParserTest, ProcessResponseSuccess) {
   EXPECT_EQ(ResultType::kTranslationResult, quick_answer_->result_type);
 }
 
+TEST_F(TranslationResponseParserTest,
+       ProcessResponseWithAmpersandCharacterCodes) {
+  constexpr char kTranslationResponse[] = R"(
+    {
+      "data": {
+        "translations": [
+          {
+            "translatedText": "don&#39;t mess with me"
+          }
+        ]
+      }
+    }
+  )";
+  constexpr char kTranslationTitle[] = "non scherzare con me · Italian";
+  translation_response_parser_->ProcessResponse(
+      std::make_unique<std::string>(kTranslationResponse), kTranslationTitle);
+  WaitForResponse();
+  EXPECT_TRUE(quick_answer_);
+  // Should correctly unescape ampersand character codes.
+  EXPECT_EQ("don't mess with me", quick_answer_->primary_answer);
+  EXPECT_EQ(kTranslationTitle, quick_answer_->secondary_answer);
+  EXPECT_EQ(ResultType::kTranslationResult, quick_answer_->result_type);
+}
+
 TEST_F(TranslationResponseParserTest, ProcessResponseNoResults) {
   constexpr char kTranslationResponse[] = R"(
     {}
