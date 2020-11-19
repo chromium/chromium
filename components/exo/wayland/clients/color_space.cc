@@ -30,7 +30,7 @@ void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
 }
 
 void WriteMixedPrimaries(gbm_bo* bo, const gfx::Size& size) {
-  CHECK_EQ(gbm_bo_get_plane_count(bo), 1u);
+  CHECK_EQ(gbm_bo_get_plane_count(bo), 1);
   uint32_t stride;
   void* mapped_data;
   void* void_data = gbm_bo_map(bo, 0, 0, size.width(), size.height(),
