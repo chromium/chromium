@@ -6,7 +6,7 @@ import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './text_badge.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {RoutineName, RoutineResult, StandardRoutineResult} from './diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
@@ -67,6 +67,27 @@ Polymer({
   },
 
   /**
+   * @param {!RoutineResult} result
+   * @return {!StandardRoutineResult}
+   */
+  getSimpleResult_(result) {
+    assert(result);
+
+    if (result.hasOwnProperty('simpleResult')) {
+      // Ideally we would just return assert(result.simpleResult) but enum
+      // value 0 fails assert.
+      return /** @type {!StandardRoutineResult} */ (result.simpleResult);
+    }
+
+    if (result.hasOwnProperty('batteryRateResult')) {
+      return /** @type {!StandardRoutineResult} */ (
+          result.batteryRateResult.result);
+    }
+
+    assertNotReached();
+  },
+
+  /**
    * @protected
    */
   getBadgeText_() {
@@ -76,7 +97,8 @@ Polymer({
     }
 
     if (this.item.result &&
-        this.item.result.simpleResult === StandardRoutineResult.kTestPassed) {
+        this.getSimpleResult_(this.item.result) ===
+            StandardRoutineResult.kTestPassed) {
       return 'SUCCESS';
     }
 
@@ -93,7 +115,8 @@ Polymer({
     }
 
     if (this.item.result &&
-        this.item.result.simpleResult === StandardRoutineResult.kTestPassed) {
+        this.getSimpleResult_(this.item.result) ===
+            StandardRoutineResult.kTestPassed) {
       return BadgeType.SUCCESS;
     }
     return BadgeType.ERROR;

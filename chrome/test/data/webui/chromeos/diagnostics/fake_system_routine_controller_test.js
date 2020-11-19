@@ -35,7 +35,22 @@ export function fakeSystemRoutineContollerTestSuite() {
     const routineRunnerRemote = {
       onRoutineResult: (resultInfo) => {
         assertEquals(expectedName, resultInfo.name);
-        assertEquals(expectedResult, resultInfo.result.simpleResult);
+
+        if (resultInfo.result.hasOwnProperty('simpleResult')) {
+          assertEquals(expectedResult, resultInfo.result.simpleResult);
+
+          // Can't have both simpleResult and batteryRateResult
+          assertFalse(resultInfo.result.hasOwnProperty('batteryRateResult'));
+        }
+
+        if (resultInfo.result.hasOwnProperty('batteryRateResult')) {
+          assertEquals(
+              expectedResult, resultInfo.result.batteryRateResult.result);
+
+          // Can't have both simpleResult and batteryRateResult
+          assertFalse(resultInfo.result.hasOwnProperty('simpleResult'));
+        }
+
         resolver.resolve();
       }
     };
@@ -113,6 +128,22 @@ export function fakeSystemRoutineContollerTestSuite() {
 
   test('ExpectedResultFail', () => {
     const routineName = RoutineName.kCpuStress;
+    const expectedResult = StandardRoutineResult.kTestFailed;
+    controller.setFakeStandardRoutineResult(routineName, expectedResult);
+
+    return runRoutineAndAssertStandardResult(routineName, expectedResult);
+  });
+
+  test('ExpectedBatteryRateResultPass', () => {
+    const routineName = RoutineName.kCharge;
+    const expectedResult = StandardRoutineResult.kTestPassed;
+    controller.setFakeStandardRoutineResult(routineName, expectedResult);
+
+    return runRoutineAndAssertStandardResult(routineName, expectedResult);
+  });
+
+  test('ExpectedBatteryRateResultFail', () => {
+    const routineName = RoutineName.kCharge;
     const expectedResult = StandardRoutineResult.kTestFailed;
     controller.setFakeStandardRoutineResult(routineName, expectedResult);
 

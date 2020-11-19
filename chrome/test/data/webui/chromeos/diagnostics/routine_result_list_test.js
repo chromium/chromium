@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/routine_result_list.js';
 
-import {RoutineName, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {RoutineName, RoutineResult, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
@@ -160,7 +160,8 @@ export function routineResultListTestSuite() {
             // Move the first routine to completed state.
             status = new ResultStatusItem(routines[0]);
             status.progress = ExecutionProgress.kCompleted;
-            status.result = {simpleResult: StandardRoutineResult.kTestPassed};
+            status.result = /** @type {!RoutineResult} */ (
+                {simpleResult: StandardRoutineResult.kTestPassed});
             routineResultListElement.onStatusUpdate(status);
 
             return flushTasks();
@@ -189,7 +190,8 @@ export function routineResultListTestSuite() {
             // Move the second routine to completed state.
             status = new ResultStatusItem(routines[1]);
             status.progress = ExecutionProgress.kCompleted;
-            status.result = {simpleResult: StandardRoutineResult.kTestPassed};
+            status.result = /** @type {!RoutineResult} */ (
+                {simpleResult: StandardRoutineResult.kTestPassed});
             routineResultListElement.onStatusUpdate(status);
 
             return flushTasks();

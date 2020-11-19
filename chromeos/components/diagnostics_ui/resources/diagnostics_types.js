@@ -127,10 +127,21 @@ export let StandardRoutineResult = {
 };
 
 /**
- * Type alias for RoutineResult.
- * TODO(zentaro): Currently only includes simple result type.
+ * Type alias for BatteryRateRoutineResult.
  * @typedef {{
- *   simpleResult: !StandardRoutineResult
+ *   result: !StandardRoutineResult,
+ *   isCharging: boolean,
+ *   percentDelta: number,
+ *   timeDeltaSeconds: number,
+ * }}
+ */
+export let BatteryRateRoutineResult;
+
+/**
+ * Type alias for RoutineResult.
+ * @typedef {{
+ *   simpleResult: (!StandardRoutineResult|undefined),
+ *   batteryRateResult: (!BatteryRateRoutineResult|undefined),
  * }}
  */
 export let RoutineResult;

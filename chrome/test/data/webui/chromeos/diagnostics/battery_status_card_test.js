@@ -64,6 +64,35 @@ export function batteryStatusCardTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * Returns the routine-section from the card.
+   * @return {!RoutineSectionElement}
+   */
+  function getRoutineSection() {
+    const routineSection = /** @type {!RoutineSectionElement} */ (
+        batteryStatusElement.$$('routine-section'));
+    assertTrue(!!routineSection);
+    return routineSection;
+  }
+
+  /**
+   * Returns the Run Tests button from inside the routine-section.
+   * @return {!CrButtonElement}
+   */
+  function getRunTestsButton() {
+    const button = dx_utils.getRunTestsButtonFromSection(getRoutineSection());
+    assertTrue(!!button);
+    return button;
+  }
+
+  /**
+   * Returns whether the run tests button is disabled.
+   * @return {boolean}
+   */
+  function isRunTestsButtonDisabled() {
+    return getRunTestsButton().disabled;
+  }
+
   test('BatteryStatusCardPopulated', () => {
     return initializeBatteryStatusCard(
                fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
@@ -93,6 +122,11 @@ export function batteryStatusCardTestSuite() {
           const diagnosticsCard =
               dx_utils.getDiagnosticsCard(batteryStatusElement);
           assertTrue(isChildVisible(diagnosticsCard, '.data-points'));
+
+          // Verify the routine section is in the card.
+          assertTrue(!!getRoutineSection());
+          assertTrue(!!getRunTestsButton());
+          assertFalse(isRunTestsButtonDisabled());
         });
   });
 }

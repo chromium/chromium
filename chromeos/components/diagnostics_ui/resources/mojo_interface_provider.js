@@ -10,8 +10,8 @@ import './system_routine_controller.mojom-lite.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {RoutineName, StandardRoutineResult, SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeRoutineResults, fakeSystemInfo} from './fake_data.js';
+import {BatteryRateRoutineResult, RoutineName, StandardRoutineResult, SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryRoutineResults, fakeCpuUsage, fakeMemoryUsage, fakeRoutineResults, fakeSystemInfo} from './fake_data.js';
 import {FakeSystemDataProvider} from './fake_system_data_provider.js';
 import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
 
@@ -60,6 +60,13 @@ function setupFakeSystemRoutineController_() {
     controller.setFakeStandardRoutineResult(
         /** @type{!RoutineName} */ (routine),
         /** @type{!StandardRoutineResult} */ (result));
+  }
+
+  // Add fake battery routine results.
+  for (const [routine, result] of fakeBatteryRoutineResults.entries()) {
+    controller.setFakeBatteryRateRoutineResult(
+        /** @type {!RoutineName} */ (routine),
+        /** @type {!BatteryRateRoutineResult} */ (result));
   }
 
   // Set the fake controller.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryInfo, BatteryHealth, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryRateRoutineResult, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -152,4 +152,24 @@ export const fakeRoutineResults = new Map([
   [RoutineName.kFloatingPoint, StandardRoutineResult.kTestFailed],
   [RoutineName.kPrimeSearch, StandardRoutineResult.kErrorExecuting],
   [RoutineName.kMemory, StandardRoutineResult.kTestPassed],
+]);
+
+/** @type {!Map<!RoutineName, !BatteryRateRoutineResult>} */
+export const fakeBatteryRoutineResults = new Map([
+  [
+    RoutineName.kCharge, {
+      result: StandardRoutineResult.kTestPassed,
+      is_charging: true,
+      percent_delta: 5,
+      time_delta_seconds: 10
+    }
+  ],
+  [
+    RoutineName.kDischarge, {
+      result: StandardRoutineResult.kUnableToRun,
+      is_charging: false,
+      percent_delta: 0,
+      time_delta_seconds: 0
+    }
+  ],
 ]);

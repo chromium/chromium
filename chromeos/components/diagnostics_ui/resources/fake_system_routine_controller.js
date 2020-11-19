@@ -4,18 +4,17 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {RoutineName, RoutineResult, RoutineResultInfo, RoutineRunner, StandardRoutineResult} from './diagnostics_types.js';
+
+import {BatteryRateRoutineResult, RoutineName, RoutineResult, RoutineResultInfo, RoutineRunner, StandardRoutineResult} from './diagnostics_types.js';
 
 /**
  * @fileoverview
  * Implements a fake version of the SystemRoutineController mojo interface.
- *
- * TODO(zentaro): Add support for complex routine results.
  */
 
 export class FakeSystemRoutineController {
   constructor() {
-    /** private !Map<!RoutineName, !StandardRoutineResult> */
+    /** private !Map<!RoutineName, !RoutineResult> */
     this.routineResults_ = new Map();
 
     /**
@@ -73,7 +72,16 @@ export class FakeSystemRoutineController {
    * @param {!StandardRoutineResult} routineResult
    */
   setFakeStandardRoutineResult(routineName, routineResult) {
-    this.routineResults_.set(routineName, routineResult);
+    this.routineResults_.set(routineName, {simpleResult: routineResult});
+  }
+
+  /**
+   *
+   * @param {!RoutineName} routineName
+   * @param {!BatteryRateRoutineResult} routineResult
+   */
+  setFakeBatteryRateRoutineResult(routineName, routineResult) {
+    this.routineResults_.set(routineName, {batteryRateResult: routineResult});
   }
 
   /**
@@ -125,18 +133,13 @@ export class FakeSystemRoutineController {
     assert(this.routineName_ != null);
     let result = this.routineResults_.get(this.routineName_);
     if (result == undefined) {
-      result = StandardRoutineResult.kErrorExecuting;
+      result = {simpleResult: StandardRoutineResult.kErrorExecuting};
     }
-
-    /** @type {!RoutineResult} */
-    const fullResult = {
-      simpleResult: result,
-    };
 
     /** @type {!RoutineResultInfo} */
     const resultInfo = {
       name: this.routineName_,
-      result: fullResult,
+      result: result,
     };
 
     return resultInfo;

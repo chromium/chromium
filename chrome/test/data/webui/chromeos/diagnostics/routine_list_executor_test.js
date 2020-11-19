@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RoutineName, RoutineResultInfo, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {BatteryRateRoutineResult, RoutineName, RoutineResultInfo, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor} from 'chrome://diagnostics/routine_list_executor.js';
 
@@ -38,9 +38,22 @@ export function fakeRoutineListExecutorTestSuite() {
       // Set the result into the fake.
       assertNotEquals(undefined, routine);
       assertNotEquals(undefined, routine.result);
-      assertNotEquals(undefined, routine.result.simpleResult);
-      controller.setFakeStandardRoutineResult(
-          routine.name, routine.result.simpleResult);
+
+      // simpleResult or batteryRateResult must exist.
+      assertTrue(
+          routine.result.hasOwnProperty('simpleResult') ||
+          routine.result.hasOwnProperty('batteryRateResult'));
+
+      if (routine.result.hasOwnProperty('simpleResult')) {
+        controller.setFakeStandardRoutineResult(
+            routine.name, /** @type {!StandardRoutineResult} */
+            (routine.result.simpleResult));
+      } else {
+        assertTrue(routine.result.batteryRateResult.hasOwnProperty('result'));
+        controller.setFakeBatteryRateRoutineResult(
+            routine.name, /** @type {!BatteryRateRoutineResult} */
+            (routine.result.batteryRateResult));
+      }
 
       // Build the list of routines to run.
       routineNames.push(routine.name);
@@ -109,7 +122,18 @@ export function fakeRoutineListExecutorTestSuite() {
       {
         name: RoutineName.kPrimeSearch,
         result: {simpleResult: StandardRoutineResult.kTestFailed}
-      }
+      },
+      {
+        name: RoutineName.kCharge,
+        result: {
+          batteryRateResult: {
+            result: StandardRoutineResult.kTestFailed,
+            isCharging: true,
+            percentDelta: 10,
+            timeDeltaSeconds: 10
+          }
+        }
+      },
     ];
 
     return runRoutinesAndAssertResults(routines);

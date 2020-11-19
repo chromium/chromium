@@ -140,8 +140,9 @@ export function routineResultEntryTestSuite() {
 
   test('PassedTest', () => {
     const item = createCompletedStatus(
-        RoutineName.kCpuStress,
-        {simpleResult: StandardRoutineResult.kTestPassed});
+        RoutineName.kCpuStress, /** @type {!RoutineResult} */ ({
+          simpleResult: StandardRoutineResult.kTestPassed
+        }));
     return initializeEntryWithItem(item).then(() => {
       // TODO(zentaro): Localize the test.
       assertEquals(getNameText(), 'kCpuStress');
@@ -154,8 +155,9 @@ export function routineResultEntryTestSuite() {
 
   test('FailedTest', () => {
     const item = createCompletedStatus(
-        RoutineName.kCpuStress,
-        {simpleResult: StandardRoutineResult.kTestFailed});
+        RoutineName.kCpuStress, /** @type {!RoutineResult} */ ({
+          simpleResult: StandardRoutineResult.kTestFailed
+        }));
     return initializeEntryWithItem(item).then(() => {
       // TODO(zentaro): Localize the test.
       assertEquals(getNameText(), 'kCpuStress');
@@ -163,6 +165,26 @@ export function routineResultEntryTestSuite() {
       // Status should show the passed result.
       assertEquals(getStatusBadge().value, 'FAILED');
       assertEquals(getStatusBadge().badgeType, BadgeType.ERROR);
+    });
+  });
+
+  test('BatteryTest', () => {
+    const item = createCompletedStatus(
+        RoutineName.kCharge, /** @type {!RoutineResult} */ ({
+          batteryRateResult: {
+            result: StandardRoutineResult.kTestPassed,
+            isCharging: true,
+            percentDelta: 10,
+            timeDeltaSeconds: 10
+          }
+        }));
+    return initializeEntryWithItem(item).then(() => {
+      // TODO(joonbug): Localize the test.
+      assertEquals(getNameText(), 'kCharge');
+
+      // Status should show the passed result.
+      assertEquals(getStatusBadge().value, 'SUCCESS');
+      assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
     });
   });
 }
