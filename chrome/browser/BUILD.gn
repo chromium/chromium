@@ -2813,6 +2813,8 @@ static_library("browser") {
       "android/rappor/rappor_service_bridge.cc",
       "android/reading_list/reading_list_manager_factory.cc",
       "android/reading_list/reading_list_manager_factory.h",
+      "android/reading_list/reading_list_notification_service_factory.cc",
+      "android/reading_list/reading_list_notification_service_factory.h",
       "android/recently_closed_tabs_bridge.cc",
       "android/recently_closed_tabs_bridge.h",
       "android/reparenting_task.cc",

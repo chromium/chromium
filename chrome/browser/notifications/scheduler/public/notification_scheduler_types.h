@@ -15,6 +15,8 @@ namespace notifications {
 // The type of a list of clients using the notification scheduler system. Used
 // in metrics, need to sync with histogram suffix
 // NotificationSchedulerClientType in histograms.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.notifications.scheduler)
 enum class SchedulerClientType {
@@ -31,7 +33,9 @@ enum class SchedulerClientType {
   kChromeUpdate = 2,
   // Offline prefetch notification.
   kPrefetch = 3,
-  kMaxValue = kPrefetch
+  // Reading list weekly notification.
+  kReadingList = 4,
+  kMaxValue = kReadingList
 };
 
 // The type of user feedback from a displayed notification.

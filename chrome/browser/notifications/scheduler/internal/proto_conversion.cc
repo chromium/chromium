@@ -57,6 +57,8 @@ proto::SchedulerClientType ToSchedulerClientType(SchedulerClientType type) {
       return proto::SchedulerClientType::CHROME_UPDATE;
     case SchedulerClientType::kPrefetch:
       return proto::SchedulerClientType::PREFETCH;
+    case SchedulerClientType::kReadingList:
+      return proto::SchedulerClientType::READING_LIST;
   }
   NOTREACHED();
 }
@@ -79,6 +81,8 @@ SchedulerClientType FromSchedulerClientType(
       return SchedulerClientType::kChromeUpdate;
     case proto::SchedulerClientType::PREFETCH:
       return SchedulerClientType::kPrefetch;
+    case proto::SchedulerClientType::READING_LIST:
+      return SchedulerClientType::kReadingList;
   }
   NOTREACHED();
 }
