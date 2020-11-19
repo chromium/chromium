@@ -499,7 +499,7 @@
   {
     "name": "chrome-share-screenshot",
     "owners": [ "jeffreycohen", "kristipark" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "chrome-sharing-hub",
