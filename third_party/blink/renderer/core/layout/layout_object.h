@@ -3139,6 +3139,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // descendant needing a paint property update too.
   void SetNeedsPaintPropertyUpdate();
   void SetNeedsPaintPropertyUpdatePreservingCachedRects();
+  void SetDescendantNeedsPaintPropertyUpdate();
   bool NeedsPaintPropertyUpdate() const {
     NOT_DESTROYED();
     return bitfields_.NeedsPaintPropertyUpdate();

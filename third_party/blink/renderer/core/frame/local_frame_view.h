@@ -618,6 +618,10 @@ class CORE_EXPORT LocalFrameView final
                                     bool subtree_throttled,
                                     bool recurse = false) override;
 
+  void SetPrePaintSkippedWhileThrottled() {
+    pre_paint_skipped_while_throttled_ = true;
+  }
+
   void BeginLifecycleUpdates();
 
   // Records a timestamp in PaintTiming when the frame is first not
@@ -907,8 +911,6 @@ class CORE_EXPORT LocalFrameView final
   DoublePoint ConvertFromContainingEmbeddedContentView(
       const DoublePoint&) const;
 
-  void InvalidateForThrottlingChange();
-
   void UpdateGeometriesIfNeeded();
   bool WasViewportResized();
   void SendResizeEventIfNeeded();
@@ -1137,6 +1139,8 @@ class CORE_EXPORT LocalFrameView final
   HeapHashSet<WeakMember<LifecycleNotificationObserver>> lifecycle_observers_;
 
   HeapHashSet<WeakMember<HTMLVideoElement>> fullscreen_video_elements_;
+
+  bool pre_paint_skipped_while_throttled_ = false;
 
   std::unique_ptr<OverlayInterstitialAdDetector>
       overlay_interstitial_ad_detector_;

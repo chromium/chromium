@@ -3615,7 +3615,13 @@ void LayoutObject::SetNeedsPaintPropertyUpdatePreservingCachedRects() {
   GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
 
   bitfields_.SetNeedsPaintPropertyUpdate(true);
-  for (auto* ancestor = ParentCrossingFrames();
+  if (auto* ancestor = ParentCrossingFrames())
+    ancestor->SetDescendantNeedsPaintPropertyUpdate();
+}
+
+void LayoutObject::SetDescendantNeedsPaintPropertyUpdate() {
+  NOT_DESTROYED();
+  for (auto* ancestor = this;
        ancestor && !ancestor->DescendantNeedsPaintPropertyUpdate();
        ancestor = ancestor->ParentCrossingFrames()) {
     ancestor->bitfields_.SetDescendantNeedsPaintPropertyUpdate(true);

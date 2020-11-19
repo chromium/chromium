@@ -43,8 +43,8 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   // See documents of methods with the same names in LocalFrameView class.
   void UpdateAllLifecyclePhases(LocalFrame& root_frame,
                                 DocumentUpdateReason reason);
-  void UpdateAllLifecyclePhasesExceptPaint(LocalFrame& root_frame,
-                                           DocumentUpdateReason reason);
+  void UpdateLifecycleToPrePaintClean(LocalFrame& root_frame,
+                                      DocumentUpdateReason reason);
   void UpdateLifecycleToLayoutClean(LocalFrame& root_frame,
                                     DocumentUpdateReason reason);
   AnimationClock& Clock() { return animation_clock_; }

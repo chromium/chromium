@@ -2742,17 +2742,26 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPrePaint);
-    if (frame_view.CanThrottleRendering()) {
-      // This frame can be throttled but not throttled, meaning we are not in an
-      // AllowThrottlingScope. Now this frame may contain dirty paint flags, and
-      // we need to propagate the flags into the ancestor chain so that
-      // PrePaintTreeWalk can reach this frame.
-      frame_view.SetNeedsPaintPropertyUpdate();
-      // We may record more pre-composited layers under the frame.
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-        frame_view.SetPaintArtifactCompositorNeedsUpdate();
-      if (auto* owner = frame_view.GetLayoutEmbeddedContent())
-        owner->SetShouldCheckForPaintInvalidation();
+    if (frame_view.pre_paint_skipped_while_throttled_ ||
+        frame_view.lifecycle_updates_throttled_) {
+      // We skipped pre-paint for this frame while it was throttled, or we
+      // have never run pre-paint for this frame. Either way, we're
+      // unthrottled now, so we must propagate our dirty bits into our
+      // parent frame so that pre-paint reaches into this frame.
+      if (LayoutView* layout_view = frame_view.GetLayoutView()) {
+        if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
+          if (layout_view->NeedsPaintPropertyUpdate() ||
+              layout_view->DescendantNeedsPaintPropertyUpdate()) {
+            owner->SetDescendantNeedsPaintPropertyUpdate();
+            // We may record more pre-composited layers under the frame.
+            if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+              frame_view.SetPaintArtifactCompositorNeedsUpdate();
+          }
+          if (layout_view->ShouldCheckForPaintInvalidation())
+            owner->SetShouldCheckForPaintInvalidation();
+        }
+      }
+      frame_view.pre_paint_skipped_while_throttled_ = false;
     }
   });
 
@@ -4313,10 +4322,6 @@ void LocalFrameView::CrossOriginToMainFrameChanged() {
     return;
   }
   RenderThrottlingStatusChanged();
-  // We need to invalidate unconditionally, so if it didn't happen during
-  // RenderThrottlingStatusChanged, do it now.
-  if (CanThrottleRendering())
-    InvalidateForThrottlingChange();
   // Immediately propagate changes to children.
   UpdateRenderThrottlingStatus(IsHiddenForThrottling(), IsSubtreeThrottled(),
                                true);
@@ -4355,7 +4360,12 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     SetPaintArtifactCompositorNeedsUpdate();
 
   if (!CanThrottleRendering()) {
-    InvalidateForThrottlingChange();
+    // Start ticking animation frames again if necessary.
+    if (GetPage())
+      GetPage()->Animator().ScheduleVisualUpdate(frame_.Get());
+    // Ensure we'll recompute viewport intersection for the frame subtree during
+    // the scheduled visual update.
+    SetIntersectionObservationState(kRequired);
   } else if (GetFrame().IsLocalRoot()) {
     // By this point, every frame in the local frame tree has become throttled,
     // so painting the tree should just clear the previous painted output.
@@ -4372,26 +4382,6 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     parent = parent->ParentFrameView();
   }
 #endif
-}
-
-void LocalFrameView::InvalidateForThrottlingChange() {
-  // Start ticking animation frames again if necessary.
-  if (GetPage())
-    GetPage()->Animator().ScheduleVisualUpdate(frame_.Get());
-  // Force a full repaint of this frame to ensure we are not left with a
-  // partially painted version of this frame's contents if we skipped
-  // painting them while the frame was throttled.
-  LayoutView* layout_view = GetLayoutView();
-  if (layout_view) {
-    layout_view->InvalidatePaintForViewAndDescendants();
-    // Also need to update all paint properties that might be skipped while
-    // the frame was throttled.
-    layout_view->AddSubtreePaintPropertyUpdateReason(
-        SubtreePaintPropertyUpdateReason::kPreviouslySkipped);
-  }
-  // Ensure we'll recompute viewport intersection for the frame subtree during
-  // the scheduled visual update.
-  SetIntersectionObservationState(kRequired);
 }
 
 void LocalFrameView::SetNeedsForcedCompositingUpdate() {

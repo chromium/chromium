@@ -401,62 +401,71 @@ TEST_P(PaintPropertyTreeUpdateTest, BuildingStopsAtThrottledFrames) {
   auto* iframe = To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
   iframe->setAttribute(html_names::kStyleAttr, "transform: translateY(5555px)");
   UpdateAllLifecyclePhasesForTest();
-  // Ensure intersection observer notifications get delivered.
-  test::RunPendingTasks();
   EXPECT_FALSE(GetDocument().View()->IsHiddenForThrottling());
+  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
   EXPECT_TRUE(ChildDocument().View()->IsHiddenForThrottling());
+  EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRenderingForTest());
 
   auto* transform = GetLayoutObjectByElementId("transform");
   auto* iframe_layout_view = ChildDocument().GetLayoutView();
   auto* iframe_transform =
       ChildDocument().getElementById("iframeTransform")->GetLayoutObject();
 
-  // Invalidate properties in the iframe and ensure ancestors are marked.
+  // Invalidate properties in the iframe; invalidations will be propagated from
+  // the throttled frame into the embedding document.
   iframe_transform->SetNeedsPaintPropertyUpdate();
+  iframe_transform->SetShouldCheckForPaintInvalidation();
   EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_TRUE(GetDocument().GetLayoutView()->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_FALSE(transform->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(iframe_layout_view->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(iframe_layout_view->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_TRUE(iframe_layout_view->ShouldCheckForPaintInvalidation());
   EXPECT_TRUE(iframe_transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(iframe_transform->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_TRUE(iframe_transform->ShouldCheckForPaintInvalidation());
 
+  // Invalidate properties in the top document.
   transform->SetNeedsPaintPropertyUpdate();
+  EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(
+      GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
   EXPECT_TRUE(transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->DescendantNeedsPaintPropertyUpdate());
 
-  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
-  EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRenderingForTest());
-
-  // A lifecycle update should update all properties except those with
-  // actively throttled descendants.
+  // A full lifecycle update with the iframe throttled will clear flags in the
+  // top document, but not in the throttled iframe. The iframe's LayoutView
+  // will be marked for paint property update because it was skipped while
+  // paint properties were updated in the embedding document.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->DescendantNeedsPaintPropertyUpdate());
-  EXPECT_FALSE(iframe_layout_view->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(iframe_layout_view->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(iframe_layout_view->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_TRUE(iframe_layout_view->ShouldCheckForPaintInvalidation());
   EXPECT_TRUE(iframe_transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(iframe_transform->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_TRUE(iframe_transform->ShouldCheckForPaintInvalidation());
 
-  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRendering());
-  EXPECT_FALSE(ChildDocument().View()->ShouldThrottleRendering());
-  // Once unthrottled, a lifecycel update should update all properties.
-  GetDocument().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+  // Run a force-unthrottled lifecycle update. All flags should be cleared.
+  GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
-  EXPECT_FALSE(transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(transform->DescendantNeedsPaintPropertyUpdate());
   EXPECT_FALSE(iframe_layout_view->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(iframe_layout_view->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_FALSE(iframe_layout_view->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(iframe_transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(iframe_transform->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_FALSE(iframe_transform->ShouldCheckForPaintInvalidation());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ClipChangesUpdateOverflowClip) {

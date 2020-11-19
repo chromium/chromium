@@ -233,11 +233,6 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
 }
 
 void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
-  if (frame_view.ShouldThrottleRendering()) {
-    // Skip the throttled frame. Will update it when it becomes unthrottled.
-    return;
-  }
-
   // We need to be careful not to have a reference to the parent context, since
   // this reference will be to the context_storage_ memory which may be
   // reallocated during this function call.
@@ -249,6 +244,25 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
 
   bool needs_tree_builder_context_update =
       NeedsTreeBuilderContextUpdate(frame_view, parent_context());
+
+  if (frame_view.ShouldThrottleRendering()) {
+    // Skip the throttled frame, and set dirty bits that will be applied when it
+    // becomes unthrottled.
+    frame_view.SetPrePaintSkippedWhileThrottled();
+    if (LayoutView* layout_view = frame_view.GetLayoutView()) {
+      if (needs_tree_builder_context_update) {
+        layout_view->AddSubtreePaintPropertyUpdateReason(
+            SubtreePaintPropertyUpdateReason::kPreviouslySkipped);
+      }
+      if (parent_context().paint_invalidator_context.NeedsSubtreeWalk())
+        layout_view->SetSubtreeShouldDoFullPaintInvalidation();
+      if (parent_context().effective_allowed_touch_action_changed)
+        layout_view->MarkEffectiveAllowedTouchActionChanged();
+      if (parent_context().blocking_wheel_event_handler_changed)
+        layout_view->MarkBlockingWheelEventHandlerChanged();
+    }
+    return;
+  }
 
   // Note that because we're emplacing an object constructed from
   // parent_context() (which is a reference to the vector itself), it's
