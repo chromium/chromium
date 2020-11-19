@@ -17,6 +17,10 @@ var PolymerSecurityTokenPinTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://oobe/login';
   }
+
+  get extraLibraries() {
+    return super.extraLibraries.concat(['components/oobe_types.js']);
+  }
 };
 
 TEST_F('PolymerSecurityTokenPinTest', 'All', function() {

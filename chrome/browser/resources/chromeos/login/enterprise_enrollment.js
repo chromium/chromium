@@ -14,7 +14,14 @@ var INJECTED_WEBVIEW_SCRIPT = String.raw`
                        keyboard.initializeKeyboardFlow(true);
                      })();`;
 
-/** @const */ var ENROLLMENT_STEP = {
+/**
+ * @const
+ * When making changes to any of these parameters, make sure that their use in
+ * chrome/browser/resources/chromeos/login/cr_ui.js is updated as well.
+ * TODO(crbug.com/1111387) - Remove this dependency when fully migrated
+ * to JS modules.
+ * */
+var ENROLLMENT_STEP = {
   SIGNIN: 'signin',
   AD_JOIN: 'ad-join',
   WORKING: 'working',

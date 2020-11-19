@@ -128,6 +128,7 @@ if (include_js_tests) {
 
     if (is_chromeos) {
       sources += [
+        "../../../browser/resources/chromeos/login/components/oobe_types.js",
         "../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
         "../../../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest.js",
         "../../../browser/ui/webui/chromeos/certificate_manager_dialog_browsertest.js",

@@ -312,15 +312,22 @@ cr.define('cr.ui', function() {
   /**
    * Returns true if enrollment was successful. Dismisses the enrollment
    * attribute screen if it's present.
+   *
+   *  TODO(crbug.com/1111387) - Remove inline values from
+   *  ENROLLMENT_STEP once fully migrated to JS modules.
    */
   Oobe.isEnrollmentSuccessfulForTest = function() {
     const step = $('enterprise-enrollment').uiStep;
-    if (step === ENROLLMENT_STEP.ATTRIBUTE_PROMPT) {
+    // See [ENROLLMENT_STEP.ATTRIBUTE_PROMPT]
+    // from c/b/r/chromeos/login/enterprise_enrollment.js
+    if (step === 'attribute-prompt') {
       chrome.send('oauthEnrollAttributes', ['', '']);
       return true;
     }
 
-    return step === ENROLLMENT_STEP.SUCCESS;
+    // See [ENROLLMENT_STEP.SUCCESS]
+    // from c/b/r/chromeos/login/enterprise_enrollment.js
+    return step === 'success';
   };
 
   /**
