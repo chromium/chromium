@@ -24,7 +24,7 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
   static void SetToNull(SkBitmap* b) { b->reset(); }
 
   static const SkImageInfo& image_info(const SkBitmap& b) { return b.info(); }
-  static uint64_t row_bytes(const SkBitmap& b) { return b.rowBytes(); }
+  static uint64_t UNUSED_row_bytes(const SkBitmap& b) { return 0; }
   static mojo_base::BigBufferView pixel_data(const SkBitmap& b);
 
   static bool Read(skia::mojom::BitmapDataView data, SkBitmap* b);
@@ -38,7 +38,7 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
   static void SetToNull(SkBitmap* b) { b->reset(); }
 
   static const SkImageInfo& image_info(const SkBitmap& b) { return b.info(); }
-  static uint64_t row_bytes(const SkBitmap& b) { return b.rowBytes(); }
+  static uint64_t UNUSED_row_bytes(const SkBitmap& b) { return 0; }
   static mojo_base::BigBufferView pixel_data(const SkBitmap& b);
 
   static bool Read(skia::mojom::BitmapMappedFromTrustedProcessDataView data,

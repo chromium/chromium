@@ -32,18 +32,16 @@ class BigBufferPixelRef final : public SkPixelRef {
 };
 
 bool CreateSkBitmapForPixelData(SkBitmap* b,
-                                int row_bytes,
                                 const SkImageInfo& image_info,
                                 base::span<const uint8_t> pixel_data) {
   // Ensure width and height are reasonable.
   if (image_info.width() > kMaxWidth || image_info.height() > kMaxHeight)
     return false;
 
-  // TODO(danakj): We should always use minRowBytes for all IPC messages.
-  if (!row_bytes)
-    row_bytes = image_info.minRowBytes();
-
-  if (!b->tryAllocPixels(image_info, row_bytes))
+  // We require incoming bitmaps to be tightly packed by specifying the
+  // rowBytes() as minRowBytes(). Then we compare the number of bytes against
+  // `pixel_data.size()` later to verify the actual data is tightly packed.
+  if (!b->tryAllocPixels(image_info, image_info.minRowBytes()))
     return false;
 
   // If the image is empty, return success after setting the image info.
@@ -70,6 +68,7 @@ bool CreateSkBitmapForPixelData(SkBitmap* b,
 // static
 mojo_base::BigBufferView StructTraits<skia::mojom::BitmapDataView,
                                       SkBitmap>::pixel_data(const SkBitmap& b) {
+  CHECK_EQ(b.rowBytes(), b.info().minRowBytes());
   return mojo_base::BigBufferView(base::make_span(
       static_cast<uint8_t*>(b.getPixels()), b.computeByteSize()));
 }
@@ -86,7 +85,7 @@ bool StructTraits<skia::mojom::BitmapDataView, SkBitmap>::Read(
   if (!data.ReadPixelData(&pixel_data_view))
     return false;
 
-  return CreateSkBitmapForPixelData(b, data.row_bytes(), std::move(image_info),
+  return CreateSkBitmapForPixelData(b, std::move(image_info),
                                     pixel_data_view.data());
 }
 
@@ -94,6 +93,7 @@ bool StructTraits<skia::mojom::BitmapDataView, SkBitmap>::Read(
 mojo_base::BigBufferView
 StructTraits<skia::mojom::BitmapMappedFromTrustedProcessDataView,
              SkBitmap>::pixel_data(const SkBitmap& b) {
+  CHECK_EQ(b.rowBytes(), b.info().minRowBytes());
   return mojo_base::BigBufferView(base::make_span(
       static_cast<uint8_t*>(b.getPixels()), b.computeByteSize()));
 }
@@ -113,7 +113,7 @@ bool StructTraits<
 
   // If the image is empty, return success after setting the image info.
   if (image_info.width() == 0 || image_info.height() == 0)
-    return b->tryAllocPixels(image_info, data.row_bytes());
+    return b->tryAllocPixels(image_info);
 
   // Otherwise, set a custom PixelRef to retain the BigBuffer. This avoids
   // making another copy of the pixel data.
@@ -122,7 +122,11 @@ bool StructTraits<
   if (!data.ReadPixelData(&pixel_data_view))
     return false;
 
-  if (!b->setInfo(image_info, data.row_bytes()))
+  // We require incoming bitmaps to be tightly packed by specifying the
+  // rowBytes() as minRowBytes(). Then we compare the number of bytes against
+  // `pixel_data_view.data().size()` later to verify the actual data is tightly
+  // packed.
+  if (!b->setInfo(image_info, image_info.minRowBytes()))
     return false;
 
   // If these don't match then the number of bytes sent does not match what the
@@ -136,7 +140,7 @@ bool StructTraits<
   b->setPixelRef(
       sk_make_sp<BigBufferPixelRef>(
           mojo_base::BigBufferView::ToBigBuffer(std::move(pixel_data_view)),
-          image_info.width(), image_info.height(), data.row_bytes()),
+          image_info.width(), image_info.height(), image_info.minRowBytes()),
       0, 0);
   return true;
 }
@@ -164,7 +168,7 @@ bool StructTraits<skia::mojom::InlineBitmapDataView, SkBitmap>::Read(
   base::span<const uint8_t> pixel_data_bytes(pixel_data_view.data(),
                                              pixel_data_view.size());
 
-  return CreateSkBitmapForPixelData(b, /*row_bytes=*/0, std::move(image_info),
+  return CreateSkBitmapForPixelData(b, std::move(image_info),
                                     std::move(pixel_data_bytes));
 }
 

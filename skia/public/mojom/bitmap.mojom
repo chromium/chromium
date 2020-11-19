@@ -11,7 +11,7 @@ import "skia/public/mojom/image_info.mojom";
 [Stable]
 struct Bitmap {
   ImageInfo image_info;
-  uint64 row_bytes;
+  uint64 UNUSED_row_bytes;
   mojo_base.mojom.BigBuffer pixel_data;
 };
 
@@ -29,7 +29,7 @@ struct Bitmap {
 [Stable, RenamedFrom="skia.mojom.UnsafeBitmap"]
 struct BitmapMappedFromTrustedProcess {
   ImageInfo image_info;
-  uint64 row_bytes;
+  uint64 UNUSED_row_bytes;
   mojo_base.mojom.BigBuffer pixel_data;
 };
 

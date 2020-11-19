@@ -99,6 +99,10 @@ mojom("mojom") {
           mojom = "skia.mojom.ImageInfo"
           cpp = "::SkImageInfo"
         },
+        {
+          mojom = "skia.mojom.BitmapN32ImageInfo"
+          cpp = "::SkImageInfo"
+        },
       ]
       traits_headers = [ "image_info_mojom_traits.h" ]
       traits_public_deps = [

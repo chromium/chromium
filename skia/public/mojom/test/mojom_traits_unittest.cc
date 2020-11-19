@@ -22,6 +22,31 @@
 namespace skia {
 namespace {
 
+// A helper to construct a skia.mojom.Bitmap without using StructTraits
+// to bypass checks on the sending/serialization side.
+mojo::StructPtr<skia::mojom::Bitmap> ConstructBitmap(
+    SkImageInfo info,
+    int row_bytes,
+    std::vector<unsigned char> pixels) {
+  auto mojom_bitmap = skia::mojom::Bitmap::New();
+  mojom_bitmap->image_info = std::move(info);
+  mojom_bitmap->UNUSED_row_bytes = row_bytes;
+  mojom_bitmap->pixel_data = std::move(pixels);
+  return mojom_bitmap;
+}
+
+// A helper to construct a skia.mojom.InlineBitmap without using StructTraits
+// to bypass checks on the sending/serialization side.
+mojo::StructPtr<skia::mojom::InlineBitmap> ConstructInlineBitmap(
+    SkImageInfo info,
+    std::vector<unsigned char> pixels) {
+  DCHECK_EQ(info.colorType(), kN32_SkColorType);
+  auto mojom_bitmap = skia::mojom::InlineBitmap::New();
+  mojom_bitmap->image_info = std::move(info);
+  mojom_bitmap->pixel_data = std::move(pixels);
+  return mojom_bitmap;
+}
+
 // mojo::test::SerializeAndDeserialize() doesn't work for a raw enum, so roll
 // our own.
 bool SerializeAndDeserialize(SkBlurImageFilter::TileMode* input,
@@ -138,23 +163,69 @@ TEST(StructTraitsTest, BitmapTooTallToSerialize) {
       &input, &output));
 }
 
-TEST(StructTraitsTest, BitmapWithExtraRowBytes) {
+TEST(StructTraitsTest, BitmapSerializeInvalidRowBytes) {
   SkBitmap input;
-  // Ensure traits work with bitmaps containing additional bytes between rows.
   SkImageInfo info =
       SkImageInfo::MakeN32(8, 5, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
-  // Any extra bytes on each row must be a multiple of the row's pixel size to
-  // keep every row's pixels aligned.
-  size_t extra = info.bytesPerPixel();
-  input.allocPixels(info, info.minRowBytes() + extra);
-  input.eraseColor(SK_ColorRED);
-  input.erase(SK_ColorTRANSPARENT, SkIRect::MakeXYWH(0, 1, 2, 3));
+  EXPECT_TRUE(
+      input.tryAllocPixels(info, info.minRowBytes() + info.bytesPerPixel()));
+
+  // We do not allow sending rowBytes() other than the minRowBytes().
+  EXPECT_DEATH(skia::mojom::Bitmap::SerializeAsMessage(&input), "");
+}
+
+TEST(StructTraitsTest, VerifyBitmapConstruction) {
+  // Verify that we can manually construct a valid skia.mojom.Bitmap and
+  // deserialize it successfully.
+  mojo::StructPtr<skia::mojom::Bitmap> input =
+      ConstructBitmap(SkImageInfo::MakeN32Premul(1, 1), 0, {1, 2, 3, 4});
+
   SkBitmap output;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
-      &input, &output));
-  EXPECT_EQ(input.info(), output.info());
-  EXPECT_EQ(input.rowBytes(), output.rowBytes());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(input, output));
+  bool ok =
+      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+  EXPECT_TRUE(ok);
+}
+
+TEST(StructTraitsTest, BitmapDeserializeIgnoresRowBytes) {
+  mojo::StructPtr<skia::mojom::Bitmap> input =
+      ConstructBitmap(SkImageInfo::MakeN32Premul(1, 1), 8, {1, 2, 3, 4});
+
+  SkBitmap output;
+  bool ok =
+      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+  EXPECT_TRUE(ok);
+  // The row_bytes field is ignored, and the minRowBytes() is always used.
+  EXPECT_EQ(4u, output.rowBytes());
+}
+
+TEST(StructTraitsTest, BitmapDeserializeMismatchFormatAndPixels) {
+  mojo::StructPtr<skia::mojom::Bitmap> input =
+      ConstructBitmap(SkImageInfo::MakeA8(1, 1), 0, {1, 2, 3, 4});
+
+  SkBitmap output;
+  bool ok =
+      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+  EXPECT_FALSE(ok);
+}
+
+TEST(StructTraitsTest, BitmapDeserializeTooFewPixels) {
+  mojo::StructPtr<skia::mojom::Bitmap> input =
+      ConstructBitmap(SkImageInfo::MakeN32Premul(2, 1), 0, {1, 2, 3, 4});
+
+  SkBitmap output;
+  bool ok =
+      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+  EXPECT_FALSE(ok);
+}
+
+TEST(StructTraitsTest, BitmapDeserializeTooManyPixels) {
+  mojo::StructPtr<skia::mojom::Bitmap> input = ConstructBitmap(
+      SkImageInfo::MakeN32Premul(1, 1), 0, {1, 2, 3, 4, 5, 6, 7, 8});
+
+  SkBitmap output;
+  bool ok =
+      SerializeAndDeserializeFromMojom<skia::mojom::Bitmap>(&input, &output);
+  EXPECT_FALSE(ok);
 }
 
 TEST(StructTraitsTest, BlurImageFilterTileMode) {
@@ -235,35 +306,9 @@ TEST(StructTraitsTest, InlineBitmapSerializeInvalidColorType) {
   EXPECT_DEATH(skia::mojom::InlineBitmap::SerializeAsMessage(&input), "");
 }
 
-// A helper to construct a skia.mojom.InlineBitmap without using StructTraits
-// to bypass checks on the sending side.
-static mojo::StructPtr<skia::mojom::InlineBitmap> ConstructInlineBitmap(
-    SkImageInfo info,
-    std::vector<unsigned char> pixels,
-    std::vector<float> color_transfer_function = {},
-    std::vector<float> color_to_xyz_matrix = {}) {
-  DCHECK_EQ(info.colorType(), kN32_SkColorType);
-  auto mojom_info = skia::mojom::BitmapN32ImageInfo::New();
-  mojom_info->alpha_type = info.alphaType();
-  mojom_info->width = info.width();
-  mojom_info->height = info.height();
-  if (!color_transfer_function.empty()) {
-    DCHECK_EQ(7u, color_transfer_function.size());
-    mojom_info->color_transfer_function = std::move(color_transfer_function);
-  }
-  if (!color_to_xyz_matrix.empty()) {
-    DCHECK_EQ(9u, color_to_xyz_matrix.size());
-    mojom_info->color_to_xyz_matrix = std::move(color_to_xyz_matrix);
-  }
-  auto inline_bitmap = skia::mojom::InlineBitmap::New();
-  inline_bitmap->image_info = std::move(mojom_info);
-  inline_bitmap->pixel_data = std::move(pixels);
-  return inline_bitmap;
-}
-
 TEST(StructTraitsTest, VerifyInlineBitmapConstruction) {
-  // Verify that we can manually construct a valid InlineBitmap and deserialize
-  // it successfully.
+  // Verify that we can manually construct a valid skia.mojom.InlineBitmap and
+  // deserialize it successfully.
   mojo::StructPtr<skia::mojom::InlineBitmap> input =
       ConstructInlineBitmap(SkImageInfo::MakeN32Premul(1, 1), {1, 2, 3, 4});
 
