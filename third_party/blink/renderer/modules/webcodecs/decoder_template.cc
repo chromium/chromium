@@ -82,7 +82,7 @@ DecoderTemplate<Traits>::~DecoderTemplate() {
 
 template <typename Traits>
 int32_t DecoderTemplate<Traits>::decodeQueueSize() {
-  return requested_decodes_;
+  return num_pending_decodes_;
 }
 
 template <typename Traits>
@@ -120,6 +120,7 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kConfigure;
   request->media_config = std::move(media_config);
+  request->reset_generation = reset_generation_;
   requests_.push_back(request);
   ProcessRequests();
 }
@@ -136,6 +137,7 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kDecode;
+  request->reset_generation = reset_generation_;
   auto status_or_buffer = MakeDecoderBuffer(*chunk);
 
   if (status_or_buffer.has_value()) {
@@ -145,7 +147,7 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
   }
 
   requests_.push_back(request);
-  ++requested_decodes_;
+  ++num_pending_decodes_;
   ProcessRequests();
 }
 
@@ -163,6 +165,7 @@ ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   request->resolver = resolver;
+  request->reset_generation = reset_generation_;
   requests_.push_back(request);
   ProcessRequests();
   return resolver->Promise();
@@ -174,16 +177,7 @@ void DecoderTemplate<Traits>::reset(ExceptionState& exception_state) {
   if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
 
-  if (state_ == V8CodecState::Enum::kUnconfigured)
-    return;
-
-  state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
-
-  Request* request = MakeGarbageCollected<Request>();
-  request->type = Request::Type::kReset;
-  requests_.push_back(request);
-  ++requested_resets_;
-  ProcessRequests();
+  ResetAlgorithm();
 }
 
 template <typename Traits>
@@ -201,6 +195,17 @@ void DecoderTemplate<Traits>::ProcessRequests() {
   DCHECK(!IsClosed());
   while (!pending_request_ && !requests_.IsEmpty()) {
     Request* request = requests_.front();
+
+    // Skip processing for requests that are canceled by a recent reset().
+    if (request->reset_generation != reset_generation_) {
+      if (request->resolver) {
+        request->resolver.Release()->Reject();
+      }
+      requests_.pop_front();
+      continue;
+    }
+
+    DCHECK_EQ(request->reset_generation, reset_generation_);
     switch (request->type) {
       case Request::Type::kConfigure:
         if (!ProcessConfigureRequest(request))
@@ -258,10 +263,6 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     return true;
   }
 
-  // Note: This flush must not be elided when there is a pending reset. An
-  // alternative would be to process Reset() requests immediately, then process
-  // already queued requests in a special mode. It seems easier to drop all of
-  // this and require configure() after reset() instead.
   if (pending_decodes_.size() + 1 >
       size_t{Traits::GetMaxDecodeRequests(*decoder_)}) {
     // Try again after OnDecodeDone().
@@ -282,9 +283,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kDecode);
-  DCHECK_GT(requested_decodes_, 0);
-
-  // TODO(sandersd): If a reset has been requested, complete immediately.
+  DCHECK_GT(num_pending_decodes_, 0);
 
   if (!decoder_) {
     HandleError(
@@ -321,7 +320,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
          pending_decodes_.Contains(pending_decode_id_))
     ;
   pending_decodes_.Set(pending_decode_id_, request);
-  --requested_decodes_;
+  --num_pending_decodes_;
   decoder_->Decode(std::move(request->decoder_buffer),
                    WTF::Bind(&DecoderTemplate::OnDecodeDone,
                              WrapWeakPersistent(this), pending_decode_id_));
@@ -335,14 +334,9 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kFlush);
 
-  // TODO(sandersd): If a reset has been requested, resolve immediately.
-
-  if (!decoder_) {
-    // TODO(sandersd): Maybe it is valid to flush no decoder? If not, it may be
-    // necessary to enter a full error state here.
-    request->resolver.Release()->Reject();
-    return true;
-  }
+  // flush() can only be called when state = "configured", in which case we
+  // should always have a decoder.
+  DCHECK(decoder_);
 
   if (pending_decodes_.size() + 1 >
       size_t{Traits::GetMaxDecodeRequests(*decoder_)}) {
@@ -364,11 +358,13 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
   DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kReset);
-  DCHECK_GT(requested_resets_, 0);
+  DCHECK_GT(reset_generation_, 0u);
 
   // Processing continues in OnResetDone().
   pending_request_ = request;
-  --requested_resets_;
+
+  // Signal [[codec implementation]] to cease producing output for the previous
+  // configuration.
   decoder_->Reset(
       WTF::Bind(&DecoderTemplate::OnResetDone, WrapWeakPersistent(this)));
   return true;
@@ -398,6 +394,17 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   DVLOG(3) << __func__;
   DCHECK(!IsClosed());
 
+  // Abort pending work (otherwise it will never complete)
+  if (pending_request_) {
+    if (pending_request_->resolver)
+      pending_request_->resolver.Release()->Reject();
+
+    pending_request_.Release();
+  }
+
+  // Abort all upcoming work.
+  ResetAlgorithm();
+
   // Store the error callback so that we can use it after clearing state.
   V8WebCodecsErrorCallback* error_cb = error_cb_.Get();
 
@@ -412,27 +419,33 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   // Clear decoding and JS-visible queue state.
   decoder_.reset();
   pending_decodes_.clear();
-  requested_decodes_ = 0;
-  requested_resets_ = 0;
+  num_pending_decodes_ = 0;
 
   // Fire the error callback if necessary.
   if (exception)
     error_cb->InvokeAndReportException(nullptr, exception);
+}
 
-  // TODO(http://crbug.com/1139089): Should |exception| be given to the promise
-  // resolvers? VideoEncoder resolves promises with exceptions, so these should
-  // at least be unified.
+template <typename Traits>
+void DecoderTemplate<Traits>::ResetAlgorithm() {
+  if (state_ == V8CodecState::Enum::kUnconfigured)
+    return;
 
-  // Clear any pending requests, rejecting all promises.
-  if (pending_request_ && pending_request_->resolver)
-    pending_request_.Release()->resolver.Release()->Reject();
+  state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
 
-  while (!requests_.IsEmpty()) {
-    Request* request = requests_.front();
-    if (request->resolver)
-      request->resolver.Release()->Reject();
-    requests_.pop_front();
-  }
+  // Increment reset counter to cause older pending requests to be rejected. See
+  // ProcessRequests().
+  reset_generation_++;
+
+  // Any previous pending decode will be filtered by ProcessRequests(). Reset
+  // the count immediately to report the correct value in decodeQueueSize().
+  num_pending_decodes_ = 0;
+
+  Request* request = MakeGarbageCollected<Request>();
+  request->type = Request::Type::kReset;
+  request->reset_generation = reset_generation_;
+  requests_.push_back(request);
+  ProcessRequests();
 }
 
 template <typename Traits>
