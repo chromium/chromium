@@ -34,6 +34,11 @@ class CORE_EXPORT PointerEvent final : public MouseEvent {
     return PointerEvent::Create(type, initializer, base::TimeTicks::Now());
   }
 
+  static PointerEvent* Create(const AtomicString& event_type,
+                              AbstractView*,
+                              const Event* underlying_event,
+                              SimulatedClickCreationScope);
+
   PointerEvent(const AtomicString&,
                const PointerEventInit*,
                base::TimeTicks platform_time_stamp,

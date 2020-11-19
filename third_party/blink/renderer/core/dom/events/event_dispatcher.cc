@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -52,6 +53,30 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
+namespace {
+Event* CreateEvent(const AtomicString& event_type,
+                   Node& node,
+                   const Event* underlying_event,
+                   SimulatedClickCreationScope creation_scope) {
+  DCHECK(event_type == event_type_names::kClick ||
+         event_type == event_type_names::kMousedown ||
+         event_type == event_type_names::kMouseup ||
+         event_type == event_type_names::kMouseover);
+  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
+      event_type == event_type_names::kClick) {
+    // TODO (crbug.com/1150979) Figure out if we can fire pointer events
+    // instead of mousedown/mouseup/mouseover or if we need to fire both pointer
+    // events and mouse events at the same time. The mouse events are used for
+    // accessibility.
+    return PointerEvent::Create(event_type_names::kClick,
+                                node.GetDocument().domWindow(),
+                                underlying_event, creation_scope);
+  } else {
+    return MouseEvent::Create(event_type, node.GetDocument().domWindow(),
+                              underlying_event, creation_scope);
+  }
+}
+}  // namespace
 
 DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
@@ -97,23 +122,21 @@ void EventDispatcher::DispatchSimulatedClick(
 
   nodes_dispatching_simulated_clicks->insert(&node);
 
-  if (mouse_event_options == kSendMouseOverUpDownEvents)
-    EventDispatcher(node, *MouseEvent::Create(event_type_names::kMouseover,
-                                              node.GetDocument().domWindow(),
-                                              underlying_event, creation_scope))
+  if (mouse_event_options == kSendMouseOverUpDownEvents) {
+    EventDispatcher(node, *CreateEvent(event_type_names::kMouseover, node,
+                                       underlying_event, creation_scope))
         .Dispatch();
+  }
 
   Element* element = DynamicTo<Element>(node);
   if (mouse_event_options != kSendNoEvents) {
-    EventDispatcher(node, *MouseEvent::Create(event_type_names::kMousedown,
-                                              node.GetDocument().domWindow(),
-                                              underlying_event, creation_scope))
+    EventDispatcher(node, *CreateEvent(event_type_names::kMousedown, node,
+                                       underlying_event, creation_scope))
         .Dispatch();
     if (element)
       element->SetActive(true);
-    EventDispatcher(node, *MouseEvent::Create(event_type_names::kMouseup,
-                                              node.GetDocument().domWindow(),
-                                              underlying_event, creation_scope))
+    EventDispatcher(node, *CreateEvent(event_type_names::kMouseup, node,
+                                       underlying_event, creation_scope))
         .Dispatch();
   }
   // Some elements (e.g. the color picker) may set active state to true before
@@ -122,9 +145,8 @@ void EventDispatcher::DispatchSimulatedClick(
     element->SetActive(false);
 
   // always send click
-  EventDispatcher(node, *MouseEvent::Create(event_type_names::kClick,
-                                            node.GetDocument().domWindow(),
-                                            underlying_event, creation_scope))
+  EventDispatcher(node, *CreateEvent(event_type_names::kClick, node,
+                                     underlying_event, creation_scope))
       .Dispatch();
 
   nodes_dispatching_simulated_clicks->erase(&node);

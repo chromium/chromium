@@ -56,6 +56,7 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   static MouseEvent* Create() { return MakeGarbageCollected<MouseEvent>(); }
 
+  // TODO(mustaq): looks like we don't need so many variations of Create() here
   static MouseEvent* Create(const AtomicString& event_type,
                             const MouseEventInit*,
                             base::TimeTicks platform_time_stamp,
@@ -70,6 +71,12 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
                             AbstractView*,
                             const Event* underlying_event,
                             SimulatedClickCreationScope);
+
+  static void PopulateMouseEventInit(const AtomicString& event_type,
+                                     AbstractView* view,
+                                     const Event* underlying_event,
+                                     SimulatedClickCreationScope creation_scope,
+                                     MouseEventInit* initializer);
 
   MouseEvent(const AtomicString& type,
              const MouseEventInit*,
@@ -200,6 +207,8 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   void ComputeRelativePosition();
 
+  void InitCoordinates(const double client_x, const double client_y);
+
   bool has_cached_relative_position_ = false;
 
  private:
@@ -217,8 +226,6 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
                               EventTarget* related_target,
                               InputDeviceCapabilities* source_capabilities,
                               uint16_t buttons = 0);
-
-  void InitCoordinates(const double client_x, const double client_y);
 
   void ComputePageLocation();
 

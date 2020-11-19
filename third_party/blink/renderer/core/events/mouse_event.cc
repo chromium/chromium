@@ -128,22 +128,21 @@ MouseEvent* MouseEvent::Create(const AtomicString& event_type,
       menu_source_type);
 }
 
-MouseEvent* MouseEvent::Create(const AtomicString& event_type,
-                               AbstractView* view,
-                               const Event* underlying_event,
-                               SimulatedClickCreationScope creation_scope) {
+void MouseEvent::PopulateMouseEventInit(
+    const AtomicString& event_type,
+    AbstractView* view,
+    const Event* underlying_event,
+    SimulatedClickCreationScope creation_scope,
+    MouseEventInit* initializer) {
   WebInputEvent::Modifiers modifiers = WebInputEvent::kNoModifiers;
   if (const UIEventWithKeyState* key_state_event =
           FindEventWithKeyState(underlying_event)) {
     modifiers = key_state_event->GetModifiers();
   }
 
-  SyntheticEventType synthetic_type = kPositionless;
-  MouseEventInit* initializer = MouseEventInit::Create();
   if (const auto* mouse_event = DynamicTo<MouseEvent>(underlying_event)) {
-    synthetic_type = kRealOrIndistinguishable;
-    initializer->setScreenX(mouse_event->screenX());
-    initializer->setScreenY(mouse_event->screenY());
+    initializer->setScreenX(mouse_event->screen_location_.X());
+    initializer->setScreenY(mouse_event->screen_location_.Y());
     initializer->setSourceCapabilities(
         view ? view->GetInputDeviceCapabilities()->FiresTouchEvents(false)
              : nullptr);
@@ -156,7 +155,19 @@ MouseEvent* MouseEvent::Create(const AtomicString& event_type,
   UIEventWithKeyState::SetFromWebInputEventModifiers(initializer, modifiers);
   initializer->setButtons(
       MouseEvent::WebInputEventModifiersToButtons(modifiers));
+}
 
+MouseEvent* MouseEvent::Create(const AtomicString& event_type,
+                               AbstractView* view,
+                               const Event* underlying_event,
+                               SimulatedClickCreationScope creation_scope) {
+  MouseEventInit* initializer = MouseEventInit::Create();
+  MouseEvent::PopulateMouseEventInit(event_type, view, underlying_event,
+                                     creation_scope, initializer);
+  SyntheticEventType synthetic_type = kPositionless;
+  if (const auto* mouse_event = DynamicTo<MouseEvent>(underlying_event)) {
+    synthetic_type = kRealOrIndistinguishable;
+  }
   base::TimeTicks timestamp = underlying_event
                                   ? underlying_event->PlatformTimeStamp()
                                   : base::TimeTicks::Now();
@@ -168,8 +179,8 @@ MouseEvent* MouseEvent::Create(const AtomicString& event_type,
   created_event->SetUnderlyingEvent(underlying_event);
   if (synthetic_type == kRealOrIndistinguishable) {
     auto* mouse_event = To<MouseEvent>(created_event->UnderlyingEvent());
-    created_event->InitCoordinates(mouse_event->clientX(),
-                                   mouse_event->clientY());
+    created_event->InitCoordinates(mouse_event->client_location_.X(),
+                                   mouse_event->client_location_.Y());
   }
 
   return created_event;
