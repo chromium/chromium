@@ -4,6 +4,8 @@
 
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mojo.h"
 
+#include <utility>
+
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 
 namespace viz {
@@ -31,7 +33,12 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
   DCHECK(!pending_frame_callback_) << "Got overlapping IssueExternalBeginFrame";
   original_source_id_ = args.frame_id.source_id;
 
-  OnBeginFrame(args);
+  BeginFrameArgs args_copy(args);
+  // Force full frame till we have first real draw.
+  if (!last_frame_acknowledged_)
+    args_copy.animate_only = false;
+  last_frame_acknowledged_ = false;
+  OnBeginFrame(args_copy);
 
   pending_frame_callback_ = std::move(callback);
 
@@ -89,11 +96,16 @@ void ExternalBeginFrameSourceMojo::MaybeProduceFrameCallback() {
   BeginFrameAck nak(last_begin_frame_args_.frame_id.source_id,
                     last_begin_frame_args_.frame_id.sequence_number,
                     /*has_damage=*/false);
+  // Prevent missing begin frames from being sent to sinks that came late,
+  // as this may result in two overlapping frames being sent, which is not
+  // supported with full pipeline mode.
+  last_begin_frame_args_ = BeginFrameArgs();
   std::move(pending_frame_callback_).Run(nak);
 }
 
 void ExternalBeginFrameSourceMojo::OnDisplayDidFinishFrame(
     const BeginFrameAck& ack) {
+  last_frame_acknowledged_ = true;
   if (!pending_frame_callback_)
     return;
   std::move(pending_frame_callback_).Run(ack);
