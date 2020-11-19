@@ -119,6 +119,10 @@ void NearbyShareAction::OnClose() {
   // The nearby WebUI requested to close through user action
   if (controller_) {
     controller_->CloseSharesheet();
+
+    // We need to clear out the controller here to protect against calling
+    // CloseShareSheet() more than once, which will cause a crash.
+    controller_ = nullptr;
   }
 }
 
