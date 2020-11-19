@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "ui/views/layout/box_layout.h"
 
-PageActionIconController::PageActionIconController() : zoom_observer_(this) {}
+PageActionIconController::PageActionIconController() = default;
 PageActionIconController::~PageActionIconController() = default;
 
 void PageActionIconController::Init(const PageActionIconParams& params,
@@ -173,7 +173,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
   }
 
   if (params.browser) {
-    zoom_observer_.Add(zoom::ZoomEventManager::GetForBrowserContext(
+    zoom_observation_.Observe(zoom::ZoomEventManager::GetForBrowserContext(
         params.browser->profile()));
   }
 }

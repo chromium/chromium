@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/zoom/zoom_event_manager.h"
@@ -100,8 +100,9 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
 
   std::vector<PageActionIconView*> page_action_icons_;
 
-  ScopedObserver<zoom::ZoomEventManager, zoom::ZoomEventManagerObserver>
-      zoom_observer_;
+  base::ScopedObservation<zoom::ZoomEventManager,
+                          zoom::ZoomEventManagerObserver>
+      zoom_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PageActionIconController);
 };

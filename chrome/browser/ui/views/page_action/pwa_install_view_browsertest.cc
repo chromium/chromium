@@ -54,19 +54,19 @@ class PwaInstallIconChangeWaiter : public views::ViewObserver {
 
  private:
   explicit PwaInstallIconChangeWaiter(views::View* view) {
-    observed_.Add(view);
+    observation_.Observe(view);
   }
   ~PwaInstallIconChangeWaiter() override = default;
 
   // ViewObserver
-  void OnViewVisibilityChanged(views::View* observed_view,
+  void OnViewVisibilityChanged(views::View* observation_view,
                                views::View* starting_view) override {
     run_loop_.Quit();
   }
 
   base::RunLoop run_loop_;
 
-  ScopedObserver<views::View, views::ViewObserver> observed_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PwaInstallIconChangeWaiter);
 };
