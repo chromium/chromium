@@ -22,6 +22,7 @@ extern const base::Feature kAndroidNightModeTabReparenting;
 extern const base::Feature kAndroidPartnerCustomizationPhenotype;
 extern const base::Feature kAndroidPayIntegrationV2;
 extern const base::Feature kAndroidSearchEngineChoiceNotification;
+extern const base::Feature kAssistantIntentPageUrl;
 extern const base::Feature kBackgroundTaskComponentUpdate;
 extern const base::Feature kBentoOffline;
 extern const base::Feature kCloseTabSuggestions;

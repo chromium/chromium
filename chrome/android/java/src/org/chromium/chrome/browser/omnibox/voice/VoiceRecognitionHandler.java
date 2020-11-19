@@ -17,11 +17,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -54,6 +57,14 @@ public class VoiceRecognitionHandler {
     // This language is only returned for queries handled by Assistant.
     @VisibleForTesting
     static final String VOICE_QUERY_RESULT_LANGUAGES = "android.speech.extra.LANGUAGE";
+    // Extra containing the URL of the current page. This is only populated for intents initiated
+    // via the toolbar button, and is not populated for internal Chrome URLs.
+    @VisibleForTesting
+    static final String EXTRA_PAGE_URL = "com.android.chrome.voice.PAGE_URL";
+    // Extra containing a string that represents the action taken by Assistant after being opened
+    // for voice transcription. See AssistantActionPerformed, below.
+    @VisibleForTesting
+    static final String EXTRA_ACTION_PERFORMED = "com.android.chrome.voice.ACTION_PERFORMED";
 
     private final Delegate mDelegate;
     private Long mQueryStartTimeMs;
@@ -74,6 +85,20 @@ public class VoiceRecognitionHandler {
 
         // Be sure to also update enums.xml when updating these values.
         int HISTOGRAM_BOUNDARY = 5;
+    }
+
+    // AssistantActionPerformed defined in tools/metrics/histograms/enums.xml.
+    // Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
+    @IntDef({AssistantActionPerformed.UNKNOWN, AssistantActionPerformed.TRANSCRIPTION,
+            AssistantActionPerformed.TRANSLATE, AssistantActionPerformed.READOUT})
+    public @interface AssistantActionPerformed {
+        int UNKNOWN = 0;
+        int TRANSCRIPTION = 1;
+        int TRANSLATE = 2;
+        int READOUT = 3;
+
+        // Be sure to also update enums.xml when updating these values.
+        int HISTOGRAM_BOUNDARY = 4;
     }
 
     /**
@@ -238,22 +263,39 @@ public class VoiceRecognitionHandler {
             }
 
             mCallbackComplete = true;
+            if (resultCode == Activity.RESULT_CANCELED) {
+                recordVoiceSearchDismissedEventSource(mSource);
+                return;
+            }
             if (resultCode != Activity.RESULT_OK || data.getExtras() == null) {
-                if (resultCode == Activity.RESULT_CANCELED) {
-                    recordVoiceSearchDismissedEventSource(mSource);
-                } else {
-                    recordVoiceSearchFailureEventSource(mSource);
-                }
+                recordVoiceSearchFailureEventSource(mSource);
                 return;
             }
 
-            // Only record query duration on success.
-            stopTrackingAndRecordQueryDuration();
+            // Assume transcription by default when the page URL feature is disabled.
+            @AssistantActionPerformed
+            int actionPerformed = AssistantActionPerformed.TRANSCRIPTION;
+            if (FeatureList.isInitialized()
+                    && ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL)) {
+                actionPerformed = getActionPerformed(data.getExtras());
+            }
+
+            recordSuccessMetrics(mSource, actionPerformed);
+
+            if (actionPerformed == AssistantActionPerformed.TRANSCRIPTION) {
+                handleTranscriptionResult(data);
+            }
+        }
+
+        /**
+         * Processes the transcription results within the given Intent, potentially initiating a
+         * search or navigation.
+         * @param data The {@link Intent} with returned transcription data.
+         */
+        private void handleTranscriptionResult(Intent data) {
             AutocompleteCoordinator autocompleteCoordinator =
                     mDelegate.getAutocompleteCoordinator();
             assert autocompleteCoordinator != null;
-
-            recordVoiceSearchFinishEventSource(mSource);
 
             List<VoiceResult> voiceResults = convertBundleToVoiceResults(data.getExtras());
             autocompleteCoordinator.onVoiceResults(voiceResults);
@@ -311,6 +353,80 @@ public class VoiceRecognitionHandler {
                 }
             }
             mDelegate.loadUrlFromVoice(url);
+        }
+    }
+
+    /** Returns the action performed by Assistant from the Assistant Intent callback bundle. */
+    private static @AssistantActionPerformed int getActionPerformed(Bundle extras) {
+        assert extras != null;
+        String actionPerformed = extras.getString(EXTRA_ACTION_PERFORMED);
+        if (actionPerformed == null) {
+            // Older versions of Assistant will not set EXTRA_ACTION_PERFORMED. These versions of
+            // Assistant also do not handle translate or readout, so we should assume transcription.
+            return AssistantActionPerformed.TRANSCRIPTION;
+        }
+        return parseActionPerformed(actionPerformed);
+    }
+
+    /**
+     * Parses actionPerformed and returns the associated AssistantActionPerformedValue.
+     * @param actionPerformed A String representation of the action enum.
+     * @return The parsed action or AssistantActionPerformed.UNKNOWN if no match was found.
+     */
+    private static @AssistantActionPerformed int parseActionPerformed(String actionPerformed) {
+        switch (actionPerformed) {
+            case "TRANSCRIPTION":
+                return AssistantActionPerformed.TRANSCRIPTION;
+            case "TRANSLATE":
+                return AssistantActionPerformed.TRANSLATE;
+            case "READOUT":
+                return AssistantActionPerformed.READOUT;
+            default:
+                return AssistantActionPerformed.UNKNOWN;
+        }
+    }
+
+    /**
+     * Returns a String for use as a histogram suffix for histograms split by
+     * AssistantActionPerformed.
+     * @param action The action performed by the Assistant.
+     * @return The histogram suffix for the given action. No '.' separator is included.
+     */
+    private static String getHistogramSuffixForAction(@AssistantActionPerformed int action) {
+        switch (action) {
+            case AssistantActionPerformed.TRANSCRIPTION:
+                return "Transcription";
+            case AssistantActionPerformed.TRANSLATE:
+                return "Translate";
+            case AssistantActionPerformed.READOUT:
+                return "Readout";
+            default:
+                return "Unknown";
+        }
+    }
+    /**
+     * Returns a String for use as a histogram suffix for histograms split by
+     * VoiceInteractionSource.
+     * @param source The source of the voice interaction.
+     * @return The histogram suffix for the given source or null if unknown. No '.' separator is
+     *         included.
+     */
+    private static @Nullable String getHistogramSuffixForSource(
+            @VoiceInteractionSource int source) {
+        switch (source) {
+            case VoiceInteractionSource.OMNIBOX:
+                return "Omnibox";
+            case VoiceInteractionSource.NTP:
+                return "NTP";
+            case VoiceInteractionSource.SEARCH_WIDGET:
+                return "SearchWidget";
+            case VoiceInteractionSource.TASKS_SURFACE:
+                return "TasksSurface";
+            case VoiceInteractionSource.TOOLBAR:
+                return "Toolbar";
+            default:
+                assert false : "Unknown VoiceInteractionSource: " + source;
+                return null;
         }
     }
 
@@ -466,6 +582,13 @@ public class VoiceRecognitionHandler {
 
         Intent intent = assistantVoiceSearchService.getAssistantVoiceSearchIntent();
 
+        if (shouldAddPageUrl(source)) {
+            String url = getUrl();
+            if (url != null) {
+                intent.putExtra(EXTRA_PAGE_URL, url);
+            }
+        }
+
         if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
             mDelegate.updateMicButtonState();
             recordVoiceSearchFailureEventSource(source);
@@ -474,6 +597,38 @@ public class VoiceRecognitionHandler {
         }
 
         return true;
+    }
+
+    /**
+     * Returns true if the current tab's URL should be included with an Assistant intent initiated
+     * via the given source.
+     */
+    private static boolean shouldAddPageUrl(@VoiceInteractionSource int source) {
+        // Non-toolbar entrypoints (Omnibox, NTP, etc) obscure the current page contents and make it
+        // less obvious that user actions in Assistant may interact with the current page. Omit the
+        // page URL in those cases to signal to Assistant that page-actions (e.g. translate,
+        // readout) should be disallowed.
+        return source == VoiceInteractionSource.TOOLBAR && FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
+    }
+
+    /**
+     * Returns the URL of the tab associated with this VoiceRecognitionHandler or null if it is not
+     * available.
+     */
+    @Nullable
+    private String getUrl() {
+        LocationBarDataProvider locationBarDataProvider = mDelegate.getLocationBarDataProvider();
+        if (locationBarDataProvider == null) return null;
+
+        Tab currentTab = locationBarDataProvider.getTab();
+        if (currentTab == null || currentTab.isIncognito()) {
+            return null;
+        }
+
+        GURL pageUrl = currentTab.getUrl();
+        if (!UrlUtilities.isHttpOrHttps(pageUrl)) return null;
+        return pageUrl.getSpec();
     }
 
     /**
@@ -519,16 +674,26 @@ public class VoiceRecognitionHandler {
         mQueryStartTimeMs = SystemClock.elapsedRealtime();
     }
 
-    /** Calculate the query duration and report it and cleanup afterwards. */
+    /** Record metrics that are only logged for successful intent responses. */
     @VisibleForTesting
-    void stopTrackingAndRecordQueryDuration() {
+    protected void recordSuccessMetrics(
+            @VoiceInteractionSource int source, @AssistantActionPerformed int action) {
         // Defensive check to guard against onIntentResult being called more than once. This only
         // happens with assistant experiments. See crbug.com/1116927 for details.
         if (mQueryStartTimeMs == null) return;
-
         long elapsedTimeMs = SystemClock.elapsedRealtime() - mQueryStartTimeMs;
-        recordVoiceSearchOpenDuration(elapsedTimeMs);
         mQueryStartTimeMs = null;
+
+        recordVoiceSearchFinishEventSource(source);
+        recordVoiceSearchOpenDuration(elapsedTimeMs);
+
+        // We should only record per-action metrics when the page URL feature is enabled. When
+        // disabled, only transcription should occur.
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL)) {
+            recordAssistantActionPerformed(source, action);
+            recordPerActionVoiceSearchOpenDuration(action, elapsedTimeMs);
+        }
     }
 
     /**
@@ -587,6 +752,22 @@ public class VoiceRecognitionHandler {
     }
 
     /**
+     * Records the action performed by Assistant as a result of the voice search intent.
+     * @param action The action performed, such as transcription or translation. Values taken from
+     *        the enum AssistantActionPerformed in enums.xml.
+     */
+    @VisibleForTesting
+    protected void recordAssistantActionPerformed(
+            @VoiceInteractionSource int source, @AssistantActionPerformed int action) {
+        String sourceSuffix = getHistogramSuffixForSource(source);
+        if (sourceSuffix != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "VoiceInteraction.AssistantActionPerformed." + sourceSuffix, action,
+                    AssistantActionPerformed.HISTOGRAM_BOUNDARY);
+        }
+    }
+
+    /**
      * Records the result of a voice search.
      * @param result The result of a voice search, true if results were successfully returned.
      */
@@ -611,6 +792,14 @@ public class VoiceRecognitionHandler {
     private void recordVoiceSearchOpenDuration(long openDurationMs) {
         RecordHistogram.recordMediumTimesHistogram(
                 "VoiceInteraction.QueryDuration.Android", openDurationMs);
+    }
+
+    /** Records end-to-end voice search duration split by the action performed. */
+    private void recordPerActionVoiceSearchOpenDuration(
+            @AssistantActionPerformed int action, long openDurationMs) {
+        String actionSuffix = getHistogramSuffixForAction(action);
+        RecordHistogram.recordMediumTimesHistogram(
+                "VoiceInteraction.QueryDuration.Android." + actionSuffix, openDurationMs);
     }
 
     /**
