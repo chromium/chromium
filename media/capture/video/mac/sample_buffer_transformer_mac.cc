@@ -16,7 +16,7 @@
 namespace media {
 
 const base::Feature kInCaptureConvertToNv12{"InCaptureConvertToNv12",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kInCaptureConvertToNv12WithPixelTransfer{
     "InCaptureConvertToNv12WithPixelTransfer",
@@ -27,7 +27,7 @@ const base::Feature kInCaptureConvertToNv12WithLibyuv{
 
 namespace {
 
-constexpr size_t kDefaultBufferPoolSize = 10;
+constexpr size_t kDefaultBufferPoolSize = 5;
 
 // NV12 a.k.a. 420v
 constexpr OSType kPixelFormatNv12 =
