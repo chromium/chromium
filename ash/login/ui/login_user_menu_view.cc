@@ -143,7 +143,6 @@ LoginUserMenuView::LoginUserMenuView(
       bubble_opener_(bubble_opener),
       on_remove_user_warning_shown_(on_remove_user_warning_shown),
       on_remove_user_requested_(on_remove_user_requested) {
-  set_notify_alert_on_show(false);
 
   const base::string16& email =
       base::UTF8ToUTF16(user.basic_user_info.display_email);
@@ -172,11 +171,11 @@ LoginUserMenuView::LoginUserMenuView(
                       kUserMenuFontSizeUsername, gfx::Font::Weight::MEDIUM),
         kUserMenuLineHeightUsername);
     container->AddChildView(username_label_);
-    views::Label* email_label = login_views_utils::CreateBubbleLabel(
+    email_label_ = login_views_utils::CreateBubbleLabel(
         email, nullptr,
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kTextColorSecondary));
-    container->AddChildView(email_label);
+    container->AddChildView(email_label_);
   }
 
   // User is managed.
@@ -192,6 +191,11 @@ LoginUserMenuView::LoginUserMenuView(
     managed_user_data_->AddChildView(management_disclosure_label_);
     AddChildView(managed_user_data_);
   }
+
+  // If we can remove the user, the focus will be trapped by the bubble, and
+  // button. If we can't, and there is no button, we set this so that the bubble
+  // accessible data is displayed by accessibility tools.
+  set_notify_alert_on_show(!user.can_remove);
 
   // Remove user.
   if (user.can_remove) {
@@ -276,10 +280,21 @@ const char* LoginUserMenuView::GetClassName() const {
 }
 
 void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(l10n_util::GetStringUTF16(
-      IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
-  node_data->SetDescription(l10n_util::GetStringUTF16(
-      IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_ACCESSIBLE_DESCRIPTION));
+  if (remove_user_button_) {
+    node_data->SetName(l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
+    node_data->SetDescription(l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_ACCESSIBLE_DESCRIPTION));
+  } else {
+    node_data->SetName(username_label_->GetText());
+    if (management_disclosure_label_) {
+      node_data->SetDescription(
+          base::StrCat({email_label_->GetText(), base::ASCIIToUTF16(" "),
+                        management_disclosure_label_->GetText()}));
+    } else {
+      node_data->SetDescription(email_label_->GetText());
+    }
+  }
   node_data->role = ax::mojom::Role::kDialog;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
 }

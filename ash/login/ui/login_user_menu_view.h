@@ -73,6 +73,7 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   views::View* remove_user_confirm_data_ = nullptr;
   RemoveUserButton* remove_user_button_ = nullptr;
   views::Label* username_label_ = nullptr;
+  views::Label* email_label_ = nullptr;
   views::Label* management_disclosure_label_ = nullptr;
 
   base::string16 warning_message_;
