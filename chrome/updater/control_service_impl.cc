@@ -107,7 +107,8 @@ void ControlServiceImpl::MaybeCheckForUpdates() {
           base::BindOnce(std::move(callback_)), config_));
 }
 
-void ControlServiceImpl::UnregisterMissingApps(std::vector<AppInfo> apps) {
+void ControlServiceImpl::UnregisterMissingApps(
+    const std::vector<AppInfo>& apps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -123,7 +124,7 @@ void ControlServiceImpl::UnregisterMissingAppsDone() {
 }
 
 std::vector<ControlServiceImpl::PingInfo> ControlServiceImpl::GetAppIDsToRemove(
-    std::vector<AppInfo> apps) {
+    const std::vector<AppInfo>& apps) {
   std::vector<PingInfo> app_ids_to_remove;
   for (const auto& app : apps) {
     // Skip if app_id is equal to updater app id.
@@ -143,7 +144,7 @@ std::vector<ControlServiceImpl::PingInfo> ControlServiceImpl::GetAppIDsToRemove(
 }
 
 void ControlServiceImpl::RemoveAppIDsAndSendUninstallPings(
-    std::vector<PingInfo> app_ids_to_remove) {
+    const std::vector<PingInfo>& app_ids_to_remove) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (app_ids_to_remove.empty()) {
@@ -151,10 +152,10 @@ void ControlServiceImpl::RemoveAppIDsAndSendUninstallPings(
     return;
   }
 
-  for (const auto& app_id_to_remove : app_ids_to_remove) {
-    const auto app_id = app_id_to_remove.app_id_;
+  for (const PingInfo& app_id_to_remove : app_ids_to_remove) {
+    const std::string& app_id = app_id_to_remove.app_id_;
     const int ping_reason = app_id_to_remove.ping_reason_;
-    const base::Version app_version = app_id_to_remove.app_version_;
+    const base::Version& app_version = app_id_to_remove.app_version_;
 
     if (persisted_data_->RemoveApp(app_id)) {
       VLOG(1) << "Uninstall ping for app id: " << app_id

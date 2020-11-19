@@ -75,7 +75,7 @@ class ControlServiceImpl : public ControlService {
 
   // Provides a way to remove apps from the persisted data if the app is no
   // longer installed on the machine.
-  void UnregisterMissingApps(std::vector<AppInfo> apps);
+  void UnregisterMissingApps(const std::vector<AppInfo>& apps);
 
   // After an uninstall ping has been processed, reduces the number of pings
   // that we need to wait on before checking for updates.
@@ -87,12 +87,12 @@ class ControlServiceImpl : public ControlService {
 
   // Returns a list of apps that need to be unregistered.
   std::vector<ControlServiceImpl::PingInfo> GetAppIDsToRemove(
-      std::vector<AppInfo> apps);
+      const std::vector<AppInfo>& apps);
 
   // Unregisters the apps in |app_ids_to_remove| and starts an update check
   // if necessary.
   void RemoveAppIDsAndSendUninstallPings(
-      std::vector<PingInfo> app_ids_to_remove);
+      const std::vector<PingInfo>& app_ids_to_remove);
 
   scoped_refptr<updater::Configurator> config_;
   scoped_refptr<updater::PersistedData> persisted_data_;
