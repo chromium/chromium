@@ -596,6 +596,34 @@ TEST_F(TextLogUploadListTest, SkipInvalidEntry_JSON) {
   EXPECT_EQ(1u, uploads.size());
 }
 
+// Test log entry string with only single column.
+// Such kind of lines are considered as invalid CSV entry. They should be
+// skipped in parsing the log file.
+TEST_F(TextLogUploadListTest, SkipBlankOrCorruptedEntry) {
+  std::string test_entry;
+
+  // Add an empty line.
+  test_entry += "\n";
+
+  // Add a line with only single column.
+  test_entry.append(kTestUploadTime);
+  test_entry += "\n";
+
+  WriteUploadLog(test_entry);
+
+  scoped_refptr<TextLogUploadList> upload_list =
+      new TextLogUploadList(log_path());
+
+  base::RunLoop run_loop;
+  upload_list->Load(run_loop.QuitClosure());
+  run_loop.Run();
+
+  std::vector<UploadList::UploadInfo> uploads;
+  upload_list->GetUploads(999, &uploads);
+
+  EXPECT_EQ(0u, uploads.size());
+}
+
 TEST_F(TextLogUploadListTest, ClearUsingUploadTime) {
   constexpr time_t kTestTime = 1234u;
   constexpr char kOtherEntry[] = "4567,def\n";
