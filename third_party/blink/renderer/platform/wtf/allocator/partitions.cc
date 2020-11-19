@@ -54,7 +54,9 @@ bool Partitions::initialized_ = false;
 
 // These statics are inlined, so cannot be LazyInstances. We create the values,
 // and then set the pointers correctly in Initialize().
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 base::ThreadSafePartitionRoot* Partitions::fast_malloc_root_ = nullptr;
+#endif
 base::ThreadSafePartitionRoot* Partitions::array_buffer_root_ = nullptr;
 base::ThreadSafePartitionRoot* Partitions::buffer_root_ = nullptr;
 base::ThreadUnsafePartitionRoot* Partitions::layout_root_ = nullptr;
@@ -67,26 +69,22 @@ void Partitions::Initialize() {
 
 // static
 bool Partitions::InitializeOnce() {
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static base::PartitionAllocator fast_malloc_allocator{};
+  fast_malloc_allocator.init(
+      {base::PartitionOptions::Alignment::kRegular,
+       base::PartitionOptions::ThreadCache::kEnabled,
+       base::PartitionOptions::PCScan::kDisabledByDefault});
+
+  fast_malloc_root_ = fast_malloc_allocator.root();
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
   static base::PartitionAllocator array_buffer_allocator{};
   static base::PartitionAllocator buffer_allocator{};
   static base::ThreadUnsafePartitionAllocator layout_allocator{};
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  // Only one thread cache at a time is supported, in this case it is already
-  // claimed by malloc().
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  fast_malloc_allocator.init(
-      {base::PartitionOptions::Alignment::kRegular,
-       base::PartitionOptions::ThreadCache::kDisabled,
-       base::PartitionOptions::PCScan::kDisabledByDefault});
-#else
-  fast_malloc_allocator.init(
-      {base::PartitionOptions::Alignment::kRegular,
-       base::PartitionOptions::ThreadCache::kEnabled,
-       base::PartitionOptions::PCScan::kDisabledByDefault});
-#endif
   array_buffer_allocator.init(
       {base::PartitionOptions::Alignment::kRegular,
        base::PartitionOptions::ThreadCache::kDisabled,
@@ -98,14 +96,15 @@ bool Partitions::InitializeOnce() {
                          base::PartitionOptions::ThreadCache::kDisabled,
                          base::PartitionOptions::PCScan::kAlwaysDisabled});
 
-  fast_malloc_root_ = fast_malloc_allocator.root();
   array_buffer_root_ = array_buffer_allocator.root();
   buffer_root_ = buffer_allocator.root();
   layout_root_ = layout_allocator.root();
 
   if (base::features::IsPartitionAllocPCScanEnabled() ||
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     fast_malloc_root_->EnablePCScan();
+#endif
     buffer_root_->EnablePCScan();
   }
 
@@ -130,8 +129,10 @@ void Partitions::DumpMemoryStats(
   // accessed only on the main thread.
   DCHECK(IsMainThread());
 
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   FastMallocPartition()->DumpStats("fast_malloc", is_light_dump,
                                    partition_stats_dumper);
+#endif
   ArrayBufferPartition()->DumpStats("array_buffer", is_light_dump,
                                     partition_stats_dumper);
   BufferPartition()->DumpStats("buffer", is_light_dump, partition_stats_dumper);
@@ -167,8 +168,10 @@ size_t Partitions::TotalSizeOfCommittedPages() {
   DCHECK(initialized_);
   size_t total_size = 0;
   // Racy reads below: this is fine to collect statistics.
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   total_size +=
       TS_UNCHECKED_READ(FastMallocPartition()->total_size_of_committed_pages);
+#endif
   total_size +=
       TS_UNCHECKED_READ(ArrayBufferPartition()->total_size_of_committed_pages);
   total_size +=
@@ -261,20 +264,36 @@ size_t Partitions::BufferActualSize(size_t n) {
   return BufferPartition()->ActualSize(n);
 }
 
+// Ideally this would be removed when PartitionAlloc is malloc(), but there are
+// quite a few callers. Just forward to the C functions instead.  Most of the
+// usual callers will never reach here though, as USING_FAST_MALLOC() becomes a
+// no-op.
 // static
 void* Partitions::FastMalloc(size_t n, const char* type_name) {
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return FastMallocPartition()->Alloc(n, type_name);
+#else
+  return malloc(n);
+#endif
 }
 
 // static
 void* Partitions::FastZeroedMalloc(size_t n, const char* type_name) {
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return FastMallocPartition()->AllocFlags(base::PartitionAllocZeroFill, n,
                                            type_name);
+#else
+  return calloc(n, 1);
+#endif
 }
 
 // static
 void Partitions::FastFree(void* p) {
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   FastMallocPartition()->Free(p);
+#else
+  free(p);
+#endif
 }
 
 // static

@@ -89,16 +89,20 @@ class WTF_EXPORT Partitions {
   static void HandleOutOfMemory(size_t size);
 
  private:
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ALWAYS_INLINE static base::ThreadSafePartitionRoot* FastMallocPartition() {
     DCHECK(initialized_);
     return fast_malloc_root_;
   }
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   static bool InitializeOnce();
 
   static bool initialized_;
   // See Allocator.md for a description of these partitions.
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static base::ThreadSafePartitionRoot* fast_malloc_root_;
+#endif
   static base::ThreadSafePartitionRoot* array_buffer_root_;
   static base::ThreadSafePartitionRoot* buffer_root_;
   static base::ThreadUnsafePartitionRoot* layout_root_;

@@ -7,6 +7,7 @@
 
 #include <atomic>
 
+#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -108,6 +109,58 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 //    };
 //
 
+// In official builds, do not include type info string literals to avoid
+// bloating the binary.
+#if defined(OFFICIAL_BUILD)
+#define WTF_HEAP_PROFILER_TYPE_NAME(T) nullptr
+#else
+#define WTF_HEAP_PROFILER_TYPE_NAME(T) ::WTF::GetStringWithTypeName<T>()
+#endif
+
+// Both of these macros enable fast malloc and provide type info to the heap
+// profiler. The regular macro does not provide type info in official builds,
+// to avoid bloating the binary with type name strings. The |WITH_TYPE_NAME|
+// variant provides type info unconditionally, so it should be used sparingly.
+// Furthermore, the |WITH_TYPE_NAME| variant does not work if |type| is a
+// template argument; |USING_FAST_MALLOC| does.
+#define USING_FAST_MALLOC(type) \
+  USING_FAST_MALLOC_INTERNAL(type, WTF_HEAP_PROFILER_TYPE_NAME(type))
+#define USING_FAST_MALLOC_WITH_TYPE_NAME(type) \
+  USING_FAST_MALLOC_INTERNAL(type, #type)
+
+// FastMalloc doesn't provide isolation, only a (hopefully fast) malloc(). When
+// PartitionAlloc is already the malloc() implementation, there is nothing to
+// do.
+//
+// Note that we could keep the two heaps separate, but each PartitionAlloc's
+// root has a cost, both in used memory and in virtual address space. Don't pay
+// it when we don't have to.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+// Still using operator overaloading to be closer to the other case, and not
+// require code changes to DISALLOW_NEW() objects.
+#define USING_FAST_MALLOC_INTERNAL(type, typeName)           \
+ public:                                                     \
+  void* operator new(size_t, void* p) { return p; }          \
+  void* operator new[](size_t, void* p) { return p; }        \
+                                                             \
+  void* operator new(size_t size) { return malloc(size); }   \
+                                                             \
+  void operator delete(void* p) { free(p); }                 \
+                                                             \
+  void* operator new[](size_t size) { return malloc(size); } \
+                                                             \
+  void operator delete[](void* p) { free(p); }               \
+  void* operator new(size_t, NotNullTag, void* location) {   \
+    DCHECK(location);                                        \
+    return location;                                         \
+  }                                                          \
+                                                             \
+ private:                                                    \
+  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+
+#else
+
 #define USING_FAST_MALLOC_INTERNAL(type, typeName)                    \
  public:                                                              \
   void* operator new(size_t, void* p) { return p; }                   \
@@ -132,24 +185,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
  private:                                                             \
   friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
-// In official builds, do not include type info string literals to avoid
-// bloating the binary.
-#if defined(OFFICIAL_BUILD)
-#define WTF_HEAP_PROFILER_TYPE_NAME(T) nullptr
-#else
-#define WTF_HEAP_PROFILER_TYPE_NAME(T) ::WTF::GetStringWithTypeName<T>()
-#endif
-
-// Both of these macros enable fast malloc and provide type info to the heap
-// profiler. The regular macro does not provide type info in official builds,
-// to avoid bloating the binary with type name strings. The |WITH_TYPE_NAME|
-// variant provides type info unconditionally, so it should be used sparingly.
-// Furthermore, the |WITH_TYPE_NAME| variant does not work if |type| is a
-// template argument; |USING_FAST_MALLOC| does.
-#define USING_FAST_MALLOC(type) \
-  USING_FAST_MALLOC_INTERNAL(type, WTF_HEAP_PROFILER_TYPE_NAME(type))
-#define USING_FAST_MALLOC_WITH_TYPE_NAME(type) \
-  USING_FAST_MALLOC_INTERNAL(type, #type)
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // TOOD(omerkatz): replace these casts with std::atomic_ref (C++20) once it
 // becomes available
@@ -359,4 +395,4 @@ inline void* operator new(size_t, NotNullTag, void* location) {
   return location;
 }
 
-#endif /* WTF_Allocator_h */
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_ALLOCATOR_H_
