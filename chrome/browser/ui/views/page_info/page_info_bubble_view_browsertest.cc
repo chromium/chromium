@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -945,7 +945,7 @@ class ViewFocusTracker : public FocusTracker, public views::ViewObserver {
  public:
   explicit ViewFocusTracker(views::View* view)
       : FocusTracker(view->HasFocus()) {
-    scoped_observer_.Add(view);
+    scoped_observation_.Observe(view);
   }
 
   void OnViewFocused(views::View* observed_view) override { OnFocused(); }
@@ -953,7 +953,8 @@ class ViewFocusTracker : public FocusTracker, public views::ViewObserver {
   void OnViewBlurred(views::View* observed_view) override { OnBlurred(); }
 
  private:
-  ScopedObserver<views::View, views::ViewObserver> scoped_observer_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
+      this};
 };
 
 }  // namespace
