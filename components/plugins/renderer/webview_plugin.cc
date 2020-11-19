@@ -299,10 +299,6 @@ bool WebViewPlugin::WebViewHelper::AcceptsLoadDrops() {
   return false;
 }
 
-bool WebViewPlugin::WebViewHelper::CanHandleGestureEvent() {
-  return true;
-}
-
 bool WebViewPlugin::WebViewHelper::CanUpdateLayout() {
   return true;
 }

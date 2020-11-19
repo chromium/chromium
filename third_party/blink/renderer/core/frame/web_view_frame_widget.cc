@@ -98,10 +98,6 @@ bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
 
 WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     const WebGestureEvent& event) {
-  if (!web_view_->Client() || !web_view_->Client()->CanHandleGestureEvent()) {
-    return WebInputEventResult::kNotHandled;
-  }
-
   // TODO(https://crbug.com/1148346): We need to figure out why MainFrameImpl is
   // null but LocalRootImpl isn't.
   CHECK(LocalRootImpl());

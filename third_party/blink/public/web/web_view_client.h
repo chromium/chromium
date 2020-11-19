@@ -162,10 +162,6 @@ class WebViewClient {
   virtual void DidUpdateInspectorSetting(const WebString& key,
                                          const WebString& value) {}
 
-  // Gestures -------------------------------------------------------------
-
-  virtual bool CanHandleGestureEvent() { return false; }
-
   // History -------------------------------------------------------------
   virtual void OnSetHistoryOffsetAndLength(int history_offset,
                                            int history_length) {}

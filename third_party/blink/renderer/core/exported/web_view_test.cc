@@ -2761,7 +2761,16 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
       WebLocalFrame::CreateMainFrame(web_view, &web_frame_client, nullptr,
                                      base::UnguessableToken::Create(), nullptr);
   web_frame_client.Bind(local_frame);
-  CreateWidgetForMainFrame(&web_widget_client, local_frame);
+  WebFrameWidget* widget =
+      CreateWidgetForMainFrame(&web_widget_client, local_frame);
+  cc::LayerTreeSettings layer_tree_settings =
+      frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
+  web_widget_client.set_layer_tree_host(widget->InitializeCompositing(
+      web_widget_client.main_thread_scheduler(),
+      web_widget_client.task_graph_runner(), ScreenInfo(),
+      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
+  widget->SetCompositorVisible(true);
+  web_view->DidAttachLocalMainFrame();
 
   WebGestureEvent event(WebInputEvent::Type::kGestureTap,
                         WebInputEvent::kNoModifiers,
