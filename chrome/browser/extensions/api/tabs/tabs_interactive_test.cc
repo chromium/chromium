@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -131,10 +132,17 @@ class NonPersistentExtensionTabsTest
   }
 };
 
-// Tests chrome.windows.create.
+// Crashes on Lacros only. http://crbug.com/1150133
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
+#else
+#define MAYBE_TabCurrentWindow TabCurrentWindow
+#endif
+
+// Tests chrome.windows.create and chrome.windows.getCurrent.
 // TODO(crbug.com/984350): Expand the test to verify that setSelfAsOpener
 // param is ignored from Service Worker extension scripts.
-IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, TabCurrentWindow) {
+IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
   ASSERT_TRUE(
       RunExtensionTestWithFlags("tabs/current_window",
                                 GetParam() == ContextType::kServiceWorker
