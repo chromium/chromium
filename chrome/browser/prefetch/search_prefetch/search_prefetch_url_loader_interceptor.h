@@ -21,7 +21,7 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-class PrefetchedResponseContainer;
+class SearchPrefetchURLLoader;
 
 // Intercepts search navigations that were previously prefetched.
 class SearchPrefetchURLLoaderInterceptor
@@ -43,13 +43,12 @@ class SearchPrefetchURLLoaderInterceptor
 
  protected:
   // Virtual for testing
-  virtual std::unique_ptr<PrefetchedResponseContainer> GetPrefetchedResponse(
+  virtual std::unique_ptr<SearchPrefetchURLLoader> GetPrefetchedResponse(
       const GURL& url);
 
  private:
   void InterceptPrefetchedNavigation(
-      const network::ResourceRequest& tentative_resource_request,
-      std::unique_ptr<PrefetchedResponseContainer>);
+      std::unique_ptr<SearchPrefetchURLLoader> prefetch);
   void DoNotInterceptPrefetchedNavigation();
 
   bool MaybeInterceptNavigation(

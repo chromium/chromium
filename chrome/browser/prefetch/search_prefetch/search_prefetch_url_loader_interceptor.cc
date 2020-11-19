@@ -11,9 +11,9 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/prefetch/search_prefetch/prefetched_response_container.h"
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_from_string_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -49,33 +49,28 @@ void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
   loader_callback_ = std::move(callback);
   url_ = tentative_resource_request.url;
 
-  std::unique_ptr<PrefetchedResponseContainer> prefetch =
+  std::unique_ptr<SearchPrefetchURLLoader> prefetch =
       GetPrefetchedResponse(url_);
   if (!prefetch) {
     DoNotInterceptPrefetchedNavigation();
     return;
   }
 
-  InterceptPrefetchedNavigation(tentative_resource_request,
-                                std::move(prefetch));
+  InterceptPrefetchedNavigation(std::move(prefetch));
 }
 
 void SearchPrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
-    const network::ResourceRequest& tentative_resource_request,
-    std::unique_ptr<PrefetchedResponseContainer> prefetch) {
-  std::unique_ptr<SearchPrefetchFromStringURLLoader> url_loader =
-      std::make_unique<SearchPrefetchFromStringURLLoader>(
-          std::move(prefetch), tentative_resource_request);
-  std::move(loader_callback_).Run(url_loader->ServingResponseHandler());
+    std::unique_ptr<SearchPrefetchURLLoader> prefetch) {
+  std::move(loader_callback_).Run(prefetch->ServingResponseHandler());
   // url_loader manages its own lifetime once bound to the mojo pipes.
-  url_loader.release();
+  prefetch.release();
 }
 
 void SearchPrefetchURLLoaderInterceptor::DoNotInterceptPrefetchedNavigation() {
   std::move(loader_callback_).Run({});
 }
 
-std::unique_ptr<PrefetchedResponseContainer>
+std::unique_ptr<SearchPrefetchURLLoader>
 SearchPrefetchURLLoaderInterceptor::GetPrefetchedResponse(const GURL& url) {
   auto* profile = ProfileFromFrameTreeNodeID(frame_tree_node_id_);
   if (!profile)

@@ -17,8 +17,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 SearchPrefetchFromStringURLLoader::SearchPrefetchFromStringURLLoader(
-    std::unique_ptr<PrefetchedResponseContainer> response,
-    const network::ResourceRequest& tentative_resource_request)
+    std::unique_ptr<PrefetchedResponseContainer> response)
     : head_(response->TakeHead()),
       body_buffer_(
           base::MakeRefCounted<net::StringIOBuffer>(response->TakeBody())),
@@ -78,7 +77,7 @@ void SearchPrefetchFromStringURLLoader::TransferRawData() {
   }
 }
 
-SearchPrefetchFromStringURLLoader::RequestHandler
+SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchFromStringURLLoader::ServingResponseHandler() {
   return base::BindOnce(&SearchPrefetchFromStringURLLoader::BindAndStart,
                         weak_ptr_factory_.GetWeakPtr());
