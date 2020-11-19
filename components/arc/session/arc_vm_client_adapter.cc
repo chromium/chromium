@@ -60,16 +60,12 @@ namespace {
 // The "_2d" in job names below corresponds to "-". Upstart escapes characters
 // that aren't valid in D-Bus object paths with underscore followed by its
 // ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
-constexpr const char kArcHostClockServiceJobName[] =
-    "arc_2dhost_2dclock_2dservice";
-constexpr const char kArcKeymasterJobName[] = "arc_2dkeymasterd";
-constexpr const char kArcSensorServiceJobName[] = "arc_2dsensor_2dservice";
 constexpr const char kArcVmAdbdJobName[] = "arcvm_2dadbd";
 constexpr const char kArcVmPerBoardFeaturesJobName[] =
     "arcvm_2dper_2dboard_2dfeatures";
-constexpr const char kArcVmBootNotificationServerJobName[] =
-    "arcvm_2dboot_2dnotification_2dserver";
-// TODO(hashimoto): Introduce another job for pre-login services.
+// TODO(hashimoto): Introduce another job for post-vm-start services.
+constexpr char kArcVmPreLoginServicesJobName[] =
+    "arcvm_2dpre_2dlogin_2dservices";
 constexpr char kArcVmPostLoginServicesJobName[] =
     "arcvm_2dpost_2dlogin_2dservices";
 
@@ -642,13 +638,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
 
         JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcKeymasterJobName, UpstartOperation::JOB_STOP_AND_START, {}},
-        JobDesc{
-            kArcSensorServiceJobName, UpstartOperation::JOB_STOP_AND_START, {}},
-        JobDesc{kArcHostClockServiceJobName,
-                UpstartOperation::JOB_STOP_AND_START,
-                {}},
-        JobDesc{kArcVmBootNotificationServerJobName,
+        JobDesc{kArcVmPreLoginServicesJobName,
                 UpstartOperation::JOB_STOP_AND_START,
                 {}},
     };

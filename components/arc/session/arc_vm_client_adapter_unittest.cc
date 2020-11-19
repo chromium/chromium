@@ -43,18 +43,14 @@
 namespace arc {
 namespace {
 
-constexpr const char kArcHostClockServiceJobName[] =
-    "arc_2dhost_2dclock_2dservice";
-constexpr const char kArcKeymasterJobName[] = "arc_2dkeymasterd";
-constexpr const char kArcSensorServiceJobName[] = "arc_2dsensor_2dservice";
 constexpr const char kArcVmAdbdJobName[] = "arcvm_2dadbd";
 constexpr const char kArcVmPerBoardFeaturesJobName[] =
     "arcvm_2dper_2dboard_2dfeatures";
-constexpr const char kArcVmBootNotificationServerJobName[] =
-    "arcvm_2dboot_2dnotification_2dserver";
 constexpr const size_t kUnixMaxPathLen = sizeof(sockaddr_un::sun_path);
 constexpr const char kArcVmBootNotificationServerAddress[kUnixMaxPathLen] =
     "\0test_arcvm_boot_notification_server";
+constexpr char kArcVmPreLoginServicesJobName[] =
+    "arcvm_2dpre_2dlogin_2dservices";
 constexpr char kArcVmPostLoginServicesJobName[] =
     "arcvm_2dpost_2dlogin_2dservices";
 
@@ -511,69 +507,6 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcVmPostLoginServicesJobFail) {
   // for other StartMiniArc_...Fail tests.
 }
 
-// Tests that StartMiniArc() fails if Upstart fails to start
-// arc-host-clock-service.
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcHostClockServiceJobFail) {
-  // Inject failure to FakeUpstartClient.
-  InjectUpstartStartJobFailure(kArcHostClockServiceJobName);
-
-  StartMiniArcWithParams(false, {});
-  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
-}
-
-// Tests that StartMiniArc() succeeds if Upstart fails to stop
-// arc-host-clock-service.
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcHostClockServiceJobFail) {
-  // Inject failure to FakeUpstartClient.
-  InjectUpstartStopJobFailure(kArcHostClockServiceJobName);
-
-  StartMiniArc();
-  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
-}
-
-// Tests that StartMiniArc() fails if Upstart fails to start arc-keymasterd.
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcKeymasterJobFail) {
-  // Inject failure to FakeUpstartClient.
-  InjectUpstartStartJobFailure(kArcKeymasterJobName);
-
-  StartMiniArcWithParams(false, {});
-  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
-}
-
-// Tests that StartMiniArc() succeeds if Upstart fails to stop arc-keymasterd.
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcKeymasterJobFail) {
-  // Inject failure to FakeUpstartClient.
-  InjectUpstartStopJobFailure(kArcKeymasterJobName);
-
-  StartMiniArc();
-  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
-}
-
-// Tests that StartMiniArc() fails if Upstart fails to start arc-sensor-service.
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcSensorServiceJobFail) {
-  // Inject failure to FakeUpstartClient.
-  InjectUpstartStartJobFailure(kArcSensorServiceJobName);
-
-  StartMiniArcWithParams(false, {});
-  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
-}
-
-// Tests that StartMiniArc() succeeds if Upstart fails to stop
-// arc-sensor-service.
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcSensorServiceJobFail) {
-  // Inject failure to FakeUpstartClient.
-  InjectUpstartStopJobFailure(kArcSensorServiceJobName);
-
-  StartMiniArc();
-  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
-}
-
 // Tests that StartMiniArc() fails when Upstart fails to start the job.
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmPerBoardFeaturesJobFail) {
   // Inject failure to FakeUpstartClient.
@@ -584,22 +517,44 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmPerBoardFeaturesJobFail) {
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
 }
 
-// Tests that StartMiniArc()'s JOB_RESTART for |kArcSensorServiceJobName| is
-// properly implemented.
+// Tests that StartMiniArc() fails if Upstart fails to start
+// arcvm-pre-login-services.
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmPreLoginServicesJobFail) {
+  // Inject failure to FakeUpstartClient.
+  InjectUpstartStartJobFailure(kArcVmPreLoginServicesJobName);
+
+  StartMiniArcWithParams(false, {});
+  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
+  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
+}
+
+// Tests that StartMiniArc() succeeds if Upstart fails to stop
+// arcvm-pre-login-services.
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcVmPreLoginServicesJobFail) {
+  // Inject failure to FakeUpstartClient.
+  InjectUpstartStopJobFailure(kArcVmPreLoginServicesJobName);
+
+  StartMiniArc();
+  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
+  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
+}
+
+// Tests that StartMiniArc()'s JOB_STOP_AND_START for
+// |kArcVmPreLoginServicesJobName| is properly implemented.
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_JobRestart) {
   StartRecordingUpstartOperations();
   StartMiniArc();
 
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
-  auto it =
-      std::find(ops.begin(), ops.end(),
-                std::make_pair(std::string(kArcSensorServiceJobName), false));
+  auto it = std::find(
+      ops.begin(), ops.end(),
+      std::make_pair(std::string(kArcVmPreLoginServicesJobName), false));
   ASSERT_NE(ops.end(), it);
   ++it;
   ASSERT_NE(ops.end(), it);
   // The next operation must be START for the job.
-  EXPECT_EQ(it->first, kArcSensorServiceJobName);
+  EXPECT_EQ(it->first, kArcVmPreLoginServicesJobName);
   EXPECT_TRUE(it->second);  // true means START.
 }
 
@@ -1324,14 +1279,6 @@ TEST_F(ArcVmClientAdapterTest, TestConnectToBootNotificationServer) {
                                             kSerialNumber, "ro.boot"),
                        "\n");
   EXPECT_EQ(boot_notification_server()->received_data(), expected_props);
-}
-
-// Tests that StartMiniArc fails when the boot notification server's Upstart
-// job fails.
-TEST_F(ArcVmClientAdapterTest, TestBootNotificationServerUpstartJobFails) {
-  InjectUpstartStartJobFailure(kArcVmBootNotificationServerJobName);
-
-  StartMiniArcWithParams(false, {});
 }
 
 // Tests that StartMiniArc fails when the boot notification server is not
