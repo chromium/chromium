@@ -241,7 +241,7 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
   // was recorded in this histogram in order to have a convenient
   // denominator to compute blocklist percentages for the rest of the
   // entries.
-  UMA_HISTOGRAM_EXACT_LINEAR("GPU.BlacklistTestResultsPerEntry", 0,
+  UMA_HISTOGRAM_EXACT_LINEAR("GPU.BlocklistTestResultsPerEntry", 0,
                              max_entry_id + 1);
   if (!gpu_feature_info.applied_gpu_blocklist_entries.empty()) {
     std::vector<uint32_t> entry_ids = blocklist->GetEntryIDsFromIndices(
@@ -250,7 +250,7 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
               entry_ids.size());
     for (auto id : entry_ids) {
       DCHECK_GE(max_entry_id, id);
-      UMA_HISTOGRAM_EXACT_LINEAR("GPU.BlacklistTestResultsPerEntry", id,
+      UMA_HISTOGRAM_EXACT_LINEAR("GPU.BlocklistTestResultsPerEntry", id,
                                  max_entry_id + 1);
     }
   }
@@ -266,12 +266,12 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL2};
   const std::string kGpuBlocklistFeatureHistogramNames[] = {
-      "GPU.BlacklistFeatureTestResults.Accelerated2dCanvas",
-      "GPU.BlacklistFeatureTestResults.GpuCompositing",
-      "GPU.BlacklistFeatureTestResults.GpuRasterization",
-      "GPU.BlacklistFeatureTestResults.OopRasterization",
-      "GPU.BlacklistFeatureTestResults.Webgl",
-      "GPU.BlacklistFeatureTestResults.Webgl2"};
+      "GPU.BlocklistFeatureTestResults.Accelerated2dCanvas",
+      "GPU.BlocklistFeatureTestResults.GpuCompositing",
+      "GPU.BlocklistFeatureTestResults.GpuRasterization",
+      "GPU.BlocklistFeatureTestResults.OopRasterization",
+      "GPU.BlocklistFeatureTestResults.Webgl",
+      "GPU.BlocklistFeatureTestResults.Webgl2"};
   const bool kGpuFeatureUserFlags[] = {
       command_line.HasSwitch(switches::kDisableAccelerated2dCanvas),
       command_line.HasSwitch(switches::kDisableGpu),

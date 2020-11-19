@@ -34929,147 +34929,147 @@ Called by update_feature_policy_enum.py.-->
   <int value="2" label="Disabled Force"/>
 </enum>
 
-<enum name="GPUBlacklistFeatureTestResults">
+<enum name="GPUBlocklistFeatureTestResults">
   <summary>
-    Results of testing against a GPU feature being allowed/blacklisted/disabled.
+    Results of testing against a GPU feature being allowed/blocklisted/disabled.
   </summary>
   <int value="0" label="Allowed"/>
-  <int value="1" label="Blacklisted"/>
+  <int value="1" label="Blocklisted"/>
   <int value="2" label="User-disabled"/>
 </enum>
 
-<enum name="GPUBlacklistFeatureTestResultsWin">
+<enum name="GPUBlocklistFeatureTestResultsWin">
   <summary>
-    Results of testing against a GPU feature being blacklisted or not in various
+    Results of testing against a GPU feature being blocklisted or not in various
     Windows sub-versions.
   </summary>
   <int value="0" label="Allowed Others"/>
-  <int value="1" label="Blacklisted Others"/>
+  <int value="1" label="Blocklisted Others"/>
   <int value="2" label="Allowed XP"/>
-  <int value="3" label="Blacklisted XP"/>
+  <int value="3" label="Blocklisted XP"/>
   <int value="4" label="Allowed Vista"/>
-  <int value="5" label="Blacklisted Vista"/>
+  <int value="5" label="Blocklisted Vista"/>
   <int value="6" label="Allowed Win7"/>
-  <int value="7" label="Blacklisted Win7"/>
+  <int value="7" label="Blocklisted Win7"/>
 </enum>
 
-<enum name="GPUBlacklistFeatureTestResultsWindows">
+<enum name="GPUBlocklistFeatureTestResultsWindows">
   <obsolete>
-    Replaced by GPUBlacklistFeatureTestResultsWindows2 in M67.
+    Replaced by GPUBlocklistFeatureTestResultsWindows2 in M67.
   </obsolete>
   <summary>
-    Results of testing against a GPU feature being allowed/blacklisted/disabled
+    Results of testing against a GPU feature being allowed/blocklisted/disabled
     in various Windows sub-versions.
   </summary>
   <int value="0" label="Allowed Others"/>
-  <int value="1" label="Blacklisted Others"/>
+  <int value="1" label="Blocklisted Others"/>
   <int value="2" label="User-disabled Others"/>
   <int value="3" label="Allowed XP"/>
-  <int value="4" label="Blacklisted XP"/>
+  <int value="4" label="Blocklisted XP"/>
   <int value="5" label="User-disabled XP"/>
   <int value="6" label="Allowed Vista"/>
-  <int value="7" label="Blacklisted Vista"/>
+  <int value="7" label="Blocklisted Vista"/>
   <int value="8" label="User-disabled Vista"/>
   <int value="9" label="Allowed Win7"/>
-  <int value="10" label="Blacklisted Win7"/>
+  <int value="10" label="Blocklisted Win7"/>
   <int value="11" label="User-disabled Win7"/>
   <int value="12" label="Allowed Win8"/>
-  <int value="13" label="Blacklisted Win8"/>
+  <int value="13" label="Blocklisted Win8"/>
   <int value="14" label="User-disabled Win8"/>
 </enum>
 
-<enum name="GPUBlacklistFeatureTestResultsWindows2">
+<enum name="GPUBlocklistFeatureTestResultsWindows2">
   <obsolete>
     Removed in Oct 2020.
   </obsolete>
   <summary>
-    Results of testing against a GPU feature being allowed, blacklisted,
+    Results of testing against a GPU feature being allowed, blocklisted,
     disabled, fallback to software, or undefined in various Windows
     sub-versions.
   </summary>
   <int value="0" label="Enabled PRE_XP"/>
-  <int value="1" label="Blacklisted PRE_XP"/>
+  <int value="1" label="Blocklisted PRE_XP"/>
   <int value="2" label="User Disabled PRE_XP"/>
   <int value="3" label="Fallback to Software PRE_XP"/>
   <int value="4" label="Status Unknown PRE_XP"/>
   <int value="5" label="Enabled XP"/>
-  <int value="6" label="Blacklisted XP"/>
+  <int value="6" label="Blocklisted XP"/>
   <int value="7" label="User Disabled XP"/>
   <int value="8" label="Fallback to Software XP"/>
   <int value="9" label="Status Unknown XP"/>
   <int value="10" label="Enabled SERVER_2003"/>
-  <int value="11" label="Blacklisted SERVER_2003"/>
+  <int value="11" label="Blocklisted SERVER_2003"/>
   <int value="12" label="User Disabled SERVER_2003"/>
   <int value="13" label="Fallback to Software SERVER_2003"/>
   <int value="14" label="Status Unknown SERVER_2003"/>
   <int value="15" label="Enabled VISTA"/>
-  <int value="16" label="Blacklisted VISTA"/>
+  <int value="16" label="Blocklisted VISTA"/>
   <int value="17" label="User Disabled VISTA"/>
   <int value="18" label="Fallback to Software VISTA"/>
   <int value="19" label="Status Unknown VISTA"/>
   <int value="20" label="Enabled WIN7"/>
-  <int value="21" label="Blacklisted WIN7"/>
+  <int value="21" label="Blocklisted WIN7"/>
   <int value="22" label="User Disabled WIN7"/>
   <int value="23" label="Fallback to Software WIN7"/>
   <int value="24" label="Status Unknown WIN7"/>
   <int value="25" label="Enabled WIN8"/>
-  <int value="26" label="Blacklisted WIN8"/>
+  <int value="26" label="Blocklisted WIN8"/>
   <int value="27" label="User Disabled WIN8"/>
   <int value="28" label="Fallback to Software WIN8"/>
   <int value="29" label="Status Unknown WIN8"/>
   <int value="30" label="Enabled WIN8_1"/>
-  <int value="31" label="Blacklisted WIN8_1"/>
+  <int value="31" label="Blocklisted WIN8_1"/>
   <int value="32" label="User Disabled WIN8_1"/>
   <int value="33" label="Fallback to Software WIN8_1"/>
   <int value="34" label="Status Unknown WIN8_1"/>
   <int value="35" label="Enabled WIN10"/>
-  <int value="36" label="Blacklisted WIN10"/>
+  <int value="36" label="Blocklisted WIN10"/>
   <int value="37" label="User Disabled WIN10"/>
   <int value="38" label="Fallback to Software WIN10"/>
   <int value="39" label="Status Unknown WIN10"/>
   <int value="40" label="Enabled WIN10_TH2"/>
-  <int value="41" label="Blacklisted WIN10_TH2"/>
+  <int value="41" label="Blocklisted WIN10_TH2"/>
   <int value="42" label="User Disabled WIN10_TH2"/>
   <int value="43" label="Fallback to Software WIN10_TH2"/>
   <int value="44" label="Status Unknown WIN10_TH2"/>
   <int value="45" label="Enabled WIN10_RS1"/>
-  <int value="46" label="Blacklisted WIN10_RS1"/>
+  <int value="46" label="Blocklisted WIN10_RS1"/>
   <int value="47" label="User Disabled WIN10_RS1"/>
   <int value="48" label="Fallback to Software WIN10_RS1"/>
   <int value="49" label="Status Unknown WIN10_RS1"/>
   <int value="50" label="Enabled WIN10_RS2"/>
-  <int value="51" label="Blacklisted WIN10_RS2"/>
+  <int value="51" label="Blocklisted WIN10_RS2"/>
   <int value="52" label="User Disabled WIN10_RS2"/>
   <int value="53" label="Fallback to Software WIN10_RS2"/>
   <int value="54" label="Status Unknown WIN10_RS2"/>
   <int value="55" label="Enabled WIN10_RS3"/>
-  <int value="56" label="Blacklisted WIN10_RS3"/>
+  <int value="56" label="Blocklisted WIN10_RS3"/>
   <int value="57" label="User Disabled WIN10_RS3"/>
   <int value="58" label="Fallback to Software WIN10_RS3"/>
   <int value="59" label="Status Unknown WIN10_RS3"/>
   <int value="60" label="Enabled WIN10_RS4"/>
-  <int value="61" label="Blacklisted WIN10_RS4"/>
+  <int value="61" label="Blocklisted WIN10_RS4"/>
   <int value="62" label="User Disabled WIN10_RS4"/>
   <int value="63" label="Fallback to Software WIN10_RS4"/>
   <int value="64" label="Status Unknown WIN10_RS4"/>
   <int value="65" label="Enabled WIN10_RS5"/>
-  <int value="66" label="Blacklisted WIN10_RS5"/>
+  <int value="66" label="Blocklisted WIN10_RS5"/>
   <int value="67" label="User Disabled WIN10_RS5"/>
   <int value="68" label="Fallback to Software WIN10_RS5"/>
   <int value="69" label="Status Unknown WIN10_RS5"/>
   <int value="70" label="Enabled WIN10_19H1"/>
-  <int value="71" label="Blacklisted WIN10_19H1"/>
+  <int value="71" label="Blocklisted WIN10_19H1"/>
   <int value="72" label="User Disabled WIN10_19H1"/>
   <int value="73" label="Fallback to Software WIN10_19H1"/>
   <int value="74" label="Status Unknown WIN10_19H1"/>
   <int value="75" label="Enabled WIN10_20H1"/>
-  <int value="76" label="Blacklisted WIN10_20H1"/>
+  <int value="76" label="Blocklisted WIN10_20H1"/>
   <int value="77" label="User Disabled WIN10_20H1"/>
   <int value="78" label="Fallback to Software WIN10_20H1"/>
   <int value="79" label="Status Unknown WIN10_20H1"/>
 </enum>
 
-<enum name="GPUBlacklistTestResultPerEntry">
+<enum name="GPUBlocklistTestResultPerEntry">
   <summary>Results of testing against the GPU blacklist entries.</summary>
   <int value="0" label="TotalCount"/>
   <int value="1" label="Mac/ATI/Radeon X1900"/>

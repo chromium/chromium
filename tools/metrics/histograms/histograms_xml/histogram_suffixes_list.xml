@@ -6915,8 +6915,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </affected-histogram>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPUBlacklistPerFeature" separator=".">
-  <owner>vmiura@chromium.org</owner>
+<histogram_suffixes name="GPUBlocklistPerFeature" separator=".">
   <suffix name="Accelerated2dCanvas" label="Accelerated2dCanvas"/>
   <suffix name="GpuCompositing" label="GpuCompositing"/>
   <suffix name="GpuRasterization" label="GpuRasterization"/>
@@ -6925,6 +6924,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GPU.BlacklistFeatureTestResults"/>
   <affected-histogram name="GPU.BlacklistFeatureTestResultsWindows"/>
   <affected-histogram name="GPU.BlacklistFeatureTestResultsWindows2"/>
+  <affected-histogram name="GPU.BlocklistFeatureTestResults"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="GpuChannelManagerPressureHandlerDurationDetails"

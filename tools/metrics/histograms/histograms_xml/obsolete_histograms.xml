@@ -25690,7 +25690,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlacklistFeatureTestResultsWindows"
-    enum="GPUBlacklistFeatureTestResultsWindows" expires_after="2018-02-28">
+    enum="GPUBlocklistFeatureTestResultsWindows" expires_after="2018-02-28">
   <obsolete>
     Replaced by GPU.BlacklistFeatureTestResultsWindows2 in M67.
   </obsolete>

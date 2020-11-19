@@ -200,7 +200,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlacklistFeatureTestResults"
-    enum="GPUBlacklistFeatureTestResults" expires_after="2021-03-21">
+    enum="GPUBlocklistFeatureTestResults" expires_after="M89">
+  <obsolete>
+    Replaced by GPU.BlocklistFeatureTestResults in M89.
+  </obsolete>
   <owner>vmiura@chromium.org</owner>
   <summary>
     Counts number of browser invocations for which a GPU feature is
@@ -209,7 +212,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlacklistFeatureTestResultsWindows2"
-    enum="GPUBlacklistFeatureTestResultsWindows2" expires_after="2020-05-10">
+    enum="GPUBlocklistFeatureTestResultsWindows2" expires_after="M89">
   <obsolete>
     Removed in Oct 2020.
   </obsolete>
@@ -221,7 +224,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlacklistTestResultsPerDisabledEntry"
-    enum="GPUBlacklistTestResultPerEntry" expires_after="M85">
+    enum="GPUBlocklistTestResultPerEntry" expires_after="M85">
+  <obsolete>
+    Removed before M86.
+  </obsolete>
   <owner>vmiura@chromium.org</owner>
   <summary>
     Counts number of browser invocations for which a disabled blacklist entry is
@@ -230,11 +236,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlacklistTestResultsPerEntry"
-    enum="GPUBlacklistTestResultPerEntry" expires_after="2020-04-26">
+    enum="GPUBlocklistTestResultPerEntry" expires_after="M89">
+  <obsolete>
+    Replaced by GPU.BlocklistTestResultsPerEntry in M89.
+  </obsolete>
   <owner>vmiura@chromium.org</owner>
   <summary>
     Counts number of browser invocations for which the GPU process is blocked
-    due to a blacklist entry match.
+    due to a blocklist entry match.
+  </summary>
+</histogram>
+
+<histogram name="GPU.BlocklistFeatureTestResults"
+    enum="GPUBlocklistFeatureTestResults" expires_after="2021-03-21">
+  <owner>vmiura@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Counts number of browser invocations for which a GPU feature is
+    allowed/blocklisted/disabled.
+  </summary>
+</histogram>
+
+<histogram name="GPU.BlocklistTestResultsPerEntry"
+    enum="GPUBlocklistTestResultPerEntry" expires_after="2021-03-21">
+  <owner>vmiura@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Counts number of browser invocations for which the GPU process is blocked
+    due to a blocklist entry match.
   </summary>
 </histogram>
 
