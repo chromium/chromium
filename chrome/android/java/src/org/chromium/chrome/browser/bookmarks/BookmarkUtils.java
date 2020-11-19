@@ -37,6 +37,9 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A class holding static util functions for bookmark.
  */
@@ -332,5 +335,50 @@ public class BookmarkUtils {
         if (context instanceof BookmarkActivity) {
             ((Activity) context).finish();
         }
+    }
+
+    /**
+     * Populates the top level bookmark folder ids.
+     * @param bookmarkModel The bookmark model that talks to bookmark native backend.
+     * @return The list of top level bookmark folder ids.
+     */
+    public static List<BookmarkId> populateTopLevelFolders(BookmarkModel bookmarkModel) {
+        List<BookmarkId> topLevelFolders = new ArrayList<>();
+        BookmarkId desktopNodeId = bookmarkModel.getDesktopFolderId();
+        BookmarkId mobileNodeId = bookmarkModel.getMobileFolderId();
+        BookmarkId othersNodeId = bookmarkModel.getOtherFolderId();
+
+        List<BookmarkId> specialFoldersIds =
+                bookmarkModel.getTopLevelFolderIDs(/*getSpecial=*/true, /*getNormal=*/false);
+        BookmarkId rootFolder = bookmarkModel.getRootFolderId();
+
+        // managed and partner bookmark folders will be put to the bottom.
+        List<BookmarkId> managedAndPartnerFolderIds = new ArrayList<>();
+
+        for (BookmarkId bookmarkId : specialFoldersIds) {
+            // Adds reading list as the first top level folder.
+            if (bookmarkId.getType() == BookmarkType.READING_LIST) {
+                topLevelFolders.add(bookmarkId);
+                continue;
+            }
+            BookmarkId parent = bookmarkModel.getBookmarkById(bookmarkId).getParentId();
+            if (parent.equals(rootFolder)) managedAndPartnerFolderIds.add(bookmarkId);
+        }
+
+        // Adds normal bookmark top level folders.
+        if (bookmarkModel.isFolderVisible(mobileNodeId)) {
+            topLevelFolders.add(mobileNodeId);
+        }
+        if (bookmarkModel.isFolderVisible(desktopNodeId)) {
+            topLevelFolders.add(desktopNodeId);
+        }
+        if (bookmarkModel.isFolderVisible(othersNodeId)) {
+            topLevelFolders.add(othersNodeId);
+        }
+
+        // Add any top-level managed and partner bookmark folders that are children of the root
+        // folder.
+        topLevelFolders.addAll(managedAndPartnerFolderIds);
+        return topLevelFolders;
     }
 }

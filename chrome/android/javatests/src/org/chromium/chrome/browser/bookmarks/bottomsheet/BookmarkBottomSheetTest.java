@@ -5,47 +5,91 @@
 package org.chromium.chrome.browser.bookmarks.bottomsheet;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.BookmarkTestUtil;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.ArrayList;
 
 /**
  * Test to verify bookmark bottom sheet.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.EnableFeatures({ChromeFeatureList.READ_LATER})
 public class BookmarkBottomSheetTest {
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    private static final String TITLE = "bookmark title";
+    private static final String TEST_URL_A = "http://a.com";
+    private static final String TEST_URL_B = "http://b.com";
+
     private BookmarkBottomSheetCoordinator mBottomSheetCoordinator;
     private BottomSheetController mBottomSheetController;
+    private BookmarkModel mBookmarkModel;
+    private BookmarkItem mItemClicked;
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBookmarkModel = new BookmarkModel(Profile.fromWebContents(
+                    mActivityTestRule.getActivity().getActivityTab().getWebContents()));
+        });
+
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
-        mBottomSheetCoordinator = new BookmarkBottomSheetCoordinator(
-                mActivityTestRule.getActivity(), mBottomSheetController);
+        mBottomSheetCoordinator =
+                new BookmarkBottomSheetCoordinator(mActivityTestRule.getActivity(),
+                        mBottomSheetController, mBookmarkModel, this::onBottomSheetClicked);
+        waitForBookmarkModelLoaded();
+    }
+
+    @After
+    public void tearDown() {
+        mItemClicked = null;
+    }
+
+    private void onBottomSheetClicked(BookmarkItem item) {
+        mItemClicked = item;
     }
 
     private void showBottomSheet() {
@@ -55,10 +99,93 @@ public class BookmarkBottomSheetTest {
                 () -> mBottomSheetController.getSheetState() == SheetState.FULL);
     }
 
+    private void waitForBookmarkModelLoaded() {
+        // Must load partner bookmark backend, or the model will not be loaded.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting());
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+    }
+
+    private void waitForBookmarkClicked() {
+        CriteriaHelper.pollUiThread(() -> mItemClicked != null);
+    }
+
+    private RecyclerView getRecyclerView() {
+        BottomSheetContent content = mBottomSheetCoordinator.getBottomSheetContentForTesting();
+        return content.getContentView().findViewById(org.chromium.chrome.R.id.sheet_item_list);
+    }
+
+    private void assertNoOverflowMenu(int position, String message) {
+        View view = getRecyclerView().findViewHolderForAdapterPosition(position).itemView;
+        Assert.assertEquals(message, View.GONE, view.findViewById(R.id.more).getVisibility());
+    }
+
+    private void assertViewHolderHasString(int position, String expectedString) {
+        View view = getRecyclerView().findViewHolderForAdapterPosition(position).itemView;
+        ArrayList<View> views = new ArrayList<>();
+        view.findViewsWithText(views, expectedString, View.FIND_VIEWS_WITH_TEXT);
+        Assert.assertFalse(views.isEmpty());
+    }
+
     @Test
     @MediumTest
-    public void testBottomSheetShow() {
+    public void testBottomSheetShowWithoutBookmarks() throws InterruptedException {
         showBottomSheet();
         onView(withId(R.id.sheet_title)).check(matches(isDisplayed()));
+        onView(withText("Reading list")).check(matches(isDisplayed()));
+        assertViewHolderHasString(0, "Save this page for later and get a reminder");
+        assertNoOverflowMenu(0, "No overflow menu for reading list folder.");
+
+        onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
+        assertViewHolderHasString(1, "No bookmarks");
+        assertNoOverflowMenu(1, "No overflow menu for mobile bookmark folder.");
+    }
+
+    @Test
+    @MediumTest
+    public void testBottomSheetShowWithOneBookmark() {
+        // Add 1 bookmark and 1 unread page.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_A);
+            mBookmarkModel.addToReadingList(TITLE, TEST_URL_A);
+        });
+
+        showBottomSheet();
+        onView(withText("Reading list")).check(matches(isDisplayed()));
+        assertViewHolderHasString(0, "1 unread page");
+
+        onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
+        assertViewHolderHasString(1, "1 bookmark");
+    }
+
+    @Test
+    @MediumTest
+    public void testBottomSheetShowWithBookmarks() {
+        // Add multiple bookmarks unread reading list pages.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_A);
+            mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_B);
+            mBookmarkModel.addToReadingList(TITLE, TEST_URL_A);
+            mBookmarkModel.addToReadingList(TITLE, TEST_URL_B);
+        });
+
+        showBottomSheet();
+        onView(withText("Reading list")).check(matches(isDisplayed()));
+        assertViewHolderHasString(0, "2 unread pages");
+
+        onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
+        assertViewHolderHasString(1, "2 bookmarks");
+    }
+
+    @Test
+    @MediumTest
+    public void testBottomSheetClickThrough() {
+        showBottomSheet();
+        onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
+        onView(withText("Reading list")).check(matches(isDisplayed())).perform(click());
+
+        waitForBookmarkClicked();
+        Assert.assertEquals(BookmarkType.READING_LIST, mItemClicked.getId().getType());
+        Assert.assertTrue(mItemClicked.isFolder());
     }
 }
