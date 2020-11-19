@@ -3985,15 +3985,7 @@
   },
 
   "ManagedGuestSessionAutoLaunchNotificationReduced": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "ManagedGuestSessionAutoLaunchNotificationReduced": true
-        },
-        "prefs": { "managed_session.reduce_auto_launch_notification": { "local_state": true } }
-      }
-    ]
+    "note": "This policy has been removed."
   },
 
   "ManagedGuestSessionPrivacyWarningsEnabled": {

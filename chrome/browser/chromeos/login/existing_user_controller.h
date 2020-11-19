@@ -32,7 +32,6 @@
 #include "chromeos/login/auth/login_performer.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -70,10 +69,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Returns the current existing user controller fetched from the current
   // LoginDisplayHost instance.
   static ExistingUserController* current_controller();
-
-  // Registers the pref for ManagedGuestSessionAutoLaunchNotificationReduced
-  // policy.
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // All UI initialization is deferred till Init() call.
   ExistingUserController();

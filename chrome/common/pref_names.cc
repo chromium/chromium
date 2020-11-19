@@ -877,11 +877,6 @@ const char kManagedSessionEnabled[] = "managed_session.enabled";
 const char kManagedSessionUseFullLoginWarning[] =
     "managed_session.use_full_warning";
 
-// Boolean pref indicating whether the privacy notification displayed when the
-// managed-guest session on Chrome OS is auto-launched should be pinned or not.
-const char kManagedGuestSessionAutoLaunchNotificationReduced[] =
-    "managed_session.reduce_auto_launch_notification";
-
 // Boolean pref indicating whether the user has previously dismissed the
 // one-time notification indicating the need for a cleanup powerwash after TPM
 // firmware update that didn't flush the TPM SRK.

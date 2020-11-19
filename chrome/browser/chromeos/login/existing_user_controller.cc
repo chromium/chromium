@@ -137,9 +137,6 @@ const char kAutoLaunchNotificationId[] =
 
 const char kAutoLaunchNotifierId[] = "ash.managed_guest_session-auto_launch";
 
-// Auto-launch notification timeout, in milliseconds.
-int kAutoLaunchNotificationDelay = 2500;
-
 // Enum types for Login.PasswordChangeFlow.
 // Don't change the existing values and update LoginPasswordChangeFlow in
 // histogram.xml when making changes here.
@@ -362,66 +359,6 @@ AccountId GetPublicSessionAutoLoginAccountId(
   }
   return EmptyAccountId();
 }
-
-class AutoLaunchNotificationDelegate
-    : public message_center::HandleNotificationClickDelegate {
- public:
-  AutoLaunchNotificationDelegate()
-      : message_center::HandleNotificationClickDelegate(
-            base::BindRepeating([](base::Optional<int> button_index) {
-              DCHECK(button_index);
-              SystemTrayClient::Get()->ShowEnterpriseInfo();
-            })) {
-    PrefService* local_state = g_browser_process->local_state();
-    if (local_state) {
-      pref_change_registrar_.Init(local_state);
-
-      // base::Unretained is safe here because `this` outlives the registrar.
-      pref_change_registrar_.Add(
-          prefs::kManagedGuestSessionAutoLaunchNotificationReduced,
-          base::BindRepeating(&AutoLaunchNotificationDelegate::
-                                  OnAutoLaunchNotificationPrefChanged,
-                              base::Unretained(this)));
-    }
-  }
-
- protected:
-  ~AutoLaunchNotificationDelegate() override {}
-
- private:
-  // Starts auto_login_notification_timer_ if the pref is set to close the
-  // privacy warning notification, and stops it otherwise.
-  void OnAutoLaunchNotificationPrefChanged() {
-    bool is_pref_set = g_browser_process->local_state()->GetBoolean(
-        prefs::kManagedGuestSessionAutoLaunchNotificationReduced);
-    if (is_pref_set) {
-      auto_launch_notification_timer_.reset(new base::OneShotTimer);
-      auto_launch_notification_timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kAutoLaunchNotificationDelay),
-          base::BindOnce(
-              &AutoLaunchNotificationDelegate::CloseAutoLaunchNotification,
-              weak_factory_.GetWeakPtr()));
-    } else if (auto_launch_notification_timer_ &&
-               auto_launch_notification_timer_->IsRunning()) {
-      auto_launch_notification_timer_->Stop();
-    }
-  }
-
-  void CloseAutoLaunchNotification() {
-    SystemNotificationHelper::GetInstance()->Close(kAutoLaunchNotificationId);
-  }
-
-  // Used for the pref of the ManagedGuestSessionAutoLaunchNotificationReduced
-  // policy.
-  PrefChangeRegistrar pref_change_registrar_;
-
-  // ManagedGuestSessionAutoLaunchNotificationReduced timer.
-  std::unique_ptr<base::OneShotTimer> auto_launch_notification_timer_;
-
-  // Factory of callbacks.
-  base::WeakPtrFactory<AutoLaunchNotificationDelegate> weak_factory_{this};
-};
 
 }  // namespace
 
@@ -1162,7 +1099,12 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
   const base::string16 message = l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING,
       base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()));
-  auto delegate = base::MakeRefCounted<AutoLaunchNotificationDelegate>();
+  auto delegate =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([](base::Optional<int> button_index) {
+            DCHECK(button_index);
+            SystemTrayClient::Get()->ShowEnterpriseInfo();
+          }));
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kAutoLaunchNotificationId,
@@ -1838,12 +1780,6 @@ void ExistingUserController::ClearActiveDirectoryState() {
   }
   // Clear authpolicyd state so nothing could leak from one user to another.
   AuthPolicyHelper::Restart();
-}
-
-void ExistingUserController::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kManagedGuestSessionAutoLaunchNotificationReduced, false);
 }
 
 }  // namespace chromeos
