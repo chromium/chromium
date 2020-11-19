@@ -259,28 +259,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionContentSettingsApiLazyTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-class ExtensionContentSettingsApiTestWithStandardFeatures
-    : public ExtensionContentSettingsApiLazyTest {
- public:
-  ExtensionContentSettingsApiTestWithStandardFeatures() {
-    scoped_feature_list_.InitAndEnableFeature(
-        content_settings::kDisallowWildcardsInPluginContentSettings);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         ExtensionContentSettingsApiTestWithStandardFeatures,
-                         ::testing::Values(ContextType::kEventPage));
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionContentSettingsApiTestWithStandardFeatures,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithStandardFeatures,
-                       Standard) {
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, Standard) {
   CheckContentSettingsDefault();
 
   const char kExtensionPath[] = "content_settings/standard";
@@ -384,34 +363,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
       "ContentSettings.ExtensionNonEmbeddedSettingSet", 2);
 }
 
-class ExtensionContentSettingsApiTestWithPluginsApiDisabled
-    : public ExtensionContentSettingsApiLazyTest {
- public:
-  ExtensionContentSettingsApiTestWithPluginsApiDisabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        content_settings::kDisallowWildcardsInPluginContentSettings);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         ExtensionContentSettingsApiTestWithPluginsApiDisabled,
-                         ::testing::Values(ContextType::kEventPage));
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionContentSettingsApiTestWithPluginsApiDisabled,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithPluginsApiDisabled,
-                       PluginsApiTest) {
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, PluginsApiTest) {
   constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
   EXPECT_TRUE(RunLazyTest(kExtensionPath)) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithPluginsApiDisabled,
-                       ConsoleErrorTest) {
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, ConsoleErrorTest) {
   constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(kExtensionPath));

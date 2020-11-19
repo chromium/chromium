@@ -26,7 +26,6 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -105,12 +104,6 @@ void ContentSettingsStore::SetExtensionContentSetting(
     ContentSettingsType type,
     ContentSetting setting,
     ExtensionPrefsScope scope) {
-  if (base::FeatureList::IsEnabled(
-          content_settings::kDisallowWildcardsInPluginContentSettings) &&
-      type == ContentSettingsType::PLUGINS &&
-      primary_pattern.HasHostWildcards()) {
-    return;
-  }
   {
     base::AutoLock lock(lock_);
     OriginIdentifierValueMap* map = GetValueMap(ext_id, scope);

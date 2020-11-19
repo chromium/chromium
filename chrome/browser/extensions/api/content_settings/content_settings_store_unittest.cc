@@ -339,38 +339,4 @@ TEST_F(ContentSettingsStoreTest, RemoveEmbedded) {
   store()->RemoveObserver(&observer);
 }
 
-TEST_F(ContentSettingsStoreTest, DisallowWildcardsInFlash) {
-  // Enabling the feature which disallows wildcard matching for Plugin content
-  // settings.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      content_settings::kDisallowWildcardsInPluginContentSettings);
-
-  // Register extension.
-  std::string ext_id("my_extension");
-  RegisterExtension(ext_id);
-  ContentSettingsPattern primary_pattern =
-      ContentSettingsPattern::FromString("https://[*.]google.com");
-  ContentSettingsPattern secondary_pattern = ContentSettingsPattern::Wildcard();
-  store()->SetExtensionContentSetting(
-      ext_id, primary_pattern, secondary_pattern, ContentSettingsType::PLUGINS,
-      CONTENT_SETTING_ALLOW, kExtensionPrefsScopeRegular);
-  store()->SetExtensionContentSetting(
-      ext_id, primary_pattern, secondary_pattern, ContentSettingsType::COOKIES,
-      CONTENT_SETTING_ALLOW, kExtensionPrefsScopeRegular);
-
-  std::vector<content_settings::Rule> rules;
-  rules = GetSettingsForOneTypeFromStore(store(), ContentSettingsType::PLUGINS,
-                                         false);
-  // Number of rules will be zero because we tried to add a pattern with
-  // wildcards.
-  ASSERT_EQ(rules.size(), 0u);
-
-  rules = GetSettingsForOneTypeFromStore(store(), ContentSettingsType::COOKIES,
-                                         false);
-  // Here we will have one rule because wildcard patterns are allowed for
-  // ContentSettingsType::COOKIES.
-  ASSERT_EQ(rules.size(), 1u);
-}
-
 }  // namespace extensions

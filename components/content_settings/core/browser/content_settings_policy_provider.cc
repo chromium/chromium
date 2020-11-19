@@ -20,7 +20,6 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -33,8 +32,6 @@ struct PrefsForManagedContentSettingsMapEntry {
   const char* pref_name;
   ContentSettingsType content_type;
   ContentSetting setting;
-  content_settings::WildcardsInPrimaryPattern wildcards_in_primary_pattern =
-      content_settings::WildcardsInPrimaryPattern::ALLOWED;
 };
 
 const PrefsForManagedContentSettingsMapEntry
@@ -392,18 +389,6 @@ void PolicyProvider::GetContentSettingsFromPreferences(
           !content_settings::WebsiteSettingsRegistry::GetInstance()
                ->Get(content_type)
                ->SupportsSecondaryPattern()) {
-        continue;
-      }
-
-      if (base::FeatureList::IsEnabled(
-              content_settings::kDisallowWildcardsInPluginContentSettings) &&
-          kPrefsForManagedContentSettingsMap[i].wildcards_in_primary_pattern ==
-              WildcardsInPrimaryPattern::NOT_ALLOWED &&
-          pattern_pair.first.HasHostWildcards()) {
-        discarded_rules_value_map_[content_type].push_back(
-            Rule(pattern_pair.first, secondary_pattern,
-                 base::Value(kPrefsForManagedContentSettingsMap[i].setting),
-                 base::Time(), content_settings::SessionModel::Durable));
         continue;
       }
 

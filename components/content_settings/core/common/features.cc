@@ -15,8 +15,4 @@ const base::Feature kImprovedCookieControls{"ImprovedCookieControls",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_IOS)
 
-const base::Feature kDisallowWildcardsInPluginContentSettings{
-    "DisallowWildcardsInPluginContentSettings",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace content_settings

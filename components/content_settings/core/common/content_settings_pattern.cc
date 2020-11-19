@@ -616,10 +616,6 @@ ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
   return path_relation;
 }
 
-bool ContentSettingsPattern::HasHostWildcards() const {
-  return parts_.has_domain_wildcard;
-}
-
 bool ContentSettingsPattern::operator==(
     const ContentSettingsPattern& other) const {
   return Compare(other) == IDENTITY;

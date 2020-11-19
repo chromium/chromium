@@ -20,7 +20,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/private_network_settings.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/policy/core/common/policy_map.h"
@@ -313,18 +312,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecurePrivateNetworkRequests) {
   EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map, GURL("http://woohoo.com/index.html")));
 }
-
-class DisallowWildcardPolicyTest : public PolicyTest {
- public:
-  DisallowWildcardPolicyTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        content_settings::kDisallowWildcardsInPluginContentSettings);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 
 class ScrollToTextFragmentPolicyTest
     : public PolicyTest,
