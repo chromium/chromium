@@ -33,14 +33,9 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   void ShowDialog() override;
   void CloseDialog() override;
 
-  // views::BubbleDialogDelegateView:
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  void WindowClosing() override;
-
   // Called by MigratableCardView when the user clicks the trash can button.
   // |guid| is the GUID of the credit card to be deleted.
+  void OnCardCheckboxToggled();
   void DeleteCard(const std::string& guid);
   void UpdateLayout();
 
@@ -50,6 +45,8 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   void ConstructView();
   void OnDialogAccepted();
   void OnDialogCancelled();
+  void OnWindowClosing();
+  bool ShouldOkButtonBeEnabled() const;
 
   base::string16 GetOkButtonLabel() const;
   base::string16 GetCancelButtonLabel() const;

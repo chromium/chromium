@@ -356,10 +356,16 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
                      base::Unretained(this)));
   SetAcceptCallback(base::BindOnce(
       &LocalCardMigrationDialogView::OnDialogAccepted, base::Unretained(this)));
+  RegisterWindowClosingCallback(base::BindOnce(
+      &LocalCardMigrationDialogView::OnWindowClosing, base::Unretained(this)));
+  // This should be a modal dialog blocking the browser since we don't want
+  // users to lose progress in the migration workflow until they are done.
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+  SetShowCloseButton(false);
 }
 
 LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {}
@@ -374,29 +380,6 @@ void LocalCardMigrationDialogView::ShowDialog() {
 void LocalCardMigrationDialogView::CloseDialog() {
   controller_ = nullptr;
   GetWidget()->Close();
-}
-
-ui::ModalType LocalCardMigrationDialogView::GetModalType() const {
-  // This should be a modal dialog blocking the browser since we don't want
-  // users to lose progress in the migration workflow until they are done.
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-bool LocalCardMigrationDialogView::ShouldShowCloseButton() const {
-  return false;
-}
-
-// TODO(crbug.com/867194): Update this method when adding feedback.
-bool LocalCardMigrationDialogView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  // If the dialog is offer dialog and all checkboxes are unchecked, disable the
-  // save button.
-  if (controller_->GetViewState() == LocalCardMigrationDialogState::kOffered &&
-      button == ui::DIALOG_BUTTON_OK) {
-    DCHECK(offer_view_);
-    return !offer_view_->GetSelectedCardGuids().empty();
-  }
-  return true;
 }
 
 void LocalCardMigrationDialogView::OnDialogAccepted() {
@@ -424,17 +407,29 @@ void LocalCardMigrationDialogView::OnDialogCancelled() {
   }
 }
 
-void LocalCardMigrationDialogView::WindowClosing() {
+void LocalCardMigrationDialogView::OnWindowClosing() {
   if (controller_) {
     controller_->OnDialogClosed();
     controller_ = nullptr;
   }
 }
 
+bool LocalCardMigrationDialogView::ShouldOkButtonBeEnabled() const {
+  if (controller_->GetViewState() == LocalCardMigrationDialogState::kOffered) {
+    DCHECK(offer_view_) << "This method can't be called before ConstructView";
+    return !offer_view_->GetSelectedCardGuids().empty();
+  }
+  return true;
+}
+
 void LocalCardMigrationDialogView::DeleteCard(const std::string& guid) {
   controller_->DeleteCard(guid);
   ConstructView();
   UpdateLayout();
+}
+
+void LocalCardMigrationDialogView::OnCardCheckboxToggled() {
+  SetButtonEnabled(ui::DIALOG_BUTTON_OK, ShouldOkButtonBeEnabled());
 }
 
 // TODO(crbug.com/913571): Figure out a way to avoid two consecutive layouts.
@@ -481,6 +476,7 @@ void LocalCardMigrationDialogView::ConstructView() {
     offer_view_->SetID(DialogViewId::MAIN_CONTENT_VIEW_MIGRATION_OFFER_DIALOG);
     card_list_view_ = offer_view_->card_list_view_;
     AddChildView(offer_view_);
+    SetButtonEnabled(ui::DIALOG_BUTTON_OK, ShouldOkButtonBeEnabled());
   } else {
     AddChildView(CreateFeedbackContentView(controller_, this).release());
   }

@@ -212,7 +212,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
 void MigratableCardView::CheckboxPressed() {
   // If the button clicked is a checkbox. Enable/disable the save
   // button if needed.
-  parent_dialog_->DialogModelChanged();
+  parent_dialog_->OnCardCheckboxToggled();
   // The warning text will be visible only when user unchecks the checkbox.
   checkbox_uncheck_text_container_->SetVisible(!checkbox_->GetChecked());
   InvalidateLayout();
