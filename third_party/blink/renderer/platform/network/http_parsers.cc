@@ -121,6 +121,14 @@ WTF::Vector<WTF::String> ConvertToBlink(std::vector<std::string> in) {
   return out;
 }
 
+blink::CSPTrustedTypesPtr ConvertToBlink(CSPTrustedTypesPtr trusted_types) {
+  if (!trusted_types)
+    return nullptr;
+  return blink::CSPTrustedTypes::New(ConvertToBlink(trusted_types->list),
+                                     trusted_types->allow_any,
+                                     trusted_types->allow_duplicates);
+}
+
 blink::ContentSecurityPolicyPtr ConvertToBlink(
     ContentSecurityPolicyPtr policy_in) {
   return blink::ContentSecurityPolicy::New(
@@ -134,6 +142,7 @@ blink::ContentSecurityPolicyPtr ConvertToBlink(
                 ConvertToBlink(std::move(policy_in->plugin_types.value())))
           : base::nullopt,
       policy_in->require_trusted_types_for,
+      ConvertToBlink(std::move(policy_in->trusted_types)),
       ConvertToBlink(std::move(policy_in->parsing_errors)));
 }
 

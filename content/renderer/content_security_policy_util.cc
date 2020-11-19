@@ -51,6 +51,16 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
 
   policy->require_trusted_types_for = policy_in.require_trusted_types_for;
 
+  if (policy_in.trusted_types) {
+    std::vector<std::string> list;
+    for (const auto& type : policy_in.trusted_types->list) {
+      list.emplace_back(type.Utf8());
+    }
+    policy->trusted_types = network::mojom::CSPTrustedTypes::New(
+        std::move(list), policy_in.trusted_types->allow_any,
+        policy_in.trusted_types->allow_duplicates);
+  }
+
   return policy;
 }
 

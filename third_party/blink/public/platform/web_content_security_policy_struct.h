@@ -73,6 +73,14 @@ struct WebContentSecurityPolicyDirective {
 
 // TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
 // from blink.
+struct WebCSPTrustedTypes {
+  WebVector<WebString> list;
+  bool allow_any;
+  bool allow_duplicates;
+};
+
+// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
+// from blink.
 struct WebContentSecurityPolicy {
   network::mojom::ContentSecurityPolicyType disposition;
   network::mojom::ContentSecurityPolicySource source;
@@ -82,6 +90,7 @@ struct WebContentSecurityPolicy {
   WebString header;
   bool use_reporting_api;
   network::mojom::CSPRequireTrustedTypesFor require_trusted_types_for;
+  base::Optional<WebCSPTrustedTypes> trusted_types;
 };
 
 }  // namespace blink

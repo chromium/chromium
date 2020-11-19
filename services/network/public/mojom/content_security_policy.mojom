@@ -132,6 +132,21 @@ enum CSPRequireTrustedTypesFor {
   Script = 1,
 };
 
+// The parsed value of the CSP directive 'trusted-types'.
+// https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive
+struct CSPTrustedTypes {
+  // The list of policies allowed by the 'trusted-types' directive.
+  array<string> list;
+
+  // This is true if the directive value contains the wildcard * (meaning all
+  // policy names are allowed).
+  bool allow_any = false;
+
+  // This is true if the directive value contains the keyword 'allow-duplicates'
+  // (which allows creating policies with a name that was already used).
+  bool allow_duplicates = false;
+};
+
 struct ContentSecurityPolicy {
   map<CSPDirectiveName, CSPSourceList> directives;
 
@@ -169,6 +184,14 @@ struct ContentSecurityPolicy {
   // https://w3c.github.io/webappsec-trusted-types/dist/spec/#require-trusted-types-for-csp-directive
   CSPRequireTrustedTypesFor require_trusted_types_for =
       CSPRequireTrustedTypesFor.None;
+
+  // The parsed value of the directive 'trusted-types'.
+  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive
+  // Note: If this is null, the directive was not present. On the other side, if
+  // this is a default CSPTrustedTypes struct with empty list, it means that the
+  // directive was present with empty value, so policies may not be created and
+  // no DOM XSS injection sinks can be used at all.
+  CSPTrustedTypes? trusted_types;
 
   // An array containing a set of errors occurred while parsing the CSP header.
   array<string> parsing_errors;

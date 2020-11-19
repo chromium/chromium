@@ -256,6 +256,17 @@ WebString ConvertToPublic(
 
 // TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
 // from blink.
+base::Optional<WebCSPTrustedTypes> ConvertToPublic(
+    network::mojom::blink::CSPTrustedTypesPtr trusted_types) {
+  if (!trusted_types)
+    return base::nullopt;
+  return WebCSPTrustedTypes{std::move(trusted_types->list),
+                            trusted_types->allow_any,
+                            trusted_types->allow_duplicates};
+}
+
+// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
+// from blink.
 WebContentSecurityPolicy ConvertToPublic(
     network::mojom::blink::ContentSecurityPolicyPtr policy) {
   WebVector<WebContentSecurityPolicyDirective> directives(
@@ -273,7 +284,8 @@ WebContentSecurityPolicy ConvertToPublic(
           std::move(policy->report_endpoints),
           policy->header->header_value,
           policy->use_reporting_api,
-          policy->require_trusted_types_for};
+          policy->require_trusted_types_for,
+          ConvertToPublic(std::move(policy->trusted_types))};
 }
 
 }  // namespace

@@ -671,6 +671,50 @@ TEST(ContentSecurityPolicy, ParseRequireTrustedTypesFor) {
   }
 }
 
+TEST(ContentSecurityPolicy, ParseTrustedTypes) {
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("script-src 'none'");
+    EXPECT_EQ(policies[0]->directives.size(), 1u);
+    EXPECT_FALSE(policies[0]->trusted_types);
+  }
+
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("trusted-types 'none'");
+    EXPECT_EQ(policies[0]->directives.size(), 0u);
+    EXPECT_TRUE(policies[0]->trusted_types);
+    EXPECT_EQ(policies[0]->trusted_types->list.size(), 0u);
+    EXPECT_FALSE(policies[0]->trusted_types->allow_any);
+    EXPECT_FALSE(policies[0]->trusted_types->allow_duplicates);
+    EXPECT_EQ(policies[0]->trusted_types->list.size(), 0u);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
+  }
+
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("trusted-types policy   'none'  other_policy@ invalid~policy");
+    EXPECT_EQ(policies[0]->directives.size(), 0u);
+    EXPECT_TRUE(policies[0]->trusted_types);
+    EXPECT_EQ(policies[0]->trusted_types->list.size(), 2u);
+    EXPECT_EQ(policies[0]->trusted_types->list[0], "policy");
+    EXPECT_EQ(policies[0]->trusted_types->list[1], "other_policy@");
+    EXPECT_FALSE(policies[0]->trusted_types->allow_any);
+    EXPECT_FALSE(policies[0]->trusted_types->allow_duplicates);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 2u);
+    EXPECT_EQ(
+        policies[0]->parsing_errors[0],
+        "The value of the Content Security Policy directive 'trusted_types' "
+        "contains an invalid policy: 'none'. It will be ignored. "
+        "Note that 'none' has no effect unless it is the only "
+        "expression in the directive value.");
+    EXPECT_EQ(
+        policies[0]->parsing_errors[1],
+        "The value of the Content Security Policy directive 'trusted_types' "
+        "contains an invalid policy: 'invalid~policy'. It will be ignored.");
+  }
+}
+
 TEST(ContentSecurityPolicy, ParseReportEndpoint) {
   // report-uri directive.
   {

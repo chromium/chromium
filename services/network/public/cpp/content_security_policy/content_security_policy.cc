@@ -743,6 +743,53 @@ network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
   return network::mojom::CSPRequireTrustedTypesFor::None;
 }
 
+// This implements tt-policy-name from
+// https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive/
+bool IsValidTrustedTypesPolicyName(base::StringPiece value) {
+  return base::ranges::all_of(value, [](char c) {
+    return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) ||
+           base::Contains("-#=_/@.%", c);
+  });
+}
+
+// Parse the 'trusted-types' directive.
+// https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive
+network::mojom::CSPTrustedTypesPtr ParseTrustedTypes(
+    base::StringPiece value,
+    std::vector<std::string>& parsing_errors) {
+  auto out = network::mojom::CSPTrustedTypes::New();
+  std::vector<base::StringPiece> pieces =
+      base::SplitStringPiece(value, base::kWhitespaceASCII,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (pieces.size() == 1 && pieces[0] == "'none'")
+    return out;
+
+  for (const auto expression : pieces) {
+    if (expression == "*")
+      out->allow_any = true;
+    else if (expression == "'allow-duplicates'")
+      out->allow_duplicates = true;
+    else if (expression == "'none'") {
+      parsing_errors.emplace_back(
+          "The value of the Content Security Policy directive "
+          "'trusted_types' contains an invalid policy: 'none'. "
+          "It will be ignored. "
+          "Note that 'none' has no effect unless it is the only "
+          "expression in the directive value.");
+    } else if (IsValidTrustedTypesPolicyName(expression))
+      out->list.emplace_back(expression);
+    else {
+      parsing_errors.emplace_back(base::StringPrintf(
+          "The value of the Content Security Policy directive "
+          "'trusted_types' contains an invalid policy: '%s'. "
+          "It will be ignored.",
+          expression.as_string().c_str()));
+    }
+  }
+  return out;
+}
+
 // Parses a reporting directive.
 // https://w3c.github.io/webappsec-csp/#directives-reporting
 // TODO(lfg): The report-to should be treated as a single token according to the
@@ -899,12 +946,16 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
             ParseRequireTrustedTypesFor(directive.second);
         break;
 
-        // We check the following three directives so that we do not trigger a
-        // warning because of an unrecognized directive. However, we skip
-        // parsing them for now since we do not need these directives here (they
-        // are parsed and enforced in the blink CSP parser).
-      case CSPDirectiveName::BlockAllMixedContent:
       case CSPDirectiveName::TrustedTypes:
+        out->trusted_types =
+            ParseTrustedTypes(directive.second, out->parsing_errors);
+        break;
+
+        // We check the following directive so that we do not trigger a warning
+        // because of an unrecognized directive. However, we skip parsing it for
+        // now since we do not need it here (it is parsed and enforced in the
+        // blink CSP parser).
+      case CSPDirectiveName::BlockAllMixedContent:
         break;
 
       case CSPDirectiveName::ReportTo:
