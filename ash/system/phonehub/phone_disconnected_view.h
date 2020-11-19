@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_PHONEHUB_CONNECTION_ERROR_VIEW_H_
-#define ASH_SYSTEM_PHONEHUB_CONNECTION_ERROR_VIEW_H_
+#ifndef ASH_SYSTEM_PHONEHUB_PHONE_DISCONNECTED_VIEW_H_
+#define ASH_SYSTEM_PHONEHUB_PHONE_DISCONNECTED_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
@@ -22,24 +22,17 @@ namespace phone_hub_metrics {
 enum class InterstitialScreenEvent;
 }
 
-// An interstitial view represeting that the Phone Hub feature is not available
-// due to connection issues.
-class ASH_EXPORT ConnectionErrorView : public PhoneHubContentView {
+// An interstitial view represeting that connection to the phone has been
+// interrupted.
+class ASH_EXPORT PhoneDisconnectedView : public PhoneHubContentView {
  public:
-  METADATA_HEADER(ConnectionErrorView);
+  METADATA_HEADER(PhoneDisconnectedView);
 
-  // Defines possible connection error states of the Phone Hub feature.
-  enum class ErrorStatus {
-    kDisconnected,  // The connection to the phone has been interrupted.
-    kReconnecting,  // Attempts to resume the connection to the phone.
-  };
-
-  ConnectionErrorView(
-      ErrorStatus error,
+  explicit PhoneDisconnectedView(
       chromeos::phonehub::ConnectionScheduler* connection_scheduler);
-  ConnectionErrorView(const ConnectionErrorView&) = delete;
-  ConnectionErrorView& operator=(const ConnectionErrorView&) = delete;
-  ~ConnectionErrorView() override;
+  PhoneDisconnectedView(const PhoneDisconnectedView&) = delete;
+  PhoneDisconnectedView& operator=(const PhoneDisconnectedView&) = delete;
+  ~PhoneDisconnectedView() override;
 
   // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
@@ -55,4 +48,4 @@ class ASH_EXPORT ConnectionErrorView : public PhoneHubContentView {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_PHONEHUB_CONNECTION_ERROR_VIEW_H_
+#endif  // ASH_SYSTEM_PHONEHUB_PHONE_DISCONNECTED_VIEW_H_

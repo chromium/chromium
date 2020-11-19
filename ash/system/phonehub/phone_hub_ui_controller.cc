@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
-#include "ash/system/phonehub/connection_error_view.h"
-#include "ash/system/phonehub/initial_connecting_view.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_connected_view.h"
+#include "ash/system/phonehub/phone_connecting_view.h"
+#include "ash/system/phonehub/phone_disconnected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "base/logging.h"
 #include "chromeos/components/phonehub/connection_scheduler.h"
@@ -65,15 +65,10 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
           OnboardingView::kExistingMultideviceUser);
     case UiState::kBluetoothDisabled:
       return std::make_unique<BluetoothDisabledView>();
-    case UiState::kInitialConnecting:
-      return std::make_unique<InitialConnectingView>();
     case UiState::kPhoneConnecting:
-      return std::make_unique<ConnectionErrorView>(
-          ConnectionErrorView::ErrorStatus::kReconnecting,
-          phone_hub_manager_->GetConnectionScheduler());
-    case UiState::kConnectionError:
-      return std::make_unique<ConnectionErrorView>(
-          ConnectionErrorView::ErrorStatus::kDisconnected,
+      return std::make_unique<PhoneConnectingView>();
+    case UiState::kPhoneDisconnected:
+      return std::make_unique<PhoneDisconnectedView>(
           phone_hub_manager_->GetConnectionScheduler());
     case UiState::kPhoneConnected:
       return std::make_unique<PhoneConnectedView>(phone_hub_manager_);
@@ -138,11 +133,11 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
       return should_show_onboarding_ui ? UiState::kOnboardingWithoutPhone
                                        : UiState::kHidden;
     case FeatureStatus::kPhoneSelectedAndPendingSetup:
-      return UiState::kInitialConnecting;
+      return UiState::kPhoneConnecting;
     case FeatureStatus::kUnavailableBluetoothOff:
       return UiState::kBluetoothDisabled;
     case FeatureStatus::kEnabledButDisconnected:
-      return UiState::kConnectionError;
+      return UiState::kPhoneDisconnected;
     case FeatureStatus::kEnabledAndConnecting:
       return UiState::kPhoneConnecting;
     case FeatureStatus::kEnabledAndConnected:

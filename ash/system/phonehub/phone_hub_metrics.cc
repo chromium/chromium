@@ -14,14 +14,12 @@ namespace {
 
 std::string GetInterstitialScreenEventHistogramName(Screen screen) {
   switch (screen) {
-    case Screen::kConnectionError:
-      return "Ash.PhoneHub.InterstitialScreenEvent.ConnectionError";
+    case Screen::kPhoneDisconnected:
+      return "Ash.PhoneHub.InterstitialScreenEvent.PhoneDisconnected";
     case Screen::kBluetoothOrWifiDisabled:
       return "Ash.PhoneHub.InterstitialScreenEvent.BluetoothOrWifiDisabled";
-    case Screen::kReconnecting:
-      return "Ash.PhoneHub.InterstitialScreenEvent.Reconnecting";
-    case Screen::kInitialConnecting:
-      return "Ash.PhoneHub.InterstitialScreenEvent.InitialConnecting";
+    case Screen::kPhoneConnecting:
+      return "Ash.PhoneHub.InterstitialScreenEvent.PhoneConnecting";
     case Screen::kOnboardingExistingMultideviceUser:
       return "Ash.PhoneHub.InterstitialScreenEvent.Onboarding."
              "ExistingMultideviceUser";

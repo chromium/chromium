@@ -46,9 +46,8 @@ class ASH_EXPORT PhoneHubUiController
     kOnboardingWithoutPhone,
     kOnboardingWithPhone,
     kBluetoothDisabled,
-    kInitialConnecting,
     kPhoneConnecting,
-    kConnectionError,
+    kPhoneDisconnected,
     kPhoneConnected,
   };
 

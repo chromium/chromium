@@ -1171,17 +1171,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
-  <summary>Events for the given PhoneHub interstitial screen.</summary>
+  <summary>
+    Events logged when the given PhoneHub interstitial screen is shown.
+  </summary>
 <!-- The entries below should be a subset of the PhoneHubScreen enum -->
 
   <token key="Screen">
     <variant name="BluetoothOrWifiDisabled"/>
-    <variant name="ConnectionError"/>
-    <variant name="InitialConnecting"/>
+    <variant name="ConnectionError">
+      <obsolete>
+        Renamed to PhoneDisconnected on Nov 2020.
+      </obsolete>
+    </variant>
+    <variant name="InitialConnecting">
+      <obsolete>
+        Combined into PhoneConnecting on Nov 2020.
+      </obsolete>
+    </variant>
     <variant name="Onboarding.ExistingMultideviceUser"/>
     <variant name="Onboarding.NewMultideviceUser"/>
     <variant name="OnboardingDismissPrompt"/>
-    <variant name="Reconnecting"/>
+    <variant name="PhoneConnecting"/>
+    <variant name="PhoneDisconnected"/>
+    <variant name="Reconnecting">
+      <obsolete>
+        Combined into PhoneConnecting on Nov 2020.
+      </obsolete>
+    </variant>
   </token>
 </histogram>
 

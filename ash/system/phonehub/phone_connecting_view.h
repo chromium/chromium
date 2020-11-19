@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_PHONEHUB_INITIAL_CONNECTING_VIEW_H_
-#define ASH_SYSTEM_PHONEHUB_INITIAL_CONNECTING_VIEW_H_
+#ifndef ASH_SYSTEM_PHONEHUB_PHONE_CONNECTING_VIEW_H_
+#define ASH_SYSTEM_PHONEHUB_PHONE_CONNECTING_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
@@ -14,17 +14,17 @@ namespace ash {
 
 class PhoneHubInterstitialView;
 
-// An interstitial view representing this device is trying to connect to your
-// phone after the user has opted in the Phone Hub feature through the
-// onboarding UI.
-class ASH_EXPORT InitialConnectingView : public PhoneHubContentView {
+// A generic connecting view representing this device is trying to connect to
+// your phone either for the first time after user has opted in or for resuming
+// an interrupted connection.
+class ASH_EXPORT PhoneConnectingView : public PhoneHubContentView {
  public:
-  METADATA_HEADER(InitialConnectingView);
+  METADATA_HEADER(PhoneConnectingView);
 
-  InitialConnectingView();
-  InitialConnectingView(const InitialConnectingView&) = delete;
-  InitialConnectingView& operator=(const InitialConnectingView&) = delete;
-  ~InitialConnectingView() override;
+  PhoneConnectingView();
+  PhoneConnectingView(const PhoneConnectingView&) = delete;
+  PhoneConnectingView& operator=(const PhoneConnectingView&) = delete;
+  ~PhoneConnectingView() override;
 
   // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
@@ -37,4 +37,4 @@ class ASH_EXPORT InitialConnectingView : public PhoneHubContentView {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_PHONEHUB_INITIAL_CONNECTING_VIEW_H_
+#endif  // ASH_SYSTEM_PHONEHUB_PHONE_CONNECTING_VIEW_H_

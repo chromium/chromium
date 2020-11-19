@@ -18,17 +18,19 @@ enum class InterstitialScreenEvent {
 };
 
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Note that value 2 and 3 have been deprecated and should not be reused.
 enum class Screen {
   kBluetoothOrWifiDisabled = 0,
-  kConnectionError = 1,
-  kInitialConnecting = 2,
-  kReconnecting = 3,
+  kPhoneDisconnected = 1,
   kOnboardingExistingMultideviceUser = 4,
   kOnboardingNewMultideviceUser = 5,
   kPhoneConnected = 6,
   kOnboardingDismissPrompt = 7,
   kInvalid = 8,
-  kMaxValue = kInvalid
+  kPhoneConnecting = 9,
+  kMaxValue = kPhoneConnecting
 };
 
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.

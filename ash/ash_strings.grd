@@ -1129,22 +1129,22 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_OK_BUTTON" desc="Confirm button on the onboarding dismiss dialog to acknowledge.">
         OK
       </message>
-      <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_TITLE" desc="The title of the initial connecting dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature.">
+      <message name="IDS_ASH_PHONE_HUB_PHONE_CONNECTING_DIALOG_TITLE" desc="The title of the generic connecting dialog that indicates the device is trying to connect to your phone.">
         Connecting...
       </message>
-      <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature.">
+      <message name="IDS_ASH_PHONE_HUB_PHONE_CONNECTING_DIALOG_DESCRIPTION" desc="The description of the generic connecting dialog that indicates the device is trying to connect to your phone.">
         Make sure your phone is nearby with Bluetooth and Wi-Fi is turned on.
       </message>
-      <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_TITLE" desc="The title of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
+      <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_TITLE" desc="The title of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
         Can’t find your phone
       </message>
-      <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
+      <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
         Looks like your phone is not online and we are not able to connect to it.
       </message>
-      <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_REFRESH_BUTTON" desc="Refresh button on the connection error dialog to retry the connection attempt to the phone.">
+      <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON" desc="Refresh button on the disconnected dialog to retry the connection attempt to the phone.">
         Refresh
       </message>
-      <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the connection error dialog to show more related information.">
+      <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the disconnected dialog to show more related information.">
         Learn more
       </message>
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_TITLE" desc="The title of the dialog that pops up when the phone hub feature is not available because Bluetooth is disabled on this device.">

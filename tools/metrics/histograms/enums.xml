@@ -58317,14 +58317,15 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="PhoneHubScreen">
   <int value="0" label="BluetoothOrWifiDisabled"/>
-  <int value="1" label="ConnectionError"/>
-  <int value="2" label="InitialConnecting"/>
-  <int value="3" label="Reconnecting"/>
+  <int value="1" label="PhoneDisconnected"/>
+  <int value="2" label="InitialConnecting (Deprecated)"/>
+  <int value="3" label="Reconnecting (Deprecated)"/>
   <int value="4" label="Onboarding.ExistingMultideviceUser"/>
   <int value="5" label="Onboarding.NewMultideviceUser"/>
   <int value="6" label="PhoneConnected"/>
   <int value="7" label="OnboardingDismissPrompt"/>
   <int value="8" label="Invalid"/>
+  <int value="9" label="PhoneConnecting"/>
 </enum>
 
 <enum name="PhoneNumberRegexVariantResult">

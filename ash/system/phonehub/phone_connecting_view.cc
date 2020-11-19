@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/phonehub/initial_connecting_view.h"
+#include "ash/system/phonehub/phone_connecting_view.h"
 
 #include <algorithm>
 #include <memory>
@@ -23,8 +23,8 @@ namespace ash {
 using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::Screen;
 
-InitialConnectingView::InitialConnectingView() {
-  SetID(PhoneHubViewID::kInitialConnectingView);
+PhoneConnectingView::PhoneConnectingView() {
+  SetID(PhoneHubViewID::kPhoneConnectingView);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   content_view_ = AddChildView(
       std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/true));
@@ -35,20 +35,20 @@ InitialConnectingView::InitialConnectingView() {
           IDR_PHONE_HUB_CONNECTING_IMAGE);
   content_view_->SetImage(*image);
   content_view_->SetTitle(l10n_util::GetStringUTF16(
-      IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_TITLE));
+      IDS_ASH_PHONE_HUB_PHONE_CONNECTING_DIALOG_TITLE));
   content_view_->SetDescription(l10n_util::GetStringUTF16(
-      IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION));
+      IDS_ASH_PHONE_HUB_PHONE_CONNECTING_DIALOG_DESCRIPTION));
 
   LogInterstitialScreenEvent(InterstitialScreenEvent::kShown);
 }
 
-InitialConnectingView::~InitialConnectingView() = default;
+PhoneConnectingView::~PhoneConnectingView() = default;
 
-phone_hub_metrics::Screen InitialConnectingView::GetScreenForMetrics() const {
-  return Screen::kInitialConnecting;
+phone_hub_metrics::Screen PhoneConnectingView::GetScreenForMetrics() const {
+  return Screen::kPhoneConnecting;
 }
 
-BEGIN_METADATA(InitialConnectingView, views::View)
+BEGIN_METADATA(PhoneConnectingView, views::View)
 END_METADATA
 
 }  // namespace ash

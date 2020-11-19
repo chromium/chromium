@@ -30,9 +30,8 @@ enum PhoneHubViewID {
   kOnboardingDismissPromptView,
   kOnboardingDismissAckButton,
 
-  // Connection error view and its components.
+  // Phone disconnected view and its components.
   kDisconnectedView,
-  kReconnectingView,
   kDisconnectedLearnMoreButton,
   kDisconnectedRefreshButton,
 
@@ -41,7 +40,7 @@ enum PhoneHubViewID {
   kBluetoothDisabledLearnMoreButton,
 
   kPhoneConnectedView,
-  kInitialConnectingView,
+  kPhoneConnectingView,
 };
 
 }  // namespace ash

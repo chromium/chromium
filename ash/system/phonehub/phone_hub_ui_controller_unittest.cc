@@ -100,11 +100,11 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithPhone) {
 TEST_F(PhoneHubUiControllerTest, PhoneConnectingForOnboarding) {
   GetFeatureStatusProvider()->SetStatus(
       FeatureStatus::kPhoneSelectedAndPendingSetup);
-  EXPECT_EQ(PhoneHubUiController::UiState::kInitialConnecting,
+  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
-  EXPECT_EQ(PhoneHubViewID::kInitialConnectingView, content_view->GetID());
+  EXPECT_EQ(PhoneHubViewID::kPhoneConnectingView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
@@ -119,7 +119,7 @@ TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
 
 TEST_F(PhoneHubUiControllerTest, PhoneDisconnected) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledButDisconnected);
-  EXPECT_EQ(PhoneHubUiController::UiState::kConnectionError,
+  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneDisconnected,
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
@@ -132,7 +132,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
-  EXPECT_EQ(PhoneHubViewID::kReconnectingView, content_view->GetID());
+  EXPECT_EQ(PhoneHubViewID::kPhoneConnectingView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
