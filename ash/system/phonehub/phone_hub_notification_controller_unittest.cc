@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/components/phonehub/fake_notification_manager.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
@@ -66,6 +67,11 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
     feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
     AshTestBase::SetUp();
 
+    feature_status_provider_ =
+        phone_hub_manager_.fake_feature_status_provider();
+    feature_status_provider_->SetStatus(
+        chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
+
     message_center_ = message_center::MessageCenter::Get();
 
     controller_ = Shell::Get()
@@ -79,11 +85,16 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
     fake_notifications_.insert(CreateNotification(kPhoneHubNotificationId2));
   }
 
+  message_center::Notification* FindNotification(const std::string& cros_id) {
+    return message_center_->FindVisibleNotificationById(cros_id);
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   message_center::MessageCenter* message_center_;
   chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
   chromeos::phonehub::FakeNotificationManager* notification_manager_;
+  chromeos::phonehub::FakeFeatureStatusProvider* feature_status_provider_;
   PhoneHubNotificationController* controller_;
   base::flat_set<chromeos::phonehub::Notification> fake_notifications_;
 };
@@ -93,15 +104,11 @@ TEST_F(PhoneHubNotificationControllerTest, AddNotifications) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
-  ASSERT_TRUE(
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId0));
-  ASSERT_TRUE(
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId1));
-  ASSERT_TRUE(
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId2));
+  ASSERT_TRUE(FindNotification(kCrOSNotificationId0));
+  ASSERT_TRUE(FindNotification(kCrOSNotificationId1));
+  ASSERT_TRUE(FindNotification(kCrOSNotificationId2));
 
-  auto* sample_notification =
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId1);
+  auto* sample_notification = FindNotification(kCrOSNotificationId1);
   EXPECT_EQ(base::UTF8ToUTF16(kTitle), sample_notification->title());
   EXPECT_EQ(base::UTF8ToUTF16(kTextContent), sample_notification->message());
 }
@@ -111,8 +118,7 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
-  auto* notification =
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId1);
+  auto* notification = FindNotification(kCrOSNotificationId1);
   EXPECT_EQ(base::UTF8ToUTF16(kTitle), notification->title());
   EXPECT_EQ(base::UTF8ToUTF16(kTextContent), notification->message());
 
@@ -129,8 +135,7 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
 
   notification_manager_->SetNotification(updated_notification);
 
-  notification =
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId1);
+  notification = FindNotification(kCrOSNotificationId1);
   EXPECT_EQ(base::UTF8ToUTF16(kNewTitle), notification->title());
   EXPECT_EQ(base::UTF8ToUTF16(kNewTextContent), notification->message());
 }
@@ -142,8 +147,7 @@ TEST_F(PhoneHubNotificationControllerTest, RemoveNotifications) {
 
   notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
   EXPECT_EQ(2u, message_center_->NotificationCount());
-  EXPECT_FALSE(
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId0));
+  EXPECT_FALSE(FindNotification(kCrOSNotificationId0));
 
   notification_manager_->RemoveNotificationsInternal(base::flat_set<int64_t>(
       {kPhoneHubNotificationId1, kPhoneHubNotificationId2}));
@@ -188,8 +192,7 @@ TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
 
 TEST_F(PhoneHubNotificationControllerTest, ClickSettings) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
-  EXPECT_TRUE(
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId0));
+  EXPECT_TRUE(FindNotification(kCrOSNotificationId0));
   EXPECT_EQ(0, GetSystemTrayClient()->show_connected_devices_settings_count());
 
   message_center_->ClickOnSettingsButton(kCrOSNotificationId0);
@@ -223,8 +226,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
 
   notification_manager_->SetNotification(fake_notification);
 
-  auto* cros_notification =
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+  auto* cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(timestamp, cros_notification->timestamp());
   EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
@@ -240,8 +242,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
 
 TEST_F(PhoneHubNotificationControllerTest, NotificationHasCustomViewType) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
-  auto* notification =
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+  auto* notification = FindNotification(kCrOSNotificationId0);
 
   // Notification should have a correct customize type.
   EXPECT_EQ(kNotificationCustomViewType, notification->custom_view_type());
@@ -249,8 +250,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationHasCustomViewType) {
 
 TEST_F(PhoneHubNotificationControllerTest, NotificationHasPhoneName) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
-  auto* notification =
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+  auto* notification = FindNotification(kCrOSNotificationId0);
 
   const base::string16 expected_phone_name = base::UTF8ToUTF16("Phone name");
   phone_hub_manager_.mutable_phone_model()->SetPhoneName(expected_phone_name);
@@ -270,8 +270,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationHasPhoneName) {
 
 TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
-  auto* notification =
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+  auto* notification = FindNotification(kCrOSNotificationId0);
 
   auto notification_view =
       PhoneHubNotificationController::CreateCustomNotificationView(
@@ -290,6 +289,51 @@ TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
   // After a brief moment, it should be enabled.
   task_environment()->FastForwardBy(kWaitForEnableButton);
   EXPECT_TRUE(reply_button->GetEnabled());
+}
+
+TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
+  chromeos::phonehub::Notification fake_notification(
+      kPhoneHubNotificationId0,
+      chromeos::phonehub::Notification::AppMetadata(base::UTF8ToUTF16(kAppName),
+                                                    kPackageName,
+                                                    /*icon=*/gfx::Image()),
+      base::Time::Now(), chromeos::phonehub::Notification::Importance::kHigh,
+      /*inline_reply_id=*/0, base::UTF8ToUTF16(kTitle),
+      base::UTF8ToUTF16(kTextContent));
+
+  // Adding the notification for the first time shows a pop-up (MAX_PRIORITY).
+  notification_manager_->SetNotification(fake_notification);
+  auto* cros_notification = FindNotification(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
+
+  feature_status_provider_->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+  feature_status_provider_->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
+
+  // Removing and readding the notification (e.g. across disconnects) should
+  // downgrade the priority so it doesn't pop-up again.
+  notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
+  ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
+  notification_manager_->SetNotification(fake_notification);
+  cros_notification = FindNotification(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(message_center::LOW_PRIORITY, cros_notification->priority());
+
+  // Disconnect due to screen lock.
+  feature_status_provider_->SetStatus(
+      chromeos::phonehub::FeatureStatus::kLockOrSuspended);
+  notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
+  ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
+
+  // Reconnect and notification should be reshown as a pop-up.
+  feature_status_provider_->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
+  notification_manager_->SetNotification(fake_notification);
+  cros_notification = FindNotification(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
 }
 
 }  // namespace ash

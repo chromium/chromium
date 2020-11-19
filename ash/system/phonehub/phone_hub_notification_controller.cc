@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
@@ -221,12 +222,15 @@ void PhoneHubNotificationController::SetManager(
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
   chromeos::phonehub::NotificationManager* notification_manager =
       phone_hub_manager->GetNotificationManager();
+  chromeos::phonehub::FeatureStatusProvider* feature_status_provider =
+      phone_hub_manager->GetFeatureStatusProvider();
   chromeos::phonehub::TetherController* tether_controller =
       phone_hub_manager->GetTetherController();
   phone_model_ = phone_hub_manager->GetPhoneModel();
 
   if (manager_ == notification_manager &&
-      tether_controller_ == tether_controller) {
+      tether_controller_ == tether_controller &&
+      feature_status_provider_ == feature_status_provider) {
     return;
   }
 
@@ -235,6 +239,12 @@ void PhoneHubNotificationController::SetManager(
 
   manager_ = notification_manager;
   manager_->AddObserver(this);
+
+  if (feature_status_provider_)
+    feature_status_provider_->RemoveObserver(this);
+
+  feature_status_provider_ = feature_status_provider;
+  feature_status_provider_->AddObserver(this);
 
   if (tether_controller_)
     tether_controller_->RemoveObserver(this);
@@ -247,6 +257,21 @@ const base::string16 PhoneHubNotificationController::GetPhoneName() const {
   if (!phone_model_)
     return base::string16();
   return phone_model_->phone_name().value_or(base::string16());
+}
+
+void PhoneHubNotificationController::OnFeatureStatusChanged() {
+  DCHECK(feature_status_provider_);
+
+  auto status = feature_status_provider_->GetStatus();
+  bool is_feature_enabled =
+      status == chromeos::phonehub::FeatureStatus::kEnabledButDisconnected ||
+      status == chromeos::phonehub::FeatureStatus::kEnabledAndConnecting ||
+      status == chromeos::phonehub::FeatureStatus::kEnabledAndConnected;
+
+  // Reset the set of shown notifications when PhoneHub is no longer available
+  // (e.g. when the screen is locked).
+  if (!is_feature_enabled)
+    shown_notification_ids_.clear();
 }
 
 void PhoneHubNotificationController::OnNotificationsAdded(
@@ -353,6 +378,7 @@ void PhoneHubNotificationController::CreateOrUpdateNotification(
 
   auto cros_notification = CreateNotification(notification, cros_id, delegate);
   cros_notification->set_custom_view_type(kNotificationCustomViewType);
+  shown_notification_ids_.insert(phone_hub_id);
 
   auto* message_center = message_center::MessageCenter::Get();
   if (notification_already_exists)
@@ -403,7 +429,12 @@ PhoneHubNotificationController::CreateNotification(
       optional_fields.priority = message_center::LOW_PRIORITY;
       break;
     case chromeos::phonehub::Notification::Importance::kHigh:
-      optional_fields.priority = message_center::MAX_PRIORITY;
+      // If the notification has already been shown in the past (even across
+      // disconnects), then downgrade the priority so it's not a pop-up.
+      if (base::Contains(shown_notification_ids_, notification->id()))
+        optional_fields.priority = message_center::LOW_PRIORITY;
+      else
+        optional_fields.priority = message_center::MAX_PRIORITY;
       break;
   }
 
