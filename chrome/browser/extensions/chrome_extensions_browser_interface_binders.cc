@@ -76,12 +76,12 @@ void BindHandwritingRecognizerRequestor(
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-void BindTtsStream(
+void BindTtsStreamFactory(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<chromeos::tts::mojom::TtsStream> receiver) {
+    mojo::PendingReceiver<chromeos::tts::mojom::TtsStreamFactory> receiver) {
   TtsEngineExtensionObserverChromeOS::GetInstance(
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
-      ->BindTtsStream(std::move(receiver));
+      ->BindTtsStreamFactory(std::move(receiver));
 }
 
 void BindRemoteAppsFactory(
@@ -168,9 +168,11 @@ void PopulateChromeFrameBindersForExtension(
         base::BindRepeating(&chromeos::CameraAppUI::ConnectToCameraAppHelper));
   }
 
-  if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
-    binder_map->Add<chromeos::tts::mojom::TtsStream>(
-        base::BindRepeating(&BindTtsStream));
+  // TODO: extend to more extensions.
+  if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId ||
+      extension->id() == extension_misc::kEspeakSpeechSynthesisExtensionId) {
+    binder_map->Add<chromeos::tts::mojom::TtsStreamFactory>(
+        base::BindRepeating(&BindTtsStreamFactory));
   }
 
   if (chromeos::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {

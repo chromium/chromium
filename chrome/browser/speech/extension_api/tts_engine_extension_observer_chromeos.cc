@@ -144,27 +144,33 @@ TtsEngineExtensionObserverChromeOS::TtsEngineExtensionObserverChromeOS(
 TtsEngineExtensionObserverChromeOS::~TtsEngineExtensionObserverChromeOS() =
     default;
 
-void TtsEngineExtensionObserverChromeOS::BindTtsStream(
-    mojo::PendingReceiver<chromeos::tts::mojom::TtsStream> receiver) {
+void TtsEngineExtensionObserverChromeOS::BindTtsStreamFactory(
+    mojo::PendingReceiver<chromeos::tts::mojom::TtsStreamFactory> receiver) {
   // At this point, the component extension has loaded, and the js has requested
-  // a TtsStream be bound. It's safe now to update the keep alive count for
-  // important accessibility features. This path is also encountered if the
+  // a TtsStreamFactory be bound. It's safe now to update the keep alive count
+  // for important accessibility features. This path is also encountered if the
   // component extension background page forceably window.close(s) on error.
   UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(profile_);
 
-  // Always launch a new TtsService. By assigning below, if |tts_service_| held
-  // a remote, it will be killed and a new one created, ensuring we only ever
-  // have one TtsService running.
-  tts_service_ =
-      content::ServiceProcessHost::Launch<chromeos::tts::mojom::TtsService>(
-          content::ServiceProcessHost::Options()
-              .WithDisplayName("TtsService")
-              .Pass());
+  // Only launch a new TtsService if necessary. By assigning below, if
+  // |tts_service_| held a remote, it will be killed and a new one created,
+  // ensuring we only ever have one TtsService running.
+  if (!tts_service_) {
+    tts_service_ =
+        content::ServiceProcessHost::Launch<chromeos::tts::mojom::TtsService>(
+            content::ServiceProcessHost::Options()
+                .WithDisplayName("TtsService")
+                .Pass());
+  }
 
+  // Always create a new audio stream for the tts stream. It is assumed once the
+  // tts stream is reset by the service, the audio stream is appropriately
+  // cleaned up by the audio service.
   mojo::PendingRemote<audio::mojom::StreamFactory> factory_remote;
   auto factory_receiver = factory_remote.InitWithNewPipeAndPassReceiver();
   content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
-  tts_service_->BindTtsStream(std::move(receiver), std::move(factory_remote));
+  tts_service_->BindTtsStreamFactory(std::move(receiver),
+                                     std::move(factory_remote));
 }
 
 void TtsEngineExtensionObserverChromeOS::Shutdown() {

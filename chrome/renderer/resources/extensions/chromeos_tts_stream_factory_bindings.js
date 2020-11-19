@@ -9,11 +9,11 @@ if ((typeof mojo === 'undefined') || !mojo.bindingsLibraryInitialized) {
 }
 mojo.config.autoLoadMojomDeps = false;
 
-loadScript('chromeos.tts.mojom.tts_stream.mojom');
+loadScript('chromeos.tts.mojom.tts_stream_factory.mojom');
 
 (function() {
-  let ptr = new chromeos.tts.mojom.TtsStreamPtr;
+  let ptr = new chromeos.tts.mojom.TtsStreamFactoryPtr;
   Mojo.bindInterface(
-      chromeos.tts.mojom.TtsStream.name, mojo.makeRequest(ptr).handle);
+      chromeos.tts.mojom.TtsStreamFactory.name, mojo.makeRequest(ptr).handle);
   exports.$set('returnValue', ptr);
 })();

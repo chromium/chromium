@@ -7,6 +7,8 @@
 
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "chromeos/services/tts/google_tts_stream.h"
+#include "chromeos/services/tts/playback_tts_stream.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "library_loaders/libchrometts.h"
 #include "media/base/audio_renderer_sink.h"
@@ -21,30 +23,48 @@ namespace chromeos {
 namespace tts {
 
 class TtsService : public mojom::TtsService,
-                   public mojom::TtsStream,
+                   public mojom::TtsStreamFactory,
                    public media::AudioRendererSink::RenderCallback {
  public:
+  // Helper group of state to pass from main thread to audio thread.
+  struct AudioBuffer {
+    AudioBuffer();
+    ~AudioBuffer();
+    AudioBuffer(const AudioBuffer& other) = delete;
+    AudioBuffer(AudioBuffer&& other);
+
+    std::vector<float> frames;
+    int char_index = -1;
+    int status = 0;
+    bool is_first_buffer = false;
+  };
+
   explicit TtsService(mojo::PendingReceiver<mojom::TtsService> receiver);
   ~TtsService() override;
 
+  // Audio operations.
+  void Play(
+      base::OnceCallback<void(::mojo::PendingReceiver<mojom::TtsEventObserver>)>
+          callback);
+  void AddAudioBuffer(AudioBuffer buf);
+  void Stop();
+  void SetVolume(float volume);
+  void Pause();
+  void Resume();
+
+  // Maybe exit this process.
+  void MaybeExit();
+
  private:
   // mojom::TtsService:
-  void BindTtsStream(
-      mojo::PendingReceiver<mojom::TtsStream> receiver,
+  void BindTtsStreamFactory(
+      mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
       mojo::PendingRemote<audio::mojom::StreamFactory> factory) override;
 
-  // mojom::TtsStream:
-  void InstallVoice(const std::string& voice_name,
-                    const std::vector<uint8_t>& voice_bytes,
-                    InstallVoiceCallback callback) override;
-  void SelectVoice(const std::string& voice_name,
-                   SelectVoiceCallback callback) override;
-  void Speak(const std::vector<uint8_t>& text_jspb,
-             SpeakCallback callback) override;
-  void Stop() override;
-  void SetVolume(float volume) override;
-  void Pause() override;
-  void Resume() override;
+  // mojom::GoogleTtsStream:
+  void CreateGoogleTtsStream(CreateGoogleTtsStreamCallback callback) override;
+  void CreatePlaybackTtsStream(
+      CreatePlaybackTtsStreamCallback callback) override;
 
   // media::AudioRendererSink::RenderCallback:
   int Render(base::TimeDelta delay,
@@ -57,19 +77,18 @@ class TtsService : public mojom::TtsService,
   void StopLocked(bool clear_buffers = true)
       EXCLUSIVE_LOCKS_REQUIRED(state_lock_);
 
-  void ReadMoreFrames(bool is_first_buffer);
-
   // Connection to tts in the browser.
   mojo::Receiver<mojom::TtsService> service_receiver_;
 
+  // Factory creating various types of streams.
+  mojo::Receiver<mojom::TtsStreamFactory> tts_stream_factory_;
+
+  std::unique_ptr<GoogleTtsStream> google_tts_stream_;
+
+  std::unique_ptr<PlaybackTtsStream> playback_tts_stream_;
+
   // Protects access to state from main thread and audio thread.
   base::Lock state_lock_;
-
-  // Prebuilt.
-  LibChromeTtsLoader libchrometts_;
-
-  // Connection to tts in the component extension.
-  mojo::Receiver<mojom::TtsStream> stream_receiver_;
 
   // Connection to send tts events to component extension.
   mojo::Remote<mojom::TtsEventObserver> tts_event_observer_;
@@ -77,24 +96,8 @@ class TtsService : public mojom::TtsService,
   // Outputs speech synthesis to audio.
   std::unique_ptr<audio::OutputDevice> output_device_;
 
-  // Helper group of state to pass from main thread to audio thread.
-  struct AudioBuffer {
-    AudioBuffer();
-    ~AudioBuffer();
-    AudioBuffer(const AudioBuffer& other) = delete;
-    AudioBuffer(AudioBuffer&& other);
-
-    std::vector<float> frames;
-    int char_index;
-    int status;
-    bool is_first_buffer;
-  };
-
   // The queue of audio buffers to be played by the audio thread.
   std::deque<AudioBuffer> buffers_ GUARDED_BY(state_lock_);
-
-  // Tracks whether the output device is playing audio.
-  bool is_playing_ = false;
 };
 
 }  // namespace tts

@@ -8,6 +8,10 @@ source_set("tts") {
   sources = [
     "constants.cc",
     "constants.h",
+    "google_tts_stream.cc",
+    "google_tts_stream.h",
+    "playback_tts_stream.cc",
+    "playback_tts_stream.h",
     "tts_service.cc",
     "tts_service.h",
   ]
