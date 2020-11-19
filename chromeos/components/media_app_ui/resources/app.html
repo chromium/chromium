@@ -11,11 +11,14 @@
   }
 </style>
 
-<script src="/js/app_main.js"></script>
+<!-- Order is important for these files since "app_main.js" reads from 
+	`window.loadTimeData`. -->
 <script src="/media_app_app_scripts.js"></script>
 
 <!-- Populates `window.loadTimeData`, needs to be after
   "media_app_app_scripts.js" which loads "load_time_data.js" -->
 <script src="/strings.js"></script>
+
+<script src="/js/app_main.js"></script>
 
 </html>
