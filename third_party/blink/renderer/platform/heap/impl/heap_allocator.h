@@ -240,29 +240,11 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
  private:
-  static Address MarkAsConstructed(Address address) {
-    HeapObjectHeader::FromPayload(reinterpret_cast<void*>(address))
-        ->MarkFullyConstructed<HeapObjectHeader::AccessMode::kAtomic>();
-    return address;
-  }
-
   static void BackingFree(void*);
   static bool BackingExpand(void*, size_t);
   static bool BackingShrink(void*,
                             size_t quantized_current_size,
                             size_t quantized_shrunk_size);
-
-  template <typename T, wtf_size_t u, typename V>
-  friend class WTF::Vector;
-  template <typename T, typename U, typename V, typename W>
-  friend class WTF::HashSet;
-  template <typename T,
-            typename U,
-            typename V,
-            typename W,
-            typename X,
-            typename Y>
-  friend class WTF::HashMap;
 };
 
 template <typename KeyArg,
