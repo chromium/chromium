@@ -308,13 +308,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistServerRedirect) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
-#if defined(OS_MAC)
-// http://crbug.com/339240
-#define MAYBE_FileURLBlacklist DISABLED_FileURLBlacklist
-#else
-#define MAYBE_FileURLBlacklist FileURLBlacklist
-#endif
-IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_FileURLBlacklist) {
+IN_PROC_BROWSER_TEST_F(PolicyTest, FileURLBlacklist) {
   // Check that FileURLs can be blacklisted and DisabledSchemes works together
   // with URLblacklisting and URLwhitelisting.
 
