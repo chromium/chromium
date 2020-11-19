@@ -27,6 +27,8 @@ namespace cr_fuchsia {
 class LegacyMetricsClient;
 }
 
+class MediaResourceProviderService;
+
 class WebEngineBrowserMainParts : public content::BrowserMainParts {
  public:
   explicit WebEngineBrowserMainParts(
@@ -39,6 +41,9 @@ class WebEngineBrowserMainParts : public content::BrowserMainParts {
   }
   WebEngineDevToolsController* devtools_controller() const {
     return devtools_controller_.get();
+  }
+  MediaResourceProviderService* media_resource_provider_service() const {
+    return media_resource_provider_service_.get();
   }
 
   // content::BrowserMainParts overrides.
@@ -60,6 +65,8 @@ class WebEngineBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<fidl::Binding<fuchsia::web::Context>> context_binding_;
   std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
   std::unique_ptr<cr_fuchsia::LegacyMetricsClient> legacy_metrics_client_;
+  std::unique_ptr<MediaResourceProviderService>
+      media_resource_provider_service_;
 
   bool run_message_loop_ = true;
   base::OnceClosure quit_closure_;

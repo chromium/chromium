@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -76,7 +77,8 @@ class FuchsiaCdmManagerTest : public ::testing::Test {
   FuchsiaCdmManagerTest() { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   std::unique_ptr<FuchsiaCdmManager> CreateFuchsiaCdmManager(
-      std::vector<base::StringPiece> key_systems) {
+      std::vector<base::StringPiece> key_systems,
+      base::Optional<uint64_t> cdm_data_quota_bytes = base::nullopt) {
     FuchsiaCdmManager::CreateKeySystemCallbackMap create_key_system_callbacks;
 
     for (const base::StringPiece& name : key_systems) {
@@ -86,7 +88,8 @@ class FuchsiaCdmManagerTest : public ::testing::Test {
                                     base::Unretained(&key_system)));
     }
     return std::make_unique<FuchsiaCdmManager>(
-        std::move(create_key_system_callbacks), temp_dir_.GetPath());
+        std::move(create_key_system_callbacks), temp_dir_.GetPath(),
+        cdm_data_quota_bytes);
   }
 
  protected:
@@ -284,5 +287,135 @@ TEST_F(FuchsiaCdmManagerTest, DifferentOriginDoNotShareDataStore) {
 
   run_loop.Run();
 }
+
+void CreateDummyCdmDirectory(const base::FilePath& cdm_data_path,
+                             base::StringPiece origin,
+                             base::StringPiece key_system,
+                             uint64_t size) {
+  const base::FilePath path = cdm_data_path.Append(origin).Append(key_system);
+  CHECK(base::CreateDirectory(path));
+  if (size) {
+    std::vector<uint8_t> zeroes(size);
+    CHECK(base::WriteFile(path.Append("zeroes"), zeroes));
+  }
+}
+
+// Verify that the least recently used CDM data directories are removed, until
+// the quota is met.  Also verify that old directories are removed regardless
+// of whether they are empty or not.
+TEST_F(FuchsiaCdmManagerTest, CdmDataQuotaBytes) {
+  constexpr uint64_t kTestQuotaBytes = 1024;
+  constexpr char kOriginDirectory1[] = "origin1";
+  constexpr char kOriginDirectory2[] = "origin2";
+  constexpr char kKeySystemDirectory1[] = "key_system1";
+  constexpr char kKeySystemDirectory2[] = "key_system2";
+  constexpr char kEmptyKeySystemDirectory[] = "empty_key_system";
+
+  // Create fake CDM data directories for two origins, each with two key
+  // systems, with each directory consuming 50% of the total quota, so that
+  // two directories must be removed to meet quota.
+
+  // Create least-recently-used directories & their contents.
+  const base::FilePath temp_path = temp_dir_.GetPath();
+  CreateDummyCdmDirectory(temp_path, kOriginDirectory1, kKeySystemDirectory1,
+                          kTestQuotaBytes / 2);
+  CreateDummyCdmDirectory(temp_path, kOriginDirectory2, kKeySystemDirectory2,
+                          kTestQuotaBytes / 2);
+  CreateDummyCdmDirectory(temp_path, kOriginDirectory1,
+                          kEmptyKeySystemDirectory, 0);
+
+  // Sleep to account for coarse-grained filesystem timestamps.
+  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+
+  // Create the recently-used directories.
+  CreateDummyCdmDirectory(temp_path, kOriginDirectory1, kKeySystemDirectory2,
+                          kTestQuotaBytes / 2);
+  CreateDummyCdmDirectory(temp_path, kOriginDirectory2, kKeySystemDirectory1,
+                          kTestQuotaBytes / 2);
+  CreateDummyCdmDirectory(temp_path, kOriginDirectory2,
+                          kEmptyKeySystemDirectory, 0);
+
+  // Create the CDM manager, to run the data directory quota enforcement.
+  std::unique_ptr<FuchsiaCdmManager> cdm_manager =
+      CreateFuchsiaCdmManager({}, kTestQuotaBytes);
+
+  // Use a CreateAndProvision() request as a proxy to wait for quota enforcement
+  // to finish being applied.
+  base::RunLoop run_loop;
+  drm::ContentDecryptionModulePtr cdm_ptr;
+  cdm_ptr.set_error_handler([&](zx_status_t status) {
+    EXPECT_EQ(status, ZX_ERR_NOT_FOUND);
+    run_loop.Quit();
+  });
+
+  cdm_manager->CreateAndProvision(
+      "com.key_system", url::Origin(),
+      base::BindRepeating(&CreateMockProvisionFetcher), cdm_ptr.NewRequest());
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(
+      temp_path.Append(kOriginDirectory1).Append(kKeySystemDirectory1)));
+  EXPECT_FALSE(base::PathExists(
+      temp_path.Append(kOriginDirectory2).Append(kKeySystemDirectory2)));
+
+  EXPECT_TRUE(base::PathExists(
+      temp_path.Append(kOriginDirectory1).Append(kKeySystemDirectory2)));
+  EXPECT_TRUE(base::PathExists(
+      temp_path.Append(kOriginDirectory2).Append(kKeySystemDirectory1)));
+
+  // Empty directories are currently always treated as old, causing them all to
+  // be deleted if the CDM data directory exceeds its quota.
+  EXPECT_FALSE(base::PathExists(
+      temp_path.Append(kOriginDirectory1).Append(kEmptyKeySystemDirectory)));
+  EXPECT_FALSE(base::PathExists(
+      temp_path.Append(kOriginDirectory2).Append(kEmptyKeySystemDirectory)));
+}
+
+// Verify that if all key-system sub-directories for a given origin have been
+// deleted then the origin's directory is also deleted.
+TEST_F(FuchsiaCdmManagerTest, EmptyOriginDirectory) {
+  constexpr uint64_t kTestQuotaBytes = 1024;
+  constexpr char kInactiveOriginDirectory[] = "origin1";
+  constexpr char kActiveOriginDirectory[] = "origin2";
+  constexpr char kKeySystemDirectory1[] = "key_system1";
+  constexpr char kKeySystemDirectory2[] = "key_system2";
+
+  // Create dummy data for an inactive origin.
+  const base::FilePath temp_path = temp_dir_.GetPath();
+  CreateDummyCdmDirectory(temp_path, kInactiveOriginDirectory,
+                          kKeySystemDirectory1, kTestQuotaBytes / 2);
+  CreateDummyCdmDirectory(temp_path, kInactiveOriginDirectory,
+                          kKeySystemDirectory2, kTestQuotaBytes / 2);
+
+  // Sleep to account for coarse-grained filesystem timestamps.
+  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+
+  // Create dummy data for a recently-used, active origin.
+  CreateDummyCdmDirectory(temp_path, kActiveOriginDirectory,
+                          kKeySystemDirectory2, kTestQuotaBytes);
+
+  // Create the CDM manager, to run the data directory quota enforcement.
+  std::unique_ptr<FuchsiaCdmManager> cdm_manager =
+      CreateFuchsiaCdmManager({}, kTestQuotaBytes);
+
+  // Use a CreateAndProvision() request as a proxy to wait for quota enforcement
+  // to finish being applied.
+  base::RunLoop run_loop;
+  drm::ContentDecryptionModulePtr cdm_ptr;
+  cdm_ptr.set_error_handler([&](zx_status_t status) {
+    EXPECT_EQ(status, ZX_ERR_NOT_FOUND);
+    run_loop.Quit();
+  });
+
+  cdm_manager->CreateAndProvision(
+      "com.key_system", url::Origin(),
+      base::BindRepeating(&CreateMockProvisionFetcher), cdm_ptr.NewRequest());
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(temp_path.Append(kInactiveOriginDirectory)));
+  EXPECT_TRUE(base::PathExists(
+      temp_path.Append(kActiveOriginDirectory).Append(kKeySystemDirectory2)));
+}
+
 }  // namespace
 }  // namespace media

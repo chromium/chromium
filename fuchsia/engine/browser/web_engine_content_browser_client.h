@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "content/public/browser/content_browser_client.h"
 #include "fuchsia/engine/browser/content_directory_loader_factory.h"
-#include "fuchsia/engine/browser/media_resource_provider_service.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -77,8 +76,6 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
 
   // Owned by content::BrowserMainLoop.
   WebEngineBrowserMainParts* main_parts_;
-
-  MediaResourceProviderService media_resource_provider_service_;
 
   DISALLOW_COPY_AND_ASSIGN(WebEngineContentBrowserClient);
 };
