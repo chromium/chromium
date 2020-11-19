@@ -635,4 +635,42 @@ TEST_F(WebFrameWidgetSimTest, DispatchBufferedTouchEvents) {
   EXPECT_FALSE(listener->GetInvokedStateAndReset());
 }
 
+// Tests that page scale is propagated to all remote frames controlled
+// by a widget.
+TEST_F(WebFrameWidgetSimTest, PropagateScaleToRemoteFrames) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <iframe style='width: 200px; height: 100px;'
+        srcdoc='<iframe srcdoc="plain text"></iframe>'>
+        </iframe>
+
+      )HTML");
+  base::RunLoop().RunUntilIdle();
+  class PageScaleRemoteFrameClient
+      : public frame_test_helpers::TestWebRemoteFrameClient {
+   public:
+    void PageScaleFactorChanged(float page_scale_factor,
+                                bool is_pinch_gesture_active) override {
+      page_scale_factor_changed_ = true;
+    }
+    bool page_scale_factor_changed_ = false;
+  };
+
+  PageScaleRemoteFrameClient page_scale_remote_frame_client;
+  EXPECT_TRUE(WebView().MainFrame()->FirstChild());
+  {
+    WebFrame* grandchild = WebView().MainFrame()->FirstChild()->FirstChild();
+    EXPECT_TRUE(grandchild);
+    EXPECT_TRUE(grandchild->IsWebLocalFrame());
+    grandchild->Swap(
+        frame_test_helpers::CreateRemote(&page_scale_remote_frame_client));
+  }
+  auto* widget = WebView().MainFrameViewWidget();
+  widget->SetPageScaleStateAndLimits(1.3f, true, 1.0f, 3.0f);
+  EXPECT_TRUE(page_scale_remote_frame_client.page_scale_factor_changed_);
+  WebView().MainFrame()->FirstChild()->FirstChild()->Detach();
+}
+
 }  // namespace blink
