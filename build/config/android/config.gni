@@ -6,9 +6,6 @@
 # |is_chromeos| is true in a LaCrOS build.
 import("//build/config/chromeos/ui_mode.gni")
 
-# TODO(iwells) remove when android_channel is no longer needed for enable_jdk_library_desugaring
-import("//build/config/android/channel.gni")
-
 # This file contains common system config stuff for the Android build.
 
 # NOTE: Because Chrome OS builds may depend on targets built with the Android
@@ -258,8 +255,7 @@ if (is_android || is_chromeos ||
 
     # Enables Java library desugaring.
     # This will cause an extra classes.dex file to appear in every apk.
-    # TODO(iwells): change to true after M88 branch point
-    enable_jdk_library_desugaring = android_channel == "default"
+    enable_jdk_library_desugaring = true
   }
 
   # Host stuff -----------------------------------------------------------------
