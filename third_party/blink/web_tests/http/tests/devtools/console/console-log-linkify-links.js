@@ -46,7 +46,7 @@
     TestRunner.addResult('\nText: ' + element.deepTextContent());
     var links = element.querySelectorAll('.devtools-link');
     for (var link of links) {
-      var info = Components.Linkifier._linkInfo(link);
+      var info = Components.Linkifier.linkInfo(link);
       if (info && info.url) {
         TestRunner.addResult('Linked url: ' + info.url);
         if (info.lineNumber !== null || info.columnNumber !== null)
