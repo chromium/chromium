@@ -546,7 +546,7 @@
               'cores': '8',
             }
           ],
-          'shards': 20,
+          'shards': 30,
         },
       },
       'Mac10.13 Tests (dbg)': {
