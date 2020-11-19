@@ -32,6 +32,8 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                           IDR_FILE_MANAGER_SWA_MOJO_LITE_JS);
   source->AddResourcePath("browser_proxy.js",
                           IDR_FILE_MANAGER_SWA_BROWSER_PROXY_JS);
+  source->AddResourcePath("script_loader.js",
+                          IDR_FILE_MANAGER_SWA_SCRIPT_LOADER_JS);
 
   // Sets up legacy_main_script.js to be the same as Files App
   //   ui/file_manager/file_manager/foreground/js/main_scripts.js

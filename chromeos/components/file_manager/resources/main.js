@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserProxy} from './browser_proxy.js'
+import {ScriptLoader} from './script_loader.js'
 
 /**
  * Represents file manager application. Starting point for the application
@@ -13,17 +14,9 @@ class FileManagerApp {
     console.info('File manager app created ...');
   }
 
-  /**
-   * Lazily loads File App legacy code.
-   */
-  loadLegacyCode() {
-    const legacyLoader = document.createElement('script');
-    legacyLoader.src = 'legacy_main_scripts.js';
-    document.body.appendChild(legacyLoader);
-  }
-
-  run() {
-    this.loadLegacyCode();
+  async run() {
+    await new ScriptLoader('legacy_main_scripts.js').load();
+    console.debug('Legacy code loaded');
   }
 }
 
