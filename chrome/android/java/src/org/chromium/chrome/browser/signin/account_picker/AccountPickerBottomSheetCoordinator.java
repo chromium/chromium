@@ -10,8 +10,11 @@ import android.view.View;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialCoordinator;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -55,6 +58,21 @@ public class AccountPickerBottomSheetCoordinator {
      * Constructs the AccountPickerBottomSheetCoordinator and shows the
      * bottom sheet on the screen.
      */
+    @MainThread
+    public AccountPickerBottomSheetCoordinator(Activity activity,
+            BottomSheetController bottomSheetController,
+            AccountPickerDelegate accountPickerDelegate, TabModel regularTabModel,
+            TabCreator incognitoTabCreator, HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+        this(activity, bottomSheetController, accountPickerDelegate,
+                new IncognitoInterstitialDelegate(
+                        activity, regularTabModel, incognitoTabCreator, helpAndFeedbackLauncher));
+    }
+
+    /**
+     * Constructs the AccountPickerBottomSheetCoordinator and shows the
+     * bottom sheet on the screen.
+     */
+    @VisibleForTesting
     @MainThread
     public AccountPickerBottomSheetCoordinator(Activity activity,
             BottomSheetController bottomSheetController,

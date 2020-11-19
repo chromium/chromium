@@ -20,7 +20,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
@@ -115,15 +114,11 @@ public class SigninUtils {
         // To create a new incognito tab after after the user clicks on "Continue" in the incognito
         // interstitial.
         TabCreator incognitoTabCreator = activity.getTabCreator(/*incognito=*/true);
-        IncognitoInterstitialDelegate incognitoInterstitialDelegate =
-                new IncognitoInterstitialDelegate(activity, regularTabModel, incognitoTabCreator,
-                        HelpAndFeedbackLauncherImpl.getInstance());
-
-        AccountPickerBottomSheetCoordinator coordinator =
-                new AccountPickerBottomSheetCoordinator(activity, bottomSheetController,
-                        new AccountPickerDelegateImpl(windowAndroid, activity.getActivityTab(),
-                                new WebSigninBridge.Factory(), continueUrl),
-                        incognitoInterstitialDelegate);
+        AccountPickerBottomSheetCoordinator coordinator = new AccountPickerBottomSheetCoordinator(
+                activity, bottomSheetController,
+                new AccountPickerDelegateImpl(windowAndroid, activity.getActivityTab(),
+                        new WebSigninBridge.Factory(), continueUrl),
+                regularTabModel, incognitoTabCreator, HelpAndFeedbackLauncherImpl.getInstance());
     }
 
     /**
