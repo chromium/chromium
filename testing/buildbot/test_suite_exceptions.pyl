@@ -85,6 +85,34 @@
       # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
       'Linux FYI Debug (NVIDIA)',
     ],
+    'modifications': {
+      # anglebug.com/5328 suspecting blue screen caused by multiprocess
+      'ANGLE GPU Win10 x64 Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'Optional Win10 x64 Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'Win10 FYI x64 Exp Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'Win10 FYI x64 Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'Win10 FYI x64 Release (Intel UHD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+    },
   },
   'angle_perftests': {
     'remove_from': [
@@ -109,6 +137,34 @@
       # https://crbug.com/1094629
       'Linux FYI Release (AMD R7 240)',
     ],
+    'modifications': {
+      # anglebug.com/5328 suspecting blue screen caused by multiprocess
+      'ANGLE GPU Win10 x64 Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'Optional Win10 x64 Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'Win10 FYI x64 Exp Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'Win10 FYI x64 Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'Win10 FYI x64 Release (Intel UHD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+    },
   },
   'blink_platform_unittests': {
     'modifications': {

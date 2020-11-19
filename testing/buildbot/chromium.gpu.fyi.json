@@ -1812,7 +1812,8 @@
         "args": [
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -1887,7 +1888,8 @@
       {
         "args": [
           "angle_white_box_tests",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -25463,7 +25465,8 @@
         "args": [
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -25514,7 +25517,8 @@
       {
         "args": [
           "angle_white_box_tests",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -27440,7 +27444,8 @@
         "args": [
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -27518,7 +27523,8 @@
       {
         "args": [
           "angle_white_box_tests",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -30326,7 +30332,8 @@
         "args": [
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -30401,7 +30408,8 @@
       {
         "args": [
           "angle_white_box_tests",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -31307,7 +31315,8 @@
         "args": [
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
@@ -31385,7 +31394,8 @@
       {
         "args": [
           "angle_white_box_tests",
-          "--bot-mode"
+          "--bot-mode",
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
