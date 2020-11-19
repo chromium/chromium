@@ -106,10 +106,7 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
 
 }  // namespace
 
-// TODO(crbug.com/965982): document.cookie is now handled by the
-// RestrictedCookieManager, not the RenderFrameMessageFilter, so these cookie
-// tests should be moved accordingly.
-class RenderFrameMessageFilterBrowserTest : public ContentBrowserTest {
+class CookieBrowserTest : public ContentBrowserTest {
  protected:
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -132,7 +129,7 @@ class RenderFrameMessageFilterBrowserTest : public ContentBrowserTest {
 
 // Exercises basic cookie operations via javascript, including an http page
 // interacting with secure cookies.
-IN_PROC_BROWSER_TEST_F(RenderFrameMessageFilterBrowserTest, Cookies) {
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -206,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameMessageFilterBrowserTest, Cookies) {
 }
 
 // Ensure "priority" cookie option is settable via document.cookie.
-IN_PROC_BROWSER_TEST_F(RenderFrameMessageFilterBrowserTest, CookiePriority) {
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookiePriority) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   struct {
@@ -233,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameMessageFilterBrowserTest, CookiePriority) {
 
 // SameSite cookies (that aren't marked as http-only) should be available to
 // JavaScript.
-IN_PROC_BROWSER_TEST_F(RenderFrameMessageFilterBrowserTest, SameSiteCookies) {
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   // Must use HTTPS because SameSite=None cookies must be Secure.
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
   server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -374,8 +371,7 @@ class CookieStoreContentBrowserClient : public ContentBrowserClient {
 // for wrong URLs are rejected.
 // TODO(https://crbug.com/954603): This should actually result in renderer
 // kills.
-IN_PROC_BROWSER_TEST_F(RenderFrameMessageFilterBrowserTest,
-                       CrossSiteCookieSecurityEnforcement) {
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
   // The code under test is only active under site isolation.
   if (!AreAllSitesIsolatedForTesting()) {
     return;
