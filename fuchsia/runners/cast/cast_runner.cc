@@ -13,12 +13,15 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
+#include "base/values.h"
 #include "fuchsia/base/agent_manager.h"
+#include "fuchsia/base/config_reader.h"
 #include "fuchsia/runners/cast/cast_streaming.h"
 #include "fuchsia/runners/cast/pending_cast_component.h"
 #include "fuchsia/runners/common/web_content_runner.h"
@@ -68,8 +71,63 @@ bool IsPermissionGrantedInAppConfig(
   return false;
 }
 
+// Names used to partition the Runner's persistent storage for different uses.
+constexpr char kCdmDataSubdirectoryName[] = "cdm_data";
+constexpr char kProfileSubdirectoryName[] = "web_profile";
+
 // Ephemeral remote debugging port used by child contexts.
 const uint16_t kEphemeralRemoteDebuggingPort = 0;
+
+// Application URL for the pseudo-component providing fuchsia.web.FrameHost.
+constexpr char kFrameHostComponentName[] = "cast:fuchsia.web.FrameHost";
+
+// Populates |params| with web data settings. Web data persistence is only
+// enabled if a soft quota is explicitly specified via config-data.
+void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
+  // Set web and CDM data quotas based on the CastRunner configuration.
+  const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  constexpr char kDataQuotaBytesSwitch[] = "data-quota-bytes";
+  const base::Optional<int> data_quota_bytes =
+      config && config->FindIntPath(kDataQuotaBytesSwitch);
+  if (!data_quota_bytes)
+    return;
+
+  // Allow best-effort persistent of Cast application data.
+  // TODO(crbug.com/1148334): Remove the need for an explicit quota to be
+  // configured, once the platform provides storage quotas.
+  const auto profile_path =
+      base::FilePath(base::fuchsia::kPersistedCacheDirectoryPath)
+          .Append(kProfileSubdirectoryName);
+  CHECK(base::CreateDirectory(profile_path));
+  params->set_data_directory(base::fuchsia::OpenDirectory(profile_path));
+  CHECK(params->data_directory());
+  params->set_data_quota_bytes(*data_quota_bytes);
+}
+
+// Populates |params| with settings to enable Widevine & PlayReady CDMs.
+// CDM data persistence is always enabled, with an optional soft quota.
+void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
+  const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  constexpr char kCdmDataQuotaBytesSwitch[] = "cdm-data-quota-bytes";
+  const base::Optional<int> cdm_data_quota_bytes =
+      config && config->FindIntPath(kCdmDataQuotaBytesSwitch);
+  if (cdm_data_quota_bytes)
+    params->set_cdm_data_quota_bytes(*cdm_data_quota_bytes);
+
+  // TODO(b/154204041): Consider using isolated-persistent-storage for CDM data.
+  // Create an isolated-cache-storage sub-directory for CDM data.
+  const auto cdm_data_path = base::FilePath(base::kPersistedCacheDirectoryPath)
+                                 .Append(kCdmDataSubdirectoryName);
+  CHECK(base::CreateDirectory(cdm_data_path));
+  params->set_cdm_data_directory(base::OpenDirectoryHandle(cdm_data_path));
+  CHECK(params->cdm_data_directory());
+
+  // Enable the Widevine and Playready CDMs.
+  *params->mutable_features() |=
+      fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM;
+  const char kCastPlayreadyKeySystem[] = "com.chromecast.playready";
+  params->set_playready_key_system(kCastPlayreadyKeySystem);
+}
 
 // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
 // used to route fuchsia.web.FrameHost capabilities cleanly.
@@ -111,9 +169,6 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
       frame_host_binding_;
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
 };
-
-// Application URL for the pseudo-component providing fuchsia.web.FrameHost.
-constexpr char kFrameHostComponentName[] = "cast:fuchsia.web.FrameHost";
 
 }  // namespace
 
@@ -274,8 +329,7 @@ void CastRunner::OnComponentDestroyed(CastComponent* component) {
 
 fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
   fuchsia::web::CreateContextParams params;
-  params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO |
-                      fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM);
+  params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
 
   if (is_headless_) {
     LOG(WARNING) << "Running in headless mode.";
@@ -288,27 +342,16 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
         fuchsia::web::ContextFeatureFlags::VULKAN;
   }
 
-  // TODO(b/154204041) Migrate to using persistent data, and specifying an
-  // explicit quota for CDM storage.
-  params.set_cdm_data_directory(base::OpenDirectoryHandle(
-      base::FilePath(base::kPersistedCacheDirectoryPath)));
-  CHECK(params.cdm_data_directory());
-
-  const char kCastPlayreadyKeySystem[] = "com.chromecast.playready";
-  params.set_playready_key_system(kCastPlayreadyKeySystem);
-
-  // See http://b/141956135.
+  // TODO(b/141956135): Fetch this information from the agent.
   params.set_user_agent_product("CrKey");
   params.set_user_agent_version("1.52.000000");
 
   // When tests require that VULKAN be disabled, DRM must also be disabled.
   if (disable_vulkan_for_test_) {
     *params.mutable_features() &=
-        ~(fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM |
-          fuchsia::web::ContextFeatureFlags::VULKAN |
+        ~(fuchsia::web::ContextFeatureFlags::VULKAN |
           fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
           fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER_ONLY);
-    params.clear_playready_key_system();
   }
 
   // If there is a list of headers to exempt from CORS checks, pass the list
@@ -328,6 +371,11 @@ fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
       fuchsia::web::ContextFeatureFlags::LEGACYMETRICS;
   main_services_->ConnectClient(
       params.mutable_service_directory()->NewRequest());
+
+  if (!disable_vulkan_for_test_)
+    SetCdmParamsForMainContext(&params);
+
+  SetDataParamsForMainContext(&params);
 
   // TODO(crbug.com/1023514): Remove this switch when it is no longer
   // necessary.
