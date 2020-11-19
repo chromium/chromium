@@ -22,7 +22,7 @@ namespace internal {
 // extracts the key as the first element of a pair.
 struct GetFirst {
   template <class Key, class Mapped>
-  const Key& operator()(const std::pair<Key, Mapped>& p) const {
+  constexpr const Key& operator()(const std::pair<Key, Mapped>& p) const {
     return p.first;
   }
 };

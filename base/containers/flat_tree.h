@@ -153,7 +153,8 @@ class flat_tree {
     constexpr explicit value_compare(Cmp&& compare_arg)
         : KeyCompare(std::forward<Cmp>(compare_arg)) {}
 
-    bool operator()(const value_type& left, const value_type& right) const {
+    constexpr bool operator()(const value_type& left,
+                              const value_type& right) const {
       GetKeyFromValue extractor;
       return key_compare::operator()(extractor(left), extractor(right));
     }
@@ -346,8 +347,8 @@ class flat_tree {
   // --------------------------------------------------------------------------
   // Comparators.
 
-  key_compare key_comp() const;
-  value_compare value_comp() const;
+  constexpr key_compare key_comp() const;
+  constexpr value_compare value_comp() const;
 
   // --------------------------------------------------------------------------
   // Search operations.
@@ -560,8 +561,8 @@ class flat_tree {
         : value_compare(std::forward<Cmp>(compare_arg)),
           body_(std::forward<Body>(underlying_type_args)...) {}
 
-    const value_compare& get_value_comp() const { return *this; }
-    const key_compare& get_key_comp() const { return *this; }
+    constexpr const value_compare& get_value_comp() const { return *this; }
+    constexpr const key_compare& get_key_comp() const { return *this; }
 
     container_type body_;
   } impl_;
@@ -620,7 +621,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     InputIterator last,
     const KeyCompare& comp)
     : impl_(comp, first, last) {
-  DCHECK(is_sorted_and_unique(*this, comp));
+  DCHECK(is_sorted_and_unique(*this, value_comp()));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -629,7 +630,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     const container_type& items,
     const KeyCompare& comp)
     : impl_(comp, items) {
-  DCHECK(is_sorted_and_unique(*this, comp));
+  DCHECK(is_sorted_and_unique(*this, value_comp()));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -638,7 +639,7 @@ constexpr flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     container_type&& items,
     const KeyCompare& comp)
     : impl_(comp, std::move(items)) {
-  DCHECK(is_sorted_and_unique(*this, comp));
+  DCHECK(is_sorted_and_unique(*this, value_comp()));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -935,13 +936,15 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::erase(
 // Comparators.
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::key_comp() const
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::key_comp() const
     -> key_compare {
   return impl_.get_key_comp();
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::value_comp() const
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::value_comp() const
     -> value_compare {
   return impl_.get_value_comp();
 }

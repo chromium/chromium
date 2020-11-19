@@ -22,6 +22,23 @@ using ::testing::ElementsAre;
 
 namespace base {
 
+namespace {
+
+struct Unsortable {
+  int value;
+};
+
+bool operator==(const Unsortable& lhs, const Unsortable& rhs) {
+  return lhs.value == rhs.value;
+}
+
+bool operator<(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator<=(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator>(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator>=(const Unsortable& lhs, const Unsortable& rhs) = delete;
+
+}  // namespace
+
 TEST(FlatMap, IncompleteType) {
   struct A {
     using Map = flat_map<A, A>;
@@ -77,6 +94,42 @@ TEST(FlatMap, InitializerListConstructor) {
                                 std::make_pair(3, 3), std::make_pair(4, 4),
                                 std::make_pair(5, 5), std::make_pair(8, 8),
                                 std::make_pair(10, 10)));
+}
+
+TEST(FlatMap, SortedRangeConstructor) {
+  using PairType = std::pair<int, Unsortable>;
+  using MapType = flat_map<int, Unsortable>;
+  MapType::value_type input_vals[] = {{1, {1}}, {2, {1}}, {3, {1}}};
+  MapType map(sorted_unique, std::begin(input_vals), std::end(input_vals));
+  EXPECT_THAT(
+      map, ElementsAre(PairType(1, {1}), PairType(2, {1}), PairType(3, {1})));
+}
+
+TEST(FlatMap, SortedCopyFromVectorConstructor) {
+  using PairType = std::pair<int, Unsortable>;
+  using MapType = flat_map<int, Unsortable>;
+  std::vector<PairType> vect{{1, {1}}, {2, {1}}};
+  MapType map(sorted_unique, vect);
+  EXPECT_THAT(map, ElementsAre(PairType(1, {1}), PairType(2, {1})));
+}
+
+TEST(FlatMap, SortedMoveFromVectorConstructor) {
+  using PairType = std::pair<int, Unsortable>;
+  using MapType = flat_map<int, Unsortable>;
+  std::vector<PairType> vect{{1, {1}}, {2, {1}}};
+  MapType map(sorted_unique, std::move(vect));
+  EXPECT_THAT(map, ElementsAre(PairType(1, {1}), PairType(2, {1})));
+}
+
+TEST(FlatMap, SortedInitializerListConstructor) {
+  using PairType = std::pair<int, Unsortable>;
+  flat_map<int, Unsortable> map(
+      sorted_unique,
+      {{1, {1}}, {2, {2}}, {3, {3}}, {4, {4}}, {5, {5}}, {8, {8}}, {10, {10}}});
+  EXPECT_THAT(map,
+              ElementsAre(PairType(1, {1}), PairType(2, {2}), PairType(3, {3}),
+                          PairType(4, {4}), PairType(5, {5}), PairType(8, {8}),
+                          PairType(10, {10})));
 }
 
 TEST(FlatMap, InitializerListAssignment) {
