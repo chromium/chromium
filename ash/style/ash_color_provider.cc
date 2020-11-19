@@ -223,11 +223,20 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kSliderColorInactive:
     case ContentLayerType::kRadioColorInactive:
       return is_dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey700;
+    case ContentLayerType::kSwitchKnobColorInactive:
+      return is_dark_mode ? gfx::kGoogleGrey800 : SK_ColorWHITE;
+    case ContentLayerType::kSwitchTrackColorInactive:
+      return GetSecondToneColor(is_dark_mode ? gfx::kGoogleGrey200
+                                             : gfx::kGoogleGrey700);
     case ContentLayerType::kButtonLabelColorBlue:
     case ContentLayerType::kSliderColorActive:
     case ContentLayerType::kRadioColorActive:
     case ContentLayerType::kSwitchAccessInnerStrokeColor:
+    case ContentLayerType::kSwitchKnobColorActive:
       return is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
+    case ContentLayerType::kSwitchTrackColorActive:
+      return GetSecondToneColor(
+          GetContentLayerColor(ContentLayerType::kSwitchKnobColorActive));
     case ContentLayerType::kButtonLabelColorPrimary:
     case ContentLayerType::kButtonIconColorPrimary:
     case ContentLayerType::kBatteryBadgeColor:

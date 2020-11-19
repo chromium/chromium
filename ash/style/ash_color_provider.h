@@ -121,6 +121,12 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
     kRadioColorActive,
     kRadioColorInactive,
 
+    // Color for toggle button.
+    kSwitchKnobColorActive,
+    kSwitchKnobColorInactive,
+    kSwitchTrackColorActive,
+    kSwitchTrackColorInactive,
+
     // Color for current active desk's border.
     kCurrentDeskColor,
 

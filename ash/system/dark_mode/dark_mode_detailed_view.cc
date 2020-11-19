@@ -122,6 +122,7 @@ void DarkModeDetailedView::OnThemeChanged() {
   TrayDetailedView::OnThemeChanged();
   themed_label_->SetEnabledColor(GetLabelColor());
   neutral_label_->SetEnabledColor(GetLabelColor());
+  TrayPopupUtils::UpdateToggleButtonColors(toggle_);
 }
 
 void DarkModeDetailedView::UpdateToggleButton(bool dark_mode_enabled) {

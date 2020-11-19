@@ -219,15 +219,6 @@ views::ImageView* TrayPopupUtils::CreateMainImageView() {
 views::ToggleButton* TrayPopupUtils::CreateToggleButton(
     views::Button::PressedCallback callback,
     int accessible_name_id) {
-  constexpr SkColor kTrackAlpha = 0x66;
-  auto GetColor = [](bool is_on, SkAlpha alpha = SK_AlphaOPAQUE) {
-    AshColorProvider::ContentLayerType type =
-        is_on ? AshColorProvider::ContentLayerType::kIconColorProminent
-              : AshColorProvider::ContentLayerType::kTextColorPrimary;
-
-    return SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(type),
-                       alpha);
-  };
   views::ToggleButton* toggle = new views::ToggleButton(std::move(callback));
   const gfx::Size toggle_size(toggle->GetPreferredSize());
   const int vertical_padding = (kMenuButtonSize - toggle_size.height()) / 2;
@@ -236,10 +227,7 @@ views::ToggleButton* TrayPopupUtils::CreateToggleButton(
   toggle->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(vertical_padding, horizontal_padding)));
   toggle->SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
-  toggle->SetThumbOnColor(GetColor(true));
-  toggle->SetThumbOffColor(GetColor(false));
-  toggle->SetTrackOnColor(GetColor(true, kTrackAlpha));
-  toggle->SetTrackOffColor(GetColor(false, kTrackAlpha));
+  UpdateToggleButtonColors(toggle);
   return toggle;
 }
 
@@ -365,6 +353,18 @@ void TrayPopupUtils::UpdateCheckMarkVisibility(HoverHighlightView* container,
   container->SetAccessibilityState(
       visible ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
               : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
+}
+
+void TrayPopupUtils::UpdateToggleButtonColors(views::ToggleButton* toggle) {
+  auto* ash_color_provider = AshColorProvider::Get();
+  toggle->SetThumbOnColor(ash_color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSwitchKnobColorActive));
+  toggle->SetThumbOffColor(ash_color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSwitchKnobColorInactive));
+  toggle->SetTrackOnColor(ash_color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSwitchTrackColorActive));
+  toggle->SetTrackOffColor(ash_color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
 }
 
 void TrayPopupUtils::SetLabelFontList(views::Label* label, FontStyle style) {

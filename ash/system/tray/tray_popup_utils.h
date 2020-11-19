@@ -201,6 +201,9 @@ class TrayPopupUtils {
   static void UpdateCheckMarkVisibility(HoverHighlightView* container,
                                         bool visible);
 
+  // Updates the toggle button colors based on the current color mode.
+  static void UpdateToggleButtonColors(views::ToggleButton* toggle);
+
   // Sets the font list for |label| based on |style|.
   static void SetLabelFontList(views::Label* label, FontStyle style);
 
