@@ -76,9 +76,7 @@ class BASE_EXPORT ThreadCacheRegistry {
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
 
 // Optional statistics collection.
-#if DCHECK_IS_ON()
 #define PA_ENABLE_THREAD_CACHE_STATISTICS 1
-#endif
 
 #if defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
 #define INCREMENT_COUNTER(counter) ++counter
