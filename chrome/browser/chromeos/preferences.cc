@@ -782,15 +782,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     if (user_is_active) {
       pointing_stick_settings.SetSensitivity(sensitivity_int);
     }
-    system::PointerSensitivity sensitivity =
-        static_cast<system::PointerSensitivity>(sensitivity_int);
-    if (reason == REASON_PREF_CHANGED) {
-      base::UmaHistogramEnumeration("PointingStick.PointerSensitivity.Changed",
-                                    sensitivity);
-    } else if (reason == REASON_INITIALIZATION) {
-      base::UmaHistogramEnumeration("PointingStick.PointerSensitivity.Started",
-                                    sensitivity);
-    }
+    ReportSensitivityPrefApplication(
+        reason, "PointingStick.PointerSensitivity.Changed",
+        "PointingStick.PointerSensitivity.Started", sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadSensitivity) {
