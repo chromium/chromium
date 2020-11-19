@@ -1,0 +1,4 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++slider horizontal inputType='range' value='5' valueForRange=5.00 minValueForRange=1.00 maxValueForRange=10.00

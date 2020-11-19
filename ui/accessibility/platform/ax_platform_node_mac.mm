@@ -195,7 +195,6 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kSearchBox, NSAccessibilityTextFieldRole},
       {ax::mojom::Role::kSection, NSAccessibilityGroupRole},
       {ax::mojom::Role::kSlider, NSAccessibilitySliderRole},
-      {ax::mojom::Role::kSliderThumb, NSAccessibilityValueIndicatorRole},
       {ax::mojom::Role::kSpinButton, NSAccessibilityIncrementorRole},
       {ax::mojom::Role::kSplitter, NSAccessibilitySplitterRole},
       {ax::mojom::Role::kStaticText, NSAccessibilityStaticTextRole},
@@ -629,7 +628,6 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::Role::kRadioButton:
     case ax::mojom::Role::kSearchBox:
     case ax::mojom::Role::kSlider:
-    case ax::mojom::Role::kSliderThumb:
     case ax::mojom::Role::kToggleButton:
       [axAttributes addObjectsFromArray:kValueAttributes];
       break;

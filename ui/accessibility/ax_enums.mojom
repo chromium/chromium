@@ -274,7 +274,6 @@ enum Role {
   kSearchBox,
   kSection,
   kSlider,
-  kSliderThumb,
   kSpinButton,
   kSplitter,
   kStaticText,

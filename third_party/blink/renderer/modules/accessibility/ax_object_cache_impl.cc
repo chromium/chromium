@@ -669,9 +669,6 @@ AXObject* AXObjectCacheImpl::GetOrCreate(ax::mojom::blink::Role role) {
   AXObject* obj = nullptr;
 
   switch (role) {
-    case ax::mojom::Role::kSliderThumb:
-      obj = MakeGarbageCollected<AXSliderThumb>(*this);
-      break;
     case ax::mojom::Role::kMenuListPopup:
       DCHECK(use_ax_menu_list_);
       obj = MakeGarbageCollected<AXMenuListPopup>(*this);

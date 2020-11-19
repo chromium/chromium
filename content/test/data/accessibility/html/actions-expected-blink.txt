@@ -2,6 +2,5 @@ rootWebArea name='Actions'
 ++genericContainer ignored
 ++++genericContainer
 ++++++slider horizontal value='50' valueForRange=50.00 minValueForRange=1.00 maxValueForRange=100.00 actions=setValue
-++++++++sliderThumb
 ++++++textField name='Test textfield' actions=setValue
 ++++++++genericContainer

@@ -1305,9 +1305,6 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kSlider:
       message_id = IDS_AX_ROLE_SLIDER;
       break;
-    case ax::mojom::Role::kSliderThumb:
-      // No role description.
-      break;
     case ax::mojom::Role::kSpinButton:
       message_id = IDS_AX_ROLE_SPIN_BUTTON;
       break;

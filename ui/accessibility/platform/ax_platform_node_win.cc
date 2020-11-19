@@ -5417,9 +5417,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kSlider:
       return ROLE_SYSTEM_SLIDER;
 
-    case ax::mojom::Role::kSliderThumb:
-      return ROLE_SYSTEM_SLIDER;
-
     case ax::mojom::Role::kSpinButton:
       return ROLE_SYSTEM_SPINBUTTON;
 
@@ -6251,9 +6248,6 @@ base::string16 AXPlatformNodeWin::UIAAriaRole() {
     case ax::mojom::Role::kSlider:
       return L"slider";
 
-    case ax::mojom::Role::kSliderThumb:
-      return L"slider";
-
     case ax::mojom::Role::kSpinButton:
       return L"spinbutton";
 
@@ -6908,9 +6902,6 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_GroupControlTypeId;
 
     case ax::mojom::Role::kSlider:
-      return UIA_SliderControlTypeId;
-
-    case ax::mojom::Role::kSliderThumb:
       return UIA_SliderControlTypeId;
 
     case ax::mojom::Role::kSpinButton:

@@ -63,9 +63,7 @@ AXRole: AXGenericContainer
         AXRole: AXStatus
         AXRole: AXProgressIndicator
         AXRole: AXStatus
-            AXRole: AXSliderThumb
         AXRole: AXSlider
-            AXRole: AXSliderThumb
 
 PASS successfullyParsed is true
 

@@ -15,4 +15,3 @@ rootWebArea
 ++++++++++++button name='enter full screen' restriction=disabled
 ++++++++++++button description='more options' name='show more media controls' descriptionFrom=attribute restriction=disabled
 ++++++++++slider horizontal description='video time scrubber' value='0:00' descriptionFrom=uninitialized restriction=disabled valueForRange=0.00 minValueForRange=0.00 maxValueForRange=0.00
-++++++++++++sliderThumb

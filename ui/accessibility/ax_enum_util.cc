@@ -462,8 +462,6 @@ const char* ToString(ax::mojom::Role role) {
       return "searchBox";
     case ax::mojom::Role::kSlider:
       return "slider";
-    case ax::mojom::Role::kSliderThumb:
-      return "sliderThumb";
     case ax::mojom::Role::kSpinButton:
       return "spinButton";
     case ax::mojom::Role::kSplitter:

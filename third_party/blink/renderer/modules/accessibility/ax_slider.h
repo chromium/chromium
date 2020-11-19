@@ -45,34 +45,15 @@ class AXSlider : public AXLayoutObject {
 
  private:
   HTMLInputElement* GetInputElement() const;
-  AXObject* ElementAccessibilityHitTest(const IntPoint&) const final;
 
   ax::mojom::Role DetermineAccessibilityRole() final;
   bool IsSlider() const final { return true; }
   bool IsControl() const final { return true; }
 
-  void AddChildren() final;
-
   bool OnNativeSetValueAction(const String&) final;
   AccessibilityOrientation Orientation() const final;
 
   DISALLOW_COPY_AND_ASSIGN(AXSlider);
-};
-
-class AXSliderThumb final : public AXMockObject {
- public:
-  explicit AXSliderThumb(AXObjectCacheImpl&);
-  ~AXSliderThumb() override = default;
-
-  ax::mojom::Role RoleValue() const override {
-    return ax::mojom::Role::kSliderThumb;
-  }
-
- private:
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-  LayoutObject* LayoutObjectForRelativeBounds() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AXSliderThumb);
 };
 
 }  // namespace blink

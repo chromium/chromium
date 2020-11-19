@@ -422,7 +422,6 @@ const InternalRoleEntry kInternalRoles[] = {
     {ax::mojom::blink::Role::kSearch, "Search"},
     {ax::mojom::blink::Role::kSearchBox, "SearchBox"},
     {ax::mojom::blink::Role::kSlider, "Slider"},
-    {ax::mojom::blink::Role::kSliderThumb, "SliderThumb"},
     {ax::mojom::blink::Role::kSpinButton, "SpinButton"},
     {ax::mojom::blink::Role::kSplitter, "Splitter"},
     {ax::mojom::blink::Role::kStaticText, "StaticText"},
@@ -4469,7 +4468,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kSlider:
     case ax::mojom::blink::Role::kSpinButton:
     case ax::mojom::blink::Role::kStatus:
-    case ax::mojom::blink::Role::kSliderThumb:
     case ax::mojom::blink::Role::kSuggestion:
     case ax::mojom::blink::Role::kSvgRoot:
     case ax::mojom::blink::Role::kTable:

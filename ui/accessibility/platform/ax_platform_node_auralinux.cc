@@ -2932,7 +2932,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kSearch:
       return ATK_ROLE_LANDMARK;
     case ax::mojom::Role::kSlider:
-    case ax::mojom::Role::kSliderThumb:
       return ATK_ROLE_SLIDER;
     case ax::mojom::Role::kSpinButton:
       return ATK_ROLE_SPIN_BUTTON;
