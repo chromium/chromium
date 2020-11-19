@@ -512,6 +512,13 @@
       'mac-release/sizes',
     ],
   },
+  'mac_10.10': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Mac-10.10',
+      },
+    },
+  },
   'mac_10.11': {
     'swarming': {
       'dimensions': {
