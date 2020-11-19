@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -73,8 +73,8 @@ class MediaRouterDialogControllerViews
 
   base::RepeatingClosure dialog_creation_callback_;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> scoped_widget_observer_{
-      this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      scoped_widget_observations_{this};
 
   // Service that provides MediaRouterActionController. It outlives |this|.
   MediaRouterUIService* const media_router_ui_service_;

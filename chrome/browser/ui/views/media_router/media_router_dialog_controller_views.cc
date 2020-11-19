@@ -63,7 +63,7 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
     // computation of |anchor_bounds| in CreateMediaRouterDialog() below, but
     // just doing the same thing here doesn't work.  I suspect that approach
     // will work, though, once the issue causing the blue border is fixed.
-    scoped_widget_observer_.Add(
+    scoped_widget_observations_.AddObservation(
         MediaDialogView::ShowDialog(media_button, service, profile));
     return true;
   } else {
@@ -104,7 +104,8 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
                                        dialog_creation_time,
                                        activation_location);
   }
-  scoped_widget_observer_.Add(CastDialogView::GetCurrentDialogWidget());
+  scoped_widget_observations_.AddObservation(
+      CastDialogView::GetCurrentDialogWidget());
 
   if (dialog_creation_callback_)
     dialog_creation_callback_.Run();
@@ -129,11 +130,11 @@ void MediaRouterDialogControllerViews::Reset() {
 }
 
 void MediaRouterDialogControllerViews::OnWidgetClosing(views::Widget* widget) {
-  DCHECK(scoped_widget_observer_.IsObserving(widget));
+  DCHECK(scoped_widget_observations_.IsObservingSource(widget));
   if (ui_)
     ui_->LogMediaSinkStatus();
   Reset();
-  scoped_widget_observer_.Remove(widget);
+  scoped_widget_observations_.RemoveObservation(widget);
 }
 
 void MediaRouterDialogControllerViews::SetDialogCreationCallbackForTesting(

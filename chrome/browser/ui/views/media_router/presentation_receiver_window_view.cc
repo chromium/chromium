@@ -49,7 +49,7 @@
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -67,7 +67,7 @@ class FullscreenWindowObserver : public aura::WindowObserver {
   FullscreenWindowObserver(aura::Window* observed_window,
                            base::RepeatingClosure on_fullscreen_change)
       : on_fullscreen_change_(on_fullscreen_change) {
-    observed_window_.Add(observed_window);
+    window_observation_.Observe(observed_window);
   }
 
   ~FullscreenWindowObserver() override = default;
@@ -89,12 +89,13 @@ class FullscreenWindowObserver : public aura::WindowObserver {
   }
 
   void OnWindowDestroying(aura::Window* window) override {
-    observed_window_.Remove(window);
+    window_observation_.RemoveObservation();
   }
 
   base::RepeatingClosure on_fullscreen_change_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_window_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenWindowObserver);
 };
