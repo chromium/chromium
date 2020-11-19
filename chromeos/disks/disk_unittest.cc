@@ -34,6 +34,8 @@ const char kProductName[] = "Product Name";
 const char kVendorId[] = "0000";
 const char kVendorName[] = "Vendor Name";
 const char kFileSystemType[] = "exfat";
+const int kBusNumber = 2;
+const int kDeviceNumber = 3;
 const uint64_t kDeviceSize = 16005464064;
 const uint32_t kDeviceMediaType = cros_disks::DEVICE_MEDIA_SD;
 
@@ -81,6 +83,17 @@ void AppendUint32DictEntry(dbus::MessageWriter* array_writer,
   array_writer->CloseContainer(&entry_writer);
 }
 
+// Appends a Int32 entry to a dictionary of type "a{sv}"
+void AppendInt32DictEntry(dbus::MessageWriter* array_writer,
+                          const std::string& key,
+                          int value) {
+  dbus::MessageWriter entry_writer(nullptr);
+  array_writer->OpenDictEntry(&entry_writer);
+  entry_writer.AppendString(key);
+  entry_writer.AppendVariantOfInt32(value);
+  array_writer->CloseContainer(&entry_writer);
+}
+
 void AppendBasicProperties(dbus::MessageWriter* array_writer) {
   AppendStringDictEntry(array_writer, cros_disks::kDeviceFile, kDeviceFile);
   AppendStringDictEntry(array_writer, cros_disks::kDriveModel, kDriveModel);
@@ -94,6 +107,8 @@ void AppendBasicProperties(dbus::MessageWriter* array_writer) {
   AppendStringDictEntry(array_writer, cros_disks::kVendorName, kVendorName);
   AppendStringDictEntry(array_writer, cros_disks::kFileSystemType,
                         kFileSystemType);
+  AppendInt32DictEntry(array_writer, cros_disks::kBusNumber, kBusNumber);
+  AppendInt32DictEntry(array_writer, cros_disks::kDeviceNumber, kDeviceNumber);
   AppendUint64DictEntry(array_writer, cros_disks::kDeviceSize, kDeviceSize);
   AppendUint32DictEntry(array_writer, cros_disks::kDeviceMediaType,
                         kDeviceMediaType);
@@ -128,6 +143,8 @@ TEST(DiskTest, ConstructFromDiskInfo) {
   EXPECT_EQ(kProductId, disk.product_id());
   EXPECT_EQ(kProductName, disk.product_name());
   EXPECT_EQ(kIdUuid, disk.fs_uuid());
+  EXPECT_EQ(kBusNumber, disk.bus_number());
+  EXPECT_EQ(kDeviceNumber, disk.device_number());
   EXPECT_EQ(kDeviceSize, disk.total_size_in_bytes());
   EXPECT_EQ(DEVICE_TYPE_SD, disk.device_type());
   EXPECT_EQ(kStorageDevicePath, disk.storage_device_path());

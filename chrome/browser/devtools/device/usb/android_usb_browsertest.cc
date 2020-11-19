@@ -137,13 +137,8 @@ UsbConfigurationInfoPtr ConstructAndroidConfig(uint8_t class_code,
 class FakeAndroidUsbDeviceInfo : public FakeUsbDeviceInfo {
  public:
   explicit FakeAndroidUsbDeviceInfo(bool is_broken)
-      : FakeUsbDeviceInfo(0x0200,  // usb_version
-                          0,       // device_class
-                          0,       // device_subclass
-                          0,       // device_protocol
-                          0,       // vendor_id
-                          0,       // product_id
-                          0x0100,  // device_version
+      : FakeUsbDeviceInfo(/*vendor_id=*/0,
+                          /*product_id=*/0,
                           kDeviceManufacturer,
                           kDeviceModel,
                           kDeviceSerial),

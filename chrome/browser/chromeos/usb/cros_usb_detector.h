@@ -51,6 +51,8 @@ struct CrosUsbDeviceInfo {
   CrosUsbDeviceInfo(const CrosUsbDeviceInfo&);
   ~CrosUsbDeviceInfo();
 
+  int bus_number = 0;
+  int port_number = 0;
   std::string guid;
   base::string16 label;
   // Whether the device can be shared with guest OSes.
@@ -102,7 +104,7 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr device) override;
 
   // Attaches the device identified by |guid| into the VM identified by
-  // |vm_name|.
+  // |vm_name|. Will unmount filesystems and detach any already shared devices.
   void AttachUsbDeviceToVm(const std::string& vm_name,
                            const std::string& guid,
                            base::OnceCallback<void(bool success)> callback);
@@ -157,6 +159,33 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   void OnListAttachedDevices(
       std::vector<device::mojom::UsbDeviceInfoPtr> devices);
 
+  // Attaching a device goes through the flow:
+  // AttachUsbDeviceToVm() -> UnmountFilesystems() -> OnUnmountFilesystems()
+  //  -> AttachAfterDetach() -> OnAttachUsbDeviceOpened() -> DoVmAttach()
+  //  -> OnUsbDeviceAttachFinished().
+  // Unmounting filesystems and detaching devices is only needed in some cases,
+  // usually we will skip these.
+
+  // This prevents data corruption and suppresses the notification about
+  // ejecting USB drives. A corresponding mount step when detaching from a VM is
+  // not necessary as PermissionBroker reattaches the usb-storage drivers,
+  // causing the drive to get mounted as usual.
+  void UnmountFilesystems(const std::string& vm_name,
+                          const std::string& guid,
+                          base::OnceCallback<void(bool success)> callback);
+
+  void OnUnmountFilesystems(const std::string& vm_name,
+                            const std::string& guid,
+                            base::OnceCallback<void(bool success)> callback,
+                            bool unmount_success);
+
+  // Devices will be auto-detached if they are attached to another VM.
+  void AttachAfterDetach(const std::string& vm_name,
+                         const std::string& guid,
+                         uint32_t allowed_interfaces_mask,
+                         base::OnceCallback<void(bool success)> callback,
+                         bool detach_success);
+
   // Callback for AttachUsbDeviceToVm after opening a file handler.
   void OnAttachUsbDeviceOpened(const std::string& vm_name,
                                device::mojom::UsbDeviceInfoPtr device,
@@ -180,12 +209,6 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
       const std::string& guid,
       base::OnceCallback<void(bool success)> callback,
       base::Optional<vm_tools::concierge::DetachUsbDeviceResponse> response);
-
-  // Devices will be auto-detached if they are attached to another VM.
-  void AttachAfterDetach(const std::string& vm_name,
-                         const std::string& guid,
-                         base::OnceCallback<void(bool success)> callback,
-                         bool success);
 
   // Returns true when a device should show a notification when attached.
   bool ShouldShowNotification(const device::mojom::UsbDeviceInfo& device_info,

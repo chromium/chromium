@@ -38,6 +38,8 @@ class FakeUsbDeviceInfo : public base::RefCounted<FakeUsbDeviceInfo> {
                     uint16_t device_version,
                     uint16_t vendor_id,
                     uint16_t product_id,
+                    uint32_t bus_number,
+                    uint32_t port_number,
                     const std::string& manufacturer_string,
                     const std::string& product_string,
                     const std::string& serial_number);

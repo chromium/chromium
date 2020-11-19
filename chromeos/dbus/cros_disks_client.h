@@ -216,6 +216,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DiskInfo {
   // Device type. Not working well, yet.
   DeviceType device_type() const { return device_type_; }
 
+  // USB bus number of the device (e.g. 1).
+  int bus_number() const { return bus_number_; }
+
+  // USB device number of the device (e.g. 5).
+  int device_number() const { return device_number_; }
+
   // Total size of the disk in bytes.
   uint64_t total_size_in_bytes() const { return total_size_in_bytes_; }
 
@@ -248,6 +254,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DiskInfo {
   std::string product_name_;
   std::string drive_model_;
   DeviceType device_type_;
+  int bus_number_;
+  int device_number_;
   uint64_t total_size_in_bytes_;
   std::string uuid_;
   std::string file_system_type_;
