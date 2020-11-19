@@ -11,6 +11,7 @@ test("gcp_unittests") {
     "../extension/task_manager_unittests.cc",
     "../gaiacp/associated_user_validator_unittests.cc",
     "../gaiacp/device_policies_manager_unittests.cc",
+    "../gaiacp/experiments_manager_unittests.cc",
     "../gaiacp/gaia_credential_base_unittests.cc",
     "../gaiacp/gaia_credential_other_user_unittests.cc",
     "../gaiacp/gaia_credential_provider_unittests.cc",

@@ -3596,7 +3596,7 @@ TEST_P(GcpGaiaCredentialBaseFetchCloudPoliciesTest, FetchAndStore) {
   ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
 
   base::TimeDelta time_since_last_fetch =
-      UserPoliciesManager::Get()->GetTimeDeltaSinceLastPolicyFetch(sid);
+      GetTimeDeltaSinceLastFetch(sid, kLastUserPolicyRefreshTimeRegKey);
 
   if (cloud_policies_enabled && !policy_refreshed_recently) {
     ASSERT_EQ(1, fake_user_policies_manager.GetNumTimesFetchAndStoreCalled());

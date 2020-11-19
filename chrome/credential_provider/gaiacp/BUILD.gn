@@ -16,6 +16,10 @@ import("//tools/grit/grit_rule.gni")
 # This static library is shared with the setup program.
 source_set("common") {
   sources = [
+    "experiments_fetcher.cc",
+    "experiments_fetcher.h",
+    "experiments_manager.cc",
+    "experiments_manager.h",
     "gcp_crash_reporter_client.cc",
     "gcp_crash_reporter_client.h",
     "gcp_crash_reporting_utils.cc",

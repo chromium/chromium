@@ -14,6 +14,8 @@
 #include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/extension/service.h"
 #include "chrome/credential_provider/extension/task_manager.h"
+#include "chrome/credential_provider/gaiacp/experiments_fetcher.h"
+#include "chrome/credential_provider/gaiacp/experiments_manager.h"
 #include "chrome/credential_provider/gaiacp/gem_device_details_manager.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
@@ -37,6 +39,13 @@ void RegisterAllTasks() {
     credential_provider::extension::TaskManager::Get()->RegisterTask(
         "UploadDeviceDetails", credential_provider::GemDeviceDetailsManager::
                                    UploadDeviceDetailsTaskCreator());
+  }
+
+  // Task to fetch experiments for all GCPW users.
+  if (credential_provider::ExperimentsManager::Get()->ExperimentsEnabled()) {
+    credential_provider::extension::TaskManager::Get()->RegisterTask(
+        "FetchExperiments", credential_provider::ExperimentsFetcher::
+                                GetFetchExperimentsTaskCreator());
   }
 }
 

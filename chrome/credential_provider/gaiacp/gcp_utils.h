@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
@@ -74,6 +75,14 @@ extern const int kMaxNumConsecutiveUploadDeviceFailures;
 // Maximum allowed time delta after which user policies should be refreshed
 // again.
 extern const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh;
+
+// Maximum allowed time delta after which experiments should be fetched
+// again.
+extern const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch;
+
+// Path elements for the path where the experiments are stored on disk.
+extern const wchar_t kGcpwExperimentsDirectory[];
+extern const wchar_t kGcpwUserExperimentsFileName[];
 
 // Because of some strange dependency problems with windows header files,
 // define STATUS_SUCCESS here instead of including ntstatus.h or SubAuth.h
@@ -403,6 +412,20 @@ GURL GetGcpwServiceUrl();
 // https://{dev}-xxxxx.sandbox.googleapis.com/...
 base::string16 GetDevelopmentUrl(const base::string16& url,
                                  const base::string16& dev);
+
+// Returns a handle to a file which is stored under DIR_COMMON_APP_DATA > |sid|
+// > |file_dir| > |file_name|. The file is opened with the provided
+// |open_flags|.
+std::unique_ptr<base::File> GetOpenedFileForUser(
+    const base::string16& sid,
+    uint32_t open_flags,
+    const base::string16& file_dir,
+    const base::string16& file_name);
+
+// Returns the time delta since the last fetch for the given |sid|. |flag|
+// stores the last fetch time.
+base::TimeDelta GetTimeDeltaSinceLastFetch(const base::string16& sid,
+                                           const base::string16& flag);
 
 }  // namespace credential_provider
 
