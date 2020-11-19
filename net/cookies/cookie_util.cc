@@ -581,48 +581,6 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSubresource(
   return CookieOptions::SameSiteCookieContext::MakeInclusive();
 }
 
-bool IsSameSiteCompatPair(const CanonicalCookie& c1,
-                          const CanonicalCookie& c2,
-                          const CookieOptions& options) {
-  if (options.exclude_httponly() && (c1.IsHttpOnly() || c2.IsHttpOnly()))
-    return false;
-
-  if (c1.IsEquivalent(c2))
-    return false;
-
-  // One of them is SameSite=None and Secure; the other one has unspecified
-  // SameSite.
-  bool same_site_attributes_ok =
-      c1.SameSite() == CookieSameSite::NO_RESTRICTION && c1.IsSecure() &&
-      c2.SameSite() == CookieSameSite::UNSPECIFIED;
-  same_site_attributes_ok =
-      same_site_attributes_ok ||
-      (c2.SameSite() == CookieSameSite::NO_RESTRICTION && c2.IsSecure() &&
-       c1.SameSite() == CookieSameSite::UNSPECIFIED);
-  if (!same_site_attributes_ok)
-    return false;
-
-  if (c1.Domain() != c2.Domain() || c1.Path() != c2.Path() ||
-      c1.Value() != c2.Value()) {
-    return false;
-  }
-
-  DCHECK(c1.Name() != c2.Name());
-  std::string shorter, longer;
-  std::tie(shorter, longer) = (c1.Name().length() < c2.Name().length())
-                                  ? std::tie(c1.Name(), c2.Name())
-                                  : std::tie(c2.Name(), c1.Name());
-  // One of them has a name that is a prefix or suffix of the other and has
-  // length at least 3 characters.
-  if (shorter.length() < kMinCompatPairNameLength)
-    return false;
-  if (base::StartsWith(longer, shorter, base::CompareCase::SENSITIVE) ||
-      base::EndsWith(longer, shorter, base::CompareCase::SENSITIVE)) {
-    return true;
-  }
-  return false;
-}
-
 bool IsSameSiteByDefaultCookiesEnabled() {
   return base::FeatureList::IsEnabled(features::kSameSiteByDefaultCookies);
 }

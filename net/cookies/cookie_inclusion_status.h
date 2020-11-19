@@ -142,30 +142,12 @@ class NET_EXPORT CookieInclusionStatus {
     // Lax to Cross-site downgrade for an effective SameSite=Lax cookie.
     WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE = 7,
 
-    // This is applied to a cookie that may be part of a "double cookie" pair
-    // used for compatibility reasons. These pairs consist of one cookie that
-    // has "SameSite=None; Secure" and a duplicate cookie that leaves SameSite
-    // unspecified to maintain compatibility with browsers that do not support
-    // the "SameSite=None" attribute. This warning is applied to both
-    // members of the pair. See cookie_util::IsSameSiteCompatPair().
-    //
-    // If computing this for a cookie access attempt from a non-network context
-    // (i.e. script), this should not be applied if either member of the pair is
-    // HttpOnly, to avoid leaking information about the name and value of
-    // HttpOnly cookies to an untrusted renderer.
-    //
-    // This is only relevant if WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT is
-    // present on the same status or a status for a cookie accessed at the same
-    // time, so it may not be applied at other times (e.g. when the context is
-    // same-site).
-    WARN_SAMESITE_COMPAT_PAIR = 8,
-
     // Advisory warning attached when a Secure cookie is accessed from (sent to,
     // or set by) a non-cryptographic URL. This can happen if the URL is
     // potentially trustworthy (e.g. a localhost URL, or another URL that
     // the CookieAccessDelegate is configured to allow).
     // TODO(chlily): Add metrics for how often and where this occurs.
-    WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC = 9,
+    WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC = 8,
 
     // This should be kept last.
     NUM_WARNING_REASONS

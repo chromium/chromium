@@ -28,10 +28,6 @@ const int kVlogPerCookieMonster = 1;
 const int kVlogSetCookies = 7;
 const int kVlogGarbageCollection = 5;
 
-// Minimum name length for SameSite compatibility pair heuristic (see
-// IsSameSiteCompatPair() below.)
-const int kMinCompatPairNameLength = 3;
-
 // This enum must match the numbering for StorageAccessResult in
 // histograms/enums.xml. Do not reorder or remove items, only add new items
 // at the end.
@@ -213,26 +209,6 @@ NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForSubresource(const GURL& url,
                                      const SiteForCookies& site_for_cookies,
                                      bool force_ignore_site_for_cookies);
-
-// Evaluates a heuristic to determine whether |c1| and |c2| are likely to be a
-// "double cookie" pair used for SameSite=None compatibility reasons.
-//
-// This returns true if all of the following are true:
-//  1. The cookies are not equivalent (i.e. same name, domain, and path).
-//  2. One of them is SameSite=None and Secure; the other one has unspecified
-//     SameSite.
-//  3. Their domains are equal.
-//  4. Their paths are equal.
-//  5. Their values are equal.
-//  6. One of them has a name that is a prefix or suffix of the other and has
-//     length at least 3 characters.
-//
-// |options| is the CookieOptions object used to access (get/set) the cookies.
-// If the CookieOptions indicate that HttpOnly cookies are not allowed, this
-// will return false if either of |c1| or |c2| is HttpOnly.
-NET_EXPORT bool IsSameSiteCompatPair(const CanonicalCookie& c1,
-                                     const CanonicalCookie& c2,
-                                     const CookieOptions& options);
 
 // Returns whether the respective SameSite feature is enabled.
 NET_EXPORT bool IsSameSiteByDefaultCookiesEnabled();
