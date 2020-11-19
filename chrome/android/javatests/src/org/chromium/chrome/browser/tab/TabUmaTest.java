@@ -72,11 +72,13 @@ public class TabUmaTest {
     private TabbedModeTabDelegateFactory createTabDelegateFactory() {
         BrowserControlsVisibilityDelegate visibilityDelegate =
                 new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH) {};
+        // clang-format off
         return new TabbedModeTabDelegateFactory(mActivityTestRule.getActivity(), visibilityDelegate,
                 new ObservableSupplierImpl<ShareDelegate>(), null,
-                mActivityTestRule.getActivity()
+                () -> {}, mActivityTestRule.getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getBottomSheetController());
+        // clang-format on
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {

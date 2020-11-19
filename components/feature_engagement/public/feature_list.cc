@@ -50,6 +50,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPwaInstallAvailableFeature,
     &kIPHQuietNotificationPromptsFeature,
     &kIPHReadLaterContextMenuFeature,
+    &kIPHReadLaterAppMenuBookmarkThisPageFeature,
+    &kIPHReadLaterAppMenuBookmarksFeature,
     &kIPHTabGroupsQuicklyComparePagesFeature,
     &kIPHTabGroupsTapToSeeAnotherTabFeature,
     &kIPHTabGroupsYourTabsAreTogetherFeature,

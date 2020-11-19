@@ -77,6 +77,10 @@ const base::Feature kIPHQuietNotificationPromptsFeature{
     "IPH_QuietNotificationPrompts", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReadLaterContextMenuFeature{
     "IPH_ReadLaterContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHReadLaterAppMenuBookmarkThisPageFeature{
+    "IPH_ReadLaterAppMenuBookmarkThisPage", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHReadLaterAppMenuBookmarksFeature{
+    "IPH_ReadLaterAppMenuBookmarks", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHEphemeralTabFeature{"IPH_EphemeralTab",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFeedCardMenuFeature{"IPH_FeedCardMenu",

@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
@@ -81,6 +82,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
+    private ReadLaterIPHController mReadLaterIPHController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private AppBannerInProductHelpController mAppBannerInProductHelpController;
@@ -326,10 +328,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
         };
         mToolbarButtonIphTabSupplier.set(activityTabProvider.get());
+        mReadLaterIPHController = new ReadLaterIPHController(mActivity,
+                getToolbarManager().getMenuButtonView(), mAppMenuCoordinator.getAppMenuHandler());
 
         boolean didTriggerPromo = triggerPromo(intentWithEffect);
         if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIPH();
+            mReadLaterIPHController.showColdStartIPH();
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
             mPromoShownOneshotSupplier.set(didTriggerPromo);
@@ -457,6 +462,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @VisibleForTesting
     public NavigationSheet getNavigationSheetForTesting() {
         return mNavigationSheet;
+    }
+
+    /** Called when a link is copied through context menu. */
+    public void onContextMenuCopyLink() {
+        // TODO(crbug/1150090): Find a better way of passing event for IPH.
+        mReadLaterIPHController.onCopyContextMenuItemClicked();
     }
 
     /**
