@@ -41,16 +41,16 @@ Polymer({
 
   /** @private */
   fetchSystemInfo_() {
-    this.systemDataProvider_.getSystemInfo().then(
-        this.onSystemInfoReceived_.bind(this));
+    this.systemDataProvider_.getSystemInfo().then((result) => {
+      this.onSystemInfoReceived_(result.systemInfo);
+    });
   },
 
   /**
-   * @param {!{systemInfo: !SystemInfo}} result
+   * @param {!SystemInfo} systemInfo
    * @private
    */
-  onSystemInfoReceived_(result) {
-    this.systemInfo_ = result.systemInfo;
+  onSystemInfoReceived_(systemInfo) {
+    this.systemInfo_ = systemInfo;
   },
-
 });

@@ -87,16 +87,17 @@ Polymer({
 
   /** @private */
   fetchBatteryInfo_() {
-    this.systemDataProvider_.getBatteryInfo().then(
-        this.onBatteryInfoReceived_.bind(this));
+    this.systemDataProvider_.getBatteryInfo().then((result) => {
+      this.onBatteryInfoReceived_(result.batteryInfo);
+    });
   },
 
   /**
-   * @param {!{batteryInfo: !BatteryInfo}} result
+   * @param {!BatteryInfo} batteryInfo
    * @private
    */
-  onBatteryInfoReceived_(result) {
-    this.batteryInfo_ = result.batteryInfo;
+  onBatteryInfoReceived_(batteryInfo) {
+    this.batteryInfo_ = batteryInfo;
   },
 
   /** @private */
