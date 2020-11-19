@@ -18,6 +18,7 @@ POLICY_EXPORT extern const char kLastPolicyStatisticsUpdate[];
 POLICY_EXPORT extern const char kNativeWindowOcclusionEnabled[];
 POLICY_EXPORT extern const char kSafeSitesFilterBehavior[];
 POLICY_EXPORT extern const char kSystemFeaturesDisableList[];
+POLICY_EXPORT extern const char kSystemFeaturesDisableMode[];
 POLICY_EXPORT extern const char kUrlBlacklist[];
 POLICY_EXPORT extern const char kUrlWhitelist[];
 POLICY_EXPORT extern const char kUserPolicyRefreshRate[];

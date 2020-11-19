@@ -19,6 +19,9 @@ const char kBrowserSettingsFeature[] = "browser_settings";
 const char kOsSettingsFeature[] = "os_settings";
 const char kScanningFeature[] = "scanning";
 
+const char kBlockedDisableMode[] = "blocked";
+const char kHiddenDisableMode[] = "hidden";
+
 const char kSystemFeaturesDisableListHistogram[] =
     "Enterprise.SystemFeaturesDisableList";
 
@@ -32,6 +35,8 @@ SystemFeaturesDisableListPolicyHandler::
 void SystemFeaturesDisableListPolicyHandler::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(policy_prefs::kSystemFeaturesDisableList);
+  registry->RegisterStringPref(policy_prefs::kSystemFeaturesDisableMode,
+                               kBlockedDisableMode);
 }
 
 void SystemFeaturesDisableListPolicyHandler::ApplyList(

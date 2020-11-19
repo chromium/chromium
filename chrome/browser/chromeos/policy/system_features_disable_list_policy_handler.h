@@ -27,10 +27,22 @@ enum SystemFeature {
   kMaxValue = SCANNING
 };
 
+// A disabling mode that decides the user experience when a system feature is
+// added into SystemFeaturesDisableList policy.
+enum class SystemFeatureDisableMode {
+  kUnknownDisableMode = 0,
+  kBlocked = 1,  // The disabled feature is blocked.
+  kHidden = 2,   // The disabled feature is blocked and hidden.
+  kMaxValue = kHidden
+};
+
 extern const char kCameraFeature[];
 extern const char kBrowserSettingsFeature[];
 extern const char kOsSettingsFeature[];
 extern const char kScanningFeature[];
+
+extern const char kBlockedDisableMode[];
+extern const char kHiddenDisableMode[];
 
 extern const char kSystemFeaturesDisableListHistogram[];
 

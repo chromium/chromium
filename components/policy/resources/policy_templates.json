@@ -10966,11 +10966,53 @@
       'tags': [],
       'desc': '''Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features to be disabled.
 
-      Disabling any of these features means that the user can't access it from the UI and will see it as "disabled by admin".
+      Disabling any of these features means that the user can't access it from the UI and will see it as "disabled by admin". The user experience of disabled features is decided by <ph name="SYSTEM_FEATURES_DISABLE_MODE">SystemFeaturesDisableMode</ph>
 
       If the policy is left not set, all <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features will be enabled by default and the user can use any of them.
 
       Note: The scanning feature is currently disabled by default via a feature flag. If the user enables the feature via the feature flag, the feature can still be disabled by this policy.''',
+    },
+    {
+      'name': 'SystemFeaturesDisableMode',
+      'owners': ['anqing@chromium.org'],
+      'type': 'string-enum',
+      'schema': {
+        'type': 'string',
+        'enum': [
+          'blocked',
+          'hidden',
+        ],
+      },
+      'items': [
+        {
+          'name': 'blocked',
+          'value': 'blocked',
+          'caption': '''Block the disabled features''',
+        },
+        {
+          'name': 'hidden',
+          'value': 'hidden',
+          'caption': '''Hide and block the disabled features''',
+        },
+      ],
+      'future_on': ['chrome_os'],
+      'features': {
+        'can_be_recommended': False,
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': 'blocked',
+      'default': 'blocked',
+      'id': 807,
+      'caption': '''Set the user experience of disabled features''',
+      'tags': [],
+      'desc': '''Controls the user experience of disabled features listed in <ph name="SYSTEM_FEATURES_DISABLE_LIST">SystemFeaturesDisableList</ph>.
+
+      If this policy is set to "blocked", the disabled features will become unusable but still visible to users.
+
+      If this policy is set to "hidden", the disabled features will become unusable and invisible to users.
+
+      If this policy is left unset or has an invalid value, the disable mode of system features will be "blocked".''',
     },
     {
       'name': 'FloatingAccessibilityMenuEnabled',
@@ -24745,6 +24787,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 806,
+  'highest_id_currently_used': 807,
   'highest_atomic_group_id_currently_used': 40
 }

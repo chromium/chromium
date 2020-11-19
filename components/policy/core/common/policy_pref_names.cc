@@ -19,6 +19,10 @@ const char kSafeSitesFilterBehavior[] = "policy.safe_sites_filter_behavior";
 // "SystemFeaturesDisableList").
 const char kSystemFeaturesDisableList[] = "policy.system_features_disable_list";
 
+// Enum specifying the user experience of disabled features.
+// See the SystemFeaturesDisableMode policy for details.
+const char kSystemFeaturesDisableMode[] = "policy.system_features_disable_mode";
+
 // Blocks access to the listed host patterns.
 const char kUrlBlacklist[] = "policy.url_blacklist";
 

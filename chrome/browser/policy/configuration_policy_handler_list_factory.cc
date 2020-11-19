@@ -1125,6 +1125,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceArcDataSnapshotHours,
     arc::prefs::kArcSnapshotHours,
     base::Value::Type::DICTIONARY },
+  { key::kSystemFeaturesDisableMode,
+    policy::policy_prefs::kSystemFeaturesDisableMode,
+    base::Value::Type::STRING },
 #else  // defined(OS_CHROMEOS)
   { key::kMetricsReportingEnabled,
     metrics::prefs::kMetricsReportingEnabled,

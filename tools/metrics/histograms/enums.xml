@@ -22570,6 +22570,7 @@ Called by update_document_policy_enum.py.-->
   <int value="804" label="FullscreenAlertEnabled"/>
   <int value="805" label="NTPCardsVisible"/>
   <int value="806" label="BasicAuthOverHttpEnabled"/>
+  <int value="807" label="SystemFeaturesDisableMode"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
