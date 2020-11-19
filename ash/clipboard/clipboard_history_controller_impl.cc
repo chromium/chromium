@@ -281,9 +281,6 @@ void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
 
 void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {
   DCHECK(IsMenuShowing());
-  // Deactivate ClipboardImageModelFactory prior to pasting to ensure that any
-  // modifications to the clipboard for HTML rendering purposes are reversed.
-  ClipboardImageModelFactory::Get()->Deactivate();
 
   auto command = context_menu_->GetSelectedMenuItemCommand();
 
@@ -322,6 +319,11 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected", command_id,
       ClipboardHistoryUtil::kMaxCommandId);
+
+  // Deactivate ClipboardImageModelFactory prior to pasting to ensure that any
+  // modifications to the clipboard for HTML rendering purposes are reversed.
+  ClipboardImageModelFactory::Get()->Deactivate();
+
   // Force close the context menu. Failure to do so before dispatching our
   // synthetic key event will result in the context menu consuming the event.
   DCHECK(context_menu_);
