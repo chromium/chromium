@@ -39,6 +39,9 @@ class CORE_EXPORT FindBuffer {
   static Node* ForwardVisibleTextNode(Node& start_node);
   static Node* BackwardVisibleTextNode(Node& start_node);
 
+  // Returns whether the given node is block level.
+  static bool IsNodeBlockLevel(Node& node);
+
   // A match result, containing the starting position of the match and
   // the length of the match.
   struct BufferMatchResult {

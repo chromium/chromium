@@ -20,14 +20,6 @@ namespace blink {
 
 namespace {
 
-// Returns text within given positions of the node, skipping invisible children
-// and comments.
-String GetText(Node* node, int start_position, int end_position) {
-  auto range_start = Position(node, start_position);
-  auto range_end = Position(node, end_position);
-  return PlainText(EphemeralRange(range_start, range_end));
-}
-
 // Returns text content of the node, skipping invisible children and comments.
 String GetText(Node* node) {
   return PlainText(EphemeralRange::RangeOfContents(*node));
@@ -36,18 +28,24 @@ String GetText(Node* node) {
 // Returns true if text from beginning of |node| until |pos_offset| can be
 // considered empty. Otherwise, return false.
 bool IsFirstVisiblePosition(Node* node, unsigned pos_offset) {
-  return pos_offset == 0 ||
-         GetText(node, 0, pos_offset).StripWhiteSpace().IsEmpty();
+  auto range_start = Position::FirstPositionInNode(*node);
+  auto range_end = Position(node, pos_offset);
+  return pos_offset == 0 || PlainText(EphemeralRange(range_start, range_end))
+                                .StripWhiteSpace()
+                                .IsEmpty();
 }
 
 // Returns true if text from |pos_offset| until end of |node| can be considered
 // empty. Otherwise, return false.
 bool IsLastVisiblePosition(Node* node, unsigned pos_offset) {
+  auto range_start = Position(node, pos_offset);
+  auto range_end = Position::LastPositionInNode(*node);
   return pos_offset == node->textContent().length() ||
-         GetText(node, pos_offset, node->textContent().length())
+         PlainText(EphemeralRange(range_start, range_end))
              .StripWhiteSpace()
              .IsEmpty();
 }
+
 struct ForwadDirection {
   static Node* Next(const Node& node) { return FlatTreeTraversal::Next(node); }
   static Node* Next(const Node& node, const Node* stay_within) {
@@ -276,7 +274,10 @@ void TextFragmentSelectorGenerator::GenerateSelector(
   max_available_range_end_ = "";
   num_prefix_words_ = 0;
   num_suffix_words_ = 0;
+  num_range_start_words_ = 0;
+  num_range_end_words_ = 0;
   iteration_ = 0;
+  selector_ = nullptr;
 
   AdjustSelection();
   UMA_HISTOGRAM_COUNTS_1000(
@@ -404,17 +405,10 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   DCHECK_EQ(kExact, step_);
   DCHECK_EQ(kNeedsNewCandidate, state_);
   EphemeralRangeInFlatTree ephemeral_range(selection_range_);
-  Node* start_container =
-      ephemeral_range.StartPosition().ComputeContainerNode();
-  Node* end_container = ephemeral_range.EndPosition().ComputeContainerNode();
-
-  Node& start_first_block_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(*start_container);
-  Node& end_first_block_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(*end_container);
 
   // If not in same node, should use ranges.
-  if (!start_first_block_ancestor.isSameNode(&end_first_block_ancestor)) {
+  if (!IsInSameUninterruptedBlock(selection_range_->StartPosition(),
+                                  selection_range_->EndPosition())) {
     step_ = kRange;
     return;
   }
@@ -464,17 +458,10 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
       max_available_range_end_.IsEmpty()) {
     EphemeralRangeInFlatTree ephemeral_range(selection_range_);
 
-    Node& start_first_block_ancestor =
-        FindBuffer::GetFirstBlockLevelAncestorInclusive(
-            *ephemeral_range.StartPosition().ComputeContainerNode());
-    Node& end_first_block_ancestor =
-        FindBuffer::GetFirstBlockLevelAncestorInclusive(
-            *ephemeral_range.EndPosition().ComputeContainerNode());
-
     // If selection starts and ends in the same block, then split selected text
     // roughly in the middle.
-    // TODO(gayane): Should also check that there are no nested blocks.
-    if (start_first_block_ancestor.isSameNode(&end_first_block_ancestor)) {
+    if (IsInSameUninterruptedBlock(selection_range_->StartPosition(),
+                                   selection_range_->EndPosition())) {
       String selection_text = PlainText(ephemeral_range);
       selection_text.Ensure16Bit();
       int selection_length = selection_text.length();
@@ -617,5 +604,31 @@ String TextFragmentSelectorGenerator::GetNextTextBlock(
   auto range_start = Position(suffix_start, suffix_start_offset);
   auto range_end = Position(suffix_end, suffix_end->textContent().length());
   return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
+}
+
+bool TextFragmentSelectorGenerator::IsInSameUninterruptedBlock(
+    const Position& start,
+    const Position& end) {
+  Node* start_node = start.ComputeContainerNode();
+  Node* end_node = end.ComputeContainerNode();
+
+  if (start_node->isSameNode(end_node))
+    return true;
+
+  Node& start_ancestor =
+      FindBuffer::GetFirstBlockLevelAncestorInclusive(*start_node);
+  Node& end_ancestor =
+      FindBuffer::GetFirstBlockLevelAncestorInclusive(*end_node);
+
+  if (!start_ancestor.isSameNode(&end_ancestor))
+    return false;
+
+  Node* node = start_node;
+  while (!node->isSameNode(end_node)) {
+    if (FindBuffer::IsNodeBlockLevel(*node))
+      return false;
+    node = FlatTreeTraversal::Next(*node);
+  }
+  return true;
 }
 }  // namespace blink

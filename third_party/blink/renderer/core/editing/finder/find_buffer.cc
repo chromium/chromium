@@ -220,6 +220,11 @@ Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
   return GetVisibleTextNode<BackwardDirection>(start_node);
 }
 
+bool FindBuffer::IsNodeBlockLevel(Node& node) {
+  const ComputedStyle* style = node.EnsureComputedStyle();
+  return style && !node.IsTextNode() && IsBlockLevel(style->Display());
+}
+
 FindBuffer::Results FindBuffer::FindMatches(const WebString& search_text,
                                             const blink::FindOptions options) {
   // We should return empty result if it's impossible to get a match (buffer is
