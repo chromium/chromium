@@ -848,6 +848,75 @@ TEST_F(TextFinderSimTest, BeforeMatchExpandedHiddenMatchableUkmNoHandler) {
   EXPECT_EQ(entries.size(), 0u);
 }
 
+TEST_F(TextFinderSimTest, BeforeMatchExpandedHiddenMatchableUseCounter) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      .hidden {
+        content-visibility: hidden-matchable;
+      }
+    </style>
+
+    <div id=hiddenid class=hidden>hidden</div>
+
+    <script>
+      hiddenid.addEventListener('beforematch', () => {
+        requestAnimationFrame(() => {
+          hiddenid.classList.remove('hidden');
+        }, 0);
+      });
+    </script>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto forced_activatable_locks = GetDocument()
+                                      .GetDisplayLockDocumentState()
+                                      .GetScopedForceActivatableLocks();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFindInPage);
+  GetTextFinder().Find(/*identifier=*/0, WebString(String("hidden")),
+                       *mojom::blink::FindOptions::New(),
+                       /*wrap_within_frame=*/false);
+
+  Compositor().BeginFrame();
+  Compositor().BeginFrame();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kBeforematchRevealedHiddenMatchable));
+}
+
+TEST_F(TextFinderSimTest,
+       BeforeMatchExpandedHiddenMatchableUseCounterNoHandler) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      .hidden {
+        content-visibility: hidden-matchable;
+      }
+    </style>
+
+    <div id=hiddenid class=hidden>hidden</div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto forced_activatable_locks = GetDocument()
+                                      .GetDisplayLockDocumentState()
+                                      .GetScopedForceActivatableLocks();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFindInPage);
+  GetTextFinder().Find(/*identifier=*/0, WebString(String("hidden")),
+                       *mojom::blink::FindOptions::New(),
+                       /*wrap_within_frame=*/false);
+
+  Compositor().BeginFrame();
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kBeforematchRevealedHiddenMatchable));
+}
+
 TEST_F(TextFinderTest, FindTextAcrossCommentNode) {
   GetDocument().body()->setInnerHTML(
       "<span>abc</span><!--comment--><span>def</span>");

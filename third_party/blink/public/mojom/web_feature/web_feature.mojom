@@ -3058,6 +3058,7 @@ enum WebFeature {
   kMediaStreamTrackProcessor = 3729,
   kAddEventListenerWithAbortSignal = 3730,
   kXRSessionRequestLightProbe = 3731,
+  kBeforematchRevealedHiddenMatchable = 3732,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

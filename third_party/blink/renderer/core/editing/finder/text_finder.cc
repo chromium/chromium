@@ -907,6 +907,8 @@ void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
   }
 
   if (context->was_match_hidden) {
+    UseCounter::Count(GetFrame()->GetDocument(),
+                      WebFeature::kBeforematchRevealedHiddenMatchable);
     GetFrame()
         ->GetDocument()
         ->MarkHasFindInPageBeforematchExpandedHiddenMatchable();

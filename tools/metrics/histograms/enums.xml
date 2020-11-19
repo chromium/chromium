@@ -30302,6 +30302,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3729" label="MediaStreamTrackProcessor"/>
   <int value="3730" label="AddEventListenerWithAbortSignal"/>
   <int value="3731" label="XRSessionRequestLightProbe"/>
+  <int value="3732" label="BeforematchRevealedHiddenMatchable"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
