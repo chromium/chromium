@@ -11,8 +11,10 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "content/public/browser/font_list_async.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace privacy_budget {
@@ -80,8 +82,9 @@ const std::pair<blink::FontSelectionValue, std::string>
 };
 
 const char kOutputHeader[] =
-    "Family name\tPostScript name\tweight\twidth\tslope\tdigest "
-    "(int64_t)\tdigest (uint64_t)";
+    "Family name\tPostScript name\tweight\twidth\tslope\ttypeface "
+    "digest\tdefault family name lookup digest\tdefault PostScript name lookup "
+    "digest";
 const char kOutputSeparator[] = "\t";
 
 FontIndexer::FontIndexer() : font_cache_(blink::FontCache::GetFontCache()) {}
@@ -234,18 +237,47 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
 
         if (scoped_refptr<blink::SimpleFontData> font_data =
                 font_cache_->GetFontData(font_description, name)) {
-          int64_t digest =
+          uint64_t typeface_digest =
               blink::FontGlobalContext::Get()
                   ->GetOrComputeTypefaceDigest(font_data->PlatformData())
                   .ToUkmMetricValue();
-          if (set_of_digests.insert(digest).is_new_entry) {
+          if (set_of_digests.insert(typeface_digest).is_new_entry) {
+            WTF::String postscript_name =
+                font_data->PlatformData().GetPostScriptName();
+
+            // Matches behavior in FontMatchingMetrics for lookups using the
+            // family name and the PostScript name, respectively, with default
+            // FontSelectionRequests.
+            uint64_t default_family_name_lookup_digest;
+            {
+              blink::IdentifiableTokenBuilder builder;
+              builder.AddValue(
+                  blink::FontDescription().GetFontSelectionRequest().GetHash());
+              builder.AddToken(
+                  blink::IdentifiabilityBenignCaseFoldingStringToken(name));
+              default_family_name_lookup_digest =
+                  builder.GetToken().ToUkmMetricValue();
+            }
+            uint64_t default_postscript_name_lookup_digest;
+            {
+              blink::IdentifiableTokenBuilder builder;
+              builder.AddValue(
+                  blink::FontDescription().GetFontSelectionRequest().GetHash());
+              builder.AddToken(
+                  blink::IdentifiabilityBenignCaseFoldingStringToken(
+                      postscript_name));
+              default_postscript_name_lookup_digest =
+                  builder.GetToken().ToUkmMetricValue();
+            }
+
             std::cout << name.Ascii() << kOutputSeparator
-                      << font_data->PlatformData().GetPostScriptName().Ascii()
-                      << kOutputSeparator << weight_pair.second
-                      << kOutputSeparator << width_pair.second
-                      << kOutputSeparator << slope_pair.second
-                      << kOutputSeparator << digest << kOutputSeparator
-                      << static_cast<uint64_t>(digest) << std::endl;
+                      << postscript_name.Ascii() << kOutputSeparator
+                      << weight_pair.second << kOutputSeparator
+                      << width_pair.second << kOutputSeparator
+                      << slope_pair.second << kOutputSeparator
+                      << typeface_digest << kOutputSeparator
+                      << default_family_name_lookup_digest << kOutputSeparator
+                      << default_postscript_name_lookup_digest << std::endl;
           }
         }
       }
