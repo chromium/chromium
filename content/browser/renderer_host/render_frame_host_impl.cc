@@ -3325,32 +3325,36 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
     beforeunload_timeout_->Stop();
   send_before_unload_start_time_ = base::TimeTicks();
 
-  // If the ACK is for a navigation, send it to the Navigator to have the
-  // current navigation stop/proceed. Otherwise, send it to the
-  // RenderFrameHostManager which handles closing.
-  if (unload_ack_is_for_navigation_) {
-    frame_tree_node_->navigator().BeforeUnloadCompleted(
-        frame_tree_node_, proceed, before_unload_end_time);
-  } else {
-    // We could reach this from a subframe destructor for |frame| while we're
-    // in the middle of closing the current tab.  In that case, dispatch the
-    // ACK to prevent re-entrancy and a potential nested attempt to free the
-    // current frame.  See https://crbug.com/866382.
-    base::OnceClosure task = base::BindOnce(
-        [](base::WeakPtr<RenderFrameHostImpl> self,
-           const base::TimeTicks& before_unload_end_time, bool proceed) {
-          if (!self)
-            return;
-          self->frame_tree_node()->render_manager()->BeforeUnloadCompleted(
+  // We could reach this from a subframe destructor for |frame| while we're in
+  // the middle of closing the current tab. In that case, dispatch the ACK to
+  // prevent re-entrancy and a potential nested attempt to free the current
+  // frame. See https://crbug.com/866382 and https://crbug.com/1147567.
+  base::OnceClosure task = base::BindOnce(
+      [](base::WeakPtr<RenderFrameHostImpl> self,
+         const base::TimeTicks& before_unload_end_time, bool proceed,
+         bool unload_ack_is_for_navigation) {
+        if (!self)
+          return;
+        FrameTreeNode* frame = self->frame_tree_node();
+        // If the ACK is for a navigation, send it to the Navigator to have the
+        // current navigation stop/proceed. Otherwise, send it to the
+        // RenderFrameHostManager which handles closing.
+        if (unload_ack_is_for_navigation) {
+          frame->navigator().BeforeUnloadCompleted(frame, proceed,
+                                                   before_unload_end_time);
+        } else {
+          frame->render_manager()->BeforeUnloadCompleted(
               proceed, before_unload_end_time);
-        },
-        weak_ptr_factory_.GetWeakPtr(), before_unload_end_time, proceed);
-    if (is_frame_being_destroyed) {
-      DCHECK(proceed);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task));
-    } else {
-      std::move(task).Run();
-    }
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), before_unload_end_time, proceed,
+      unload_ack_is_for_navigation_);
+
+  if (is_frame_being_destroyed) {
+    DCHECK(proceed);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task));
+  } else {
+    std::move(task).Run();
   }
 
   // If canceled, notify the delegate to cancel its pending navigation entry.
