@@ -37,6 +37,8 @@
         <structure name="IDR_ASSISTANT_OPTIN_JS" file="resources\chromeos\assistant_optin\assistant_optin.js" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
         <structure name="IDR_OOBE_DEBUGGER_JS" file="resources\chromeos\login\debug\debug.js" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_OOBE_DEBUGGER_STUB_JS" file="resources\chromeos\login\debug\no_debug.js" flattenhtml="true" type="chrome_html" />
+        <structure name="IDR_OOBE_TEST_API_JS" file="resources\chromeos\login\test_api\test_api.js" flattenhtml="true" type="chrome_html" />
+        <structure name="IDR_OOBE_TEST_API_STUB_JS" file="resources\chromeos\login\test_api\no_test_api.js" flattenhtml="true" type="chrome_html" />
 
         <!-- OOBE Components -->
         <structure name="IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML" file="resources/chromeos/login/components/oobe_i18n_behavior/oobe_i18n_behavior.html" type="chrome_html" />

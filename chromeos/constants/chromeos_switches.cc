@@ -547,6 +547,9 @@ const char kShowLoginDevOverlay[] = "show-login-dev-overlay";
 // testing. Limited to ChromeOS-on-linux and test images only.
 const char kShowOobeDevOverlay[] = "show-oobe-dev-overlay";
 
+// Enables OOBE testing API for tast tests.
+const char kEnableOobeTestAPI[] = "enable-oobe-test-api";
+
 // Specifies directory for screenshots taken with OOBE UI Debugger.
 const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
 

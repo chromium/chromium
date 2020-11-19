@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/testapi/oobe_test_api_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
@@ -144,6 +145,8 @@ constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kRecommendAppListViewHTMLPath[] = "recommend_app_list_view.html";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
+constexpr char kTestAPIJSPath[] = "test_api.js";
+
 // Components
 constexpr char kCommonStylesHTML[] = "components/common_styles.html";
 constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
@@ -290,6 +293,17 @@ void AddDebuggerResources(content::WebUIDataSource* source) {
   }
 }
 
+void AddTestAPIResources(content::WebUIDataSource* source) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  bool enable_test_api =
+      command_line->HasSwitch(::chromeos::switches::kEnableOobeTestAPI);
+  if (enable_test_api) {
+    source->AddResourcePath(kTestAPIJSPath, IDR_OOBE_TEST_API_JS);
+  } else {
+    source->AddResourcePath(kTestAPIJSPath, IDR_OOBE_TEST_API_STUB_JS);
+  }
+}
+
 // Default and non-shared resource definition for kOobeDisplay display type.
 // chrome://oobe/oobe
 void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
@@ -344,6 +358,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   AddMarketingOptInResources(source);
 
   AddDebuggerResources(source);
+  AddTestAPIResources(source);
 
   source->AddResourcePath(kKeyboardUtilsJSPath, IDR_KEYBOARD_UTILS_JS);
   source->OverrideContentSecurityPolicy(
@@ -604,6 +619,13 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
   if (enable_debugger && test_mode) {
     AddWebUIHandler(
         std::make_unique<DebugOverlayHandler>(js_calls_container_.get()));
+  }
+
+  bool enable_test_api =
+      command_line->HasSwitch(::chromeos::switches::kEnableOobeTestAPI);
+  if (enable_test_api) {
+    AddWebUIHandler(
+        std::make_unique<OobeTestAPIHandler>(js_calls_container_.get()));
   }
 
   base::DictionaryValue localized_strings;
