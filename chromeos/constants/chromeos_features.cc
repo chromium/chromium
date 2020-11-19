@@ -292,7 +292,7 @@ const base::Feature kFilesJsModules{"FilesJsModules",
 
 // Enables JS modules for Audio Player.
 const base::Feature kAudioPlayerJsModules{"AudioPlayerJsModules",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables JS modules for Video Player.
 const base::Feature kVideoPlayerJsModules{"VideoPlayerJsModules",
