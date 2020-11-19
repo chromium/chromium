@@ -387,6 +387,12 @@ void PlayerCompositorDelegate::SendCompositeRequest(
     return;
   }
 
+  // It is possible the client was disconnected while loading the proto.
+  if (!paint_preview_compositor_client_) {
+    OnCompositorReady(CompositorStatus::COMPOSITOR_CLIENT_DISCONNECT, nullptr);
+    return;
+  }
+
   paint_preview_compositor_client_->BeginSeparatedFrameComposite(
       std::move(begin_composite_request),
       base::BindOnce(&PlayerCompositorDelegate::OnCompositorReadyStatusAdapter,
