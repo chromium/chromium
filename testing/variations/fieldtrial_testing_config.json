@@ -4719,6 +4719,7 @@
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxLocalZeroSuggestAgeThreshold",
+                        "OmniboxLocalZeroSuggestForAuthenticatedUsers",
                         "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
@@ -4730,6 +4731,7 @@
                         "OmniboxRichEntitySuggestions",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "OmniboxZeroSuggestCaching",
                         "QueryInOmnibox",
                         "SearchSuggestChips"
                     ]
