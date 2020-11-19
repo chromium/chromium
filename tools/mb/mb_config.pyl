@@ -43,6 +43,7 @@
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-beta': 'official_goma_chromeos',
       'linux-chromeos-chrome': 'official_goma_chromeos',
+      'linux-chromeos-chrome-easwa': 'official_goma_chromeos',
       'linux-chromeos-ltc': 'official_goma_chromeos',
       'linux-chromeos-lts': 'official_goma_chromeos',
       'linux-chromeos-stable': 'official_goma_chromeos',
