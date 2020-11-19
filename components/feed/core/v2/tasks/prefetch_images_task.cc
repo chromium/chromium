@@ -89,9 +89,9 @@ void PrefetchImagesTask::PrefetchImagesFromModel(const StreamModel& model) {
 void PrefetchImagesTask::MaybePrefetchImage(const GURL& gurl) {
   // If we've already fetched this url, or we've hit the max number of fetches,
   // then don't send a fetch request.
-  if ((previously_fetched_.find(gurl.spec()) != previously_fetched_.end()) ||
-      previously_fetched_.size() >=
-          static_cast<size_t>(max_images_per_refresh_))
+  if (!gurl.is_valid() ||
+      (previously_fetched_.find(gurl.spec()) != previously_fetched_.end()) ||
+      previously_fetched_.size() >= max_images_per_refresh_)
     return;
   previously_fetched_.insert(gurl.spec());
   stream_->PrefetchImage(gurl);
