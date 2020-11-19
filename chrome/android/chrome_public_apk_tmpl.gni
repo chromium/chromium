@@ -528,6 +528,15 @@ template("monochrome_public_common_apk_or_module_tmpl") {
 
       # Add all loadable modules and shared libraries from DFMs.
       if (_enable_chrome_module) {
+        # The arcore manifest needs to be merged into the base module because the Play
+        # Store verifies the com.google.ar.core.min_apk_version meta-data tag is in
+        # the base manifest.
+        if (enable_arcore) {
+          deps += [
+            "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+          ]
+        }
+
         if (is_monochrome) {
           deps += [ "//chrome/android:base_monochrome_module_java" ]
         } else {
