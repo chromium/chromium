@@ -1,0 +1,5 @@
+Tests sending of info for iframe with src
+Frame navigated to http://devtools.test:8000/inspector-protocol/page/resources/iframe-src.html
+Frame navigated to http://devtools.test:8000/inspector-protocol/resources/empty.html
+Received information about 2 frame(s).
+

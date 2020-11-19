@@ -1,0 +1,6 @@
+Tests sending of info for iframe with src which is being written to after a delay
+Frame navigated to http://devtools.test:8000/inspector-protocol/page/resources/iframe-src.html
+Frame navigated to http://devtools.test:8000/inspector-protocol/resources/empty.html
+Document opened, new url: http://devtools.test:8000/inspector-protocol/page/resources/iframe-src.html
+Received information about 2 frame(s).
+

@@ -1,0 +1,6 @@
+Tests sending of info for iframe with srcdoc which is being written to after a delay
+Frame navigated to http://devtools.test:8000/inspector-protocol/page/resources/iframe-srcdoc.html
+Frame navigated to about:srcdoc
+Document opened, new url: http://devtools.test:8000/inspector-protocol/page/resources/iframe-srcdoc.html
+Received information about 2 frame(s).
+
