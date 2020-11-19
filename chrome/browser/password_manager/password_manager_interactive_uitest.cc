@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -299,6 +300,56 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   std::string submit = "document.getElementById('submit_button').click();";
   VerifyPasswordIsSavedAndFilled("/password/password_xhr_submit.html",
                                  "username_field", "password_field", submit);
+}
+
+// This fixture enables detecting submission on form clear feature.
+class PasswordManagerInteractiveTestSubmissionDetectionOnFormClear
+    : public PasswordManagerInteractiveTest {
+ public:
+  PasswordManagerInteractiveTestSubmissionDetectionOnFormClear() {
+    feature_list_.InitAndEnableFeature(
+        features::kDetectFormSubmissionOnFormClear);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordManagerInteractiveTestSubmissionDetectionOnFormClear,
+    ChangePwdFormCleared) {
+  // At first let us save credentials to the PasswordManager.
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = embedded_test_server()->base_url().spec();
+  signin_form.username_value = base::ASCIIToUTF16("temp");
+  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  password_store->AddLogin(signin_form);
+
+  NavigateToFile("/password/password_form.html");
+
+  // Fill a form and submit through a <input type="submit"> button.
+  std::unique_ptr<BubbleObserver> prompt_observer(
+      new BubbleObserver(WebContents()));
+
+  FillElementWithValue("chg_new_password_1", "new_pw", "new_pw");
+  FillElementWithValue("chg_new_password_2", "new_pw", "new_pw");
+
+  std::string submit = "document.getElementById('chg_clear_button').click();";
+  ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
+
+  EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+
+  // We emulate that the user clicks "Update" button.
+  prompt_observer->AcceptUpdatePrompt();
+
+  // Check that credentials are stored.
+  WaitForPasswordStore();
+  CheckThatCredentialsStored("temp", "new_pw");
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

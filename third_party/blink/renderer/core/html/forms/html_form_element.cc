@@ -63,6 +63,8 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/form_submission.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -578,6 +580,7 @@ void HTMLFormElement::reset() {
   }
 
   is_in_reset_function_ = false;
+  frame->GetPage()->GetChromeClient().FormElementReset(*this);
 }
 
 void HTMLFormElement::ParseAttribute(

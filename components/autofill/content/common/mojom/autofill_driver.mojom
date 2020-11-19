@@ -112,6 +112,10 @@ interface PasswordManagerDriver {
   // FRAME_DETACHED.
   SameDocumentNavigation(SubmissionIndicatorEvent submission_indication_event);
 
+  // Notification that password form was cleared. This is used as a signal of
+  // a successful submission for change password forms.
+  PasswordFormCleared(FormData form_data);
+
   // Sends |log| to browser for displaying to the user. Only strings passed as
   // an argument to methods overriding SavePasswordProgressLogger::SendLog may
   // become |log|, because those are guaranteed to be sanitized.

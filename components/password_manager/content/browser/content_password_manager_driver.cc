@@ -272,6 +272,11 @@ void ContentPasswordManagerDriver::SameDocumentNavigation(
   LogSiteIsolationMetricsForSubmittedForm(render_frame_host_);
 }
 
+void ContentPasswordManagerDriver::PasswordFormCleared(
+    const autofill::FormData& form_data) {
+  GetPasswordManager()->OnPasswordFormCleared(this, form_data);
+}
+
 void ContentPasswordManagerDriver::RecordSavePasswordProgress(
     const std::string& log) {
   client_->GetLogManager()->LogTextMessage(log);

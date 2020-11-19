@@ -1227,6 +1227,23 @@ void PasswordManager::ResetPendingCredentials() {
   owned_submitted_form_manager_.reset();
 }
 
+// TODO(crbug.com/1147363): Make sure metrics are tracking this kind of form
+// submission properly (create SubmissionIndicatorEvent and ensure it's recorded
+// correctly).
+void PasswordManager::OnPasswordFormCleared(
+    PasswordManagerDriver* driver,
+    const autofill::FormData& form_data) {
+  // Find a form with corresponding renderer id.
+  auto it = base::ranges::find_if(form_managers_, [&](auto& manager) {
+    return manager->DoesManageAccordingToRendererId(
+        form_data.unique_renderer_id, driver);
+  });
+  if (it != form_managers_.end() && (*it)->is_submitted() &&
+      (*it)->GetSubmittedForm()->IsPossibleChangePasswordForm()) {
+    OnLoginSuccessful();
+  }
+}
+
 bool PasswordManager::IsFormManagerPendingPasswordUpdate() const {
   for (const auto& form_manager : form_managers_) {
     if (form_manager->IsPasswordUpdate())
