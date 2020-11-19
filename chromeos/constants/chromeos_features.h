@@ -196,6 +196,8 @@ extern const base::Feature kMediaAppAnnotation;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kMediaAppHandlesRaw;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kMediaAppPdfInInk;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kMinimumChromeVersion;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOsSettingsDeepLinking;
