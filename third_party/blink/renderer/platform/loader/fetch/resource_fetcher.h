@@ -404,7 +404,8 @@ class PLATFORM_EXPORT ResourceFetcher
                               RevalidationPolicy,
                               const FetchParameters&,
                               const ResourceFactory&,
-                              bool is_static_data) const;
+                              bool is_static_data,
+                              bool in_cached_resources_map) const;
 
   void ScheduleStaleRevalidate(Resource* stale_resource);
   void RevalidateStaleResource(Resource* stale_resource);

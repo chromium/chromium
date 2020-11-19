@@ -1468,6 +1468,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.MemoryCache.RevalidationPolicy.PerDocument"
+    enum="RevalidationPolicy" expires_after="2021-04-21">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    RevalidationPolicy used for requests for each resource type. Logged only if
+    the resource is found in the memory cache and if the same document had
+    loaded this resource earlier.
+  </summary>
+</histogram>
+
 <histogram name="Blink.MemoryCache.RevalidationPolicy.Preload"
     enum="RevalidationPolicy" expires_after="2021-04-21">
   <owner>hiroshige@chromium.org</owner>

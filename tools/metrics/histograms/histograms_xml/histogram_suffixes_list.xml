@@ -15848,6 +15848,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="XSLStyleSheet" label=""/>
   <affected-histogram name="Blink.MemoryCache.RevalidationPolicy"/>
   <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.Dead"/>
+  <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.PerDocument"/>
   <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.Preload"/>
   <affected-histogram name="PreloadScanner.Counts"/>
   <affected-histogram name="PreloadScanner.Counts.Miss"/>

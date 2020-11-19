@@ -800,11 +800,13 @@ void ResourceFetcher::MakePreloadedResourceBlockOnloadIfNeeded(
   }
 }
 
-void ResourceFetcher::UpdateMemoryCacheStats(Resource* resource,
-                                             RevalidationPolicy policy,
-                                             const FetchParameters& params,
-                                             const ResourceFactory& factory,
-                                             bool is_static_data) const {
+void ResourceFetcher::UpdateMemoryCacheStats(
+    Resource* resource,
+    RevalidationPolicy policy,
+    const FetchParameters& params,
+    const ResourceFactory& factory,
+    bool is_static_data,
+    bool in_cached_resources_map) const {
   if (is_static_data)
     return;
 
@@ -821,6 +823,11 @@ void ResourceFetcher::UpdateMemoryCacheStats(Resource* resource,
   if (resource && !resource->IsAlive() && !ContainsAsPreload(resource)) {
     DEFINE_RESOURCE_HISTOGRAM("Dead.");
   }
+
+  // Log metrics to evaluate effectiveness of the memory cache if it were scoped
+  // to the document.
+  if (in_cached_resources_map)
+    DEFINE_RESOURCE_HISTOGRAM("PerDocument.");
 
   // Async (and defer) scripts may have more cache misses, track them
   // separately. See https://crbug.com/1043679 for context.
@@ -1084,7 +1091,11 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     }
   }
 
-  UpdateMemoryCacheStats(resource, policy, params, factory, is_static_data);
+  bool in_cached_resources_map = cached_resources_map_.Contains(
+      MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()));
+
+  UpdateMemoryCacheStats(resource, policy, params, factory, is_static_data,
+                         in_cached_resources_map);
 
   switch (policy) {
     case RevalidationPolicy::kReload:
@@ -1132,8 +1143,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   DCHECK(EqualIgnoringFragmentIdentifier(resource->Url(), params.Url()));
   if (policy == RevalidationPolicy::kUse &&
       resource->GetStatus() == ResourceStatus::kCached &&
-      !cached_resources_map_.Contains(
-          MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()))) {
+      !in_cached_resources_map) {
     // Loaded from MemoryCache.
     DidLoadResourceFromMemoryCache(resource, resource_request, is_static_data);
   }
