@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_IDENTIFIABILITY_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_IDENTIFIABILITY_METRICS_H_
 
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_capabilities.h"
-
 namespace blink {
+
+class RTCRtpCapabilities;
+class IdentifiableTokenBuilder;
 
 void IdentifiabilityAddRTCRtpCapabilitiesToBuilder(
     IdentifiableTokenBuilder& builder,

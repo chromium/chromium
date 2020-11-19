@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/modules/service_worker/extendable_message_event.h"
 
+#include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_client.h"
+
 namespace blink {
 
 ExtendableMessageEvent* ExtendableMessageEvent::Create(

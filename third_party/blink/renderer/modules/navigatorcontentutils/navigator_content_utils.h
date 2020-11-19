@@ -36,6 +36,7 @@
 namespace blink {
 
 class ExceptionState;
+class LocalFrame;
 class NavigatorContentUtilsClient;
 
 // Verify custom handler schemes for errors as described in

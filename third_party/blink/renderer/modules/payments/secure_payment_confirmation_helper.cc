@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_type_converter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"

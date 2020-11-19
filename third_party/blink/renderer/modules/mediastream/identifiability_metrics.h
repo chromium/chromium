@@ -7,9 +7,11 @@
 
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_constraints.h"
 
 namespace blink {
+
+class ExecutionContext;
+class MediaStreamConstraints;
 
 IdentifiableToken TokenFromConstraints(
     const MediaStreamConstraints* constraints);

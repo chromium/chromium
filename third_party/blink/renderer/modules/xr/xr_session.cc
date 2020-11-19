@@ -1260,10 +1260,11 @@ ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
 
   if (light_probe_init->reflectionFormat() != "srgba8" &&
       light_probe_init->reflectionFormat() != "rgba16f") {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Reflection format \"" +
-                                          light_probe_init->reflectionFormat() +
-                                          "\" not supported.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Reflection format \"" +
+            IDLEnumAsString(light_probe_init->reflectionFormat()) +
+            "\" not supported.");
     return ScriptPromise();
   }
 

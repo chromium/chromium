@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/peerconnection/identifiability_metrics.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_codec_capability.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_header_extension_capability.h"
+
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_capabilities.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_codec_capability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_header_extension_capability.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {

@@ -121,7 +121,7 @@ ComputedEffectTiming* Timing::getComputedTiming(
     computed_timing->setLocalTime(
         CSSNumberish::FromDouble(calculated_timing.local_time.value() * 1000));
   } else {
-    computed_timing->setLocalTimeToNull();
+    computed_timing->setLocalTime(CSSNumberish());
   }
 
   if (calculated_timing.is_in_effect) {

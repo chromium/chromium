@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_estimate.h"
-#include "third_party/blink/renderer/modules/xr/xr_light_probe_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_object_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 
