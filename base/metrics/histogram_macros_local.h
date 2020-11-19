@@ -69,6 +69,12 @@
       base::Histogram::FactoryTimeGet(name, min, max, bucket_count,        \
                                       base::HistogramBase::kNoFlags))
 
+#define LOCAL_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(name, sample, min, max, \
+                                                  bucket_count)           \
+  STATIC_HISTOGRAM_POINTER_BLOCK(                                         \
+      name, AddTimeMicrosecondsGranularity(sample),                       \
+      base::Histogram::FactoryMicrosecondsTimeGet(                        \
+          name, min, max, bucket_count, base::HistogramBase::kNoFlags))
 //------------------------------------------------------------------------------
 // Memory histograms.
 //

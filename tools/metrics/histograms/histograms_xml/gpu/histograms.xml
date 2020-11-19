@@ -627,6 +627,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GPU.GpuBlockedBetweenSwapsUs2" units="microseconds"
     expires_after="2020-12-01">
+  <obsolete>
+    Removed in Nov 2020 (available as local histogram for telemetry runs).
+  </obsolete>
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>

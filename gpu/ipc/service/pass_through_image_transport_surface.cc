@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "ui/gfx/vsync_provider.h"
@@ -255,7 +256,7 @@ void PassThroughImageTransportSurface::FinishSwapBuffers(
       // Report only if collection is enabled and supported on current platform
       // See gpu::Scheduler::TakeTotalBlockingTime for details.
       if (!blocked_time_since_last_swap.is_min()) {
-        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        LOCAL_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
             "GPU.GpuBlockedBetweenSwapsUs2", blocked_time_since_last_swap,
             kTimingMetricsHistogramMin, kTimingMetricsHistogramMax,
             kTimingMetricsHistogramBuckets);
