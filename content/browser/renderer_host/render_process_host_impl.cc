@@ -2480,7 +2480,7 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   AddUIThreadInterface(
       registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindVideoDecoderService,
+      base::BindRepeating(&RenderProcessHostImpl::BindMediaInterfaceProxy,
                           weak_factory_.GetWeakPtr()));
 
   AddUIThreadInterface(
@@ -2560,11 +2560,11 @@ void RenderProcessHostImpl::CreateCodeCacheHost(
   }
 }
 
-void RenderProcessHostImpl::BindVideoDecoderService(
+void RenderProcessHostImpl::BindMediaInterfaceProxy(
     mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
-  if (!video_decoder_proxy_)
-    video_decoder_proxy_.reset(new VideoDecoderProxy());
-  video_decoder_proxy_->Add(std::move(receiver));
+  if (!media_interface_proxy_)
+    media_interface_proxy_ = std::make_unique<FramelessMediaInterfaceProxy>();
+  media_interface_proxy_->Add(std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindWebDatabaseHostImpl(

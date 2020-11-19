@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEDIA_VIDEO_DECODER_PROXY_H_
-#define CONTENT_BROWSER_MEDIA_VIDEO_DECODER_PROXY_H_
+#ifndef CONTENT_BROWSER_MEDIA_FRAMELESS_MEDIA_INTERFACE_PROXY_H_
+#define CONTENT_BROWSER_MEDIA_FRAMELESS_MEDIA_INTERFACE_PROXY_H_
 
 #include <string>
 
@@ -24,14 +24,13 @@
 namespace content {
 
 // This implements the media::mojom::InterfaceFactory interface for a
-// RenderProcessHostImpl. Unlike MediaInterfaceProxy, only
-// CreateVideoDecoder() is implemented. This allows WebRTC to create
-// MojoVideoDecoder instances without a RenderFrame.
-class CONTENT_EXPORT VideoDecoderProxy final
+// RenderProcessHostImpl. It does not support creating services that require a
+// frame context (ie. CDMs and renderers).
+class CONTENT_EXPORT FramelessMediaInterfaceProxy final
     : public media::mojom::InterfaceFactory {
  public:
-  VideoDecoderProxy();
-  ~VideoDecoderProxy() final;
+  FramelessMediaInterfaceProxy();
+  ~FramelessMediaInterfaceProxy() final;
 
   void Add(mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
 
@@ -77,9 +76,9 @@ class CONTENT_EXPORT VideoDecoderProxy final
   mojo::ReceiverSet<media::mojom::InterfaceFactory> receivers_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderProxy);
+  DISALLOW_COPY_AND_ASSIGN(FramelessMediaInterfaceProxy);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEDIA_VIDEO_DECODER_PROXY_H_
+#endif  // CONTENT_BROWSER_MEDIA_FRAMELESS_MEDIA_INTERFACE_PROXY_H_
