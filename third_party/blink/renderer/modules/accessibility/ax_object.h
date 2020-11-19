@@ -428,7 +428,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsAnchor() const;
   bool IsButton() const;
   bool IsCanvas() const;
-  bool IsCheckbox() const;
   bool IsCheckboxOrRadio() const;
   bool IsColorWell() const;
   virtual bool IsControl() const;
@@ -453,9 +452,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsPasswordField() const;
   bool IsPasswordFieldAndShouldHideValue() const;
   bool IsPresentational() const;
-  bool IsRadioButton() const {
-    return RoleValue() == ax::mojom::blink::Role::kRadioButton;
-  }
   bool IsRangeValueSupported() const;
   bool IsScrollbar() const {
     return RoleValue() == ax::mojom::blink::Role::kScrollBar;

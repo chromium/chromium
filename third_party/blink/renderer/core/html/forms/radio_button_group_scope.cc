@@ -163,14 +163,6 @@ void RadioButtonGroup::Remove(HTMLInputElement* button) {
     // valid only if the group was invalid.
     button->SetNeedsValidityCheck();
   }
-
-  // Send notification to update AX attributes for AXObjects which radiobutton
-  // group has.
-  if (!members_.IsEmpty()) {
-    HTMLInputElement* input = members_.begin()->key;
-    if (AXObjectCache* cache = input->GetDocument().ExistingAXObjectCache())
-      cache->RadiobuttonRemovedFromGroup(input);
-  }
 }
 
 void RadioButtonGroup::SetNeedsValidityCheckForAllButtons() {

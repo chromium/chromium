@@ -84,7 +84,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_progress_indicator.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_radio_input.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_slider.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_svg_root.h"
@@ -465,8 +464,6 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
 
   if (auto* html_input_element = DynamicTo<HTMLInputElement>(node)) {
     const AtomicString& type = html_input_element->type();
-    if (type == input_type_names::kRadio)
-      return MakeGarbageCollected<AXRadioInput>(layout_object, *this);
     if (type == input_type_names::kRange)
       return MakeGarbageCollected<AXSlider>(layout_object, *this);
   }
@@ -1623,27 +1620,6 @@ void AXObjectCacheImpl::LocationChanged(const LayoutObject* layout_object) {
     return;
 
   PostNotification(layout_object, ax::mojom::Event::kLocationChanged);
-}
-
-void AXObjectCacheImpl::RadiobuttonRemovedFromGroup(
-    HTMLInputElement* group_member) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(group_member->GetDocument());
-
-  auto* ax_object = DynamicTo<AXRadioInput>(Get(group_member));
-  if (!ax_object)
-    return;
-
-  // The 'posInSet' and 'setSize' attributes should be updated from the first
-  // node, as the removed node is already detached from tree.
-  auto* first_radio = ax_object->FindFirstRadioButtonInGroup(group_member);
-  AXObject* first_obj = Get(first_radio);
-  auto* ax_first_obj = DynamicTo<AXRadioInput>(first_obj);
-  if (!ax_first_obj)
-    return;
-
-  ax_first_obj->UpdatePosAndSetSize(1);
-  PostNotification(first_obj, ax::mojom::Event::kAriaAttributeChanged);
-  ax_first_obj->RequestUpdateToNextNode(true);
 }
 
 void AXObjectCacheImpl::ImageLoaded(const LayoutObject* layout_object) {

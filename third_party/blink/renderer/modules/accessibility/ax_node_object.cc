@@ -532,10 +532,6 @@ static bool IsRequiredOwnedElement(AXObject* parent,
     return IsListElement(parent_node);
   if (current_role == ax::mojom::blink::Role::kListMarker)
     return IsA<HTMLLIElement>(*parent_node);
-  if (current_role == ax::mojom::blink::Role::kMenuItemCheckBox ||
-      current_role == ax::mojom::blink::Role::kMenuItem ||
-      current_role == ax::mojom::blink::Role::kMenuItemRadio)
-    return IsA<HTMLMenuElement>(*parent_node);
 
   if (!current_element)
     return false;
@@ -1286,14 +1282,6 @@ bool AXNodeObject::IsMultiSelectable() const {
 
   auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());
   return html_select_element && html_select_element->IsMultiple();
-}
-
-bool AXNodeObject::IsNativeCheckboxOrRadio() const {
-  if (const auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
-    return input->type() == input_type_names::kCheckbox ||
-           input->type() == input_type_names::kRadio;
-  }
-  return false;
 }
 
 bool AXNodeObject::IsNativeImage() const {

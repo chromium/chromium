@@ -22,25 +22,6 @@
   }, "Tests that aria-posinset and aria-setSize for a simple list are exposed to accessibility correctly");
 </script>
 
-<form id ="form">
-  <input type="radio" name="meals" value="breakfast">
-  <input type="radio" name="meals" value="lunch">
-  <input type="radio" name="meals" value="dinner">
-</form>
-
-<script>
-  test(function(t){
-    var form = accessibilityController.accessibleElementById("form");
-    // aria-posinset and aria-setSize can be implicitly caluclated for input type of radio.
-    assert_equals(form.childAtIndex(0).posInSet,1);
-    assert_equals(form.childAtIndex(1).posInSet,2);
-    assert_equals(form.childAtIndex(2).posInSet,3);
-    assert_equals(form.childAtIndex(0).setSize,3);
-    assert_equals(form.childAtIndex(1).setSize,3);
-    assert_equals(form.childAtIndex(2).setSize,3);
-  }, "Tests that aria-posinset and aria-setSize for native radio inputs are exposed to accessibility correctly");
-</script>
-
 <div id="radiogroup" role="radiogroup">
   <hr>
   <div id="radio1" role="radio" aria-setSize="3" aria-posinset="2">Radio 1</div>

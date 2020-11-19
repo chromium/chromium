@@ -40,8 +40,6 @@ blink_modules_sources("accessibility") {
     "ax_position.h",
     "ax_progress_indicator.cc",
     "ax_progress_indicator.h",
-    "ax_radio_input.cc",
-    "ax_radio_input.h",
     "ax_range.cc",
     "ax_range.h",
     "ax_relation_cache.cc",

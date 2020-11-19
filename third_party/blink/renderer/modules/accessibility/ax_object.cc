@@ -1254,12 +1254,17 @@ bool AXObject::IsCanvas() const {
   return RoleValue() == ax::mojom::blink::Role::kCanvas;
 }
 
-bool AXObject::IsCheckbox() const {
-  return RoleValue() == ax::mojom::blink::Role::kCheckBox;
-}
-
 bool AXObject::IsCheckboxOrRadio() const {
-  return IsCheckbox() || IsRadioButton();
+  switch (RoleValue()) {
+    case ax::mojom::blink::Role::kCheckBox:
+    case ax::mojom::blink::Role::kMenuItemCheckBox:
+    case ax::mojom::blink::Role::kMenuItemRadio:
+    case ax::mojom::blink::Role::kRadioButton:
+      return true;
+    default:
+      break;
+  }
+  return false;
 }
 
 bool AXObject::IsColorWell() const {

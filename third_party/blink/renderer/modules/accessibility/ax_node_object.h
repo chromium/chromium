@@ -77,7 +77,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsTextControl() const override;
   Element* MenuItemElementForMenu() const;
   Element* MouseButtonListener() const;
-  bool IsNativeCheckboxOrRadio() const;
   void SetNode(Node*);
   AXObject* CorrespondingControlAXObjectForLabelElement() const;
   AXObject* CorrespondingLabelAXObject() const;
@@ -142,9 +141,13 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                           Vector<AXRange>* marker_ranges) const override;
   AXObject* InPageLinkTarget() const override;
   AccessibilityOrientation Orientation() const override;
+
+  // Used to compute kRadioGroupIds, which is only used on Mac.
+  // TODO(accessibility) Consider computing on browser side and removing here.
   AXObjectVector RadioButtonsInGroup() const override;
   static HeapVector<Member<HTMLInputElement>> FindAllRadioButtonsWithSameName(
       HTMLInputElement* radio_button);
+
   String GetText() const override;
   String ImageDataUrl(const IntSize& max_size) const final;
   int TextLength() const override;
