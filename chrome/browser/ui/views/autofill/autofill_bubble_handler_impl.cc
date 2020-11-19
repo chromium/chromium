@@ -36,13 +36,14 @@ AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
     ToolbarButtonProvider* toolbar_button_provider)
     : browser_(browser), toolbar_button_provider_(toolbar_button_provider) {
   if (browser->profile()) {
-    personal_data_manager_observer_.Add(
+    personal_data_manager_observation_.Observe(
         PersonalDataManagerFactory::GetForProfile(
             browser->profile()->GetOriginalProfile()));
   }
-  if (toolbar_button_provider_->GetAvatarToolbarButton())
-    avatar_toolbar_button_observer_.Add(
+  if (toolbar_button_provider_->GetAvatarToolbarButton()) {
+    avatar_toolbar_button_observation_.Observe(
         toolbar_button_provider_->GetAvatarToolbarButton());
+  }
 }
 
 AutofillBubbleHandlerImpl::~AutofillBubbleHandlerImpl() = default;

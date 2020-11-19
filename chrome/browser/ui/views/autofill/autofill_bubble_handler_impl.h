@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_BUBBLE_HANDLER_IMPL_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -70,10 +70,10 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
   // button after the highlight animation finishes.
   bool should_show_sign_in_promo_if_applicable_ = false;
 
-  ScopedObserver<PersonalDataManager, PersonalDataManagerObserver>
-      personal_data_manager_observer_{this};
-  ScopedObserver<AvatarToolbarButton, AvatarToolbarButton::Observer>
-      avatar_toolbar_button_observer_{this};
+  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
+      personal_data_manager_observation_{this};
+  base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
+      avatar_toolbar_button_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutofillBubbleHandlerImpl);
 };
