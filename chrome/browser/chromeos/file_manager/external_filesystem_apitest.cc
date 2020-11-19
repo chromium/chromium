@@ -808,8 +808,9 @@ IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileBrowserHandlers) {
       FLAGS_USE_FILE_HANDLER)) << message_;
 }
 
+// Failing: http://crbug.com/1150689
 IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest,
-                       FileBrowserHandlersLazy) {
+                       DISABLED_FileBrowserHandlersLazy) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/handler_test_runner",
       FILE_PATH_LITERAL("manifest.json"),
