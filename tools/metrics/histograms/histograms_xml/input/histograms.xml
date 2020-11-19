@@ -33,6 +33,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.Autocorrect.Actions"
+    enum="IMEAutocorrectActions" expires_after="2021-03-15">
+  <owner>jopalmer@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The actions taken by assistive autocorrect, such as underlining a word.
+    Recorded after an action is performed.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.Autocorrect.Count"
     enum="IMETextInputClient" expires_after="2021-05-16">
   <owner>myy@google.com</owner>

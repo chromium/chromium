@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
@@ -11,6 +12,24 @@
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Needs to match ImeAutocorrectActions
+// in enums.xml.
+enum class AutocorrectActions {
+  kWindowShown = 0,
+  kUnderlined = 1,
+  kMaxValue = kUnderlined,
+};
+
+void LogAssistiveAutocorrectAction(AutocorrectActions action) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
+                                action);
+}
+
+}  // namespace
 
 namespace chromeos {
 
@@ -36,6 +55,7 @@ void AutocorrectManager::MarkAutocorrectRange(const std::string& corrected_word,
     input_context->SetAutocorrectRange(base::UTF8ToUTF16(corrected_word),
                                        start_index,
                                        start_index + corrected_word.length());
+    LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   }
 }
 
@@ -99,6 +119,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
       button_highlighted = false;
       suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                         &error);
+      LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
     }
     key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
   } else if (window_visible) {

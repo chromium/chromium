@@ -37411,6 +37411,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Url or App not allowed"/>
 </enum>
 
+<enum name="IMEAutocorrectActions">
+  <int value="0" label="WINDOW_SHOWN"/>
+  <int value="1" label="UNDERLINED"/>
+</enum>
+
 <enum name="IMECommitType">
   <obsolete>
     Deprecated 03/2015, and replaced by IMECommitType2.
