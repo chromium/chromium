@@ -1,7 +1,15 @@
-per-file AwMetricsIntegrationTest.java=ntfschr@chromium.org
-per-file CookieManagerStartupTest.java=ntfschr@chromium.org
-per-file CookieManagerTest.java=ntfschr@chromium.org
-per-file SafeBrowsingTest.java=ntfschr@chromium.org
+# Networking/Network Service
+per-file AwNetworkConfigurationTest.java=file://android_webview/browser/network_service/OWNERS
+per-file SslPreferencesTest.java=file://android_webview/browser/network_service/OWNERS
+per-file OnDiskFileTest.java=file://android_webview/browser/network_service/OWNERS
+per-file CookieManager*=file://android_webview/browser/network_service/OWNERS
+
+# Safe Browsing
+per-file SafeBrowsingTest.java=file://android_webview/browser/safe_browsing/OWNERS
+
+# Metrics
+per-file AwMetricsIntegrationTest.java=file://android_webview/browser/metrics/OWNERS
+per-file MemoryMetricsLoggerTest.java=file://android_webview/browser/metrics/OWNERS
 
 # Variations
 per-file AwVariationsSeedFetcherTest*=file://android_webview/browser/variations/OWNERS
