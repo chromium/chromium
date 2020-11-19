@@ -5,6 +5,7 @@
 #include "content/browser/loader/prefetch_url_loader_service.h"
 
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/time/default_tick_clock.h"
@@ -31,8 +32,10 @@
 
 namespace {
 void DumpWithoutCrashing(const network::ResourceRequest& request) {
-  DEBUG_ALIAS_FOR_GURL(prefetch_buf, request.url);
-  DEBUG_ALIAS_FOR_GURL(initiator_buf, request.request_initiator->GetURL());
+  std::string prefetch_url = request.url.spec();
+  std::string initiator_url = request.request_initiator->GetURL().spec();
+  SCOPED_CRASH_KEY_STRING256(Crbug1132770, PrefetchURL, prefetch_url);
+  SCOPED_CRASH_KEY_STRING256(Crbug1132770, InitiatorURL, initiator_url);
   base::debug::DumpWithoutCrashing();
 }
 }  // namespace
