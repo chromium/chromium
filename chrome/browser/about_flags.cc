@@ -6729,6 +6729,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowPerformanceMetricsHudDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kHudDisplayForPerformanceMetrics)},
 
+#if defined(OS_CHROMEOS)
+    {"disable-buffer-bw-compression",
+     flag_descriptions::kDisableBufferBWCompressionName,
+     flag_descriptions::kDisableBufferBWCompressionDescription, kOsCrOS,
+     SINGLE_VALUE_TYPE(switches::kDisableBufferBWCompression)},
+#endif  // defined(OS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -22,4 +22,7 @@ const char kDisableExplicitDmaFences[] = "disable-explicit-dma-fences";
 const char kDisableRunningAsSystemCompositor[] =
     "disable-running-as-system-compositor";
 
+// Disable buffer bandwidth compression
+const char kDisableBufferBWCompression[] = "disable-buffer-bw-compression";
+
 }  // namespace switches

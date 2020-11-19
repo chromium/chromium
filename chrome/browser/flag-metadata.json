@@ -894,6 +894,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-buffer-bw-compression",
+    "owners": [ "chromeos-gfx@google.com" ],
+    // This flag is used for QA & debugging on ChromeOS, which has no way to
+    // customize switches.
+    "expiry_milestone": -1
+  },
+  {
     "name": "disable-camera-frame-rotation-at-source",
     "owners": [ "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 88

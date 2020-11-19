@@ -230,6 +230,12 @@ class OzonePlatformDrm : public OzonePlatform {
   }
 
   void InitializeGPU(const InitParams& args) override {
+    // Check if buffer bandwidth compression is disabled
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kDisableBufferBWCompression)) {
+      setenv("MINIGBM_DEBUG", "nocompression", 1);
+    }
+
     gpu_task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
     // NOTE: Can't start the thread here since this is called before sandbox

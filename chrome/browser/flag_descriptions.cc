@@ -3779,6 +3779,11 @@ const char kCryptAuthV2EnrollmentName[] = "CryptAuth v2 Enrollment";
 const char kCryptAuthV2EnrollmentDescription[] =
     "Use the CryptAuth v2 Enrollment protocol.";
 
+const char kDisableBufferBWCompressionName[] =
+    "Disable buffer bandwidth compression";
+const char kDisableBufferBWCompressionDescription[] =
+    "Disable bandwidth compression when allocating buffers";
+
 const char kDisableCameraFrameRotationAtSourceName[] =
     "Disable camera frame rotation at source";
 const char kDisableCameraFrameRotationAtSourceDescription[] =

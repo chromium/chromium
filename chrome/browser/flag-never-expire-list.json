@@ -22,6 +22,7 @@
   "disable-accelerated-mjpeg-decode",
   "disable-accelerated-video-decode",
   "disable-accelerated-video-encode",
+  "disable-buffer-bw-compression",
   "disable-explicit-dma-fences",
   "disable-javascript-harmony-shipping",
   "disable-threaded-scrolling",
