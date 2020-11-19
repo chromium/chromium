@@ -1003,6 +1003,63 @@ public class BookmarkTest {
     }
 
     @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    public void testReadingListItemsInSelectionMode() throws Exception {
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
+        BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
+        openBookmarkManager();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+
+        // Open the "Reading list" folder.
+        onView(withText("Reading list")).perform(click());
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+
+        // Select a reading list item. Verify the toolbar menu buttons being shown.
+        BookmarkRow bookmarkRow =
+                (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        TouchCommon.longPressView(bookmarkRow);
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+        BookmarkActionBar toolbar = mManager.getToolbarForTests();
+        Assert.assertFalse("Read later items shouldn't have move option",
+                toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
+        Assert.assertFalse("Read later items shouldn't have edit option",
+                toolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isVisible());
+        Assert.assertTrue("Read later items should have delete option",
+                toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id).isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    public void testReadingListItemMenuItems() throws Exception {
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
+        BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
+        openBookmarkManager();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+
+        // Open the "Reading list" folder.
+        onView(withText("Reading list")).perform(click());
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+
+        // Open the three-dot menu and verify the menu options being shown.
+        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        View more = readingListItem.findViewById(R.id.more);
+
+        TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
+        onView(withText("Select")).check(matches(isDisplayed()));
+        onView(withText("Edit")).check(doesNotExist());
+        onView(withText("Delete")).check(matches(isDisplayed()));
+        onView(withText("Mark as read")).check(matches(isDisplayed()));
+        onView(withText("Move up")).check(doesNotExist());
+        onView(withText("Move down")).check(doesNotExist());
+    }
+
+    @Test
     @MediumTest
     public void testMoveUpMenuItem() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
@@ -1597,6 +1654,13 @@ public class BookmarkTest {
         readPartnerBookmarks();
         return TestThreadUtils.runOnUiThreadBlocking(
                 () -> mBookmarkModel.addBookmark(mBookmarkModel.getDefaultFolder(), 0, title, url));
+    }
+
+    private BookmarkId addReadingListBookmark(final String title, final String url)
+            throws ExecutionException {
+        readPartnerBookmarks();
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkModel.addToReadingList(title, url));
     }
 
     private BookmarkId addFolder(final String title) throws ExecutionException {

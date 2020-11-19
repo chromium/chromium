@@ -21,6 +21,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -146,10 +147,16 @@ abstract class BookmarkRow extends SelectableItemView<BookmarkId> implements Boo
             if (bookmarkItem != null) canMove = bookmarkItem.isMovable();
         }
         ModelList listItems = new ModelList();
-        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
-        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
-        listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
-        listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
+        if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
+            listItems.add(buildMenuListItem(R.string.reading_list_mark_as_read, 0, 0));
+            listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
+            listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
+        } else {
+            listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
+            listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
+            listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
+            listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
+        }
 
         if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
@@ -182,6 +189,11 @@ abstract class BookmarkRow extends SelectableItemView<BookmarkId> implements Boo
                 } else {
                     BookmarkUtils.startEditActivity(getContext(), bookmarkItem.getId());
                 }
+            } else if (textId == R.string.reading_list_mark_as_read) {
+                BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
+                mDelegate.getModel().setReadStatusForReadingList(
+                        bookmarkItem.getUrl(), true /*read*/);
+                // TODO(crbug/1140277): Add metrics.
             } else if (textId == R.string.bookmark_item_move) {
                 BookmarkFolderSelectActivity.startFolderSelectActivity(getContext(), mBookmarkId);
                 RecordUserAction.record("MobileBookmarkManagerMoveToFolder");

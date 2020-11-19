@@ -228,6 +228,15 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
                     break;
                 }
             }
+
+            // Disable edit, move buttons, if the selection includes a reading list item.
+            for (BookmarkId bookmark : selectedBookmarks) {
+                if (bookmark.getType() == BookmarkType.READING_LIST) {
+                    getMenu().findItem(R.id.selection_mode_move_menu_id).setVisible(false);
+                    getMenu().findItem(R.id.selection_mode_edit_menu_id).setVisible(false);
+                    break;
+                }
+            }
         } else {
             mDelegate.notifyStateChange(this);
         }
