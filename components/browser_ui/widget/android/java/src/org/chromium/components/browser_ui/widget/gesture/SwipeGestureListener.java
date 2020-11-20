@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * To use this class:
  * <ul>
- *  <li>Create an instance of the {@link SwipeGestureListener} for your View
+ *  <li>Create an instance of the {@link SwipeGestureListener} for your View.
  *  <li>In the View#onTouchEvent(MotionEvent) method ensure you call
  *          {@link #onTouchEvent(MotionEvent)}. The methods defined in your callback
  *          will be executed when the gestures occur.
@@ -35,6 +35,9 @@ import java.lang.annotation.RetentionPolicy;
  *          ignoring swipe recognition based on the MotionEvents.
  *  <li>Once a swipe gesture is detected, the class will check if the the direction
  *          is supported by calling {@link SwipeHandler#isSwipeEnabled}.
+ *  <li>Override {@link #onDown(MotionEvent)} to always return true if you want to intercept the
+ *          event stream from the initial #onDown event. This always returns false by default, as
+ *          {@link SimpleOnGestureListener} does by default.
  * </ul>
 
  * Internally, this class uses a {@link GestureDetector} to recognize swipe gestures.
@@ -181,13 +184,15 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
     // Swipe Recognition Helpers
     // ============================================================================================
 
+    // Override #onDown if necessary. See JavaDoc of this class for more details.
+
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if (mHandler == null || e1 == null || e2 == null) return false;
 
         if (mDirection == ScrollDirection.UNKNOWN && shouldRecognizeSwipe(e1, e2)) {
-            float tx = (e2.getRawX() - e1.getRawX());
-            float ty = (e2.getRawY() - e1.getRawY());
+            float tx = e2.getRawX() - e1.getRawX();
+            float ty = e2.getRawY() - e1.getRawY();
 
             @ScrollDirection
             int direction = ScrollDirection.UNKNOWN;

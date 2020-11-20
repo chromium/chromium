@@ -79,7 +79,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     }
 
     void setSwipeHandler(SwipeHandler handler) {
-        mSwipeGestureDetector = new SwipeGestureListener(getContext(), handler);
+        mSwipeGestureDetector = new MessageSwipeGestureListener(getContext(), handler);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -89,5 +89,16 @@ public class MessageBannerView extends BoundedLinearLayout {
             return mSwipeGestureDetector.onTouchEvent(event) || super.onTouchEvent(event);
         }
         return super.onTouchEvent(event);
+    }
+
+    private class MessageSwipeGestureListener extends SwipeGestureListener {
+        public MessageSwipeGestureListener(Context context, SwipeHandler handler) {
+            super(context, handler);
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
     }
 }
