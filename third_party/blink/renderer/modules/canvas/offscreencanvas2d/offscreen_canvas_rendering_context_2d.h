@@ -122,9 +122,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const final;
 
   bool HasAlpha() const final { return CreationAttributes().alpha; }
-  bool IsDesynchronized() const final {
-    return CreationAttributes().desynchronized;
-  }
   bool isContextLost() const override;
 
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;

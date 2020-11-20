@@ -1696,14 +1696,12 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   // TODO(crbug.com/1101055): Remove the check for NewCanvas2DAPI flag once
   // released.
-  // TODO(crbug.com/1090180): New Canvas2D API utilizes willReadFrequently
-  // attribute that let the users indicate if a canvas will be read frequently
-  // through getImageData, thus uses CPU rendering from the start in such cases.
+  // New Canvas2D API utilizes willReadFrequently attribute that let the users
+  // indicate if a canvas will be read frequently through getImageData, thus
+  // uses CPU rendering from the start in such cases. (crbug.com/1090180)
   if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
-    // GetImagedata is faster in Unaccelerated canvases.
-    // In Desynchronized canvas disabling the acceleration will break
-    // putImageData: crbug.com/1112060.
-    if (IsAccelerated() && !IsDesynchronized()) {
+    // GetImagedata is faster in Unaccelerated canvases
+    if (IsAccelerated()) {
       DisableAcceleration();
       base::UmaHistogramEnumeration("Blink.Canvas.GPUFallbackToCPU",
                                     GPUFallbackToCPUScenario::kGetImageData);
