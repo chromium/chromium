@@ -67,8 +67,7 @@
     // Remove the div and verify that scrolling takes place as expected.
     document.body.removeChild(occlusion_div);
     await mouseClickOn(down_arrow_x, down_arrow_y);
-    const EXPECTED_BUTTON_SCROLL_AMOUNT =
-      getScrollbarButtonScrollDelta(scroller).y;
+    const EXPECTED_BUTTON_SCROLL_AMOUNT = getScrollbarButtonScrollDelta(scroller).y;
     const expected = onMacPlatform ? 74 : EXPECTED_BUTTON_SCROLL_AMOUNT;
     const pressedPart = onMacPlatform ? "track" : "down arrow";
     await waitForAnimationEndTimeBased(() => {return scroller.scrollTop;});

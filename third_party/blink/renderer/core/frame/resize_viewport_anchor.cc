@@ -38,13 +38,6 @@ void ResizeViewportAnchor::EndScope() {
   ScrollOffset visual_viewport_in_document =
       frame_view->GetScrollableArea()->GetScrollOffset() - drift_;
 
-  // TODO(bokan): Don't use RootFrameViewport::setScrollPosition since it
-  // assumes we can just set a sub-pixel precision offset on the LocalFrameView.
-  // While we "can" do this, the offset that will be shipped to CC will be the
-  // truncated number and this class is used to handle TopControl movement
-  // which needs the two threads to match exactly pixel-for-pixel. We can
-  // replace this with RFV::setScrollPosition once Blink is sub-pixel scroll
-  // offset aware. crbug.com/414283.
   DCHECK(frame_view->GetRootFrameViewport());
   frame_view->GetRootFrameViewport()->RestoreToAnchor(
       visual_viewport_in_document);

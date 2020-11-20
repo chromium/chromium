@@ -37,7 +37,13 @@ window.onload = () => {
       y += asc_increments[i];
       await mouseMoveTo(x, y);
       const offset = onMacPlatform ? asc_offsets_mac[i] : asc_offsets[i];
-      assert_equals(window.scrollY, offset, "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
+      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+        assert_approx_equals(window.scrollY, offset, 1,
+          "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
+      } else {
+        assert_equals(window.scrollY, offset,
+          "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
+      }
     };
 
     // Scroll up
@@ -45,7 +51,13 @@ window.onload = () => {
       y -= desc_increments[i];
       await mouseMoveTo(x, y);
       const offset = onMacPlatform ? desc_offsets_mac[i] : desc_offsets[i];
-      assert_equals(window.scrollY, offset, "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
+      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+        assert_approx_equals(window.scrollY, offset, 1,
+          "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
+      } else {
+        assert_equals(window.scrollY, offset,
+          "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
+      }
     };
 
     await mouseUpAt(x, y);
