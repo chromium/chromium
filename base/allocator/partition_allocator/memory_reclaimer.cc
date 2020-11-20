@@ -95,23 +95,34 @@ void PartitionAllocMemoryReclaimer::Start(
   // singleton.
   timer_->Start(
       FROM_HERE, kInterval,
-      BindRepeating(&PartitionAllocMemoryReclaimer::Reclaim, Unretained(this)));
+      BindRepeating(&PartitionAllocMemoryReclaimer::ReclaimPeriodically,
+                    Unretained(this)));
 }
 
 PartitionAllocMemoryReclaimer::PartitionAllocMemoryReclaimer() = default;
 PartitionAllocMemoryReclaimer::~PartitionAllocMemoryReclaimer() = default;
 
-void PartitionAllocMemoryReclaimer::Reclaim() {
+void PartitionAllocMemoryReclaimer::ReclaimAll() {
+  constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
+                         PartitionPurgeDiscardUnusedSystemPages |
+                         PartitionPurgeForceAllFreed;
+  Reclaim(kFlags);
+}
+
+void PartitionAllocMemoryReclaimer::ReclaimPeriodically() {
+  constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
+                         PartitionPurgeDiscardUnusedSystemPages;
+  Reclaim(kFlags);
+}
+
+void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
   AutoLock lock(lock_);  // Has to protect from concurrent (Un)Register calls.
   TRACE_EVENT0("base", "PartitionAllocMemoryReclaimer::Reclaim()");
 
-  constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
-                         PartitionPurgeDiscardUnusedSystemPages;
-
   for (auto* partition : thread_safe_partitions_)
-    partition->PurgeMemory(kFlags);
+    partition->PurgeMemory(flags);
   for (auto* partition : thread_unsafe_partitions_)
-    partition->PurgeMemory(kFlags);
+    partition->PurgeMemory(flags);
 }
 
 void PartitionAllocMemoryReclaimer::ResetForTesting() {

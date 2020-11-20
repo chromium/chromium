@@ -73,6 +73,10 @@ class BASE_EXPORT PCScan final {
     }
     size_t last_size() const { return last_size_; }
 
+    bool MinimumScanningThresholdReached() const {
+      return size() > kQuarantineSizeMinLimit;
+    }
+
    private:
     static constexpr size_t kQuarantineSizeMinLimit = 1 * 1024 * 1024;
 

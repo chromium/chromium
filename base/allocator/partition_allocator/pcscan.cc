@@ -486,8 +486,7 @@ void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
 
 template <bool thread_safe>
 void PCScan<thread_safe>::PerformScanIfNeeded(InvocationMode invocation_mode) {
-  // Perform PCScan only if quarantine is not empty.
-  if (quarantine_data_.size())
+  if (quarantine_data_.MinimumScanningThresholdReached())
     PerformScan(invocation_mode);
 }
 

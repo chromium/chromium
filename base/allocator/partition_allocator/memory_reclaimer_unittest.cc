@@ -98,7 +98,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest, Reclaim) {
 
     size_t committed_before = root->get_total_size_of_committed_pages();
     EXPECT_GT(committed_before, committed_initially);
-    PartitionAllocMemoryReclaimer::Instance()->Reclaim();
+    PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
     size_t committed_after = root->get_total_size_of_committed_pages();
 
     EXPECT_LT(committed_after, committed_before);

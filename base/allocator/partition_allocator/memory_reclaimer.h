@@ -42,12 +42,17 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
   void UnregisterPartition(PartitionRoot<internal::NotThreadSafe>* partition);
   // Starts the periodic reclaim. Should be called once.
   void Start(scoped_refptr<SequencedTaskRunner> task_runner);
-  // Triggers an explicit reclaim now.
-  void Reclaim();
+  // Triggers an explicit reclaim now reclaiming all free memory
+  void ReclaimAll();
+  // Triggers an explicit reclaim now to reclaim as much free memory as
+  // possible.
+  void ReclaimPeriodically();
 
  private:
   PartitionAllocMemoryReclaimer();
   ~PartitionAllocMemoryReclaimer();
+  // |flags| is an OR of base::PartitionPurgeFlags
+  void Reclaim(int flags);
   void ReclaimAndReschedule();
   void ResetForTesting();
 

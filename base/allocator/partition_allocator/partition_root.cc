@@ -620,7 +620,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
   // TODO(chromium:1129751): Change to LIKELY once PCScan is enabled by default.
-  if (UNLIKELY(pcscan)) {
+  if (UNLIKELY(pcscan) && (flags & PartitionPurgeForceAllFreed)) {
     pcscan->PerformScanIfNeeded(
         internal::PCScan<thread_safe>::InvocationMode::kBlocking);
   }
