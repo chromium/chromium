@@ -23,6 +23,19 @@ WindowsEventLogger::WindowsEventLogger(const std::string& application_name) {
   }
 }
 
+WindowsEventLogger::WindowsEventLogger(WindowsEventLogger&& other)
+    : event_log_(other.event_log_) {
+  other.event_log_ = nullptr;
+}
+
+WindowsEventLogger& WindowsEventLogger::operator=(WindowsEventLogger&& other) {
+  if (this != &other) {
+    event_log_ = other.event_log_;
+    other.event_log_ = nullptr;
+  }
+  return *this;
+}
+
 WindowsEventLogger::~WindowsEventLogger() {
   if (event_log_ != nullptr) {
     ::DeregisterEventSource(event_log_);

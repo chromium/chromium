@@ -387,6 +387,8 @@ shared_library("remoting_core") {
     "host_event_file_logger.cc",
     "host_event_file_logger.h",
     "host_event_logger.h",
+    "host_event_windows_event_logger.cc",
+    "host_event_windows_event_logger.h",
     "host_service.cc",
     "host_service.h",
     "launch_native_messaging_host_process.cc",

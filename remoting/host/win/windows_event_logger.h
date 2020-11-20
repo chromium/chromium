@@ -15,8 +15,8 @@ namespace remoting {
 class WindowsEventLogger {
  public:
   explicit WindowsEventLogger(const std::string& application_name);
-  WindowsEventLogger(const WindowsEventLogger&) = delete;
-  WindowsEventLogger& operator=(const WindowsEventLogger&) = delete;
+  WindowsEventLogger(WindowsEventLogger&&);
+  WindowsEventLogger& operator=(WindowsEventLogger&&);
   ~WindowsEventLogger();
 
   // Indicates whether the instance has successfully registered itself with the

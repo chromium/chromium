@@ -169,7 +169,8 @@
                           CategoryMessageFile="[#$(var.CoreBinary)]"
                           EventMessageFile="[#$(var.CoreBinary)]"
                           SupportsErrors="yes"
-                          SupportsInformationals="yes"/>
+                          SupportsInformationals="yes"
+                          SupportsWarnings="yes"/>
       </Component>
 
       <Component Id="remoting_desktop" Guid="*">
