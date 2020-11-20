@@ -64,31 +64,19 @@ WebViewFrameWidget::WebViewFrameWidget(
                          hidden,
                          never_composited,
                          /*is_for_child_local_root=*/false,
-                         is_for_nested_main_frame),
-      web_view_(&web_view),
-      self_keep_alive_(PERSISTENT_FROM_HERE, this) {
-  web_view_->SetMainFrameViewWidget(this);
+                         is_for_nested_main_frame) {
+  web_view.SetMainFrameViewWidget(this);
 }
 
 WebViewFrameWidget::~WebViewFrameWidget() = default;
-
-void WebViewFrameWidget::Close(
-    scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) {
-  GetPage()->WillCloseAnimationHost(nullptr);
-  // Closing the WebViewFrameWidget happens in response to the local main frame
-  // being detached from the Page/WebViewImpl.
-  web_view_->SetMainFrameViewWidget(nullptr);
-  web_view_ = nullptr;
-  WebFrameWidgetBase::Close(std::move(cleanup_runner));
-  self_keep_alive_.Clear();
-}
 
 WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     const WebGestureEvent& event) {
   // TODO(https://crbug.com/1148346): We need to figure out why MainFrameImpl is
   // null but LocalRootImpl isn't.
   CHECK(LocalRootImpl());
-  if (!web_view_->MainFrameImpl())
+  WebViewImpl* web_view = View();
+  if (!web_view->MainFrameImpl())
     return WebInputEventResult::kNotHandled;
 
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
@@ -99,22 +87,22 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
   CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingCancel);
 
   WebGestureEvent scaled_event = TransformWebGestureEvent(
-      web_view_->MainFrameImpl()->GetFrameView(), event);
+      web_view->MainFrameImpl()->GetFrameView(), event);
 
   // Special handling for double tap and scroll events as we don't want to
   // hit test for them.
   switch (event.GetType()) {
     case WebInputEvent::Type::kGestureDoubleTap:
-      if (web_view_->SettingsImpl()->DoubleTapToZoomEnabled() &&
-          web_view_->MinimumPageScaleFactor() !=
-              web_view_->MaximumPageScaleFactor()) {
-        if (auto* main_frame = web_view_->MainFrameImpl()) {
+      if (web_view->SettingsImpl()->DoubleTapToZoomEnabled() &&
+          web_view->MinimumPageScaleFactor() !=
+              web_view->MaximumPageScaleFactor()) {
+        if (auto* main_frame = web_view->MainFrameImpl()) {
           IntPoint pos_in_root_frame =
               FlooredIntPoint(scaled_event.PositionInRootFrame());
           WebRect block_bounds =
               main_frame->FrameWidgetImpl()->ComputeBlockBound(
                   pos_in_root_frame, false);
-          web_view_->AnimateDoubleTapZoom(pos_in_root_frame, block_bounds);
+          web_view->AnimateDoubleTapZoom(pos_in_root_frame, block_bounds);
         }
       }
       event_result = WebInputEventResult::kHandledSystem;
@@ -128,7 +116,7 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
       // This matches handleWheelEvent.  Perhaps we could simplify things by
       // rewriting scroll handling to work inner frame out, and then unify with
       // other gesture events.
-      event_result = web_view_->MainFrameImpl()
+      event_result = web_view->MainFrameImpl()
                          ->GetFrame()
                          ->GetEventHandler()
                          .HandleGestureScrollEvent(scaled_event);
@@ -151,7 +139,7 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
   switch (event.GetType()) {
     case WebInputEvent::Type::kGestureShowPress:
       // Queue a highlight animation, then hand off to regular handler.
-      web_view_->EnableTapHighlightAtPoint(targeted_event);
+      web_view->EnableTapHighlightAtPoint(targeted_event);
       break;
     case WebInputEvent::Type::kGestureTapCancel:
     case WebInputEvent::Type::kGestureTap:
@@ -166,18 +154,18 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     case WebInputEvent::Type::kGestureTap: {
       {
         ContextMenuAllowedScope scope;
-        event_result = web_view_->MainFrameImpl()
+        event_result = web_view->MainFrameImpl()
                            ->GetFrame()
                            ->GetEventHandler()
                            .HandleGestureEvent(targeted_event);
       }
 
-      if (web_view_->GetPagePopup() && last_hidden_page_popup_ &&
-          web_view_->GetPagePopup()->HasSamePopupClient(
+      if (web_view->GetPagePopup() && last_hidden_page_popup_ &&
+          web_view->GetPagePopup()->HasSamePopupClient(
               last_hidden_page_popup_.get())) {
         // The tap triggered a page popup that is the same as the one we just
         // closed. It needs to be closed.
-        web_view_->CancelPagePopup();
+        web_view->CancelPagePopup();
       }
       // Don't have this value persist outside of a single tap gesture, plus
       // we're done with it now.
@@ -187,8 +175,8 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     case WebInputEvent::Type::kGestureTwoFingerTap:
     case WebInputEvent::Type::kGestureLongPress:
     case WebInputEvent::Type::kGestureLongTap: {
-      if (!web_view_->MainFrameImpl() ||
-          !web_view_->MainFrameImpl()->GetFrameView())
+      if (!web_view->MainFrameImpl() ||
+          !web_view->MainFrameImpl()->GetFrameView())
         break;
 
       if (event.GetType() == WebInputEvent::Type::kGestureLongTap) {
@@ -196,7 +184,7 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
                 targeted_event.GetHitTestResult().InnerNodeFrame()) {
           if (!inner_frame->GetEventHandler().LongTapShouldInvokeContextMenu())
             break;
-        } else if (!web_view_->MainFrameImpl()
+        } else if (!web_view->MainFrameImpl()
                         ->GetFrame()
                         ->GetEventHandler()
                         .LongTapShouldInvokeContextMenu()) {
@@ -207,7 +195,7 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
       GetPage()->GetContextMenuController().ClearContextMenu();
       {
         ContextMenuAllowedScope scope;
-        event_result = web_view_->MainFrameImpl()
+        event_result = web_view->MainFrameImpl()
                            ->GetFrame()
                            ->GetEventHandler()
                            .HandleGestureEvent(targeted_event);
@@ -224,9 +212,9 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
       // same popup.
       // This value should not persist outside of a gesture, so is cleared by
       // GestureTap (where it is used) and by GestureCancel.
-      last_hidden_page_popup_ = web_view_->GetPagePopup();
-      web_view_->CancelPagePopup();
-      event_result = web_view_->MainFrameImpl()
+      last_hidden_page_popup_ = web_view->GetPagePopup();
+      web_view->CancelPagePopup();
+      event_result = web_view->MainFrameImpl()
                          ->GetFrame()
                          ->GetEventHandler()
                          .HandleGestureEvent(targeted_event);
@@ -235,21 +223,21 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     case WebInputEvent::Type::kGestureTapCancel: {
       // Don't have this value persist outside of a single tap gesture.
       last_hidden_page_popup_ = nullptr;
-      event_result = web_view_->MainFrameImpl()
+      event_result = web_view->MainFrameImpl()
                          ->GetFrame()
                          ->GetEventHandler()
                          .HandleGestureEvent(targeted_event);
       break;
     }
     case WebInputEvent::Type::kGestureShowPress: {
-      event_result = web_view_->MainFrameImpl()
+      event_result = web_view->MainFrameImpl()
                          ->GetFrame()
                          ->GetEventHandler()
                          .HandleGestureEvent(targeted_event);
       break;
     }
     case WebInputEvent::Type::kGestureTapUnconfirmed: {
-      event_result = web_view_->MainFrameImpl()
+      event_result = web_view->MainFrameImpl()
                          ->GetFrame()
                          ->GetEventHandler()
                          .HandleGestureEvent(targeted_event);

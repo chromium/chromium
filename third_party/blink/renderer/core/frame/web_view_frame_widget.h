@@ -59,22 +59,14 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
       bool never_composited);
   ~WebViewFrameWidget() override;
 
-  // WebWidget overrides:
-  void Close(
-      scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
-
  private:
   // PageWidgetEventHandler overrides:
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
-
-  scoped_refptr<WebViewImpl> web_view_;
 
   // This stores the last hidden page popup. If a GestureTap attempts to open
   // the popup that is closed by its previous GestureTapDown, the popup remains
   // closed.
   scoped_refptr<WebPagePopupImpl> last_hidden_page_popup_;
-
-  SelfKeepAlive<WebViewFrameWidget> self_keep_alive_;
 
   DISALLOW_COPY_AND_ASSIGN(WebViewFrameWidget);
 };

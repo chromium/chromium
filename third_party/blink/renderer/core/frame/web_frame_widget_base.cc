@@ -212,7 +212,8 @@ WebFrameWidgetBase::WebFrameWidgetBase(
                                                 is_for_child_local_root)),
       client_(&client),
       frame_sink_id_(frame_sink_id),
-      is_for_child_local_root_(is_for_child_local_root) {
+      is_for_child_local_root_(is_for_child_local_root),
+      self_keep_alive_(PERSISTENT_FROM_HERE, this) {
   DCHECK(task_runner);
   if (is_for_nested_main_frame)
     main_data().is_for_nested_main_frame = is_for_nested_main_frame;
@@ -247,6 +248,24 @@ void WebFrameWidgetBase::SetIsNestedMainFrameWidget(bool is_nested) {
 
 void WebFrameWidgetBase::Close(
     scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) {
+  LocalFrameView* frame_view;
+  if (is_for_child_local_root_) {
+    frame_view = LocalRootImpl()->GetFrame()->View();
+  } else {
+    // Scrolling for the root frame is special we need to pass null indicating
+    // we are at the top of the tree when setting up the Animation. Which will
+    // cause ownership of the timeline and animation host.
+    // See ScrollingCoordinator::AnimationHostInitialized.
+    frame_view = nullptr;
+  }
+  GetPage()->WillCloseAnimationHost(frame_view);
+
+  if (ForMainFrame()) {
+    // Closing the WebFrameWidgetBase happens in response to the local main
+    // frame being detached from the Page/WebViewImpl.
+    View()->SetMainFrameViewWidget(nullptr);
+  }
+
   mutator_dispatcher_ = nullptr;
   local_root_->SetFrameWidget(nullptr);
   local_root_ = nullptr;
@@ -256,6 +275,7 @@ void WebFrameWidgetBase::Close(
   widget_base_.reset();
   receiver_.reset();
   input_target_receiver_.reset();
+  self_keep_alive_.Clear();
 }
 
 WebLocalFrame* WebFrameWidgetBase::LocalRoot() const {

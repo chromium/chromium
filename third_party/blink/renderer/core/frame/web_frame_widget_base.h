@@ -952,6 +952,8 @@ class CORE_EXPORT WebFrameWidgetBase
   // Whether this widget is for a child local root, or otherwise a main frame.
   const bool is_for_child_local_root_;
 
+  SelfKeepAlive<WebFrameWidgetBase> self_keep_alive_;
+
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
 };

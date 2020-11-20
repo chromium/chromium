@@ -205,21 +205,11 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
                          hidden,
                          never_composited,
                          /*is_for_child_local_root=*/true,
-                         /*is_for_nested_main_frame=*/false),
-      self_keep_alive_(PERSISTENT_FROM_HERE, this) {}
+                         /*is_for_nested_main_frame=*/false) {}
 
 WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;
 
 // WebWidget ------------------------------------------------------------------
-
-void WebFrameWidgetImpl::Close(
-    scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) {
-  GetPage()->WillCloseAnimationHost(LocalRootImpl()->GetFrame()->View());
-
-  WebFrameWidgetBase::Close(std::move(cleanup_runner));
-
-  self_keep_alive_.Clear();
-}
 
 WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     const WebGestureEvent& event) {
@@ -285,14 +275,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
   event_result = frame->GetEventHandler().HandleGestureEvent(scaled_event);
   DidHandleGestureEvent(event, event_cancelled);
   return event_result;
-}
-
-PaintLayerCompositor* WebFrameWidgetImpl::Compositor() const {
-  LocalFrame* frame = LocalRootImpl()->GetFrame();
-  if (!frame || !frame->GetDocument() || !frame->GetDocument()->GetLayoutView())
-    return nullptr;
-
-  return frame->GetDocument()->GetLayoutView()->Compositor();
 }
 
 }  // namespace blink

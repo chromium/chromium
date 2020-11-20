@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-class PaintLayerCompositor;
 class WebFrameWidget;
 class WebFrameWidgetImpl;
 
@@ -78,19 +77,12 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
       bool never_composited);
   ~WebFrameWidgetImpl() override;
 
-  // WebWidget functions:
-  void Close(
-      scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
-
-  PaintLayerCompositor* Compositor() const;
-
  private:
   friend class WebFrameWidget;  // For WebFrameWidget::create.
 
   // PageWidgetEventHandler functions
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
 
-  SelfKeepAlive<WebFrameWidgetImpl> self_keep_alive_;
 };
 
 }  // namespace blink
