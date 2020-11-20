@@ -4,12 +4,15 @@
 
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/common/extensions/api/scripting.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/load_and_localize_file.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -20,6 +23,8 @@
 namespace extensions {
 
 namespace {
+
+constexpr char kCouldNotLoadFileError[] = "Could not load file: '*'.";
 
 // Returns true if the `permissions` allow for injection into the given `frame`.
 // If false, populates `error`.
@@ -121,6 +126,54 @@ bool CanAccessTarget(const PermissionsData& permissions,
   return true;
 }
 
+// Returns true if the loaded resource is valid for injection.
+bool CheckLoadedResource(bool success,
+                         std::string* data,
+                         const std::string& file_name,
+                         std::string* error) {
+  if (!success) {
+    *error = ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, file_name);
+    return false;
+  }
+
+  DCHECK(data);
+  // TODO(devlin): What necessitates this encoding requirement? Is it needed for
+  // blink injection?
+  if (!base::IsStringUTF8(*data)) {
+    constexpr char kBadFileEncodingError[] =
+        "Could not load file '*'. It isn't UTF-8 encoded.";
+    *error = ErrorUtils::FormatErrorMessage(kBadFileEncodingError, file_name);
+    return false;
+  }
+
+  return true;
+}
+
+// Checks the specified `files` for validity, and attempts to load and localize
+// them, invoking `callback` with the result. Returns true on success; on
+// failure, populates `error`.
+bool CheckAndLoadFiles(const std::vector<std::string>& files,
+                       const Extension& extension,
+                       bool requires_localization,
+                       LoadAndLocalizeResourceCallback callback,
+                       std::string* error) {
+  if (files.size() != 1) {
+    constexpr char kExactlyOneFileError[] =
+        "Exactly one file must be specified.";
+    *error = kExactlyOneFileError;
+    return false;
+  }
+  ExtensionResource resource = extension.GetResource(files[0]);
+  if (resource.extension_root().empty() || resource.relative_path().empty()) {
+    *error = ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, files[0]);
+    return false;
+  }
+
+  LoadAndLocalizeResource(extension, resource, requires_localization,
+                          std::move(callback));
+  return true;
+}
+
 }  // namespace
 
 ScriptingExecuteScriptFunction::ScriptingExecuteScriptFunction() = default;
@@ -130,40 +183,83 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   std::unique_ptr<api::scripting::ExecuteScript::Params> params(
       api::scripting::ExecuteScript::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
-  const api::scripting::ScriptInjection& injection = params->injection;
+  injection_ = std::move(params->injection);
 
-  // TODO(devlin): Add support for specifying a file.
-  if (!injection.function)
-    return RespondNow(Error("'css' must be specified"));
-
-  std::string error;
-  ScriptExecutor* script_executor = nullptr;
-  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
-  std::vector<int> frame_ids;
-  if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
-                       browser_context(), include_incognito_information(),
-                       &script_executor, &frame_scope, &frame_ids, &error)) {
-    return RespondNow(Error(std::move(error)));
+  if ((injection_.files && injection_.function) ||
+      (!injection_.files && !injection_.function)) {
+    return RespondNow(
+        Error("Exactly one of 'function' and 'files' must be specified"));
   }
 
-  DCHECK(script_executor);
+  if (injection_.files) {
+    // JS files don't require localization.
+    constexpr bool kRequiresLocalization = false;
+    std::string error;
+    if (!CheckAndLoadFiles(
+            *injection_.files, *extension(), kRequiresLocalization,
+            base::BindOnce(&ScriptingExecuteScriptFunction::DidLoadResource,
+                           this),
+            &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+    return RespondLater();
+  }
+
+  DCHECK(injection_.function);
 
   // TODO(devlin): This (wrapping a function to create an IIFE) is pretty hacky,
   // and won't work well when we support currying arguments. Add support to the
   // ScriptExecutor to better support this case.
   std::string code_to_execute =
-      base::StringPrintf("(%s)()", injection.function->c_str());
+      base::StringPrintf("(%s)()", injection_.function->c_str());
+
+  std::string error;
+  if (!Execute(std::move(code_to_execute), /*script_src=*/GURL(), &error))
+    return RespondNow(Error(std::move(error)));
+
+  return RespondLater();
+}
+
+void ScriptingExecuteScriptFunction::DidLoadResource(
+    bool success,
+    std::unique_ptr<std::string> data) {
+  DCHECK(injection_.files);
+  DCHECK_EQ(1u, injection_.files->size());
+
+  std::string error;
+  if (!CheckLoadedResource(success, data.get(), injection_.files->at(0),
+                           &error)) {
+    Respond(Error(std::move(error)));
+    return;
+  }
+
+  GURL script_url = extension()->GetResourceURL(injection_.files->at(0));
+  if (!Execute(std::move(*data), std::move(script_url), &error))
+    Respond(Error(std::move(error)));
+}
+
+bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
+                                             GURL script_url,
+                                             std::string* error) {
+  ScriptExecutor* script_executor = nullptr;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
+  std::vector<int> frame_ids;
+  if (!CanAccessTarget(*extension()->permissions_data(), injection_.target,
+                       browser_context(), include_incognito_information(),
+                       &script_executor, &frame_scope, &frame_ids, error)) {
+    return false;
+  }
 
   script_executor->ExecuteScript(
       HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_JAVASCRIPT,
-      code_to_execute, frame_scope, frame_ids,
+      std::move(code_to_execute), frame_scope, frame_ids,
       ScriptExecutor::MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
       ScriptExecutor::DEFAULT_PROCESS,
-      /* webview_src */ GURL(), /* script_url */ GURL(), user_gesture(),
+      /* webview_src */ GURL(), std::move(script_url), user_gesture(),
       base::nullopt, ScriptExecutor::JSON_SERIALIZED_RESULT,
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
-  return RespondLater();
+  return true;
 }
 
 void ScriptingExecuteScriptFunction::OnScriptExecuted(
@@ -196,20 +292,66 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
   std::unique_ptr<api::scripting::InsertCSS::Params> params(
       api::scripting::InsertCSS::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
-  api::scripting::CSSInjection injection = std::move(params->injection);
 
-  // TODO(https://crbug.com/1148880): Add support for specifying a file.
-  if (!injection.css)
-    return RespondNow(Error("'css' must be specified"));
+  injection_ = std::move(params->injection);
+
+  if ((injection_.files && injection_.css) ||
+      (!injection_.files && !injection_.css)) {
+    return RespondNow(
+        Error("Exactly one of 'css' and 'files' must be specified"));
+  }
+
+  if (injection_.files) {
+    // CSS files require localization.
+    constexpr bool kRequiresLocalization = true;
+    std::string error;
+    if (!CheckAndLoadFiles(
+            *injection_.files, *extension(), kRequiresLocalization,
+            base::BindOnce(&ScriptingInsertCSSFunction::DidLoadResource, this),
+            &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+    return RespondLater();
+  }
+
+  DCHECK(injection_.css);
 
   std::string error;
+  if (!Execute(std::move(*injection_.css), /*script_url=*/GURL(), &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  return RespondLater();
+}
+
+void ScriptingInsertCSSFunction::DidLoadResource(
+    bool success,
+    std::unique_ptr<std::string> data) {
+  DCHECK(injection_.files);
+  DCHECK_EQ(1u, injection_.files->size());
+
+  std::string error;
+  if (!CheckLoadedResource(success, data.get(), injection_.files->at(0),
+                           &error)) {
+    Respond(Error(std::move(error)));
+    return;
+  }
+
+  GURL script_url = extension()->GetResourceURL(injection_.files->at(0));
+  if (!Execute(std::move(*data), std::move(script_url), &error))
+    Respond(Error(std::move(error)));
+}
+
+bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
+                                         GURL script_url,
+                                         std::string* error) {
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   std::vector<int> frame_ids;
-  if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
+  if (!CanAccessTarget(*extension()->permissions_data(), injection_.target,
                        browser_context(), include_incognito_information(),
-                       &script_executor, &frame_scope, &frame_ids, &error)) {
-    return RespondNow(Error(std::move(error)));
+                       &script_executor, &frame_scope, &frame_ids, error)) {
+    return false;
   }
   DCHECK(script_executor);
 
@@ -217,7 +359,7 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
   // pass it through ScriptExecutor and friends, rather than having it
   // defined in the renderer.
   base::Optional<CSSOrigin> origin;
-  switch (injection.origin) {
+  switch (injection_.origin) {
     case api::scripting::STYLE_ORIGIN_USER:
       origin = CSS_ORIGIN_USER;
       break;
@@ -234,13 +376,14 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
   constexpr UserScript::RunLocation kRunLocation = UserScript::DOCUMENT_START;
   script_executor->ExecuteScript(
       HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_CSS,
-      *injection.css, frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
-      kRunLocation, ScriptExecutor::DEFAULT_PROCESS,
-      /* webview_src */ GURL(), /* script_url */ GURL(), user_gesture(), origin,
+      std::move(code_to_execute), frame_scope, frame_ids,
+      ScriptExecutor::MATCH_ABOUT_BLANK, kRunLocation,
+      ScriptExecutor::DEFAULT_PROCESS,
+      /* webview_src */ GURL(), std::move(script_url), user_gesture(), origin,
       ScriptExecutor::NO_RESULT,
       base::BindOnce(&ScriptingInsertCSSFunction::OnCSSInserted, this));
 
-  return RespondLater();
+  return true;
 }
 
 void ScriptingInsertCSSFunction::OnCSSInserted(const std::string& error,

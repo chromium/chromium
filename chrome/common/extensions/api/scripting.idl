@@ -33,8 +33,16 @@ namespace scripting {
     // A JavaScript function to inject. This function will be serialized, and
     // then deserialized for injection. This means that any bound parameters
     // and execution context will be lost.
-    // At least one of "file" and "function" must be specified.
+    // Exactly one of <code>files</code> and <code>function</code> must be
+    // specified.
     [serializableFunction]InjectedFunction? function;
+
+    // The path of the JS files to inject, relative to the extension's root
+    // directory.
+    // NOTE: Currently a maximum of one file is supported.
+    // Exactly one of <code>files</code> and <code>function</code> must be
+    // specified.
+    DOMString[]? files;
 
     // Details specifying the target into which to inject the script.
     InjectionTarget target;
@@ -45,7 +53,16 @@ namespace scripting {
     InjectionTarget target;
 
     // A string containing the CSS to inject.
+    // Exactly one of <code>files</code> and <code>css</code> must be
+    // specified.
     DOMString? css;
+
+    // The path of the CSS files to inject, relative to the extension's root
+    // directory.
+    // NOTE: Currently a maximum of one file is supported.
+    // Exactly one of <code>files</code> and <code>css</code> must be
+    // specified.
+    DOMString[]? files;
 
     // The style origin for the injection. Defaults to <code>'AUTHOR'</code>.
     StyleOrigin? origin;

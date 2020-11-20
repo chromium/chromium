@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/common/extensions/api/scripting.h"
 #include "extensions/browser/extension_function.h"
 
 class GURL;
@@ -33,10 +34,21 @@ class ScriptingExecuteScriptFunction : public ExtensionFunction {
  private:
   ~ScriptingExecuteScriptFunction() override;
 
+  // Called when the resource file to be injected has been loaded.
+  void DidLoadResource(bool success, std::unique_ptr<std::string> data);
+
+  // Triggers the execution of `code_to_execute` in the appropriate context.
+  // Returns true on success; on failure, populates `error`.
+  bool Execute(std::string code_to_execute,
+               GURL script_url,
+               std::string* error);
+
   // Invoked when script execution is complete.
   void OnScriptExecuted(const std::string& error,
                         const GURL& frame_url,
                         const base::ListValue& result);
+
+  api::scripting::ScriptInjection injection_;
 };
 
 class ScriptingInsertCSSFunction : public ExtensionFunction {
@@ -54,10 +66,21 @@ class ScriptingInsertCSSFunction : public ExtensionFunction {
  private:
   ~ScriptingInsertCSSFunction() override;
 
+  // Called when the resource file to be injected has been loaded.
+  void DidLoadResource(bool success, std::unique_ptr<std::string> data);
+
+  // Triggers the execution of `code_to_execute` in the appropriate context.
+  // Returns true on success; on failure, populates `error`.
+  bool Execute(std::string code_to_execute,
+               GURL script_url,
+               std::string* error);
+
   // Called when the CSS insertion is complete.
   void OnCSSInserted(const std::string& error,
                      const GURL& frame_url,
                      const base::ListValue& result);
+
+  api::scripting::CSSInjection injection_;
 };
 
 }  // namespace extensions

@@ -10,6 +10,9 @@ const CSS_BLUE = 'body { background-color: blue !important }';
 const BLUE = 'rgb(0, 0, 255)';
 const CSS_CYAN = 'body { background-color: cyan !important }';
 const CYAN = 'rgb(0, 255, 255)';
+const YELLOW = 'rgb(255, 255, 0)';
+
+const EXACTLY_ONE_FILE_ERROR = 'Exactly one file must be specified.';
 
 function getBodyColor() {
   const hostname = (new URL(location.href)).hostname;
@@ -46,7 +49,7 @@ chrome.test.runTests([
   // tabs to ensure a "clean slate", but it's not worth the added complexity
   // yet.
   // Instead, each test uses a different color.
-  async function changeBackground() {
+  async function changeBackgroundFromString() {
     const query = {url: 'http://example.com/*'};
     const tab = await getSingleTab(query);
     const results = await new Promise(resolve => {
@@ -127,6 +130,27 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function changeBackgroundFromFile() {
+    const query = {url: 'http://example.com/*'};
+    const tab = await getSingleTab(query);
+    const results = await new Promise(resolve => {
+      chrome.scripting.insertCSS(
+          {
+            target: {
+              tabId: tab.id,
+            },
+            files: ['css_file.css'],
+          },
+          resolve);
+    });
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(undefined, results);
+    const colors = await getBodyColorsForTab(tab.id);
+    chrome.test.assertEq(1, colors.length);
+    chrome.test.assertEq(`example.com ${YELLOW}`, colors[0]);
+    chrome.test.succeed();
+  },
+
   async function noSuchTab() {
     const nonExistentTabId = 99999;
     // NOTE(devlin): We can't use a fancy `await` here, because the lastError
@@ -141,6 +165,61 @@ chrome.test.runTests([
         },
         results => {
           chrome.test.assertLastError(`No tab with id: ${nonExistentTabId}`);
+          chrome.test.assertEq(undefined, results);
+          chrome.test.succeed();
+        });
+  },
+
+  async function noSuchFile() {
+    const noSuchFile = 'no_such_file.css';
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    // NOTE(devlin): We can't use a fancy `await` here, because the lastError
+    // won't be properly set. This will work better with true promise support,
+    // where this could be wrapped in an e.g. expectThrows().
+    chrome.scripting.insertCSS(
+        {
+          target: {
+            tabId: tab.id,
+          },
+          files: [noSuchFile],
+        },
+        results => {
+          chrome.test.assertLastError(`Could not load file: '${noSuchFile}'.`);
+          chrome.test.assertEq(undefined, results);
+          chrome.test.succeed();
+        });
+  },
+
+  async function noFilesSpecified() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    chrome.scripting.executeScript(
+        {
+          target: {
+            tabId: tab.id,
+          },
+          files: [],
+        },
+        results => {
+          chrome.test.assertLastError(EXACTLY_ONE_FILE_ERROR);
+          chrome.test.assertEq(undefined, results);
+          chrome.test.succeed();
+        });
+  },
+
+  async function multipleFilesSpecified() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    chrome.scripting.executeScript(
+        {
+          target: {
+            tabId: tab.id,
+          },
+          files: ['css_file.css', 'css_file2.css'],
+        },
+        results => {
+          chrome.test.assertLastError(EXACTLY_ONE_FILE_ERROR);
           chrome.test.assertEq(undefined, results);
           chrome.test.succeed();
         });
