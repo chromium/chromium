@@ -2439,6 +2439,28 @@ public class CronetUrlRequestTest {
         }
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    public void testSetIdempotency() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        ExperimentalUrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
+        assertEquals(builder.setIdempotency(ExperimentalUrlRequest.Builder.IDEMPOTENT), builder);
+
+        TestUploadDataProvider dataProvider = new TestUploadDataProvider(
+                TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
+        dataProvider.addRead("test".getBytes());
+        builder.setUploadDataProvider(dataProvider, callback.getExecutor());
+        builder.addHeader("Content-Type", "useless/string");
+        builder.build().start();
+        callback.blockForDone();
+        dataProvider.assertClosed();
+
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals("POST", callback.mResponseAsString);
+    }
+
     // Return connection migration disable load flag value.
     private static native int nativeGetConnectionMigrationDisableLoadFlag();
 }
