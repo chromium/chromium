@@ -139,6 +139,9 @@ vars = {
   # e.g. with custom_vars.
   'checkout_ios_webkit': False,
 
+  # By default, do not checkout the re-client binaries.
+  'checkout_reclient': False,
+
   # Fetches only the SDK boot images which match at least one of the whitelist
   # entries in a comma-separated list.
   #
@@ -447,7 +450,16 @@ deps = {
     'dep_type': 'cipd',
     'condition': 'host_os == "win"',
   },
-
+  'src/tools/reclient': {
+    'packages': [
+      {
+        'package': 'infra/rbe/client/linux-amd64',
+        'version': 'FY971v8hquNEs2x-L-AvVGygtX9sFTRy9aloq85WbqYC',
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': 'host_os == "linux" and checkout_reclient',
+  },
   'src/chrome/browser/resources/media_router/extension/src':
     Var('chromium_git') + '/media_router.git' + '@' + 'd4389c097c61fa8c5aa5eb7c3ba34ee203dd62e3',
 
