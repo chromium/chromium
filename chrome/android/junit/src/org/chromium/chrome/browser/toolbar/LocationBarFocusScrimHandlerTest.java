@@ -24,7 +24,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
 /** Unit tests for LocationBarFocusScrimHandler. */
@@ -44,8 +43,6 @@ public class LocationBarFocusScrimHandlerTest {
     @Mock
     private Configuration mConfiguration;
     @Mock
-    private TabObscuringHandler mTabObscuringHandler;
-    @Mock
     private ScrimCoordinator mScrimCoordinator;
     @Mock
     private NewTabPageDelegate mNewTabPageDelegate;
@@ -57,8 +54,10 @@ public class LocationBarFocusScrimHandlerTest {
         MockitoAnnotations.initMocks(this);
         doReturn(mResources).when(mContext).getResources();
         doReturn(mConfiguration).when(mResources).getConfiguration();
-        mScrimHandler = new LocationBarFocusScrimHandler(mScrimCoordinator, mTabObscuringHandler,
+        // clang-format off
+        mScrimHandler = new LocationBarFocusScrimHandler(mScrimCoordinator, (visible) -> {},
                 mContext, mLocationBarDataProvider, mClickDelegate, mScrimTarget);
+        // clang-format on
     }
 
     @Test

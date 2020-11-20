@@ -246,6 +246,32 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
     private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
 
+    private static class TabObscuringCallback implements Callback<Boolean> {
+        private final TabObscuringHandler mTabObscuringHandler;
+        /** A token held while the toolbar/omnibox is obscuring all visible tabs. */
+        private int mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+        public TabObscuringCallback(TabObscuringHandler handler) {
+            mTabObscuringHandler = handler;
+        }
+
+        @Override
+        public void onResult(Boolean visible) {
+            if (visible) {
+                // It's possible for the scrim to unfocus and refocus without the
+                // visibility actually changing. In this case we have to make sure we
+                // unregister the previous token before acquiring a new one.
+                int oldToken = mTabObscuringToken;
+                mTabObscuringToken = mTabObscuringHandler.obscureAllTabs();
+                if (oldToken != TokenHolder.INVALID_TOKEN) {
+                    mTabObscuringHandler.unobscureAllTabs(oldToken);
+                }
+            } else {
+                mTabObscuringHandler.unobscureAllTabs(mTabObscuringToken);
+                mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+            }
+        }
+    };
+
     /**
      * Creates a ToolbarManager object.
      *
@@ -437,9 +463,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         Runnable clickDelegate =
                 () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
         View scrimTarget = mCompositorViewHolder;
-        mLocationBarFocusHandler =
-                new LocationBarFocusScrimHandler(scrimCoordinator, tabObscuringHandler,
-                        /* context= */ activity, mLocationBarModel, clickDelegate, scrimTarget);
+        mLocationBarFocusHandler = new LocationBarFocusScrimHandler(scrimCoordinator,
+                new TabObscuringCallback(tabObscuringHandler), /* context= */ activity,
+                mLocationBarModel, clickDelegate, scrimTarget);
         if (mLocationBar.getFakeboxDelegate() != null) {
             mLocationBar.getFakeboxDelegate().addUrlFocusChangeListener(mLocationBarFocusHandler);
         }

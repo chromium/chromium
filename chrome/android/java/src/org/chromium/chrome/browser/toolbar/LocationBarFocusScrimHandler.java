@@ -12,13 +12,11 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
-import org.chromium.ui.util.TokenHolder;
 
 /**
  * Handles showing and hiding a scrim when url bar focus changes.
@@ -26,10 +24,7 @@ import org.chromium.ui.util.TokenHolder;
 public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     /** The params used to control how the scrim behaves when shown for the omnibox. */
     private PropertyModel mScrimModel;
-    private final TabObscuringHandler mTabObscuringHandler;
     private final ScrimCoordinator mScrimCoordinator;
-    /** A token held while the toolbar/omnibox is obscuring all visible tabs. */
-    private int mTabObscuringToken = TokenHolder.INVALID_TOKEN;
 
     /** Whether the scrim was shown on focus. */
     private boolean mScrimShown;
@@ -43,7 +38,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     /**
      *
      * @param scrimCoordinator Coordinator responsible for showing and hiding the scrim view.
-     * @param tabObscuringHandler Handler used to obscure/unobscure tabs when the scrim is
+     * @param visibilityChangeCallback Callback used to obscure/unobscure tabs when the scrim is
      *         shown/hidden.
      * @param context Context for retrieving resources.
      * @param locationBarDataProvider Provider of location bar data, e.g. the NTP state.
@@ -51,11 +46,10 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
      * @param scrimTarget View that the scrim should be anchored to.
      */
     public LocationBarFocusScrimHandler(ScrimCoordinator scrimCoordinator,
-            TabObscuringHandler tabObscuringHandler, Context context,
+            Callback<Boolean> visibilityChangeCallback, Context context,
             LocationBarDataProvider locationBarDataProvider, Runnable clickDelegate,
             View scrimTarget) {
         mScrimCoordinator = scrimCoordinator;
-        mTabObscuringHandler = tabObscuringHandler;
         mLocationBarDataProvider = locationBarDataProvider;
         mClickDelegate = clickDelegate;
         mContext = context;
@@ -65,23 +59,6 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                 resources.getDimensionPixelSize(org.chromium.chrome.R.dimen.tab_strip_height);
         mLightScrimColor = ApiCompatibilityUtils.getColor(resources,
                 org.chromium.chrome.R.color.omnibox_focused_fading_background_color_light);
-
-        Callback<Boolean> visibilityChangeCallback = (visible) -> {
-            if (visible) {
-                // It's possible for the scrim to unfocus and refocus without the
-                // visibility actually changing. In this case we have to make sure we
-                // unregister the previous token before acquiring a new one.
-                int oldToken = mTabObscuringToken;
-                mTabObscuringToken = mTabObscuringHandler.obscureAllTabs();
-                if (oldToken != TokenHolder.INVALID_TOKEN) {
-                    mTabObscuringHandler.unobscureAllTabs(oldToken);
-                }
-            } else {
-                mTabObscuringHandler.unobscureAllTabs(mTabObscuringToken);
-                mTabObscuringToken = TokenHolder.INVALID_TOKEN;
-            }
-        };
-
         mScrimModel = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                               .with(ScrimProperties.ANCHOR_VIEW, scrimTarget)
                               .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
