@@ -181,11 +181,11 @@ guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
     return {renameResult: RenameResult.FILE_EXISTS};
   }
 
-  const originalFile = await handle.getFile();
+  const originalFile = await maybeGetFileFromFileHandle(handle);
   let originalFileIndex =
       currentFiles.findIndex(fd => fd.token === renameMsg.token);
 
-  if (originalFileIndex < 0) {
+  if (!originalFile || originalFileIndex < 0) {
     return {renameResult: RenameResult.FILE_NO_LONGER_IN_LAST_OPENED_DIRECTORY};
   }
 
@@ -545,8 +545,21 @@ function assertFileAndDirectoryMutable(editFileToken, operation) {
  * @return {!Promise<boolean>}
  */
 async function isHandleInCurrentDirectory(handle) {
-  // Get the name from the file reference. Handles file renames.
-  const currentFilename = (await handle.getFile()).name;
+  /** @type {?File} */
+  const file = await maybeGetFileFromFileHandle(handle);
+  // If we were unable to get a file from the handle it must not be in the
+  // current directory anymore.
+  if (!file) {
+    return false;
+  }
+
+  // It's unclear if getFile will always give us a NotFoundError if the file has
+  // been moved as it's not explicitly stated in the native file system API
+  // spec. As such we perform an additional check here to make sure the file
+  // returned by the handle is in fact in the current directory.
+  // TODO(b/172628918): Remove this once we have more assurances getFile() does
+  // the right thing.
+  const currentFilename = file.name;
   const fileHandle = await getFileHandleFromCurrentDirectory(currentFilename);
   return fileHandle ? fileHandle.isSameEntry(handle) : false;
 }
@@ -599,6 +612,31 @@ async function getFileFromHandle(fileSystemHandle) {
   const handle = /** @type {!FileSystemFileHandle} */ (fileSystemHandle);
   const file = await handle.getFile();  // Note: throws DOMException.
   return {file, handle};
+}
+
+/**
+ * Calls getFile on `handle` and gracefully returns null if it encounters a
+ * NotFoundError, which can happen if the file is no longer in the current
+ * directory due to being moved or deleted.
+ * @param {!FileSystemFileHandle} handle
+ * @return {!Promise<?File>}
+ */
+async function maybeGetFileFromFileHandle(handle) {
+  /** @type {?File} */
+  let file;
+  try {
+    file = await handle.getFile();
+  } catch (/** @type {!DOMException} */ e) {
+    // NotFoundError can be thrown if `handle` is no longer in the directory we
+    // have access to.
+    if (e.name === 'NotFoundError') {
+      file = null;
+    } else {
+      // Any other error is unexpected.
+      throw e;
+    }
+  }
+  return file;
 }
 
 /**

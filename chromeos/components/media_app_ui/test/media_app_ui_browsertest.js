@@ -141,6 +141,19 @@ function queryIFrame() {
   return /** @type{!HTMLIFrameElement} */ (document.querySelector('iframe'));
 }
 
+/**
+ * Sets up a FakeFileSystemFileHandle to behave like a file which has been
+ * deleted or moved to a directory to which we do not have access.
+ * @param {!FakeFileSystemFileHandle} handle
+ */
+function makeFileNotFound(handle) {
+  // Mimic the exception that would be thrown when attempting to call getFile on
+  // a file which has been moved or deleted.
+  handle.getFileSync = () => {
+    throw new DOMException('File not found', 'NotFoundError');
+  };
+}
+
 // Tests that chrome://media-app is allowed to frame
 // chrome-untrusted://media-app. The URL is set in the html. If that URL can't
 // load, test this fails like JS ERROR: "Refused to frame '...' because it
@@ -731,6 +744,39 @@ TEST_F('MediaAppUIBrowserTest', 'DeletionOpensNextFile', async () => {
   // The app should be in zero state with no media loaded.
   lastLoadedFiles = await getLoadedFiles();
   assertEquals(0, lastLoadedFiles.length);
+
+  testDone();
+});
+
+// Tests that the app gracefully handles a delete request on a file that's
+// been deleted or moved.
+TEST_F('MediaAppUIBrowserTest', 'DeleteMissingFile', async () => {
+  const directory = await launchWithFiles(
+      [await createTestImageFile(1, 1, 'first_file_name.png')]);
+  makeFileNotFound(directory.files[0]);
+
+  const messageDelete = {deleteLastFile: true};
+  const testResponse = await sendTestMessage(messageDelete);
+
+  assertEquals(
+      'deleteOriginalFile resolved file moved', testResponse.testQueryResult);
+
+  testDone();
+});
+
+// Tests that the app gracefully handles a rename request on a file that's
+// been deleted or moved.
+TEST_F('MediaAppUIBrowserTest', 'RenameMissingFile', async () => {
+  const directory =
+      await launchWithFiles([await createTestImageFile(1, 1, 'file_name.png')]);
+  makeFileNotFound(directory.files[0]);
+
+  const messageRename = {renameLastFile: 'new_file_name'};
+  const testResponse = await sendTestMessage(messageRename);
+
+  assertEquals(
+      'renameOriginalFile resolved FILE_NO_LONGER_IN_LAST_OPENED_DIRECTORY',
+      testResponse.testQueryResult);
 
   testDone();
 });
