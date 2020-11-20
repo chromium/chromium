@@ -3460,9 +3460,6 @@
 <translation id="6536600139108165863">裝置關機時自動重新啟動</translation>
 <translation id="6539246272469751178">這項政策對 Android 應用程式沒有影響。Android 應用程式會一律使用預設的下載目錄，無法存取任何由 <ph name="PRODUCT_OS_NAME" />下載到非預設下載目錄的檔案。</translation>
 <translation id="654303922206238013">eCryptfs 遷移策略</translation>
-<translation id="6544897973797372144">如果你將這項政策設為「True」，且並未指定 ChromeOsReleaseChannel 政策，則註冊網域的使用者將可變更裝置的發布頻道。如果你將這項政策設為「False」，則系統會將裝置鎖定為先前設定的任何頻道。
-
-      ChromeOsReleaseChannel 政策會覆寫使用者選取的頻道，但如果政策設定的頻道比裝置原本安裝的頻道更穩定，則系統只會在更穩定的頻道發布比裝置上安裝的頻道更高的版本時，才會切換至該版本。</translation>
 <translation id="6553143066970470539">螢幕亮度百分比</translation>
 <translation id="6558362593755624474">你可以透過這項政策，指定這部裝置的 <ph name="PLUGIN_VM_NAME" /> 授權金鑰。</translation>
 <translation id="6559057113164934677">不允許任何網站使用攝影機和麥克風</translation>
@@ -4228,7 +4225,6 @@
 
 這項政策應用於逐步輪換存取碼設定。新設定一律會加到 |future_config| 中，同時
       現有值會移到 |current_config| 中。|current_config| 先前的值則會移到 |old_configs|，並在輪換結束後移除。這項政策只適用於兒童使用者。如果設定這項政策，系統將可在兒童使用者裝置上驗證家長存取碼。如果不設定這項政策，系統將無法在兒童使用者裝置上驗證家長存取碼。</translation>
-<translation id="7625444193696794922">指定裝置的固定發布頻道。</translation>
 <translation id="7629840767216985001">將這項政策設為 True 時，系統會在登入畫面啟用大型游標。將這項政策設為 False 時，系統會在登入畫面停用大型游標。
 
       如果設定這項政策，使用者可暫時啟用或停用大型游標。當登入畫面重新載入或閒置達一分鐘時，大型游標會還原成原始狀態。
