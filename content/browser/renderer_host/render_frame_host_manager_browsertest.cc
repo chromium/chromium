@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -300,6 +301,8 @@ class RenderFrameHostManagerTest
   }
 
  protected:
+  void AssertCanRemoveSubframeInUnload(bool same_site);
+
   std::string foo_com_;
   GURL::Replacements replace_host_;
   net::HostPortPair foo_host_port_;
@@ -9076,6 +9079,62 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerNoSiteIsolationTest,
   // Navigate to a web URL in the second window.  This shouldn't crash.
   GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell2->web_contents(), url));
+}
+
+// With RenderDocument for subframes, removing a frame while it is executing
+// its own unload handler caused a crash. https://crbug.com/1148793
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       RemoveSubframeInUnload_SameSite) {
+  // TODO(https://crbug.com/1148793): Remove this early return.
+  if (ShouldCreateNewHostForSameSiteSubframe())
+    return;
+  AssertCanRemoveSubframeInUnload(/*same_site=*/true);
+}
+
+// See RemoveSubframeInUnload_SameSite
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       RemoveSubframeInUnload_CrossSite) {
+  AssertCanRemoveSubframeInUnload(/*same_site=*/false);
+}
+
+// See RemoveSubframeInUnload_SameSite
+void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
+    bool same_site) {
+  StartEmbeddedServer();
+
+  // Create a page with a subframe.
+  GURL frame_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  ASSERT_TRUE(NavigateToURL(shell(), frame_url));
+
+  // Set up the subframe's unload handler to remove the subframe.
+  ASSERT_TRUE(ExecuteScript(shell(), R"(
+    const subframe = document.getElementById("child-0");
+    subframe.contentWindow.onunload = () => {
+      subframe.remove();
+    }
+  )"));
+
+  // Navigate the subframe, triggering unload.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  FrameTreeNode* subframe = web_contents->GetMainFrame()->child_at(0);
+  RenderFrameDeletedObserver observer(
+      subframe->render_manager()->current_frame_host());
+
+  GURL other_url(embedded_test_server()->GetURL(same_site ? "a.com" : "b.com",
+                                                "/title1.html"));
+  // The navigation will remove the frame that was navigating. Various Navigate
+  // helpers run into problems with this because there is no successful commit
+  // nor is there a DidStopLoading (because the destination frame should not
+  // load at all). So instead we start the Navigation and just wait for the
+  // deletion.
+  ASSERT_TRUE(ExecJs(subframe, JsReplace("location = $1", other_url)));
+  observer.WaitUntilDeleted();
+
+  // The subframe has been removed.
+  EXPECT_EQ(0UL, web_contents->GetMainFrame()->child_count());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
