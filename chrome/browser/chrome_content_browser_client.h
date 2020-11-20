@@ -106,7 +106,8 @@ blink::UserAgentMetadata GetUserAgentMetadata();
 blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
     base::Optional<std::string> brand,
-    std::string major_version);
+    std::string major_version,
+    base::Optional<std::string> maybe_greasey_brand);
 
 class ChromeContentBrowserClient : public content::ContentBrowserClient {
  public:
