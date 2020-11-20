@@ -84,13 +84,6 @@ const char kEnableRasterSideDarkModeForImages[] =
 // Enable rasterizer that writes directly to GPU memory associated with tiles.
 const char kEnableZeroCopy[] = "enable-zero-copy";
 
-// Pins the default referrer policy to the pre-M80 value of
-// no-referrer-when-downgrade.
-// TODO(crbug.com/1016541): After M88, remove when the corresponding
-// enterprise policy has been deleted.
-const char kForceLegacyDefaultReferrerPolicy[] =
-    "force-legacy-default-referrer-policy";
-
 // The number of multisample antialiasing samples for GPU rasterization.
 // Requires MSAA support on GPU to have an effect. 0 disables MSAA.
 const char kGpuRasterizationMSAASampleCount[] =

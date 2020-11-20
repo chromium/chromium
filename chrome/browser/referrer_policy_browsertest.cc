@@ -740,9 +740,6 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 // These tests assume a default policy of no-referrer-when-downgrade.
 struct ReferrerOverrideParams {
   base::Optional<base::Feature> feature_to_enable;
-  // If true, calls blink::ReferrerUtils::SetForceLegacyDefaultReferrerPolicy()
-  // to pin the default policy to no-referrer-when-downgrade.
-  bool force_no_referrer_when_downgrade_default;
   network::mojom::ReferrerPolicy baseline_policy;
   network::mojom::ReferrerPolicy expected_policy;
 
@@ -754,7 +751,6 @@ struct ReferrerOverrideParams {
       same_origin_to_cross_origin_subresource_redirect;
 } kReferrerOverrideParams[] = {
     {.feature_to_enable = features::kNoReferrers,
-     .force_no_referrer_when_downgrade_default = false,
      .baseline_policy = network::mojom::ReferrerPolicy::kAlways,
      // The renderer's "have we completely disabled referrers?"
      // implementation resets requests' referrer policies to kNever when
@@ -772,7 +768,6 @@ struct ReferrerOverrideParams {
          ReferrerPolicyTest::EXPECT_EMPTY_REFERRER},
     {
         .feature_to_enable = net::features::kCapReferrerToOriginOnCrossOrigin,
-        .force_no_referrer_when_downgrade_default = false,
         .baseline_policy = network::mojom::ReferrerPolicy::kAlways,
         // Applying the cap doesn't change the "referrer policy"
         // attribute of a request
@@ -794,7 +789,6 @@ struct ReferrerOverrideParams {
     },
     {
         .feature_to_enable = blink::features::kReducedReferrerGranularity,
-        .force_no_referrer_when_downgrade_default = false,
         .baseline_policy = network::mojom::ReferrerPolicy::kDefault,
         // kDefault gets resolved into a concrete policy when making requests
         .expected_policy =
@@ -809,24 +803,6 @@ struct ReferrerOverrideParams {
         .same_origin_subresource = ReferrerPolicyTest::EXPECT_FULL_REFERRER,
         .same_origin_to_cross_origin_subresource_redirect =
             ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
-    },
-    {
-        .feature_to_enable = blink::features::kReducedReferrerGranularity,
-        .force_no_referrer_when_downgrade_default = true,
-        .baseline_policy = network::mojom::ReferrerPolicy::kDefault,
-        // kDefault gets resolved into a concrete policy when making requests
-        .expected_policy =
-            network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
-        .same_origin_nav = ReferrerPolicyTest::EXPECT_FULL_REFERRER,
-        .cross_origin_nav = ReferrerPolicyTest::EXPECT_FULL_REFERRER,
-        .cross_origin_downgrade_nav = ReferrerPolicyTest::EXPECT_EMPTY_REFERRER,
-        .same_origin_to_cross_origin_redirect =
-            ReferrerPolicyTest::EXPECT_FULL_REFERRER,
-        .cross_origin_to_same_origin_redirect =
-            ReferrerPolicyTest::EXPECT_FULL_REFERRER,
-        .same_origin_subresource = ReferrerPolicyTest::EXPECT_FULL_REFERRER,
-        .same_origin_to_cross_origin_subresource_redirect =
-            ReferrerPolicyTest::EXPECT_FULL_REFERRER,
     }};
 
 class ReferrerOverrideTest
@@ -836,8 +812,6 @@ class ReferrerOverrideTest
   ReferrerOverrideTest() {
     if (GetParam().feature_to_enable)
       scoped_feature_list_.InitAndEnableFeature(*GetParam().feature_to_enable);
-    blink::ReferrerUtils::SetForceLegacyDefaultReferrerPolicy(
-        GetParam().force_no_referrer_when_downgrade_default);
   }
 
  protected:
@@ -924,10 +898,8 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<ReferrerOverrideParams>& info)
         -> std::string {
       if (info.param.feature_to_enable)
-        return base::StringPrintf(
-            "Param%s_ForceLegacyPolicy%s", info.param.feature_to_enable->name,
-            info.param.force_no_referrer_when_downgrade_default ? "True"
-                                                                : "False");
+        return base::StringPrintf("Param%s",
+                                  info.param.feature_to_enable->name);
       return "NoFeature";
     });
 

@@ -2226,10 +2226,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                  kDinosaurEasterEggSwitches,
                                  base::size(kDinosaurEasterEggSwitches));
 
-  if (blink::ReferrerUtils::ShouldForceLegacyDefaultReferrerPolicy())
-    command_line->AppendSwitch(
-        blink::switches::kForceLegacyDefaultReferrerPolicy);
-
 #if defined(OS_CHROMEOS)
   // On Chrome OS need to pass primary user homedir (in multi-profiles session).
   base::FilePath homedir;
