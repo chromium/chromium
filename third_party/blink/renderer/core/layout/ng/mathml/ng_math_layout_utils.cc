@@ -210,7 +210,7 @@ bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
 }
 
 bool IsOperatorWithSpecialShaping(const NGBlockNode& node) {
-  if (!node.IsBlock() || !node.IsMathML())
+  if (!node.IsBlock() || !node.IsMathML() || !node.FirstChild().IsInline())
     return false;
   // https://mathml-refresh.github.io/mathml-core/#layout-of-operators
   if (auto* element = DynamicTo<MathMLOperatorElement>(node.GetDOMNode())) {
