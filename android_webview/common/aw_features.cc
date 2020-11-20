@@ -28,13 +28,6 @@ const base::Feature kWebViewCpuAffinityRestrictToLittleCores{
 const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Only allow extra headers added via loadUrl() to be sent to the original
-// domain (eTLD+1); strip them from the request if a cross-domain redirect
-// occurs. kWebViewExtraHeadersSameOriginOnly is stricter; when that's enabled,
-// this feature has no effect.
-const base::Feature kWebViewExtraHeadersSameDomainOnly{
-    "WebViewExtraHeadersSameDomainOnly", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, passive mixed content (Audio/Video/Image subresources loaded
 // over HTTP on HTTPS sites) will be autoupgraded to HTTPS, and the load will be
 // blocked if the resource fails to load over HTTPS. This only affects apps that
@@ -46,7 +39,6 @@ const base::Feature kWebViewMixedContentAutoupgrades{
 
 // Only allow extra headers added via loadUrl() to be sent to the original
 // origin; strip them from the request if a cross-origin redirect occurs.
-// When this is enabled, kWebViewExtraHeadersSameDomainOnly has no effect.
 const base::Feature kWebViewExtraHeadersSameOriginOnly{
     "WebViewExtraHeadersSameOriginOnly", base::FEATURE_DISABLED_BY_DEFAULT};
 
