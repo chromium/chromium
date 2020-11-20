@@ -849,7 +849,7 @@
 <translation id="4297502707443874121">Ескіз для сторінки <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Розгорнути</translation>
 <translation id="4300675098767811073">Пробити кілька отворів праворуч</translation>
-<translation id="4302514097724775343">Щоб почати гру, натисніть динозавра</translation>
+<translation id="4302514097724775343">Щоб почати гру, торкніться динозавра</translation>
 <translation id="4302965934281694568">Chou3 (конверт)</translation>
 <translation id="4305666528087210886">Не вдалося отримати доступ до файлу</translation>
 <translation id="4305817255990598646">Перейти</translation>
@@ -1478,7 +1478,7 @@
 <translation id="6895330447102777224">Дані картки підтверджено</translation>
 <translation id="6897140037006041989">Агент користувача</translation>
 <translation id="6898699227549475383">Організація (О)</translation>
-<translation id="6907293445143367439">Дозвольте сайту <ph name="SITE_NAME" />:</translation>
+<translation id="6907293445143367439">Дозволити сайту <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> хоче повністю контролювати ваші пристрої MIDI</translation>
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>

@@ -128,7 +128,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
-<translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'aperçu</translation>
+<translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'Aperçu</translation>
 <translation id="2208323208084708176">Mode bureau unifié</translation>
 <translation id="2220572644011485463">Code ou mot de passe</translation>
 <translation id="2222338659135520253">Connexion requise</translation>
@@ -537,7 +537,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="602001110135236999">Vers la gauche</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6030495522958826102">Le menu a été déplacé dans l'angle inférieur gauche de l'écran.</translation>
-<translation id="6032620807120418574">Cliquez n'importe où pour enregistrer tout l'écran</translation>
+<translation id="6032620807120418574">Cliquez n'importe où pour capturer tout l'écran</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6043212731627905357">Ce moniteur ne fonctionne pas avec votre <ph name="DEVICE_TYPE" /> (il n'est pas compatible).</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>

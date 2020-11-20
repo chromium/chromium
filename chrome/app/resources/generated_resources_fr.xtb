@@ -86,7 +86,7 @@
 <translation id="1091767800771861448">Appuyez sur ECHAP pour ignorer (versions non officielles uniquement).</translation>
 <translation id="1093457606523402488">Réseaux visibles :</translation>
 <translation id="1094607894174825014">L'opération de lecture ou d'écriture a été demandée avec un décalage incorrect sur l'appareil <ph name="DEVICE_NAME" />.</translation>
-<translation id="1095761715416917775">Veiller à toujours avoir accès à vos données synchronisées</translation>
+<translation id="1095761715416917775">Veillez à toujours avoir accès à vos données synchronisées</translation>
 <translation id="109647177154844434">Si vous désinstallez Parallels Desktop, cela supprimera aussi l'image Windows, y compris ses applications, ses paramètres et ses données. Voulez-vous vraiment continuer ?</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{1 lien}one{# lien}many{# links}other{# liens}}</translation>
 <translation id="1097658378307015415">Avant de vous connecter, veuillez vous connecter en tant qu'invité afin d'activer le réseau <ph name="NETWORK_ID" />.</translation>
@@ -4315,7 +4315,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6031600495088157824">Options de saisie dans la barre d'outils</translation>
 <translation id="6032715498678347852">Pour autoriser l'accès à ce site pour une extension, cliquez sur celle-ci.</translation>
 <translation id="6032912588568283682">Système de fichiers</translation>
-<translation id="603539183851330738">Ce bouton permet d'annuler la correction automatique et de rétablir le mot "<ph name="TYPED_WORD" />". Appuyez sur Entrée pour activer ou sur Échap pour ignorer.</translation>
+<translation id="603539183851330738">Ce bouton permet d'annuler la correction automatique et de rétablir le mot "<ph name="TYPED_WORD" />". Appuyez sur Entrée pour le rétablir ou sur Échap pour ignorer l'annulation.</translation>
 <translation id="6035517790085323771">Qui peut partager des fichiers avec votre appareil</translation>
 <translation id="6038929619733116134">Bloquer si le site affiche des annonces intrusives ou trompeuses</translation>
 <translation id="6039651071822577588">Dictionnaire des propriétés du réseau non conforme.</translation>
@@ -6745,7 +6745,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8830796635868321089">Échec de la vérification de mise à jour avec les paramètres de proxy actuels. Veuillez modifier vos <ph name="PROXY_SETTINGS_LINK_START" />paramètres de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="8831140208248705279">Votre <ph name="DEVICE_TYPE" /> et votre téléphone Android fonctionnent mieux ensemble. Connectez-les pour envoyer des SMS depuis votre ordinateur, partager votre connexion Internet et déverrouiller votre <ph name="DEVICE_TYPE" /> avec votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">La configuration réseau est contrôlée par <ph name="USER_EMAIL" />.</translation>
-<translation id="8835786707922974220">Veiller à toujours avoir accès à vos mots de passe enregistrés</translation>
+<translation id="8835786707922974220">Veillez à toujours avoir accès à vos mots de passe enregistrés</translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Annoter l'image</translation>

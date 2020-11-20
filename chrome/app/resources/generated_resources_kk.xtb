@@ -385,7 +385,7 @@
            <ph name="LINE_BREAK" />
            • кеңейтімдерді өшіреді;
            <ph name="LINE_BREAK" />
-           • Cookie файлдарын және сайттың басқа уақытша деректерін жояды;
+           • cookie файлдарын және сайттың басқа уақытша деректерін жояды;
             <ph name="LINE_BREAKS" />
            бетбелгілерге, тарихқа және сақталған құпия сөздерге ештеңе болмайды.</translation>
 <translation id="1426410128494586442">Иә</translation>
@@ -4886,6 +4886,7 @@
 <translation id="671928215901716392">Экранды құлыптау</translation>
 <translation id="6721678857435001674">Security Key құрылғысының маркасы мен үлгісін көру</translation>
 <translation id="6721972322305477112">&amp;Файл</translation>
+<translation id="672208878794563299">Бұл сайт келесіде тағы сұрайды.</translation>
 <translation id="672213144943476270">Қонақ ретінде шарлау үшін профиліңіздің құлпын ашыңыз.</translation>
 <translation id="6723661294526996303">Бетбелгілер мен параметрлерді импорттау...</translation>
 <translation id="6723839937902243910">Күш</translation>
@@ -6736,7 +6737,7 @@
 <translation id="8830796635868321089">Ағымдағы прокси сервер параметрлерін пайдалану арқылы жаңартуды тексеру сәтсіз аяқталды. <ph name="PROXY_SETTINGS_LINK_START" />Прокси сервер параметрлерін<ph name="PROXY_SETTINGS_LINK_END" /> реттеңіз.</translation>
 <translation id="8831140208248705279"><ph name="DEVICE_TYPE" /> құрылғысы мен Android телефоныңыз бірге жақсырақ жұмыс істейді. Оларды жалғап, компьютер арқылы мәтін теруге, интернет байланысын бөлісуге және <ph name="DEVICE_TYPE" /> құрылғысының құлпын телефон арқылы ашуға болады.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Толығырақ ақпарат<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">Желі конфигурациясын <ph name="USER_EMAIL" /> басқарады.</translation>
-<translation id="8835786707922974220">Сақталған құпия сөздерді кел келген уақытта қолдана алуыңыз керек</translation>
+<translation id="8835786707922974220">Сақталған құпия сөздерді кез келген уақытта қолдана алуыңыз керек</translation>
 <translation id="8838601485495657486">Тұнық емес</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
 <translation id="883911313571074303">Кескінді аннотациялау</translation>

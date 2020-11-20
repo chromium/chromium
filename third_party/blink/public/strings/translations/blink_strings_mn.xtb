@@ -76,7 +76,7 @@
 <translation id="2908441821576996758">Цэгээр тусгаарлагдсан и-мэйл хаягуудын жагсаалтыг оруулна уу.</translation>
 <translation id="2940813599313844715">обьект</translation>
 <translation id="3040011195152428237">холбоос</translation>
-<translation id="3049748772180311791"><ph name="QUANTITY" /> Мегабайт</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Энэ талбар нь бүрэн бус эсвэл хүчин төгөлдөр бус огноотой байна. Хүчин төгөлдөр утга оруулна уу.</translation>
 <translation id="3078740164268491126">Хүснэгт</translation>
 <translation id="3086746722712840547">Тайлбар</translation>
@@ -231,7 +231,7 @@
 <translation id="739024184232394898">Бусад...</translation>
 <translation id="7405738980073107433">нэмэлт тэмдэглэл</translation>
 <translation id="7410239719251593705">Насанд хүрэгчдэд зориулсан контент агуулсан бололтой. Тайлбар алга.</translation>
-<translation id="7460907917090416791"><ph name="QUANTITY" /> терабайт</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7491962110804786152">цонх</translation>
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7529102961911894712">арын холбоос</translation>

@@ -1313,7 +1313,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="248003956660572823">Parollar saqlanmadi</translation>
 <translation id="2480868415629598489">Nusxalab joylanadigan ma’lumotlarni tahrirlash</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
-<translation id="2482895651873876648">Varaq <ph name="GROUP_NAME" /> guruhiga koʻchirildi – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2482895651873876648">Varaq <ph name="GROUP_NAME" /> guruhiga olindi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2484959914739448251">Brauzer tarixini Google hisobingizga sinxronlangan barcha qurilmalardan tozalash uchun <ph name="BEGIN_LINK" />kodli iborani kiriting<ph name="END_LINK" />.</translation>
 <translation id="2485005079599453134">Parol shu qurilmaga saqlandi</translation>
 <translation id="2485394160472549611">Siz uchun saralanganlar</translation>
@@ -1608,7 +1608,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2805646850212350655">Microsoft (EFS) shifrlangan fayl tizimi</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2805770823691782631">Batafsil</translation>
-<translation id="2806372837663997957">Siz fayllar ulashishni xohlagan qurilma uni qabul qilmadi</translation>
+<translation id="2806372837663997957">Siz fayl ulashishni xohlagan qurilma uni qabul qilmadi</translation>
 <translation id="2807517655263062534">Yuklab olingan fayllar shu yerda turadi</translation>
 <translation id="2809586584051668049">shuningdek, <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Kengaytmani tanimasangiz yoki brauzer kutganingizdek ishlamasa, kengaytmalarni bu yerdan faolsizlantirishingiz yoki boshqarishingiz mumkin.</translation>
@@ -3575,7 +3575,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5160634252433617617">Tashqi klaviatura</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> hisobingizga kiring</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> bloklandi</translation>
-<translation id="5163910114647549394">Varaq panelning oxiriga koʻchirildi</translation>
+<translation id="5163910114647549394">Varaq panelning oxiriga olindi</translation>
 <translation id="5166596762332123936">“<ph name="PLUGIN_NAME" />” plagini eskirganligi sababli bloklandi</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5171045022955879922">Qidiring yoki URL manzili kiriting</translation>
@@ -4133,7 +4133,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> qurilmasiga telefoningizni ulang. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Yarim shaffof</translation>
 <translation id="5827266244928330802">Safari</translation>
-<translation id="5828545842856466741">Profil kiritish</translation>
+<translation id="5828545842856466741">Profil kiritish...</translation>
 <translation id="5828633471261496623">Chop etilmoqda...</translation>
 <translation id="5830720307094128296">Sahifani &amp;saqlab olish...</translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
@@ -4858,7 +4858,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6684827949542560880">Eng oxirgi yangilanish yuklab olinmoqda</translation>
 <translation id="668599234725812620">Play Marketni ochish</translation>
 <translation id="6686490380836145850">O‘ng tomondagi ichki oynalarni yopish</translation>
-<translation id="6686665106869989887">Varaq oʻngga koʻchirildi</translation>
+<translation id="6686665106869989887">Varaq oʻngga olindi</translation>
 <translation id="6686817083349815241">Parolni saqlash</translation>
 <translation id="6688285987813868112">Bu rasm uchun QR kod yaratish</translation>
 <translation id="6690659332373509948">Faylni tahlil qilib bo‘lmadi bo‘lmadi: <ph name="FILE_NAME" /></translation>
@@ -5121,7 +5121,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="698524779381350301">Quyidagi saytlarda avtomatik ruxsat berilsin</translation>
 <translation id="6985607387932385770">Printerlar</translation>
 <translation id="6988094684494323731">Linux konteyneri ishga tushirilmoqda</translation>
-<translation id="6988403677482707277">Varaq panelning boshiga koʻchirildi</translation>
+<translation id="6988403677482707277">Varaq panelning boshiga olindi</translation>
 <translation id="6990778048354947307">Qorong‘i mavzu</translation>
 <translation id="6991665348624301627">Belgilangan manzil tanlang</translation>
 <translation id="6992554835374084304">Kengaytirilgan imlo tekshiruvini yoqish</translation>
@@ -5793,7 +5793,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7773726648746946405">Seanslar saqlanishi</translation>
 <translation id="7774365994322694683">Qush</translation>
 <translation id="7774792847912242537">Soʻrovlar soni oshib ketdi.</translation>
-<translation id="7775694664330414886">Varaq nomsiz guruhga koʻchirildi – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="7775694664330414886">Varaq nomsiz guruhga olindi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Bu sayt uchun varaqlar yopilmasa, <ph name="ORIGIN" /> sayti <ph name="FOLDERNAME" /> jildidagi barcha fayllarni ocha oladi</translation>
 <translation id="7776701556330691704">Ovoz namunalari topilmadi</translation>
 <translation id="7780252971640011240">Ulanishda muammolar bor. Yordam uchun aloqa operatoringizga murojaat qiling.</translation>
@@ -6673,8 +6673,8 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8774934320277480003">Yuqori hoshiya</translation>
 <translation id="8775144690796719618">URL manzil yaroqsiz</translation>
 <translation id="8775163630211761057">Android telefoningizdagi narsalarni <ph name="DEVICE_TYPE" /> qurilmangizga uzating</translation>
-<translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> qurilmangiz # soniyadan keyin avtomatik bloklanadi.
-<ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.}other{<ph name="DEVICE_TYPE" /> qurilmangiz # soniyadan keyin avtomatik bloklanadi.
+<translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> qurilmangiz # soniyadan keyin avtomatik qulflanadi.
+<ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.}other{<ph name="DEVICE_TYPE" /> qurilmangiz # soniyadan keyin avtomatik qulflanadi.
 <ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.}}</translation>
 <translation id="8777628254805677039">superfoydalanuvchi paroli</translation>
 <translation id="8780123805589053431">Rasmlarni tavsiflash (Google orqali)</translation>
@@ -6943,8 +6943,8 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9066773882585798925">Matnni o‘qib eshittirish</translation>
 <translation id="9066782832737749352">Nutq sintezatori</translation>
 <translation id="9068849894565669697">Rangni tanlang</translation>
-<translation id="9068878141610261315">Bu fayl turi qoʻllab-quvvatlanmaydi</translation>
-<translation id="9070342919388027491">Varaq chapga koʻchirildi</translation>
+<translation id="9068878141610261315">Bu fayl turi dastaklanmaydi</translation>
+<translation id="9070342919388027491">Varaq chapga olindi</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{1 ta manzil}other{# ta manzil}}</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

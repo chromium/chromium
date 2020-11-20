@@ -122,7 +122,7 @@
 <translation id="1128591060186966949">Modifica motore di ricerca</translation>
 <translation id="1129850422003387628">Gestire app</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Parte del gruppo <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Puoi ora ricevere le notifiche dal telefono al tuo dispositivo <ph name="DEVICE_TYPE" />. Se ignori le notifiche sul tuo dispositivo <ph name="DEVICE_TYPE" />, verranno ignorate anche sul telefono. Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
+<translation id="1130712065489627903">Puoi ora ricevere le notifiche del telefono sul tuo dispositivo <ph name="DEVICE_TYPE" />. Se ignori le notifiche sul tuo dispositivo <ph name="DEVICE_TYPE" />, verranno ignorate anche sul telefono. Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="1134009406053225289">Apri nella finestra di navigazione in incognito</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> di <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Il token di sicurezza è stato bloccato perché è stato inserito troppe volte il PIN errato. Per sbloccarlo, rimuovilo e inseriscilo di nuovo.</translation>
@@ -6485,7 +6485,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8569682776816196752">Nessuna destinazione trovata</translation>
 <translation id="8571213806525832805">Ultime 4 settimane</translation>
 <translation id="8571687764447439720">Aggiungere richiesta di Kerberos</translation>
-<translation id="8571814292654854151">Nome del profilo</translation>
+<translation id="8571814292654854151">Assegna un nome al profilo</translation>
 <translation id="8574990355410201600">Consenti sempre l'audio su <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Tieni premuto <ph name="KEY_EQUIVALENT" /> per uscire</translation>
 <translation id="8576249514688522074">Non inizializzato</translation>

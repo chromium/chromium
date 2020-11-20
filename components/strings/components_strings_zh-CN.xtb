@@ -301,6 +301,7 @@
 <translation id="2102495993840063010">Android 应用</translation>
 <translation id="2107021941795971877">打印方面的支持</translation>
 <translation id="2108755909498034140">重新启动计算机</translation>
+<translation id="2111166930115883695">按空格键即可播放</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">信用卡</translation>
 <translation id="2114841414352855701">由于已被 <ph name="POLICY_NAME" /> 替换，该政策已忽略。</translation>
@@ -516,6 +517,7 @@
 <translation id="3010559122411665027">列表条目“<ph name="ENTRY_INDEX" />”：<ph name="ERROR" /></translation>
 <translation id="301521992641321250">已被自动禁止</translation>
 <translation id="3016780570757425217">获取您的位置</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />，依次按 Tab 键和 Enter 键即可移除建议。</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">策略类型有误</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
@@ -753,6 +755,7 @@
 <translation id="4056223980640387499">棕色调</translation>
 <translation id="4058922952496707368">“<ph name="SUBKEY" />”键：<ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">屏幕截取功能已恢复。</translation>
 <translation id="4067947977115446013">添加有效地址</translation>
 <translation id="4072486802667267160">处理您的订单时出错。请重试。</translation>
 <translation id="4075732493274867456">客户端和服务器不支持一般 SSL 协议版本或加密套件。</translation>
@@ -833,6 +836,7 @@
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 页的缩略图</translation>
 <translation id="42981349822642051">展开</translation>
 <translation id="4300675098767811073">多孔（右侧）</translation>
+<translation id="4302514097724775343">点按恐龙图标即可开始玩这款游戏</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">无法访问您的文件</translation>
 <translation id="4305817255990598646">切换</translation>
@@ -1245,6 +1249,7 @@
 <translation id="5963413905009737549">章节标记</translation>
 <translation id="5967592137238574583">修改联系信息</translation>
 <translation id="5967867314010545767">从历史记录中移除</translation>
+<translation id="5968793460449681917">每次访问时</translation>
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1459,6 +1464,7 @@
 <translation id="6895330447102777224">已确认您的信用卡</translation>
 <translation id="6897140037006041989">用户代理</translation>
 <translation id="6898699227549475383">组织 (O)</translation>
+<translation id="6907293445143367439">允许 <ph name="SITE_NAME" />：</translation>
 <translation id="6910240653697687763"><ph name="URL" /> 想完全控制您的 MIDI 设备</translation>
 <translation id="6915804003454593391">用户：</translation>
 <translation id="6934672428414710184">此名称来自您的 Google 帐号</translation>
@@ -1895,6 +1901,7 @@
 <translation id="858637041960032120">添加电话号码
 </translation>
 <translation id="8589998999637048520">最佳的质量</translation>
+<translation id="8600271352425265729">仅限这一次</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8606726445206553943">使用您的 MIDI 设备</translation>
 <translation id="8612761427948161954">尊敬的<ph name="USERNAME" />：
@@ -2052,6 +2059,7 @@
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="945855313015696284">请查看下面的信息，并删除所有无效卡片</translation>
 <translation id="950736567201356821">三孔（顶部）</translation>
+<translation id="951941430552851965">为了保护您屏幕上的内容，管理员已暂停屏幕截取功能。</translation>
 <translation id="961663415146723894">装订（底部）</translation>
 <translation id="962484866189421427">此内容可能会尝试安装欺骗性应用，而这些应用能够冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">正式版本</translation>

@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">পৃষ্ঠা থেকে না বেরিয়েই ওয়েবসাইটের বিষয়গুলির ব্যাপারে জানুন। 'টাচ করে সার্চ করুন' ফিচারটি Google Search-এ একটি শব্দ ও তার আনুষঙ্গিক প্রসঙ্গ পাঠায়, যার উত্তরে Google Search বিভিন্ন সংজ্ঞা, ছবি, সার্চের ফলাফল ও অন্যান্য বিবরণ দেখায়।
 
 সার্চ করার জন্য যেকোনও শব্দ টাচ করে ধরে থাকুন। সার্চ রিফাইন করতে, বেশি বা কম সংখ্যক শব্দ বেছে নিন। আপনার সার্চ এডিট করতে, প্যানেলটি খুলুন। তারপরে, আইকনে ট্যাপ করে একটি নতুন ট্যাবে এটি খুলুন এবং সার্চ বক্সে যা যা পরিবর্তন করতে চান সেগুলি করুন।</translation>
+<translation id="2459390580524506445">উন্নত ভয়েস সার্চ</translation>
 <translation id="246532703174860178">শেয়ার করুন</translation>
 <translation id="2478076885740497414">অ্যাপ্লিকেশান ইনস্টল করুন</translation>
 <translation id="2479148705183875116">সেটিংসে যান</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> স্টোরেজ</translation>
 <translation id="2942036813789421260">প্রিভিউ ট্যাব বন্ধ করা আছে</translation>
 <translation id="2956410042958133412">এই অ্যাকাউন্টটি <ph name="PARENT_NAME_1" /> এবং <ph name="PARENT_NAME_2" /> দ্বারা পরিচালিত হয়৷</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />টি পৃষ্ঠা পড়া হয়নি}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}}</translation>
 <translation id="2962095958535813455">ছদ্মবেশী ট্যাবে পাল্টানো হয়েছে</translation>
 <translation id="2979025552038692506">নির্বাচিত ছদ্মবেশী ট্যাবগুলি</translation>
 <translation id="2987620471460279764">অন্য ডিভাইস থেকে টেক্সট শেয়ার করা হয়েছে</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">বিজ্ঞপ্তিগুলি অনুমোদিত</translation>
 <translation id="3290991969712132877">এটি আরও তাড়াতাড়ি পেতে, এই পৃষ্ঠাটি 'আরও বিকল্প' বোতাম থেকে আপনার হোম স্ক্রিনে যোগ করুন</translation>
 <translation id="3295530008794733555">চটপট ব্রাউজ করুন। আরও কম ডেটা ব্যবহার করুন।</translation>
+<translation id="3297344142967351106">ভয়েস সহায়তা</translation>
 <translation id="3298243779924642547">লাইট</translation>
 <translation id="3303414029551471755">কন্টেন্ট ডাউনলোড করার জন্য এগোতে চান?</translation>
 <translation id="3315103659806849044">আপনি এখন আপনার সিঙ্ক এবং Google পরিষেবার সেটিংস কাস্টমাইজ করছেন। স্ক্রিনের নিচের দিকে থাকা 'কনফার্ম করুন' বোতামে ট্যাপ করে সিঙ্ক চালু দিন। উপরে নেভিগেট করুন</translation>
@@ -627,6 +630,7 @@
 <translation id="5524843473235508879">রিডাইরেক্ট ব্লক করা হয়েছে।</translation>
 <translation id="5527082711130173040">ডিভাইস স্ক্যান করার জন্য Chrome এর অবস্থানের অ্যাক্সেস প্রয়োজন।  <ph name="BEGIN_LINK1" />অনুমতিগুলির আপডেট করুন<ph name="END_LINK1" />। অবস্থানের অ্যাক্সেস <ph name="BEGIN_LINK2" />এই ডিভাইসের জন্যও বন্ধ করা হয়েছে<ph name="END_LINK2" />।</translation>
 <translation id="5530766185686772672">ছদ্মবেশী ট্যাবগুলি বন্ধ করুন</translation>
+<translation id="5530920986376047241">আপনার পড়ার তালিকায় পৃষ্ঠা সেভ করে রাখতে পারেন, যাতে সেগুলি আবার খুঁজে পাওয়া যায়</translation>
 <translation id="5534640966246046842">সাইট কপি করা হয়েছে</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5561549206367097665">নেটওয়ার্কের জন্য অপেক্ষা করা হচ্ছে...</translation>
@@ -706,6 +710,7 @@
 <translation id="5982307838673692400">একটি ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="6000066717592683814">Google কে রাখুন</translation>
 <translation id="6005538289190791541">প্রস্তাবিত পাসওয়ার্ড</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />টি পৃষ্ঠা রয়েছে}one{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />টি পৃষ্ঠা রয়েছে}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />টি পৃষ্ঠা রয়েছে}}</translation>
 <translation id="6014293228235665243">পড়া হয়নি</translation>
 <translation id="6036057147555329831">অতিরিক্ত ICU</translation>
 <translation id="6039379616847168523">পরবর্তী ট্যাবে চলে যান</translation>
@@ -940,6 +945,7 @@
 <translation id="756809126120519699">Chrome ডেটা সাফ হয়েছে</translation>
 <translation id="7577900504646297215">আপনার পছন্দ ম্যানেজ করুন</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />টি ফাইল ডাউনলোড হয়েছে}one{<ph name="FILES_DOWNLOADED_MANY" />টি ফাইল ডাউনলোড হয়েছে}other{<ph name="FILES_DOWNLOADED_MANY" />টি ফাইল ডাউনলোড হয়েছে}}</translation>
+<translation id="7583262514280211622">আপনি নিজের পড়ার তালিকা এখানে খুঁজে পাবেন</translation>
 <translation id="7588219262685291874">আপনার ডিভাইস ব্যাটারি সেভারে চললে গাঢ় থিম চালু করুন</translation>
 <translation id="7593557518625677601">Android সেটিংস খুলে Chrome সিঙ্ক শুরু করতে Android সিস্টেমকে পুনরায় সক্ষম করুন</translation>
 <translation id="7596558890252710462">অপারেটিং সিস্টেম</translation>
@@ -971,6 +977,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" /> বন্ধ করুন</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}}</translation>
 <translation id="7778840695157240389">নতুন খবরের জন্য পরে আবার চেক করুন</translation>
+<translation id="7786595606756654269">Google Assistant, ওয়েবে আরও ভাল ভয়েস সার্চের অভিজ্ঞতা প্রদান করে এবং আপনার খুলে রাখা সাইটগুলির সাথে এনগেজ করে রাখে। Google Assistant, সেইসব সাইটের ইউআরএল ও কন্টেন্ট ব্যবহার করবে, যাতে আপনি Assistant ব্যবহার করেন।</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনা হয়েছে</translation>
 <translation id="780301667611848630">না থাক</translation>
@@ -996,6 +1003,7 @@
 <translation id="7961926449547174351">আপনি স্টোরেজ অ্যাক্সেস বন্ধ করে রেখেছেন, 'সেটিংস' থেকে এটি চালু করতে পারবেন।</translation>
 <translation id="7963646190083259054">বিক্রেতা:</translation>
 <translation id="7967911570373677897">QR কোড স্ক্যান করতে হলে, আপনার সেটিংস পরিবর্তন করুন যাতে Chrome আপনার ক্যামেরা ব্যবহার করতে পারে</translation>
+<translation id="7968014550143838305">পড়ার তালিকায় যোগ করা হয়েছে</translation>
 <translation id="7971136598759319605">১ দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> পৃষ্ঠার প্রিভিউ দেখুন</translation>
 <translation id="7981313251711023384">আরও দ্রুত ব্রাউজ করা এবং খোঁজার জন্য পৃষ্ঠা আগে লোড করুন</translation>
@@ -1057,6 +1065,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> ভাষা ডাউনলোড হয়ে গেছে।</translation>
 <translation id="8393700583063109961">বার্তা পাঠান</translation>
 <translation id="8407396331882458341">১. <ph name="APP_NAME" /> বেছে নিন\n2. “সবসময়” বোতাম ট্যাপ করুন</translation>
+<translation id="8410695015584479363">দাম ট্র্যাক করুন</translation>
 <translation id="8413126021676339697">সম্পূর্ণ ইতিহাস দেখান</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8427875596167638501">প্রিভিউ ট্যাব অর্ধেক খোলা আছে</translation>

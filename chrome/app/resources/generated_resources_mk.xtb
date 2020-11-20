@@ -568,7 +568,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Функциите на коишто им треба микрофонот нема да работат</translation>
 <translation id="1621831347985899379">Податоците на <ph name="DEVICE_TYPE" /> ќе се избришат</translation>
-<translation id="1622054403950683339">Заборави ја Wi-Fi-мрежата</translation>
+<translation id="1622054403950683339">Заборави ја Wi-Fi мрежата</translation>
 <translation id="1623132449929929218">Сликите не се достапни во моментов. Повторно поврзете се на интернет за да ги видите колекциите со тапети.</translation>
 <translation id="1623723619460186680">Намалување на синото светло</translation>
 <translation id="1624012933569991823">Поставки</translation>
@@ -7030,7 +7030,7 @@
 <translation id="9159643062839240276">Обидете се:
     <ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />да ги проверите мрежните кабли, модемот и рутерот
-      <ph name="LIST_ITEM" />повторно да се поврзете со Wi-Fi-мрежата
+      <ph name="LIST_ITEM" />повторно да се поврзете со Wi-Fi мрежата
       <ph name="LIST_ITEM" />да извршите проверка преку „Дијагностика за поврзливост на Chrome“
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Слика во слика</translation>

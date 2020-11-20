@@ -1442,7 +1442,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2627424346328942291">Deljenje nije uspelo</translation>
 <translation id="2628770867680720336">Chromebook mora da se vrati na fabrička podešavanja da bi se omogućilo ADB otklanjanje grešaka <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Programirajte Android aplikacije</translation>
-<translation id="2630681426381349926">Povežite sa WiFi-jem da biste započeli</translation>
+<translation id="2630681426381349926">Povežite sa WiFi-em da biste započeli</translation>
 <translation id="2631498379019108537">Prikazuj opcije unosa u polici</translation>
 <translation id="2633212996805280240">Želite li da uklonite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> nije mogao da dovrši instalaciju, ali će nastaviti da se pokreće sa slike diska.</translation>
@@ -1471,7 +1471,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funkcije se razlikuju u zavisnosti od uređaja</translation>
 <translation id="2659971421398561408">Promena veličine diska za Crostini</translation>
 <translation id="2660779039299703961">Događaj</translation>
-<translation id="266079277508604648">Povezivanje sa štampačem nije uspelo. Proverite da li je štampač uključen i povezan sa Chromebook-om pomoću WiFi-ja ili USB-a.</translation>
+<translation id="266079277508604648">Povezivanje sa štampačem nije uspelo. Proverite da li je štampač uključen i povezan sa Chromebook-om pomoću WiFi-a ili USB-a.</translation>
 <translation id="2661714428027871023">Pregledajte brže i koristite manje podataka pomoću Lite režima. Kliknite da biste saznali više.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663302507110284145">Jezik</translation>
@@ -2320,7 +2320,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3650753875413052677">Greška pri registraciji</translation>
 <translation id="3650845953328929506">Otpremanje evidencije je na čekanju.</translation>
 <translation id="3650952250015018111">Dozvolite da „<ph name="APP_NAME" />“ pristupa:</translation>
-<translation id="3651488188562686558">prekinuti vezu sa WiFi-jem</translation>
+<translation id="3651488188562686558">prekinuti vezu sa WiFi-em</translation>
 <translation id="3652817283076144888">Pokreće se</translation>
 <translation id="3653160965917900914">Deljenja datoteka na mreži</translation>
 <translation id="3653842108912548333">Pristupajte Pomoćniku pomoću Voice Match-a</translation>
@@ -3203,7 +3203,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4688036121858134881">ID lokalne evidencije: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Odaberite podešavanja demonstracije</translation>
 <translation id="4689421377817139245">Sinhronizujte ovaj obeleživač sa iPhone-om</translation>
-<translation id="4690091457710545971">&lt;Četiri datoteke koje je generisao Intel firmver za WiFi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Prve tri datoteke su binarne datoteke koje sadrže ispise registara i Intel potvrđuje da ne sadrže lične podatke niti podatke koji mogu da identifikuju uređaj.  Poslednja datoteka je trag izvršenja Intel firmvera; iz nje su uklonjeni bilo kakvi lični podaci ili podaci koji mogu da identifikuju uređaj, ali je prevelika da bismo je ovde prikazali.  Ove datoteke su generisane kao odgovor na nedavne probleme sa WiFi-jem na uređaju i delićemo ih sa Intel-om da bismo rešili te probleme.&gt;</translation>
+<translation id="4690091457710545971">&lt;Četiri datoteke koje je generisao Intel firmver za WiFi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Prve tri datoteke su binarne datoteke koje sadrže ispise registara i Intel potvrđuje da ne sadrže lične podatke niti podatke koji mogu da identifikuju uređaj.  Poslednja datoteka je trag izvršenja Intel firmvera; iz nje su uklonjeni bilo kakvi lični podaci ili podaci koji mogu da identifikuju uređaj, ali je prevelika da bismo je ovde prikazali.  Ove datoteke su generisane kao odgovor na nedavne probleme sa WiFi-em na uređaju i delićemo ih sa Intel-om da bismo rešili te probleme.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> će moći da pregleda datoteku <ph name="FILENAME" /> dok ne zatvorite sve kartice ovog sajta</translation>
 <translation id="4692623383562244444">Pretraživači</translation>
 <translation id="4693155481716051732">Suši</translation>

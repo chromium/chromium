@@ -87,7 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
 <translation id="4646949265910132906">การเชื่อมต่อ Wi-Fi ที่ปลอดภัย</translation>
 <translation id="467510802200863975">รหัสผ่านไม่ตรงกัน</translation>
-<translation id="467715984478005772">สงสัยว่าเป็นไฟร์วอลล์</translation>
+<translation id="467715984478005772">คาดว่าติดไฟร์วอลล์</translation>
 <translation id="4691278870498629773">หยุดพิมพ์ - ไม่มีถาด</translation>
 <translation id="469379815867856270">ความแรงของสัญญาณ</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
@@ -120,7 +120,7 @@
 <translation id="6048107060512778456">ไม่สำเร็จ - กระดาษติด</translation>
 <translation id="6050189528197190982">ระดับสีเทา</translation>
 <translation id="6058625436358447366">ป้อนรหัสผ่านเดิมและรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
-<translation id="6061772781719867950">คำขอ HTTP ที่ไม่สำเร็จ</translation>
+<translation id="6061772781719867950">คำขอ HTTPS ที่ไม่สำเร็จ</translation>
 <translation id="6106186594183574873">ป้อนรหัสผ่านเดิมเพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6108689792487843350">เข้าถึงเกตเวย์ไม่ได้</translation>
 <translation id="6146993107019042706">ป้อนรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>

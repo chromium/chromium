@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1204296502688602597">DNS 延迟时间</translation>
+<translation id="1238612778414822719">HTTPS 延迟</translation>
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
+<translation id="1398634363027580500">HTTPS 延迟非常长</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1478594628797167447">扫描器</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">此 <ph name="DEVICE_TYPE" /> 由 <ph name="ENROLLMENT_DOMAIN" /> 管理。管理员可以远程配置此设备。</translation>
 <translation id="4034824040120875894">打印机</translation>
 <translation id="4131410914670010031">黑白色</translation>
+<translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
 <translation id="4646949265910132906">安全的 Wi-Fi 连接</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
+<translation id="467715984478005772">疑似存在防火墙</translation>
 <translation id="4691278870498629773">已停止 - 缺少送纸盘</translation>
 <translation id="469379815867856270">信号强度</translation>
 <translation id="4731797938093519117">家长访问</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">失败 - 卡纸了</translation>
 <translation id="6050189528197190982">灰度</translation>
 <translation id="6058625436358447366">要完成更改，请输入您的旧密码和新密码</translation>
+<translation id="6061772781719867950">HTTPS 请求失败</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
+<translation id="6766275201586212568">DNS 解析失败</translation>
+<translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="6839141349259399400">无法连接到扫描器？</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7162487448488904999">媒体库</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPS 延迟较长</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
 <translation id="7805768142964895445">状态</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">福利</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8294431847097064396">来源</translation>
+<translation id="8302368968391049045">HTTPS 防火墙</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="8352772353338965963">为多帐号登录添加帐号。用户无需使用密码即可访问所有已登录的帐号，因此您应仅通过受信任的帐号使用此功能。</translation>
 <translation id="8364946094152050673">未指定域名服务器</translation>

@@ -326,7 +326,7 @@
 <translation id="32895400574683172">允許顯示通知</translation>
 <translation id="3290991969712132877">如要更快速地前往這個網頁，請透過「更多」選項按鈕，將網頁新增到主畫面</translation>
 <translation id="3295530008794733555">瀏覽速度更快，數據用量更少。</translation>
-<translation id="3297344142967351106">語音小幫手</translation>
+<translation id="3297344142967351106">語音協助</translation>
 <translation id="3298243779924642547">精簡版本</translation>
 <translation id="3303414029551471755">繼續下載這項內容？</translation>
 <translation id="3315103659806849044">你正在自訂同步功能和 Google 服務設定。如要完成開啟同步功能，請輕觸畫面底部附近的 [確認] 按鈕。向上瀏覽</translation>
@@ -975,7 +975,7 @@
 <translation id="7772375229873196092">關閉 <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
 <translation id="7778840695157240389">請稍後再返回查看是否有新的報導</translation>
-<translation id="7786595606756654269">當你搜尋網路以及和已開啟的網站互動時，Google 助理可提供更好的語音體驗。當你在網站上使用 Google 助理時，系統會將網站的網址和內容傳送給 Google 助理。</translation>
+<translation id="7786595606756654269">Google 助理可提供更好的語音體驗，方便你搜尋網路及瀏覽網站。當你在網站上使用 Google 助理時，系統會將網站的網址和內容傳送給 Google 助理。</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">已還原 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>

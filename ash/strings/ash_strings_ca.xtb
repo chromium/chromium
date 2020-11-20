@@ -58,7 +58,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">La captura de pantalla s'ha fet i s'ha desat al porta-retalls</translation>
 <translation id="1426410128494586442">Sí</translation>
-<translation id="144853431011121127">Rep les notificacions del telèfon al dispositiu <ph name="DEVICE_TYPE" /></translation>
+<translation id="144853431011121127">Rep les notificacions del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
 <translation id="1467432559032391204">Esquerra</translation>
@@ -353,7 +353,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4296136865091727875">Esborra les <ph name="COUNT" /> notificacions</translation>
 <translation id="4302592941791324970">No disponible</translation>
 <translation id="4303223480529385476">Desplega l'àrea d'estat</translation>
-<translation id="4315586716182276649">Amplia la connexió a Internet del telèfon, controla la funció No molestis i localitza el teu dispositiu. Consulta des del teu dispositiu <ph name="DEVICE_TYPE" /> les pestanyes de Chrome que tens actives al telèfon.</translation>
+<translation id="4315586716182276649">Amplia la connexió a Internet del telèfon, controla la funció No molestis i localitza el teu dispositiu. Consulta al teu <ph name="DEVICE_TYPE" /> les pestanyes de Chrome actives del telèfon.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Has premut la tecla de drecera de l'alt contrast. Vols activar-lo?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -749,7 +749,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
 <translation id="8061464966246066292">Contrast alt</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Amplia la connexió a Internet del telèfon, controla la funció No molestis i localitza el teu telèfon. Consulta des del teu dispositiu <ph name="DEVICE_TYPE" /> les pestanyes de Chrome que tens actives al telèfon.</translation>
+<translation id="8108657971283652031">Amplia la connexió a Internet del telèfon, controla la funció No molestis i localitza el teu telèfon. Consulta al teu <ph name="DEVICE_TYPE" /> les pestanyes de Chrome actives del telèfon.</translation>
 <translation id="8113423164597455979">Sí, en totes</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirma</translation>

@@ -759,7 +759,7 @@
 <translation id="4056223980640387499">セピア</translation>
 <translation id="4058922952496707368">キー「<ph name="SUBKEY" />」: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1（封筒）</translation>
-<translation id="4067669230157909013">画面キャプチャが再開されました。</translation>
+<translation id="4067669230157909013">スクリーン キャプチャが再開されました。</translation>
 <translation id="4067947977115446013">有効なアドレスの追加</translation>
 <translation id="4072486802667267160">ご注文の処理中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="4075732493274867456">クライアントとサーバーで、共通の SSL プロトコル バージョンまたは暗号スイートがサポートされていません。</translation>
@@ -840,7 +840,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4300675098767811073">多穴パンチ（右）</translation>
-<translation id="4302514097724775343">プレイするには恐竜アイコンをタップしてください</translation>
+<translation id="4302514097724775343">プレイするには恐竜をタップしてください</translation>
 <translation id="4302965934281694568">長3（封筒）</translation>
 <translation id="4305666528087210886">ファイルにアクセスできませんでした</translation>
 <translation id="4305817255990598646">切り替え</translation>
@@ -2064,7 +2064,7 @@
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>
 <translation id="950736567201356821">3 穴パンチ（上）</translation>
-<translation id="951941430552851965">画面上のコンテンツに問題があるため、管理者によって画面キャプチャが一時停止されました。</translation>
+<translation id="951941430552851965">画面上のコンテンツに問題があるため、管理者によってスクリーン キャプチャが一時停止されました。</translation>
 <translation id="961663415146723894">製本（下綴じ）</translation>
 <translation id="962484866189421427">このコンテンツを表示すると、詐欺的なアプリ（他のものに成りすましたり、ユーザーの追跡などに使用可能なデータを収集したりするアプリ）のインストールが試行される可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Official Build</translation>

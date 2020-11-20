@@ -134,8 +134,8 @@
 <translation id="6643016212128521049">அழி</translation>
 <translation id="6704062477274546131">DNS ரெசல்யூஷன்</translation>
 <translation id="6747215703636344499">பிரிண்ட் வெளியே வரும் டிரே நிரம்பிவிட்டதால் அச்சிட முடியவில்லை</translation>
-<translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் கிடைக்கவில்லை</translation>
-<translation id="6768237774506518020">DNS ரெசல்யூஷன் விகிதம் அதிகமாக உள்ளது</translation>
+<translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
+<translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
 <translation id="7162487448488904999">கேலரி</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

@@ -238,7 +238,7 @@
 <translation id="3236488194889173876">ไม่มีเครือข่ายมือถือพร้อมใช้งาน</translation>
 <translation id="3249513730522716925">ย้ายหน้าต่าง <ph name="WINDOW_TITLE" /> จากเดสก์ <ph name="ACTIVE_DESK" /> ไปยังเดสก์ <ph name="TARGET_DESK" /> แล้ว</translation>
 <translation id="3255483164551725916">เธอทำอะไรได้บ้าง</translation>
-<translation id="3289674678944039601">กำลังชาร์จด้วยอะแดปเตอร์</translation>
+<translation id="3289674678944039601">กำลังชาร์จผ่านอะแดปเตอร์</translation>
 <translation id="3290356915286466215">ไม่ปลอดภัย</translation>
 <translation id="3294437725009624529">ผู้มาเยือน</translation>
 <translation id="3307642347673023554">เปลี่ยนเป็นโหมดแล็ปท็อปแล้ว</translation>
@@ -561,7 +561,7 @@
 <translation id="6283712521836204486">โหมดห้ามรบกวนปิดอยู่</translation>
 <translation id="6284232397434400372">เปลี่ยนความละเอียดแล้ว</translation>
 <translation id="6288235558961782912">คุณจะเพิ่ม <ph name="USER_EMAIL_ADDRESS" /> ได้อีกครั้งในภายหลังโดยต้องได้รับอนุญาตจากผู้ปกครอง</translation>
-<translation id="6291221004442998378">ไม่ได้ชาร์จ</translation>
+<translation id="6291221004442998378">ไม่ได้เสียบชาร์จ</translation>
 <translation id="6297287540776456956">ใช้สไตลัสเพื่อเลือกพื้นที่</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> หมุนเวียนเป็น <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">เสียง</translation>
@@ -590,7 +590,7 @@
 <translation id="6537924328260219877">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">แคสต์ไปที่<ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">ถามผู้ดูแลระบบ</translation>
-<translation id="6570902864550063460">กำลังชาร์จด้วย USB</translation>
+<translation id="6570902864550063460">กำลังชาร์จผ่าน USB</translation>
 <translation id="6585808820553845416">เซสชันจะสิ้นสุดใน <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="6614169507485700968">หน้าจอส่วนตัวเปิดอยู่</translation>

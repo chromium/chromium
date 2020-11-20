@@ -4310,7 +4310,7 @@
 <translation id="6031600495088157824">工具列中的輸入選項</translation>
 <translation id="6032715498678347852">如要授予擴充功能這個網站的存取權，請按一下該擴充功能。</translation>
 <translation id="6032912588568283682">檔案系統</translation>
-<translation id="603539183851330738">復原自動更正內容的按鈕，還原為「<ph name="TYPED_WORD" />」。按下 Enter 鍵即可啟用，按 Esc 鍵可關閉。</translation>
+<translation id="603539183851330738">復原自動更正內容的按鈕，還原為「<ph name="TYPED_WORD" />」。按下 Enter 鍵即可還原，按 Esc 鍵則為取消。</translation>
 <translation id="6035517790085323771">哪些人可與你的裝置分享內容</translation>
 <translation id="6038929619733116134">封鎖干擾性或誤導性的網站廣告</translation>
 <translation id="6039651071822577588">網路屬性字典格式錯誤</translation>
@@ -6052,7 +6052,7 @@
 <translation id="8045923671629973368">輸入應用程式 ID 或線上應用程式商店網址</translation>
 <translation id="8047242494569930800">移至 Google 帳戶</translation>
 <translation id="804786196054284061">使用者授權協議</translation>
-<translation id="8048977114738515028">在裝置上建立桌面捷徑即可直接存取這個設定檔</translation>
+<translation id="8048977114738515028">在裝置上建立桌面捷徑，直接存取這個設定檔</translation>
 <translation id="8049705080247101012">Google 已將「<ph name="EXTENSION_NAME" />」標示為惡意擴充功能並禁止安裝</translation>
 <translation id="8049948037269924837">觸控板反向捲動</translation>
 <translation id="8050038245906040378">Microsoft 商用程式碼簽署</translation>
@@ -7117,7 +7117,7 @@
 <translation id="971774202801778802">書籤網址</translation>
 <translation id="973473557718930265">結束</translation>
 <translation id="975893173032473675">翻譯目標語言</translation>
-<translation id="976499800099896273">系統將「<ph name="TYPED_WORD" />」更正為「<ph name="CORRECTED_WORD" />」後，已顯示復原自動更正內容的對話方塊。按向上鍵即可存取，按 Esc 鍵可忽略。</translation>
+<translation id="976499800099896273">系統將「<ph name="TYPED_WORD" />」更正為「<ph name="CORRECTED_WORD" />」後，已顯示復原自動更正內容的對話方塊。按向上鍵即可選取對話方塊，按 Esc 鍵則為忽略。</translation>
 <translation id="978146274692397928">初始標點符號寬度為全形</translation>
 <translation id="97905529126098460">此視窗將在完成取消作業後關閉。</translation>
 <translation id="980731642137034229">動作選單按鈕</translation>

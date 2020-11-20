@@ -1678,7 +1678,7 @@
 <translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
-<translation id="2889481634493693121">スマートフォンで通知をオンにする</translation>
+<translation id="2889481634493693121">スマートフォンからの通知をオンにする</translation>
 <translation id="2889925978073739256">サンドボックスの無効化プラグインを引き続きブロックする</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 個のテキスト}other{# 個のテキスト}}</translation>
@@ -4312,7 +4312,7 @@
 <translation id="6031600495088157824">ツールバーの入力オプション</translation>
 <translation id="6032715498678347852">このサイトに拡張機能がアクセスするのを許可するには、クリックしてください。</translation>
 <translation id="6032912588568283682">ファイル システム</translation>
-<translation id="603539183851330738">自動修正を元に戻すボタン。「<ph name="TYPED_WORD" />」に戻します。実行する場合は Enter キー、拒否する場合は Esc キーを押してください。</translation>
+<translation id="603539183851330738">自動修正を元に戻すボタン。「<ph name="TYPED_WORD" />」に戻します。戻す場合は Enter キー、修正されたままにする場合は Esc キーを押してください。</translation>
 <translation id="6035517790085323771">あなたのデバイスとファイルを共有できる相手</translation>
 <translation id="6038929619733116134">煩わしい広告や誤解を招く広告が表示されるサイトの場合にブロックします</translation>
 <translation id="6039651071822577588">ネットワーク プロパティ辞書が不正です</translation>

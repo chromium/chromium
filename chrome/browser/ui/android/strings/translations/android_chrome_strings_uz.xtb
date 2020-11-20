@@ -429,7 +429,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4084682180776658562">Xatcho‘p</translation>
 <translation id="4084712963632273211">Muallifi: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google tomonidan taqdim etildi<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Ilovaga tegishli ma’lumotlar o‘chirilsinmi?</translation>
-<translation id="4095189195365058471">Keyin oʻqish: <ph name="BEGIN_NEW" />Yangi funksiya<ph name="END_NEW" /></translation>
+<translation id="4095189195365058471">Saqlab olish: <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini jo‘natish orqali Chrome’ning takomillashtirishga yordam bering</translation>
 <translation id="4108998448622696017">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="4116038641877404294">Saytlarni oflayn ko‘rish uchun yuklab oling</translation>
@@ -673,7 +673,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5797070761912323120">Qidiruv, rekama va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# soat oldin}other{# soat oldin}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
-<translation id="5810864297166300463">Internetga oid yordam</translation>
+<translation id="5810864297166300463">Internetda yordam</translation>
 <translation id="5814131985548525293">Boshlash uchun shu yerga yozing yoki ovoz belgisini bosing</translation>
 <translation id="5817918615728894473">Ulanish</translation>
 <translation id="583281660410589416">Noma’lum</translation>
@@ -890,7 +890,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7177466738963138057">Buni keyinroq “Sozlamalar” orqali o‘zgartirishingiz mumkin</translation>
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7187993566681480880">Hisobingizga kirganingizda Chrome va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
-<translation id="718926126787620637">Bukmarklar roʻyxati jildi toʻliq hajmda ochildi</translation>
+<translation id="718926126787620637">Bukmark jildlari roʻyxati toʻliq hajmda ochildi</translation>
 <translation id="7189372733857464326">Google Play xizmatlari yangilanib bo‘lishi kutilmoqda</translation>
 <translation id="7191430249889272776">Ichki oyna orqa fonda ochildi.</translation>
 <translation id="7233236755231902816">Internetni oʻz tilingizda kezish uchun Chrome eng oxirgi versiyasiga yangilanishi kerak</translation>
@@ -1131,7 +1131,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8912362522468806198">Google hisobi</translation>
 <translation id="8920114477895755567">Ota-ona haqidagi ma’lumotlar yetarli emas</translation>
 <translation id="8922289737868596582">Saytlarni oflayn ko‘rish uchun “Boshqa parametrlar” tugmasidan foydalanib, yuklab oling</translation>
-<translation id="8928626432984354940">Bukmarklar roʻyxati jildi yarim hajmda ochildi</translation>
+<translation id="8928626432984354940">Bukmarkli jildlar roʻyxati yarim hajmda ochildi</translation>
 <translation id="8937267401510745927">Google internetda ishlashingizni osonlashtirish uchun Assistent orqali kirilgan saytlarning URL manzillari va kontentlarini, shuningdek, soʻrovlarni ham oladi. Bu axborot Google hisobingizga saqlanishi mumkin. Chrome sozlamalari ichidan Assistentni faolsizlantirishingiz mumkin.</translation>
 <translation id="8937772741022875483">Raqamli muvozanat xizmatidan Chrome amallari olib tashlansinmi?</translation>
 <translation id="8942627711005830162">Yangi oynada ochish</translation>

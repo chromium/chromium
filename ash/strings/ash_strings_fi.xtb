@@ -537,7 +537,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6030495522958826102">Valikko siirretty näytön vasempaan alanurkkaan</translation>
-<translation id="6032620807120418574">Ota koko ruudun kuvakaappaus klikkaamalla minne tahansa</translation>
+<translation id="6032620807120418574">Ota kuvakaappaus koko näytöstä klikkaamalla minne tahansa</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6043212731627905357">Näyttö ja <ph name="DEVICE_TYPE" /> eivät sovi yhteen (näyttöä ei tueta).</translation>
 <translation id="6043994281159824495">Kirjaudu ulos nyt</translation>

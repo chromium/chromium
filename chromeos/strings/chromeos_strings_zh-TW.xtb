@@ -87,7 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已列印 <ph name="PRINTED_PAGE_NUMBER" /> 頁 (共 <ph name="TOTAL_PAGE_NUMBER" /> 頁)。按下 Enter 鍵即可取消列印工作。</translation>
 <translation id="4646949265910132906">安全的 WiFi 連線</translation>
 <translation id="467510802200863975">密碼不相符</translation>
-<translation id="467715984478005772">可疑的防火牆</translation>
+<translation id="467715984478005772">可能有防火牆</translation>
 <translation id="4691278870498629773">已停止 - 缺少紙匣</translation>
 <translation id="469379815867856270">訊號強度</translation>
 <translation id="4731797938093519117">家長存取</translation>

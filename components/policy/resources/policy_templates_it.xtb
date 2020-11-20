@@ -506,7 +506,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio è disattivato o non configurato, WebDriver non potrà eseguire l'override dei criteri non compatibili.</translation>
 <translation id="1843117931376765605">Frequenza di aggiornamento criteri relativi agli utenti</translation>
 <translation id="1844620919405873871">Consente di configurare le norme relative allo sblocco rapido.</translation>
-<translation id="1844972978764975668">Consenti query al server di Google per ricevere un timestamp accurato</translation>
+<translation id="1844972978764975668">Consenti query al server di Google per recuperare un timestamp accurato</translation>
 <translation id="1845405905602899692">Impostazioni kiosk</translation>
 <translation id="1845429996559814839">Limita la modalità di stampa PIN</translation>
 <translation id="1847960418907100918">Consente di specificare i parametri utilizzati durante la ricerca istantanea con POST. Si tratta di coppie di nome/valore separate da virgole. Se un valore è il parametro di un modello, come {searchTerms} nell'esempio precedente, verrà sostituito con i dati dei termini di ricerca reali.
@@ -4456,7 +4456,7 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 <translation id="7448430478749155471">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
 <translation id="7458437477941640506">Non eseguire il rollback alla versione target se la versione del sistema operativo è più nuova del target. Anche gli aggiornamenti sono disattivati.</translation>
 <translation id="7459601923199346224">Consente di controllare i criteri relativi agli utenti e ai dispositivi per la gestione dei certificati.</translation>
-<translation id="7459633275230216698">Consenti finestre per la selezione di file</translation>
+<translation id="7459633275230216698">Consenti finestre di dialogo per la selezione di file</translation>
 <translation id="7464991223784276288">Limita i cookie degli URL corrispondenti alla sessione corrente</translation>
 <translation id="7468182772656807573">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio. Gli intervalli sono compresi tra 30 secondi e 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare nei limiti.
 
@@ -4525,7 +4525,7 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
       Nota: se il metodo di immissione corrente non è supportato, viene effettuato il passaggio al layout da tastiera hardware (se consentito) o alla prima voce valida in questo elenco. I metodi non supportati o non validi vengono ignorati.</translation>
 <translation id="7534199150025803530">Questa norma non influisce sull'app Google Drive per Android. Se vuoi impedire l'utilizzo di Google Drive tramite rete cellulare, non devi consentire l'installazione dell'app Google Drive per Android.</translation>
 <translation id="7540622499178214923">Permette di consentire l'uso del controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
-<translation id="7540826630642174841">Impostare il criterio significa che i criteri relativi ai dispositivi specificati vengono ignorati (si usano le impostazioni predefinite di questi criteri) durante gli intervalli indicati. I criteri relativi ai dispositivi vengono applicati di nuovo da <ph name="PRODUCT_NAME" /> all'inizio o alla fine del periodo del criterio. L'utente viene avvisato e deve disconnettersi quando cambia questo periodo e le impostazioni dei criteri relativi ai dispositivi (ad esempio, quando un utente accede con un account non autorizzato.</translation>
+<translation id="7540826630642174841">Impostare il criterio significa che i criteri relativi ai dispositivi specificati vengono ignorati (si usano le impostazioni predefinite di questi criteri) durante gli intervalli indicati. I criteri relativi ai dispositivi vengono applicati di nuovo da <ph name="PRODUCT_NAME" /> all'inizio o alla fine del periodo del criterio. L'utente viene avvisato e deve disconnettersi quando questo periodo e le impostazioni dei criteri relativi ai dispositivi cambiano (ad esempio, quando un utente accede con un account non autorizzato).</translation>
 <translation id="7547549430720182663">Unisci</translation>
 <translation id="7553535237300701827">Se viene impostata questa norma, il flusso di autenticazione dell'accesso sarà uno dei seguenti, a seconda del valore dell'impostazione:
 
@@ -4663,8 +4663,8 @@ Se la norma viene impostata gli utenti non potranno modificarla o ignorarla.
 
 Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visualizzazione della schermata di accesso o durante una sessione di un'app kiosk. Questo comportamento cambierà in futuro e la norma sarà sempre valida, a prescindere dal fatto che sia in corso o meno una sessione di tipo specifico.</translation>
 <translation id="7701341006446125684">Imposta le dimensioni della cache di app ed estensioni (in byte)</translation>
-<translation id="7703737669292992839">Blocca finestre per la selezione di file</translation>
-<translation id="7709470712369261710">Non usare i servizi Google per le descrizioni immagini automatiche</translation>
+<translation id="7703737669292992839">Blocca finestre di dialogo per la selezione di file</translation>
+<translation id="7709470712369261710">Non usare i servizi Google per fornire le descrizioni immagini automatiche</translation>
 <translation id="7710950688502974809">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, che si attiva quando vengono inseriti dati in Chrome dagli appunti o tramite trascinamento di contenuti web.
 
       I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare dati per l'analisi quando viene inserito in una pagina specifica e quali tag includere nella richiesta di analisi di tali dati. Un tag che corrisponde a un pattern "enable" verrà incluso nella richiesta di analisi se l'URL della pagina corrisponde a un pattern associato a tale tag purché nessun pattern "disable" con lo stesso tag corrisponda all'URL della pagina. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta.
@@ -5039,7 +5039,7 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
 
       Se un criterio è nell'elenco, nel caso ci sia conflitto tra due origini:
 
-      * Se hanno lo stesso ambito e lo stesso livello: i valori verranno uniti nel nuovo elenco dei criteri.
+      * Se hanno lo stesso ambito e lo stesso livello: i valori verranno uniti nel nuovo dizionario dei criteri.
 
       * Se hanno ambito o livello diversi: verrà applicato il criterio con la priorità massima.
 

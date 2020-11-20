@@ -205,6 +205,7 @@
 <translation id="3335337277364016868">ರೆಕಾರ್ಡ್ ಮಾಡಿದ ವರ್ಷ</translation>
 <translation id="3353984535370177728">ಅಪ್‌ಲೋಡ್‌ ಮಾಡಲು ಫೋಲ್ಡರ್‌ವೊಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3356580349448036450">ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
+<translation id="3369522691271417561">ಸೊರಾನಿ ಕುರ್ದಿಶ್ ಜೊತೆಗೆ ಅರೇಬಿಕ್-ಆಧಾರಿತ ಕೀಬೋರ್ಡ್</translation>
 <translation id="3414856743105198592">ತೆಗೆದುಹಾಕುವ ಮಾಧ್ಯಮದ ಸ್ವರೂಪಣೆಯು ಎಲ್ಲ ಡೇಟಾವನ್ನು ಅಳಿಸಿ ಹಾಕುತ್ತದೆ. ನೀವು ಇದನ್ನು ಮುಂದುವರಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="3437801641691368414">ರಚಿಸಿದ ಸಮಯ</translation>
 <translation id="3466147780910026086">ನಿಮ್ಮ ಮಾಧ್ಯಮ ಸಾಧನವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -556,7 +557,6 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ಡ್ರೈವ್ ಹುಡುಕಿ&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="714369685015246514">ಚೈನೀಸ್ ಅರೇ</translation>
-<translation id="7155751472708812680">ಸೊರಾನಿ ಕುರ್ದಿಶ್ ಅರೇಬಿಕ್-ಆಧಾರಿತ ಕೀಬೋರ್ಡ್</translation>
 <translation id="7169438078134535111">ಎಫ್-ಕೀಬೋರ್ಡ್‌ನೊಂದಿಗೆ ಟರ್ಕಿಶ್</translation>
 <translation id="7170467426996704624">ಲಿಪ್ಯಂತರಣ (salam → ሰላም)</translation>
 <translation id="7173380554947442031">ವಿಯೆಟ್ನಾಮೀಸ್ (VNI)</translation>
@@ -730,7 +730,7 @@
 <translation id="9148058034647219655">ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="9154418932169119429">ಈ ಚಿತ್ರವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="9213073329713032541">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಿಕೆಯು ಯಶಸ್ವಿಯಾಗಿ ಆರಂಭಗೊಂಡಿದೆ.</translation>
-<translation id="9219103736887031265">ಚಿತ್ರಗಳು</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">ಚಂದ್ರ</translation>
 <translation id="939736085109172342">ಹೊಸ ಫೋಲ್ಡರ್</translation>
 <translation id="942954117721265519">ಈ ಡೈರೆಕ್ಟರಿಯಲ್ಲಿ ಯಾವುದೇ ಚಿತ್ರಗಳಿಲ್ಲ.</translation>

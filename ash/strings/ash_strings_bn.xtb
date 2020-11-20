@@ -98,6 +98,7 @@
 <translation id="1838895407229022812">নাইট লাইট ফিচার বন্ধ করা আছে।</translation>
 <translation id="1850504506766569011">ওয়াই-ফাই বন্ধ আছে৷</translation>
 <translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
+<translation id="1882814835921407042">মোবাইল নেটওয়ার্ক নেই</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> তে প্রতিবিম্বিত হচ্ছে</translation>
 <translation id="1885785240814121742">আঙ্গুলের ছাপ দিয়ে আনলক করুন</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />-এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> হার্জ) কাজ করে না। রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) করা হয়েছে। পরিবর্তিত সেটিংস রেখে দিতে 'কনফার্ম করুন' বিকল্পে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
@@ -119,6 +120,7 @@
 <translation id="2049240716062114887">ডেস্কের নাম পরিবর্তন করে <ph name="DESK_NAME" /> রাখা হয়েছে</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2067602449040652523">কীবোর্ডের উজ্জ্বলতা</translation>
+<translation id="2078034614700056995">পরবর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে ডানদিকে সোয়াইপ করুন</translation>
 <translation id="2083190527011054446">শুভরাত্রি <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
@@ -126,6 +128,7 @@
 <translation id="2132302418721800944">ফুল স্ক্রিন রেকর্ড করুন</translation>
 <translation id="2135456203358955318">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: আবার চেষ্টা করুন</translation>
+<translation id="2170530631236737939">'এক নজরে' মোড থেকে বেরিয়ে আসতে তিনটি আঙুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>
 <translation id="2208323208084708176">একীভূত ডেস্কটপ মোড</translation>
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="2222338659135520253">সাইন-ইন করা প্রয়োজন</translation>
@@ -235,6 +238,7 @@
 <translation id="3236488194889173876">কোনো মোবাইল নেটওয়ার্ক উপলব্ধ নেই</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> ডেস্ক <ph name="ACTIVE_DESK" /> থেকে ডেস্ক <ph name="TARGET_DESK" />-এ সরানো হয়েছে</translation>
 <translation id="3255483164551725916">আপনি কি করতে পারেন?</translation>
+<translation id="3289674678944039601">অ্যাডাপ্টার দিয়ে চার্জ হচ্ছে</translation>
 <translation id="3290356915286466215">সুরক্ষিত নেই</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3307642347673023554">'ল্যাপটপ' মোডে পাল্টানো হয়েছে</translation>
@@ -293,6 +297,7 @@
 <translation id="3799080171973636491">ফুল-স্ক্রিন ম্যাগনিফায়ারের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
 <translation id="380165613292957338">হাই, আমি কীভাবে সাহায্য করতে পারি?</translation>
 <translation id="3826099427150913765">যাচাইকরণের জন্য পাসওয়ার্ড ব্যবহার করুন</translation>
+<translation id="383058930331066723">'ব্যাটারি সেভার' মোড চালু আছে</translation>
 <translation id="383629559565718788">কীবোর্ড সেটিংস দেখান</translation>
 <translation id="3846214748874656680">পূর্ণস্ক্রীন থেকে প্রস্থান করুন</translation>
 <translation id="3846575436967432996">কোনো নেটওয়ার্ক সংক্রান্ত তথ্য উপলব্ধ নেই</translation>
@@ -338,6 +343,7 @@
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
+<translation id="425364040945105958">কোনও সিম নেই</translation>
 <translation id="4261870227682513959">বিজ্ঞপ্তি সেটিংস দেখান। বিজ্ঞপ্তি বন্ধ আছে</translation>
 <translation id="4267383818855338811">কোনও ভার্চুয়াল মেশিন আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="4269883910223712419">এই ডিভাইসের প্রশাসক এগুলি করতে পারেন:</translation>
@@ -470,14 +476,17 @@
 <translation id="54609108002486618">পরিচালিত</translation>
 <translation id="5465662442746197494">সাহায্য চান?</translation>
 <translation id="5496819745535887422">আপনার অ্যাডমিনিস্ট্রেটর আপনার ডিভাইসটি রোল ব্যাক করেছেন। ডিভাইসটি রিস্টার্টের সময় সমস্ত ডেটা মুছে ফেলা হবে।</translation>
+<translation id="5516420770350073386">আপনার স্ক্রিনে কন্টেন্ট থাকার জন্য আপনার অ্যাডমিনিস্ট্রেটর স্ক্রিন রেকর্ড করা বন্ধ করে দিয়েছেন।</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> কানেক্ট করা হচ্ছে।</translation>
+<translation id="5532994612895037630">ফুল স্ক্রিন ছবি ক্যাপচার করতে, যেকোনও জায়গায় ট্যাপ করুন</translation>
 <translation id="553675580533261935">সেশন থেকে প্রস্থান করছে</translation>
 <translation id="5537725057119320332">কাস্ট করুন</translation>
 <translation id="554893713779400387">ডিক্টেশন চালু বা বন্ধ করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5571066253365925590">ব্লুটুথ সক্ষমিত</translation>
 <translation id="557563299383177668">পরবর্তী অনুচ্ছেদ</translation>
+<translation id="55808498489107691">আপনার স্ক্রিনে কন্টেন্ট থাকার জন্য অ্যাডমিনিস্ট্রেটর স্ক্রিন ক্যাপচারের সুবিধা ব্লক করে দিয়েছেন।</translation>
 <translation id="558849140439112033">যে জায়গার স্ক্রিন ক্যাপচার করতে চান সেটি ড্র্যাগ করে বেছে নিন</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">কথ্য প্রতিবার্তা বন্ধ করতে Ctrl + Alt + Z টিপুন।</translation>
@@ -528,6 +537,7 @@
 <translation id="602001110135236999">বাঁ দিকে স্ক্রল করুন</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6030495522958826102">স্ক্রিনের নিচে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
+<translation id="6032620807120418574">ফুল স্ক্রিন ছবি রেকর্ড করতে, যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6043212731627905357">এই মনিটরটি আপনার <ph name="DEVICE_TYPE" /> এর সাথে তাল মেলাতে পারছে না (মনিটরটি সমর্থিত নয়)।</translation>
 <translation id="6043994281159824495">এখনই সাইন-আউট করুন</translation>
@@ -536,6 +546,7 @@
 <translation id="6059276912018042191">Chrome-এ সম্প্রতি খোলা ট্যাবগুলি</translation>
 <translation id="6062360702481658777">আপনি <ph name="LOGOUT_TIME_LEFT" /> এর মধ্যে স্বয়ংক্রিয়ভাবে প্রস্থান করুন হবেন৷</translation>
 <translation id="607652042414456612">আপনার কম্পিউটার কাছাকাছি ব্লুটুথ ডিভাইসে খুঁজে পাওয়া সম্ভব এবং ঠিকানা <ph name="ADDRESS" /> সমেত "<ph name="NAME" />" হিসাবে প্রদর্শিত হবে</translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
 <translation id="615957422585914272">অন-স্ক্রিন কীবোর্ড প্রদর্শন করুন</translation>
@@ -551,6 +562,7 @@
 <translation id="6283712521836204486">'বিরক্ত করবে না' মোড বন্ধ আছে</translation>
 <translation id="6284232397434400372">রেজোলিউশন পরিবর্তন করা হয়েছে</translation>
 <translation id="6288235558961782912">পরে অভিভাবকের অনুমতি সহ <ph name="USER_EMAIL_ADDRESS" /> আবার যোগ করা যেতে পারে।</translation>
+<translation id="6291221004442998378">চার্জ হচ্ছে না</translation>
 <translation id="6297287540776456956">একটি অঞ্চল নির্বাচন করতে স্টাইলাস ব্যবহার করুন</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> <ph name="ROTATION" /> আবর্তিত হয়েছে</translation>
 <translation id="6315170314923504164">ভয়েস</translation>
@@ -579,6 +591,7 @@
 <translation id="6537924328260219877">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> এ কাস্ট করা হচ্ছে</translation>
 <translation id="6559976592393364813">অ্যাডমিনিস্ট্রেটরকে জিজ্ঞাসা করুন</translation>
+<translation id="6570902864550063460">USB দিয়ে চার্জ হচ্ছে</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> এর মধ্যে সেশন শেষ হয়ে যাবে৷</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>
@@ -656,6 +669,7 @@
 <translation id="7377169924702866686">Caps Lock চালু আছে৷</translation>
 <translation id="7378203170292176219">রেকর্ড করতে ড্র্যাগ করে কিছুটা জায়গা বেছে নিন</translation>
 <translation id="7378594059915113390">মিডিয়ার নিয়ন্ত্রণ</translation>
+<translation id="7378889811480108604">'ব্যাটারি সেভার' মোড বন্ধ আছে</translation>
 <translation id="7392563512730092880">সেটিংস থেকে আপনি যখন খুশি সেট আপ করে নিতে পারেন।</translation>
 <translation id="7398254312354928459">নেটওয়ার্ক সংযোগ পরিবর্তন করা হয়েছে</translation>
 <translation id="7405710164030118432">ডিভাইসটি আনলক করতে আপনার Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন</translation>
@@ -705,6 +719,7 @@
 <translation id="7837740436429729974">সময় শেষ</translation>
 <translation id="7842569679327885685">সতর্কতা: পরীক্ষামূলক বৈশিষ্ট্য</translation>
 <translation id="7846634333498149051">কীবোর্ড</translation>
+<translation id="7860671499921112077">'এক নজরে' মোডে প্রবেশ করতে, তিনটি আঙুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="7868900307798234037">আঙ্গুলের ছাপ দিয়ে আনলক করা হচ্ছে</translation>
 <translation id="7872786842639831132">বন্ধ আছে</translation>
 <translation id="7886169021410746335">গোপনীয়তা সেটিংস অ্যাডজাস্ট করুন</translation>
@@ -746,6 +761,7 @@
 <translation id="8152092012181020186">বন্ধ করতে Ctrl + W প্রেস করুন।</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে।</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ব্যবহার করা হচ্ছে</translation>
+<translation id="8170567869359129153">মোবাইল নেটওয়ার্ক। সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">বিজ্ঞপ্তি লুকানো আছে।</translation>
 <translation id="8196787716797768628">একটি অ্যাপ থেকে খুব তাড়াতাড়ি অন্য অ্যাপে যেতে এবং ট্যাবলেট মোডে আপনার Chromebook-এ নেভিগেট করার জন্য জেসচার ফিচার ব্যবহার করুন।</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
@@ -755,6 +771,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> আনলক করতে এন্টার বোতামে প্রেস করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
+<translation id="8284362522226889623">পূর্ববর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে বাঁদিকে সোয়াইপ করুন</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>
 <translation id="8297006494302853456">দুর্বল</translation>
 <translation id="8308637677604853869">পূর্ববর্তী মেনু</translation>
@@ -811,6 +828,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-এ কানেক্ট করুন</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ওয়াই-ফাই</translation>
+<translation id="881757059229893486">'ইনপুট পদ্ধতি' সেটিংস</translation>
 <translation id="8825863694328519386">ফিরে যেতে আপনার স্ক্রিনের বাম প্রান্ত থেকে সোয়াইপ করুন</translation>
 <translation id="8828714802988429505">৯০°</translation>
 <translation id="8841375032071747811">ফিরে যাওয়ার বোতাম</translation>

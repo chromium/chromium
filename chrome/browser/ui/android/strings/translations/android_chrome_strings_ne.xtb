@@ -707,7 +707,7 @@
 <translation id="5982307838673692400">इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="6000066717592683814">Google लाई पूर्वनिर्धारित खोज इञ्जिनका रूपमा कायम राख्नुहोस्</translation>
 <translation id="6005538289190791541">सिफारिस गरिएको पासवर्ड</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{तपाईंले <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> वटा पेज पढ्न बाँकी छ}other{तपाईंले <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> वटा पेज पढ्न बाँकी छ}}</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> वटा पेज छन्}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> वटा पेज छन्}}</translation>
 <translation id="6014293228235665243">नपढिएको</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">अर्को ट्याबमा जानुहोस्</translation>

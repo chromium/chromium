@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
-<translation id="1071587090247825784">ກວດເຫັນ firewall</translation>
+<translation id="1071587090247825784">ກວດເຫັນ Firewall</translation>
 <translation id="1075811647922107217">ຂະຫນາດຫນ້າ</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1204296502688602597">ການຕອບສະໜອງຂອງ DNS</translation>
@@ -120,7 +120,7 @@
 <translation id="6048107060512778456">ບໍ່ສຳເລັດ, ເຈ້ຍຕິດ</translation>
 <translation id="6050189528197190982">ໂທນສີເທົາ</translation>
 <translation id="6058625436358447366">ເພື່ອສຳເລັດກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າ ແລະ ໃໝ່ຂອງທ່ານ</translation>
-<translation id="6061772781719867950">ຄຳຂໍ HTTP ບໍ່ສຳເລັດ</translation>
+<translation id="6061772781719867950">ຄຳຂໍ HTTPS ບໍ່ສຳເລັດ</translation>
 <translation id="6106186594183574873">ເພື່ອສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າຂອງທ່ານ</translation>
 <translation id="6108689792487843350">ບໍ່ສາມາດຕິດຕໍ່ເກດເວໄດ້</translation>
 <translation id="6146993107019042706">ເພື່ອດຳເນີນການໃຫ້ສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານໃໝ່ຂອງທ່ານ</translation>

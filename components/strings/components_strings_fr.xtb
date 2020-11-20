@@ -764,7 +764,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Clé "<ph name="SUBKEY" />" : <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (enveloppe)</translation>
-<translation id="4067669230157909013">La capture d'écran a repris.</translation>
+<translation id="4067669230157909013">L'enregistrement de l'écran a repris.</translation>
 <translation id="4067947977115446013">Ajouter une adresse valide</translation>
 <translation id="4072486802667267160">Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.</translation>
 <translation id="4075732493274867456">Le client et le serveur ne sont pas compatibles avec une version de protocole ou une méthode de chiffrement SSL commune.</translation>
@@ -2072,7 +2072,7 @@ Informations supplémentaires :
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="945855313015696284">Vérifiez les informations ci-dessous et supprimez les cartes non valides</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>
-<translation id="951941430552851965">Votre administrateur a suspendu la capture de l'écran en raison du contenu qui y est affiché.</translation>
+<translation id="951941430552851965">Votre administrateur a suspendu l'enregistrement de l'écran en raison du contenu qui y est affiché.</translation>
 <translation id="961663415146723894">Reliure en bas</translation>
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses se faisant passer pour d'autres, ou de collecter des données afin de vous surveiller. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Build officiel</translation>

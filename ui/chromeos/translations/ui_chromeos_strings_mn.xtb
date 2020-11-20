@@ -89,7 +89,7 @@
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" />-г форматаллаа</translation>
 <translation id="1931134289871235022">Словак</translation>
 <translation id="1933345018156373194">Дараах гэнэтийн алдааны улмаас зөөж чадсангүй: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="1936717151811561466">Финлянд</translation>
+<translation id="1936717151811561466">Финланд</translation>
 <translation id="1942765061641586207">Зургийн нягтрал</translation>
 <translation id="1943097386230153518">Шинэ үйлчилгээг суулгах</translation>
 <translation id="1972984168337863910">Файлын cанал хүсэлтийн түр зуурын самбарыг дэлгэх</translation>
@@ -209,6 +209,7 @@
 <translation id="3335337277364016868">Бүртгэсэн жил</translation>
 <translation id="3353984535370177728">Татаж оруулах хавтсыг сонгох</translation>
 <translation id="3356580349448036450">Бүрэн</translation>
+<translation id="3369522691271417561">Араб суурьтай гартай сорани курд</translation>
 <translation id="3414856743105198592">Зөөврийн хэрэгслийг форматлах нь бүх өгөгдлийг арилгана. Та үйлдлийг үргэжлүүлэх үү?</translation>
 <translation id="3437801641691368414">Үүсгэсэн цаг</translation>
 <translation id="3466147780910026086">Таны төхөөрөмжийг уншиж байна...</translation>
@@ -496,7 +497,7 @@
 <translation id="642282551015776456">Энэ нэрийг хавтасны нэрийн файл болгон ашиглаж болохгүй.</translation>
 <translation id="647955688546403164">Dvorak гартай англи хэл (ИБ)</translation>
 <translation id="6485131920355264772">Сансрын мэдээллийг сэргээн татаж авч чадсангүй</translation>
-<translation id="6509122719576673235">Норвеги хэл</translation>
+<translation id="6509122719576673235">Норвег хэл</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> синхрончилж байна...</translation>
 <translation id="6549689063733911810">Сүүлд</translation>
@@ -559,7 +560,6 @@
 <translation id="7126604456862387217">"&lt;b&gt; <ph name="SEARCH_STRING" /> &lt;/ б&gt; '- search &lt;em&gt; Drive &lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="714369685015246514">Хятад матрицын арга</translation>
-<translation id="7155751472708812680">Араб суурьтай гартай сорани курд</translation>
 <translation id="7169438078134535111">F-гартай турк</translation>
 <translation id="7170467426996704624">Хөрвүүлэлт (салам → ሰላም)</translation>
 <translation id="7173380554947442031">Вьетнам VNI</translation>

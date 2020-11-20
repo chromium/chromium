@@ -606,7 +606,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5403644198645076998">Зөвхөн тодорхой сайтыг зөвшөөрөх</translation>
 <translation id="5414836363063783498">Баталгаажуулж байна ...</translation>
 <translation id="5423934151118863508">Таны хамгийн их зочилсон хуудас энд гарч ирэх болно</translation>
-<translation id="5424588387303617268"><ph name="GIGABYTES" /> гигабайт боломжтой</translation>
+<translation id="5424588387303617268"><ph name="GIGABYTES" /> ГБ боломжтой</translation>
 <translation id="543338862236136125">Нууц үг засах</translation>
 <translation id="5433691172869980887">Хэрэглэгчийн нэрийг хуулсан</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> файлыг татаж байна (<ph name="MEGABYTES" />).</translation>
@@ -797,7 +797,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6560414384669816528">Sogou-р хайх</translation>
 <translation id="656065428026159829">Дэлгэрэнгүй үзэх</translation>
 <translation id="6565959834589222080">Wi-Fi-г боломжтой үед ашигладаг</translation>
-<translation id="6566259936974865419">Chrome <ph name="GIGABYTES" /> гигабайтыг хэмнэсэн</translation>
+<translation id="6566259936974865419">Chrome <ph name="GIGABYTES" /> ГБ-ыг хэмнэсэн</translation>
 <translation id="6573096386450695060">Байнга зөвшөөрөх</translation>
 <translation id="6573431926118603307">Таны бусад төхөөрөмжөөрөө Chrome-д нээсэн чихтэй хуудас энд харагдах болно.</translation>
 <translation id="6583199322650523874">Одоогийн хуудсыг тэмдэглэх</translation>
@@ -1016,7 +1016,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8037801708772278989">Дөнгөж сая шалгасан</translation>
 <translation id="804335162455518893">SD карт олдсонгүй</translation>
 <translation id="805047784848435650">Таны хайлтын түүхэнд тулгуурласан</translation>
-<translation id="8051695050440594747"><ph name="MEGABYTES" /> мегабайт боломжтой</translation>
+<translation id="8051695050440594747"><ph name="MEGABYTES" /> МБ боломжтой</translation>
 <translation id="8058746566562539958">Chrome-н шинэ чихтэй хуудсанд нээх</translation>
 <translation id="8063895661287329888">Хавчуургыг нэмж чадсангүй.</translation>
 <translation id="806745655614357130">Миний өгөгдлийг тусад нь байлгах</translation>
@@ -1131,9 +1131,10 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8920114477895755567">Эцэг, эхийн мэдээллийг хүлээж байна.</translation>
 <translation id="8922289737868596582">Хуудсыг офлайн үед ашиглахын тулд Бусад сонголт товчлуураас татна уу</translation>
 <translation id="8928626432984354940">Тал хэмжээтэйгээр нээсэн хавчуурганы фолдерын жагсаалт</translation>
+<translation id="8937267401510745927">Google танд ажлуудаа дуусгахад тань туслахын тулд таны Туслахаа ашиглах сайтуудын URL болон контентоос гадна Туслахаар илгээх мэдээллийг хүлээн авна. Энэ мэдээллийг таны Google бүртгэлд хадгалж болзошгүй. Та Туслахыг Chrome-н тохиргоонд унтраах боломжтой.</translation>
 <translation id="8937772741022875483">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнээс устгах уу?</translation>
 <translation id="8942627711005830162">Өөр цонхонд нээх</translation>
-<translation id="8951232171465285730">Chrome <ph name="MEGABYTES" /> мегабайтыг хэмнэсэн</translation>
+<translation id="8951232171465285730">Chrome <ph name="MEGABYTES" /> МБ-ыг хэмнэсэн</translation>
 <translation id="8965591936373831584">хүлээгдэж байна</translation>
 <translation id="8970887620466824814">Алдаа гарлаа.</translation>
 <translation id="8972098258593396643">Өгөгдмөл фолдерт татаж авах уу?</translation>

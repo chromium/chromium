@@ -3127,7 +3127,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4596295440756783523">Anda memiliki sertifikat pada file yang mengidentifikasi server ini</translation>
 <translation id="4598556348158889687">Pengelolaan penyimpanan</translation>
 <translation id="4598776695426288251">Wi-Fi tersedia melalui beberapa perangkat</translation>
-<translation id="4602466770786743961">Selelu izinkan <ph name="HOST" /> mengakses kamera dan mikrofon Anda</translation>
+<translation id="4602466770786743961">Selalu izinkan <ph name="HOST" /> mengakses kamera dan mikrofon Anda</translation>
 <translation id="4606551464649945562">Jangan izinkan situs membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
 <translation id="4608500690299898628">&amp;Temukan...</translation>
 <translation id="4608520674724523647">Ilustrasi pendaftaran yang berhasil</translation>
@@ -4312,7 +4312,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6031600495088157824">Opsi masukan di toolbar</translation>
 <translation id="6032715498678347852">Agar ekstensi dapat mengakses situs ini, klik ekstensi.</translation>
 <translation id="6032912588568283682">Sistem file</translation>
-<translation id="603539183851330738">Tombol urungkan koreksi otomatis. Kembali ke <ph name="TYPED_WORD" />.  Tekan enter untuk mengaktifkan, escape untuk menutup.</translation>
+<translation id="603539183851330738">Tombol urungkan koreksi otomatis. Kembalikan ke <ph name="TYPED_WORD" />.  Tekan enter untuk mengaktifkan, escape untuk menutup.</translation>
 <translation id="6035517790085323771">Pengguna yang dapat berbagi dengan perangkat Anda</translation>
 <translation id="6038929619733116134">Blokir jika situs menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="6039651071822577588">Kamus properti jaringan rusak</translation>
@@ -5316,7 +5316,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7213903639823314449">Mesin telusur yang digunakan di kolom URL</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="7216595297012131718">Urutkan bahasa berdasarkan preferensi Anda</translation>
-<translation id="7219473482981809164">Kami menemukan beberapa profil tersedia untuk didownload. Pilih salah satu yang ingin Anda download sebelum melanjutkan.</translation>
+<translation id="7219473482981809164">Kami menemukan beberapa profil yang tersedia untuk didownload. Pilih salah satu yang ingin Anda download sebelum melanjutkan.</translation>
 <translation id="7220019174139618249">Tidak dapat mengekspor sandi ke "<ph name="FOLDER" />"</translation>
 <translation id="722055596168483966">Personalisasi layanan Google</translation>
 <translation id="722099540765702221">Sumber pengisian daya</translation>

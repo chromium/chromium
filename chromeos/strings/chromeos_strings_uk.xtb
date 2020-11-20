@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1018656279737460067">Скасовано</translation>
-<translation id="1071587090247825784">Виявлено брандмауер</translation>
+<translation id="1071587090247825784">виявлено брандмауер</translation>
 <translation id="1075811647922107217">Розмір сторінки</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
 <translation id="1204296502688602597">Затримка DNS</translation>
@@ -11,7 +11,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">За розміром області сканування</translation>
 <translation id="1397738625398125236">Шлюз можна перевірити</translation>
-<translation id="1398634363027580500">Дуже велика затримка HTTPS</translation>
+<translation id="1398634363027580500">дуже велика затримка HTTPS</translation>
 <translation id="1413240736185167732">Не надруковано – помилка фільтра</translation>
 <translation id="1468664791493211953">Пропозиції</translation>
 <translation id="1478594628797167447">Сканери</translation>
@@ -87,7 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="4646949265910132906">Надійне з'єднання Wi-Fi</translation>
 <translation id="467510802200863975">Паролі не збігаються</translation>
-<translation id="467715984478005772">Можливо, працює брандмауер</translation>
+<translation id="467715984478005772">можливо, працює брандмауер</translation>
 <translation id="4691278870498629773">Зупинено – немає лотка</translation>
 <translation id="469379815867856270">Потужність сигналу</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
@@ -120,7 +120,7 @@
 <translation id="6048107060512778456">Не надруковано – зам'яло папір</translation>
 <translation id="6050189528197190982">Відтінки сірого</translation>
 <translation id="6058625436358447366">Щоб завершити, введіть старий і новий паролі</translation>
-<translation id="6061772781719867950">Невдалі запити HTTPS</translation>
+<translation id="6061772781719867950">невдалі запити HTTPS</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6108689792487843350">Шлюз недоступний</translation>
 <translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
@@ -139,8 +139,8 @@
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
 <translation id="6747215703636344499">Зупинено – вихідний лоток заповнений</translation>
-<translation id="6766275201586212568">Невдалі перетворення DNS</translation>
-<translation id="6768237774506518020">Велика кількість збоїв під час перетворення DNS</translation>
+<translation id="6766275201586212568">невдалі перетворення DNS</translation>
+<translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="6839141349259399400">Не вдається підключитися до сканерів?</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
 <translation id="7162487448488904999">Галерея</translation>
@@ -148,7 +148,7 @@
 <translation id="7359657277149375382">Тип файлу</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7648838807254605802">Велика затримка HTTPS</translation>
+<translation id="7648838807254605802">велика затримка HTTPS</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
 <translation id="7805768142964895445">Статус</translation>

@@ -98,7 +98,7 @@
 <translation id="1838895407229022812">రాత్రి కాంతి ఆఫ్‌లో ఉంది.</translation>
 <translation id="1850504506766569011">Wi-Fi ఆఫ్ చేయబడింది.</translation>
 <translation id="1864454756846565995">USB-C పరికరం (వెనుకవైపు పోర్ట్)</translation>
-<translation id="1882814835921407042">ఏ మొబైల్ నెట్‌వర్క్ అందుబాటులో లేదు</translation>
+<translation id="1882814835921407042">మొబైల్ నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />కు మిర్రరింగ్ చేస్తోంది</translation>
 <translation id="1885785240814121742">వేలిముద్రతో అన్‌లాక్ చేయండి</translation>
 <translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ను <ph name="DISPLAY_NAME" /> సపోర్ట్ చేయదు. రిజల్యూషన్ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'నిర్ధారించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
@@ -120,7 +120,7 @@
 <translation id="2049240716062114887">డెస్క్ పేరు <ph name="DESK_NAME" />గా మార్చబడింది</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
 <translation id="2067602449040652523">కీబోర్డ్ ప్రకాశం</translation>
-<translation id="2078034614700056995">తర్వాతి డెస్క్‌కు స్విచ్ చేయడానికి నాలుగు వేళ్లతో కుడి వైపుకు స్వైప్ చేయండి</translation>
+<translation id="2078034614700056995">తర్వాతి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో కుడి వైపు స్వైప్ చేయండి</translation>
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2126242104232412123">కొత్త డెస్క్</translation>
@@ -761,7 +761,7 @@
 <translation id="8152092012181020186">మూసివేయడానికి Ctrl + W నొక్కండి.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ని ఉపయోగిస్తోంది</translation>
-<translation id="8170567869359129153">మొబైల్ నెట్‌వర్క్. <ph name="SIGNAL_STRENGTH" /> యొక్క సిగ్నల్ సామర్థ్యం</translation>
+<translation id="8170567869359129153">మొబైల్ నెట్‌వర్క్. సిగ్నల్ సామర్థ్యం - <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">నోటిఫికేషన్‌లు దాచబడ్డాయి.</translation>
 <translation id="8196787716797768628">టాబ్లెట్ మోడ్‌లో, యాప్‌ల మధ్య త్వరగా మారడానికి, అలాగే మీ Chromebookతో ఇంటరాక్ట్ కావడానికి సంజ్ఞలను ఉపయోగించండి.</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించు</translation>
@@ -771,7 +771,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> కోసం అన్‌లాక్ చేయడానికి నమోదును నొక్కండి</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
-<translation id="8284362522226889623">మునుపటి డెస్క్‌కు స్విచ్ చేయడానికి నాలుగు వేళ్లతో ఎడమ వైపుకు స్వైప్ చేయండి</translation>
+<translation id="8284362522226889623">మునుపటి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో ఎడమ వైపు స్వైప్ చేయండి</translation>
 <translation id="828708037801473432">ఆఫ్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8308637677604853869">మునుపటి మెనూ</translation>

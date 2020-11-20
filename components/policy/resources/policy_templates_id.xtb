@@ -178,7 +178,7 @@
 
       Jika Anda mengaktifkan setelan ini, pengguna tidak dapat mengubah atau mengganti setelan ini di <ph name="PRODUCT_NAME" />.
 
-      Jika kebijakan ini dibiarkan tidak tersetel, Google Sync akan tersedia bagi pengguna tersebut untuk memilih apakah pengguna menggunakannya atau tidak.
+      Jika kebijakan ini dibiarkan tidak tersetel, Google Sync akan tersedia bagi pengguna tersebut untuk memilih menggunakannya atau tidak.
 
       Untuk menonaktifkan Google Sync sepenuhnya, sebaiknya Anda menonaktifkan layanan Google Sync di konsol Google Admin.</translation>
 <translation id="1290634681382861275">Mengontrol berbagai setelan antara lain USB, bluetooth, pembaruan kebijakan, mode developer, dan lainnya.</translation>
@@ -197,9 +197,9 @@
 <translation id="1309465583050255779">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> akan menentukan nama penyedia penelusuran default.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> tidak disetel, hostname yang ditentukan oleh URL penelusuran akan digunakan.</translation>
-<translation id="1310052497030002740">Jika kebijakan disetel, <ph name="PRODUCT_NAME" /> mencoba mendaftar sendiri dengan <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Nilai kebijakan ini adalah token pendaftaran yang dapat Anda ambil dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+<translation id="1310052497030002740">Jika kebijakan disetel, <ph name="PRODUCT_NAME" /> akan mencoba mendaftarkan diri ke <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Nilai kebijakan ini adalah token pendaftaran yang dapat Anda ambil dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
-      Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detail.</translation>
+      Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detailnya.</translation>
 <translation id="1312799700549720683">Mengontrol setelan tampilan.</translation>
 <translation id="131353325527891113">Tampilkan nama pengguna pada layar masuk</translation>
 <translation id="1327466551276625742">Aktifkan permintaan konfigurasi jaringan saat offline</translation>
@@ -1894,11 +1894,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="3816312845600780067">Aktifkan pintasan keyboard penyelamatan untuk masuk otomatis</translation>
 <translation id="3817323252437541502">Mengaktifkan perlindungan tambahan untuk pengguna yang terdaftar di Program Perlindungan Lanjutan</translation>
 <translation id="3821861026311587684">Memaksa pengguna logout saat akun mereka menjadi tidak terautentikasi</translation>
-<translation id="3823381379309653965">Jika kebijakan disetel, periode dalam milidetik akan ditentukan saat layanan pengelolaan perangkat dikueri untuk informasi kebijakan perangkat. Nilai yang valid berkisar dari 1.800.000 (30 menit) hingga 86.400.000 (1 hari). Nilai di luar rentang ini akan dikunci ke masing-masing batas.
+<translation id="3823381379309653965">Jika kebijakan disetel, periode dalam milidetik akan ditentukan guna mengkueri layanan pengelolaan perangkat untuk informasi kebijakan perangkat. Nilai yang valid berkisar dari 1.800.000 (30 menit) hingga 86.400.000 (1 hari). Nilai di luar rentang ini akan dikunci ke masing-masing batas.
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan nilai default 3 jam.
 
-      Catatan: Pemberitahuan kebijakan memaksa refresh ketika kebijakan berubah, membuat refresh yang sering terjadi tidak diperlukan. Jadi, jika platform mendukung pemberitahuan ini, refresh ditunda selama 24 jam (mengabaikan default dan nilai kebijakan ini).</translation>
+      Catatan: Pemberitahuan kebijakan memaksa refresh ketika kebijakan berubah, sehingga tidak perlu sering me-refresh. Jadi, jika platform mendukung pemberitahuan ini, refresh ditunda selama 24 jam (mengabaikan default dan nilai kebijakan ini).</translation>
 <translation id="382476126209906314">Mengonfigurasi awalan TalkGadget untuk hosting akses jarak jauh</translation>
 <translation id="3824972131618513497">Mengontrol setelan yang terkait dengan pengelolaan daya dan reboot.</translation>
 <translation id="3826475866868158882">Layanan lokasi Google diaktifkan</translation>
@@ -2643,7 +2643,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       * Cakupan dan level yang sama: Nilai-nilai tersebut digabungkan ke dalam daftar kebijakan baru.
 
-      * Cakupan atau level berbeda: Berlaku kebijakan dengan prioritas tertinggi.
+      * Cakupan atau level berbeda: Kebijakan dengan prioritas tertinggi akan diterapkan.
 
       Jika sebuah kebijakan tidak tercantum dalam daftar dan terdapat konflik antara sumber, cakupan, atau level, kebijakan dengan prioritas tertinggi akan diterapkan.</translation>
 <translation id="5056708224511062314">Lup dinonaktifkan</translation>
@@ -3023,7 +3023,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan disetel ke Nonaktif, Halaman Tab Baru tidak akan menampilkan kartu.
 
-      Jika kebijakan tidak disetel, pengguna dapat mengontrol visibilitas kartu. Default-nya terlihat.
+      Jika kebijakan tidak disetel, pengguna dapat mengontrol visibilitas kartu. Default-nya adalah kartu terlihat.
       </translation>
 <translation id="5457065417344056871">Mengaktifkan mode tamu dalam browser</translation>
 <translation id="5457387982448145430">Jika kebijakan disetel ke Aktif, sandi yang tersimpan akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada sandi tersimpan yang akan diimpor saat pertama kali dijalankan.
@@ -3356,7 +3356,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5951418260805607969">Menampilkan notifikasi saat ruang penyimpanan hampir penuh</translation>
 <translation id="5959428851851090097">Jika kebijakan disetel ke Aktif, kebijakan cloud diutamakan jika bertentangan dengan kebijakan platform.
 
-      Jika kebijakan disetel ke Nonaktif atau membiarkannya tidak disetel, kebijakan platform akan diutamakan jika bertentangan dengan kebijakan cloud.
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, kebijakan platform akan diutamakan jika bertentangan dengan kebijakan cloud.
 
       Kebijakan wajib ini memengaruhi kebijakan cloud cakupan perangkat.</translation>
 <translation id="5961137303188584693">Alamat MAC NIC bawaan perangkat</translation>
@@ -3479,7 +3479,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Menyetel kebijakan ke Nonaktif atau membiarkannya tidak disetel menjadikan <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> opsional dan tidak memblokir proses peluncuran <ph name="PRODUCT_NAME" /> jika gagal.
 
-      Pendaftaran kebijakan cloud cakupan perangkat di desktop menggunakan kebijakan ini. Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detail.</translation>
+      Pendaftaran kebijakan cloud cakupan perangkat di desktop menggunakan kebijakan ini. Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detailnya.</translation>
 <translation id="6155936611791017817">Setel status default kursor besar di layar masuk</translation>
 <translation id="6157537876488211233">Peraturan mengabaikan proxy yang dipisahkan koma</translation>
 <translation id="6158324314836466367">Nama toko web perusahaan (tidak digunakan)</translation>
@@ -3749,7 +3749,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika tidak ditetapkan, ditetapkan ke Biarkan pengguna menentukan (Let user decide), atau ditetapkan ke Tidak Ada (None), pengguna akan mengontrol deteksi zona waktu otomatis menggunakan kontrol normal di chrome://setelan.</translation>
 <translation id="6532769014584932288">Izinkan penguncian layar saat aktif</translation>
-<translation id="6536444379078076149">Mengaktifkan atau menonaktifkan tampilan UI terkait koneksi pada desktop host saat koneksi aktif.</translation>
+<translation id="6536444379078076149">Aktifkan atau nonaktifkan tampilan UI terkait koneksi pada desktop host saat koneksi aktif.</translation>
 <translation id="6536600139108165863">Booting ulang otomatis saat mematikan perangkat</translation>
 <translation id="6539246272469751178">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi Android selalu menggunakan direktori download default dan tidak dapat mengakses file apa pun yang didownload oleh <ph name="PRODUCT_OS_NAME" /> ke direktori download non-default.</translation>
 <translation id="654303922206238013">Strategi migrasi untuk ecryptfs</translation>
@@ -4724,11 +4724,11 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengklik halaman peringatan apa pun.</translation>
 <translation id="7750991880413385988">Buka Halaman Tab Baru</translation>
 <translation id="7754704193130578113">Tanyakan lokasi penyimpanan setiap file sebelum mendownload</translation>
-<translation id="7754893969683595513">Jika kebijakan disetel, periode dalam milidetik akan ditentukan saat layanan pengelolaan perangkat dikueri untuk informasi kebijakan pengguna. Nilai yang valid berkisar dari 1.800.000 (30 menit) hingga 86.400.000 (1 hari). Nilai di luar rentang ini akan dikunci ke masing-masing batas.
+<translation id="7754893969683595513">Jika kebijakan disetel, periode dalam milidetik akan ditentukan guna mengkueri layanan pengelolaan perangkat untuk informasi kebijakan pengguna. Nilai yang valid berkisar dari 1.800.000 (30 menit) hingga 86.400.000 (1 hari). Nilai di luar rentang ini akan dikunci ke masing-masing batas.
 
       Jika kebijakan tidak disetel, nilai default 3 jam akan digunakan.
 
-      Catatan: Pemberitahuan kebijakan memaksa refresh ketika kebijakan berubah, membuat refresh yang sering terjadi tidak diperlukan. Jadi, jika platform mendukung pemberitahuan ini, refresh ditunda selama 24 jam (mengabaikan default dan nilai kebijakan ini).</translation>
+      Catatan: Pemberitahuan kebijakan memaksa refresh ketika kebijakan berubah, sehingga tidak perlu sering me-refresh. Jadi, jika platform mendukung pemberitahuan ini, refresh ditunda selama 24 jam (mengabaikan default dan nilai kebijakan ini).</translation>
 <translation id="7758378441185523981">Mengaktifkan Autentikasi Pasif untuk jenis profil.</translation>
 <translation id="776110834126722255">Tidak digunakan lagi</translation>
 <translation id="7763614521440615342">Tampilkan saran konten di halaman Tab Baru</translation>
@@ -4997,7 +4997,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 <translation id="816783746144552109">Mengonfigurasi versi minimum Chrome OS yang diizinkan untuk perangkat.</translation>
 <translation id="8171924760436219650">Mengalihkan tombol mouse utama ke tombol kanan pada layar login</translation>
 <translation id="8176035528522326671">Memungkinkan pengguna perusahaan menjadi pengguna banyak profil primer saja (Perilaku default untuk pengguna yang dikelola perusahaan)</translation>
-<translation id="8179161412673077784">Cegah situs dengan pengalaman yang menyesatkan pengguna agar tidak membuka jendela atau tab baru</translation>
+<translation id="8179161412673077784">Cegah situs dengan pengalaman yang menyesatkan pengguna untuk membuka jendela atau tab baru</translation>
 <translation id="8183108371184777472">Sembunyikan peluncuran jendela browser</translation>
 <translation id="8186911565834244165">Izinkan masukan pengguna</translation>
 <translation id="8195133650230097559">Abaikan permintaan penguncian layar saat aktif untuk pengelolaan daya</translation>
@@ -5054,7 +5054,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 
       * Cakupan dan level yang sama: Nilai-nilai tersebut digabungkan ke dalam kamus kebijakan baru.
 
-      * Cakupan atau level berbeda: Berlaku kebijakan dengan prioritas tertinggi.
+      * Cakupan atau level berbeda: Kebijakan dengan prioritas tertinggi akan diterapkan.
 
       Jika sebuah kebijakan tidak tercantum dalam daftar dan terdapat konflik antara sumber, cakupan, atau level, kebijakan dengan prioritas tertinggi akan diterapkan.</translation>
 <translation id="8266778278542911985">Jika kebijakan disetel ke 3, situs akan dapat meminta akses ke port serial. Jika kebijakan disetel ke 2, akses ke port serial akan ditolak.
