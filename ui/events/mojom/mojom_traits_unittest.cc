@@ -114,8 +114,8 @@ TEST(StructTraitsTest, KeyEvent) {
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     EXPECT_TRUE(output->IsKeyEvent());
 
     const KeyEvent* output_key_event = output->AsKeyEvent();
@@ -155,8 +155,8 @@ TEST(StructTraitsTest, MouseEvent) {
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     ASSERT_TRUE(output->IsMouseEvent());
 
     ExpectEventsEqual(kTestData[i], *output);
@@ -181,8 +181,8 @@ TEST(StructTraitsTest, MouseWheelEvent) {
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     ASSERT_EQ(ET_MOUSEWHEEL, output->type());
 
     const MouseWheelEvent* output_event = output->AsMouseWheelEvent();
@@ -211,8 +211,8 @@ TEST(StructTraitsTest, FloatingPointLocations) {
   for (Event* event : test_data) {
     std::unique_ptr<Event> event_copy = Event::Clone(*event);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(&event_copy,
-                                                                  &output));
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::Event>(event_copy, output));
     EXPECT_EQ(location, output->AsLocatedEvent()->location_f());
     EXPECT_EQ(root_location, output->AsLocatedEvent()->root_location_f());
   }
@@ -267,8 +267,8 @@ TEST(StructTraitsTest, GestureEvent) {
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     ASSERT_TRUE(output->IsGestureEvent());
 
     const GestureEvent* output_ptr_event = output->AsGestureEvent();
@@ -314,8 +314,8 @@ TEST(StructTraitsTest, ScrollEvent) {
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     EXPECT_TRUE(output->IsScrollEvent());
 
     const ScrollEvent* output_ptr_event = output->AsScrollEvent();
@@ -348,7 +348,7 @@ TEST(StructTraitsTest, PointerDetails) {
 
     PointerDetails output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PointerDetails>(
-        &input, &output));
+        input, output));
     EXPECT_EQ(input, output);
   }
 }
@@ -367,8 +367,8 @@ TEST(StructTraitsTest, TouchEvent) {
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     ExpectEventsEqual(*expected_copy, *output);
   }
 
@@ -381,7 +381,7 @@ TEST(StructTraitsTest, TouchEvent) {
   std::unique_ptr<Event> expected = std::move(touch_event);
   std::unique_ptr<Event> output;
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::Event>(&expected, &output));
+      mojo::test::SerializeAndDeserialize<mojom::Event>(expected, output));
   ExpectEventsEqual(*expected, *output);
 }
 
@@ -392,7 +392,7 @@ TEST(StructTraitsTest, UnserializedTouchEventFields) {
   std::unique_ptr<Event> expected = std::move(touch_event);
   std::unique_ptr<Event> output;
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::Event>(&expected, &output));
+      mojo::test::SerializeAndDeserialize<mojom::Event>(expected, output));
   ExpectEventsEqual(*expected, *output);
   EXPECT_NE(expected->AsTouchEvent()->unique_event_id(),
             output->AsTouchEvent()->unique_event_id());
@@ -430,7 +430,7 @@ TEST(StructTraitsTest, DifferentKeyboardLayout) {
   std::unique_ptr<Event> expected = std::move(key_event);
   std::unique_ptr<Event> output;
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::Event>(&expected, &output));
+      mojo::test::SerializeAndDeserialize<mojom::Event>(expected, output));
   ExpectEventsEqual(*expected, *output);
 }
 

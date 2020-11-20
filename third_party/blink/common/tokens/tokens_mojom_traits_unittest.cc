@@ -23,8 +23,8 @@ void ExpectSerializationWorks() {
   MultiTokenType multi_token(typed_token);
 
   MultiTokenType deserialized;
-  EXPECT_TRUE(::mojo::test::SerializeAndDeserialize<MojomType>(&multi_token,
-                                                               &deserialized));
+  EXPECT_TRUE(::mojo::test::SerializeAndDeserialize<MojomType>(multi_token,
+                                                               deserialized));
   EXPECT_TRUE(deserialized.template Is<TokenType>());
   EXPECT_EQ(multi_token, deserialized);
   EXPECT_EQ(multi_token.template GetAs<TokenType>(),

@@ -15,7 +15,7 @@ TEST(MemoryAllocatorDumpCrossProcessUidTest, SerializeFailsOnZeroValue) {
   base::trace_event::MemoryAllocatorDumpGuid out;
 
   ASSERT_FALSE(mojo::test::SerializeAndDeserialize<
-               mojom::MemoryAllocatorDumpCrossProcessUid>(&in, &out));
+               mojom::MemoryAllocatorDumpCrossProcessUid>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -24,7 +24,7 @@ TEST(MemoryAllocatorDumpCrossProcessUidTest, SerializeSucceedsOnValidIntValue) {
   base::trace_event::MemoryAllocatorDumpGuid out;
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
-              mojom::MemoryAllocatorDumpCrossProcessUid>(&in, &out));
+              mojom::MemoryAllocatorDumpCrossProcessUid>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -34,7 +34,7 @@ TEST(MemoryAllocatorDumpCrossProcessUidTest,
   base::trace_event::MemoryAllocatorDumpGuid out;
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
-              mojom::MemoryAllocatorDumpCrossProcessUid>(&in, &out));
+              mojom::MemoryAllocatorDumpCrossProcessUid>(in, out));
   EXPECT_EQ(in, out);
 }
 

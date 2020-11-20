@@ -15,7 +15,7 @@ TEST(UnguessableTokenTest, UnguessableToken) {
   base::UnguessableToken out;
 
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::UnguessableToken>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::UnguessableToken>(in, out));
   EXPECT_EQ(in, out);
 }
 

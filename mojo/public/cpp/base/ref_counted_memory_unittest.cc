@@ -19,7 +19,7 @@ TEST(RefCountedMemoryTest, Data) {
 
   scoped_refptr<base::RefCountedMemory> out;
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::RefCountedMemory>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::RefCountedMemory>(in, out));
   ASSERT_EQ(out->size(), in->size());
   for (size_t i = 0; i < out->size(); ++i)
     EXPECT_EQ(in->front()[i], out->front()[i]);
@@ -33,7 +33,7 @@ TEST(RefCountedMemoryTest, Null) {
 
   scoped_refptr<base::RefCountedMemory> in;
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::RefCountedMemory>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::RefCountedMemory>(in, out));
 
   ASSERT_FALSE(out.get());
 }

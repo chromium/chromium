@@ -44,7 +44,7 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
     net::IsolationInfo copied;
     EXPECT_TRUE(
         mojo::test::SerializeAndDeserialize<network::mojom::IsolationInfo>(
-            &original, &copied));
+            original, copied));
     EXPECT_TRUE(original.IsEqualForTesting(copied));
   }
 }

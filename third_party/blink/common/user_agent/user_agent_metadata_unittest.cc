@@ -49,13 +49,13 @@ TEST(UserAgentMetaDataTest, Basic) {
 TEST(UserAgentMetaDataTest, MojoTraits) {
   blink::UserAgentMetadata to_encode = MakeToEncode();
   blink::UserAgentMetadata copied;
-  mojo::test::SerializeAndDeserialize<mojom::UserAgentMetadata>(&to_encode,
-                                                                &copied);
+  mojo::test::SerializeAndDeserialize<mojom::UserAgentMetadata>(to_encode,
+                                                                copied);
   EXPECT_EQ(to_encode, copied);
 
   to_encode.mobile = true;
-  mojo::test::SerializeAndDeserialize<mojom::UserAgentMetadata>(&to_encode,
-                                                                &copied);
+  mojo::test::SerializeAndDeserialize<mojom::UserAgentMetadata>(to_encode,
+                                                                copied);
   EXPECT_EQ(to_encode, copied);
 }
 

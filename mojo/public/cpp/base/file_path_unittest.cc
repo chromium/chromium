@@ -16,7 +16,7 @@ TEST(FilePathTest, File) {
   base::FilePath file_out;
 
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::FilePath>(&file, &file_out));
+      mojo::test::SerializeAndDeserialize<mojom::FilePath>(file, file_out));
   ASSERT_EQ(file, file_out);
 }
 

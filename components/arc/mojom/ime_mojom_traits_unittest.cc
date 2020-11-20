@@ -36,8 +36,7 @@ TEST(KeyEventStructTraitsTest, Convert) {
   for (size_t idx = 0; idx < base::size(kTestData); ++idx) {
     auto copy = std::make_unique<ui::KeyEvent>(kTestData[idx]);
     std::unique_ptr<ui::KeyEvent> output;
-    mojo::test::SerializeAndDeserialize<arc::mojom::KeyEventData>(&copy,
-                                                                  &output);
+    mojo::test::SerializeAndDeserialize<arc::mojom::KeyEventData>(copy, output);
     ExpectKeyEventsEqual(*copy, *output);
   }
 }

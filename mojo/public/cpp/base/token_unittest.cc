@@ -13,17 +13,17 @@ namespace token_unittest {
 TEST(TokenTest, Token) {
   base::Token in;
   base::Token out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Token>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Token>(in, out));
   EXPECT_EQ(in, out);
 
   constexpr uint64_t kTestHigh = 0x0123456789abcdefull;
   constexpr uint64_t kTestLow = 0x5a5a5a5aa5a5a5a5ull;
   in = base::Token{kTestHigh, kTestLow};
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Token>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Token>(in, out));
   EXPECT_EQ(in, out);
 
   in = base::Token::CreateRandom();
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Token>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Token>(in, out));
   EXPECT_EQ(in, out);
 }
 

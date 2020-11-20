@@ -28,7 +28,7 @@ TEST(MessagePortDescriptorTest, SerializationWorks) {
   // the custom StructTraits.
   MessagePortDescriptor port;
   mojo::test::SerializeAndDeserialize<mojom::blink::MessagePortDescriptor,
-                                      MessagePortDescriptor>(&port0, &port);
+                                      MessagePortDescriptor>(port0, port);
   EXPECT_TRUE(port0.IsDefault());
   EXPECT_TRUE(port.IsValid());
 

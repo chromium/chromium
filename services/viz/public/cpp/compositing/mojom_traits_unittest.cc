@@ -92,7 +92,7 @@ TEST_F(StructTraitsTest, BeginFrameArgs) {
   input.animate_only = animate_only;
 
   BeginFrameArgs output;
-  mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
 
   EXPECT_EQ(source_id, output.frame_id.source_id);
   EXPECT_EQ(sequence_number, output.frame_id.sequence_number);
@@ -113,7 +113,7 @@ TEST_F(StructTraitsTest, BeginFrameAck) {
   input.has_damage = has_damage;
 
   BeginFrameAck output;
-  mojo::test::SerializeAndDeserialize<mojom::BeginFrameAck>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::BeginFrameAck>(input, output);
 
   EXPECT_EQ(source_id, output.frame_id.source_id);
   EXPECT_EQ(sequence_number, output.frame_id.sequence_number);
@@ -169,7 +169,7 @@ TEST_F(StructTraitsTest, FilterOperationBlur) {
   cc::FilterOperation input = cc::FilterOperation::CreateBlurFilter(20);
 
   cc::FilterOperation output;
-  mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(input, output);
   ExpectEqual(input, output);
 }
 
@@ -178,7 +178,7 @@ TEST_F(StructTraitsTest, FilterOperationDropShadow) {
       gfx::Point(4, 4), 4.0f, SkColorSetARGB(255, 40, 0, 0));
 
   cc::FilterOperation output;
-  mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(input, output);
   ExpectEqual(input, output);
 }
 
@@ -191,7 +191,7 @@ TEST_F(StructTraitsTest, FilterOperationReferenceFilter) {
           nullptr));
 
   cc::FilterOperation output;
-  mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(input, output);
   ExpectEqual(input, output);
 }
 
@@ -202,7 +202,7 @@ TEST_F(StructTraitsTest, FilterOperations) {
   input.Append(cc::FilterOperation::CreateZoomFilter(2.0f, 1));
 
   cc::FilterOperations output;
-  mojo::test::SerializeAndDeserialize<mojom::FilterOperations>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::FilterOperations>(input, output);
 
   EXPECT_EQ(input.size(), output.size());
   for (size_t i = 0; i < input.size(); ++i) {
@@ -215,7 +215,7 @@ TEST_F(StructTraitsTest, LocalSurfaceId) {
       42, base::UnguessableToken::Deserialize(0x12345678, 0x9abcdef0));
 
   LocalSurfaceId output;
-  mojo::test::SerializeAndDeserialize<mojom::LocalSurfaceId>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::LocalSurfaceId>(input, output);
 
   EXPECT_EQ(input, output);
 }
@@ -252,8 +252,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_BitmapRequest) {
   input->set_source(source);
   EXPECT_TRUE(input->is_scaled());
   std::unique_ptr<CopyOutputRequest> output;
-  mojo::test::SerializeAndDeserialize<mojom::CopyOutputRequest>(&input,
-                                                                &output);
+  mojo::test::SerializeAndDeserialize<mojom::CopyOutputRequest>(input, output);
 
   EXPECT_EQ(result_format, output->result_format());
   EXPECT_TRUE(output->is_scaled());
@@ -323,8 +322,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
           run_loop_for_result.QuitClosure(), result_rect)));
   EXPECT_FALSE(input->is_scaled());
   std::unique_ptr<CopyOutputRequest> output;
-  mojo::test::SerializeAndDeserialize<mojom::CopyOutputRequest>(&input,
-                                                                &output);
+  mojo::test::SerializeAndDeserialize<mojom::CopyOutputRequest>(input, output);
 
   EXPECT_EQ(output->result_format(), result_format);
   EXPECT_FALSE(output->is_scaled());
@@ -386,7 +384,7 @@ TEST_F(StructTraitsTest, ResourceSettings) {
   input.use_gpu_memory_buffer_resources = kArbitraryBool;
 
   ResourceSettings output;
-  mojo::test::SerializeAndDeserialize<mojom::ResourceSettings>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::ResourceSettings>(input, output);
 
   EXPECT_EQ(input.use_gpu_memory_buffer_resources,
             output.use_gpu_memory_buffer_resources);
@@ -405,7 +403,7 @@ TEST_F(StructTraitsTest, Selection) {
   input.start = start;
   input.end = end;
   Selection<gfx::SelectionBound> output;
-  mojo::test::SerializeAndDeserialize<mojom::Selection>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::Selection>(input, output);
   EXPECT_EQ(start, output.start);
   EXPECT_EQ(end, output.end);
 }
@@ -431,8 +429,8 @@ TEST_F(StructTraitsTest, SharedQuadState) {
                    opacity, blend_mode, sorting_context_id);
   input_sqs.is_fast_rounded_corner = is_fast_rounded_corner;
   SharedQuadState output_sqs;
-  mojo::test::SerializeAndDeserialize<mojom::SharedQuadState>(&input_sqs,
-                                                              &output_sqs);
+  mojo::test::SerializeAndDeserialize<mojom::SharedQuadState>(input_sqs,
+                                                              output_sqs);
   EXPECT_EQ(quad_to_target_transform, output_sqs.quad_to_target_transform);
   EXPECT_EQ(layer_rect, output_sqs.quad_layer_rect);
   EXPECT_EQ(visible_layer_rect, output_sqs.visible_quad_layer_rect);
@@ -519,7 +517,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   input.metadata.frame_token = 1;
 
   CompositorFrame output;
-  mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(input, output);
 
   EXPECT_EQ(device_scale_factor, output.metadata.device_scale_factor);
   EXPECT_EQ(root_scroll_offset, output.metadata.root_scroll_offset);
@@ -580,7 +578,7 @@ TEST_F(StructTraitsTest, SurfaceInfo) {
 
   SurfaceInfo input(surface_id, device_scale_factor, size);
   SurfaceInfo output;
-  mojo::test::SerializeAndDeserialize<mojom::SurfaceInfo>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::SurfaceInfo>(input, output);
 
   EXPECT_EQ(input.id(), output.id());
   EXPECT_EQ(input.size_in_pixels(), output.size_in_pixels());
@@ -606,7 +604,7 @@ TEST_F(StructTraitsTest, ReturnedResource) {
   input.lost = lost;
 
   ReturnedResource output;
-  mojo::test::SerializeAndDeserialize<mojom::ReturnedResource>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::ReturnedResource>(input, output);
 
   EXPECT_EQ(id, output.id);
   EXPECT_EQ(sync_token, output.sync_token);
@@ -660,8 +658,8 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
   input.top_controls_visible_height.emplace(top_controls_visible_height);
 
   CompositorFrameMetadata output;
-  mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(&input,
-                                                                      &output);
+  mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(input,
+                                                                      output);
   EXPECT_EQ(device_scale_factor, output.device_scale_factor);
   EXPECT_EQ(root_scroll_offset, output.root_scroll_offset);
   EXPECT_EQ(page_scale_factor, output.page_scale_factor);
@@ -766,8 +764,8 @@ TEST_F(StructTraitsTest, RenderPass) {
   surface_quad->allow_merge = !surface_quad->allow_merge;
 
   std::unique_ptr<CompositorRenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&input,
-                                                                   &output);
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(input,
+                                                                   output);
 
   EXPECT_EQ(input->quad_list.size(), output->quad_list.size());
   EXPECT_EQ(input->shared_quad_state_list.size(),
@@ -865,8 +863,8 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   // Unlike the previous test, don't add any quads to the list; we need to
   // verify that the serialization code can deal with that.
   std::unique_ptr<CompositorRenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&input,
-                                                                   &output);
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(input,
+                                                                   output);
 
   EXPECT_EQ(input->quad_list.size(), output->quad_list.size());
   EXPECT_EQ(input->shared_quad_state_list.size(),
@@ -965,8 +963,8 @@ TEST_F(StructTraitsTest, QuadListBasic) {
                                  uv_top_left, uv_bottom_right);
 
   std::unique_ptr<CompositorRenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&render_pass,
-                                                                   &output);
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(render_pass,
+                                                                   output);
 
   ASSERT_EQ(render_pass->quad_list.size(), output->quad_list.size());
 
@@ -1056,7 +1054,7 @@ TEST_F(StructTraitsTest, SurfaceId) {
                                          base::UnguessableToken::Create());
   SurfaceId input(frame_sink_id, local_surface_id);
   SurfaceId output;
-  mojo::test::SerializeAndDeserialize<mojom::SurfaceId>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::SurfaceId>(input, output);
   EXPECT_EQ(frame_sink_id, output.frame_sink_id());
   EXPECT_EQ(local_surface_id, output.local_surface_id());
 }
@@ -1094,8 +1092,8 @@ TEST_F(StructTraitsTest, TransferableResource) {
   input.is_overlay_candidate = is_overlay_candidate;
 
   TransferableResource output;
-  mojo::test::SerializeAndDeserialize<mojom::TransferableResource>(&input,
-                                                                   &output);
+  mojo::test::SerializeAndDeserialize<mojom::TransferableResource>(input,
+                                                                   output);
 
   EXPECT_EQ(id, output.id);
   EXPECT_EQ(format, output.format);
@@ -1147,8 +1145,8 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
                bits_per_channel, protected_video_type, hdr_metadata);
 
   std::unique_ptr<CompositorRenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&render_pass,
-                                                                   &output);
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(render_pass,
+                                                                   output);
 
   ASSERT_EQ(render_pass->quad_list.size(), output->quad_list.size());
 
@@ -1177,7 +1175,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyBitmap) {
   auto input = std::make_unique<CopyOutputResult>(
       CopyOutputResult::Format::RGBA_BITMAP, gfx::Rect());
   std::unique_ptr<CopyOutputResult> output;
-  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
 
   EXPECT_TRUE(output->IsEmpty());
   EXPECT_EQ(output->format(), CopyOutputResult::Format::RGBA_BITMAP);
@@ -1194,7 +1192,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
   EXPECT_TRUE(input->IsEmpty());
 
   std::unique_ptr<CopyOutputResult> output;
-  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
 
   EXPECT_TRUE(output->IsEmpty());
   EXPECT_EQ(output->format(), CopyOutputResult::Format::RGBA_TEXTURE);
@@ -1213,7 +1211,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
       std::make_unique<CopyOutputSkBitmapResult>(result_rect, bitmap);
 
   std::unique_ptr<CopyOutputResult> output;
-  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
 
   EXPECT_FALSE(output->IsEmpty());
   EXPECT_EQ(output->format(), CopyOutputResult::Format::RGBA_BITMAP);
@@ -1267,7 +1265,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
                                                 std::move(callback));
 
   std::unique_ptr<CopyOutputResult> output;
-  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(&input, &output);
+  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
 
   EXPECT_FALSE(output->IsEmpty());
   EXPECT_EQ(output->format(), CopyOutputResult::Format::RGBA_TEXTURE);

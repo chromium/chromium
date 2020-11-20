@@ -39,8 +39,8 @@ TEST(VideoAcceleratorStructTraitsTest, ConvertVideoFrameLayout) {
   std::unique_ptr<media::VideoFrameLayout> input =
       std::make_unique<media::VideoFrameLayout>(*layout);
   std::unique_ptr<media::VideoFrameLayout> output;
-  mojo::test::SerializeAndDeserialize<arc::mojom::VideoFrameLayout>(&input,
-                                                                    &output);
+  mojo::test::SerializeAndDeserialize<arc::mojom::VideoFrameLayout>(input,
+                                                                    output);
 
   EXPECT_EQ(output->format(), kFormat);
   EXPECT_EQ(output->coded_size(), kCodedSize);
@@ -52,8 +52,8 @@ TEST(VideoAcceleratorStructTraitsTest, ConvertVideoFrameLayout) {
 TEST(VideoAcceleratorStructTraitsTest, ConvertNullVideoFrameLayout) {
   std::unique_ptr<media::VideoFrameLayout> input;
   std::unique_ptr<media::VideoFrameLayout> output;
-  mojo::test::SerializeAndDeserialize<arc::mojom::VideoFrameLayout>(&input,
-                                                                    &output);
+  mojo::test::SerializeAndDeserialize<arc::mojom::VideoFrameLayout>(input,
+                                                                    output);
 
   EXPECT_FALSE(output);
 }

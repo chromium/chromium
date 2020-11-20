@@ -60,7 +60,7 @@ void AssertSerializeAndDeserializeSucceeds(std::vector<UserType> test_cases) {
   for (auto original : test_cases) {
     UserType copied;
     EXPECT_TRUE(
-        mojo::test::SerializeAndDeserialize<MojomType>(&original, &copied));
+        mojo::test::SerializeAndDeserialize<MojomType>(original, copied));
     EXPECT_EQ(original, copied);
   }
 }

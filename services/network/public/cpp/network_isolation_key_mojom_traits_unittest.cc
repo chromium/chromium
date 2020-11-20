@@ -26,7 +26,7 @@ TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
     SCOPED_TRACE(original.ToDebugString());
     net::NetworkIsolationKey copied;
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-                network::mojom::NetworkIsolationKey>(&original, &copied));
+                network::mojom::NetworkIsolationKey>(original, copied));
     EXPECT_EQ(original, copied);
   }
 }
@@ -57,7 +57,7 @@ TEST_F(NetworkIsolationKeyMojomTraitsWithFrameOriginTest,
     SCOPED_TRACE(original.ToDebugString());
     net::NetworkIsolationKey copied;
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-                network::mojom::NetworkIsolationKey>(&original, &copied));
+                network::mojom::NetworkIsolationKey>(original, copied));
     EXPECT_EQ(original, copied);
     EXPECT_EQ(original.GetTopFrameSite(), copied.GetTopFrameSite());
     EXPECT_EQ(original.GetFrameSite(), copied.GetFrameSite());

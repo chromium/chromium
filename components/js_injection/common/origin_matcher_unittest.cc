@@ -317,7 +317,7 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeMatchAll) {
   OriginMatcher deserialized;
   ASSERT_TRUE(matcher.AddRuleFromString("*"));
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::OriginMatcher>(
-      &matcher, &deserialized));
+      matcher, deserialized));
   ASSERT_NO_FATAL_FAILURE(CompareMatchers(matcher, deserialized));
 }
 
@@ -326,7 +326,7 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeSubdomainMatcher) {
   OriginMatcher deserialized;
   ASSERT_TRUE(matcher.AddRuleFromString("https://*.example.com"));
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::OriginMatcher>(
-      &matcher, &deserialized));
+      matcher, deserialized));
   ASSERT_NO_FATAL_FAILURE(CompareMatchers(matcher, deserialized));
 }
 
@@ -341,7 +341,7 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeInvalidSubdomain) {
     matcher.SetRules(std::move(rules));
   }
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::OriginMatcher>(
-      &matcher, &deserialized));
+      matcher, deserialized));
 }
 
 TEST_F(OriginMatcherTest, SerializeAndDeserializeInvalidScheme) {
@@ -355,7 +355,7 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeInvalidScheme) {
     matcher.SetRules(std::move(rules));
   }
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::OriginMatcher>(
-      &matcher, &deserialized));
+      matcher, deserialized));
 }
 
 TEST_F(OriginMatcherTest, SerializeAndDeserializeTooManyWildcards) {
@@ -369,7 +369,7 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeTooManyWildcards) {
     matcher.SetRules(std::move(rules));
   }
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::OriginMatcher>(
-      &matcher, &deserialized));
+      matcher, deserialized));
 }
 
 TEST_F(OriginMatcherTest, SerializeAndDeserializeInvalidWildcard) {
@@ -383,7 +383,7 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeInvalidWildcard) {
     matcher.SetRules(std::move(rules));
   }
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::OriginMatcher>(
-      &matcher, &deserialized));
+      matcher, deserialized));
 }
 
 TEST_F(OriginMatcherTest, SerializeAndDeserializeValidWildcard) {
@@ -397,7 +397,7 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeValidWildcard) {
     matcher.SetRules(std::move(rules));
   }
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::OriginMatcher>(
-      &matcher, &deserialized));
+      matcher, deserialized));
   ASSERT_NO_FATAL_FAILURE(CompareMatchers(matcher, deserialized));
 }
 

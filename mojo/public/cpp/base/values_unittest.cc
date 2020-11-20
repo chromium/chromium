@@ -17,7 +17,7 @@ namespace mojo_base {
 TEST(ValuesStructTraitsTest, NullValue) {
   base::Value in;
   base::Value out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -26,7 +26,7 @@ TEST(ValuesStructTraitsTest, BoolValue) {
   for (auto& test_case : kTestCases) {
     base::Value in(test_case);
     base::Value out;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
     EXPECT_EQ(in, out);
   }
 }
@@ -38,7 +38,7 @@ TEST(ValuesStructTraitsTest, IntValue) {
   for (auto& test_case : kTestCases) {
     base::Value in(test_case);
     base::Value out;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
     EXPECT_EQ(in, out);
   }
 }
@@ -53,7 +53,7 @@ TEST(ValuesStructTraitsTest, DoubleValue) {
   for (auto& test_case : kTestCases) {
     base::Value in(test_case);
     base::Value out;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
     EXPECT_EQ(in, out);
   }
 }
@@ -67,7 +67,7 @@ TEST(ValuesStructTraitsTest, StringValue) {
   for (auto* test_case : kTestCases) {
     base::Value in(test_case);
     base::Value out;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
     EXPECT_EQ(in, out);
   }
 }
@@ -76,7 +76,7 @@ TEST(ValuesStructTraitsTest, BinaryValue) {
   std::vector<char> kBinaryData = {'\x00', '\x80', '\xff', '\x7f', '\x01'};
   base::Value in(std::move(kBinaryData));
   base::Value out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -96,11 +96,11 @@ TEST(ValuesStructTraitsTest, DictionaryValue) {
 
   base::Value in(base::Value::DictStorage(std::move(storage)));
   base::Value out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -110,7 +110,7 @@ TEST(ValuesStructTraitsTest, SerializeInvalidDictionaryValue) {
 
   base::Value out;
   EXPECT_DCHECK_DEATH(
-      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(in, out));
 }
 
 TEST(ValuesStructTraitsTest, ListValue) {
@@ -125,10 +125,10 @@ TEST(ValuesStructTraitsTest, ListValue) {
   storage.emplace_back(base::Value::ListStorage());
   base::Value in(std::move(storage));
   base::Value out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ListValue>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ListValue>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -138,7 +138,7 @@ TEST(ValuesStructTraitsTest, SerializeInvalidListValue) {
 
   base::Value out;
   EXPECT_DCHECK_DEATH(
-      mojo::test::SerializeAndDeserialize<mojom::ListValue>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::ListValue>(in, out));
 }
 
 // A deeply nested base::Value should trigger a deserialization error.
@@ -150,7 +150,7 @@ TEST(ValuesStructTraitsTest, DeeplyNestedValue) {
     in = base::Value(std::move(storage));
   }
   base::Value out;
-  ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
 }
 
 }  // namespace mojo_base

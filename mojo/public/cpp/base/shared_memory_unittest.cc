@@ -16,8 +16,8 @@ TEST(SharedMemoryMojomTest, ReadOnly) {
 
   base::ReadOnlySharedMemoryRegion read_only_out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
-              mojo_base::mojom::ReadOnlySharedMemoryRegion>(&region.region,
-                                                            &read_only_out));
+              mojo_base::mojom::ReadOnlySharedMemoryRegion>(region.region,
+                                                            read_only_out));
   base::ReadOnlySharedMemoryMapping mapping = read_only_out.Map();
   EXPECT_EQ(0, memcmp(mapping.memory(), kTestData.data(), kTestData.size()));
 }
@@ -29,9 +29,9 @@ TEST(SharedMemoryMojomTest, Writable) {
   memcpy(mapping.memory(), kTestData.data(), kTestData.size());
 
   base::WritableSharedMemoryRegion writable_out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
-              mojo_base::mojom::WritableSharedMemoryRegion>(&region,
-                                                            &writable_out));
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<
+          mojo_base::mojom::WritableSharedMemoryRegion>(region, writable_out));
 
   mapping = writable_out.Map();
   EXPECT_EQ(0, memcmp(mapping.memory(), kTestData.data(), kTestData.size()));
@@ -44,9 +44,8 @@ TEST(SharedMemoryMojomTest, Unsafe) {
   memcpy(mapping.memory(), kTestData.data(), kTestData.size());
 
   base::UnsafeSharedMemoryRegion unsafe_out;
-  ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<
-          mojo_base::mojom::UnsafeSharedMemoryRegion>(&region, &unsafe_out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojo_base::mojom::UnsafeSharedMemoryRegion>(region, unsafe_out));
 
   mapping = unsafe_out.Map();
   EXPECT_EQ(0, memcmp(mapping.memory(), kTestData.data(), kTestData.size()));

@@ -81,7 +81,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<blink::mojom::NotificationData>(
-          &notification_data, &roundtrip_notification_data));
+          notification_data, roundtrip_notification_data));
 
   EXPECT_EQ(roundtrip_notification_data.title, notification_data.title);
   EXPECT_EQ(roundtrip_notification_data.direction, notification_data.direction);
@@ -134,7 +134,7 @@ TEST(NotificationStructTraitsTest, ValidVibrationPattern) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<blink::mojom::NotificationData>(
-          &notification_data, &platform_notification_data));
+          notification_data, platform_notification_data));
 }
 
 // Check round-trip fails when there are too many entries in the vibration
@@ -154,7 +154,7 @@ TEST(NotificationStructTraitsTest, TooManyVibrations) {
 
   ASSERT_FALSE(
       mojo::test::SerializeAndDeserialize<blink::mojom::NotificationData>(
-          &notification_data, &platform_notification_data));
+          notification_data, platform_notification_data));
 }
 
 // Check round-trip fails when there is a too-long vibration duration.
@@ -173,7 +173,7 @@ TEST(NotificationStructTraitsTest, TooLongVibrationDuration) {
 
   ASSERT_FALSE(
       mojo::test::SerializeAndDeserialize<blink::mojom::NotificationData>(
-          &notification_data, &platform_notification_data));
+          notification_data, platform_notification_data));
 }
 
 // Check round-trip fails when there are too many actions provided.
@@ -193,7 +193,7 @@ TEST(NotificationStructTraitsTest, TooManyActions) {
 
   ASSERT_FALSE(
       mojo::test::SerializeAndDeserialize<blink::mojom::NotificationData>(
-          &notification_data, &platform_notification_data));
+          notification_data, platform_notification_data));
 }
 
 // Check round-trip fails when the data size is too big.
@@ -210,7 +210,7 @@ TEST(NotificationStructTraitsTest, DataExceedsMaximumSize) {
 
   ASSERT_FALSE(
       mojo::test::SerializeAndDeserialize<blink::mojom::NotificationData>(
-          &notification_data, &platform_notification_data));
+          notification_data, platform_notification_data));
 }
 
 TEST(NotificationStructTraitsTest, NotificationResourcesRoundtrip) {
@@ -228,7 +228,7 @@ TEST(NotificationStructTraitsTest, NotificationResourcesRoundtrip) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<blink::mojom::NotificationResources>(
-          &resources, &roundtrip_resources));
+          resources, roundtrip_resources));
 
   ASSERT_FALSE(roundtrip_resources.image.empty());
   EXPECT_TRUE(ImagesShareDimensionsAndColor(resources.image,

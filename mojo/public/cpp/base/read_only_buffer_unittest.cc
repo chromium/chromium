@@ -17,7 +17,7 @@ TEST(ReadOnlyBufferTest, ReadOnlyBufferEmptySpan) {
   base::span<const uint8_t> out;
 
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::ReadOnlyBuffer>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::ReadOnlyBuffer>(in, out));
   EXPECT_TRUE(std::equal(in.begin(), in.end(), out.begin(), out.end()));
 }
 

@@ -339,7 +339,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
 
       gfx::GpuMemoryBufferHandle output_handle;
       mojo::test::SerializeAndDeserialize<gfx::mojom::GpuMemoryBufferHandle>(
-          &handle, &output_handle);
+          handle, output_handle);
       EXPECT_EQ(output_handle.type, kBufferType);
 
       std::unique_ptr<GpuMemoryBufferImpl> buffer(

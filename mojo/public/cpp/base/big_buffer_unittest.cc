@@ -30,7 +30,7 @@ TEST(BigBufferTest, EmptyBuffer) {
   EXPECT_EQ(BigBuffer::StorageType::kBytes, in.storage_type());
   EXPECT_EQ(0u, in.size());
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(in, out));
 
   EXPECT_EQ(BigBuffer::StorageType::kBytes, out.storage_type());
   EXPECT_TRUE(BufferEquals(in, out));
@@ -41,7 +41,7 @@ TEST(BigBufferTest, SmallDataSize) {
   EXPECT_EQ(BigBuffer::StorageType::kBytes, in.storage_type());
 
   BigBuffer out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(in, out));
 
   EXPECT_EQ(BigBuffer::StorageType::kBytes, out.storage_type());
   EXPECT_TRUE(BufferEquals(in, out));
@@ -56,7 +56,7 @@ TEST(BigBufferTest, LargeDataSize) {
   EXPECT_EQ(BigBuffer::StorageType::kSharedMemory, in.storage_type());
 
   BigBuffer out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(in, out));
 
   EXPECT_EQ(BigBuffer::StorageType::kSharedMemory, out.storage_type());
 
@@ -74,7 +74,7 @@ TEST(BigBufferTest, InvalidBuffer) {
   EXPECT_EQ(invalid_view.storage_type(),
             BigBuffer::StorageType::kInvalidBuffer);
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(
-      &invalid_view, &out_view));
+      invalid_view, out_view));
 
   BigBuffer out_buffer;
   auto invalid_buffer =
@@ -82,7 +82,7 @@ TEST(BigBufferTest, InvalidBuffer) {
   EXPECT_EQ(invalid_buffer.storage_type(),
             BigBuffer::StorageType::kInvalidBuffer);
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(
-      &invalid_buffer, &out_buffer));
+      invalid_buffer, out_buffer));
 }
 
 }  // namespace big_buffer_unittest

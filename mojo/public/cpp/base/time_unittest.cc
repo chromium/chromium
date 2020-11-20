@@ -14,7 +14,7 @@ TEST(TimeTest, Time) {
   base::Time in = base::Time::Now();
   base::Time out;
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Time>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Time>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -22,7 +22,7 @@ TEST(TimeTest, TimeDelta) {
   base::TimeDelta in = base::TimeDelta::FromDays(123);
   base::TimeDelta out;
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TimeDelta>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TimeDelta>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -30,7 +30,7 @@ TEST(TimeTest, TimeTicks) {
   base::TimeTicks in = base::TimeTicks::Now();
   base::TimeTicks out;
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TimeTicks>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TimeTicks>(in, out));
   EXPECT_EQ(in, out);
 }
 

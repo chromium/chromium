@@ -21,7 +21,7 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_Empty) {
 
   net::DnsConfigOverrides deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DnsConfigOverrides>(
-      &original, &deserialized));
+      original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }
@@ -46,7 +46,7 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_FullySpecified) {
 
   net::DnsConfigOverrides deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DnsConfigOverrides>(
-      &original, &deserialized));
+      original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }
@@ -70,7 +70,7 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_OnlyDnsOverHttpsServers) {
 
   net::DnsConfigOverrides deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DnsConfigOverrides>(
-      &original, &deserialized));
+      original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }
@@ -81,7 +81,7 @@ TEST(HostResolverMojomTraitsTest, ResolveErrorInfo) {
 
   net::ResolveErrorInfo deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ResolveErrorInfo>(
-      &original, &deserialized));
+      original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }

@@ -32,7 +32,7 @@ TEST(DigitallySignedTraitsTest, Roundtrips) {
 
       net::ct::DigitallySigned copied;
       EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DigitallySigned>(
-          &original, &copied))
+          original, copied))
           << "with hash " << hash_alg << " and sig " << sig_alg;
       EXPECT_EQ(original.hash_algorithm, copied.hash_algorithm);
       EXPECT_EQ(original.signature_algorithm, copied.signature_algorithm);
@@ -49,7 +49,7 @@ TEST(DigitallySignedTraitsTest, EmptySignatureRejected) {
 
   net::ct::DigitallySigned copied;
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::DigitallySigned>(
-      &original, &copied));
+      original, copied));
 }
 
 TEST(DigitallySignedTraitsTest, OutOfBoundsEnumsRejected) {
@@ -61,8 +61,8 @@ TEST(DigitallySignedTraitsTest, OutOfBoundsEnumsRejected) {
 
   net::ct::DigitallySigned copied;
   EXPECT_DCHECK_DEATH(
-      mojo::test::SerializeAndDeserialize<mojom::DigitallySigned>(&original,
-                                                                  &copied));
+      mojo::test::SerializeAndDeserialize<mojom::DigitallySigned>(original,
+                                                                  copied));
 }
 
 }  // namespace

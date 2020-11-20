@@ -118,7 +118,7 @@ TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePaper) {
     printing::PrinterSemanticCapsAndDefaults::Paper input = paper;
     printing::PrinterSemanticCapsAndDefaults::Paper output;
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<printing::mojom::Paper>(
-        &input, &output));
+        input, output));
     EXPECT_EQ(paper, output);
   }
 }
@@ -130,7 +130,7 @@ TEST(PrintBackendMojomTraitsTest,
     printing::AdvancedCapability input = advanced_capability;
     printing::AdvancedCapability output;
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-                printing::mojom::AdvancedCapability>(&input, &output));
+                printing::mojom::AdvancedCapability>(input, output));
     EXPECT_EQ(advanced_capability, output);
   }
 }
@@ -142,9 +142,8 @@ TEST(PrintBackendMojomTraitsTest,
       GenerateSamplePrinterSemanticCapsAndDefaults();
   printing::PrinterSemanticCapsAndDefaults output;
 
-  EXPECT_TRUE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
   EXPECT_EQ(kCollateCapable, output.collate_capable);
   EXPECT_EQ(kCollateDefault, output.collate_default);
@@ -175,9 +174,8 @@ TEST(PrintBackendMojomTraitsTest,
   // Override sample with no copies.
   input.copies_max = 0;
 
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 }
 
 TEST(
@@ -204,9 +202,8 @@ TEST(
   input.advanced_capabilities = kEmptyAdvancedCapabilities;
 #endif
 
-  EXPECT_TRUE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
   EXPECT_EQ(kEmptyDuplexModes, output.duplex_modes);
   EXPECT_EQ(kEmptyUserDefinedPapers, output.user_defined_papers);
@@ -225,9 +222,8 @@ TEST(PrintBackendMojomTraitsTest,
   // Override sample with empty `papers`, which is not allowed.
   input.papers = printing::PrinterSemanticCapsAndDefaults::Papers{};
 
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 }
 
 TEST(
@@ -243,9 +239,8 @@ TEST(
       printing::mojom::DuplexMode::kSimplex,
       printing::mojom::DuplexMode::kSimplex};
 
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
   // Use a paper with same name but different size.
   printing::PrinterSemanticCapsAndDefaults::Paper paperA4Prime = kPaperA4;
@@ -254,24 +249,21 @@ TEST(
   input.papers = printing::PrinterSemanticCapsAndDefaults::Papers{
       kPaperA4, kPaperLetter, kPaperLedger, paperA4Prime};
 
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
   input = GenerateSamplePrinterSemanticCapsAndDefaults();
   input.user_defined_papers = printing::PrinterSemanticCapsAndDefaults::Papers{
       kPaperLetter, kPaperLetter};
 
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
   input = GenerateSamplePrinterSemanticCapsAndDefaults();
   input.dpis = std::vector<gfx::Size>{kDpi600, kDpi600, kDpi1200};
 
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
 #if defined(OS_CHROMEOS)
   // Use an advanced capability with same name but different other fields.
@@ -282,9 +274,8 @@ TEST(
   input.advanced_capabilities = printing::AdvancedCapabilities{
       kAdvancedCapability1, advancedCapability1Prime};
 
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<
-          printing::mojom::PrinterSemanticCapsAndDefaults>(&input, &output));
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               printing::mojom::PrinterSemanticCapsAndDefaults>(input, output));
 #endif
 }
 

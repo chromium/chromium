@@ -138,8 +138,8 @@ TEST_F(StructTraitsTest, Transform) {
 TEST_F(StructTraitsTest, AcceleratedWidget) {
   gfx::AcceleratedWidget input(CastToAcceleratedWidget(1001));
   gfx::AcceleratedWidget output;
-  mojo::test::SerializeAndDeserialize<gfx::mojom::AcceleratedWidget>(&input,
-                                                                     &output);
+  mojo::test::SerializeAndDeserialize<gfx::mojom::AcceleratedWidget>(input,
+                                                                     output);
   EXPECT_EQ(input, output);
 }
 
@@ -252,8 +252,8 @@ TEST_F(StructTraitsTest, PresentationFeedback) {
   input.latch_timestamp =
       base::TimeTicks() + base::TimeDelta::FromMilliseconds(22);
   PresentationFeedback output;
-  mojo::test::SerializeAndDeserialize<gfx::mojom::PresentationFeedback>(
-      &input, &output);
+  mojo::test::SerializeAndDeserialize<gfx::mojom::PresentationFeedback>(input,
+                                                                        output);
   EXPECT_EQ(timestamp, output.timestamp);
   EXPECT_EQ(interval, output.interval);
   EXPECT_EQ(flags, output.flags);

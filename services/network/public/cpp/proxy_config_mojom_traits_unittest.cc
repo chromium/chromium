@@ -22,7 +22,7 @@ bool TestProxyConfigRoundTrip(net::ProxyConfigWithAnnotation& original_config) {
   net::ProxyConfigWithAnnotation copied_config;
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::ProxyConfigWithAnnotation>(
-          &original_config, &copied_config));
+          original_config, copied_config));
 
   return original_config.value().Equals(copied_config.value()) &&
          original_config.traffic_annotation() ==

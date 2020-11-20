@@ -16,7 +16,7 @@ TEST(IPAddressStructTraitsTest, Ipv4) {
 
   IPAddress deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<network::mojom::IPAddress>(
-      &original, &deserialized));
+      original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }
@@ -26,7 +26,7 @@ TEST(IPAddressStructTraitsTest, Ipv6) {
 
   IPAddress deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<network::mojom::IPAddress>(
-      &original, &deserialized));
+      original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }
@@ -40,7 +40,7 @@ TEST(IPAddressStructTraitsTest, InvalidAddress) {
 
   IPAddress deserialized;
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<network::mojom::IPAddress>(
-      &original, &deserialized));
+      original, deserialized));
 }
 
 }  // namespace

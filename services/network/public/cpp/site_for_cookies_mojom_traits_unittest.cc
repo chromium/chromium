@@ -22,7 +22,7 @@ TEST(SiteForCookiesMojomTraitsTest, SerializeAndDeserialize) {
     net::SiteForCookies copied;
     EXPECT_TRUE(
         mojo::test::SerializeAndDeserialize<network::mojom::SiteForCookies>(
-            &original, &copied));
+            original, copied));
     EXPECT_TRUE(original.IsEquivalent(copied));
     EXPECT_EQ(original.schemefully_same(), copied.schemefully_same());
   }

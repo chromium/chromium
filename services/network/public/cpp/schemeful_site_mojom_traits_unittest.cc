@@ -38,7 +38,7 @@ TEST(SchemefulSiteMojomTraitsTest, SerializeAndDeserialize) {
   for (auto original : keys) {
     net::SchemefulSite copied;
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SchemefulSite>(
-        &original, &copied));
+        original, copied));
     EXPECT_EQ(original, copied);
   }
 }

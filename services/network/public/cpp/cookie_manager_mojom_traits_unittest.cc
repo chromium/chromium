@@ -20,12 +20,6 @@
 namespace network {
 namespace {
 
-template <typename MojoType, typename NativeType>
-bool SerializeAndDeserializeEnum(NativeType in, NativeType* out) {
-  MojoType intermediate = mojo::EnumTraits<MojoType, NativeType>::ToMojom(in);
-  return mojo::EnumTraits<MojoType, NativeType>::FromMojom(intermediate, out);
-}
-
 TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   net::CanonicalCookie original(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(), false,
@@ -35,7 +29,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   net::CanonicalCookie copied;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
-      &original, &copied));
+      original, copied));
 
   EXPECT_EQ(original.Name(), copied.Name());
   EXPECT_EQ(original.Value(), copied.Value());
@@ -60,7 +54,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   net::CanonicalCookie copied_unspecified;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
-      &original_unspecified, &copied_unspecified));
+      original_unspecified, copied_unspecified));
 
   EXPECT_EQ(original_unspecified.SourcePort(), copied_unspecified.SourcePort());
 
@@ -72,7 +66,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   net::CanonicalCookie copied_invalid;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
-      &original_invalid, &copied_invalid));
+      original_invalid, copied_invalid));
 
   EXPECT_EQ(original_invalid.SourcePort(), copied_invalid.SourcePort());
 
@@ -85,7 +79,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
                                   net::COOKIE_PRIORITY_LOW, false);
 
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
-      &original, &copied));
+      original, copied));
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_CookieInclusionStatus) {
@@ -105,7 +99,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieInclusionStatus) {
   net::CookieInclusionStatus copied;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieInclusionStatus>(
-      &original, &copied));
+      original, copied));
   EXPECT_TRUE(copied.HasExactlyExclusionReasonsForTesting(
       {net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
        net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX,
@@ -121,7 +115,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieInclusionStatus) {
 
   EXPECT_FALSE(
       mojo::test::SerializeAndDeserialize<mojom::CookieInclusionStatus>(
-          &invalid, &copied));
+          invalid, copied));
 }
 
 TEST(CookieManagerTraitsTest, Rountrips_CookieAccessResult) {
@@ -136,7 +130,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieAccessResult) {
   net::CookieAccessResult copied;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieAccessResult>(
-      &original, &copied));
+      original, copied));
 
   EXPECT_EQ(original.effective_same_site, copied.effective_same_site);
   EXPECT_TRUE(copied.status.HasExactlyExclusionReasonsForTesting(
@@ -159,7 +153,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::CookieWithAccessResult>(
-          &original, &copied));
+          original, copied));
 
   EXPECT_EQ(original.cookie.Name(), copied.cookie.Name());
   EXPECT_EQ(original.cookie.Value(), copied.cookie.Value());
@@ -190,7 +184,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieAndLineWithAccessResult) {
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::CookieAndLineWithAccessResult>(
-          &original, &copied));
+          original, copied));
 
   EXPECT_EQ(original.cookie->Name(), copied.cookie->Name());
   EXPECT_EQ(original.cookie->Value(), copied.cookie->Value());
@@ -213,8 +207,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSite) {
        {net::CookieSameSite::NO_RESTRICTION, net::CookieSameSite::LAX_MODE,
         net::CookieSameSite::STRICT_MODE, net::CookieSameSite::UNSPECIFIED}) {
     net::CookieSameSite roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::CookieSameSite>(cookie_state,
-                                                                   &roundtrip));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieSameSite>(
+        cookie_state, roundtrip));
     EXPECT_EQ(cookie_state, roundtrip);
   }
 }
@@ -227,8 +221,9 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieEffectiveSameSite) {
         net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
         net::CookieEffectiveSameSite::UNDEFINED}) {
     net::CookieEffectiveSameSite roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::CookieEffectiveSameSite>(
-        cookie_state, &roundtrip));
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::CookieEffectiveSameSite>(
+            cookie_state, roundtrip));
     EXPECT_EQ(cookie_state, roundtrip);
   }
 }
@@ -239,8 +234,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_ContextType) {
        {ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
         ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_STRICT}) {
     ContextType roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::ContextType>(context_type,
-                                                                &roundtrip));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ContextType>(
+        context_type, roundtrip));
     EXPECT_EQ(context_type, roundtrip);
   }
 }
@@ -251,8 +246,9 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessSemantics) {
         net::CookieAccessSemantics::NONLEGACY,
         net::CookieAccessSemantics::LEGACY}) {
     net::CookieAccessSemantics roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::CookieAccessSemantics>(
-        access_semantics, &roundtrip));
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::CookieAccessSemantics>(
+            access_semantics, roundtrip));
     EXPECT_EQ(access_semantics, roundtrip);
   }
 }
@@ -262,8 +258,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSourceScheme) {
        {net::CookieSourceScheme::kUnset, net::CookieSourceScheme::kNonSecure,
         net::CookieSourceScheme::kSecure}) {
     net::CookieSourceScheme roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::CookieSourceScheme>(
-        source_scheme, &roundtrip));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieSourceScheme>(
+        source_scheme, roundtrip));
     EXPECT_EQ(source_scheme, roundtrip);
   }
 }
@@ -276,8 +272,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeCause) {
         net::CookieChangeCause::EVICTED,
         net::CookieChangeCause::EXPIRED_OVERWRITE}) {
     net::CookieChangeCause roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::CookieChangeCause>(
-        change_cause, &roundtrip));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieChangeCause>(
+        change_cause, roundtrip));
     EXPECT_EQ(change_cause, roundtrip);
   }
 }
@@ -299,7 +295,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
 
       EXPECT_EQ(
           mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContext>(
-              &context_in, &copy),
+              context_in, copy),
           schemeful_context_type <= context_type);
 
       if (schemeful_context_type <= context_type)
@@ -316,7 +312,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     least_trusted.set_return_excluded_cookies();  // differ from default.
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
-        &least_trusted, &copy));
+        least_trusted, copy));
     EXPECT_TRUE(copy.exclude_httponly());
     EXPECT_EQ(
         net::CookieOptions::SameSiteCookieContext(
@@ -335,7 +331,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     very_trusted.set_full_party_context(kPartyContext);
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
-        &very_trusted, &copy));
+        very_trusted, copy));
     EXPECT_FALSE(copy.exclude_httponly());
     EXPECT_EQ(net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
               copy.same_site_cookie_context());
@@ -360,7 +356,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_FullPartyContext) {
       net::CookieOptions options, copy;
       options.set_full_party_context(fpc);
       EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
-          &options, &copy));
+          options, copy));
       EXPECT_EQ(fpc, copy.full_party_context());
     }
   }
@@ -370,7 +366,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_FullPartyContext) {
     net::CookieOptions options, copy;
     options.set_full_party_context(kFullPartyContext);
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
-        &options, &copy));
+        options, copy));
     EXPECT_EQ(kFullPartyContext, copy.full_party_context());
   }
 }
@@ -391,7 +387,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   net::CookieChangeInfo copied;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieChangeInfo>(
-      &original, &copied));
+      original, copied));
 
   EXPECT_EQ(original.cookie.Name(), copied.cookie.Name());
   EXPECT_EQ(original.cookie.Value(), copied.cookie.Value());

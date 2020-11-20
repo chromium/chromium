@@ -23,7 +23,7 @@ TEST(String16MojomTraitsTest, String16) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::String16>(
-          &str, &output));
+          str, output));
   ASSERT_EQ(str, output);
 
   // Replace the "o"s in "hello world" with "o"s with acute, so that |str| is
@@ -32,7 +32,7 @@ TEST(String16MojomTraitsTest, String16) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::String16>(
-          &str, &output));
+          str, output));
   ASSERT_EQ(str, output);
 }
 
@@ -42,7 +42,7 @@ TEST(String16MojomTraitsTest, EmptyString16) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::String16>(
-          &str, &output));
+          str, output));
   ASSERT_EQ(str, output);
 }
 
@@ -52,7 +52,7 @@ TEST(String16MojomTraitsTest, BigString16_Empty) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::BigString16>(
-          &str, &output));
+          str, output));
   ASSERT_EQ(str, output);
 }
 
@@ -63,7 +63,7 @@ TEST(String16MojomTraitsTest, BigString16_Short) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::BigString16>(
-          &str, &output));
+          str, output));
   ASSERT_EQ(str, output);
 
   // Replace the "o"s in "hello world" with "o"s with acute, so that |str| is
@@ -72,7 +72,7 @@ TEST(String16MojomTraitsTest, BigString16_Short) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::BigString16>(
-          &str, &output));
+          str, output));
   ASSERT_EQ(str, output);
 }
 
@@ -85,7 +85,7 @@ TEST(String16MojomTraitsTest, BigString16_Long) {
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::BigString16>(
-          &str, &output));
+          str, output));
   ASSERT_EQ(str, output);
 }
 

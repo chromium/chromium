@@ -35,7 +35,7 @@ TEST(AXTreeDataMojomTraitsTest, TestSerializeAndDeserializeAXTreeData) {
   input.sel_focus_affinity = ax::mojom::TextAffinity::kDownstream;
   input.root_scroller_id = 14;
 
-  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeData>(&input, &output));
+  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeData>(input, output));
 
   EXPECT_EQ(tree_id_1, output.tree_id);
   EXPECT_EQ(tree_id_2, output.parent_tree_id);

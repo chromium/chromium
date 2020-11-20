@@ -30,7 +30,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripEmpty) {
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              blink::mojom::blink::FetchAPIRequestBody>(&src, &dest));
+              blink::mojom::blink::FetchAPIRequestBody>(src, dest));
 
   EXPECT_TRUE(dest.IsEmpty());
 }
@@ -43,7 +43,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBytes) {
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              blink::mojom::blink::FetchAPIRequestBody>(&src, &dest));
+              blink::mojom::blink::FetchAPIRequestBody>(src, dest));
 
   ASSERT_TRUE(dest.FormBody());
   EXPECT_EQ(dest.FormBody()->Identifier(), 29);
@@ -61,7 +61,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFile) {
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              blink::mojom::blink::FetchAPIRequestBody>(&src, &dest));
+              blink::mojom::blink::FetchAPIRequestBody>(src, dest));
 
   ASSERT_TRUE(dest.FormBody());
   ASSERT_EQ(1u, dest.FormBody()->Elements().size());
@@ -79,7 +79,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFileRange) {
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              blink::mojom::blink::FetchAPIRequestBody>(&src, &dest));
+              blink::mojom::blink::FetchAPIRequestBody>(src, dest));
 
   ASSERT_TRUE(dest.FormBody());
   ASSERT_EQ(1u, dest.FormBody()->Elements().size());
@@ -102,7 +102,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBlobWithOpionalHandle) {
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              blink::mojom::blink::FetchAPIRequestBody>(&src, &dest));
+              blink::mojom::blink::FetchAPIRequestBody>(src, dest));
 
   ASSERT_TRUE(dest.FormBody());
   ASSERT_EQ(1u, dest.FormBody()->Elements().size());
@@ -122,7 +122,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripDataPipeGetter) {
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              blink::mojom::blink::FetchAPIRequestBody>(&src, &dest));
+              blink::mojom::blink::FetchAPIRequestBody>(src, dest));
 
   ASSERT_TRUE(dest.FormBody());
   ASSERT_EQ(1u, dest.FormBody()->Elements().size());
@@ -139,7 +139,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripStreamBody) {
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              blink::mojom::blink::FetchAPIRequestBody>(&src, &dest));
+              blink::mojom::blink::FetchAPIRequestBody>(src, dest));
 
   EXPECT_FALSE(dest.FormBody());
   ASSERT_TRUE(dest.StreamBody());

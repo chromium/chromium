@@ -22,8 +22,8 @@ namespace test {
 template <typename MojomType,
           typename UserStructType,
           std::enable_if_t<!std::is_enum<UserStructType>::value, int> = 0>
-bool SerializeAndDeserialize(UserStructType* input, UserStructType* output) {
-  mojo::Message message = MojomType::SerializeAsMessage(input);
+bool SerializeAndDeserialize(UserStructType& input, UserStructType& output) {
+  mojo::Message message = MojomType::SerializeAsMessage(&input);
 
   // This accurately simulates full serialization to ensure that all attached
   // handles are serialized as well. Necessary for DeserializeFromMessage to
@@ -32,7 +32,7 @@ bool SerializeAndDeserialize(UserStructType* input, UserStructType* output) {
   message = mojo::Message::CreateFromMessageHandle(&handle);
   DCHECK(!message.IsNull());
 
-  return MojomType::DeserializeFromMessage(std::move(message), output);
+  return MojomType::DeserializeFromMessage(std::move(message), &output);
 }
 
 // This overload is used for mojom structures with struct traits, but here they
@@ -43,9 +43,9 @@ bool SerializeAndDeserialize(UserStructType* input, UserStructType* output) {
 template <typename MojomType,
           typename UserStructType,
           std::enable_if_t<!std::is_enum<UserStructType>::value, int> = 0>
-bool SerializeAndDeserialize(mojo::StructPtr<MojomType>* input,
-                             UserStructType* output) {
-  mojo::Message message = MojomType::SerializeAsMessage(input);
+bool SerializeAndDeserialize(mojo::StructPtr<MojomType>& input,
+                             UserStructType& output) {
+  mojo::Message message = MojomType::SerializeAsMessage(&input);
 
   // This accurately simulates full serialization to ensure that all attached
   // handles are serialized as well. Necessary for DeserializeFromMessage to
@@ -54,7 +54,7 @@ bool SerializeAndDeserialize(mojo::StructPtr<MojomType>* input,
   message = mojo::Message::CreateFromMessageHandle(&handle);
   DCHECK(!message.IsNull());
 
-  return MojomType::DeserializeFromMessage(std::move(message), output);
+  return MojomType::DeserializeFromMessage(std::move(message), &output);
 }
 
 // This overload is used for mojom enums. The C++ enum type is given as an
@@ -62,9 +62,9 @@ bool SerializeAndDeserialize(mojo::StructPtr<MojomType>* input,
 template <typename MojomType,
           typename UserEnumType,
           std::enable_if_t<std::is_enum<UserEnumType>::value, int> = 0>
-bool SerializeAndDeserialize(UserEnumType* input, UserEnumType* output) {
-  MojomType mode = mojo::EnumTraits<MojomType, UserEnumType>::ToMojom(*input);
-  return mojo::EnumTraits<MojomType, UserEnumType>::FromMojom(mode, output);
+bool SerializeAndDeserialize(UserEnumType input, UserEnumType& output) {
+  MojomType mode = mojo::EnumTraits<MojomType, UserEnumType>::ToMojom(input);
+  return mojo::EnumTraits<MojomType, UserEnumType>::FromMojom(mode, &output);
 }
 
 // Writes a message to |handle| with message data |text|. Returns true on

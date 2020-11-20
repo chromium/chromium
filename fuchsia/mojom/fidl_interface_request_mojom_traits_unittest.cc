@@ -22,8 +22,8 @@ TEST(InterfaceRequestStructTraitsTest, Serialization) {
   fidl::InterfaceRequest<TestInterface> output_request;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              fuchsia::test::mojom::TestInterfaceRequest>(&input_request,
-                                                          &output_request));
+              fuchsia::test::mojom::TestInterfaceRequest>(input_request,
+                                                          output_request));
   EXPECT_TRUE(output_request.is_valid());
 }
 

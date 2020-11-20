@@ -54,14 +54,14 @@ TEST(StructTraitsTest, ImageInfo) {
       SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kAdobeRGB));
   SkImageInfo output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::ImageInfo>(
-      &input, &output));
+      input, output));
   EXPECT_EQ(input, output);
 
   SkImageInfo another_input_with_null_color_space =
       SkImageInfo::Make(54, 43, SkColorType::kRGBA_8888_SkColorType,
                         SkAlphaType::kPremul_SkAlphaType, nullptr);
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::ImageInfo>(
-      &another_input_with_null_color_space, &output));
+      another_input_with_null_color_space, output));
   EXPECT_FALSE(output.colorSpace());
   EXPECT_EQ(another_input_with_null_color_space, output);
 }
@@ -76,7 +76,7 @@ TEST(StructTraitsTest, ImageInfoCustomColorSpace) {
                         kUnpremul_SkAlphaType, color_space);
   SkImageInfo output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::ImageInfo>(
-      &input, &output));
+      input, output));
   EXPECT_TRUE(output.colorSpace());
   EXPECT_EQ(input, output);
 }
@@ -90,8 +90,8 @@ TEST(StructTraitsTest, Bitmap) {
   input.eraseColor(SK_ColorYELLOW);
   input.erase(SK_ColorTRANSPARENT, SkIRect::MakeXYWH(0, 1, 2, 3));
   SkBitmap output;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
-      &input, &output));
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output));
   EXPECT_EQ(input.info(), output.info());
   EXPECT_EQ(input.rowBytes(), output.rowBytes());
   EXPECT_TRUE(gfx::BitmapsAreEqual(input, output));
@@ -107,8 +107,8 @@ TEST(StructTraitsTest, BitmapNull) {
 
   // Null input produces a default-initialized SkBitmap.
   SkBitmap output;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
-      &input, &output));
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output));
   EXPECT_EQ(output.info().alphaType(), kUnknown_SkAlphaType);
   EXPECT_EQ(output.info().colorType(), kUnknown_SkColorType);
   EXPECT_EQ(output.rowBytes(), 0u);
@@ -122,8 +122,8 @@ TEST(StructTraitsTest, BitmapTooWideToSerialize) {
       SkImageInfo::MakeN32(kTooWide, 1, SkAlphaType::kUnpremul_SkAlphaType));
   input.eraseColor(SK_ColorYELLOW);
   SkBitmap output;
-  ASSERT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
-      &input, &output));
+  ASSERT_FALSE(
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output));
 }
 
 TEST(StructTraitsTest, BitmapTooTallToSerialize) {
@@ -133,8 +133,8 @@ TEST(StructTraitsTest, BitmapTooTallToSerialize) {
       SkImageInfo::MakeN32(1, kTooTall, SkAlphaType::kUnpremul_SkAlphaType));
   input.eraseColor(SK_ColorYELLOW);
   SkBitmap output;
-  ASSERT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
-      &input, &output));
+  ASSERT_FALSE(
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output));
 }
 
 TEST(StructTraitsTest, BitmapSerializeInvalidRowBytes) {
@@ -156,7 +156,7 @@ TEST(StructTraitsTest, VerifyBitmapConstruction) {
 
   SkBitmap output;
   bool ok =
-      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output);
   EXPECT_TRUE(ok);
 }
 
@@ -166,7 +166,7 @@ TEST(StructTraitsTest, BitmapDeserializeIgnoresRowBytes) {
 
   SkBitmap output;
   bool ok =
-      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output);
   EXPECT_TRUE(ok);
   // The row_bytes field is ignored, and the minRowBytes() is always used.
   EXPECT_EQ(4u, output.rowBytes());
@@ -178,7 +178,7 @@ TEST(StructTraitsTest, BitmapDeserializeMismatchFormatAndPixels) {
 
   SkBitmap output;
   bool ok =
-      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output);
   EXPECT_FALSE(ok);
 }
 
@@ -188,7 +188,7 @@ TEST(StructTraitsTest, BitmapDeserializeTooFewPixels) {
 
   SkBitmap output;
   bool ok =
-      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output);
   EXPECT_FALSE(ok);
 }
 
@@ -198,7 +198,7 @@ TEST(StructTraitsTest, BitmapDeserializeTooManyPixels) {
 
   SkBitmap output;
   bool ok =
-      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(&input, &output);
+      mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(input, output);
   EXPECT_FALSE(ok);
 }
 
@@ -206,15 +206,15 @@ TEST(StructTraitsTest, BlurImageFilterTileMode) {
   SkBlurImageFilter::TileMode input(SkBlurImageFilter::kClamp_TileMode);
   SkBlurImageFilter::TileMode output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
-      &input, &output));
+      input, output));
   EXPECT_EQ(input, output);
   input = SkBlurImageFilter::kRepeat_TileMode;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
-      &input, &output));
+      input, output));
   EXPECT_EQ(input, output);
   input = SkBlurImageFilter::kClampToBlack_TileMode;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
-      &input, &output));
+      input, output));
   EXPECT_EQ(input, output);
 }
 
@@ -228,7 +228,7 @@ TEST(StructTraitsTest, InlineBitmap) {
   input.erase(SK_ColorTRANSPARENT, SkIRect::MakeXYWH(0, 1, 2, 3));
   SkBitmap output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
-      &input, &output));
+      input, output));
   EXPECT_EQ(input.info(), output.info());
   EXPECT_EQ(input.rowBytes(), output.rowBytes());
   EXPECT_TRUE(gfx::BitmapsAreEqual(input, output));
@@ -245,7 +245,7 @@ TEST(StructTraitsTest, InlineBitmapNull) {
   // Null input produces a default-initialized SkBitmap.
   SkBitmap output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
-      &input, &output));
+      input, output));
   EXPECT_EQ(output.info().alphaType(), kUnknown_SkAlphaType);
   EXPECT_EQ(output.info().colorType(), kUnknown_SkColorType);
   EXPECT_EQ(output.rowBytes(), 0u);
@@ -291,7 +291,7 @@ TEST(StructTraitsTest, VerifyInlineBitmapConstruction) {
 
   SkBitmap output;
   bool ok = mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
-      &input, &output);
+      input, output);
   EXPECT_TRUE(ok);
 }
 
@@ -301,7 +301,7 @@ TEST(StructTraitsTest, InlineBitmapDeserializeTooFewBytes) {
 
   SkBitmap output;
   bool ok = mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
-      &input, &output);
+      input, output);
   EXPECT_FALSE(ok);
 }
 
@@ -311,7 +311,7 @@ TEST(StructTraitsTest, InlineBitmapDeserializeTooManyBytes) {
 
   SkBitmap output;
   bool ok = mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
-      &input, &output);
+      input, output);
   EXPECT_FALSE(ok);
 }
 

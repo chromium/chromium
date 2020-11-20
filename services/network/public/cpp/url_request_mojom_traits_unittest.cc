@@ -104,8 +104,8 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       "some_header");
 
   network::ResourceRequest copied;
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::URLRequest>(&original,
-                                                                     &copied));
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original, copied));
   EXPECT_TRUE(original.EqualsForTesting(copied));
 }
 

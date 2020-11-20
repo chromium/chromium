@@ -36,7 +36,7 @@ TEST(AXEventMojomTraitsTest, RoundTrip) {
   input.action_request_id = 222;
 
   ui::AXEvent output;
-  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXEvent>(&input, &output));
+  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXEvent>(input, output));
   EXPECT_EQ(ax::mojom::Event::kTextChanged, output.event_type);
   EXPECT_EQ(111, output.id);
   EXPECT_EQ(ax::mojom::EventFrom::kUser, output.event_from);

@@ -173,8 +173,8 @@ TEST_F(GamepadStructTraitsTest, GamepadCommon) {
   Gamepad gamepad_in = GetWebGamepadInstance(GamepadCommon);
   Gamepad gamepad_out;
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Gamepad>(
-      &gamepad_in, &gamepad_out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Gamepad>(gamepad_in,
+                                                                  gamepad_out));
   EXPECT_EQ(true, isWebGamepadEqual(gamepad_in, gamepad_out));
 }
 
@@ -182,8 +182,8 @@ TEST_F(GamepadStructTraitsTest, GamepadPose_HasOrientation) {
   Gamepad gamepad_in = GetWebGamepadInstance(GamepadPose_HasOrientation);
   Gamepad gamepad_out;
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Gamepad>(
-      &gamepad_in, &gamepad_out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Gamepad>(gamepad_in,
+                                                                  gamepad_out));
   EXPECT_EQ(true, isWebGamepadEqual(gamepad_in, gamepad_out));
 }
 
@@ -191,8 +191,8 @@ TEST_F(GamepadStructTraitsTest, GamepadPose_HasPosition) {
   Gamepad gamepad_in = GetWebGamepadInstance(GamepadPose_HasPosition);
   Gamepad gamepad_out;
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Gamepad>(
-      &gamepad_in, &gamepad_out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Gamepad>(gamepad_in,
+                                                                  gamepad_out));
   EXPECT_EQ(true, isWebGamepadEqual(gamepad_in, gamepad_out));
 }
 
@@ -200,8 +200,8 @@ TEST_F(GamepadStructTraitsTest, GamepadPose_Null) {
   Gamepad gamepad_in = GetWebGamepadInstance(GamepadPose_Null);
   Gamepad gamepad_out;
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Gamepad>(
-      &gamepad_in, &gamepad_out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Gamepad>(gamepad_in,
+                                                                  gamepad_out));
   EXPECT_EQ(true, isWebGamepadEqual(gamepad_in, gamepad_out));
 }
 }  // namespace device
