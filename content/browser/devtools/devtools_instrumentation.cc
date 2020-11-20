@@ -669,12 +669,14 @@ void OnRequestWillBeSentExtraInfo(
     int routing_id,
     const std::string& devtools_request_id,
     const net::CookieAccessResultList& request_cookie_list,
-    const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers) {
+    const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
+    network::mojom::ClientSecurityStatePtr security_state) {
   FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, routing_id);
   if (ftn) {
     DispatchToAgents(ftn,
                      &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
-                     devtools_request_id, request_cookie_list, request_headers);
+                     devtools_request_id, request_cookie_list, request_headers,
+                     std::move(security_state));
     return;
   }
 
@@ -686,7 +688,8 @@ void OnRequestWillBeSentExtraInfo(
   DispatchToWorkerAgents(
       process_id, routing_id,
       &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
-      devtools_request_id, request_cookie_list, request_headers);
+      devtools_request_id, request_cookie_list, request_headers,
+      std::move(security_state));
 }
 
 void OnResponseReceivedExtraInfo(

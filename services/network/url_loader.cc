@@ -60,6 +60,7 @@
 #include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
@@ -1852,9 +1853,17 @@ void URLLoader::SetRawRequestHeadersAndNotify(
       header_array.push_back(std::move(pair));
     }
 
+    mojom::ClientSecurityStatePtr client_security_state;
+    if (factory_params_->client_security_state) {
+      client_security_state = factory_params_->client_security_state->Clone();
+    } else if (request_client_security_state_) {
+      client_security_state = request_client_security_state_->Clone();
+    }
+
     network_service_client_->OnRawRequest(
         GetProcessId(), GetRenderFrameId(), devtools_request_id().value(),
-        url_request_->maybe_sent_cookies(), std::move(header_array));
+        url_request_->maybe_sent_cookies(), std::move(header_array),
+        std::move(client_security_state));
   }
 
   if (cookie_observer_) {

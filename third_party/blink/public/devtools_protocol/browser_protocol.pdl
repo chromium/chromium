@@ -5483,6 +5483,24 @@ domain Network
       # WebSocket request data.
       WebSocketRequest request
 
+  experimental type PrivateNetworkRequestPolicy extends string
+    enum
+      Allow
+      BlockFromInsecureToMorePrivate
+
+  experimental type IPAddressSpace extends string
+    enum
+      Local
+      Private
+      Public
+      Unknown
+
+  experimental type ClientSecurityState extends object
+    properties
+      boolean initiatorIsSecureContext
+      IPAddressSpace initiatorIPAddressSpace
+      PrivateNetworkRequestPolicy privateNetworkRequestPolicy
+
   # Fired when additional information about a requestWillBeSent event is available from the
   # network stack. Not every requestWillBeSent event will have an additional
   # requestWillBeSentExtraInfo fired for it, and there is no guarantee whether requestWillBeSent
@@ -5496,6 +5514,8 @@ domain Network
       array of BlockedCookieWithReason associatedCookies
       # Raw request headers as they will be sent over the wire.
       Headers headers
+      # The client security state set for the request.
+      optional ClientSecurityState clientSecurityState
 
   # Fired when additional information about a responseReceived event is available from the network
   # stack. Not every responseReceived event will have an additional responseReceivedExtraInfo for

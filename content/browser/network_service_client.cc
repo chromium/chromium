@@ -212,10 +212,11 @@ void NetworkServiceClient::OnRawRequest(
     int32_t routing_id,
     const std::string& devtools_request_id,
     const net::CookieAccessResultList& cookies_with_access_result,
-    std::vector<network::mojom::HttpRawHeaderPairPtr> headers) {
+    std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
+    network::mojom::ClientSecurityStatePtr security_state) {
   devtools_instrumentation::OnRequestWillBeSentExtraInfo(
       process_id, routing_id, devtools_request_id, cookies_with_access_result,
-      headers);
+      headers, std::move(security_state));
 }
 
 void NetworkServiceClient::OnRawResponse(

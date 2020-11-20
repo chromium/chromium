@@ -84,6 +84,7 @@
 #include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/client_security_state.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -2433,16 +2434,56 @@ DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
   return Response::Success();
 }
 
+namespace {
+String BuildPrivateNetworkRequestPolicy(
+    network::mojom::PrivateNetworkRequestPolicy policy) {
+  switch (policy) {
+    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::Allow;
+    case network::mojom::PrivateNetworkRequestPolicy::
+        kBlockFromInsecureToMorePrivate:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::
+          BlockFromInsecureToMorePrivate;
+  }
+}
+String BuildIpAddressSpace(network::mojom::IPAddressSpace space) {
+  switch (space) {
+    case network::mojom::IPAddressSpace::kLocal:
+      return protocol::Network::IPAddressSpaceEnum::Local;
+    case network::mojom::IPAddressSpace::kPrivate:
+      return protocol::Network::IPAddressSpaceEnum::Private;
+    case network::mojom::IPAddressSpace::kPublic:
+      return protocol::Network::IPAddressSpaceEnum::Public;
+    case network::mojom::IPAddressSpace::kUnknown:
+      return protocol::Network::IPAddressSpaceEnum::Unknown;
+  }
+}
+Maybe<protocol::Network::ClientSecurityState> MaybeBuildClientSecurityState(
+    const network::mojom::ClientSecurityStatePtr& state) {
+  if (!state) {
+    return {};
+  }
+  return protocol::Network::ClientSecurityState::Create()
+      .SetPrivateNetworkRequestPolicy(BuildPrivateNetworkRequestPolicy(
+          state->private_network_request_policy))
+      .SetInitiatorIPAddressSpace(BuildIpAddressSpace(state->ip_address_space))
+      .SetInitiatorIsSecureContext(state->is_web_secure_context)
+      .Build();
+}
+}  // namespace
+
 void NetworkHandler::OnRequestWillBeSentExtraInfo(
     const std::string& devtools_request_id,
     const net::CookieAccessResultList& request_cookie_list,
-    const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers) {
+    const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
+    network::mojom::ClientSecurityStatePtr security_state) {
   if (!enabled_)
     return;
 
   frontend_->RequestWillBeSentExtraInfo(
       devtools_request_id, BuildProtocolAssociatedCookies(request_cookie_list),
-      GetRawHeaders(request_headers));
+      GetRawHeaders(request_headers),
+      MaybeBuildClientSecurityState(security_state));
 }
 
 void NetworkHandler::OnResponseReceivedExtraInfo(

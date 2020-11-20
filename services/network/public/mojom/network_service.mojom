@@ -27,6 +27,7 @@ import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
+import "services/network/public/mojom/client_security_state.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -66,7 +67,8 @@ interface NetworkServiceClient {
     int32 routing_id,
     string devtool_request_id,
     array<CookieWithAccessResult> cookies_with_access_result,
-    array<HttpRawHeaderPair> headers);
+    array<HttpRawHeaderPair> headers,
+    ClientSecurityState? client_security_state);
 
   // Called to send information about the cookies blocked from storage from a
   // received response. Only called when |devtool_request_id| is available to

@@ -37,7 +37,8 @@ class TestNetworkServiceClient : public network::mojom::NetworkServiceClient {
       int32_t routing_id,
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& cookies_with_access_result,
-      std::vector<network::mojom::HttpRawHeaderPairPtr> headers) override;
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
+      network::mojom::ClientSecurityStatePtr client_security_state) override;
   void OnRawResponse(
       int32_t process_id,
       int32_t routing_id,

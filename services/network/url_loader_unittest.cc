@@ -3131,12 +3131,14 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
       int32_t routing_id,
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& cookies_with_access_result,
-      std::vector<network::mojom::HttpRawHeaderPairPtr> headers) override {
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
+      network::mojom::ClientSecurityStatePtr client_security_state) override {
     raw_request_cookies_.insert(raw_request_cookies_.end(),
                                 cookies_with_access_result.begin(),
                                 cookies_with_access_result.end());
-
+    got_raw_request_ = true;
     devtools_request_id_ = devtools_request_id;
+    client_security_state_ = std::move(client_security_state);
 
     if (wait_for_raw_request_ &&
         raw_request_cookies_.size() >= wait_for_raw_request_goal_) {
@@ -3176,7 +3178,7 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
   }
 
   void WaitUntilRawRequest(size_t goal) {
-    if (raw_request_cookies_.size() < goal) {
+    if (raw_request_cookies_.size() < goal || !got_raw_request_) {
       wait_for_raw_request_goal_ = goal;
       base::RunLoop run_loop;
       wait_for_raw_request_ = run_loop.QuitClosure();
@@ -3199,6 +3201,10 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
     return raw_response_headers_;
   }
 
+  const network::mojom::ClientSecurityStatePtr& client_security_state() const {
+    return client_security_state_;
+  }
+
  private:
   net::CookieAndLineAccessResultList raw_response_cookies_;
   base::OnceClosure wait_for_raw_response_;
@@ -3206,9 +3212,11 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
   std::string devtools_request_id_;
   base::Optional<std::string> raw_response_headers_;
 
+  bool got_raw_request_ = false;
   net::CookieAccessResultList raw_request_cookies_;
   base::OnceClosure wait_for_raw_request_;
   size_t wait_for_raw_request_goal_ = 0u;
+  network::mojom::ClientSecurityStatePtr client_security_state_;
 
   DISALLOW_COPY_AND_ASSIGN(MockNetworkServiceClient);
 };
@@ -5879,6 +5887,132 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
             net::ERR_TRUST_TOKEN_OPERATION_FAILED);
   EXPECT_EQ(client()->completion_status().trust_token_operation_status,
             mojom::TrustTokenOperationStatus::kInternalError);
+}
+
+TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {
+  MockNetworkServiceClient network_service_client;
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
+  request.devtools_request_id = "fake-id";
+
+  auto client_security_state = mojom::ClientSecurityState::New();
+  client_security_state->is_web_secure_context = false;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  mojom::URLLoaderFactoryParams params;
+  params.client_security_state = std::move(client_security_state);
+  params.process_id = kProcessId;
+  params.is_corb_enabled = false;
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
+      context(), &network_service_client, /* network_context_client */ nullptr,
+      DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), 0, request,
+      client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
+      TRAFFIC_ANNOTATION_FOR_TESTS, &params,
+      /*coep_reporter=*/nullptr, 0 /* request_id */,
+      0 /* keepalive_request_size */, resource_scheduler_client(), nullptr,
+      nullptr /* network_usage_accumulator */, nullptr /* header_client */,
+      nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
+      mojo::NullRemote() /* cookie_observer */);
+
+  delete_run_loop.Run();
+  client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+
+  network_service_client.WaitUntilRawRequest(0);
+  ASSERT_TRUE(network_service_client.client_security_state());
+  EXPECT_EQ(network_service_client.client_security_state()
+                ->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kAllow);
+  EXPECT_EQ(
+      network_service_client.client_security_state()->is_web_secure_context,
+      false);
+  EXPECT_EQ(network_service_client.client_security_state()->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
+}
+
+TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateRequest) {
+  MockNetworkServiceClient network_service_client;
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
+  request.devtools_request_id = "fake-id";
+  auto client_security_state = mojom::ClientSecurityState::New();
+  client_security_state->is_web_secure_context = false;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  request.trusted_params->client_security_state =
+      std::move(client_security_state);
+
+  mojom::URLLoaderFactoryParams params;
+  params.process_id = kProcessId;
+  params.is_corb_enabled = false;
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
+      context(), &network_service_client, /* network_context_client */ nullptr,
+      DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), 0, request,
+      client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
+      TRAFFIC_ANNOTATION_FOR_TESTS, &params,
+      /*coep_reporter=*/nullptr, 0 /* request_id */,
+      0 /* keepalive_request_size */, resource_scheduler_client(), nullptr,
+      nullptr /* network_usage_accumulator */, nullptr /* header_client */,
+      nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
+      mojo::NullRemote() /* cookie_observer */);
+  delete_run_loop.Run();
+  client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+
+  network_service_client.WaitUntilRawRequest(0);
+  ASSERT_TRUE(network_service_client.client_security_state());
+  EXPECT_EQ(network_service_client.client_security_state()
+                ->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kAllow);
+  EXPECT_EQ(
+      network_service_client.client_security_state()->is_web_secure_context,
+      false);
+  EXPECT_EQ(network_service_client.client_security_state()->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
+}
+
+TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateNotPresent) {
+  MockNetworkServiceClient network_service_client;
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
+  request.devtools_request_id = "fake-id";
+
+  mojom::URLLoaderFactoryParams params;
+  params.process_id = kProcessId;
+  params.is_corb_enabled = false;
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
+      context(), &network_service_client, /* network_context_client */ nullptr,
+      DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), 0, request,
+      client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
+      TRAFFIC_ANNOTATION_FOR_TESTS, &params,
+      /*coep_reporter=*/nullptr, 0 /* request_id */,
+      0 /* keepalive_request_size */, resource_scheduler_client(), nullptr,
+      nullptr /* network_usage_accumulator */, nullptr /* header_client */,
+      nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
+      mojo::NullRemote() /* cookie_observer */);
+  delete_run_loop.Run();
+  client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+
+  network_service_client.WaitUntilRawRequest(0);
+  ASSERT_FALSE(network_service_client.client_security_state());
 }
 
 }  // namespace network
