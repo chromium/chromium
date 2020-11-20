@@ -517,7 +517,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
-                       LaunchToActiveDesktop) {
+                       DISABLED_LaunchToActiveDesktop) {
   // Login two users.
   LoginUser(account_id1_);
   base::RunLoop().RunUntilIdle();
