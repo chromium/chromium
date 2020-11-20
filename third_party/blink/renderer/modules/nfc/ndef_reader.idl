@@ -12,7 +12,7 @@
 ] interface NDEFReader : EventTarget {
     [CallWith=ExecutionContext] constructor();
     attribute EventHandler onreading;
-    attribute EventHandler onerror;
+    attribute EventHandler onreadingerror;
 
     [CallWith=ScriptState, RaisesException] Promise<void> scan(
         optional NDEFScanOptions options={});

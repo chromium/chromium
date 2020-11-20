@@ -41,8 +41,8 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   // ActiveScriptWrappable overrides.
   bool HasPendingActivity() const override;
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(reading, kReading)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(readingerror, kReadingerror)
   ScriptPromise scan(ScriptState*, const NDEFScanOptions*, ExceptionState&);
 
   void Trace(Visitor*) const override;
@@ -50,7 +50,7 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   // Called by NFCProxy for dispatching events.
   virtual void OnReading(const String& serial_number,
                          const device::mojom::blink::NDEFMessage&);
-  virtual void OnError(const String& message);
+  virtual void OnReadingError(const String& message);
 
   // Called by NFCProxy for notification about connection error.
   void OnMojoConnectionError();

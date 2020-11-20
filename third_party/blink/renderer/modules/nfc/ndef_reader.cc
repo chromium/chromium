@@ -8,13 +8,12 @@
 
 #include "services/device/public/mojom/nfc.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_scan_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_reading_event.h"
@@ -198,10 +197,11 @@ void NDEFReader::OnReading(const String& serial_number,
       MakeGarbageCollected<NDEFMessage>(message)));
 }
 
-void NDEFReader::OnError(const String& message) {
-  ErrorEvent* event = ErrorEvent::Create(
-      message, SourceLocation::Capture(GetExecutionContext()), nullptr);
-  DispatchEvent(*event);
+void NDEFReader::OnReadingError(const String& message) {
+  DispatchEvent(*Event::Create(event_type_names::kReadingerror));
+  GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kInfo, message));
 }
 
 void NDEFReader::OnMojoConnectionError() {
@@ -212,9 +212,6 @@ void NDEFReader::OnMojoConnectionError() {
         kNotSupportedOrPermissionDenied));
     resolver_.Clear();
   }
-
-  // Dispatches an error event.
-  OnError(kNotSupportedOrPermissionDenied);
 }
 
 void NDEFReader::ContextDestroyed() {

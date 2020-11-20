@@ -233,6 +233,7 @@
     "quotachange",
     "ratechange",
     "reading",
+    "readingerror",
     "readystatechange",
     "reflectionchange",
     "rejectionhandled",

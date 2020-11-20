@@ -5377,12 +5377,12 @@ interface NDEFMessage
     method constructor
 interface NDEFReader : EventTarget
     attribute @@toStringTag
-    getter onerror
     getter onreading
+    getter onreadingerror
     method constructor
     method scan
-    setter onerror
     setter onreading
+    setter onreadingerror
 interface NDEFReadingEvent : Event
     attribute @@toStringTag
     getter message
