@@ -36,12 +36,12 @@
 #include "chrome/browser/chromeos/file_manager/open_with_browser.h"
 #include "chrome/browser/chromeos/file_manager/web_file_tasks.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -202,8 +202,7 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
     });
   };
 
-  const auto media_app_task =
-      task_for_app(chromeos::default_web_apps::kMediaAppId);
+  const auto media_app_task = task_for_app(web_app::kMediaAppId);
   if (media_app_task == tasks->end())
     return;
 
@@ -272,7 +271,7 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
     return false;
   }
 
-  // Note that chromeos::default_web_apps::kMediaAppId does not appear in the
+  // Note that web_app::kMediaAppId does not appear in the
   // list of built-in apps below. Doing so would mean the presence of any other
   // handler of image files (e.g. Keep, Photos) would take precedence. But we
   // want that only to occur if the user has explicitly set the preference for

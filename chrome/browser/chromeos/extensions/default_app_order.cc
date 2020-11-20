@@ -18,9 +18,9 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_paths.h"
 #include "extensions/common/constants.h"
@@ -47,32 +47,32 @@ const char* const kDefaultAppOrder[] = {
 
     arc::kGmailAppId,
     extension_misc::kGmailAppId,
-    default_web_apps::kGmailAppId,
+    web_app::kGmailAppId,
 
     extension_misc::kGoogleDocAppId,
-    default_web_apps::kGoogleDocsAppId,
+    web_app::kGoogleDocsAppId,
 
     extension_misc::kGoogleSlidesAppId,
-    default_web_apps::kGoogleSlidesAppId,
+    web_app::kGoogleSlidesAppId,
 
     extension_misc::kGoogleSheetsAppId,
-    default_web_apps::kGoogleSheetsAppId,
+    web_app::kGoogleSheetsAppId,
 
     extension_misc::kDriveHostedAppId,
-    default_web_apps::kGoogleDriveAppId,
+    web_app::kGoogleDriveAppId,
 
     extension_misc::kGoogleKeepAppId,
 
     arc::kGoogleCalendarAppId,
     extension_misc::kCalendarAppId,
-    default_web_apps::kGoogleCalendarAppId,
+    web_app::kGoogleCalendarAppId,
 
     arc::kYoutubeAppId,
     extension_misc::kYoutubeAppId,
-    default_web_apps::kYoutubeAppId,
+    web_app::kYoutubeAppId,
 
     arc::kYoutubeMusicAppId,
-    default_web_apps::kYoutubeMusicAppId,
+    web_app::kYoutubeMusicAppId,
 
     arc::kPlayMoviesAppId,
     extension_misc::kGooglePlayMoviesAppId,
@@ -84,38 +84,38 @@ const char* const kDefaultAppOrder[] = {
 
     arc::kPlayBooksAppId,
     extension_misc::kGooglePlayBooksAppId,
-    default_web_apps::kPlayBooksAppId,
+    web_app::kPlayBooksAppId,
 
     extension_misc::kCameraAppId,
-    default_web_apps::kCameraAppId,
+    web_app::kCameraAppId,
 
     arc::kGooglePhotosAppId,
     extension_misc::kGooglePhotosAppId,
 
     arc::kGoogleDuoAppId,
-    default_web_apps::kStadiaAppId,
+    web_app::kStadiaAppId,
 
     // First default page break
     app_list::kDefaultPageBreak1,
 
     arc::kGoogleMapsAppId,
     extension_misc::kGoogleMapsAppId,  // TODO(crbug.com/976578): Remove.
-    default_web_apps::kGoogleMapsAppId,
+    web_app::kGoogleMapsAppId,
 
     ash::kInternalAppIdSettings,
-    default_web_apps::kSettingsAppId,
-    default_web_apps::kOsSettingsAppId,
+    web_app::kSettingsAppId,
+    web_app::kOsSettingsAppId,
 
-    default_web_apps::kHelpAppId,
+    web_app::kHelpAppId,
     extension_misc::kCalculatorAppId,
-    default_web_apps::kCanvasAppId,
+    web_app::kCanvasAppId,
     extension_misc::kTextEditorAppId,
-    default_web_apps::kYoutubeTVAppId,
-    default_web_apps::kGoogleNewsAppId,
+    web_app::kYoutubeTVAppId,
+    web_app::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
     arc::kLightRoomAppId,
     arc::kInfinitePainterAppId,
-    default_web_apps::kShowtimeAppId,
+    web_app::kShowtimeAppId,
     extension_misc::kGooglePlusAppId,
     extension_misc::kChromeRemoteDesktopAppId,
 };

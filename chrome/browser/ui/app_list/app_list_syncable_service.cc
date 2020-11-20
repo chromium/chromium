@@ -22,7 +22,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/page_break_app_item.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -189,7 +189,7 @@ bool IsPageBreakItem(const AppListSyncableService::SyncItem& sync_item) {
 
 // Returns true if the app is Settings app
 bool IsOsSettingsApp(const std::string& app_id) {
-  return app_id == chromeos::default_web_apps::kOsSettingsAppId;
+  return app_id == web_app::kOsSettingsAppId;
 }
 
 bool IsSystemCreatedSyncFolder(AppListSyncableService::SyncItem* folder_item) {

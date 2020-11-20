@@ -47,7 +47,6 @@
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/chromeos/web_applications/camera_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/connectivity_diagnostics_system_web_app_info.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/help_app_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/media_web_app_info.h"
@@ -56,6 +55,7 @@
 #include "chrome/browser/chromeos/web_applications/scanning_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/terminal_source.h"
 #include "chrome/browser/chromeos/web_applications/terminal_system_web_app_info.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
@@ -139,7 +139,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
                               base::BindRepeating(
                                   &CreateWebAppInfoForOSSettingsSystemWebApp)));
   infos.at(SystemAppType::SETTINGS).uninstall_and_replace = {
-      chromeos::default_web_apps::kSettingsAppId, ash::kInternalAppIdSettings};
+      web_app::kSettingsAppId, ash::kInternalAppIdSettings};
   // Large enough to see the heading text "Settings" in the top-left.
   infos.at(SystemAppType::SETTINGS).minimum_window_size = {300, 100};
 

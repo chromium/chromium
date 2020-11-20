@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -193,15 +193,15 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kVideoPlayer, launch_source);
   else if (app_id == file_manager::kAudioPlayerAppId)
     RecordDefaultAppLaunch(DefaultAppName::kAudioPlayer, launch_source);
-  else if (app_id == chromeos::default_web_apps::kCanvasAppId)
+  else if (app_id == web_app::kCanvasAppId)
     RecordDefaultAppLaunch(DefaultAppName::kChromeCanvas, launch_source);
   else if (app_id == extension_misc::kCameraAppId)
     RecordDefaultAppLaunch(DefaultAppName::kCamera, launch_source);
-  else if (app_id == chromeos::default_web_apps::kCameraAppId)
+  else if (app_id == web_app::kCameraAppId)
     RecordDefaultAppLaunch(DefaultAppName::kCamera, launch_source);
-  else if (app_id == chromeos::default_web_apps::kHelpAppId)
+  else if (app_id == web_app::kHelpAppId)
     RecordDefaultAppLaunch(DefaultAppName::kHelpApp, launch_source);
-  else if (app_id == chromeos::default_web_apps::kMediaAppId)
+  else if (app_id == web_app::kMediaAppId)
     RecordDefaultAppLaunch(DefaultAppName::kMediaApp, launch_source);
   else if (app_id == extension_misc::kChromeAppId)
     RecordDefaultAppLaunch(DefaultAppName::kChrome, launch_source);
@@ -237,7 +237,7 @@ void RecordAppLaunch(const std::string& app_id,
   else if (app_id == arc::kPlayStoreAppId)
     RecordDefaultAppLaunch(DefaultAppName::kPlayStore, launch_source);
 #endif  // OS_CHROMEOS
-  else if (app_id == chromeos::default_web_apps::kOsSettingsAppId)
+  else if (app_id == web_app::kOsSettingsAppId)
     RecordDefaultAppLaunch(DefaultAppName::kSettings, launch_source);
   else if (app_id == extension_misc::kGoogleSheetsAppId)
     RecordDefaultAppLaunch(DefaultAppName::kSheets, launch_source);
@@ -250,9 +250,9 @@ void RecordAppLaunch(const std::string& app_id,
            app_id == arc::kYoutubeAppId)
     RecordDefaultAppLaunch(DefaultAppName::kYouTube, launch_source);
 #endif  // OS_CHROMEOS
-  else if (app_id == chromeos::default_web_apps::kYoutubeMusicAppId)
+  else if (app_id == web_app::kYoutubeMusicAppId)
     RecordDefaultAppLaunch(DefaultAppName::kYouTubeMusic, launch_source);
-  else if (app_id == chromeos::default_web_apps::kStadiaAppId)
+  else if (app_id == web_app::kStadiaAppId)
     RecordDefaultAppLaunch(DefaultAppName::kStadia, launch_source);
 
   // Above are default apps; below are built-in apps.
@@ -270,7 +270,7 @@ void RecordAppLaunch(const std::string& app_id,
 #endif  // OS_CHROMEOS
   } else if (app_id == ash::kReleaseNotesAppId) {
     RecordBuiltInAppLaunch(BuiltInAppName::kReleaseNotes, launch_source);
-  } else if (app_id == chromeos::default_web_apps::kMockSystemAppId) {
+  } else if (app_id == web_app::kMockSystemAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMockSystemApp, launch_source);
   }
 }

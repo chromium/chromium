@@ -18,13 +18,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -192,8 +192,8 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
           ? apps::mojom::IconType::kStandard
           : apps::mojom::IconType::kUncompressed;
   app_service_proxy_->LoadIcon(
-      apps::mojom::AppType::kWeb, chromeos::default_web_apps::kOsSettingsAppId,
-      icon_type, ash::AppListConfig::instance().search_list_icon_dimension(),
+      apps::mojom::AppType::kWeb, web_app::kOsSettingsAppId, icon_type,
+      ash::AppListConfig::instance().search_list_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                      weak_factory_.GetWeakPtr()));
@@ -284,7 +284,7 @@ void OsSettingsProvider::OnSearchReturned(
 }
 
 void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() != chromeos::default_web_apps::kOsSettingsAppId)
+  if (update.AppId() != web_app::kOsSettingsAppId)
     return;
 
   // Request the Settings app icon when either the readiness is changed to
@@ -304,8 +304,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
             ? apps::mojom::IconType::kStandard
             : apps::mojom::IconType::kUncompressed;
     app_service_proxy_->LoadIcon(
-        apps::mojom::AppType::kWeb,
-        chromeos::default_web_apps::kOsSettingsAppId, icon_type,
+        apps::mojom::AppType::kWeb, web_app::kOsSettingsAppId, icon_type,
         ash::AppListConfig::instance().search_list_icon_dimension(),
         /*allow_placeholder_icon=*/false,
         base::BindOnce(&OsSettingsProvider::OnLoadIcon,

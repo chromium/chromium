@@ -6,8 +6,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
 
   Profile* profile = browser()->profile();
   apps::AppLaunchParams params(
-      chromeos::default_web_apps::kOsSettingsAppId,
+      web_app::kOsSettingsAppId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       apps::mojom::AppLaunchSource::kSourceTest);

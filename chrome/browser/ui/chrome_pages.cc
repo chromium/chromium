@@ -24,7 +24,6 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +42,7 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -112,9 +112,9 @@ void LaunchReleaseNotesImpl(Profile* profile,
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
-  proxy->LaunchAppWithUrl(
-      chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
-      GURL("chrome://help-app/updates"), source, display::kDefaultDisplayId);
+  proxy->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
+                          GURL("chrome://help-app/updates"), source,
+                          display::kDefaultDisplayId);
 }
 
 #endif
@@ -143,8 +143,8 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   }
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
-  proxy->Launch(chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
-                app_launch_source, display::kDefaultDisplayId);
+  proxy->Launch(web_app::kHelpAppId, ui::EventFlags::EF_NONE, app_launch_source,
+                display::kDefaultDisplayId);
 #else
   GURL url;
   switch (source) {

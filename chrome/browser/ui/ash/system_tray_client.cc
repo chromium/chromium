@@ -22,7 +22,6 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/set_time_dialog.h"
 #include "chrome/browser/chromeos/system/system_clock.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -307,10 +307,10 @@ void SystemTrayClient::ShowGestureEducationHelp() {
 
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
-  proxy->LaunchAppWithUrl(
-      chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
-      GURL(chrome::kChromeOSGestureEducationHelpURL),
-      apps::mojom::LaunchSource::kFromOtherApp, display::kDefaultDisplayId);
+  proxy->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
+                          GURL(chrome::kChromeOSGestureEducationHelpURL),
+                          apps::mojom::LaunchSource::kFromOtherApp,
+                          display::kDefaultDisplayId);
 }
 
 void SystemTrayClient::ShowPaletteHelp() {

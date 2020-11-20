@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_WEB_APPLICATIONS_DEFAULT_WEB_APP_IDS_H_
-#define CHROME_BROWSER_CHROMEOS_WEB_APPLICATIONS_DEFAULT_WEB_APP_IDS_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_ID_CONSTANTS_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_ID_CONSTANTS_H_
 
-namespace chromeos {
-namespace default_web_apps {
+namespace web_app {
 
 // The URLs used to generate the app IDs MUST match the start_url field of the
 // manifest served by the PWA.
+// Please maintain the alphabetical order when adding new app IDs.
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "chrome://camera-app/views/main.html"))
@@ -99,7 +99,6 @@ constexpr char kYoutubeMusicAppId[] = "cinhimbnkkaeohfgghhklpknlkffjgod";
 //     "https://tv.youtube.com/"))
 constexpr char kYoutubeTVAppId[] = "kiemjbkkegajmpbobdfngbmjccjhnofh";
 
-}  // namespace default_web_apps
-}  // namespace chromeos
+}  // namespace web_app
 
-#endif  // CHROME_BROWSER_CHROMEOS_WEB_APPLICATIONS_DEFAULT_WEB_APP_IDS_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_ID_CONSTANTS_H_

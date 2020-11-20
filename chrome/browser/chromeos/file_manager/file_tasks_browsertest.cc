@@ -10,9 +10,9 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -24,7 +24,7 @@
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/features.h"
 
-using chromeos::default_web_apps::kMediaAppId;
+using web_app::kMediaAppId;
 
 namespace file_manager {
 namespace file_tasks {

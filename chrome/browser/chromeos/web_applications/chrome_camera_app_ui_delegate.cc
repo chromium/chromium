@@ -12,11 +12,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
@@ -132,7 +132,7 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->LaunchAppWithFiles(
-      chromeos::default_web_apps::kMediaAppId,
+      web_app::kMediaAppId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,

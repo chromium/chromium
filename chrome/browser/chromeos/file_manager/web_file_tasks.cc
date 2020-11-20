@@ -15,11 +15,11 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/webui_url_constants.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
@@ -60,7 +60,7 @@ void FindWebTasks(Profile* profile,
 
   std::vector<web_app::AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
-    if (has_special_file && app_id != chromeos::default_web_apps::kMediaAppId)
+    if (has_special_file && app_id != web_app::kMediaAppId)
       continue;
 
     if (!os_integration_manager.IsFileHandlingAPIAvailable(app_id))

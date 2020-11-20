@@ -19,8 +19,8 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -83,7 +83,7 @@ void MaybeAdjustTaskForGalleryAppRemoval(
     file_manager::file_tasks::TaskDescriptor* task,
     const std::vector<FileSystemURL>& urls,
     Profile* profile) {
-  if (task->app_id != chromeos::default_web_apps::kMediaAppId)
+  if (task->app_id != web_app::kMediaAppId)
     return;
 
   auto* provider = web_app::WebAppProvider::Get(profile);
@@ -96,7 +96,7 @@ void MaybeAdjustTaskForGalleryAppRemoval(
   if (optional_app_id) {
     // Sanity check the app id when installed. The app id at runtime is
     // determined by the origin and the "start_url" manifest property.
-    DCHECK_EQ(*optional_app_id, chromeos::default_web_apps::kMediaAppId);
+    DCHECK_EQ(*optional_app_id, web_app::kMediaAppId);
     return;
   }
 

@@ -71,9 +71,9 @@
 #endif
 
 #if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
@@ -312,7 +312,7 @@ class ExtensionPolicyTest : public PolicyTest {
     web_app::ExternallyInstalledWebAppPrefs web_app_prefs(
         browser()->profile()->GetPrefs());
     web_app_prefs.Insert(GURL("chrome://os-settings/"),
-                         chromeos::default_web_apps::kOsSettingsAppId,
+                         web_app::kOsSettingsAppId,
                          web_app::ExternalInstallSource::kSystemInstalled);
 
     content::Details<const extensions::Extension> details = observer.details();
@@ -443,11 +443,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   extensions::ExtensionRegistry* registry = extension_registry();
   const extensions::Extension* bookmark_app = InstallOSSettings();
   ASSERT_TRUE(bookmark_app);
-  ASSERT_TRUE(registry->enabled_extensions().GetByID(
-      chromeos::default_web_apps::kOsSettingsAppId));
+  ASSERT_TRUE(
+      registry->enabled_extensions().GetByID(web_app::kOsSettingsAppId));
 
   base::ListValue blocklist;
-  blocklist.AppendString(chromeos::default_web_apps::kOsSettingsAppId);
+  blocklist.AppendString(web_app::kOsSettingsAppId);
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
@@ -455,8 +455,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   UpdateProviderPolicy(policies);
 
   extensions::ExtensionService* service = extension_service();
-  EXPECT_TRUE(service->IsExtensionEnabled(
-      chromeos::default_web_apps::kOsSettingsAppId));
+  EXPECT_TRUE(service->IsExtensionEnabled(web_app::kOsSettingsAppId));
 }
 #endif  // defined(OS_CHROMEOS)
 

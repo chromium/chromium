@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, AppListSearchHasApp) {
   SearchAndWaitForProviders("", {ResultType::kInstalledApp,
                                  ResultType::kLauncher, ResultType::kHelpApp});
 
-  auto* result = FindResult(chromeos::default_web_apps::kHelpAppId);
+  auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
   // Has regular app name as title.
   EXPECT_EQ(base::UTF16ToASCII(result->title()), "Explore");
