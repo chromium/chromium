@@ -405,6 +405,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-pie-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
     cores = 16,
     goma_jobs = goma.jobs.J300,
     ssd = True,
