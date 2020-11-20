@@ -2112,6 +2112,10 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
 }
 
 void StyleEngine::ViewportDefiningElementDidChange() {
+  // Guarded by if-test in UpdateStyleAndLayoutTree().
+  DCHECK(GetDocument().documentElement());
+  if (GetDocument().documentElement()->NeedsReattachLayoutTree())
+    return;
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
   if (!body || body->NeedsReattachLayoutTree())
     return;
