@@ -85,6 +85,13 @@
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
       inherited: true,
     },
+    {
+      name: "InForcedColorsMode",
+      field_template: "primitive",
+      default_value: "false",
+      type_name: "bool",
+      inherited: true,
+    },
     // Whether we're inside an NG block fragmentation context.
     {
       name: "InsideNGFragmentationContext",

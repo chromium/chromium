@@ -572,8 +572,13 @@ const blink::Color BackgroundColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(!visited_link);
-  return style.BackgroundColor().Resolve(style.GetCurrentColor(),
-                                         style.UsedColorScheme());
+  StyleColor background_color = style.BackgroundColor();
+  if (style.ShouldForceColor(background_color)) {
+    return To<Longhand>(GetCSSPropertyInternalForcedBackgroundColor())
+        .ColorIncludingFallback(false, style);
+  }
+  return background_color.Resolve(style.GetCurrentColor(),
+                                  style.UsedColorScheme());
 }
 
 const CSSValue* BackgroundColor::CSSValueFromComputedStyleInternal(
@@ -586,10 +591,15 @@ const CSSValue* BackgroundColor::CSSValueFromComputedStyleInternal(
         style.VisitedDependentColor(*this).Rgb());
   }
 
+  StyleColor background_color = style.BackgroundColor();
+  if (style.ShouldForceColor(background_color)) {
+    return GetCSSPropertyInternalForcedBackgroundColor()
+        .CSSValueFromComputedStyle(style, nullptr, allow_visited_style);
+  }
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
   return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, style.BackgroundColor(), CSSValuePhase::kUsedValue);
+      style, background_color, CSSValuePhase::kUsedValue);
 }
 
 const CSSValue* BackgroundImage::ParseSingleValue(
@@ -3474,7 +3484,12 @@ const blink::Color InternalVisitedBackgroundColor::ColorIncludingFallback(
     const ComputedStyle& style) const {
   DCHECK(visited_link);
 
-  blink::Color color = style.InternalVisitedBackgroundColor().Resolve(
+  StyleColor visited_background_color = style.InternalVisitedBackgroundColor();
+  if (style.ShouldForceColor(visited_background_color)) {
+    return To<Longhand>(GetCSSPropertyInternalForcedBackgroundColor())
+        .ColorIncludingFallback(true, style);
+  }
+  blink::Color color = visited_background_color.Resolve(
       style.GetInternalVisitedCurrentColor(), style.UsedColorScheme());
 
   // TODO: Technically someone could explicitly specify the color
@@ -3718,6 +3733,47 @@ const CSSValue* InternalVisitedTextStrokeColor::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ConsumeColor(range, context);
+}
+
+const blink::Color InternalForcedBackgroundColor::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style) const {
+  blink::Color current_color;
+  int alpha;
+  if (visited_link) {
+    current_color = style.GetInternalVisitedCurrentColor();
+    alpha = style.InternalVisitedBackgroundColor()
+                .Resolve(current_color, style.UsedColorScheme())
+                .Alpha();
+  } else {
+    current_color = style.GetCurrentColor();
+    alpha = style.BackgroundColor()
+                .Resolve(current_color, style.UsedColorScheme())
+                .Alpha();
+  }
+
+  return style.InternalForcedBackgroundColor().ResolveWithAlpha(
+      current_color, style.UsedColorScheme(), alpha);
+}
+
+const CSSValue*
+InternalForcedBackgroundColor::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  bool visited_link = allow_visited_style &&
+                      style.InsideLink() == EInsideLink::kInsideVisitedLink;
+  return cssvalue::CSSColorValue::Create(
+      ColorIncludingFallback(visited_link, style).Rgb());
+}
+
+const CSSValue* InternalForcedBackgroundColor::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ConsumeColor(range, context,
+                                         IsQuirksModeBehavior(context.Mode()));
 }
 
 const CSSValue* Isolation::CSSValueFromComputedStyleInternal(

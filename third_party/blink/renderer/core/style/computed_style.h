@@ -110,6 +110,7 @@ class ColumnRuleColor;
 class Fill;
 class Float;
 class FloodColor;
+class InternalForcedBackgroundColor;
 class InternalVisitedBackgroundColor;
 class InternalVisitedBorderBottomColor;
 class InternalVisitedBorderLeftColor;
@@ -214,6 +215,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::Fill;
   friend class css_longhand::Float;
   friend class css_longhand::FloodColor;
+  friend class css_longhand::InternalForcedBackgroundColor;
   friend class css_longhand::InternalVisitedBackgroundColor;
   friend class css_longhand::InternalVisitedBorderBottomColor;
   friend class css_longhand::InternalVisitedBorderLeftColor;
@@ -2549,7 +2551,8 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool HasBackgroundRelatedColorReferencingCurrentColor() const {
     if (BackgroundColor().IsCurrentColor() ||
-        InternalVisitedBackgroundColor().IsCurrentColor())
+        InternalVisitedBackgroundColor().IsCurrentColor() ||
+        InternalForcedBackgroundColor().IsCurrentColor())
       return true;
     if (!BoxShadow())
       return false;
@@ -2842,6 +2845,10 @@ class ComputedStyle : public ComputedStyleBase,
     return InternalVisitedTextStrokeColorInternal();
   }
 
+  const StyleColor& InternalForcedBackgroundColor() const {
+    return InternalForcedBackgroundColorInternal();
+  }
+
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;
 
   const StyleColor& StopColor() const { return SvgStyle().StopColor(); }
@@ -2935,6 +2942,8 @@ class ComputedStyle : public ComputedStyleBase,
   static Difference ComputeDifferenceIgnoringInheritedFirstLineStyle(
       const ComputedStyle& old_style,
       const ComputedStyle& new_style);
+
+  bool ShouldForceColor(const StyleColor& unforced_color) const;
 
   FRIEND_TEST_ALL_PREFIXES(
       ComputedStyleTest,

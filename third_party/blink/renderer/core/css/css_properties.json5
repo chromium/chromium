@@ -6062,6 +6062,27 @@
       valid_for_highlight: true,
     },
 
+    // Forced colors properties.
+    // TODO(almaher): add forced colors properties to a separate raredata
+    // structure.
+    {
+      name: "-internal-forced-background-color",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/layout/layout_theme.h"],
+      default_value: "StyleColor(LayoutTheme::GetTheme().SystemColor(CSSValueID::kCanvas, mojom::blink::ColorScheme::kLight))",
+      type_name: "StyleColor",
+      computed_style_custom_functions: ["getter"],
+      converter: "ConvertStyleColor",
+      style_builder_template: "color",
+      style_builder_template_args: {
+        initial_color: "ComputedStyleInitialValues::InitialInternalForcedBackgroundColor",
+      },
+      valid_for_first_letter: true,
+      valid_for_cue: true,
+    },
+
     // Name: -internal-empty-line-height:
     // Value: none | fabricated
     //    If the element is inline or contains visible text, this property has

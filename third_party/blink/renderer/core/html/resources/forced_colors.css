@@ -37,6 +37,10 @@
     border-color: CanvasText;
   }
 
+  mark {
+    -internal-forced-background-color: yellow;
+  }
+
   ::placeholder {
     color: GrayText;
   }
@@ -46,6 +50,7 @@
     background-color: Canvas;
     border-color: ButtonText;
     color: CanvasText;
+    -internal-forced-background-color: Canvas;
   }
 
   input:hover,
@@ -72,11 +77,13 @@
     background-color: ButtonFace;
     border-color: GrayText;
     color: GrayText;
+    -internal-forced-background-color: ButtonFace;
   }
 
   input::-webkit-calendar-picker-indicator {
     background-color: ButtonFace;
     color: ButtonText;
+    -internal-forced-background-color: ButtonFace;
   }
 
   input::-webkit-datetime-edit-ampm-field:focus,
@@ -91,6 +98,7 @@
       background-color: Highlight;
       color: HighlightText;
       outline: none;
+      -internal-forced-background-color: Highlight;
   }
 
   input[type="color"]:disabled {
@@ -113,6 +121,7 @@
     border-color: ButtonText;
     background-color: ButtonFace;
     color: ButtonText;
+    -internal-forced-background-color: ButtonFace;
   }
 
   button:hover,
@@ -142,6 +151,7 @@
   select:-internal-list-box {
     background-color: Canvas !important;
     border-color: ButtonText;
+    -internal-forced-background-color: Canvas !important;
   }
 
   /* option disabled */
@@ -151,6 +161,7 @@
   select:-internal-list-box:disabled option:hover {
     background-color: Canvas !important;
     color: GrayText !important;
+    -internal-forced-background-color: Canvas !important;
   }
 
   /* option selected */
@@ -187,10 +198,12 @@
     background-color: Canvas;
     border-color: CanvasText;
     color: CanvasText;
+    -internal-forced-background-color: Canvas;
   }
 
   select:not(:-internal-list-box) {
     background-color: Canvas;
+    -internal-forced-background-color: Canvas;
   }
 
   select:hover {
@@ -210,12 +223,14 @@
   meter::-webkit-meter-bar {
     background-color: ButtonFace;
     border-color: CanvasText;
+    -internal-forced-background-color: ButtonFace;
   }
 
   meter::-webkit-meter-even-less-good-value,
   meter::-webkit-meter-optimum-value,
   meter::-webkit-meter-suboptimum-value {
     background-color: Highlight;
+    -internal-forced-background-color: Highlight;
   }
 
   input:-internal-autofill-previewed,
@@ -223,6 +238,7 @@
   select:-internal-autofill-previewed {
     color: CanvasText !important;
     background-color: Canvas !important;
+    -internal-forced-background-color: Canvas !important;
   }
 
   input:-internal-autofill-selected,
@@ -230,6 +246,7 @@
   select:-internal-autofill-selected {
     color: CanvasText !important;
     background-color: Canvas !important;
+    -internal-forced-background-color: Canvas !important;
   }
 
 }

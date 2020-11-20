@@ -3538,32 +3538,6 @@ TEST_F(StyleCascadeTest, GetCascadedValuesInterpolated) {
   EXPECT_EQ("-5s", CssTextAt(map, "animation-delay"));
 }
 
-TEST_F(StyleCascadeTest, ForcedVisitedBackgroundColor) {
-  ScopedForcedColorsForTest scoped_feature(true);
-  ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kActive);
-  UpdateAllLifecyclePhasesForTest();
-
-  TestCascade cascade(GetDocument());
-  cascade.State().Style()->SetInsideLink(EInsideLink::kInsideVisitedLink);
-  cascade.Add(ParseDeclarationBlock("background-color:#aabbccdd"),
-              CascadeOrigin::kAuthor, CSSSelector::kMatchVisited);
-  cascade.Apply();
-
-  Color forced_bg_color =
-      StyleColor(CSSValueID::kCanvas)
-          .Resolve(Color(), mojom::blink::ColorScheme::kLight);
-  Color expected_bg_color =
-      Color(forced_bg_color.Red(), forced_bg_color.Green(),
-            forced_bg_color.Blue(), 0xdd);
-
-  // Verify that the visited background color alpha channel is preserved in
-  // Forced Colors Mode.
-  EXPECT_EQ(
-      expected_bg_color,
-      cascade.State().Style()->InternalVisitedBackgroundColor().GetColor());
-}
-
 TEST_F(StyleCascadeTest, RevertOrigin) {
   TestCascade cascade(GetDocument());
 

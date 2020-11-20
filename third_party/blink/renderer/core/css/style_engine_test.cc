@@ -3481,6 +3481,20 @@ TEST_F(StyleEngineTest, DisabledAdvanceOverrideDescriptor) {
   EXPECT_FALSE(font_face->HasFontMetricsOverride());
 }
 
+// Properties stored for forced colors mode should only be usable by the UA.
+TEST_F(StyleEngineTest, InternalForcedProperties) {
+  String properties_to_test[] = {"-internal-forced-background-color"};
+  for (auto property : properties_to_test) {
+    String declaration = property + ":red";
+    ASSERT_TRUE(
+        css_test_helpers::ParseDeclarationBlock(declaration, kHTMLStandardMode)
+            ->IsEmpty());
+    ASSERT_TRUE(
+        !css_test_helpers::ParseDeclarationBlock(declaration, kUASheetMode)
+             ->IsEmpty());
+  }
+}
+
 class StyleEngineSimTest : public SimTest {};
 
 TEST_F(StyleEngineSimTest, OwnerColorScheme) {

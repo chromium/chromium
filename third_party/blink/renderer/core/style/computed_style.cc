@@ -2175,6 +2175,12 @@ Color ComputedStyle::ResolvedColor(const StyleColor& color) const {
   return color.Resolve(current_color, UsedColorScheme());
 }
 
+bool ComputedStyle::ShouldForceColor(const StyleColor& unforced_color) const {
+  return InForcedColorsMode() &&
+         ForcedColorAdjust() != EForcedColorAdjust::kNone &&
+         !unforced_color.IsSystemColor();
+}
+
 void ComputedStyle::SetMarginStart(const Length& margin) {
   if (IsHorizontalWritingMode()) {
     if (IsLeftToRightDirection())

@@ -1250,6 +1250,7 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement(
   initial_style->SetZoom(frame && !document.Printing() ? frame->PageZoomFactor()
                                                        : 1);
   initial_style->SetEffectiveZoom(initial_style->Zoom());
+  initial_style->SetInForcedColorsMode(document.InForcedColorsMode());
 
   FontDescription document_font_description =
       initial_style->GetFontDescription();
