@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const CSS = 'body { background-color: green !important }';
+const CSS_GREEN = 'body { background-color: green !important }';
 const GREEN = 'rgb(0, 128, 0)';
+const CSS_RED = 'body { background-color: red !important }';
+const RED = 'rgb(255, 0, 0)';
+const CSS_BLUE = 'body { background-color: blue !important }';
+const BLUE = 'rgb(0, 0, 255)';
+const CSS_CYAN = 'body { background-color: cyan !important }';
+const CYAN = 'rgb(0, 255, 255)';
 
 function getBodyColor() {
   const hostname = (new URL(location.href)).hostname;
@@ -33,6 +39,13 @@ async function getBodyColorsForTab(tabId) {
 }
 
 chrome.test.runTests([
+  // NOTE: These tests re-inject into (potentially) the same frames. This isn't
+  // a major problem, because more-recent stylesheets take precedent over
+  // previously-inserted ones, but it does put a somewhat unfortunate slight
+  // dependency between subtests. If this becomes a problem, we could reload
+  // tabs to ensure a "clean slate", but it's not worth the added complexity
+  // yet.
+  // Instead, each test uses a different color.
   async function changeBackground() {
     const query = {url: 'http://example.com/*'};
     const tab = await getSingleTab(query);
@@ -42,7 +55,7 @@ chrome.test.runTests([
             target: {
               tabId: tab.id,
             },
-            css: CSS,
+            css: CSS_GREEN,
           },
           resolve);
     });
@@ -64,7 +77,7 @@ chrome.test.runTests([
               tabId: tab.id,
               allFrames: true,
             },
-            css: CSS,
+            css: CSS_RED,
           },
           resolve);
     });
@@ -75,8 +88,42 @@ chrome.test.runTests([
     colors.sort();
     // Note: injected only in b.com and subframes.example, not c.com (which
     // the extension doesn't have permission to).
-    chrome.test.assertEq(`b.com ${GREEN}`, colors[0]);
-    chrome.test.assertEq(`subframes.example ${GREEN}`, colors[1]);
+    chrome.test.assertEq(`b.com ${RED}`, colors[0]);
+    chrome.test.assertEq(`subframes.example ${RED}`, colors[1]);
+    chrome.test.succeed();
+  },
+
+  async function specificFrames() {
+    const query = {url: 'http://subframes.example/*'};
+    const tab = await getSingleTab(query);
+    const frames = await new Promise(resolve => {
+      chrome.webNavigation.getAllFrames({tabId: tab.id}, resolve);
+    });
+    const bComFrame = frames.find(frame => {
+      return (new URL(frame.url)).hostname == 'b.com';
+    });
+    chrome.test.assertTrue(!!bComFrame);
+
+    const results = await new Promise(resolve => {
+      chrome.scripting.insertCSS(
+          {
+            target: {
+              tabId: tab.id,
+              frameIds: [bComFrame.frameId],
+            },
+            css: CSS_BLUE,
+          },
+          resolve);
+    });
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(undefined, results);
+
+    const colors = await getBodyColorsForTab(tab.id);
+    chrome.test.assertEq(2, colors.length);
+    colors.sort();
+    chrome.test.assertEq(`b.com ${BLUE}`, colors[0]);
+    // NOTE: subframes.example frame is still red from the previous test.
+    chrome.test.assertEq(`subframes.example ${RED}`, colors[1]);
     chrome.test.succeed();
   },
 
@@ -90,7 +137,7 @@ chrome.test.runTests([
           target: {
             tabId: nonExistentTabId,
           },
-          css: CSS,
+          css: CSS_CYAN,
         },
         results => {
           chrome.test.assertLastError(`No tab with id: ${nonExistentTabId}`);
@@ -107,7 +154,7 @@ chrome.test.runTests([
           target: {
             tabId: tab.id,
           },
-          css: CSS,
+          css: CSS_CYAN,
         },
         results => {
           chrome.test.assertLastError(
