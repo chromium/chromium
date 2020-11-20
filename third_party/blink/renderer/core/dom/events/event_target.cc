@@ -506,7 +506,7 @@ bool EventTarget::AddEventListenerInternal(
   if (!listener)
     return false;
 
-  if (options->signal() && options->signal()->aborted())
+  if (options->hasSignal() && options->signal()->aborted())
     return false;
 
   if (event_type == event_type_names::kTouchcancel ||
@@ -536,7 +536,7 @@ bool EventTarget::AddEventListenerInternal(
   bool added = EnsureEventTargetData().event_listener_map.Add(
       event_type, listener, options, &registered_listener);
   if (added) {
-    if (options->signal()) {
+    if (options->hasSignal()) {
       options->signal()->AddAlgorithm(WTF::Bind(
           [](EventTarget* event_target, const AtomicString& event_type,
              const EventListener* listener,
