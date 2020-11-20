@@ -154,7 +154,7 @@ TEST_F(AutofillPopupViewNativeViewsTest, AccessibilityTest) {
   // Item 0.
   ui::AXNodeData node_data_0;
   view()->GetRowsForTesting()[0]->GetAccessibleNodeData(&node_data_0);
-  EXPECT_EQ(ax::mojom::Role::kMenuItem, node_data_0.role);
+  EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_0.role);
   EXPECT_EQ(1, node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_TRUE(
@@ -174,7 +174,7 @@ TEST_F(AutofillPopupViewNativeViewsTest, AccessibilityTest) {
   view()->GetRowsForTesting()[2]->GetAccessibleNodeData(&node_data_2);
   EXPECT_EQ(2, node_data_2.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_2.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
-  EXPECT_EQ(ax::mojom::Role::kMenuItem, node_data_2.role);
+  EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_2.role);
   EXPECT_FALSE(
       node_data_2.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 
@@ -183,7 +183,7 @@ TEST_F(AutofillPopupViewNativeViewsTest, AccessibilityTest) {
   view()->GetRowsForTesting()[3]->GetAccessibleNodeData(&node_data_3);
   EXPECT_EQ(3, node_data_3.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_3.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
-  EXPECT_EQ(ax::mojom::Role::kMenuItem, node_data_3.role);
+  EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_3.role);
   EXPECT_FALSE(
       node_data_3.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }

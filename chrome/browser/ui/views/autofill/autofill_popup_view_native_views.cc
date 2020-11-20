@@ -459,7 +459,7 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(base::JoinString(text, base::ASCIIToUTF16(" ")));
 
   // Options are selectable.
-  node_data->role = ax::mojom::Role::kMenuItem;
+  node_data->role = ax::mojom::Role::kListBoxOption;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                               is_selected());
 
@@ -1041,7 +1041,7 @@ AutofillPopupViewNativeViews::~AutofillPopupViewNativeViews() = default;
 
 void AutofillPopupViewNativeViews::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kMenu;
+  node_data->role = ax::mojom::Role::kListBox;
   // If controller_ is valid, then the view is expanded.
   if (controller_) {
     node_data->AddState(ax::mojom::State::kExpanded);
