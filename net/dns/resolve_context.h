@@ -129,15 +129,18 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   base::TimeDelta NextDohFallbackPeriod(size_t doh_server_index,
                                         const DnsSession* session);
 
-  // Return a timeout for a transaction (from Transaction::Start()). Expected
-  // that the transaction will skip waiting for this timeout if it is using
-  // fast timeouts, and also expected that transactions will always wait for all
-  // attempts to run for at least their fallback period before dying with
-  // timeout.
-  //
-  // Currently only implemented for secure transactions as insecure transactions
-  // are assumed to always use aggressive timeouts (but a
-  // ClassicTransactionTimeout() could be implemented if ever needed).
+  // Return a timeout for an insecure transaction (from Transaction::Start()).
+  // Expected that the transaction will skip waiting for this timeout if it is
+  // using fast timeouts, and also expected that transactions will always wait
+  // for all attempts to run for at least their fallback period before dying
+  // with timeout.
+  base::TimeDelta ClassicTransactionTimeout(const DnsSession* session);
+
+  // Return a timeout for a secure transaction (from Transaction::Start()).
+  // Expected that the transaction will skip waiting for this timeout if it is
+  // using fast timeouts, and also expected that transactions will always wait
+  // for all attempts to run for at least their fallback period before dying
+  // with timeout.
   base::TimeDelta SecureTransactionTimeout(SecureDnsMode secure_dns_mode,
                                            const DnsSession* session);
 
@@ -214,6 +217,10 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // Return the fallback period for the next query.
   base::TimeDelta NextFallbackPeriodHelper(const ServerStats* server_stats,
                                            int attempt);
+
+  template <typename Iterator>
+  base::TimeDelta TransactionTimeoutHelper(Iterator server_stats_begin,
+                                           Iterator server_stats_end);
 
   // Record the time to perform a query.
   void RecordRttForUma(size_t server_index,
