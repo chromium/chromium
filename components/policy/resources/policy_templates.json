@@ -1841,11 +1841,12 @@
       'owners': ['davidvc@chromium.org', 'chrome-network-stack@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:80-', 'chrome_os:80-'],
+      'supported_on': ['chrome.*:80-87', 'chrome_os:80-87'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'deprecated': True,
       'example_value': False,
       'id': 648,
       'caption': '''Use a default referrer policy of no-referrer-when-downgrade.''',

@@ -803,7 +803,9 @@
     ]
   },
 
-  "ForceLegacyDefaultReferrerPolicy": {},
+  "ForceLegacyDefaultReferrerPolicy": {
+     "note": "This policy is deprecated. This test tests its migration path."
+  },
 
   "ForceYouTubeSafetyMode": {
     "os": ["win", "linux", "mac", "chromeos", "android"],

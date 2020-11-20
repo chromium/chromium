@@ -897,8 +897,6 @@ static_library("browser") {
     "net/proxy_service_factory.h",
     "net/referrer.cc",
     "net/referrer.h",
-    "net/referrer_policy_policy_handler.cc",
-    "net/referrer_policy_policy_handler.h",
     "net/secure_dns_config.cc",
     "net/secure_dns_config.h",
     "net/secure_dns_policy_handler.cc",
