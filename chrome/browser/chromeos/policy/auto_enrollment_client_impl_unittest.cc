@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <tuple>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -16,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -25,6 +27,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1423,6 +1426,35 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
     return private_set_membership_test_case_.is_positive_membership_expected();
   }
 
+  // Expects a sample for kUMAPrivateSetMembershipRequestStatus to be recorded
+  // once with value |status|.
+  void ExpectPrivateSetMembershipHistograms(
+      const std::vector<PrivateSetMembershipStatus> status_list,
+      bool success_time_recorded) const {
+    for (PrivateSetMembershipStatus status : status_list) {
+      histogram_tester_.ExpectBucketCount(kUMAPrivateSetMembershipRequestStatus,
+                                          status, /*expected_count=*/1);
+    }
+    histogram_tester_.ExpectTotalCount(kUMAPrivateSetMembershipSuccessTime,
+                                       success_time_recorded ? 1 : 0);
+  }
+
+  // Expects a sample for kUMAPrivateSetMembershipSuccessTime to be recorded
+  // |count| times.
+  void ExpectPrivateSetMembershipSuccessTimeRecorded(int count) {
+    histogram_tester_.ExpectTotalCount(kUMAPrivateSetMembershipSuccessTime,
+                                       count);
+  }
+
+  // Expects a sample for kUMAPrivateSetMembershipHashDanceComparison to be
+  // recorded once with value |comparison|.
+  void ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      PrivateSetMembershipHashDanceComparison comparison) {
+    histogram_tester_.ExpectUniqueSample(
+        kUMAPrivateSetMembershipHashDanceComparison, comparison,
+        /*expected_count=*/1);
+  }
+
   void VerifyPrivateSetMembershipLastRequestJobType() {
     EXPECT_EQ(DeviceManagementService::JobConfiguration::
                   TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
@@ -1460,6 +1492,8 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
       private_set_membership_last_job_type_ =
           DeviceManagementService::JobConfiguration::TYPE_INVALID;
   em::DeviceManagementRequest private_set_membership_last_request_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_P(PrivateSetMembershipHelperTest, MembershipRetrievedSuccessfully) {
@@ -1480,6 +1514,10 @@ TEST_P(PrivateSetMembershipHelperTest, MembershipRetrievedSuccessfully) {
             GetExpectedMembershipResult()
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
+  ExpectPrivateSetMembershipHistograms(
+      {PrivateSetMembershipStatus::kAttempt,
+       PrivateSetMembershipStatus::kSuccessfulDetermination},
+      /*success_time_recorded=*/true);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 }
@@ -1497,6 +1535,9 @@ TEST_P(PrivateSetMembershipHelperTest, DISABLED_EmptyRlweQueryResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 }
@@ -1511,6 +1552,9 @@ TEST_P(PrivateSetMembershipHelperTest, EmptyRlweOprfResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipRlweOprfRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 }
@@ -1527,6 +1571,9 @@ TEST_P(PrivateSetMembershipHelperTest, ConnectionErrorForRlweQueryResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 }
@@ -1542,6 +1589,9 @@ TEST_P(PrivateSetMembershipHelperTest, ConnectionErrorForRlweOprfResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipRlweOprfRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 }
@@ -1557,6 +1607,9 @@ TEST_P(PrivateSetMembershipHelperTest, NetworkFailureForRlweOprfResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipLastRequestJobType();
 }
 
@@ -1571,6 +1624,9 @@ TEST_P(PrivateSetMembershipHelperTest, NetworkFailureForRlweQueryResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 }
@@ -1603,6 +1659,10 @@ TEST_P(PrivateSetMembershipHelperTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
+  ExpectPrivateSetMembershipHistograms(
+      {PrivateSetMembershipStatus::kAttempt,
+       PrivateSetMembershipStatus::kSuccessfulDetermination},
+      /*success_time_recorded=*/true);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 }
@@ -1633,6 +1693,9 @@ TEST_P(PrivateSetMembershipHelperTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 }
@@ -1671,11 +1734,19 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
 
   // Verify failure of private set membership protocol.
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 
   // Verify Hash dance result.
   VerifyCachedResult(true, kPowerLimit);
+
+  // Verify recorded comparison value between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      PrivateSetMembershipHashDanceComparison::kPSMErrorHashDanceSuccess);
 
   // Verify device state result.
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1709,10 +1780,18 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
 
   // Verify failure of private set membership protocol.
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipLastRequestJobType();
 
   // Verify Hash dance result.
   VerifyCachedResult(true, kPowerLimit);
+
+  // Verify recorded comparison between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      PrivateSetMembershipHashDanceComparison::kPSMErrorHashDanceSuccess);
 
   // Verify device state result.
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1735,7 +1814,9 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   // Succeed for both DeviceAutoEnrollmentRequest and
   // DeviceStateRetrievalRequest. And the result of DeviceAutoEnrollmentRequest
   // is positive.
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
+  const bool kExpectedHashDanceResult = true;
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true,
+                  /*with_id_hash=*/kExpectedHashDanceResult);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -1749,11 +1830,22 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
             GetExpectedMembershipResult()
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
+  ExpectPrivateSetMembershipHistograms(
+      {PrivateSetMembershipStatus::kAttempt,
+       PrivateSetMembershipStatus::kSuccessfulDetermination},
+      /*success_time_recorded=*/true);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 
   // Verify Hash dance result.
-  VerifyCachedResult(true, kPowerLimit);
+  VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
+
+  // Verify recorded comparison between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      (GetExpectedMembershipResult() == kExpectedHashDanceResult)
+          ? PrivateSetMembershipHashDanceComparison::kEqualResults
+          : PrivateSetMembershipHashDanceComparison::kDifferentResults);
 
   // Verify device state result.
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1775,7 +1867,9 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
 
   // Succeed with a negative result for DeviceAutoEnrollmentRequest i.e. Hash
   // dance request.
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/false);
+  const bool kExpectedHashDanceResult = false;
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true,
+                  /*with_id_hash=*/kExpectedHashDanceResult);
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1785,11 +1879,22 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
             GetExpectedMembershipResult()
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
+  ExpectPrivateSetMembershipHistograms(
+      {PrivateSetMembershipStatus::kAttempt,
+       PrivateSetMembershipStatus::kSuccessfulDetermination},
+      /*success_time_recorded=*/true);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 
   // Verify Hash dance result.
-  VerifyCachedResult(false, kPowerLimit);
+  VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
+
+  // Verify recorded comparison between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      (GetExpectedMembershipResult() == kExpectedHashDanceResult)
+          ? PrivateSetMembershipHashDanceComparison::kEqualResults
+          : PrivateSetMembershipHashDanceComparison::kDifferentResults);
 
   // Verify that no enrollment has been done, and no state has been retrieved.
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1814,10 +1919,18 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
 
   // Verify failure of private set membership protocol.
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipLastRequestJobType();
 
   // Verify failure of Hash dance by inexistence of its cached decision.
   EXPECT_FALSE(HasCachedDecision());
+
+  // Verify recorded comparison between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      PrivateSetMembershipHashDanceComparison::kBothError);
 
   // Verify that no enrollment has been done, and no state has been retrieved.
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
@@ -1837,7 +1950,9 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   // Succeed for both DeviceAutoEnrollmentRequest and
   // DeviceStateRetrievalRequest. And the result of DeviceAutoEnrollmentRequest
   // is positive.
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
+  const bool kExpectedHashDanceResult = true;
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true,
+                  /*with_id_hash=*/kExpectedHashDanceResult);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -1854,7 +1969,7 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
 
   // Verify Hash dance result.
-  VerifyCachedResult(true, kPowerLimit);
+  VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
 
   // Verify device state result.
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1872,14 +1987,25 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   // Verify that private set membership cached decision hasn't changed, and no
   // new requests have been sent.
   EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
+  ExpectPrivateSetMembershipHistograms(
+      {PrivateSetMembershipStatus::kAttempt,
+       PrivateSetMembershipStatus::kSuccessfulDetermination},
+      /*success_time_recorded=*/true);
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 
   // Verify that Hash dance cached decision hasn't changed, and no new request
   // has been sent.
-  VerifyCachedResult(true, kPowerLimit);
+  VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
+
+  // Verify recorded comparison between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      (GetExpectedMembershipResult() == kExpectedHashDanceResult)
+          ? PrivateSetMembershipHashDanceComparison::kEqualResults
+          : PrivateSetMembershipHashDanceComparison::kDifferentResults);
 }
 
 TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
@@ -1920,6 +2046,9 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   // Verify that private set membership cached decision hasn't changed, and no
   // new requests have been sent.
   EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
   VerifyPrivateSetMembershipRlweOprfRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
 
@@ -1930,6 +2059,11 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
             DeviceManagementService::JobConfiguration::TYPE_INVALID);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
+
+  // Verify recorded comparison between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      PrivateSetMembershipHashDanceComparison::kBothError);
 }
 
 INSTANTIATE_TEST_SUITE_P(
