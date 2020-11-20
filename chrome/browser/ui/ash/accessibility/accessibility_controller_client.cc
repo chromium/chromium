@@ -159,3 +159,8 @@ void AccessibilityControllerClient::MagnifierBoundsChanged(
 void AccessibilityControllerClient::OnSwitchAccessDisabled() {
   chromeos::AccessibilityManager::Get()->OnSwitchAccessDisabled();
 }
+
+void AccessibilityControllerClient::OnSelectToSpeakPanelAction(
+    ash::SelectToSpeakPanelAction action) {
+  chromeos::AccessibilityManager::Get()->OnSelectToSpeakPanelAction(action);
+}

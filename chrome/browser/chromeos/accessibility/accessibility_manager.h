@@ -40,6 +40,7 @@ class Browser;
 namespace ash {
 struct AccessibilityFocusRingInfo;
 enum class SelectToSpeakState;
+enum class SelectToSpeakPanelAction;
 }  // namespace ash
 
 namespace gfx {
@@ -336,6 +337,9 @@ class AccessibilityManager
   // Create a focus ring ID from the extension ID and the name of the ring.
   const std::string GetFocusRingId(const std::string& extension_id,
                                    const std::string& focus_ring_name);
+
+  // Sends a panel action event to the Select-to-speak extension.
+  void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action);
 
   // Test helpers:
   void SetProfileForTest(Profile* profile);

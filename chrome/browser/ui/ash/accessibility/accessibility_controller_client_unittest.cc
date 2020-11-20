@@ -52,6 +52,10 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   void RequestSelectToSpeakStateChange() override {
     ++select_to_speak_state_changes_;
   }
+  void OnSelectToSpeakPanelAction(
+      ash::SelectToSpeakPanelAction action) override {
+    last_select_to_speak_panel_action_ = action;
+  }
 
   ash::AccessibilityAlert last_a11y_alert_ = ash::AccessibilityAlert::NONE;
   int32_t last_sound_key_ = -1;
@@ -63,6 +67,8 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   int on_two_finger_touch_stop_count_ = 0;
   int spoken_feedback_toggle_count_down_ = -1;
   int select_to_speak_state_changes_ = 0;
+  ash::SelectToSpeakPanelAction last_select_to_speak_panel_action_ =
+      ash::SelectToSpeakPanelAction::kNone;
 
  private:
   bool dictation_on_ = false;
@@ -139,4 +145,10 @@ TEST_F(AccessibilityControllerClientTest, MethodCalls) {
   // Tests RequestSelectToSpeakStateChange method call.
   client.RequestSelectToSpeakStateChange();
   EXPECT_EQ(1, client.select_to_speak_state_changes_);
+
+  // Tests OnSelectToSpeakPanelAction method call.
+  const ash::SelectToSpeakPanelAction action =
+      ash::SelectToSpeakPanelAction::kPause;
+  client.OnSelectToSpeakPanelAction(action);
+  EXPECT_EQ(action, client.last_select_to_speak_panel_action_);
 }

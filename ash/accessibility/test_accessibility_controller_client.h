@@ -42,6 +42,7 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
       gfx::Point& point_in_screen) override;
   void MagnifierBoundsChanged(const gfx::Rect& bounds_in_screen) override;
   void OnSwitchAccessDisabled() override;
+  void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action) override;
 
   int32_t GetPlayedEarconAndReset();
 
@@ -51,12 +52,17 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
     return select_to_speak_state_change_requests_;
   }
   const std::string& last_alert_message() const { return last_alert_message_; }
+  SelectToSpeakPanelAction last_select_to_speak_panel_action() const {
+    return last_select_to_speak_panel_action_;
+  }
 
  private:
   AccessibilityAlert last_a11y_alert_ = AccessibilityAlert::NONE;
   std::string last_alert_message_;
   int32_t sound_key_ = -1;
   bool is_dictation_active_ = false;
+  SelectToSpeakPanelAction last_select_to_speak_panel_action_ =
+      SelectToSpeakPanelAction::kNone;
 
   ax::mojom::Gesture last_a11y_gesture_ = ax::mojom::Gesture::kNone;
 

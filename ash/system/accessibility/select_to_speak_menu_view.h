@@ -47,6 +47,7 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
   FloatingMenuButton* next_sentence_button_ = nullptr;
   FloatingMenuButton* next_paragraph_button_ = nullptr;
   FloatingMenuButton* stop_button_ = nullptr;
+  bool is_paused_ = false;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, SelectToSpeakMenuView, views::BoxLayoutView)

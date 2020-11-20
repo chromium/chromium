@@ -75,6 +75,11 @@ void TestAccessibilityControllerClient::MagnifierBoundsChanged(
 
 void TestAccessibilityControllerClient::OnSwitchAccessDisabled() {}
 
+void TestAccessibilityControllerClient::OnSelectToSpeakPanelAction(
+    SelectToSpeakPanelAction action) {
+  last_select_to_speak_panel_action_ = action;
+}
+
 int32_t TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
   int32_t tmp = sound_key_;
   sound_key_ = -1;

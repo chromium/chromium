@@ -30,6 +30,8 @@ class FakeAccessibilityController : ash::AccessibilityController {
       ash::SelectToSpeakEventHandlerDelegate* delegate) override;
   void ShowSelectToSpeakPanel(const gfx::Rect& anchor, bool is_paused) override;
   void HideSelectToSpeakPanel() override;
+  void OnSelectToSpeakPanelAction(
+      ash::SelectToSpeakPanelAction action) override;
   void HideSwitchAccessBackButton() override;
   void HideSwitchAccessMenu() override;
   void ShowSwitchAccessBackButton(const gfx::Rect& anchor) override;

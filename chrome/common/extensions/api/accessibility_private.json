@@ -203,6 +203,12 @@
         "type": "string",
         "enum": [ "selectToSpeakNavigationControl" ],
         "description": "Subset of accessibility features."
+      },
+      {
+        "id": "SelectToSpeakPanelAction",
+        "type": "string",
+        "enum": [ "previousParagraph", "previousSentence", "pause", "resume", "nextSentence", "nextParagraph", "exit" ],
+        "description": "Actions that can be performed in the Select-to-speak panel."
       }
     ],
     "functions": [
@@ -592,6 +598,18 @@
         "type": "function",
         "description": "Fired when Chrome OS wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
         "parameters": [],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "onSelectToSpeakPanelAction",
+        "type": "function",
+        "description": "Fired when an action is performed in the Select-to-speak panel.",
+        "parameters": [
+          {
+            "name": "action",
+            "$ref": "SelectToSpeakPanelAction"
+          }
+        ],
         "platforms": ["chromeos"]
       },
       {

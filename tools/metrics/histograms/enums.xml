@@ -23813,6 +23813,8 @@ Called by update_extension_histograms.py.-->
   <int value="464" label="ACCESSIBILITY_PRIVATE_ON_MAGNIFIER_BOUNDS_CHANGED"/>
   <int value="465" label="FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED"/>
   <int value="466" label="ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET"/>
+  <int value="467"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_PANEL_ACTION"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

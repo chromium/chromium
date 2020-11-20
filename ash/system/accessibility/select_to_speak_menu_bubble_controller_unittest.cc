@@ -5,6 +5,8 @@
 #include "ash/system/accessibility/select_to_speak_menu_bubble_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/test_accessibility_controller_client.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_menu_button.h"
@@ -17,6 +19,14 @@
 #include "ui/display/screen.h"
 
 namespace ash {
+namespace {
+
+ui::GestureEvent CreateTapEvent(int x = 0, int y = 0) {
+  return ui::GestureEvent(x, y, 0, base::TimeTicks(),
+                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+}
+
+}  // namespace
 
 class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
  public:
@@ -36,6 +46,8 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
     Shell::Get()->accessibility_controller()->select_to_speak().SetEnabled(
         true);
   }
+
+  void TearDown() override { AshTestBase::TearDown(); }
 
   AccessibilityControllerImpl* GetAccessibilitController() {
     return Shell::Get()->accessibility_controller();
@@ -62,13 +74,17 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
         menu_view->GetViewByID(static_cast<int>(view_id)));
   }
 
+  void ShowSelectToSpeakPanel(bool is_paused) {
+    gfx::Rect anchor_rect(10, 10, 0, 0);
+    GetAccessibilitController()->ShowSelectToSpeakPanel(anchor_rect, is_paused);
+  }
+
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, ShowSelectToSpeakPanel_paused) {
-  gfx::Rect anchor_rect(10, 10, 0, 0);
-  GetAccessibilitController()->ShowSelectToSpeakPanel(anchor_rect,
-                                                      /* isPaused= */ true);
+  ShowSelectToSpeakPanel(/* is_paused= */ true);
   EXPECT_TRUE(GetMenuView());
 
   FloatingMenuButton* pause_button =
@@ -80,9 +96,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, ShowSelectToSpeakPanel_paused) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest,
        ShowSelectToSpeakPanel_notPaused) {
-  gfx::Rect anchor_rect(10, 10, 0, 0);
-  GetAccessibilitController()->ShowSelectToSpeakPanel(anchor_rect,
-                                                      /* isPaused= */ false);
+  ShowSelectToSpeakPanel(/* is_paused= */ false);
   EXPECT_TRUE(GetMenuView());
 
   FloatingMenuButton* pause_button =
@@ -93,12 +107,94 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest,
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, HideSelectToSpeakPanel) {
-  gfx::Rect anchor_rect(10, 10, 0, 0);
-  GetAccessibilitController()->ShowSelectToSpeakPanel(anchor_rect,
-                                                      /* isPaused= */ false);
+  ShowSelectToSpeakPanel(/* is_paused= */ false);
   GetAccessibilitController()->HideSelectToSpeakPanel();
   EXPECT_TRUE(GetMenuView());
   EXPECT_FALSE(GetBubbleWidget()->IsVisible());
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, PauseButtonPressed) {
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  FloatingMenuButton* button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kPause);
+  ui::GestureEvent event = CreateTapEvent();
+  button->OnGestureEvent(&event);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kPause);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, ResumeButtonPressed) {
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/* is_paused= */ true);
+  FloatingMenuButton* button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kPause);
+  ui::GestureEvent event = CreateTapEvent();
+  button->OnGestureEvent(&event);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kResume);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevParagraphButtonPressed) {
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  FloatingMenuButton* button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kPrevParagraph);
+  ui::GestureEvent event = CreateTapEvent();
+  button->OnGestureEvent(&event);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kPreviousParagraph);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceButtonPressed) {
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  FloatingMenuButton* button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kPrevSentence);
+  ui::GestureEvent event = CreateTapEvent();
+  button->OnGestureEvent(&event);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kPreviousSentence);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, NextParagraphButtonPressed) {
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  FloatingMenuButton* button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kNextParagraph);
+  ui::GestureEvent event = CreateTapEvent();
+  button->OnGestureEvent(&event);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kNextParagraph);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceButtonPressed) {
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  FloatingMenuButton* button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kNextSentence);
+  ui::GestureEvent event = CreateTapEvent();
+  button->OnGestureEvent(&event);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kNextSentence);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, StopButtonPressed) {
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  FloatingMenuButton* button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kStop);
+  ui::GestureEvent event = CreateTapEvent();
+  button->OnGestureEvent(&event);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kExit);
 }
 
 }  // namespace ash

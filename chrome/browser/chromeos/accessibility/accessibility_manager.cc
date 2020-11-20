@@ -152,6 +152,43 @@ bool VolumeAdjustSoundEnabled() {
       chromeos::switches::kDisableVolumeAdjustSound);
 }
 
+std::string AccessibilityPrivateEnumForAction(
+    ash::SelectToSpeakPanelAction action) {
+  switch (action) {
+    case ash::SelectToSpeakPanelAction::kPreviousSentence:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::
+              SELECT_TO_SPEAK_PANEL_ACTION_PREVIOUSSENTENCE);
+    case ash::SelectToSpeakPanelAction::kPreviousParagraph:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::
+              SELECT_TO_SPEAK_PANEL_ACTION_PREVIOUSPARAGRAPH);
+    case ash::SelectToSpeakPanelAction::kPause:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::
+              SELECT_TO_SPEAK_PANEL_ACTION_PAUSE);
+    case ash::SelectToSpeakPanelAction::kResume:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::
+              SELECT_TO_SPEAK_PANEL_ACTION_RESUME);
+    case ash::SelectToSpeakPanelAction::kNextSentence:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::
+              SELECT_TO_SPEAK_PANEL_ACTION_NEXTSENTENCE);
+    case ash::SelectToSpeakPanelAction::kNextParagraph:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::
+              SELECT_TO_SPEAK_PANEL_ACTION_NEXTPARAGRAPH);
+    case ash::SelectToSpeakPanelAction::kExit:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::
+              SELECT_TO_SPEAK_PANEL_ACTION_EXIT);
+    case ash::SelectToSpeakPanelAction::kNone:
+      NOTREACHED();
+      return "";
+  }
+}
+
 }  // namespace
 
 class AccessibilityPanelWidgetObserver : public views::WidgetObserver {
@@ -1657,6 +1694,27 @@ void AccessibilityManager::SetSwitchAccessKeysForTest(
     previous_update->AppendInteger(key);
 
   profile_->GetPrefs()->CommitPendingWrite();
+}
+
+// Sends a panel action event to the Select-to-speak extension.
+void AccessibilityManager::OnSelectToSpeakPanelAction(
+    ash::SelectToSpeakPanelAction action) {
+  if (!profile_)
+    return;
+
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+
+  auto event_args = std::make_unique<base::ListValue>();
+  event_args->AppendString(AccessibilityPrivateEnumForAction(action));
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_PANEL_ACTION,
+      extensions::api::accessibility_private::OnSelectToSpeakPanelAction::
+          kEventName,
+      std::move(event_args));
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kSelectToSpeakExtensionId, std::move(event));
 }
 
 }  // namespace chromeos

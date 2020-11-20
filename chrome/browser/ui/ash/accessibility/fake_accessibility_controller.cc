@@ -42,6 +42,9 @@ void FakeAccessibilityController::ShowSelectToSpeakPanel(
 
 void FakeAccessibilityController::HideSelectToSpeakPanel() {}
 
+void FakeAccessibilityController::OnSelectToSpeakPanelAction(
+    ash::SelectToSpeakPanelAction action) {}
+
 void FakeAccessibilityController::HideSwitchAccessBackButton() {}
 
 void FakeAccessibilityController::HideSwitchAccessMenu() {}

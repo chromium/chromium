@@ -5,6 +5,9 @@
 var AutomationEvent = chrome.automation.AutomationEvent;
 var EventType = chrome.automation.EventType;
 var RoleType = chrome.automation.RoleType;
+const AccessibilityFeature = chrome.accessibilityPrivate.AccessibilityFeature;
+const SelectToSpeakPanelAction =
+    chrome.accessibilityPrivate.SelectToSpeakPanelAction;
 
 // This must be the same as in ash/system/accessibility/select_to_speak_tray.cc:
 // ash::kSelectToSpeakTrayClassName.
@@ -137,6 +140,18 @@ class SelectToSpeak {
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-language-detection', (result) => {
           this.enableLanguageDetectionIntegration_ = result;
+        });
+
+    /**
+     * Feature flag controlling STS navigation control.
+     * @type {boolean}
+     */
+    this.enableNavigationControl_ = false;
+
+    // TODO(crbug.com/1143830): Also check STS client-side setting.
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        AccessibilityFeature.SELECT_TO_SPEAK_NAVIGATION_CONTROL, (result) => {
+          this.enableNavigationControl_ = result;
         });
   }
 
@@ -433,6 +448,9 @@ class SelectToSpeak {
     this.setFocusRings_([], false /* do not draw background */);
     chrome.accessibilityPrivate.setHighlights(
         [], this.prefsManager_.highlightColor());
+    if (this.enableNavigationControl_) {
+      chrome.accessibilityPrivate.updateSelectToSpeakPanel(/* show= */ false);
+    }
   }
 
   /**
@@ -527,6 +545,8 @@ class SelectToSpeak {
     this.inputHandler_.setUpEventListeners();
     chrome.accessibilityPrivate.onSelectToSpeakStateChangeRequested.addListener(
         this.onStateChangeRequested_.bind(this));
+    chrome.accessibilityPrivate.onSelectToSpeakPanelAction.addListener(
+        this.onSelectToSpeakPanelAction_.bind(this));
     // Initialize the state to SelectToSpeakState.INACTIVE.
     chrome.accessibilityPrivate.setSelectToSpeakState(this.state_);
   }
@@ -565,6 +585,25 @@ class SelectToSpeak {
   }
 
   /**
+   * Handles Select-to-speak panel action.
+   * @param {!SelectToSpeakPanelAction} panelAction
+   * @private
+   */
+  onSelectToSpeakPanelAction_(panelAction) {
+    if (!this.enableNavigationControl_) {
+      // Ignore if this feature is not enabled.
+      return;
+    }
+    switch (panelAction) {
+      case SelectToSpeakPanelAction.EXIT:
+        this.stopAll_();
+        break;
+      default:
+        // TODO(crbug.com/1140216): Implement other actions.
+    }
+  }
+
+  /**
    * Enqueue speech for the single given string. The string is not associated
    * with any particular nodes, so this does not do any work around drawing
    * focus rings, unlike startSpeechQueue_ below.
@@ -579,8 +618,11 @@ class SelectToSpeak {
         this.onStateChanged_(SelectToSpeakState.SPEAKING);
         this.testCurrentNode_();
       } else if (
-          event.type === 'end' || event.type === 'interrupted' ||
-          event.type === 'cancelled') {
+          (event.type === 'end' || event.type === 'interrupted' ||
+           event.type === 'cancelled') &&
+          !this.enableNavigationControl_) {
+        // Automatically dismiss when we're at the end, unless navigation
+        // controled is enabled, in which case we persist STS.
         this.onStateChanged_(SelectToSpeakState.INACTIVE);
       }
     };
@@ -693,7 +735,9 @@ class SelectToSpeak {
         } else if (event.type === 'interrupted' || event.type === 'cancelled') {
           this.onStateChanged_(SelectToSpeakState.INACTIVE);
         } else if (event.type === 'end') {
-          if (isLast) {
+          if (isLast && !this.enableNavigationControl_) {
+            // Auto dismiss when we're at the end, unless navigation control
+            // is enabled.
             this.onStateChanged_(SelectToSpeakState.INACTIVE);
           }
         } else if (event.type === 'word') {
@@ -946,12 +990,19 @@ class SelectToSpeak {
     // blocks.
     // TODO: Better test: has no siblings in the group, highlight just
     // the one node. if it has siblings, highlight the parent.
-    if (this.currentBlockParent_ != null &&
+    let focusRingRect;
+    if (this.currentBlockParent_ !== null &&
         node.role === RoleType.INLINE_TEXT_BOX) {
-      this.setFocusRings_(
-          [this.currentBlockParent_.location], true /* draw background */);
+      focusRingRect = this.currentBlockParent_.location;
     } else {
-      this.setFocusRings_([node.location], true /* draw background */);
+      focusRingRect = node.location;
+    }
+    this.setFocusRings_([focusRingRect], true /* draw background */);
+    if (this.enableNavigationControl_) {
+      // TODO(crbug.com/1143817): Update paused state correctly once
+      // pause/resume functionality is implemented.
+      chrome.accessibilityPrivate.updateSelectToSpeakPanel(
+          /* show= */ true, /* anchor= */ focusRingRect, /* isPaused= */ false);
     }
   }
 

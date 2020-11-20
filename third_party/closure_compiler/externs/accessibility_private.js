@@ -191,6 +191,19 @@ chrome.accessibilityPrivate.SelectToSpeakState = {
 /**
  * @enum {string}
  */
+chrome.accessibilityPrivate.SelectToSpeakPanelAction = {
+  PREVIOUS_PARAGRAPH: 'previousParagraph',
+  PREVIOUS_SENTENCE: 'previousSentence',
+  PAUSE: 'pause',
+  RESUME: 'resume',
+  NEXT_SENTENCE: 'nextSentence',
+  NEXT_PARAGRAPH: 'nextParagraph',
+  EXIT: 'exit',
+};
+
+/**
+ * @enum {string}
+ */
 chrome.accessibilityPrivate.FocusType = {
   GLOW: 'glow',
   SOLID: 'solid',
@@ -438,6 +451,12 @@ chrome.accessibilityPrivate.onTwoFingerTouchStop;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onSelectToSpeakStateChangeRequested;
+
+/**
+ * Fired when an action is performed on the Select-to-speak panel.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onSelectToSpeakPanelAction;
 
 /**
  * Fired when Chrome OS has received a key event corresponding to a Switch

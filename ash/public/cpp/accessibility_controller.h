@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
@@ -72,6 +73,9 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
 
   // Hides the Select-to-Speak panel.
   virtual void HideSelectToSpeakPanel() = 0;
+
+  // Dispatches event to notify Select-to-speak that a panel action occurred.
+  virtual void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action) = 0;
 
   // Hides the Switch Access back button.
   virtual void HideSwitchAccessBackButton() = 0;

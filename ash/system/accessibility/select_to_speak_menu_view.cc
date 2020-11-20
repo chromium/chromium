@@ -4,6 +4,8 @@
 
 #include "ash/system/accessibility/select_to_speak_menu_view.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -29,6 +31,31 @@ namespace {
 constexpr int kButtonSize = 36;
 constexpr int kStopButtonPadding = 14;
 constexpr int kSeparatorHeight = 16;
+
+SelectToSpeakPanelAction PanelActionForButtonID(int button_id, bool is_paused) {
+  auto button_enum = static_cast<SelectToSpeakMenuView::ButtonId>(button_id);
+  switch (button_enum) {
+    case SelectToSpeakMenuView::ButtonId::kPrevParagraph:
+      return SelectToSpeakPanelAction::kPreviousParagraph;
+    case SelectToSpeakMenuView::ButtonId::kPrevSentence:
+      return SelectToSpeakPanelAction::kPreviousSentence;
+    case SelectToSpeakMenuView::ButtonId::kPause:
+      // Pause button toggles pause/resume state.
+      if (is_paused)
+        return SelectToSpeakPanelAction::kResume;
+      else
+        return SelectToSpeakPanelAction::kPause;
+    case SelectToSpeakMenuView::ButtonId::kNextParagraph:
+      return SelectToSpeakPanelAction::kNextParagraph;
+    case SelectToSpeakMenuView::ButtonId::kNextSentence:
+      return SelectToSpeakPanelAction::kNextSentence;
+    case SelectToSpeakMenuView::ButtonId::kStop:
+      return SelectToSpeakPanelAction::kExit;
+  }
+
+  NOTREACHED();
+  return SelectToSpeakPanelAction::kNone;
+}
 
 }  // namespace
 
@@ -127,10 +154,13 @@ void SelectToSpeakMenuView::SetPaused(bool is_paused) {
   pause_button_->SetTooltipText(
       l10n_util::GetStringUTF16(is_paused ? IDS_ASH_SELECT_TO_SPEAK_RESUME
                                           : IDS_ASH_SELECT_TO_SPEAK_PAUSE));
+  is_paused_ = is_paused;
 }
 
 void SelectToSpeakMenuView::OnButtonPressed(views::Button* sender) {
-  // TODO(crbug.com/1143814): Handle button clicks.
+  SelectToSpeakPanelAction action =
+      PanelActionForButtonID(sender->GetID(), is_paused_);
+  Shell::Get()->accessibility_controller()->OnSelectToSpeakPanelAction(action);
 }
 
 BEGIN_METADATA(SelectToSpeakMenuView, views::BoxLayoutView)

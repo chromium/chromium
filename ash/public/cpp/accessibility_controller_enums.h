@@ -83,6 +83,25 @@ enum class SelectToSpeakState {
   kSelectToSpeakStateSpeaking,
 };
 
+enum class SelectToSpeakPanelAction {
+  // No action.
+  kNone,
+  // Navigate to previous paragraph/block.
+  kPreviousParagraph,
+  // Navigate to previous sentence.
+  kPreviousSentence,
+  // Pause text-to-speech.
+  kPause,
+  // Resumes text-to-speech.
+  kResume,
+  // Navigate to next sentence.
+  kNextSentence,
+  // Navigate to next paragraph/block.
+  kNextParagraph,
+  // Exit Select-to-speak.
+  kExit,
+};
+
 enum class SwitchAccessCommand {
   // Do not perform a command.
   kNone,

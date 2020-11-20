@@ -23,6 +23,7 @@ class Rect;
 namespace ash {
 
 enum class AccessibilityAlert;
+enum class SelectToSpeakPanelAction;
 
 // Interface for Ash to request accessibility service from its client, Chrome.
 class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
@@ -92,6 +93,10 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   // and before the disable dialog is accepted, so that users can use Switch
   // Access to cancel or accept the dialog.
   virtual void OnSwitchAccessDisabled() = 0;
+
+  // Called when an action occurs (such as button click) on the Select-to-speak
+  // floating control panel.
+  virtual void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action) = 0;
 };
 
 }  // namespace ash

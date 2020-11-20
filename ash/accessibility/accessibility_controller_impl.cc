@@ -1023,6 +1023,14 @@ void AccessibilityControllerImpl::HideSelectToSpeakPanel() {
   select_to_speak_bubble_controller_->Hide();
 }
 
+void AccessibilityControllerImpl::OnSelectToSpeakPanelAction(
+    SelectToSpeakPanelAction action) {
+  if (!features::IsSelectToSpeakNavigationControlEnabled() || !client_) {
+    return;
+  }
+  client_->OnSelectToSpeakPanelAction(action);
+}
+
 bool AccessibilityControllerImpl::IsSwitchAccessRunning() const {
   return switch_access().enabled() || switch_access_disable_dialog_showing_;
 }
@@ -1895,10 +1903,13 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
       break;
     case FeatureType::kSelectToSpeak:
       select_to_speak_state_ = SelectToSpeakState::kSelectToSpeakStateInactive;
-      if (enabled)
+      if (enabled) {
         MaybeCreateSelectToSpeakEventHandler();
-      else
+      } else {
         select_to_speak_event_handler_.reset();
+        HideSelectToSpeakPanel();
+        select_to_speak_bubble_controller_.reset();
+      }
       break;
     case FeatureType::kStickyKeys:
       Shell::Get()->sticky_keys_controller()->Enable(enabled);
