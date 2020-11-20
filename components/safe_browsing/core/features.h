@@ -37,6 +37,10 @@ extern const base::Feature kCaptureInlineJavascriptForGoogleAds;
 // Enables client side detection on Android.
 extern const base::Feature kClientSideDetectionForAndroid;
 
+// Determines the experimental version of client side detection model, for
+// Desktop.
+extern const base::Feature kClientSideDetectionModelVersion;
+
 // Enable the addition of access tokens to download pings for enhanced
 // protection users.
 extern const base::Feature kDownloadRequestWithToken;

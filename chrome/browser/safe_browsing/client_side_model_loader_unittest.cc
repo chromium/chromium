@@ -20,6 +20,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/variations/variations_associated_data.h"
@@ -76,6 +78,13 @@ class ModelLoaderTest : public testing::Test {
   // Set up the finch experiment to control the model number
   // used in the model URL. This clears all existing state.
   void SetFinchModelNumber(int model_number) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kClientSideDetectionModelVersion,
+        {{ ModelLoader::kClientModelFinchParam,
+           base::NumberToString(model_number) }});
+#else
     scoped_feature_list_.Reset();
     scoped_feature_list_.Init();
     variations::testing::ClearAllVariationIDs();
@@ -91,6 +100,7 @@ class ModelLoaderTest : public testing::Test {
 
     ASSERT_TRUE(variations::AssociateVariationParams(
         ModelLoader::kClientModelFinchExperiment, group_name, params));
+#endif
   }
 
   // Set the URL for future SetModelFetchResponse() calls.

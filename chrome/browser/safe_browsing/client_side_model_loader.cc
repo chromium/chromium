@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/variations/variations_associated_data.h"
@@ -63,10 +64,8 @@ const char ModelLoader::kClientModelUrlPrefix[] =
     "https://ssl.gstatic.com/safebrowsing/csd/";
 const char ModelLoader::kClientModelNamePattern[] =
     "client_model_v5%s_variation_%d.pb";
+#if !BUILDFLAG(FULL_SAFE_BROWSING)
 const char ModelLoader::kClientModelFinchExperiment[] =
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-    "ClientSideDetectionModel";
-#else
     "ClientSideDetectionModelOnAndroid";
 #endif
 const char ModelLoader::kClientModelFinchParam[] =
@@ -80,8 +79,13 @@ const char kOverrideCsdModelFlag[] = "csd-model-override-path";
 
 // static
 int ModelLoader::GetModelNumber() {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  std::string num_str = base::GetFieldTrialParamValueByFeature(
+      kClientSideDetectionModelVersion, kClientModelFinchParam);
+#else
   std::string num_str = variations::GetVariationParamValue(
       kClientModelFinchExperiment, kClientModelFinchParam);
+#endif
   int model_number = 0;
   if (!base::StringToInt(num_str, &model_number)) {
     model_number = 6;  // Default model
