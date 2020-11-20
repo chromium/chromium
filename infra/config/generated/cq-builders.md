@@ -23,6 +23,8 @@ These builders must pass before a CL may land that affects files outside of
 
 * [android-marshmallow-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-arm64-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-marshmallow-arm64-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-marshmallow-arm64-rel))
 
+* [android-marshmallow-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-marshmallow-x86-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-marshmallow-x86-rel))
+
 * [android-pie-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-pie-arm64-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-pie-arm64-rel))
 
 * [android_compile_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android_compile_dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android_compile_dbg))
@@ -370,9 +372,6 @@ builder.
 These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
-
-* [android-marshmallow-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-marshmallow-x86-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-marshmallow-x86-rel))
-  * Experiment percentage: 100
 
 * [ios-simulator-coverage-exp](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-coverage-exp) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-coverage-exp)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-coverage-exp))
   * Experiment percentage: 3
