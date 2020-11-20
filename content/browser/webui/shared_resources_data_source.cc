@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/resources/media/grit/media_internals_resources.h"
 #include "content/browser/resources/media/grit/media_internals_resources_map.h"
 #include "content/grit/content_resources.h"
@@ -38,7 +39,7 @@
 #include "ui/resources/grit/webui_generated_resources_map.h"
 #include "ui/resources/grit/webui_resources_map.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/grit/chromeos_resources_map.h"
 #endif
@@ -65,9 +66,9 @@ const std::map<std::string, std::string> CreatePathPrefixAliasesMap() {
     // more context: crbug.com/1020284.
     {"@out_folder@/android_clang_arm/gen/ui/webui/resources/", ""},
 #endif  // defined(OS_ANDROID)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"@out_folder@/gen/ui/chromeos/", "chromeos/"},
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 
 #if !defined(OS_ANDROID)
@@ -105,7 +106,7 @@ const std::map<int, std::string> CreateSkiaResourceIdToAliasMap() {
   };
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const std::map<int, std::string> CreateChromeosMojoResourceIdToAliasMap() {
   return std::map<int, std::string>{
       {IDR_CELLULAR_SETUP_MOJOM_HTML,
@@ -170,7 +171,7 @@ const std::map<int, std::string> CreateChromeosMojoResourceIdToAliasMap() {
        "network_diagnostics.mojom-lite.js"},
   };
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AddResource(const std::string& path,
                  int resource_id,
@@ -241,10 +242,10 @@ const ResourcesMap* CreateResourcesMap() {
       result);
   AddAliasedResourcesToMap(CreateSkiaResourceIdToAliasMap(), kSkiaResources,
                            kSkiaResourcesSize, result);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AddAliasedResourcesToMap(CreateChromeosMojoResourceIdToAliasMap(),
                            kChromeosResources, kChromeosResourcesSize, result);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return result;
 }
 

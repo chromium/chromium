@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -679,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, CaptureScreenshotJpeg) {
 }
 
 // ChromeOS and Android don't support software compositing.
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 
 class NoGPUCaptureScreenshotTest : public CaptureScreenshotTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -734,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, LargeScreenshot) {
   EXPECT_GT(static_cast<int>(SkColorGetB(bottom_left)), 128);
 }
 
-#endif  // !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 
 // Setting frame size (through RWHV) is not supported on Android.
 // This test seems to be very flaky on windows: https://crbug.com/801173

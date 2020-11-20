@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "content/browser/compositor/image_transport_factory.h"
@@ -131,11 +132,12 @@ const GpuFeatureData GetGpuFeatureData(
     {"video_decode",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE),
-#if defined(OS_LINUX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(OS_ANDROID)
      !command_line.HasSwitch(switches::kEnableAcceleratedVideoDecode),
 #else
      command_line.HasSwitch(switches::kDisableAcceleratedVideoDecode),
-#endif  // defined(OS_LINUX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  //  (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))&&
+        //  !defined(OS_ANDROID)
      DisableInfo::Problem(
          "Accelerated video decode has been disabled, either via blocklist, "
          "about:flags or the command line."),
@@ -358,7 +360,7 @@ int NumberOfRendererRasterThreads() {
   int num_processors = base::SysInfo::NumberOfProcessors();
 
 #if defined(OS_ANDROID) || \
-    (defined(OS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY))
+    (BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY))
   // Android and ChromeOS ARM devices may report 6 to 8 CPUs for big.LITTLE
   // configurations. Limit the number of raster threads based on maximum of
   // 4 big cores.

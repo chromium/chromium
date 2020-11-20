@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/features.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
@@ -39,7 +40,7 @@ class AuraWindowVideoCaptureDeviceBrowserTest
   ~AuraWindowVideoCaptureDeviceBrowserTest() override = default;
 
   aura::Window* GetCapturedWindow() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Since the LameWindowCapturerChromeOS will be used, just return the normal
     // shell window.
     return shell()->window();
@@ -96,7 +97,7 @@ class AuraWindowVideoCaptureDeviceBrowserTest
         const gfx::RectF webcontents_in_frame_rect_f = TransformSimilarly(
             gfx::Rect(window_size), window_in_frame_rect_f, webcontents_rect);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         // Browser window capture on ChromeOS uses the
         // LameWindowCapturerChromeOS, which takes RGB snapshots and then
         // software-converts them to YUV, and color accuracy is greatly reduced.
@@ -302,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Disabled (crbug.com/1096988)
 // On ChromeOS, another window may occlude a window that is being captured.
 // Make sure the visibility is set to visible during capture if it's occluded.
@@ -326,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   window.reset();
   StopAndDeAllocate();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class AuraWindowVideoCaptureDeviceBrowserTestP
     : public AuraWindowVideoCaptureDeviceBrowserTest,
@@ -340,7 +341,7 @@ class AuraWindowVideoCaptureDeviceBrowserTestP
   }
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE_P(
     All,
     AuraWindowVideoCaptureDeviceBrowserTestP,
@@ -357,7 +358,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      true /* software compositing */),
                      testing::Values(false /* variable aspect ratio */,
                                      true /* fixed aspect ratio */)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Disabled (crbug.com/1096988)
 // Tests that the device successfully captures a series of content changes,

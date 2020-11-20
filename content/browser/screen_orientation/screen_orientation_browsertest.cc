@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -141,7 +142,7 @@ class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
 // actually support MacOS X if and when it switches to Aura.
 #if defined(USE_AURA) || defined(OS_ANDROID)
 // Flaky on Chrome OS: http://crbug.com/468259
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ScreenOrientationChange DISABLED_ScreenOrientationChange
 #else
 #define MAYBE_ScreenOrientationChange ScreenOrientationChange
@@ -175,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest,
 #endif // defined(USE_AURA) || defined(OS_ANDROID)
 
 // Flaky on Chrome OS: http://crbug.com/468259
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_WindowOrientationChange DISABLED_WindowOrientationChange
 #else
 #define MAYBE_WindowOrientationChange WindowOrientationChange

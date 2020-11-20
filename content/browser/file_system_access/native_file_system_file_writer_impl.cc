@@ -9,6 +9,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/quarantine/quarantine.h"
 #include "content/browser/file_system_access/native_file_system_error.h"
 #include "content/browser/file_system_access/native_file_system_manager_impl.h"
@@ -617,7 +618,7 @@ void NativeFileSystemFileWriterImpl::DidSwapFileDoQuarantine(
   // On ChromeOS on the other hand anything that isn't in the sandboxed file
   // system is also uniquely identifiable by its FileSystemURL::path(), and
   // thus we accept all other FileSystemURL types.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(target_url.type() != storage::kFileSystemTypeTemporary &&
          target_url.type() != storage::kFileSystemTypePersistent)
       << target_url.type();

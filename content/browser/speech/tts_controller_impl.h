@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
@@ -29,7 +30,7 @@
 namespace content {
 class BrowserContext;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class TtsControllerDelegate;
 #endif
 
@@ -156,7 +157,7 @@ class CONTENT_EXPORT TtsControllerImpl : public TtsController,
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(Visibility visibility) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   TtsControllerDelegate* GetTtsControllerDelegate();
   void SetTtsControllerDelegateForTesting(TtsControllerDelegate* delegate);
   TtsControllerDelegate* delegate_ = nullptr;

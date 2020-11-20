@@ -47,6 +47,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/input/touch_action.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/viz/common/features.h"
@@ -186,7 +187,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/test/test_screen.h"
 #endif
 
@@ -971,7 +972,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessHighDPIBrowserTest,
   EXPECT_EQ(expected_dip_scale, GetFrameDeviceScaleFactor(child));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        SubframeUpdateToCorrectDeviceScaleFactor) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -12087,7 +12088,7 @@ class CommitMessageOrderReverser : public DidCommitNavigationInterceptor {
 // its layout/animate phase. See https://crbug.com/802932.
 //
 // TODO(809580): Disabled on Android, Mac, and ChromeOS due to flakiness.
-#if defined(OS_ANDROID) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_OOPIFDetachDuringAnimation DISABLED_OOPIFDetachDuringAnimation
 #else
 #define MAYBE_OOPIFDetachDuringAnimation OOPIFDetachDuringAnimation
@@ -14863,7 +14864,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // Touchscreen DoubleTapZoom is only supported on Android & ChromeOS at present.
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 // A test ContentBrowserClient implementation which enforces
 // WebPreferences' |double_tap_to_zoom_enabled| to be true.
 class DoubleTapZoomContentBrowserClient : public TestContentBrowserClient {
@@ -14965,7 +14966,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   SetBrowserClientForTesting(old_client);
 }
-#endif  // defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 
 class CrossProcessNavigationObjectElementTest
     : public SitePerProcessBrowserTestBase,

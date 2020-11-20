@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -23,7 +24,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/browser/media/keyboard_mic_registration.h"
 #endif
 
@@ -31,7 +32,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 enum KeyboardMicAction { kRegister, kDeregister };
 
 void UpdateKeyboardMicRegistration(KeyboardMicAction action) {
@@ -92,7 +93,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
     params_.set_format(media::AudioParameters::AUDIO_FAKE);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (params_.channel_layout() ==
       media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
     UpdateKeyboardMicRegistration(kRegister);
@@ -103,7 +104,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
 AudioInputStreamBroker::~AudioInputStreamBroker() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (params_.channel_layout() ==
       media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
     UpdateKeyboardMicRegistration(kDeregister);

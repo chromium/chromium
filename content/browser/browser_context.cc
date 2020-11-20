@@ -32,6 +32,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/background_sync/background_sync_scheduler.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
@@ -88,9 +89,9 @@ const char kStoragePartitionMapKeyName[] = "content_storage_partition_map";
 const char kVideoDecodePerfHistoryId[] = "video-decode-perf-history";
 const char kLearningSession[] = "learning-session";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kMountPointsKey[] = "mount_points";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 StoragePartitionImplMap* GetStoragePartitionMap(
     BrowserContext* browser_context) {
@@ -177,7 +178,7 @@ storage::ExternalMountPoints* BrowserContext::GetMountPoints(
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
          !BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!context->GetUserData(kMountPointsKey)) {
     scoped_refptr<storage::ExternalMountPoints> mount_points =
         storage::ExternalMountPoints::CreateRefCounted();

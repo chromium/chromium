@@ -109,7 +109,7 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
       return "crashed";
     case base::TERMINATION_STATUS_STILL_RUNNING:
       return "still running";
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Used for the case when oom-killer kills a process on ChromeOS.
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
       return "oom killed";

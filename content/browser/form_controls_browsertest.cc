@@ -6,6 +6,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_paths.h"
@@ -66,7 +67,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     platform_suffix = "_mac";
 #elif defined(OS_WIN)
     platform_suffix = "_win";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
     platform_suffix = "_chromeos";
 #elif defined(OS_ANDROID)
     int sdk_int = base::android::BuildInfo::GetInstance()->sdk_int();

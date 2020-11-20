@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -206,11 +207,11 @@ bool SchemeMaySupportRedirectingToHTTPS(BrowserContext* browser_context,
                                                             url.scheme()))
     return true;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return url.SchemeIs(kExternalFileScheme);
-#else   // OS_CHROMEOS
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be

@@ -34,6 +34,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
@@ -528,7 +529,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   // Android and Chrome OS can't switch to software compositing. If the GPU
   // process initialization fails or GPU process is too unstable then crash the
   // browser process to reset everything.
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // On Windows, with GPU access disabled, the display compositor is run in the
   // browser process.
 #if defined(OS_WIN)
@@ -549,7 +550,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
     fallback_modes_.clear();
     fallback_modes_.push_back(gpu::GpuMode::DISABLED);
 #endif
-#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
     CHECK(false) << "GPU acceleration is required on certain platforms!";
 #endif  // IS_CHROMECAST
   } else {

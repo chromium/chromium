@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/autofill/content/browser/webauthn/internal_authenticator_impl.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -1567,7 +1568,7 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 }
 #endif  // defined(OS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug/1150681): Better testing, e.g. use a mock/fake u2fd proxy here.
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
   NavigateAndCommit(GURL(kTestOrigin1));
@@ -1579,7 +1580,7 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
   // There's no u2fd DBus proxy in tests so not available.
   EXPECT_FALSE(cb.value());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class OverrideRPIDAuthenticatorRequestDelegate
     : public AuthenticatorRequestClientDelegate {

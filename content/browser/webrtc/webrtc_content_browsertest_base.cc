@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/common/content_switches.h"
@@ -20,7 +21,7 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #endif
@@ -42,7 +43,7 @@ void WebRtcContentBrowserTestBase::SetUpCommandLine(
 void WebRtcContentBrowserTestBase::SetUp() {
   // We need pixel output when we dig pixels out of video tags for verification.
   EnablePixelOutput();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::CrasAudioClient::InitializeFake();
   chromeos::CrasAudioHandler::InitializeForTesting();
 #endif
@@ -53,7 +54,7 @@ void WebRtcContentBrowserTestBase::SetUp() {
 
 void WebRtcContentBrowserTestBase::TearDown() {
   ContentBrowserTest::TearDown();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::CrasAudioHandler::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
 #endif

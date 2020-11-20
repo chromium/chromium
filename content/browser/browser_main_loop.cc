@@ -51,6 +51,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/histograms.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
@@ -184,7 +185,7 @@
 #include "sandbox/policy/win/sandbox_win.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_switches.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -362,11 +363,12 @@ std::unique_ptr<base::MemoryPressureMonitor> CreateMemoryPressureMonitor(
 
   std::unique_ptr<util::MultiSourceMemoryPressureMonitor> monitor;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::switches::MemoryPressureHandlingEnabled())
     monitor = std::make_unique<util::MultiSourceMemoryPressureMonitor>();
 #elif defined(OS_MAC) || defined(OS_WIN) || defined(OS_FUCHSIA) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMECAST))
+    ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&       \
+     !BUILDFLAG(IS_CHROMECAST))
   monitor = std::make_unique<util::MultiSourceMemoryPressureMonitor>();
 #endif
   // No memory monitor on other platforms...
@@ -377,7 +379,7 @@ std::unique_ptr<base::MemoryPressureMonitor> CreateMemoryPressureMonitor(
   return monitor;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 mojo::PendingRemote<data_decoder::mojom::BleScanParser> GetBleScanParser() {
   static base::NoDestructor<data_decoder::DataDecoder> decoder;
   mojo::PendingRemote<data_decoder::mojom::BleScanParser> ble_scan_parser;
@@ -385,7 +387,7 @@ mojo::PendingRemote<data_decoder::mojom::BleScanParser> GetBleScanParser() {
       ble_scan_parser.InitWithNewPipeAndPassReceiver());
   return ble_scan_parser;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
 // Disable dynamic code using ACG. Prevents the browser process from generating
@@ -778,7 +780,7 @@ void BrowserMainLoop::PostMainMessageLoopStart() {
       skia::SkiaMemoryDumpProvider::GetInstance(), "Skia", nullptr);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       sql::SqlMemoryDumpProvider::GetInstance(), "Sql", nullptr);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   device::BluetoothAdapterFactory::SetBleScanParserCallback(
       base::BindRepeating(&GetBleScanParser));
 #else

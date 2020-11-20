@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/fido/features.h"
 
 #if defined(OS_MAC)
@@ -38,7 +39,7 @@ bool IsUVPlatformAuthenticatorAvailable(
              IsUserVerifyingPlatformAuthenticatorAvailable(win_webauthn_api);
 }
 
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsUVPlatformAuthenticatorAvailable() {
   return base::FeatureList::IsEnabled(
              device::kWebAuthCrosPlatformAuthenticator) &&

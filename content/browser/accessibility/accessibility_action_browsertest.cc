@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -984,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
 
 // This test ony makes sense on platforms where the popup menu is implemented
 // internally as an HTML page in a popup, not where it's a native popup.
-#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(USE_ATK)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_ATK)
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
                        OpenSelectPopupWithNoAXMenuList) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -1024,6 +1025,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   ASSERT_TRUE(listbox);
   EXPECT_EQ(3U, listbox->PlatformChildCount());
 }
-#endif  // defined(OS_WIN) || defined(OS_CHROMEOS) || defined(USE_ATK)
+#endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_ATK)
 
 }  // namespace content

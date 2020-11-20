@@ -5,6 +5,7 @@
 #include "base/macros.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/feature_observer.h"
 #include "content/public/browser/content_browser_client.h"
@@ -199,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
 // IndexedDB connections (notifications only when the number of held connections
 // switches between zero and non-zero).
 // Disabled on ChromeOS release build for flakiness. See crbug.com/1030733.
-#if defined(OS_CHROMEOS) && defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(NDEBUG)
 #define MAYBE_ObserverTwoLocks DISABLED_ObserverTwoLocks
 #else
 #define MAYBE_ObserverTwoLocks ObserverTwoLocks

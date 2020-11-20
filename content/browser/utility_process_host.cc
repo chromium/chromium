@@ -225,7 +225,10 @@ bool UtilityProcessHost::StartProcess() {
       network::switches::kNetLogCaptureMode,
       network::switches::kExplicitlyAllowedPorts,
       sandbox::policy::switches::kNoSandbox,
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !BUILDFLAG(IS_LACROS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
       switches::kDisableDevShmUsage,
 #endif
 #if defined(OS_MAC)

@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
 import("//build/config/ui.gni")
@@ -2125,18 +2126,18 @@ source_set("browser") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources +=
         [ "screenlock_monitor/screenlock_monitor_device_source_chromeos.cc" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [ "speech/tts_linux.cc" ]
     deps += [ "//third_party/speech-dispatcher" ]
   }
 
   # ChromeOS also defines linux but their memory-monitors conflict.
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "media/keyboard_mic_registration.cc",
       "media/keyboard_mic_registration.h",
@@ -2242,7 +2243,7 @@ source_set("browser") {
       ]
       deps += [ "//ui/base/cursor" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "media/capture/slow_capture_overlay_chromeos.cc",
         "media/capture/slow_capture_overlay_chromeos.h",
@@ -2257,7 +2258,7 @@ source_set("browser") {
         "//sandbox/mac:seatbelt_extension",
       ]
     }
-    if (chromeos_is_browser_only) {
+    if (is_chromeos_lacros) {
       sources += [
         "media/capture/desktop_capturer_lacros.cc",
         "media/capture/desktop_capturer_lacros.h",
@@ -2381,7 +2382,7 @@ source_set("browser") {
       "//ppapi/shared_impl",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.cc",
         "renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.h",
@@ -2670,7 +2671,7 @@ source_set("browser") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "gpu/chromeos/delegate_to_browser_gpu_service_accelerator_factory.cc",
       "gpu/chromeos/video_capture_dependencies.cc",
@@ -2705,7 +2706,7 @@ source_set("browser") {
       "renderer_host/render_widget_host_view_event_handler.h",
     ]
 
-    if (is_linux && !is_chromeos) {
+    if (is_linux || is_chromeos_lacros) {
       deps += [ "//ui/base/ime/linux" ]
     }
   } else {  # Not aura.

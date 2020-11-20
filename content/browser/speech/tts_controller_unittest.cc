@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/speech/tts_utterance_impl.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/browser/visibility.h"
@@ -19,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/public/browser/tts_controller_delegate.h"
 #endif
 
@@ -106,7 +107,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   base::OnceCallback<void(bool)> did_start_speaking_callback_;
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class MockTtsControllerDelegate : public TtsControllerDelegate {
  public:
   MockTtsControllerDelegate() = default;
@@ -154,7 +155,7 @@ class TestTtsControllerImpl : public TtsControllerImpl {
   using TtsControllerImpl::GetMatchingVoice;
   using TtsControllerImpl::SpeakNextUtterance;
   using TtsControllerImpl::UpdateUtteranceDefaults;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using TtsControllerImpl::SetTtsControllerDelegateForTesting;
 #endif
   using TtsControllerImpl::IsPausedForTesting;
@@ -172,7 +173,7 @@ class TtsControllerTest : public testing::Test {
     platform_impl_ = std::make_unique<MockTtsPlatformImpl>(controller_.get());
     browser_context_ = std::make_unique<TestBrowserContext>();
     controller()->SetTtsPlatform(platform_impl_.get());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     controller()->SetTtsControllerDelegateForTesting(&delegate_);
 #endif
     controller()->AddVoicesChangedDelegate(&voices_changed_);
@@ -187,7 +188,7 @@ class TtsControllerTest : public testing::Test {
   TestTtsControllerImpl* controller() { return controller_.get(); }
   TestBrowserContext* browser_context() { return browser_context_.get(); }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   MockTtsControllerDelegate* delegate() { return &delegate_; }
 #endif
 
@@ -224,7 +225,7 @@ class TtsControllerTest : public testing::Test {
   std::unique_ptr<TestTtsControllerImpl> controller_;
   std::unique_ptr<MockTtsPlatformImpl> platform_impl_;
   std::unique_ptr<TestBrowserContext> browser_context_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   MockTtsControllerDelegate delegate_;
 #endif
   MockVoicesChangedDelegate voices_changed_;
@@ -246,7 +247,7 @@ TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
   ReleaseTtsController();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(TtsControllerTest, TestBrowserContextRemoved) {
   std::vector<VoiceData> voices;
   VoiceData voice_data;
@@ -399,7 +400,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     utterance->SetEngineId("id5");
     EXPECT_EQ(5, controller()->GetMatchingVoice(utterance.get(), voices));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     TtsControllerDelegate::PreferredVoiceIds preferred_voice_ids;
     preferred_voice_ids.locale_voice_id.emplace("Voice7", "id7");
     preferred_voice_ids.any_locale_voice_id.emplace("Android", "");
@@ -449,7 +450,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     utterance->SetLang("");
     EXPECT_EQ(1, controller()->GetMatchingVoice(utterance.get(), voices));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // voice0 is matched against the system language which has no region piece.
     TestContentBrowserClient::GetInstance()->set_application_locale("en");
     EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));

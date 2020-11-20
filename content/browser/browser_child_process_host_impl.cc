@@ -27,6 +27,7 @@
 #include "base/token.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
@@ -490,7 +491,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
                                   PROCESS_TYPE_MAX);
         break;
       }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
       case base::TERMINATION_STATUS_PROCESS_WAS_KILLED: {
@@ -517,7 +518,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
     UMA_HISTOGRAM_ENUMERATION("ChildProcess.Disconnected2",
                               static_cast<ProcessType>(data_.process_type),
                               PROCESS_TYPE_MAX);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (info.status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM) {
       UMA_HISTOGRAM_ENUMERATION("ChildProcess.Killed2.OOM",
                                 static_cast<ProcessType>(data_.process_type),
@@ -641,7 +642,7 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
         base::BindOnce(&NotifyProcessLaunchedAndConnected, data_.Duplicate()));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ChromeOS, there are still child processes of NaCl modules, and they
   // don't contribute to tracing actually. So do not register those clients
   // to the tracing service. See https://crbug.com/1101468.

@@ -19,6 +19,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
@@ -436,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // Disabled because the test always fails the first time it runs on the Win Aura
 // bots, and usually but not always passes second-try (See crbug.com/179532).
 // Flaky on CrOS as well: https://crbug.com/856079
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_QuickOverscrollDirectionChange \
   DISABLED_QuickOverscrollDirectionChange
 #else
@@ -839,7 +840,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // tests. http://crbug.com/305722
 // TODO(tdresser): Re-enable this once eager GR is back on. See
 // crbug.com/410280.
-#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_OverscrollNavigationTouchThrottling \
         DISABLED_OverscrollNavigationTouchThrottling
 #else

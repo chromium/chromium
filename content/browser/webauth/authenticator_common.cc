@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/virtual_authenticator_request_delegate.h"
@@ -538,7 +539,7 @@ bool IsUserVerifyingPlatformAuthenticatorAvailableImpl(
   return !browser_context->IsOffTheRecord() &&
          IsUVPlatformAuthenticatorAvailable(
              discovery_factory->win_webauthn_api());
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return !browser_context->IsOffTheRecord() &&
          IsUVPlatformAuthenticatorAvailable();
 #else
@@ -630,7 +631,7 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
   }
 #endif  // defined(OS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore the ChromeOS u2fd virtual U2F HID device for WebAuthn requests so
   // that it doesn't collide with the ChromeOS platform authenticator, also
   // implemented in u2fd.
@@ -641,7 +642,7 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
     discovery_factory->set_generate_request_id_callback(
         request_delegate->GetGenerateRequestIdCallback(render_frame_host));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return discovery_factory;
 }

@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_controller.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -121,7 +122,7 @@ class TracingControllerImpl : public TracingController,
 
   void InitStartupTracingForDuration();
   void EndStartupTracing();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnMachineStatisticsLoaded();
 #endif
   base::FilePath GetStartupTraceFileName() const;
@@ -144,7 +145,7 @@ class TracingControllerImpl : public TracingController,
   // This timer initiates trace file saving.
   base::OneShotTimer startup_trace_timer_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool are_statistics_loaded_ = false;
   std::string hardware_class_;
   base::WeakPtrFactory<TracingControllerImpl> weak_ptr_factory_{this};

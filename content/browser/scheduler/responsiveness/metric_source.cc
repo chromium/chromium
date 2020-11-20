@@ -7,12 +7,13 @@
 #include "base/bind.h"
 #include "base/pending_task.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/scheduler/responsiveness/message_loop_observer.h"
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ui_base_features.h"
 #endif
 

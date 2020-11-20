@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/bad_message.h"
@@ -7355,13 +7356,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // This test is not important for Chrome OS if TTS is called in content. For
 // more details refer (content/browser/speech/tts_platform_impl.cc).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DoesNotCacheIfUsingSpeechSynthesis \
   DISABLED_DoesNotCacheIfUsingSpeechSynthesis
 #else
 #define MAYBE_DoesNotCacheIfUsingSpeechSynthesis \
   DoesNotCacheIfUsingSpeechSynthesis
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_DoesNotCacheIfUsingSpeechSynthesis) {
   ASSERT_TRUE(embedded_test_server()->Start());

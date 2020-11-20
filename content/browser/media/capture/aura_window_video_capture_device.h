@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -32,7 +33,7 @@ class CONTENT_EXPORT AuraWindowVideoCaptureDevice final
   explicit AuraWindowVideoCaptureDevice(const DesktopMediaID& source_id);
   ~AuraWindowVideoCaptureDevice() final;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
  protected:
   // Overrides FrameSinkVideoCaptureDevice::CreateCapturer() to create a
   // LameWindowCapturerChromeOS for window capture where compositor frame sinks

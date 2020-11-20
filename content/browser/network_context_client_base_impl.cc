@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/network_context_client_base.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -163,7 +164,7 @@ void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void NetworkContextClientBase::OnTrustAnchorUsed() {}
 #endif
 

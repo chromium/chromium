@@ -15,6 +15,7 @@
 #include "base/token.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/media/media_interface_factory_holder.h"
 #include "content/public/common/cdm_info.h"
 #include "media/media_buildflags.h"
@@ -105,7 +106,7 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
   // |cdm_factory_map_| associated with |cdm_guid|.
   void OnCdmServiceConnectionError(const base::Token& cdm_guid);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Callback for for Chrome OS CDM creation to facilitate falling back to the
   // library CDM if the daemon is unavailable or other settings prevent usage of
   // it.
@@ -117,7 +118,7 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
       const base::Optional<base::UnguessableToken>& cdm_id,
       mojo::PendingRemote<media::mojom::Decryptor> decryptor,
       const std::string& error_message);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   // Safe to hold a raw pointer since |this| is owned by RenderFrameHostImpl.

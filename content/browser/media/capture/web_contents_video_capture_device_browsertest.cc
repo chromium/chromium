@@ -373,7 +373,7 @@ class WebContentsVideoCaptureDeviceBrowserTestP
   }
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebContentsVideoCaptureDeviceBrowserTestP,
@@ -395,7 +395,7 @@ INSTANTIATE_TEST_SUITE_P(
                         true /* fixed aspect ratio */),
         testing::Values(false /* page has only a main frame */,
                         true /* page contains a cross-site iframe */)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that the device successfully captures a series of content changes,
 // whether the browser is running with software compositing or GPU-accelerated
@@ -403,7 +403,7 @@ INSTANTIATE_TEST_SUITE_P(
 // and whether the main document contains a cross-site iframe.
 
 // Fails on LACROS for Chrome OS and linux. http://crbug.com/1108205
-#if BUILDFLAG(IS_LACROS) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges

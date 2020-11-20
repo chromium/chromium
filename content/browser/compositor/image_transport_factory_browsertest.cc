@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -27,7 +28,7 @@ class MockContextLostObserver : public viz::ContextLostObserver {
 };
 
 // Flaky on ChromeOS: crbug.com/394083
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_TestLostContext DISABLED_TestLostContext
 #else
 #define MAYBE_TestLostContext TestLostContext

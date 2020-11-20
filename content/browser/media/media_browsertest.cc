@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(MediaTest, LoadManyVideos) {
 }
 #endif  // !defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4) {
   PlayVideo("bear_mpeg4_mp3.avi", GetParam());
 }
@@ -312,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAmrnbMpeg4) {
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavGsmms) {
   PlayAudio("bear_gsm_ms.wav", GetParam());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac) {

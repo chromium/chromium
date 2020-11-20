@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
 #include "content/browser/gpu/gpu_data_manager_testing_autogen.h"
 #include "content/browser/gpu/gpu_data_manager_testing_entry_enums_autogen.h"
@@ -273,7 +274,7 @@ TEST_F(GpuDataManagerImplPrivateTest, UnblockThisDomainFrom3DAPIs) {
 
 // Android and Chrome OS do not support software compositing, while Fuchsia does
 // not support falling back to software from Vulkan.
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackToSwiftShader) {
   ScopedGpuDataManagerImplPrivate manager;
@@ -388,13 +389,13 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
 
   // The first fallback should go to SwiftShader on platforms where fallback to
   // software is allowed.
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 #endif  // !OS_ANDROID && !OS_CHROMEOS
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVulkan);

@@ -15,6 +15,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -41,7 +42,9 @@ namespace {
 constexpr gfx::Rect kBounds = gfx::Rect(0, 0, 20, 20);
 constexpr gfx::PointF kClientPt = {5, 10};
 
-#if defined(OS_LINUX) || defined(OS_WIN)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN)
 constexpr gfx::PointF kScreenPt = {17, 3};
 #endif
 
@@ -200,7 +203,9 @@ TEST_F(WebContentsViewAuraTest, OccludeView) {
   EXPECT_EQ(web_contents()->GetVisibility(), Visibility::VISIBLE);
 }
 
-#if defined(OS_LINUX) || defined(OS_WIN)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN)
 TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
@@ -236,7 +241,9 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   view->OnDragEntered(event);
   ASSERT_NE(nullptr, view->current_drop_data_);
 
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // By design, Linux implementations return an empty string if file data
   // is also present.
   EXPECT_TRUE(!view->current_drop_data_->text ||
@@ -267,7 +274,9 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
 
   CheckDropData(view);
 
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // By design, Linux implementations returns an empty string if file data
   // is also present.
   EXPECT_TRUE(!drop_complete_data_->drop_data.text ||
@@ -324,7 +333,9 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   view->OnDragEntered(event);
   ASSERT_NE(nullptr, view->current_drop_data_);
 
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // By design, Linux implementations return an empty string if file data
   // is also present.
   EXPECT_TRUE(!view->current_drop_data_->text ||
@@ -348,7 +359,9 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
 
   CheckDropData(view);
 
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // By design, Linux implementations returns an empty string if file data is
   // also present.
   EXPECT_TRUE(!drop_complete_data_->drop_data.text ||

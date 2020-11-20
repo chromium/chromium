@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/test/gpu_host_impl_test_api.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -64,7 +65,7 @@ class TestGpuService : public viz::mojom::GpuService {
                            bool cache_shaders_on_disk,
                            EstablishGpuChannelCallback callback) override {}
   void CloseChannel(int32_t client_id) override {}
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override {}
@@ -83,7 +84,7 @@ class TestGpuService : public viz::mojom::GpuService {
   void CreateJpegEncodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) override {}
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           receiver) override {}

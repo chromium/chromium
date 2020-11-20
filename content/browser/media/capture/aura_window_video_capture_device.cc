@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,7 +25,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/browser/media/capture/slow_window_capturer_chromeos.h"
 #endif
 
@@ -80,7 +81,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
     target_window_ = DesktopMediaID::GetNativeWindowById(source_id);
     if (target_window_ &&
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         // See class comments for SlowWindowCapturerChromeOS.
         (source_id.type == DesktopMediaID::TYPE_WINDOW ||
          target_window_->GetFrameSinkId().is_valid()) &&
@@ -88,7 +89,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
         target_window_->GetFrameSinkId().is_valid() &&
 #endif
         true) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       force_visible_.emplace(target_window_);
 #endif
       target_window_->AddObserver(this);
@@ -116,7 +117,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
     target_window_->RemoveObserver(this);
     target_window_ = nullptr;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     force_visible_.reset();
 #endif
 
@@ -140,7 +141,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
   const DesktopMediaID::Type target_type_;
 
   aura::Window* target_window_ = nullptr;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Optional<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_visible_;
 #endif
@@ -155,7 +156,7 @@ AuraWindowVideoCaptureDevice::AuraWindowVideoCaptureDevice(
 
 AuraWindowVideoCaptureDevice::~AuraWindowVideoCaptureDevice() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AuraWindowVideoCaptureDevice::CreateCapturer(
     mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) {
   GetUIThreadTaskRunner({})->PostTask(

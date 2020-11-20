@@ -13,13 +13,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_process_sub_thread.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "media/media_buildflags.h"
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
 #include "ui/base/buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/browser/media/keyboard_mic_registration.h"
 #endif
 
@@ -167,7 +168,7 @@ class CONTENT_EXPORT BrowserMainLoop {
     return media_keys_listener_manager_.get();
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only expose this on ChromeOS since it's only needed there. On Android this
   // be null if this process started in reduced mode.
   net::NetworkChangeNotifier* network_change_notifier() const {
@@ -364,7 +365,7 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   std::unique_ptr<media::AudioSystem> audio_system_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   KeyboardMicRegistration keyboard_mic_registration_;
 #endif
 

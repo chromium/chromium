@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/installed_payment_apps_finder.h"
@@ -257,7 +258,7 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
 };
 
 // TODO(crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
 #define MAYBE_AbortPaymentWithInvalidRegistrationId \
   DISABLED_AbortPaymentWithInvalidRegistrationId
 #else
@@ -280,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest,
 }
 
 // TODO(crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
 #define MAYBE_AbortPayment DISABLED_AbortPayment
 #else
 #define MAYBE_AbortPayment AbortPayment
@@ -330,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, MAYBE_CanMakePayment) {
 }
 
 // TODO(crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
 #define MAYBE_PaymentAppInvocationAndFailed \
   DISABLED_PaymentAppInvocationAndFailed
 #else

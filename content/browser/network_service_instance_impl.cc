@@ -24,6 +24,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/network_service_client.h"
 #include "content/browser/service_sandbox_type.h"
@@ -79,7 +80,7 @@ std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
 // called from the IO thread.
 const base::Feature kNetworkServiceDedicatedThread {
   "NetworkServiceDedicatedThread",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -404,7 +405,7 @@ RegisterNetworkServiceCrashHandler(base::RepeatingClosure handler) {
   return GetCrashHandlersList().Add(std::move(handler));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 net::NetworkChangeNotifier* GetNetworkChangeNotifier() {
   return BrowserMainLoop::GetInstance()->network_change_notifier();
 }
@@ -557,7 +558,7 @@ class CertVerifierServiceFactoryOwner {
   cert_verifier::mojom::CertVerifierServiceFactory*
   GetCertVerifierServiceFactory() {
     if (!service_factory_) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // ChromeOS's in-process CertVerifierService should run on the IO thread
       // because it interacts with IO-bound NSS and ChromeOS user slots.
       // See for example InitializeNSSForChromeOSUser().

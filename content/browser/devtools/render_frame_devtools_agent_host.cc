@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/devtools_manager.h"
@@ -576,7 +577,7 @@ void RenderFrameDevToolsAgentHost::RenderProcessExited(
   switch (info.status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
     case base::TERMINATION_STATUS_PROCESS_CRASHED:

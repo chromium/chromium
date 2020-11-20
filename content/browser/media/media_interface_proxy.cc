@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_sandbox_type.h"
@@ -49,9 +50,9 @@
 #if defined(OS_MAC)
 #include "sandbox/mac/seatbelt_extension.h"
 #endif  // defined(OS_MAC)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_ANDROID)
@@ -229,10 +230,10 @@ class SeatbeltExtensionTokenProviderImpl
 
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) && defined(OS_MAC)
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS) && defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kChromeOsCdmFileSystemId[] =
     "application_chromeos-cdm-factory-daemon";
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) && defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The amount of time to allow the secondary Media Service instance to idle
 // before tearing it down. Only used if the Content embedder defines how to
@@ -323,7 +324,7 @@ MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
   DVLOG(1) << __func__;
   DCHECK(render_frame_host_);
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS) && defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(IS_CHROMEOS_ASH)
   // The file system ID passed in here is only used by the CDM obtained through
   // the |media_interface_factory_ptr_|.
   auto frame_factory_getter = base::BindRepeating(
@@ -439,7 +440,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
                                     CreateCdmCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(jkardatzke): Conditionalize this on |cdm_config.use_hw_secure_codecs|
   if (base::FeatureList::IsEnabled(chromeos::features::kCdmFactoryDaemon)) {
     auto* factory = media_interface_factory_ptr_->Get();
@@ -454,7 +455,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
       return;
     }
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto* factory = GetCdmFactory(key_system);
 #elif BUILDFLAG(ENABLE_CAST_RENDERER)
   // CDM service lives together with renderer service if cast renderer is
@@ -566,7 +567,7 @@ void MediaInterfaceProxy::OnCdmServiceConnectionError(
   cdm_factory_map_.erase(cdm_guid);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void MediaInterfaceProxy::OnChromeOsCdmCreated(
     const std::string& key_system,
     const media::CdmConfig& cdm_config,
@@ -593,7 +594,7 @@ void MediaInterfaceProxy::OnChromeOsCdmCreated(
   }
   factory->CreateCdm(key_system, cdm_config, std::move(callback));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 }  // namespace content
