@@ -440,18 +440,19 @@ void ChromeContentRendererClient::RenderThreadStarted() {
         WebString::FromASCII(scheme));
   }
 
-  // This doesn't work in single-process mode.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
+    // This doesn't work in single-process mode.
     ThreadProfiler::SetMainThreadTaskRunner(
         base::ThreadTaskRunnerHandle::Get());
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
     thread->BindHostReceiver(collector.InitWithNewPipeAndPassReceiver());
     ThreadProfiler::SetCollectorForChildProcess(std::move(collector));
-  }
 
-  blink::IdentifiabilityStudySettings::SetGlobalProvider(
-      std::make_unique<PrivacyBudgetSettingsProvider>());
+    // This is superfluous in single-process mode and triggers a DCHECK
+    blink::IdentifiabilityStudySettings::SetGlobalProvider(
+        std::make_unique<PrivacyBudgetSettingsProvider>());
+  }
 }
 
 void ChromeContentRendererClient::ExposeInterfacesToBrowser(
