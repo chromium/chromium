@@ -21,6 +21,7 @@
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 
 class GrDirectContext;
 class SkImage;
@@ -74,7 +75,8 @@ class GPU_GLES2_EXPORT ServiceTransferCache
       ServiceDiscardableHandle handle,
       GrDirectContext* context,
       std::vector<sk_sp<SkImage>> plane_images,
-      cc::YUVDecodeFormat plane_images_format,
+      SkYUVAInfo::PlaneConfig plane_config,
+      SkYUVAInfo::Subsampling subsampling,
       SkYUVColorSpace yuv_color_space,
       size_t buffer_byte_size,
       bool needs_mips);

@@ -406,6 +406,10 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
       cache_use.emplace(gr_shader_cache,
                         base::strict_cast<int32_t>(channel_->client_id()));
     DCHECK(shared_context_state->transfer_cache());
+    SkYUVAInfo::PlaneConfig plane_config =
+        completed_decode->buffer_format == gfx::BufferFormat::YVU_420
+            ? SkYUVAInfo::PlaneConfig::kY_V_U
+            : SkYUVAInfo::PlaneConfig::kY_UV;
     // TODO(andrescj): |params.target_color_space| is not needed because Skia
     // knows where it's drawing, so it can handle color space conversion without
     // us having to specify the target color space. However, we are currently
@@ -421,9 +425,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
                                           params.discardable_handle_shm_offset,
                                           params.discardable_handle_shm_id),
                  shared_context_state->gr_context(), std::move(plane_sk_images),
-                 completed_decode->buffer_format == gfx::BufferFormat::YVU_420
-                     ? cc::YUVDecodeFormat::kYVU3
-                     : cc::YUVDecodeFormat::kYUV2,
+                 plane_config, SkYUVAInfo::Subsampling::k420,
                  completed_decode->yuv_color_space,
                  completed_decode->buffer_byte_size, params.needs_mips)) {
       DLOG(ERROR) << "Could not create and insert the transfer cache entry";

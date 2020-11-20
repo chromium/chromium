@@ -17,7 +17,6 @@
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gl/trace_util.h"
 
@@ -280,7 +279,8 @@ bool ServiceTransferCache::CreateLockedHardwareDecodedImageEntry(
     ServiceDiscardableHandle handle,
     GrDirectContext* context,
     std::vector<sk_sp<SkImage>> plane_images,
-    cc::YUVDecodeFormat plane_images_format,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
     SkYUVColorSpace yuv_color_space,
     size_t buffer_byte_size,
     bool needs_mips) {
@@ -292,7 +292,7 @@ bool ServiceTransferCache::CreateLockedHardwareDecodedImageEntry(
   // Create the service-side image transfer cache entry.
   auto entry = std::make_unique<cc::ServiceImageTransferCacheEntry>();
   if (!entry->BuildFromHardwareDecodedImage(
-          context, std::move(plane_images), plane_images_format,
+          context, std::move(plane_images), plane_config, subsampling,
           yuv_color_space, buffer_byte_size, needs_mips)) {
     return false;
   }

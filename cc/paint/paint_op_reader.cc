@@ -670,6 +670,33 @@ void PaintOpReader::Read(SkYUVColorSpace* yuv_color_space) {
   *yuv_color_space = static_cast<SkYUVColorSpace>(raw_yuv_color_space);
 }
 
+void PaintOpReader::Read(SkYUVAInfo::PlaneConfig* plane_config) {
+  uint32_t raw_plane_config =
+      static_cast<uint32_t>(SkYUVAInfo::PlaneConfig::kUnknown);
+  ReadSimple(&raw_plane_config);
+
+  if (raw_plane_config >
+      static_cast<uint32_t>(SkYUVAInfo::PlaneConfig::kLast)) {
+    SetInvalid();
+    return;
+  }
+
+  *plane_config = static_cast<SkYUVAInfo::PlaneConfig>(raw_plane_config);
+}
+
+void PaintOpReader::Read(SkYUVAInfo::Subsampling* subsampling) {
+  uint32_t raw_subsampling =
+      static_cast<uint32_t>(SkYUVAInfo::Subsampling::kUnknown);
+  ReadSimple(&raw_subsampling);
+
+  if (raw_subsampling > static_cast<uint32_t>(SkYUVAInfo::Subsampling::kLast)) {
+    SetInvalid();
+    return;
+  }
+
+  *subsampling = static_cast<SkYUVAInfo::Subsampling>(raw_subsampling);
+}
+
 void PaintOpReader::Read(gpu::Mailbox* mailbox) {
   ReadData(sizeof(gpu::Mailbox::Name), (*mailbox).name);
 }

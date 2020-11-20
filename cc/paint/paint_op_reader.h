@@ -75,6 +75,8 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkImageInfo* info);
   void Read(sk_sp<SkColorSpace>* color_space);
   void Read(SkYUVColorSpace* yuv_color_space);
+  void Read(SkYUVAInfo::PlaneConfig* plane_config);
+  void Read(SkYUVAInfo::Subsampling* subsampling);
   void Read(gpu::Mailbox* mailbox);
 
 #if !defined(OS_ANDROID)

@@ -542,6 +542,14 @@ void PaintOpWriter::Write(SkYUVColorSpace yuv_color_space) {
   WriteSimple(static_cast<uint32_t>(yuv_color_space));
 }
 
+void PaintOpWriter::Write(SkYUVAInfo::PlaneConfig plane_config) {
+  WriteSimple(static_cast<uint32_t>(plane_config));
+}
+
+void PaintOpWriter::Write(SkYUVAInfo::Subsampling subsampling) {
+  WriteSimple(static_cast<uint32_t>(subsampling));
+}
+
 void PaintOpWriter::WriteData(size_t bytes, const void* input) {
   EnsureBytes(bytes);
   if (!valid_)

@@ -2172,16 +2172,16 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
 
     // Non-hardware-accelerated path.
     if (image_data->yuva_pixmap_info.has_value()) {
-      SkPixmap y_pixmap;
-      SkPixmap u_pixmap;
-      SkPixmap v_pixmap;
-      if (!image_data->decode.y_image()->peekPixels(&y_pixmap) ||
-          !image_data->decode.u_image()->peekPixels(&u_pixmap) ||
-          !image_data->decode.v_image()->peekPixels(&v_pixmap)) {
+      SkPixmap yuv_pixmaps[3];
+      if (!image_data->decode.y_image()->peekPixels(&yuv_pixmaps[0]) ||
+          !image_data->decode.u_image()->peekPixels(&yuv_pixmaps[1]) ||
+          !image_data->decode.v_image()->peekPixels(&yuv_pixmaps[2])) {
         return;
       }
       ClientImageTransferCacheEntry image_entry(
-          &y_pixmap, &u_pixmap, &v_pixmap, decoded_target_colorspace.get(),
+          yuv_pixmaps, image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
+          image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
+          decoded_target_colorspace.get(),
           image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace(),
           image_data->needs_mips);
       InsertTransferCacheEntry(image_entry, image_data);

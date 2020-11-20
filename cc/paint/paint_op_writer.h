@@ -13,6 +13,7 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 
 struct SkRect;
 struct SkIRect;
@@ -69,6 +70,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const sk_sp<SkTextBlob>& blob);
   void Write(SkColorType color_type);
   void Write(SkYUVColorSpace yuv_color_space);
+  void Write(SkYUVAInfo::PlaneConfig plane_config);
+  void Write(SkYUVAInfo::Subsampling subsampling);
   void Write(const gpu::Mailbox& mailbox);
 
   void Write(SkClipOp op) { Write(static_cast<uint8_t>(op)); }
