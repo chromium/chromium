@@ -1,0 +1,13 @@
+<html>
+  <body>
+    <p></p>
+  </body>
+  <script>
+    let audio = document.createElement('audio');
+    function playAudio() {
+      audio.src = 'test_audio.ogg';
+      audio.play();
+    }
+    document.addEventListener('touchend', function(e) { playAudio(); }, false);
+  </script>
+</html>

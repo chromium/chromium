@@ -26,6 +26,7 @@ android_library("weblayer_java_tests") {
     "src/org/chromium/weblayer/test/FullscreenSizeTest.java",
     "src/org/chromium/weblayer/test/GoogleAccountsTest.java",
     "src/org/chromium/weblayer/test/InputTypesTest.java",
+    "src/org/chromium/weblayer/test/MediaSessionTest.java",
     "src/org/chromium/weblayer/test/NavigationTest.java",
     "src/org/chromium/weblayer/test/NewTabCallbackTest.java",
     "src/org/chromium/weblayer/test/OnTabRemovedTabListCallbackImpl.java",
