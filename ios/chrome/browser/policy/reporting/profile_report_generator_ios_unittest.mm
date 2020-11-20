@@ -109,7 +109,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
     EXPECT_EQ(kProfilePath.BaseName().AsUTF8Unsafe(), report->name());
     EXPECT_EQ(kProfilePath.AsUTF8Unsafe(), report->id());
-    EXPECT_TRUE(report->is_available());
+    EXPECT_TRUE(report->is_detail_available());
 
     return report;
   }

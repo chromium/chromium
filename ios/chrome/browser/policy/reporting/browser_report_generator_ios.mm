@@ -52,7 +52,7 @@ void BrowserReportGeneratorIOS::GenerateProfileInfo(ReportType report_type,
         report->add_chrome_user_profile_infos();
     profile->set_id(entry->GetStatePath().AsUTF8Unsafe());
     profile->set_name(entry->GetStatePath().BaseName().AsUTF8Unsafe());
-    profile->set_is_available(false);
+    profile->set_is_detail_available(false);
   }
 }
 
