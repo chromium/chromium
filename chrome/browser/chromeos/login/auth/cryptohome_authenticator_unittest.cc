@@ -824,18 +824,6 @@ TEST_F(CryptohomeAuthenticatorTest, DriveOnlineLogin) {
   RunResolve(auth_.get());
 }
 
-TEST_F(CryptohomeAuthenticatorTest, DriveUnlock) {
-  ExpectLoginSuccess(user_context_);
-  FailOnLoginFailure();
-
-  // Set up fake cryptohome client to respond successfully to a cryptohome
-  // key-check attempt.
-  ExpectCheckKeyExCall();
-
-  auth_->AuthenticateToUnlock(user_context_);
-  run_loop_.Run();
-}
-
 TEST_F(CryptohomeAuthenticatorTest, DriveLoginWithPreHashedPassword) {
   CreateTransformedKey(Key::KEY_TYPE_SALTED_SHA256, kSalt);
 

@@ -80,10 +80,6 @@ void StubAuthenticator::AuthenticateToLogin(content::BrowserContext* context,
                                 AuthFailure::FromNetworkAuthFailure(error)));
 }
 
-void StubAuthenticator::AuthenticateToUnlock(const UserContext& user_context) {
-  AuthenticateToLogin(NULL /* not used */, user_context);
-}
-
 void StubAuthenticator::LoginAsSupervisedUser(const UserContext& user_context) {
   UserContext new_user_context = user_context;
   new_user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail() +

@@ -46,7 +46,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
                      const UserContext& user_context) override;
   void AuthenticateToLogin(content::BrowserContext* context,
                            const UserContext& user_context) override;
-  void AuthenticateToUnlock(const UserContext& user_context) override;
   void LoginAsSupervisedUser(const UserContext& user_context) override;
   void LoginOffTheRecord() override;
   void LoginAsPublicSession(const UserContext& user_context) override;

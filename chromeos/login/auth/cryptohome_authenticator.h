@@ -82,13 +82,13 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
                              // time to migrate key.
     OFFLINE_LOGIN = 12,      // Login succeeded offline.
     ONLINE_LOGIN = 13,       // Offline and online login succeeded.
-    UNLOCK = 14,             // Screen unlock succeeded.
+    UNLOCK = 14,             // Obsolete: Screen unlock succeeded.
     ONLINE_FAILED = 15,      // Obsolete (ClientLogin): Online login disallowed,
                              // but offline succeeded.
     GUEST_LOGIN = 16,        // Logged in guest mode.
     PUBLIC_ACCOUNT_LOGIN = 17,        // Logged into a public account.
     SUPERVISED_USER_LOGIN = 18,       // Logged in as a supervised user.
-    LOGIN_FAILED = 19,                // Login denied.
+    LOGIN_FAILED = 19,                // Obsolete: Login denied.
     OWNER_REQUIRED = 20,              // Login is restricted to the owner only.
     FAILED_USERNAME_HASH = 21,        // Failed GetSanitizedUsername request.
     KIOSK_ACCOUNT_LOGIN = 22,         // Logged into a kiosk account.
@@ -120,12 +120,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   // Uses |context| when doing URL fetches.
   void AuthenticateToLogin(content::BrowserContext* context,
                            const UserContext& user_context) override;
-
-  // Given |user_context|, this method attempts to authenticate to the cached
-  // user_context. This will never contact the server even if it's online.
-  // The auth result is sent to AuthStatusConsumer in a same way as
-  // AuthenticateToLogin does.
-  void AuthenticateToUnlock(const UserContext& user_context) override;
 
   // Initiates supervised user login.
   // Creates cryptohome if missing or mounts existing one and
@@ -274,7 +268,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   bool remove_attempted_;
   bool resync_attempted_;
   bool ephemeral_mount_attempted_;
-  bool check_key_attempted_;
 
   // When the user has changed their password, but gives us the old one, we will
   // be able to mount their cryptohome, but online authentication will fail.

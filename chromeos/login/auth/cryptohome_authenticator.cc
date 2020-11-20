@@ -556,28 +556,6 @@ void Remove(const base::WeakPtr<AuthAttemptState>& attempt,
                                  "CryptohomeRemove-End"));
 }
 
-void OnKeyChecked(const base::WeakPtr<AuthAttemptState>& attempt,
-                  scoped_refptr<CryptohomeAuthenticator> resolver,
-                  base::Optional<cryptohome::BaseReply> reply) {
-  attempt->RecordCryptohomeStatus(BaseReplyToMountError(reply));
-  resolver->Resolve();
-}
-
-// Calls cryptohome's key check method.
-void CheckKey(const base::WeakPtr<AuthAttemptState>& attempt,
-              scoped_refptr<CryptohomeAuthenticator> resolver,
-              const std::string& system_salt) {
-  std::unique_ptr<Key> key =
-      TransformKeyIfNeeded(*attempt->user_context.GetKey(), system_salt);
-  cryptohome::AuthorizationRequest auth;
-  auth.mutable_key()->set_secret(key->GetSecret());
-  CryptohomeClient::Get()->CheckKeyEx(
-      cryptohome::CreateAccountIdentifierFromAccountId(
-          attempt->user_context.GetAccountId()),
-      auth, cryptohome::CheckKeyRequest(),
-      base::BindOnce(&OnKeyChecked, attempt, resolver));
-}
-
 }  // namespace
 
 CryptohomeAuthenticator::CryptohomeAuthenticator(
@@ -589,7 +567,6 @@ CryptohomeAuthenticator::CryptohomeAuthenticator(
       remove_attempted_(false),
       resync_attempted_(false),
       ephemeral_mount_attempted_(false),
-      check_key_attempted_(false),
       already_reported_success_(false),
       owner_is_verified_(false),
       user_can_login_(false),
@@ -647,20 +624,6 @@ void CryptohomeAuthenticator::CompleteLogin(content::BrowserContext* context,
       FROM_HERE,
       base::BindOnce(&CryptohomeAuthenticator::ResolveLoginCompletionStatus,
                      this));
-}
-
-void CryptohomeAuthenticator::AuthenticateToUnlock(
-    const UserContext& user_context) {
-  DCHECK_EQ(user_manager::USER_TYPE_REGULAR, user_context.GetUserType());
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            true,     // unlock
-                                            true,     // online_complete
-                                            false));  // user_is_new
-  remove_user_data_on_failure_ = false;
-  check_key_attempted_ = true;
-  SystemSaltGetter::Get()->GetSystemSalt(
-      base::BindOnce(&CheckKey, current_state_->AsWeakPtr(),
-                     scoped_refptr<CryptohomeAuthenticator>(this)));
 }
 
 void CryptohomeAuthenticator::LoginAsSupervisedUser(
@@ -971,13 +934,12 @@ void CryptohomeAuthenticator::Resolve() {
     case ONLINE_FAILED:
     case NEED_NEW_PW:
     case HAVE_NEW_PW:
+    case UNLOCK:
+    case LOGIN_FAILED:
       NOTREACHED() << "Using obsolete ClientLogin code path.";
       break;
     case OFFLINE_LOGIN:
       VLOG(2) << "Offline login";
-      FALLTHROUGH;
-    case UNLOCK:
-      VLOG(2) << "Unlock";
       FALLTHROUGH;
     case ONLINE_LOGIN:
       VLOG(2) << "Online login";
@@ -1003,12 +965,6 @@ void CryptohomeAuthenticator::Resolve() {
       task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&CryptohomeAuthenticator::OnAuthSuccess, this));
-      break;
-    case LOGIN_FAILED:
-      current_state_->ResetCryptohomeStatus();
-      task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&CryptohomeAuthenticator::OnAuthFailure,
-                                    this, current_state_->online_outcome()));
       break;
     case OWNER_REQUIRED: {
       current_state_->ResetCryptohomeStatus();
@@ -1077,7 +1033,6 @@ CryptohomeAuthenticator::AuthState CryptohomeAuthenticator::ResolveState() {
   remove_attempted_ = false;
   resync_attempted_ = false;
   ephemeral_mount_attempted_ = false;
-  check_key_attempted_ = false;
 
   if (state != POSSIBLE_PW_CHANGE && state != NO_MOUNT &&
       state != OFFLINE_LOGIN)
@@ -1103,8 +1058,6 @@ CryptohomeAuthenticator::ResolveCryptohomeFailureState() {
     return FAILED_TMPFS;
   if (migrate_attempted_)
     return NEED_OLD_PW;
-  if (check_key_attempted_)
-    return LOGIN_FAILED;
 
   if (current_state_->cryptohome_code() ==
       cryptohome::MOUNT_ERROR_TPM_NEEDS_REBOOT) {
@@ -1164,8 +1117,6 @@ CryptohomeAuthenticator::ResolveCryptohomeSuccessState() {
     return REMOVED_DATA_AFTER_FAILURE;
   if (migrate_attempted_)
     return RECOVER_MOUNT;
-  if (check_key_attempted_)
-    return UNLOCK;
 
   const user_manager::UserType user_type =
       current_state_->user_context.GetUserType();
