@@ -88,14 +88,6 @@ bool IsGeolocationSupported() {
   return geolocation_supported.Get();
 }
 
-bool IsFileSystemSupported() {
-  if (!DeviceHasEnoughMemoryForBackForwardCache())
-    return false;
-  static constexpr base::FeatureParam<bool> file_system_api_supported(
-      &features::kBackForwardCache, "file_system_api_supported", false);
-  return file_system_api_supported.Get();
-}
-
 bool IgnoresOutstandingNetworkRequestForTesting() {
   if (!DeviceHasEnoughMemoryForBackForwardCache())
     return false;
@@ -154,6 +146,7 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
       FeatureToBit(WebSchedulerTrackedFeature::kSpeechSynthesis) |
       FeatureToBit(WebSchedulerTrackedFeature::kWakeLock) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebDatabase) |
+      FeatureToBit(WebSchedulerTrackedFeature::kWebFileSystem) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebHID) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebLocks) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebRTC) |
@@ -176,10 +169,6 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
         FeatureToBit(
             WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch) |
         FeatureToBit(WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR);
-  }
-
-  if (!IsFileSystemSupported()) {
-    result |= FeatureToBit(WebSchedulerTrackedFeature::kWebFileSystem);
   }
 
   if (requested_features == RequestedFeatures::kOnlySticky) {
