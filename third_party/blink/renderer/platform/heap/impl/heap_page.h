@@ -92,8 +92,6 @@ BlinkGuardPageSize() {
 static_assert(8 == sizeof(double), "We expect sizeof(double) to be 8");
 constexpr size_t kAllocationGranularity = sizeof(double);
 constexpr size_t kAllocationMask = kAllocationGranularity - 1;
-constexpr size_t kMaxHeapObjectSizeLog2 = 27;
-constexpr size_t kMaxHeapObjectSize = 1 << kMaxHeapObjectSizeLog2;
 constexpr size_t kLargeObjectSizeThreshold = kBlinkPageSize / 2;
 
 // A zap value used for freed memory that is allowed to be added to the free

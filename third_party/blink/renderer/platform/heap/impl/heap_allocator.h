@@ -68,6 +68,10 @@ class PLATFORM_EXPORT HeapAllocator {
   using Visitor = blink::Visitor;
   static constexpr bool kIsGarbageCollected = true;
 
+  // See wtf/size_t.h for details.
+  static constexpr size_t kMaxHeapObjectSizeLog2 = 27;
+  static constexpr size_t kMaxHeapObjectSize = 1 << kMaxHeapObjectSizeLog2;
+
   template <typename T>
   static size_t MaxElementCountInBackingStore() {
     return kMaxHeapObjectSize / sizeof(T);
@@ -75,10 +79,12 @@ class PLATFORM_EXPORT HeapAllocator {
 
   template <typename T>
   static size_t QuantizedSize(size_t count) {
-    CHECK(count <= MaxElementCountInBackingStore<T>());
-    return ThreadHeap::AllocationSizeFromSize(count * sizeof(T)) -
-           sizeof(HeapObjectHeader);
+    CHECK_LE(count, MaxElementCountInBackingStore<T>());
+    // Oilpan's internal size is independent of MaxElementCountInBackingStore()
+    // and the required size to match capacity needs.
+    return count * sizeof(T);
   }
+
   template <typename T>
   static T* AllocateVectorBacking(size_t size) {
     return reinterpret_cast<T*>(

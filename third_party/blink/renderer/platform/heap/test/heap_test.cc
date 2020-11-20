@@ -2191,7 +2191,7 @@ TEST_F(HeapTest, MAYBE_LargeHashMap) {
 
   // Try to allocate a HashTable larger than kMaxHeapObjectSize
   // (crbug.com/597953).
-  wtf_size_t size = kMaxHeapObjectSize /
+  wtf_size_t size = HeapAllocator::kMaxHeapObjectSize /
                     sizeof(HeapHashMap<int, Member<IntWrapper>>::ValueType);
   Persistent<HeapHashMap<int, Member<IntWrapper>>> map =
       MakeGarbageCollected<HeapHashMap<int, Member<IntWrapper>>>();
@@ -2204,7 +2204,8 @@ TEST_F(HeapTest, LargeVector) {
 
   // Try to allocate a HeapVectors larger than kMaxHeapObjectSize
   // (crbug.com/597953).
-  const wtf_size_t size = kMaxHeapObjectSize / sizeof(Member<IntWrapper>);
+  const wtf_size_t size =
+      HeapAllocator::kMaxHeapObjectSize / sizeof(Member<IntWrapper>);
   Persistent<HeapVector<Member<IntWrapper>>> vector =
       MakeGarbageCollected<HeapVector<Member<IntWrapper>>>(size);
   EXPECT_LE(size, vector->capacity());
