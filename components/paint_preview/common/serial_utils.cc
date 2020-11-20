@@ -77,22 +77,21 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   ImageSerializationContext* context =
       reinterpret_cast<ImageSerializationContext*>(ctx);
 
-  // If there already exists encoded data and it is of a reasonable size use it
-  // directly.
+  const SkImageInfo& image_info = image->imageInfo();
+  // If decoding/encoding the image would result in it exceeding the allowable
+  // size, effectively delete it by providing no data.
+  if (context->max_representation_size != 0 &&
+      image_info.computeMinByteSize() > context->max_representation_size) {
+    return SkData::MakeEmpty();
+  }
+
+  // If there already exists encoded data use it directly.
   sk_sp<SkData> encoded_data = image->refEncodedData();
   if (!encoded_data) {
-    const SkImageInfo& image_info = image->imageInfo();
-    // If encoding the image will result in it exceeding the allowable size,
-    // effectively delete it by providing no data.
-    if (context->max_representation_size != 0 &&
-        image_info.computeMinByteSize() > context->max_representation_size) {
-      return SkData::MakeEmpty();
-    }
-
     encoded_data = image->encodeToData();
   }
 
-  // If encoding fails then no-op.
+  // If encoding failed then no-op.
   if (!encoded_data)
     return SkData::MakeEmpty();
 
