@@ -74,10 +74,9 @@ public class PlayerFrameBitmapStateController {
                 (mLoadingBitmapState == null) ? mVisibleBitmapState : mLoadingBitmapState;
         if (scaleUpdated || activeLoadingState == null) {
             invalidateLoadingBitmaps();
-            mLoadingBitmapState =
-                    new PlayerFrameBitmapState(mGuid, Math.round(mViewport.getWidth() / 2.0f),
-                            Math.round(mViewport.getHeight() / 2.0f), mViewport.getScale(),
-                            mContentSize, mCompositorDelegate, this, mTaskRunner);
+            mLoadingBitmapState = new PlayerFrameBitmapState(mGuid, mViewport.getWidth(),
+                    Math.round(mViewport.getHeight() / 2.0f), mViewport.getScale(), mContentSize,
+                    mCompositorDelegate, this, mTaskRunner);
             if (mVisibleBitmapState == null) {
                 mLoadingBitmapState.skipWaitingForVisibleBitmaps();
                 swap(mLoadingBitmapState);

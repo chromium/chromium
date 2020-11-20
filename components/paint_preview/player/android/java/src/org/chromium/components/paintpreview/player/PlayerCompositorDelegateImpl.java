@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.SysUtils;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -27,6 +28,8 @@ import java.util.List;
  */
 @JNINamespace("paint_preview")
 class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
+    private static final int LOW_MEMORY_THRESHOLD_KB = 2048;
+
     private CompositorListener mCompositorListener;
     private long mNativePlayerCompositorDelegate;
     private List<Runnable> mMemoryPressureListeners = new ArrayList<>();
@@ -38,7 +41,8 @@ class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
         if (service != null && service.getNativeService() != 0) {
             mNativePlayerCompositorDelegate = PlayerCompositorDelegateImplJni.get().initialize(this,
                     service.getNativeService(), url.getSpec(), directoryKey,
-                    compositorErrorCallback);
+                    compositorErrorCallback,
+                    SysUtils.amountOfPhysicalMemoryKB() < LOW_MEMORY_THRESHOLD_KB);
         }
         // TODO(crbug.com/1021590): Handle initialization errors when
         // mNativePlayerCompositorDelegate == 0.
@@ -132,7 +136,8 @@ class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     @NativeMethods
     interface Natives {
         long initialize(PlayerCompositorDelegateImpl caller, long nativePaintPreviewBaseService,
-                String urlSpec, String directoryKey, Callback<Integer> compositorErrorCallback);
+                String urlSpec, String directoryKey, Callback<Integer> compositorErrorCallback,
+                boolean isLowMemory);
         void destroy(long nativePlayerCompositorDelegateAndroid);
         int requestBitmap(long nativePlayerCompositorDelegateAndroid, UnguessableToken frameGuid,
                 Callback<Bitmap> bitmapCallback, Runnable errorCallback, float scaleFactor,
