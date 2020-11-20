@@ -493,8 +493,15 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
 }
 
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ShowConfirmationDialogAndCancel \
+  DISABLED_ShowConfirmationDialogAndCancel
+#else
+#define MAYBE_ShowConfirmationDialogAndCancel ShowConfirmationDialogAndCancel
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       ShowConfirmationDialogAndCancel) {
+                       MAYBE_ShowConfirmationDialogAndCancel) {
   EXPECT_FALSE(IsConfirmationDialogShown());
 
   InvokeDemoModeWithAccelerator();
@@ -506,7 +513,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, InvokeWithTaps) {
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_InvokeWithTaps DISABLED_InvokeWithTaps
+#else
+#define MAYBE_InvokeWithTaps InvokeWithTaps
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_InvokeWithTaps) {
   // Use fake time to avoid flakiness.
   SetFakeTimeForMultiTapDetector(base::Time::UnixEpoch());
   EXPECT_FALSE(IsConfirmationDialogShown());
