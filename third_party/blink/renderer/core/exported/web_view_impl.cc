@@ -1961,67 +1961,6 @@ void WebViewImpl::SetFocusedFrame(WebFrame* frame) {
   core_frame->GetPage()->GetFocusController().SetFocusedFrame(core_frame);
 }
 
-// TODO(dglazkov): Remove and replace with Node:hasEditableStyle.
-// http://crbug.com/612560
-static bool IsElementEditable(const Element* element) {
-  element->GetDocument().UpdateStyleAndLayoutTree();
-  if (HasEditableStyle(*element))
-    return true;
-
-  if (auto* text_control = ToTextControlOrNull(element)) {
-    if (!text_control->IsDisabledOrReadOnly())
-      return true;
-  }
-
-  return EqualIgnoringASCIICase(
-      element->FastGetAttribute(html_names::kRoleAttr), "textbox");
-}
-
-bool WebViewImpl::ScrollFocusedEditableElementIntoView() {
-  DCHECK(MainFrameImpl());
-  LocalFrameView* main_frame_view = MainFrameImpl()->GetFrame()->View();
-  if (!main_frame_view)
-    return false;
-
-  Element* element = FocusedElement();
-  if (!element || !IsElementEditable(element))
-    return false;
-
-  element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
-
-  LayoutObject* layout_object = element->GetLayoutObject();
-  if (!layout_object)
-    return false;
-
-  // Since the page has been resized, the layout may have changed. The page
-  // scale animation started by ZoomAndScrollToFocusedEditableRect will scroll
-  // only the visual and layout viewports. We'll call ScrollRectToVisible with
-  // the stop_at_main_frame_layout_viewport param to ensure the element is
-  // actually visible in the page.
-  auto params = ScrollAlignment::CreateScrollIntoViewParams(
-      ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
-      mojom::blink::ScrollType::kProgrammatic, false,
-      mojom::blink::ScrollBehavior::kInstant);
-  params->stop_at_main_frame_layout_viewport = true;
-  layout_object->ScrollRectToVisible(
-      PhysicalRect(layout_object->AbsoluteBoundingBoxRect()),
-      std::move(params));
-
-  ZoomAndScrollToFocusedEditableElementRect(
-      main_frame_view->RootFrameToDocument(
-          element->GetDocument().View()->ConvertToRootFrame(
-              layout_object->AbsoluteBoundingBoxRect())),
-      main_frame_view->RootFrameToDocument(
-          element->GetDocument().View()->ConvertToRootFrame(
-              element->GetDocument()
-                  .GetFrame()
-                  ->Selection()
-                  .ComputeRectToScroll(kDoNotRevealExtent))),
-      ShouldZoomToLegibleScale(*element));
-
-  return true;
-}
-
 bool WebViewImpl::ShouldZoomToLegibleScale(const Element& element) {
   bool zoom_into_legible_scale =
       web_settings_->AutoZoomFocusedNodeToLegibleScale() &&

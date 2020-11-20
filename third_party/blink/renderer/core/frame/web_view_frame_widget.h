@@ -63,9 +63,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
 
-  // WebFrameWidget overrides:
-  bool ScrollFocusedEditableElementIntoView() override;
-
  private:
   // PageWidgetEventHandler overrides:
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;

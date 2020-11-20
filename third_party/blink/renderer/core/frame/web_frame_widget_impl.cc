@@ -86,21 +86,6 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
 namespace blink {
-namespace {
-const int kCaretPadding = 10;
-const float kIdealPaddingRatio = 0.3f;
-
-// Returns a rect which is offset and scaled accordingly to |base_rect|'s
-// location and size.
-FloatRect NormalizeRect(const IntRect& to_normalize, const IntRect& base_rect) {
-  FloatRect result(to_normalize);
-  result.SetLocation(
-      FloatPoint(to_normalize.Location() + (-base_rect.Location())));
-  result.Scale(1.0 / base_rect.Width(), 1.0 / base_rect.Height());
-  return result;
-}
-
-}  // namespace
 
 // WebFrameWidget ------------------------------------------------------------
 
@@ -236,22 +221,6 @@ void WebFrameWidgetImpl::Close(
   self_keep_alive_.Clear();
 }
 
-bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
-  Element* element = FocusedElement();
-  if (!element || !WebElement(element).IsEditable())
-    return false;
-
-  if (!element->GetLayoutObject())
-    return false;
-
-  PhysicalRect rect_to_scroll;
-  auto params = ScrollAlignment::CreateScrollIntoViewParams();
-  GetScrollParamsForFocusedEditableElement(*element, rect_to_scroll, params);
-  element->GetLayoutObject()->ScrollRectToVisible(rect_to_scroll,
-                                                  std::move(params));
-  return true;
-}
-
 WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     const WebGestureEvent& event) {
   DCHECK(Client());
@@ -324,54 +293,6 @@ PaintLayerCompositor* WebFrameWidgetImpl::Compositor() const {
     return nullptr;
 
   return frame->GetDocument()->GetLayoutView()->Compositor();
-}
-
-void WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
-    const Element& element,
-    PhysicalRect& rect_to_scroll,
-    mojom::blink::ScrollIntoViewParamsPtr& params) {
-  LocalFrameView& frame_view = *element.GetDocument().View();
-  IntRect absolute_element_bounds =
-      element.GetLayoutObject()->AbsoluteBoundingBoxRect();
-  IntRect absolute_caret_bounds =
-      element.GetDocument().GetFrame()->Selection().AbsoluteCaretBounds();
-  // Ideally, the chosen rectangle includes the element box and caret bounds
-  // plus some margin on the left. If this does not work (i.e., does not fit
-  // inside the frame view), then choose a subrect which includes the caret
-  // bounds. It is preferrable to also include element bounds' location and left
-  // align the scroll. If this cant be satisfied, the scroll will be right
-  // aligned.
-  IntRect maximal_rect =
-      UnionRect(absolute_element_bounds, absolute_caret_bounds);
-
-  // Set the ideal margin.
-  maximal_rect.ShiftXEdgeTo(
-      maximal_rect.X() -
-      static_cast<int>(kIdealPaddingRatio * absolute_element_bounds.Width()));
-
-  bool maximal_rect_fits_in_frame =
-      !(frame_view.Size() - maximal_rect.Size()).IsEmpty();
-
-  if (!maximal_rect_fits_in_frame) {
-    IntRect frame_rect(maximal_rect.Location(), frame_view.Size());
-    maximal_rect.Intersect(frame_rect);
-    IntPoint point_forced_to_be_visible =
-        absolute_caret_bounds.MaxXMaxYCorner() +
-        IntSize(kCaretPadding, kCaretPadding);
-    if (!maximal_rect.Contains(point_forced_to_be_visible)) {
-      // Move the rect towards the point until the point is barely contained.
-      maximal_rect.Move(point_forced_to_be_visible -
-                        maximal_rect.MaxXMaxYCorner());
-    }
-  }
-
-  params->zoom_into_rect = View()->ShouldZoomToLegibleScale(element);
-  params->relative_element_bounds = NormalizeRect(
-      Intersection(absolute_element_bounds, maximal_rect), maximal_rect);
-  params->relative_caret_bounds = NormalizeRect(
-      Intersection(absolute_caret_bounds, maximal_rect), maximal_rect);
-  params->behavior = mojom::blink::ScrollBehavior::kInstant;
-  rect_to_scroll = PhysicalRect(maximal_rect);
 }
 
 }  // namespace blink

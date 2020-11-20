@@ -83,10 +83,6 @@ void WebViewFrameWidget::Close(
   self_keep_alive_.Clear();
 }
 
-bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
-  return web_view_->ScrollFocusedEditableElementIntoView();
-}
-
 WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     const WebGestureEvent& event) {
   // TODO(https://crbug.com/1148346): We need to figure out why MainFrameImpl is

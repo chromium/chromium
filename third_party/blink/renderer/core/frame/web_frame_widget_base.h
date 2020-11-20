@@ -17,6 +17,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/drag.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_battery_savings.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
@@ -290,6 +291,7 @@ class CORE_EXPORT WebFrameWidgetBase
       cc::ElementId scroll_latched_element_id) override;
   WebInputMethodController* GetActiveWebInputMethodController() const override;
   WebLocalFrame* FocusedWebLocalFrameInWidget() const override;
+  bool ScrollFocusedEditableElementIntoView() override;
   void ApplyViewportChangesForTesting(
       const ApplyViewportChangesArgs& args) override;
   void NotifySwapAndPresentationTime(
@@ -795,6 +797,14 @@ class CORE_EXPORT WebFrameWidgetBase
       const base::RepeatingCallback<void(RemoteFrame*)>& callback);
 
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
+
+  // Finds the parameters required for scrolling the focused editable |element|
+  // into view. |out_rect_to_scroll| is used for recursive scrolling of the
+  // element into view and contains all or part of element's bounding box and
+  // always includes the caret and is with respect to absolute coordinates.
+  mojom::blink::ScrollIntoViewParamsPtr
+  GetScrollParamsForFocusedEditableElement(const Element& element,
+                                           PhysicalRect& out_rect_to_scroll);
 
   static bool ignore_input_events_;
 

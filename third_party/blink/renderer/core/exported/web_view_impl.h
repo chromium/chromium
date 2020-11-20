@@ -621,7 +621,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // and text input-related events.
   void RemoveFocusAndTextInputState();
 
-  bool ScrollFocusedEditableElementIntoView();
   // Finds the zoom and scroll parameters for zooming into an editable element
   // with bounds |element_bounds_in_document| and caret bounds
   // |caret_bounds_in_document|. If the original element belongs to the local
