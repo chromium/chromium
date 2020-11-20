@@ -1,14 +1,12 @@
 boliu@chromium.org
 changwan@chromium.org
 michaelbai@chromium.org
+ntfschr@chromium.org
 tobiasjs@chromium.org
 torne@chromium.org
 
 # Documentation changes:
 per-file *.md=file://android_webview/docs/OWNERS
-
-# Build file refactoring:
-per-file *.gn=ntfschr@chromium.org
 
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
