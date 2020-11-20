@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/mac/mac_logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -142,7 +143,10 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(client);
 
-  if (PIXEL_FORMAT_I420 != config.input_format) {
+  // Clients are expected to call Flush() before reinitializing the encoder.
+  DCHECK_EQ(pending_encodes_, 0);
+
+  if (config.input_format != PIXEL_FORMAT_I420) {
     DLOG(ERROR) << "Input format not supported= "
                 << VideoPixelFormatToString(config.input_format);
     return false;
@@ -253,6 +257,19 @@ void VTVideoEncodeAccelerator::Destroy() {
   delete this;
 }
 
+void VTVideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  encoder_thread_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VTVideoEncodeAccelerator::FlushTask,
+                     base::Unretained(this), std::move(flush_callback)));
+}
+
+bool VTVideoEncodeAccelerator::IsFlushSupported() {
+  return true;
+}
+
 void VTVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
                                           bool force_keyframe) {
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
@@ -283,12 +300,13 @@ void VTVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   // We can pass the ownership of |request| to the encode callback if
   // successful. Otherwise let it fall out of scope.
   OSStatus status = VTCompressionSessionEncodeFrame(
-      compression_session_, pixel_buffer, timestamp_cm, CMTime{0, 0, 0, 0},
+      compression_session_, pixel_buffer, timestamp_cm, kCMTimeInvalid,
       frame_props, reinterpret_cast<void*>(request.get()), nullptr);
   if (status != noErr) {
     DLOG(ERROR) << " VTCompressionSessionEncodeFrame failed: " << status;
     NotifyError(kPlatformFailureError);
   } else {
+    ++pending_encodes_;
     CHECK(request.release());
   }
 }
@@ -359,8 +377,6 @@ void VTVideoEncodeAccelerator::DestroyTask() {
 
   // Cancel all encoder thread callbacks.
   encoder_task_weak_factory_.InvalidateWeakPtrs();
-
-  // This call blocks until all pending frames are flushed out.
   DestroyCompressionSession();
 }
 
@@ -407,6 +423,9 @@ void VTVideoEncodeAccelerator::CompressionCallbackTask(
     std::unique_ptr<EncodeOutput> encode_output) {
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
 
+  --pending_encodes_;
+  DCHECK_GE(pending_encodes_, 0);
+
   if (status != noErr) {
     DLOG(ERROR) << " encode failed: " << status;
     NotifyError(kPlatformFailureError);
@@ -439,6 +458,7 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
         base::BindOnce(&Client::BitstreamBufferReady, client_, buffer_ref->id,
                        BitstreamBufferMetadata(
                            0, false, encode_output->capture_timestamp)));
+    MaybeRunFlushCallback();
     return;
   }
 
@@ -465,6 +485,7 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
           &Client::BitstreamBufferReady, client_, buffer_ref->id,
           BitstreamBufferMetadata(used_buffer_size, keyframe,
                                   encode_output->capture_timestamp)));
+  MaybeRunFlushCallback();
 }
 
 bool VTVideoEncodeAccelerator::ResetCompressionSession() {
@@ -554,6 +575,50 @@ void VTVideoEncodeAccelerator::DestroyCompressionSession() {
     VTCompressionSessionInvalidate(compression_session_);
     compression_session_.reset();
   }
+}
+
+void VTVideoEncodeAccelerator::FlushTask(FlushCallback flush_callback) {
+  DVLOG(3) << __func__;
+  DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK(flush_callback);
+
+  if (!compression_session_) {
+    client_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(flush_callback), false));
+    return;
+  }
+
+  // Even though this will block until all frames are returned, the frames will
+  // be posted to the current task runner, so we can't run the flush callback
+  // at this time.
+  OSStatus status =
+      VTCompressionSessionCompleteFrames(compression_session_, kCMTimeInvalid);
+
+  if (status != noErr) {
+    OSSTATUS_DLOG(ERROR, status)
+        << " VTCompressionSessionCompleteFrames failed: " << status;
+    client_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(flush_callback), /*success=*/false));
+    return;
+  }
+
+  pending_flush_cb_ = std::move(flush_callback);
+  MaybeRunFlushCallback();
+}
+
+void VTVideoEncodeAccelerator::MaybeRunFlushCallback() {
+  DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
+
+  if (!pending_flush_cb_)
+    return;
+
+  if (pending_encodes_ || !encoder_output_queue_.empty())
+    return;
+
+  client_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(pending_flush_cb_), /*success=*/true));
 }
 
 }  // namespace media

@@ -38,6 +38,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   void RequestEncodingParametersChange(uint32_t bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
+  void Flush(FlushCallback flush_callback) override;
+  bool IsFlushSupported() override;
 
  private:
   // Holds the associated data of a video frame being processed.
@@ -93,6 +95,11 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // encoding work).
   void DestroyCompressionSession();
 
+  // Flushes the encoder. The flush callback won't be run until all pending
+  // encodes have been completed.
+  void FlushTask(FlushCallback flush_callback);
+  void MaybeRunFlushCallback();
+
   base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
 
   gfx::Size input_visible_size_;
@@ -130,6 +137,11 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // GPU child thread and CompressionCallback() posted from device thread.
   base::Thread encoder_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> encoder_thread_task_runner_;
+
+  // Tracking information for ensuring flushes aren't completed until all
+  // pending encodes have been returned.
+  int pending_encodes_ = 0;
+  FlushCallback pending_flush_cb_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
