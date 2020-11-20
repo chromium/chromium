@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UserActionTester;
@@ -105,8 +104,9 @@ public class HomepageSettingsFragmentTest {
         Assert.assertNotNull("Custom URI radio button is null.", mCustomUriRadioButton);
     }
 
-    private void finishSettingsActivity() throws Exception {
-        ApplicationTestUtils.finishActivity(mTestRule.getActivity());
+    private void finishSettingsActivity() {
+        mTestRule.getActivity().finish();
+        mTestRule.waitTillActivityIsDestroyed();
     }
 
     @Test
@@ -394,7 +394,7 @@ public class HomepageSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    public void testCheckRadioButtons() throws Exception {
+    public void testCheckRadioButtons() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_FOO);
         launchSettingsActivity();
         LocationChangedCounter counter = new LocationChangedCounter();
@@ -446,7 +446,7 @@ public class HomepageSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    public void testChangeCustomized() throws Exception {
+    public void testChangeCustomized() {
         mHomepageTestRule.useChromeNTPForTest();
         launchSettingsActivity();
         LocationChangedCounter actionCounter = new LocationChangedCounter();

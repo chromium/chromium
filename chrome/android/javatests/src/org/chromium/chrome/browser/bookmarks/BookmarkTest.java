@@ -204,9 +204,8 @@ public class BookmarkTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
-        if (mBookmarkActivity != null) ApplicationTestUtils.finishActivity(mBookmarkActivity);
     }
 
     @AfterClass
@@ -284,7 +283,7 @@ public class BookmarkTest {
         // Click the star button again to launch the edit activity.
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(), R.id.bookmark_this_page_id);
-        waitForEditActivity().finish();
+        waitForEditActivity();
     }
 
     @Test
@@ -315,9 +314,8 @@ public class BookmarkTest {
             currentSnackbar.getController().onAction(null);
         });
 
-        BookmarkEditActivity activity = waitForEditActivity();
+        waitForEditActivity();
         SnackbarManager.setDurationForTesting(0);
-        activity.finish();
     }
 
     @Test
@@ -1703,13 +1701,12 @@ public class BookmarkTest {
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
 
-    private BookmarkEditActivity waitForEditActivity() {
+    private void waitForEditActivity() {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(ApplicationStatus.getLastTrackedFocusedActivity(),
                     IsInstanceOf.instanceOf(BookmarkEditActivity.class));
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        return (BookmarkEditActivity) ApplicationStatus.getLastTrackedFocusedActivity();
     }
 
     private ChromeTabbedActivity waitForTabbedActivity() {

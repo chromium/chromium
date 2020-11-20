@@ -8,11 +8,13 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -33,6 +35,11 @@ import org.chromium.net.test.EmbeddedTestServer;
 public class MainActivityWithURLTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @After
+    public void tearDown() throws Exception {
+        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+    }
 
     /**
      * Verify launch the activity with URL.
