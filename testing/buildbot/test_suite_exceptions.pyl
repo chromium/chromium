@@ -740,6 +740,11 @@
     'remove_from': [
       'android-code-coverage-native', # https://crbug.com/1018780
     ],
+    'modifications': {
+      'android-marshmallow-x86-rel': {
+        'experiment_percentage': 100, # crbug.com/1127110
+      },
+    },
   },
   'chrome_public_test_apk': {
     'remove_from': [
