@@ -91,13 +91,13 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // Called after the file I/O part of DeleteFile() completed.
   void DidDeleteFile(const std::string& name,
                      DeleteFileCallback callback,
-                     blink::mojom::NativeIOErrorPtr delete_error);
+                     bool success);
 
   // Called after the file I/O part of RenameFile() completed.
   void DidRenameFile(const std::string& old_name,
                      const std::string& new_name,
                      RenameFileCallback callback,
-                     blink::mojom::NativeIOErrorPtr rename_error);
+                     bool success);
 
   // The directory holding all the files for this origin.
   const base::FilePath root_path_;

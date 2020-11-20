@@ -5,34 +5,6 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/file_error.mojom";
-
-// NativeIOErrorTypes are designed to give sufficient information to web
-// application developers while masking platform-specific behaviour that may
-// create privacy or security issues.
-// See https://crbug.com/1095537 for a design doc.
-// TODO(rstz): Add error descriptions to the specification.
-enum NativeIOErrorType {
-  kSuccess,
-  // The operation failed due to an unspecified file error. There is no clear
-  // path to recovery from this error.
-  kUnknown,
-  // The object being operated on was in a permanent invalid state for the
-  // operation. Retrying is unlikely to succeed.
-  kInvalidState,
-  // An object being operated on was not found.
-  kNotFound,
-  // An object being operated cannot be modified at this time. Retrying might
-  // succeed.
-  kNoModificationAllowed,
-  // No space on disk is available for this operation.
-  kNoSpace,
-};
-
-struct NativeIOError {
-  NativeIOErrorType type;
-  string message;
-};
 
 // The NativeIO API currently offers synchronous access to storage. This is
 // purely for purpose of allowing developers to experiment, so we can learn the
@@ -73,12 +45,10 @@ interface NativeIOFileHost {
   // multiple file handles to the same file. A compromised renderer may hand
   // over an arbitrary file. As base::File::SetLength() is allowed by the
   // Windows, Linux, and macOS 10.15+ sandbox, it is safe to expose this
-  // functionality to the renderer on macOS < 10.15 as well. We also return
-  // any unsanitized base::File::Error that might have occurred. See
+  // functionality to the renderer on macOS < 10.15 as well. See
   // crbug.com/1084565.
-  [Sync] SetLength(int64 length, mojo_base.mojom.File backing_file) =>
-         (mojo_base.mojom.File backing_file,
-          NativeIOError set_length_error);
+  [Sync] SetLength(int64 length, mojo_base.mojom.File backing_file) => (bool
+  success, mojo_base.mojom.File backing_file);
 };
 
 // Origin-scoped implementation of the Web Platform's NativeIO API.
@@ -97,11 +67,11 @@ interface NativeIOHost {
   // |lock_handle|, or until it disconnects from it.
   [Sync]
   OpenFile(string name, pending_receiver<NativeIOFileHost> file_host_receiver)
-      => (mojo_base.mojom.File? backing_file, NativeIOError open_error);
+      => (mojo_base.mojom.File? backing_file);
 
   // Deletes a previously created file.
   [Sync]
-  DeleteFile(string name) => (NativeIOError delete_error);
+  DeleteFile(string name) => (bool success);
 
   // Lists all the files created by the origin.
   [Sync]
@@ -112,8 +82,7 @@ interface NativeIOHost {
   // Rename does not allow renaming any files that are currently open and does
   // not override existing files.
   [Sync]
-  RenameFile(string old_name, string new_name) =>
-    (NativeIOError rename_error);
+  RenameFile(string old_name, string new_name) => (bool success);
 
   // TODO(pwnall): Build quota integration before this API exits Dev Trials.
 };

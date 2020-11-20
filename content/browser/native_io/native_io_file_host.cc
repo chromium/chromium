@@ -8,39 +8,28 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "content/browser/native_io/native_io_context.h"
 #include "content/browser/native_io/native_io_host.h"
-#include "third_party/blink/public/common/native_io/native_io_utils.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
-
-using blink::mojom::NativeIOError;
-using blink::mojom::NativeIOErrorPtr;
-using blink::mojom::NativeIOErrorType;
 
 namespace content {
 
 namespace {
 
 // Performs the file I/O work in SetLength().
-std::pair<base::File, base::File::Error> DoSetLength(const int64_t length,
-                                                     base::File file) {
+std::pair<bool, base::File> DoSetLength(const int64_t length, base::File file) {
+  bool set_length_success = false;
   DCHECK_GE(length, 0) << "The file length should not be negative";
-  base::File::Error set_length_error;
-  bool success = file.SetLength(length);
-  set_length_error = success ? base::File::FILE_OK : file.GetLastFileError();
+  set_length_success = file.SetLength(length);
 
-  return {std::move(file), set_length_error};
+  return {set_length_success, std::move(file)};
 }
 
 void DidSetLength(blink::mojom::NativeIOFileHost::SetLengthCallback callback,
-                  std::pair<base::File, base::File::Error> result) {
-  NativeIOErrorPtr error =
-      NativeIOContext::FileErrorToNativeIOError(result.second);
-  std::move(callback).Run(std::move(result.first), std::move(error));
+                  std::pair<bool, base::File> result) {
+  std::move(callback).Run(result.first, std::move(result.second));
 }
 
 }  // namespace
@@ -75,20 +64,14 @@ void NativeIOFileHost::SetLength(const int64_t length,
 
   if (length < 0) {
     mojo::ReportBadMessage("The file length cannot be negative.");
-    // No error message is specified as the ReportBadMessage() call should close
-    // the pipe and kill the renderer.
-    std::move(callback).Run(
-        std::move(file), NativeIOError::New(NativeIOErrorType::kUnknown, ""));
+    std::move(callback).Run(false, std::move(file));
     return;
   }
   // file.IsValid() does not interact with the file system, so we may call it on
   // this thread.
   if (!file.IsValid()) {
     mojo::ReportBadMessage("The file is invalid.");
-    // No error message is specified as the ReportBadMessage() call should close
-    // the pipe and kill the renderer.
-    std::move(callback).Run(
-        std::move(file), NativeIOError::New(NativeIOErrorType::kUnknown, ""));
+    std::move(callback).Run(false, std::move(file));
     return;
   }
 

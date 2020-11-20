@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/native_io/native_io_error.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_file.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_file_sync.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -52,18 +51,18 @@ void OnOpenResult(
     ScriptPromiseResolver* resolver,
     DisallowNewWrapper<HeapMojoRemote<mojom::blink::NativeIOFileHost>>*
         backend_file_wrapper,
-    base::File backing_file,
-    mojom::blink::NativeIOErrorPtr open_error) {
+    base::File backing_file) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
   ScriptState::Scope scope(script_state);
 
-  if (open_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
-    blink::RejectNativeIOWithError(resolver, std::move(open_error));
+  if (!backing_file.IsValid()) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+        "open() failed"));
     return;
   }
-  DCHECK(backing_file.IsValid()) << "browser returned closed file but no error";
 
   NativeIOFile* file = MakeGarbageCollected<NativeIOFile>(
       std::move(backing_file), backend_file_wrapper->TakeValue(),
@@ -71,15 +70,16 @@ void OnOpenResult(
   resolver->Resolve(file);
 }
 
-void OnDeleteResult(ScriptPromiseResolver* resolver,
-                    mojom::blink::NativeIOErrorPtr delete_error) {
+void OnDeleteResult(ScriptPromiseResolver* resolver, bool backend_success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
   ScriptState::Scope scope(script_state);
 
-  if (delete_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
-    blink::RejectNativeIOWithError(resolver, std::move(delete_error));
+  if (!backend_success) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+        "delete() failed"));
     return;
   }
 
@@ -104,15 +104,16 @@ void OnGetAllResult(ScriptPromiseResolver* resolver,
   resolver->Resolve(file_names);
 }
 
-void OnRenameResult(ScriptPromiseResolver* resolver,
-                    mojom::blink::NativeIOErrorPtr rename_error) {
+void OnRenameResult(ScriptPromiseResolver* resolver, bool backend_success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
   ScriptState::Scope scope(script_state);
 
-  if (rename_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
-    blink::RejectNativeIOWithError(resolver, std::move(rename_error));
+  if (!backend_success) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+        "rename() failed"));
     return;
   }
   resolver->Resolve();
@@ -143,10 +144,8 @@ ScriptPromise NativeIOManager::open(ScriptState* script_state,
   }
 
   if (!backend_.is_bound()) {
-    ThrowNativeIOWithError(exception_state,
-                           mojom::blink::NativeIOError::New(
-                               mojom::blink::NativeIOErrorType::kInvalidState,
-                               "NativeIOHost backend went away"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "NativeIOHost backend went away");
     return ScriptPromise();
   }
 
@@ -175,10 +174,8 @@ ScriptPromise NativeIOManager::Delete(ScriptState* script_state,
   }
 
   if (!backend_.is_bound()) {
-    ThrowNativeIOWithError(exception_state,
-                           mojom::blink::NativeIOError::New(
-                               mojom::blink::NativeIOErrorType::kInvalidState,
-                               "NativeIOHost backend went away"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "NativeIOHost backend went away");
     return ScriptPromise();
   }
 
@@ -191,10 +188,8 @@ ScriptPromise NativeIOManager::Delete(ScriptState* script_state,
 ScriptPromise NativeIOManager::getAll(ScriptState* script_state,
                                       ExceptionState& exception_state) {
   if (!backend_.is_bound()) {
-    ThrowNativeIOWithError(exception_state,
-                           mojom::blink::NativeIOError::New(
-                               mojom::blink::NativeIOErrorType::kInvalidState,
-                               "NativeIOHost backend went away"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "NativeIOHost backend went away");
     return ScriptPromise();
   }
 
@@ -214,10 +209,8 @@ ScriptPromise NativeIOManager::rename(ScriptState* script_state,
   }
 
   if (!backend_.is_bound()) {
-    ThrowNativeIOWithError(exception_state,
-                           mojom::blink::NativeIOError::New(
-                               mojom::blink::NativeIOErrorType::kInvalidState,
-                               "NativeIOHost backend went away"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "NativeIOHost backend went away");
     return ScriptPromise();
   }
 
@@ -235,10 +228,8 @@ NativeIOFileSync* NativeIOManager::openSync(String name,
   }
 
   if (!backend_.is_bound()) {
-    ThrowNativeIOWithError(exception_state,
-                           mojom::blink::NativeIOError::New(
-                               mojom::blink::NativeIOErrorType::kInvalidState,
-                               "NativeIOHost backend went away"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "NativeIOHost backend went away");
     return nullptr;
   }
 
@@ -251,16 +242,14 @@ NativeIOFileSync* NativeIOManager::openSync(String name,
       backend_file.BindNewPipeAndPassReceiver(receiver_task_runner_);
 
   base::File backing_file;
-  mojom::blink::NativeIOErrorPtr open_error;
-  bool call_succeeded = backend_->OpenFile(
-      name, std::move(backend_file_receiver), &backing_file, &open_error);
+  bool call_succeeded =
+      backend_->OpenFile(name, std::move(backend_file_receiver), &backing_file);
 
-  if (open_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
-    ThrowNativeIOWithError(exception_state, std::move(open_error));
+  if (!call_succeeded || !backing_file.IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
+                                      "openSync() failed");
     return nullptr;
   }
-  DCHECK(call_succeeded) << "Mojo call failed";
-  DCHECK(backing_file.IsValid()) << "File is invalid but no error set";
 
   return MakeGarbageCollected<NativeIOFileSync>(
       std::move(backing_file), std::move(backend_file), execution_context);
@@ -273,38 +262,32 @@ void NativeIOManager::deleteSync(String name, ExceptionState& exception_state) {
   }
 
   if (!backend_.is_bound()) {
-    ThrowNativeIOWithError(exception_state,
-                           mojom::blink::NativeIOError::New(
-                               mojom::blink::NativeIOErrorType::kInvalidState,
-                               "NativeIOHost backend went away"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "NativeIOHost backend went away");
     return;
   }
 
-  mojom::blink::NativeIOErrorPtr delete_error;
-  bool call_succeeded = backend_->DeleteFile(name, &delete_error);
+  bool backend_success = false;
+  bool call_succeeded = backend_->DeleteFile(name, &backend_success);
 
-  if (delete_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
-    ThrowNativeIOWithError(exception_state, std::move(delete_error));
-    return;
+  if (!call_succeeded || !backend_success) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
+                                      "deleteSync() failed");
   }
-  DCHECK(call_succeeded) << "Mojo call failed";
 }
 
 Vector<String> NativeIOManager::getAllSync(ExceptionState& exception_state) {
   Vector<String> result;
   if (!backend_.is_bound()) {
-    ThrowNativeIOWithError(exception_state,
-                           mojom::blink::NativeIOError::New(
-                               mojom::blink::NativeIOErrorType::kInvalidState,
-                               "NativeIOHost backend went away"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "NativeIOHost backend went away");
     return result;
   }
 
   bool backend_success = false;
   bool call_succeeded = backend_->GetAllFileNames(&backend_success, &result);
-  DCHECK(call_succeeded) << "Mojo call failed";
 
-  if (!backend_success) {
+  if (!call_succeeded || !backend_success) {
     exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
                                       "getAllSync() failed");
   }
@@ -320,22 +303,19 @@ void NativeIOManager::renameSync(String old_name,
   }
 
   if (!backend_.is_bound()) {
-    ThrowNativeIOWithError(exception_state,
-                           mojom::blink::NativeIOError::New(
-                               mojom::blink::NativeIOErrorType::kInvalidState,
-                               "NativeIOHost backend went away"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "NativeIOHost backend went away");
     return;
   }
 
-  mojom::blink::NativeIOErrorPtr backend_success;
+  bool backend_success = false;
   bool call_succeeded =
       backend_->RenameFile(old_name, new_name, &backend_success);
 
-  if (backend_success->type != mojom::blink::NativeIOErrorType::kSuccess) {
-    ThrowNativeIOWithError(exception_state, std::move(backend_success));
-    return;
+  if (!call_succeeded || !backend_success) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
+                                      "renameSync() failed");
   }
-  DCHECK(call_succeeded) << "Mojo call failed";
 }
 
 void NativeIOManager::Trace(Visitor* visitor) const {
