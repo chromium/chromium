@@ -130,35 +130,40 @@ export class Preview {
   }
 
   /**
-   * Starts the preview with the source stream.
-   * @param {!MediaStream} stream Stream to be the source.
-   * @return {!Promise} Promise for the operation.
+   * Opens preview stream.
+   * @param {!MediaStreamConstraints} constraints Constraints of preview stream.
+   * @return {!Promise<!MediaStream>} Promise resolved to opened preview stream.
    */
-  start(stream) {
-    return this.setSource_(stream).then(() => {
+  async open(constraints) {
+    this.stream_ = await navigator.mediaDevices.getUserMedia(constraints);
+    try {
+      await this.setSource_(this.stream_);
       // Use a watchdog since the stream.onended event is unreliable in the
       // recent version of Chrome. As of 55, the event is still broken.
       this.watchdog_ = setInterval(() => {
         // Check if video stream is ended (audio stream may still be live).
-        if (!stream.getVideoTracks().length ||
-            stream.getVideoTracks()[0].readyState === 'ended') {
+        if (this.stream_.getVideoTracks().length === 0 ||
+            this.stream_.getVideoTracks()[0].readyState === 'ended') {
           clearInterval(this.watchdog_);
           this.watchdog_ = null;
           this.stream_ = null;
           this.onNewStreamNeeded_();
         }
       }, 100);
-      this.stream_ = stream;
       this.updateShowMetadata_();
       state.set(state.State.STREAMING, true);
-    });
+    } catch (e) {
+      await this.close();
+      throw e;
+    }
+    return this.stream_;
   }
 
   /**
-   * Stops the preview.
+   * Closes the preview.
    * @return {!Promise}
    */
-  async stop() {
+  async close() {
     if (this.watchdog_) {
       clearInterval(this.watchdog_);
       this.watchdog_ = null;

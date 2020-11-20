@@ -518,7 +518,7 @@ export class Camera extends View {
           await this.endTake_();
         }
       } finally {
-        await this.preview_.stop();
+        await this.preview_.close();
       }
       return this.start_();
     })();
@@ -551,26 +551,24 @@ export class Camera extends View {
         if (this.isSuspended()) {
           throw new CameraSuspendedError();
         }
+        const factory = this.modes_.getModeFactory(mode);
         try {
+          factory.setCaptureResolution(captureR);
           if (deviceOperator !== null) {
-            assert(deviceId !== null);
-            const optConfigs =
-                mode === Mode.VIDEO ? {} : {stillCaptureResolution: captureR};
-            await deviceOperator.setStreamConfig(
-                deviceId, constraints, optConfigs);
-            await deviceOperator.setCaptureIntent(
-                deviceId, this.modes_.getCaptureIntent(mode));
+            factory.prepareDevice(deviceOperator, constraints);
           }
-          const stream = await navigator.mediaDevices.getUserMedia(constraints);
-          await this.preview_.start(stream);
+          const stream = await this.preview_.open(constraints);
           this.facingMode_ = await this.options_.updateValues(stream);
+          factory.setPreviewStream(stream);
+          factory.setFacing(this.facingMode_);
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(
-              mode, stream, this.facingMode_, deviceId, captureR);
+              mode, factory, stream, this.facingMode_, deviceId, captureR);
           nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
           return true;
         } catch (e) {
-          this.preview_.stop();
+          factory.clear();
+          this.preview_.close();
           console.error(e);
         }
       }

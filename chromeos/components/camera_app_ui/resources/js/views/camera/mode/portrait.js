@@ -15,6 +15,7 @@ import * as util from '../../../util.js';
 
 import {
   Photo,
+  PhotoFactory,
   PhotoHandler,  // eslint-disable-line no-unused-vars
 } from './photo.js';
 
@@ -115,5 +116,19 @@ export class Portrait extends Photo {
     state.set(
         PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
         {hasError, facing: this.facing_});
+  }
+}
+
+/**
+ * Factory for creating portrait mode capture object.
+ */
+export class PortraitFactory extends PhotoFactory {
+  /**
+   * @override
+   */
+  produce_() {
+    return new Portrait(
+        this.previewStream_, this.facing_, this.captureResolution_,
+        this.handler_);
   }
 }

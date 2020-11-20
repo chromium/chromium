@@ -17,22 +17,26 @@ import * as dom from '../../../dom.js';
 import {DeviceOperator} from '../../../mojo/device_operator.js';
 import * as state from '../../../state.js';
 import {
-  Facing,
+  Facing,  // eslint-disable-line no-unused-vars
   Mode,
   Resolution,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
 import * as util from '../../../util.js';
 
-import {ModeBase} from './mode_base.js';  // eslint-disable-line no-unused-vars
 import {
-  Photo,
+  ModeBase,     // eslint-disable-line no-unused-vars
+  ModeFactory,  // eslint-disable-line no-unused-vars
+} from './mode_base.js';
+import {
+  PhotoFactory,
   PhotoHandler,
   PhotoResult,
 } from './photo.js';
-import {Portrait} from './portrait.js';
-import {Square} from './square.js';
+import {PortraitFactory} from './portrait.js';
+import {SquareFactory} from './square.js';
 import {
   Video,
+  VideoFactory,
   VideoHandler,
   VideoResult,
 } from './video.js';
@@ -54,13 +58,6 @@ export let DoSwitchMode;
  */
 class ModeConfig {
   /**
-   * Factory function to create capture object for this mode.
-   * @return {!ModeBase}
-   * @abstract
-   */
-  captureFactory() {}
-
-  /**
    * @param {?string} deviceId
    * @return {!Promise<boolean>} Resolves to boolean indicating whether the mode
    *     is supported by video device with specified device id.
@@ -79,6 +76,13 @@ class ModeConfig {
   /* eslint-disable getter-return */
 
   /**
+   * Gets factory to create capture object for this mode.
+   * @return {!ModeFactory}
+   * @abstract
+   */
+  get captureFactory() {}
+
+  /**
    * HALv3 constraints preferrer for this mode.
    * @return {!ConstraintsPreferrer}
    * @abstract
@@ -91,13 +95,6 @@ class ModeConfig {
    * @abstract
    */
   get nextMode() {}
-
-  /**
-   * Capture intent of this mode.
-   * @return {!cros.mojom.CaptureIntent}
-   * @abstract
-   */
-  get captureIntent() {}
 
   /* eslint-enable getter-return */
 }
@@ -132,30 +129,10 @@ export class Modes {
     this.current = null;
 
     /**
-     * Stream of current mode.
-     * @type {?MediaStream}
-     * @private
-     */
-    this.stream_ = null;
-
-    /**
-     * Camera facing of current mode.
-     * @type {!Facing}
-     * @private
-     */
-    this.facing_ = Facing.UNKNOWN;
-
-    /**
      * @type {!HTMLElement}
      * @private
      */
     this.modesGroup_ = dom.get('#modes-group', HTMLElement);
-
-    /**
-     * @type {?Resolution}
-     * @private
-     */
-    this.captureResolution_ = null;
 
     /**
      * Returns a set of available constraints for HALv1 device.
@@ -199,39 +176,28 @@ export class Modes {
      */
     this.allModes_ = {
       [Mode.VIDEO]: {
-        captureFactory: () => new Video(
-            assertInstanceof(this.stream_, MediaStream), this.facing_,
-            videoHandler),
+        captureFactory: new VideoFactory(videoHandler),
         isSupported: async () => true,
         constraintsPreferrer: videoPreferrer,
         getV1Constraints: getV1Constraints.bind(this, true),
         nextMode: Mode.PHOTO,
-        captureIntent: cros.mojom.CaptureIntent.VIDEO_RECORD,
       },
       [Mode.PHOTO]: {
-        captureFactory: () => new Photo(
-            assertInstanceof(this.stream_, MediaStream), this.facing_,
-            this.captureResolution_, photoHandler),
+        captureFactory: new PhotoFactory(photoHandler),
         isSupported: async () => true,
         constraintsPreferrer: photoPreferrer,
         getV1Constraints: getV1Constraints.bind(this, false),
         nextMode: Mode.SQUARE,
-        captureIntent: cros.mojom.CaptureIntent.STILL_CAPTURE,
       },
       [Mode.SQUARE]: {
-        captureFactory: () => new Square(
-            assertInstanceof(this.stream_, MediaStream), this.facing_,
-            this.captureResolution_, photoHandler),
+        captureFactory: new SquareFactory(photoHandler),
         isSupported: async () => true,
         constraintsPreferrer: photoPreferrer,
         getV1Constraints: getV1Constraints.bind(this, false),
         nextMode: Mode.PHOTO,
-        captureIntent: cros.mojom.CaptureIntent.STILL_CAPTURE,
       },
       [Mode.PORTRAIT]: {
-        captureFactory: () => new Portrait(
-            assertInstanceof(this.stream_, MediaStream), this.facing_,
-            this.captureResolution_, photoHandler),
+        captureFactory: new PortraitFactory(photoHandler),
         isSupported: async (deviceId) => {
           if (deviceId === null) {
             return false;
@@ -245,7 +211,6 @@ export class Modes {
         constraintsPreferrer: photoPreferrer,
         getV1Constraints: getV1Constraints.bind(this, false),
         nextMode: Mode.PHOTO,
-        captureIntent: cros.mojom.CaptureIntent.STILL_CAPTURE,
       },
     };
 
@@ -352,12 +317,12 @@ export class Modes {
   }
 
   /**
-   * Gets capture intent for the given mode.
+   * Gets factory to create mode capture object.
    * @param {!Mode} mode
-   * @return {!cros.mojom.CaptureIntent} Capture intent for the given mode.
+   * @return {!ModeFactory}
    */
-  getCaptureIntent(mode) {
-    return this.allModes_[mode].captureIntent;
+  getModeFactory(mode) {
+    return this.allModes_[mode].captureFactory;
   }
 
   /**
@@ -398,6 +363,8 @@ export class Modes {
   /**
    * Creates and updates new current mode object.
    * @param {!Mode} mode Classname of mode to be updated.
+   * @param {!ModeFactory} factory The factory ready for producing mode capture
+   *     object.
    * @param {!MediaStream} stream Stream of the new switching mode.
    * @param {!Facing} facing Camera facing of the current mode.
    * @param {?string} deviceId Device id of currently working video device.
@@ -405,18 +372,15 @@ export class Modes {
    *     height.
    * @return {!Promise}
    */
-  async updateMode(mode, stream, facing, deviceId, captureResolution) {
+  async updateMode(mode, factory, stream, facing, deviceId, captureResolution) {
     if (this.current !== null) {
       await this.current.stopCapture();
     }
     this.updateModeUI_(mode);
-    this.stream_ = stream;
-    this.facing_ = facing;
-    this.captureResolution_ = captureResolution;
-    this.current = this.allModes_[mode].captureFactory();
-    if (deviceId && this.captureResolution_) {
+    this.current = factory.produce();
+    if (deviceId && captureResolution) {
       this.allModes_[mode].constraintsPreferrer.updateValues(
-          deviceId, stream, facing, this.captureResolution_);
+          deviceId, stream, facing, captureResolution);
     }
     await this.updateSaveMetadata_();
   }

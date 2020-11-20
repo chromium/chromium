@@ -4,7 +4,7 @@
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
 import {browserProxy} from '../../../browser_proxy/browser_proxy.js';
-import {assert} from '../../../chrome_util.js';
+import {assert, assertString} from '../../../chrome_util.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {
   VideoSaver,  // eslint-disable-line no-unused-vars
@@ -21,7 +21,7 @@ import {
 import * as util from '../../../util.js';
 import {WaitableEvent} from '../../../waitable_event.js';
 
-import {ModeBase} from './mode_base.js';
+import {ModeBase, ModeFactory} from './mode_base.js';
 import {PhotoResult} from './photo.js';  // eslint-disable-line no-unused-vars
 import {RecordTime} from './record_time.js';
 
@@ -359,5 +359,56 @@ export class Video extends ModeBase {
       state.set(state.State.RECORDING_PAUSED, false);
       state.set(state.State.RECORDING_UI_PAUSED, false);
     });
+  }
+}
+
+/**
+ * Factory for creating video mode capture object.
+ */
+export class VideoFactory extends ModeFactory {
+  /**
+   * @param {!VideoHandler} handler
+   */
+  constructor(handler) {
+    super();
+
+    /**
+     * @const {!VideoHandler}
+     * @private
+     */
+    this.handler_ = handler;
+  }
+
+  /**
+   * @override
+   */
+  async prepareDevice(deviceOperator, constraints) {
+    const deviceId = assertString(constraints.video.deviceId.exact);
+    await deviceOperator.setCaptureIntent(
+        deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
+
+    let /** number */ minFrameRate = 0;
+    let /** number */ maxFrameRate = 0;
+    if (constraints.video && constraints.video.frameRate) {
+      const frameRate = constraints.video.frameRate;
+      if (frameRate.exact) {
+        minFrameRate = frameRate.exact;
+        maxFrameRate = frameRate.exact;
+      } else if (frameRate.min && frameRate.max) {
+        minFrameRate = frameRate.min;
+        maxFrameRate = frameRate.max;
+      }
+      // TODO(wtlee): To set the fps range to the default value, we should
+      // remove the frameRate from constraints instead of using incomplete
+      // range.
+    }
+    await deviceOperator.setFpsRange(deviceId, minFrameRate, maxFrameRate);
+  }
+
+  /**
+   * @override
+   */
+  produce_() {
+    return new Video(this.previewStream_, this.facing_, this.handler_);
   }
 }
