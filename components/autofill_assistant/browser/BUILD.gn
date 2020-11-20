@@ -222,6 +222,8 @@ static_library("browser") {
     "web/element_position_getter.h",
     "web/element_rect_getter.cc",
     "web/element_rect_getter.h",
+    "web/element_store.cc",
+    "web/element_store.h",
     "web/js_snippets.cc",
     "web/js_snippets.h",
     "web/web_controller.cc",
@@ -380,6 +382,7 @@ source_set("unit_tests") {
     "user_model_unittest.cc",
     "value_util_unittest.cc",
     "wait_for_document_operation_unittest.cc",
+    "web/element_store_unittest.cc",
     "website_login_manager_impl_unittest.cc",
   ]
 

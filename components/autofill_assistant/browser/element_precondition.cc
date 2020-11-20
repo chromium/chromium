@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
+#include "components/autofill_assistant/browser/web/element.h"
 
 namespace autofill_assistant {
 
@@ -18,10 +19,14 @@ ElementPrecondition::ElementPrecondition(const ElementConditionProto& proto)
 
 ElementPrecondition::~ElementPrecondition() = default;
 
-void ElementPrecondition::Check(
-    BatchElementChecker* batch_checks,
-    base::OnceCallback<void(const ClientStatus&,
-                            const std::vector<std::string>&)> callback) {
+ElementPrecondition::Result::Result() = default;
+
+ElementPrecondition::Result::~Result() = default;
+
+ElementPrecondition::Result::Result(const Result&) = default;
+
+void ElementPrecondition::Check(BatchElementChecker* batch_checks,
+                                Callback callback) {
   if (results_.empty()) {
     OnAllElementChecksDone(std::move(callback));
     return;
@@ -56,20 +61,19 @@ void ElementPrecondition::OnCheckElementExists(
   result.match = element_status.ok();
   // TODO(szermatt): Consider reporting element_status as an unexpected error
   // right away if it is neither success nor ELEMENT_RESOLUTION_FAILED.
-  // TODO(b/171782156): Store the element, if the status is ok.
+  if (element_status.ok() && result.client_id.has_value()) {
+    elements_[*result.client_id] = element_reference.dom_object;
+  }
 }
 
-void ElementPrecondition::OnAllElementChecksDone(
-    base::OnceCallback<void(const ClientStatus& status,
-                            const std::vector<std::string>& payloads)>
-        callback) {
+void ElementPrecondition::OnAllElementChecksDone(Callback callback) {
   size_t next_result_index = 0;
   std::vector<std::string> payloads;
   bool match = EvaluateResults(proto_, &next_result_index, &payloads);
   DCHECK_EQ(next_result_index, results_.size());
   std::move(callback).Run(match ? ClientStatus(ACTION_APPLIED)
                                 : ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                          payloads);
+                          payloads, elements_);
 }
 
 bool ElementPrecondition::EvaluateResults(const ElementConditionProto& proto_,
@@ -156,6 +160,9 @@ void ElementPrecondition::AddResults(const ElementConditionProto& proto_) {
     case ElementConditionProto::kMatch: {
       Result result;
       result.selector = Selector(proto_.match());
+      if (proto_.has_client_id()) {
+        result.client_id = proto_.client_id().identifier();
+      }
       results_.emplace_back(result);
       break;
     }

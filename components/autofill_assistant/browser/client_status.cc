@@ -138,6 +138,9 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::ELEMENT_NOT_ON_TOP:
       out << "ELEMENT_NOT_ON_TOP";
       break;
+    case ProcessedActionStatusProto::CLIENT_ID_RESOLUTION_FAILED:
+      out << "CLIENT_ID_RESOLUTION_FAILED";
+      break;
 
       // Intentionally no default case to make compilation fail if a new value
       // was added to the enum but not to this list.

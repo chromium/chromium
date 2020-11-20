@@ -20,6 +20,7 @@
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -375,7 +376,15 @@ class MockActionDelegate : public ActionDelegate {
     return client_settings_;
   }
 
+  ElementStore* GetElementStore() const override {
+    if (!element_store_) {
+      element_store_ = std::make_unique<ElementStore>(nullptr);
+    }
+    return element_store_.get();
+  }
+
   ClientSettings client_settings_;
+  mutable std::unique_ptr<ElementStore> element_store_;
 
   base::WeakPtrFactory<MockActionDelegate> weak_ptr_factory_{this};
 };

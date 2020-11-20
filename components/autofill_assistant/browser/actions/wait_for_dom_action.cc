@@ -12,13 +12,45 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-
-namespace {
-static constexpr base::TimeDelta kDefaultCheckDuration =
-    base::TimeDelta::FromSeconds(15);
-}  // namespace
+#include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 
 namespace autofill_assistant {
+namespace {
+
+static constexpr base::TimeDelta kDefaultCheckDuration =
+    base::TimeDelta::FromSeconds(15);
+
+void CollectExpectedElements(const ElementConditionProto& condition,
+                             std::vector<std::string>* expected_client_ids) {
+  switch (condition.type_case()) {
+    case ElementConditionProto::kAllOf:
+      for (const auto& inner_condition : condition.all_of().conditions()) {
+        CollectExpectedElements(inner_condition, expected_client_ids);
+      }
+      break;
+    case ElementConditionProto::kAnyOf:
+      for (const auto& inner_condition : condition.any_of().conditions()) {
+        CollectExpectedElements(inner_condition, expected_client_ids);
+      }
+      break;
+    case ElementConditionProto::kNoneOf:
+      for (const auto& inner_condition : condition.none_of().conditions()) {
+        CollectExpectedElements(inner_condition, expected_client_ids);
+      }
+      break;
+    case ElementConditionProto::kMatch:
+      if (condition.has_client_id()) {
+        expected_client_ids->emplace_back(condition.client_id().identifier());
+      }
+      break;
+    case ElementConditionProto::TYPE_NOT_SET:
+      break;
+  }
+}
+
+}  // namespace
 
 WaitForDomAction::WaitForDomAction(ActionDelegate* delegate,
                                    const ActionProto& proto)
@@ -62,20 +94,40 @@ void WaitForDomAction::CheckElements(
 void WaitForDomAction::OnWaitConditionDone(
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status,
-    const std::vector<std::string>& payloads) {
-  auto* result = processed_action_proto_->mutable_wait_for_dom_result();
-  // Conditions are first cleared, as OnWaitConditionDone can be called more
+    const std::vector<std::string>& payloads,
+    const base::flat_map<std::string, DomObjectFrameStack>& elements) {
+  // Results are first cleared, as OnWaitConditionDone can be called more
   // than once. Yet, we want report only the payloads sent with the final call
   // to OnWaitConditionDone() as action result.
+
+  auto* result = processed_action_proto_->mutable_wait_for_dom_result();
   result->clear_matching_condition_payloads();
   for (const std::string& payload : payloads) {
     result->add_matching_condition_payloads(payload);
   }
+
+  elements_ = elements;
+
   std::move(callback).Run(status);
+}
+
+void WaitForDomAction::UpdateElementStore() {
+  std::vector<std::string> expected_client_ids;
+  CollectExpectedElements(proto_.wait_for_dom().wait_condition(),
+                          &expected_client_ids);
+
+  auto* store = delegate_->GetElementStore();
+  for (const auto& client_id : expected_client_ids) {
+    store->RemoveElement(client_id);
+  }
+  for (const auto& it : elements_) {
+    store->AddElement(it.first, it.second);
+  }
 }
 
 void WaitForDomAction::ReportActionResult(ProcessActionCallback callback,
                                           const ClientStatus& status) {
+  UpdateElementStore();
   UpdateProcessedAction(status.proto_status());
   std::move(callback).Run(std::move(processed_action_proto_));
 }

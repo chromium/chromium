@@ -37,6 +37,7 @@ class TriggerContext;
 class WebsiteLoginManager;
 class EventHandler;
 class UserModel;
+class ElementStore;
 
 class ScriptExecutorDelegate {
  public:
@@ -60,6 +61,7 @@ class ScriptExecutorDelegate {
   virtual const GURL& GetScriptURL() = 0;
   virtual Service* GetService() = 0;
   virtual WebController* GetWebController() = 0;
+  virtual ElementStore* GetElementStore() const = 0;
   virtual const TriggerContext* GetTriggerContext() = 0;
   virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
   virtual WebsiteLoginManager* GetWebsiteLoginManager() = 0;

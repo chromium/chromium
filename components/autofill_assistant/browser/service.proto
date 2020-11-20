@@ -12,6 +12,7 @@ package autofill_assistant;
 
 import "action_strategy.proto";
 import "action_value.proto";
+import "dom_action.proto";
 import "generic_ui.proto";
 import "model.proto";
 import "view_layout.proto";
@@ -1482,6 +1483,11 @@ message WaitForDomProto {
 
   // Wait until this condition becomes true. If, at the end of the timeout, the
   // condition is not true, returns ELEMENT_RESOLUTION_FAILED.
+  // The |wait_condition| can be used to store matches on the client by
+  // annotating a |match| condition with a |client_id|. Note that matches that
+  // were not found will be removed from the store, e.g. if they were entered
+  // by a previous |WaitForDomProto|. The store also gets updated if the action
+  // fails.
   optional ElementConditionProto wait_condition = 9;
 
   // If true, run scripts flagged with 'interrupt=true' as soon as their
@@ -1518,6 +1524,10 @@ message ElementConditionProto {
   // A payload that identifies this condition. WaitForDom puts this payload
   // into the result. This is ignored outside of WaitForDom.
   optional bytes payload = 5;
+
+  // Optional. If set, the element of |match| will be stored under this
+  // identifier on the client.
+  optional ClientIdProto client_id = 6;
 }
 
 message ElementConditionsProto {

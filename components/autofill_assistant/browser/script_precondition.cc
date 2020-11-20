@@ -7,24 +7,28 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/web/element.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
-
 namespace {
-void RunCallbackWithoutPayload(
+
+void RunCallbackWithoutData(
     base::OnceCallback<void(bool)> callback,
     const ClientStatus& status,
-    const std::vector<std::string>& ignored_payloads) {
+    const std::vector<std::string>& ignored_payloads,
+    const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
   std::move(callback).Run(status.ok());
 }
+
 }  // namespace
 
 // Static
@@ -71,7 +75,7 @@ void ScriptPrecondition::Check(
   }
   element_precondition_.Check(
       batch_checks,
-      base::BindOnce(&RunCallbackWithoutPayload, std::move(callback)));
+      base::BindOnce(&RunCallbackWithoutData, std::move(callback)));
 }
 
 ScriptPrecondition::ScriptPrecondition(

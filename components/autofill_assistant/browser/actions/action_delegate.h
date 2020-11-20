@@ -41,6 +41,7 @@ namespace autofill_assistant {
 class ClientStatus;
 struct ClientSettings;
 struct CollectUserDataOptions;
+class ElementStore;
 class UserAction;
 class WebsiteLoginManager;
 
@@ -376,6 +377,9 @@ class ActionDelegate {
 
   // Get associated web contents.
   virtual content::WebContents* GetWebContents() = 0;
+
+  // Get the ElementStore.
+  virtual ElementStore* GetElementStore() const = 0;
 
   // Returns the e-mail address that corresponds to the access token or an empty
   // string.

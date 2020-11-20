@@ -24,6 +24,7 @@
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/view_layout.pb.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/strings/grit/components_strings.h"
@@ -142,6 +143,13 @@ WebController* Controller::GetWebController() {
     web_controller_ = WebController::CreateForWebContents(web_contents());
   }
   return web_controller_.get();
+}
+
+ElementStore* Controller::GetElementStore() const {
+  if (!element_store_) {
+    element_store_ = std::make_unique<ElementStore>(web_contents());
+  }
+  return element_store_.get();
 }
 
 const TriggerContext* Controller::GetTriggerContext() {

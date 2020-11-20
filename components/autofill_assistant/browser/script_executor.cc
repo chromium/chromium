@@ -26,6 +26,7 @@
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/wait_for_document_operation.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/http/http_status_code.h"
@@ -774,6 +775,10 @@ WebsiteLoginManager* ScriptExecutor::GetWebsiteLoginManager() {
 
 content::WebContents* ScriptExecutor::GetWebContents() {
   return delegate_->GetWebContents();
+}
+
+ElementStore* ScriptExecutor::GetElementStore() const {
+  return delegate_->GetElementStore();
 }
 
 std::string ScriptExecutor::GetEmailAddressForAccessTokenAccount() {

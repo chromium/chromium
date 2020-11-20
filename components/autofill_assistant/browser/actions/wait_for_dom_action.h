@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/element_precondition.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element.h"
 
 namespace autofill_assistant {
 class BatchElementChecker;
@@ -36,11 +38,14 @@ class WaitForDomAction : public Action {
   void OnWaitConditionDone(
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status,
-      const std::vector<std::string>& payloads);
+      const std::vector<std::string>& payloads,
+      const base::flat_map<std::string, DomObjectFrameStack>& elements);
   void ReportActionResult(ProcessActionCallback callback,
                           const ClientStatus& status);
+  void UpdateElementStore();
 
   std::unique_ptr<ElementPrecondition> wait_condition_;
+  base::flat_map<std::string, DomObjectFrameStack> elements_;
 
   base::WeakPtrFactory<WaitForDomAction> weak_ptr_factory_{this};
 

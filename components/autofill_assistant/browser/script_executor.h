@@ -28,6 +28,7 @@
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
+class ElementStore;
 class UserModel;
 class WaitForDocumentOperation;
 
@@ -261,6 +262,7 @@ class ScriptExecutor : public ActionDelegate,
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   WebsiteLoginManager* GetWebsiteLoginManager() override;
   content::WebContents* GetWebContents() override;
+  ElementStore* GetElementStore() const override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   std::string GetLocale() override;
   void SetDetails(std::unique_ptr<Details> details) override;

@@ -87,7 +87,7 @@ class ElementFinder : public WebControllerWorker {
       base::OnceCallback<void(const ClientStatus&, std::unique_ptr<Result>)>;
 
   // Finds the element and calls the callback.
-  void Start(Callback callback_);
+  void Start(Callback callback);
 
  private:
   // Helper for building JavaScript functions.

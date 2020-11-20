@@ -6,12 +6,14 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_GENERIC_UI_ACTION_H_
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/element_precondition.h"
+#include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 
 namespace autofill_assistant {
@@ -34,9 +36,11 @@ class ShowGenericUiAction : public Action,
   void RegisterChecks(
       BatchElementChecker* checker,
       base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback);
-  void OnPreconditionResult(size_t choice_index,
-                            const ClientStatus& status,
-                            const std::vector<std::string>& ignored_payloads);
+  void OnPreconditionResult(
+      size_t choice_index,
+      const ClientStatus& status,
+      const std::vector<std::string>& ignored_payloads,
+      const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void OnElementChecksDone(
       base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback);
   void OnDoneWaitForDom(const ClientStatus& status);

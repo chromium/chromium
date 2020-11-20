@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
@@ -17,6 +18,7 @@
 #include "components/autofill_assistant/browser/chip.h"
 #include "components/autofill_assistant/browser/element_precondition.h"
 #include "components/autofill_assistant/browser/user_action.h"
+#include "components/autofill_assistant/browser/web/element.h"
 
 namespace autofill_assistant {
 
@@ -35,12 +37,16 @@ class PromptAction : public Action {
       base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback);
   void SetupConditions();
   bool HasNonemptyPreconditions();
-  void OnPreconditionResult(size_t choice_index,
-                            const ClientStatus& status,
-                            const std::vector<std::string>& ignored_payloads);
+  void OnPreconditionResult(
+      size_t choice_index,
+      const ClientStatus& status,
+      const std::vector<std::string>& ignored_payloads,
+      const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void UpdateUserActions();
-  void OnAutoSelectCondition(const ClientStatus& status,
-                             const std::vector<std::string>& payloads);
+  void OnAutoSelectCondition(
+      const ClientStatus& status,
+      const std::vector<std::string>& payloads,
+      const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void OnElementChecksDone(
       base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback);
   void OnDoneWaitForDom(const ClientStatus& status);

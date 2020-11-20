@@ -83,7 +83,7 @@ message LoginOptionList {
   repeated LoginOptionProto values = 1;
 }
 
-// Next: 25
+// Next: 29
 enum ProcessedActionStatusProto {
   UNKNOWN_ACTION_STATUS = 0;
 
@@ -204,6 +204,11 @@ enum ProcessedActionStatusProto {
 
   // Another element covered the targeted element, when trying to click.
   ELEMENT_NOT_ON_TOP = 27;
+
+  // The client_id could not be found in the client's ElementStore. This means
+  // the element was either not successfully found or a wrong client_id was
+  // used.
+  CLIENT_ID_RESOLUTION_FAILED = 28;
 
   reserved 15, 23;
 }
