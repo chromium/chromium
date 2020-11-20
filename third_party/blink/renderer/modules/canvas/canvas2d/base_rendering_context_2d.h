@@ -483,8 +483,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   ImageDataColorSettings* GetColorSettingsAsImageDataColorSettings() const;
 
-  void PutByteArray(const unsigned char* source,
-                    const IntSize& source_size,
+  void PutByteArray(const SkPixmap& source,
                     const IntRect& source_rect,
                     const IntPoint& dest_point);
   virtual bool IsCanvas2DBufferValid() const {

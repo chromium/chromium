@@ -1907,32 +1907,38 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   // in sRGB color space and use uint8 pixel storage format. We use RGBA pixel
   // order for both ImageData and CanvasResourceProvider, therefore no
   // additional swizzling is needed.
+  SkImageInfo data_info = data->GetSkImageInfo();
   CanvasColorParams data_color_params = data->GetCanvasColorParams();
   CanvasColorParams context_color_params = CanvasColorParams(
       GetCanvas2DColorParams().ColorSpace(), PixelFormat(), kNonOpaque);
 
-  size_t data_length;
-  if (!base::CheckMul(data->Size().Area(), context_color_params.BytesPerPixel())
-           .AssignIfValid(&data_length))
-    return;
-
   if (data_color_params.ColorSpace() != context_color_params.ColorSpace() ||
       data_color_params.PixelFormat() != context_color_params.PixelFormat() ||
       PixelFormat() == CanvasPixelFormat::kF16) {
+    size_t data_length;
+    if (!base::CheckMul(data->Size().Area(),
+                        context_color_params.BytesPerPixel())
+             .AssignIfValid(&data_length)) {
+      return;
+    }
     std::unique_ptr<uint8_t[]> converted_pixels(new uint8_t[data_length]);
+
     if (data->ImageDataInCanvasColorSettings(
             GetCanvas2DColorParams().ColorSpace(), PixelFormat(),
             converted_pixels.get(), kRGBAColorType)) {
-      PutByteArray(converted_pixels.get(),
-                   IntSize(data->width(), data->height()), source_rect,
-                   IntPoint(dest_offset));
+      SkImageInfo converted_info = data_info;
+      converted_info = converted_info.makeColorType(
+          GetCanvas2DColorParams().GetSkColorType());
+      converted_info = converted_info.makeColorSpace(
+          GetCanvas2DColorParams().GetSkColorSpace());
+      PutByteArray(SkPixmap(converted_info, converted_pixels.get(),
+                            converted_info.minRowBytes()),
+                   source_rect, IntPoint(dest_offset));
     }
   } else {
-    // TODO(crbug.com/1115317): PutByteArray works with uint8 only. It should be
-    // compatible with uint16 and float32.
-    PutByteArray(data->data().GetAsUint8ClampedArray()->Data(),
-                 IntSize(data->width(), data->height()), source_rect,
-                 IntPoint(dest_offset));
+    PutByteArray(SkPixmap(data_info, data->BufferBase()->Data(),
+                          data_info.minRowBytes()),
+                 source_rect, IntPoint(dest_offset));
   }
 
   if (!IsPaint2D()) {
@@ -1950,60 +1956,37 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   DidDraw(dest_rect);
 }
 
-void BaseRenderingContext2D::PutByteArray(const unsigned char* source,
-                                          const IntSize& source_size,
+void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,
                                           const IntRect& source_rect,
                                           const IntPoint& dest_point) {
   if (!IsCanvas2DBufferValid())
     return;
-  uint8_t bytes_per_pixel = GetCanvas2DColorParams().BytesPerPixel();
 
-  DCHECK_GT(source_rect.Width(), 0);
-  DCHECK_GT(source_rect.Height(), 0);
-
-  int origin_x = source_rect.X();
+  DCHECK(IntRect(0, 0, source.width(), source.height()).Contains(source_rect));
   int dest_x = dest_point.X() + source_rect.X();
   DCHECK_GE(dest_x, 0);
   DCHECK_LT(dest_x, Width());
-  DCHECK_GE(origin_x, 0);
-  DCHECK_LT(origin_x, source_rect.MaxX());
-
-  int origin_y = source_rect.Y();
   int dest_y = dest_point.Y() + source_rect.Y();
   DCHECK_GE(dest_y, 0);
   DCHECK_LT(dest_y, Height());
-  DCHECK_GE(origin_y, 0);
-  DCHECK_LT(origin_y, source_rect.MaxY());
 
-  const base::CheckedNumeric<size_t> src_bytes_per_row_checked =
-      base::CheckMul(bytes_per_pixel, source_size.Width());
-  if (!src_bytes_per_row_checked.IsValid()) {
-    VLOG(1) << "Invalid sizes";
-    return;
-  }
-  const size_t src_bytes_per_row = src_bytes_per_row_checked.ValueOrDie();
-  const void* src_addr =
-      source + origin_y * src_bytes_per_row + origin_x * bytes_per_pixel;
-
-  SkAlphaType alpha_type;
+  SkImageInfo info =
+      source.info().makeWH(source_rect.Width(), source_rect.Height());
   if (kOpaque == GetCanvas2DColorParams().GetOpacityMode()) {
     // If the surface is opaque, tell it that we are writing opaque
     // pixels.  Writing non-opaque pixels to opaque is undefined in
     // Skia.  There is some discussion about whether it should be
     // defined in skbug.com/6157.  For now, we can get the desired
     // behavior (memcpy) by pretending the write is opaque.
-    alpha_type = kOpaque_SkAlphaType;
+    info = info.makeAlphaType(kOpaque_SkAlphaType);
   } else {
-    alpha_type = kUnpremul_SkAlphaType;
+    info = info.makeAlphaType(kUnpremul_SkAlphaType);
   }
-
-  SkImageInfo info =
-      SkImageInfo::Make(source_rect.Width(), source_rect.Height(),
-                        GetCanvas2DColorParams().GetSkColorType(), alpha_type,
-                        GetCanvas2DColorParams().GetSkColorSpace());
   if (info.colorType() == kN32_SkColorType)
     info = info.makeColorType(kRGBA_8888_SkColorType);
-  WritePixels(info, src_addr, src_bytes_per_row, dest_x, dest_y);
+
+  WritePixels(info, source.addr(source_rect.X(), source_rect.Y()),
+              source.rowBytes(), dest_x, dest_y);
 }
 
 void BaseRenderingContext2D::InflateStrokeRect(FloatRect& rect) const {
