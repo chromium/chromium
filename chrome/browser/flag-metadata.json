@@ -514,7 +514,7 @@
   {
     "name": "chrome-sharing-hub-v1-5",
     "owners": [ "sophey" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 90
   },
   {
     "name": "chromeos-direct-video-decoder",
@@ -4239,7 +4239,7 @@
   {
     "name": "share-button-in-top-toolbar",
     "owners": [ "jeffreycohen" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "share-by-default-in-cct",
