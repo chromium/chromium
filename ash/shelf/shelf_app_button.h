@@ -162,6 +162,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Calculates the icon bounds for an icon scaled by |icon_scale|.
   gfx::Rect GetIconViewBounds(float icon_scale);
 
+  // Calculates the notification indicator bounds when scaled by |scale|.
+  gfx::Rect GetNotificationIndicatorBounds(float scale);
+
   // Calculates the transform between the icon scaled by |icon_scale| and the
   // normal size icon.
   gfx::Transform GetScaleTransform(float icon_scale);
