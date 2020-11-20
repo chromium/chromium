@@ -9,6 +9,7 @@ how various product names and the like should be referenced.
 * Internet Explorer: `<ph name="IE_PRODUCT_NAME">Internet® Explorer®</ph>`
 * Google Admin console: `<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>`
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
+* Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
 * Lacros: `<ph name="LACROS_NAME">Lacros</ph>`
 * macOS: `<ph name="MAC_OS_NAME">macOS</ph>`
