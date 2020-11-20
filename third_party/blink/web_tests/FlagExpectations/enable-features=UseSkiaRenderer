@@ -17,6 +17,9 @@ crbug.com/1026375 [ Win ] media/encrypted-media/encrypted-media-playback-setmedi
 crbug.com/1026375 [ Win ] media/controls/video-enter-exit-fullscreen-while-hovering-shows-controls.html [ Failure Pass ]
 crbug.com/1026375 [ Win ] media/video-pause-immediately.html [ Failure Pass ]
 
+# Flaky on Linux.
+crbug.com/1150545 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Timeout Pass ]
+
 # Failing on Linux & Windows.
 crbug.com/1086181 [ Linux ] media/controls-layout-direction.html [ Failure ]
 crbug.com/1086181 [ Win10 ] media/controls-layout-direction.html [ Failure ]
