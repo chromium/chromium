@@ -23,12 +23,20 @@
 namespace performance_manager {
 
 class FrameNodeImpl;
+class FrozenFrameAggregatorAccess;
+class PageAggregatorAccess;
+class PageLoadTrackerAccess;
+class SiteDataAccess;
 
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver> {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
+  using FrozenFrameDataStorage =
+      InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8>;
+  using PageAggregatorDataStorage =
+      InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 12>;
 
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kPage; }
 
@@ -116,13 +124,50 @@ class PageNodeImpl
     return weak_factory_.GetWeakPtr();
   }
 
+  // Accessors to some of the NodeAttachedData:
+  std::unique_ptr<NodeAttachedData>& GetSiteData(
+      base::PassKey<SiteDataAccess>) {
+    return site_data_;
+  }
+  std::unique_ptr<NodeAttachedData>& GetPageLoadTrackerData(
+      base::PassKey<PageLoadTrackerAccess>) {
+    return page_load_tracker_data_;
+  }
+  FrozenFrameDataStorage& GetFrozenFrameData(
+      base::PassKey<FrozenFrameAggregatorAccess>) {
+    return frozen_frame_data_;
+  }
+  PageAggregatorDataStorage& GetPageAggregatorData(
+      base::PassKey<PageAggregatorAccess>) {
+    return page_aggregator_data_;
+  }
+
+  // Functions meant to be called by a FrameNodeImpl:
+  void AddFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
+  void RemoveFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
+
+  // Function meant to be called by FrozenFrameAggregatorAccess.
+  void SetLifecycleState(base::PassKey<FrozenFrameAggregatorAccess>,
+                         LifecycleState lifecycle_state) {
+    SetLifecycleState(lifecycle_state);
+  }
+
+  // Functions meant to be called by PageAggregatorAccess:
+  void SetIsHoldingWebLock(base::PassKey<PageAggregatorAccess>,
+                           bool is_holding_weblock) {
+    SetIsHoldingWebLock(is_holding_weblock);
+  }
+  void SetIsHoldingIndexedDBLock(base::PassKey<PageAggregatorAccess>,
+                                 bool is_holding_indexeddb_lock) {
+    SetIsHoldingIndexedDBLock(is_holding_indexeddb_lock);
+  }
+  void SetHadFormInteraction(base::PassKey<PageAggregatorAccess>,
+                             bool had_form_interaction) {
+    SetHadFormInteraction(had_form_interaction);
+  }
+
  private:
-  friend class FrameNodeImpl;
-  friend class FrozenFrameAggregatorAccess;
-  friend class PageAggregatorAccess;
-  friend class PageLoadTrackerAccess;
   friend class PageNodeImplDescriber;
-  friend class SiteDataAccess;
 
   // PageNode implementation.
   const std::string& GetBrowserContextID() const override;
@@ -145,9 +190,6 @@ class PageNodeImpl
   const GURL& GetMainFrameUrl() const override;
   bool HadFormInteraction() const override;
   const WebContentsProxy& GetContentsProxy() const override;
-
-  void AddFrame(FrameNodeImpl* frame_node);
-  void RemoveFrame(FrameNodeImpl* frame_node);
 
   // NodeBase:
   void OnJoiningGraph() override;
@@ -263,10 +305,10 @@ class PageNodeImpl
   std::unique_ptr<NodeAttachedData> site_data_;
 
   // Inline storage for FrozenFrameAggregator user data.
-  InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8> frozen_frame_data_;
+  FrozenFrameDataStorage frozen_frame_data_;
 
   // Inline storage for PageAggregatorAccess user data.
-  InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 12> page_aggregator_data_;
+  PageAggregatorDataStorage page_aggregator_data_;
 
   base::WeakPtrFactory<PageNodeImpl> weak_factory_{this};
 

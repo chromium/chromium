@@ -19,10 +19,11 @@ using LifecycleState = performance_manager::mojom::LifecycleState;
 // PageNodeImpl and ProcessNodeImpl.
 class FrozenFrameAggregatorAccess {
  public:
-  using StorageType = decltype(PageNodeImpl::frozen_frame_data_);
+  using StorageType = PageNodeImpl::FrozenFrameDataStorage;
 
   static StorageType* GetInternalStorage(PageNodeImpl* page_node) {
-    return &page_node->frozen_frame_data_;
+    return &page_node->GetFrozenFrameData(
+        base::PassKey<FrozenFrameAggregatorAccess>());
   }
 
   static StorageType* GetInternalStorage(ProcessNodeImpl* process_node) {
@@ -31,7 +32,8 @@ class FrozenFrameAggregatorAccess {
 
   static void SetLifecycleState(PageNodeImpl* page_node,
                                 LifecycleState lifecycle_state) {
-    page_node->SetLifecycleState(lifecycle_state);
+    page_node->SetLifecycleState(base::PassKey<FrozenFrameAggregatorAccess>(),
+                                 lifecycle_state);
   }
 
   static void NotifyAllFramesInProcessFrozen(ProcessNodeImpl* process_node) {

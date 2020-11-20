@@ -24,23 +24,27 @@ const char kDescriberName[] = "PageAggregator";
 // Provides PageAggregator machinery access to some internals of a PageNodeImpl.
 class PageAggregatorAccess {
  public:
-  using StorageType = decltype(PageNodeImpl::page_aggregator_data_);
+  using StorageType = PageNodeImpl::PageAggregatorDataStorage;
 
   static StorageType* GetInternalStorage(PageNodeImpl* page_node) {
-    return &page_node->page_aggregator_data_;
+    return &page_node->GetPageAggregatorData(
+        base::PassKey<PageAggregatorAccess>());
   }
 
   static void SetPageIsHoldingWebLock(PageNodeImpl* page_node, bool value) {
-    page_node->SetIsHoldingWebLock(value);
+    page_node->SetIsHoldingWebLock(base::PassKey<PageAggregatorAccess>(),
+                                   value);
   }
 
   static void SetPageIsHoldingIndexedDBLock(PageNodeImpl* page_node,
                                             bool value) {
-    page_node->SetIsHoldingIndexedDBLock(value);
+    page_node->SetIsHoldingIndexedDBLock(base::PassKey<PageAggregatorAccess>(),
+                                         value);
   }
 
   static void SetPageHadFormInteraction(PageNodeImpl* page_node, bool value) {
-    page_node->SetHadFormInteraction(value);
+    page_node->SetHadFormInteraction(base::PassKey<PageAggregatorAccess>(),
+                                     value);
   }
 };
 

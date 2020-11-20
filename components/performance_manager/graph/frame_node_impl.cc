@@ -559,7 +559,7 @@ void FrameNodeImpl::OnJoiningGraph() {
   // Wire this up to the other nodes in the graph.
   if (parent_frame_node_)
     parent_frame_node_->AddChildFrame(this);
-  page_node_->AddFrame(this);
+  page_node_->AddFrame(base::PassKey<FrameNodeImpl>(), this);
   process_node_->AddFrame(this);
 }
 
@@ -573,7 +573,7 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
 
   // Leave the page.
   DCHECK(graph()->NodeInGraph(page_node_));
-  page_node_->RemoveFrame(this);
+  page_node_->RemoveFrame(base::PassKey<FrameNodeImpl>(), this);
 
   // Leave the frame hierarchy.
   if (parent_frame_node_) {

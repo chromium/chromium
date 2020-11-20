@@ -32,7 +32,7 @@ class SiteDataAccess {
  public:
   static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
       PageNodeImpl* page_node) {
-    return &page_node->site_data_;
+    return &page_node->GetSiteData(base::PassKey<SiteDataAccess>());
   }
 };
 

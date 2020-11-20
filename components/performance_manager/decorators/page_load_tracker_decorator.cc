@@ -21,7 +21,8 @@ class PageLoadTrackerAccess {
  public:
   static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
       PageNodeImpl* page_node) {
-    return &page_node->page_load_tracker_data_;
+    return &page_node->GetPageLoadTrackerData(
+        base::PassKey<PageLoadTrackerAccess>());
   }
 };
 

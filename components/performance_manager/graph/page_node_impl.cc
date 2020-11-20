@@ -42,7 +42,8 @@ const WebContentsProxy& PageNodeImpl::contents_proxy() const {
   return contents_proxy_;
 }
 
-void PageNodeImpl::AddFrame(FrameNodeImpl* frame_node) {
+void PageNodeImpl::AddFrame(base::PassKey<FrameNodeImpl>,
+                            FrameNodeImpl* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_node);
   DCHECK_EQ(this, frame_node->page_node());
@@ -53,7 +54,8 @@ void PageNodeImpl::AddFrame(FrameNodeImpl* frame_node) {
     main_frame_nodes_.insert(frame_node);
 }
 
-void PageNodeImpl::RemoveFrame(FrameNodeImpl* frame_node) {
+void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
+                               FrameNodeImpl* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_node);
   DCHECK_EQ(this, frame_node->page_node());
