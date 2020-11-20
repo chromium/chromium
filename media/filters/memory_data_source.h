@@ -41,7 +41,10 @@ class MEDIA_EXPORT MemoryDataSource final : public DataSource {
   const uint8_t* data_ = nullptr;
   const size_t size_ = 0;
 
-  bool is_stopped_ = false;
+  // Stop may be called from the render thread while this class is being used by
+  // the media thread. It's harmless if we fulfill a read after Stop() has been
+  // called, so an atomic without a lock is safe.
+  std::atomic<bool> is_stopped_{false};
 
   DISALLOW_COPY_AND_ASSIGN(MemoryDataSource);
 };
