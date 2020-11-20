@@ -1167,7 +1167,7 @@ class CONTENT_EXPORT NavigationRequest
   // URLLoaderFactory to facilitate loading blob URLs.
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory_;
 
-  NavigationState state_;
+  NavigationState state_ = NOT_STARTED;
   bool is_navigation_started_ = false;
 
   std::unique_ptr<NavigationURLLoader> loader_;
@@ -1186,7 +1186,7 @@ class CONTENT_EXPORT NavigationRequest
   const RestoreType restore_type_;
   const ReloadType reload_type_;
   const int nav_entry_id_;
-  bool is_view_source_;
+  bool is_view_source_ = false;
   int bindings_;
   bool entry_overrides_ua_ = false;
 
@@ -1197,10 +1197,11 @@ class CONTENT_EXPORT NavigationRequest
 
   // Whether the navigation should be sent to a renderer a process. This is
   // true, except for 204/205 responses and downloads.
-  bool response_should_be_rendered_;
+  bool response_should_be_rendered_ = false;
 
   // The type of SiteInstance associated with this navigation.
-  AssociatedSiteInstanceType associated_site_instance_type_;
+  AssociatedSiteInstanceType associated_site_instance_type_ =
+      AssociatedSiteInstanceType::NONE;
 
   // Stores the SiteInstance created on redirects to check if there is an
   // existing RenderProcessHost that can commit the navigation so that the
@@ -1227,7 +1228,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Holds information for the navigation while the WillFailRequest
   // checks are performed by the NavigationHandle.
-  bool has_stale_copy_in_cache_;
+  bool has_stale_copy_in_cache_ = false;
   net::Error net_error_ = net::OK;
   // Detailed host resolution error information. The error code in
   // |resolve_error_info_.error| should be consistent with (but not necessarily
@@ -1255,7 +1256,8 @@ class CONTENT_EXPORT NavigationRequest
   base::Optional<SubresourceLoaderParams> subresource_loader_params_;
 
   // See comment on accessor.
-  const base::UnguessableToken devtools_navigation_token_;
+  const base::UnguessableToken devtools_navigation_token_ =
+      base::UnguessableToken::Create();
 
   base::Optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
       subresource_overrides_;
@@ -1332,7 +1334,7 @@ class CONTENT_EXPORT NavigationRequest
   std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker_;
 
   // Timing information of loading for the navigation. Used for recording UMAs.
-  std::unique_ptr<NavigationHandleTiming> navigation_handle_timing_;
+  NavigationHandleTiming navigation_handle_timing_;
 
   // The time this navigation was ready to commit.
   base::TimeTicks ready_to_commit_time_;
@@ -1451,7 +1453,8 @@ class CONTENT_EXPORT NavigationRequest
 
   // Holds a set of values needed to enforce several WebPlatform security APIs
   // at the network request level.
-  network::mojom::ClientSecurityStatePtr client_security_state_;
+  network::mojom::ClientSecurityStatePtr client_security_state_ =
+      network::mojom::ClientSecurityState::New();
 
   // Holds the required CSP for this navigation. This will be moved into
   // the RenderFrameHost at DidCommitNavigation time.

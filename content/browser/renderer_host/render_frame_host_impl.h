@@ -2659,11 +2659,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Boolean indicating whether this RenderFrameHost is being actively used or
   // is waiting for FrameHostMsg_Unload_ACK and thus pending deletion.
-  bool is_waiting_for_unload_ack_;
+  bool is_waiting_for_unload_ack_ = false;
 
   // Tracks whether the RenderFrame for this RenderFrameHost has been created in
   // the renderer process.
-  bool render_frame_created_;
+  bool render_frame_created_ = false;
 
   // Tracks whether the RenderFrame has ever been created for this
   // RenderFrameHost or not. This starts out as false, becomes true after the
@@ -2680,18 +2680,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // cross-site transition or a tab close attempt.
   // TODO(clamy): Remove this boolean and add one more state to the state
   // machine.
-  bool is_waiting_for_beforeunload_completion_;
+  bool is_waiting_for_beforeunload_completion_ = false;
 
   // Valid only when |is_waiting_for_beforeunload_completion_| is true. This
   // indicates whether a subsequent request to launch a modal dialog should be
   // honored or whether it should implicitly cause the unload to be canceled.
-  bool beforeunload_dialog_request_cancels_unload_;
+  bool beforeunload_dialog_request_cancels_unload_ = false;
 
   // Valid only when is_waiting_for_beforeunload_completion_ or
   // IsWaitingForUnloadACK is true.  This tells us if the unload request
   // is for closing the entire tab ( = false), or only this RenderFrameHost in
   // the case of a navigation ( = true).
-  bool unload_ack_is_for_navigation_;
+  bool unload_ack_is_for_navigation_ = false;
 
   // The timeout monitor that runs from when the beforeunload is started in
   // DispatchBeforeUnload() until either the render process invokes the
@@ -2720,11 +2720,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns whether the tab was previously discarded.
   // This is passed to CommitNavigationParams in NavigationRequest.
-  bool was_discarded_;
+  bool was_discarded_ = false;
 
   // Indicates whether this RenderFrameHost is in the process of loading a
   // document or not.
-  bool is_loading_;
+  bool is_loading_ = false;
 
   // Indicates whether this RenderFrameHost has completed firing
   // DOMContentLoaded or not.
@@ -2735,7 +2735,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // such as for a new subframe navigation in a different frame.  Tracking this
   // allows us to send things like title and state updates to the latest
   // relevant NavigationEntry.
-  int nav_entry_id_;
+  int nav_entry_id_ = 0;
 
   // Used to clean up this RFH when the unload event is taking too long to
   // execute. May be null in tests.
@@ -2774,7 +2774,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   ui::AXTreeData ax_tree_data_;
 
   // The AX tree ID of the embedder, if this is a browser plugin guest.
-  ui::AXTreeID browser_plugin_embedder_ax_tree_id_;
+  ui::AXTreeID browser_plugin_embedder_ax_tree_id_ = ui::AXTreeIDUnknown();
 
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
 #if defined(OS_ANDROID)
@@ -2786,7 +2786,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   AccessibilityCallbackForTesting accessibility_testing_callback_;
   // Flag to not create a BrowserAccessibilityManager, for testing. If one
   // already exists it will still be used.
-  bool no_create_browser_accessibility_manager_for_testing_;
+  bool no_create_browser_accessibility_manager_for_testing_ = false;
 
   // Context shared for each mojom::PermissionService instance created for this
   // RFH.
@@ -2840,21 +2840,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // document is from WebUI source. Otherwise they will be null and
   // WebUI::kNoWebUI, respectively.
   std::unique_ptr<WebUIImpl> web_ui_;
-  WebUI::TypeID web_ui_type_;
+  WebUI::TypeID web_ui_type_ = WebUI::kNoWebUI;
 
   // If true, then the RenderFrame has selected text.
-  bool has_selection_;
+  bool has_selection_ = false;
 
   // If true, then this RenderFrame has one or more audio streams with audible
   // signal. If false, all audio streams are currently silent (or there are no
   // audio streams).
-  bool is_audible_;
+  bool is_audible_ = false;
 
   // If true, then the Virtual keyboard rectangle that occludes the content is
   // sent to the VirtualKeyboard API where it fires overlaygeometrychange JS
   // event notifying the web authors that Virtual keyboard has occluded the
   // content.
-  bool should_virtual_keyboard_overlay_content_;
+  bool should_virtual_keyboard_overlay_content_ = false;
 
   // Used for tracking the latest size of the RenderFrame.
   base::Optional<gfx::Size> frame_size_;
@@ -2892,7 +2892,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool waiting_for_init_;
 
   // If true then this frame's document has a focused element which is editable.
-  bool has_focused_editable_element_;
+  bool has_focused_editable_element_ = false;
 
   std::unique_ptr<PendingNavigation> pending_navigate_;
 
@@ -2945,7 +2945,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // copy of the active sandbox flags which are stored in the FrameTreeNode for
   // this RenderFrameHost, but may diverge if this RenderFrameHost is pending
   // deletion.
-  network::mojom::WebSandboxFlags active_sandbox_flags_;
+  network::mojom::WebSandboxFlags active_sandbox_flags_ =
+      network::mojom::WebSandboxFlags::kNone;
 
   // Same as |active_sandbox_flags_|, except this is computed:
   // - outside of the renderer process.
@@ -3117,7 +3118,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::string canonical_encoding_;
 
   // Used to intercept DidCommit* calls in tests.
-  CommitCallbackInterceptor* commit_callback_interceptor_;
+  CommitCallbackInterceptor* commit_callback_interceptor_ = nullptr;
 
   // Used to hear about CreateNewPopupWidget calls in tests.
   CreateNewPopupWidgetCallbackForTesting create_new_popup_widget_callback_;

@@ -1011,7 +1011,6 @@ NavigationRequest::NavigationRequest(
       commit_params_(std::move(commit_params)),
       browser_initiated_(browser_initiated),
       navigation_ui_data_(std::move(navigation_ui_data)),
-      state_(NOT_STARTED),
       restore_type_(entry ? entry->restore_type() : RestoreType::NONE),
       // Some navigations, such as renderer-initiated subframe navigations,
       // won't have a NavigationEntryImpl. Set |reload_type_| if applicable
@@ -1020,21 +1019,13 @@ NavigationRequest::NavigationRequest(
           entry ? entry->reload_type()
                 : NavigationTypeToReloadType(common_params_->navigation_type)),
       nav_entry_id_(entry ? entry->GetUniqueID() : 0),
-      is_view_source_(false),
       bindings_(FrameNavigationEntry::kInvalidBindings),
-      response_should_be_rendered_(true),
-      associated_site_instance_type_(AssociatedSiteInstanceType::NONE),
       from_begin_navigation_(from_begin_navigation),
-      has_stale_copy_in_cache_(false),
       expected_render_process_host_id_(ChildProcessHost::kInvalidUniqueID),
       initiator_csp_context_(std::make_unique<InitiatorCSPContext>(
           std::move(common_params_->initiator_csp_info->initiator_csp),
           std::move(common_params_->initiator_csp_info->initiator_self_source),
           std::move(navigation_initiator))),
-      devtools_navigation_token_(base::UnguessableToken::Create()),
-      request_navigation_client_(mojo::NullAssociatedRemote()),
-      commit_navigation_client_(mojo::NullAssociatedRemote()),
-      navigation_handle_timing_(std::make_unique<NavigationHandleTiming>()),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
       // Store the old RenderFrameHost id at request creation to be used later.
@@ -1042,7 +1033,6 @@ NavigationRequest::NavigationRequest(
           frame_tree_node->current_frame_host()->GetProcess()->GetID(),
           frame_tree_node->current_frame_host()->GetRoutingID())),
       initiator_routing_id_(initiator_routing_id),
-      client_security_state_(network::mojom::ClientSecurityState::New()),
       coop_status_(frame_tree_node, common_params_->initiator_origin),
       previous_page_ukm_source_id_(
           frame_tree_node_->current_frame_host()->GetPageUkmSourceId()) {
@@ -1663,7 +1653,7 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
       ConvertToCrossDocumentType(common_params_->navigation_type);
 
   // Reset navigation handle timings.
-  navigation_handle_timing_ = std::make_unique<NavigationHandleTiming>();
+  navigation_handle_timing_ = NavigationHandleTiming();
 }
 
 void NavigationRequest::ResetStateForSiteInstanceChange() {
@@ -3480,41 +3470,40 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
   base::TimeTicks loader_callback_time = base::TimeTicks::Now();
 
   if (is_first_response) {
-    DCHECK(navigation_handle_timing_->first_request_start_time.is_null());
-    DCHECK(navigation_handle_timing_->first_response_start_time.is_null());
-    DCHECK(navigation_handle_timing_->first_loader_callback_time.is_null());
-    navigation_handle_timing_->first_request_start_time =
+    DCHECK(navigation_handle_timing_.first_request_start_time.is_null());
+    DCHECK(navigation_handle_timing_.first_response_start_time.is_null());
+    DCHECK(navigation_handle_timing_.first_loader_callback_time.is_null());
+    navigation_handle_timing_.first_request_start_time =
         response_head_->load_timing.send_start;
-    navigation_handle_timing_->first_response_start_time =
+    navigation_handle_timing_.first_response_start_time =
         response_head_->load_timing.receive_headers_start;
-    navigation_handle_timing_->first_loader_callback_time =
-        loader_callback_time;
+    navigation_handle_timing_.first_loader_callback_time = loader_callback_time;
   }
 
-  navigation_handle_timing_->final_request_start_time =
+  navigation_handle_timing_.final_request_start_time =
       response_head_->load_timing.send_start;
-  navigation_handle_timing_->final_response_start_time =
+  navigation_handle_timing_.final_response_start_time =
       response_head_->load_timing.receive_headers_start;
-  navigation_handle_timing_->final_loader_callback_time = loader_callback_time;
+  navigation_handle_timing_.final_loader_callback_time = loader_callback_time;
 
   // 103 Early Hints experiment (https://crbug.com/1093693).
   if (is_first_response) {
-    DCHECK(navigation_handle_timing_->early_hints_for_first_request_time
-               .is_null());
-    navigation_handle_timing_->early_hints_for_first_request_time =
+    DCHECK(
+        navigation_handle_timing_.early_hints_for_first_request_time.is_null());
+    navigation_handle_timing_.early_hints_for_first_request_time =
         response_head_->load_timing.first_early_hints_time;
   }
-  navigation_handle_timing_->early_hints_for_final_request_time =
+  navigation_handle_timing_.early_hints_for_final_request_time =
       response_head_->load_timing.first_early_hints_time;
 
   // |navigation_commit_sent_time| will be updated by
   // UpdateNavigationHandleTimingsOnCommitSent() later.
-  DCHECK(navigation_handle_timing_->navigation_commit_sent_time.is_null());
+  DCHECK(navigation_handle_timing_.navigation_commit_sent_time.is_null());
 }
 
 void NavigationRequest::UpdateNavigationHandleTimingsOnCommitSent() {
-  DCHECK(navigation_handle_timing_->navigation_commit_sent_time.is_null());
-  navigation_handle_timing_->navigation_commit_sent_time =
+  DCHECK(navigation_handle_timing_.navigation_commit_sent_time.is_null());
+  navigation_handle_timing_.navigation_commit_sent_time =
       base::TimeTicks::Now();
 }
 
@@ -4776,7 +4765,7 @@ base::TimeTicks NavigationRequest::NavigationInputStart() {
 }
 
 const NavigationHandleTiming& NavigationRequest::GetNavigationHandleTiming() {
-  return *navigation_handle_timing_;
+  return navigation_handle_timing_;
 }
 
 bool NavigationRequest::IsPost() {
