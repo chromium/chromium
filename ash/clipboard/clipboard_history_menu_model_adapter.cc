@@ -215,6 +215,13 @@ ClipboardHistoryMenuModelAdapter::GetMenuItemViewAtForTest(int index) const {
   return root_view_->GetSubmenu()->GetMenuItemAt(index);
 }
 
+views::MenuItemView* ClipboardHistoryMenuModelAdapter::GetMenuItemViewAtForTest(
+    int index) {
+  return const_cast<views::MenuItemView*>(
+      const_cast<const ClipboardHistoryMenuModelAdapter*>(this)
+          ->GetMenuItemViewAtForTest(index));
+}
+
 ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(
     std::unique_ptr<ui::SimpleMenuModel> model,
     base::RepeatingClosure menu_closed_callback,

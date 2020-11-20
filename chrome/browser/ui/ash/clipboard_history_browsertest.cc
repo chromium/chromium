@@ -164,6 +164,12 @@ class ClipboardHistoryWithMultiProfileBrowserTest
     return GetContextMenu()->GetMenuItemViewAtForTest(index);
   }
 
+  views::MenuItemView* GetMenuItemViewForTest(int index) {
+    return const_cast<views::MenuItemView*>(
+        const_cast<const ClipboardHistoryWithMultiProfileBrowserTest*>(this)
+            ->GetMenuItemViewForIndex(index));
+  }
+
   const ash::ClipboardHistoryItemView* GetHistoryItemViewForIndex(
       int index) const {
     const views::MenuItemView* hosting_menu_item =
@@ -171,6 +177,12 @@ class ClipboardHistoryWithMultiProfileBrowserTest
     EXPECT_EQ(1u, hosting_menu_item->children().size());
     return static_cast<const ash::ClipboardHistoryItemView*>(
         hosting_menu_item->children()[0]);
+  }
+
+  ash::ClipboardHistoryItemView* GetHistoryItemViewForIndex(int index) {
+    return const_cast<ash::ClipboardHistoryItemView*>(
+        const_cast<const ClipboardHistoryWithMultiProfileBrowserTest*>(this)
+            ->GetHistoryItemViewForIndex(index));
   }
 
   // chromeos::LoginManagerTest:
@@ -624,6 +636,39 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
       second_menu_item_view->GetBoundsInScreen().CenterPoint());
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+}
+
+// Verifies that the delete button should show after its host item view is under
+// gesture press for enough long time (https://crbug.com/1147584).
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
+                       DeleteButtonShowAfterLongPress) {
+  SetClipboardText("A");
+  SetClipboardText("B");
+  ShowContextMenuViaAccelerator();
+  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  ash::ClipboardHistoryItemView* second_item_view =
+      GetHistoryItemViewForIndex(/*index=*/1);
+  views::View* second_item_delete_button =
+      second_item_view->delete_button_for_test();
+  EXPECT_FALSE(second_item_delete_button->GetVisible());
+
+  // Long press on the second item until its delete button shows.
+  GetEventGenerator()->PressTouch(
+      second_item_view->GetBoundsInScreen().CenterPoint());
+  base::RunLoop run_loop;
+  auto subscription = second_item_delete_button->AddVisibleChangedCallback(
+      run_loop.QuitClosure());
+  run_loop.Run();
+  GetEventGenerator()->ReleaseTouch();
+  EXPECT_TRUE(second_item_delete_button->GetVisible());
+
+  // Press the up arrow key then press the ENTER key. Verify that the first
+  // item's clipboard data is pasted.
+  PressAndRelease(ui::KeyboardCode::VKEY_UP, ui::EF_NONE);
+  PressAndRelease(ui::VKEY_RETURN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_EQ("B", base::UTF16ToUTF8(textfield_->GetText()));
 }
 
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
