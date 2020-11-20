@@ -16,8 +16,9 @@ builds **on Linux**.
     Please include symbolized backtraces in bug reports if you don't have crash
     reporting turned on.
 *   User metrics only if turned on
-*   Video and Audio codecs (may vary by distro)
-    *   AAC, H.264, MP3, Opus, Theora, Vorbis, VP8, VP9, and WAV
+*   Video and Audio codecs (may vary by distribution)
+    *   **H.264**, AV1, VP8, and VP9 video codecs.
+    *   **AAC**, MP3, Opus, Theora, Vorbis, FLAC, and WAV audio codecs.
 *   Sandboxed PPAPI (non-free) Flash plugin included in release
 *   Code is tested by Chrome developers
 *   Sandbox is always on
@@ -33,8 +34,9 @@ builds **on Linux**.
 *   Does not ever [report crashes](linux/crash_dumping.md). Please include
     symbolized backtraces in bug reports.
 *   User metrics are never reported.
-*   Video and Audio codecs (may vary by distro)
-    *   Opus, Theora, Vorbis, VP8, VP9, and WAV by default
+*   Video and Audio codecs (may vary by distribution)
+    *   AV1, VP8, and VP9 video codecs.
+    *   MP3, Opus, Theora, Vorbis, FLAC, and WAV audio codecs.
 *   Supports NPAPI (unsandboxed) Flash plugins, including the one from Adobe in
     Chrome 34 and below
 *   Code may be modified by distributions
