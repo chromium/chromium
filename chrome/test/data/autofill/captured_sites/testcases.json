@@ -72,7 +72,7 @@
     { "site_name": "expedia", "disabled":true, "bug_number":1101864 },
     { "site_name": "fanatics" },
     { "site_name": "fansedge" },
-    { "site_name": "fender" },
+    { "site_name": "fender", "disabled":true, "bug_number":1151204 },
     { "site_name": "findmeagift" },
     { "site_name": "fingerhut" },
     { "site_name": "finish_line" },
