@@ -52,6 +52,8 @@ class ProxyManagerImpl : public ProxyManager {
         socket_manager_(std::move(socket_manager)),
         receiver_(this, std::move(request)) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    receiver_.set_disconnect_handler(
+        base::BindOnce([] { LOG(ERROR) << "CupsProxy mojo connection lost"; }));
   }
 
   ~ProxyManagerImpl() override = default;
