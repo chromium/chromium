@@ -228,3 +228,29 @@ ul {
 .center-text {
   text-align: center;
 }
+
+.modal {
+  background-color: rgba(0,0,0,0.5);
+  display: none;
+  height: 100%;
+  left: 0;
+  overflow: auto;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.modal-content {
+  align-items: flex-end;   /* Or center if you'd prefer */
+  background-color: #fefefe;
+  border: 1px solid #888;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 15% auto;
+  min-width: 250px;
+  padding: 20px;
+  width: 50%;
+}

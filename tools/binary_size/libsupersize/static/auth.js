@@ -17,15 +17,29 @@ function handleClientLoad() {
   }
 }
 
+function toggleSigninModal(show) {
+  const modal = document.getElementById('signin-modal');
+  if (show) {
+    modal.style.display = 'block';
+  } else {
+    modal.style.display = 'none';
+  }
+}
+
 function initClient() {
+  const signin_button = document.querySelector('#signin-modal button.signin')
+  signin_button.addEventListener('click', () => {
+    window.googleAuth.signIn().then(setSigninStatus);
+    toggleSigninModal(false /*show*/);
+  });
   return gapi.client.init({
       'clientId': AUTH_CLIENT_ID,
       'discoveryDocs': [AUTH_DISCOVERY_URL],
       'scope': AUTH_SCOPE,
   }).then(function () {
     window.googleAuth = gapi.auth2.getAuthInstance();
-    if (!window.googleAuth.isSignedIn.get()) {
-      window.googleAuth.signIn().then(setSigninStatus);
+    if (!window.googleAuth.isSignedIn.get() && requiresAuthentication()) {
+      toggleSigninModal(true /*show*/);
     } else {
       setSigninStatus();
     }
