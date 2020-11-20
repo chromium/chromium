@@ -271,7 +271,7 @@ void PageSwitcher::TotalPagesChanged(int previous_page_count,
     button->SetSelected(i == model_->selected_page() ? true : false);
   }
   buttons_->SetVisible(model_->total_pages() > 1);
-  Layout();
+  PreferredSizeChanged();
 }
 
 void PageSwitcher::SelectedPageChanged(int old_selected, int new_selected) {
