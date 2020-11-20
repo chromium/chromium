@@ -104,6 +104,8 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*,
   void OnPageStopped(CastWebContents* cast_web_contents,
                      int error_code) override;
 
+  void SetAccessibilityEnabled(bool value);
+
  private:
   class AXTreeWebContentsObserver : public content::WebContentsObserver {
    public:
@@ -211,6 +213,8 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*,
 
   // Copy of most recent tree data
   gallium::castos::OnAccessibilityEventRequest last_event_data_;
+
+  bool accessibility_enabled_ = false;
 };
 
 }  // namespace accessibility

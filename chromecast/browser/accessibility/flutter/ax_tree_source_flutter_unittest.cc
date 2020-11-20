@@ -124,7 +124,10 @@ class AXTreeSourceFlutterTest : public testing::Test,
       : tree_(
             std::make_unique<AXTreeSourceFlutter>(this,
                                                   nullptr /* browser_context */,
-                                                  &router_)) {}
+                                                  &router_)) {
+    // Enable by default.
+    tree_->SetAccessibilityEnabled(true);
+  }
   AXTreeSourceFlutterTest(const AXTreeSourceFlutterTest&) = delete;
   ~AXTreeSourceFlutterTest() override {
     EXPECT_CALL(router_, DispatchTreeDestroyedEvent).Times(1);
@@ -134,6 +137,10 @@ class AXTreeSourceFlutterTest : public testing::Test,
  protected:
   void CallNotifyAccessibilityEvent(OnAccessibilityEventRequest* event_data) {
     tree_->NotifyAccessibilityEvent(event_data);
+  }
+
+  void SetAccessibilityEnabled(bool value) {
+    tree_->SetAccessibilityEnabled(value);
   }
 
   void CallGetChildren(SemanticsNode* node,
@@ -955,8 +962,16 @@ TEST_F(AXTreeSourceFlutterTest, Announce) {
 
   // Setup an announcement event
   OnAccessibilityEventRequest event;
+  SetAccessibilityEnabled(false);
   event.set_event_type(OnAccessibilityEventRequest_EventType_ANNOUNCEMENT);
   event.set_text("Say this please");
+  CallNotifyAccessibilityEvent(&event);
+
+  // Child 3 should NOT have been spoken
+  ASSERT_EQ(mock_tts_platform.GetLastSpokenUtterance(), "");
+
+  // This time with a11y enabled.
+  SetAccessibilityEnabled(true);
   CallNotifyAccessibilityEvent(&event);
 
   // Child 3 should have been spoken

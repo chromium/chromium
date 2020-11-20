@@ -60,6 +60,7 @@ FlutterAccessibilityHelperBridge::FlutterAccessibilityHelperBridge(
 FlutterAccessibilityHelperBridge::~FlutterAccessibilityHelperBridge() = default;
 
 void FlutterAccessibilityHelperBridge::AccessibilityStateChanged(bool value) {
+  tree_source_->SetAccessibilityEnabled(value);
   if (value) {
     aura::Window* window = chromecast::shell::CastBrowserProcess::GetInstance()
                                ->accessibility_manager()

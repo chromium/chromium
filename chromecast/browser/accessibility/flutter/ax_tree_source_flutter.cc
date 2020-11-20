@@ -77,7 +77,8 @@ AXTreeSourceFlutter::AXTreeSourceFlutter(
       browser_context_(browser_context),
       event_router_(event_router
                         ? event_router
-                        : extensions::AutomationEventRouter::GetInstance()) {
+                        : extensions::AutomationEventRouter::GetInstance()),
+      accessibility_enabled_(false) {
   DCHECK(delegate_);
 }
 
@@ -756,6 +757,9 @@ int32_t AXTreeSourceFlutter::FindFirstFocusableNodeId() {
 }
 
 void AXTreeSourceFlutter::SubmitTTS(const std::string& text) {
+  if (!accessibility_enabled_)
+    return;
+
   std::unique_ptr<content::TtsUtterance> utterance =
       content::TtsUtterance::Create(browser_context_);
 
@@ -779,6 +783,10 @@ void AXTreeSourceFlutter::OnPageStopped(CastWebContents* cast_web_contents,
   // Webview is gone. Stop observing.
   cast_web_contents->RemoveObserver(this);
   child_tree_observers_.erase(cast_web_contents->id());
+}
+
+void AXTreeSourceFlutter::SetAccessibilityEnabled(bool value) {
+  accessibility_enabled_ = value;
 }
 
 }  // namespace accessibility
