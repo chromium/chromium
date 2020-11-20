@@ -13,6 +13,8 @@
 
 namespace media {
 
+using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
+
 #define RETURN_ON_HR_FAILURE(expr_name, expr)                                  \
   do {                                                                         \
     HRESULT expr_value = (expr);                                               \
@@ -334,7 +336,7 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
 #undef RELEASE_BUFFER
 }
 
-bool D3D11VP9Accelerator::SubmitDecode(
+DecodeStatus D3D11VP9Accelerator::SubmitDecode(
     scoped_refptr<VP9Picture> picture,
     const Vp9SegmentationParams& segmentation_params,
     const Vp9LoopFilterParams& loop_filter_params,
@@ -343,7 +345,7 @@ bool D3D11VP9Accelerator::SubmitDecode(
   D3D11VP9Picture* pic = static_cast<D3D11VP9Picture*>(picture.get());
 
   if (!BeginFrame(*pic))
-    return false;
+    return DecodeStatus::kFail;
 
   DXVA_PicParams_VP9 pic_params = {};
   CopyFrameParams(*pic, &pic_params);
@@ -355,13 +357,17 @@ bool D3D11VP9Accelerator::SubmitDecode(
   CopyHeaderSizeAndID(&pic_params, *pic);
 
   if (!SubmitDecoderBuffer(pic_params, *pic))
-    return false;
+    return DecodeStatus::kFail;
 
-  RETURN_ON_HR_FAILURE(DecoderEndFrame,
-                       video_context_->DecoderEndFrame(video_decoder_.Get()));
+  HRESULT hr = video_context_->DecoderEndFrame(video_decoder_.Get());
+  if (FAILED(hr)) {
+    RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr));
+    return DecodeStatus::kFail;
+  }
+
   if (on_finished_cb)
     std::move(on_finished_cb).Run();
-  return true;
+  return DecodeStatus::kOk;
 }
 
 bool D3D11VP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> picture) {

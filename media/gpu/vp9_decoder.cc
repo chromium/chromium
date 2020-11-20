@@ -101,6 +101,7 @@ bool VP9Decoder::Flush() {
 
 void VP9Decoder::Reset() {
   curr_frame_hdr_ = nullptr;
+  pending_pic_.reset();
 
   ref_frames_.Clear();
 
@@ -112,7 +113,21 @@ void VP9Decoder::Reset() {
 }
 
 VP9Decoder::DecodeResult VP9Decoder::Decode() {
-  while (1) {
+  while (true) {
+    // If we have a pending picture to decode, try that first.
+    if (pending_pic_) {
+      VP9Accelerator::Status status = DecodeAndOutputPicture(pending_pic_);
+      if (status == VP9Accelerator::Status::kFail) {
+        pending_pic_.reset();
+        SetError();
+        return kDecodeError;
+      }
+      if (status == VP9Accelerator::Status::kTryAgain)
+        return kTryAgain;
+
+      pending_pic_.reset();
+    }
+
     // Read a new frame header if one is not awaiting decoding already.
     std::unique_ptr<DecryptConfig> decrypt_config;
     if (!curr_frame_hdr_) {
@@ -238,29 +253,35 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       return kConfigChange;
     }
 
-    scoped_refptr<VP9Picture> pic = accelerator_->CreateVP9Picture();
-    if (!pic) {
+    pending_pic_ = accelerator_->CreateVP9Picture();
+    if (!pending_pic_) {
       return kRanOutOfSurfaces;
     }
     DVLOG(2) << "Render resolution: " << new_render_rect.ToString();
 
-    pic->set_visible_rect(new_render_rect);
-    pic->set_bitstream_id(stream_id_);
+    pending_pic_->set_visible_rect(new_render_rect);
+    pending_pic_->set_bitstream_id(stream_id_);
 
-    pic->set_decrypt_config(std::move(decrypt_config));
+    pending_pic_->set_decrypt_config(std::move(decrypt_config));
 
     // For VP9, container color spaces override video stream color spaces.
-    if (container_color_space_.IsSpecified()) {
-      pic->set_colorspace(container_color_space_);
-    } else if (curr_frame_hdr_) {
-      pic->set_colorspace(curr_frame_hdr_->GetColorSpace());
-    }
-    pic->frame_hdr = std::move(curr_frame_hdr_);
+    if (container_color_space_.IsSpecified())
+      pending_pic_->set_colorspace(container_color_space_);
+    else if (curr_frame_hdr_)
+      pending_pic_->set_colorspace(curr_frame_hdr_->GetColorSpace());
 
-    if (!DecodeAndOutputPicture(std::move(pic))) {
+    pending_pic_->frame_hdr = std::move(curr_frame_hdr_);
+
+    VP9Accelerator::Status status = DecodeAndOutputPicture(pending_pic_);
+    if (status == VP9Accelerator::Status::kFail) {
+      pending_pic_.reset();
       SetError();
       return kDecodeError;
     }
+    if (status == VP9Accelerator::Status::kTryAgain)
+      return kTryAgain;
+
+    pending_pic_.reset();
   }
 }
 
@@ -279,7 +300,8 @@ void VP9Decoder::UpdateFrameContext(
   std::move(context_refresh_cb).Run(frame_ctx);
 }
 
-bool VP9Decoder::DecodeAndOutputPicture(scoped_refptr<VP9Picture> pic) {
+VP9Decoder::VP9Accelerator::Status VP9Decoder::DecodeAndOutputPicture(
+    scoped_refptr<VP9Picture> pic) {
   DCHECK(!pic_size_.IsEmpty());
   DCHECK(pic->frame_hdr);
 
@@ -293,20 +315,19 @@ bool VP9Decoder::DecodeAndOutputPicture(scoped_refptr<VP9Picture> pic) {
   }
 
   const Vp9Parser::Context& context = parser_.context();
-  if (!accelerator_->SubmitDecode(pic, context.segmentation(),
-                                  context.loop_filter(), ref_frames_,
-                                  std::move(done_cb))) {
-    return false;
-  }
+  VP9Accelerator::Status status = accelerator_->SubmitDecode(
+      pic, context.segmentation(), context.loop_filter(), ref_frames_,
+      std::move(done_cb));
+  if (status != VP9Accelerator::Status::kOk)
+    return status;
 
   if (pic->frame_hdr->show_frame) {
-    if (!accelerator_->OutputPicture(pic)) {
-      return false;
-    }
+    if (!accelerator_->OutputPicture(pic))
+      return VP9Accelerator::Status::kFail;
   }
 
   ref_frames_.Refresh(std::move(pic));
-  return true;
+  return status;
 }
 
 void VP9Decoder::SetError() {

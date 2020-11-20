@@ -28,11 +28,11 @@ class V4L2LegacyVP9Accelerator : public VP9Decoder::VP9Accelerator {
   // VP9Decoder::VP9Accelerator implementation.
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
 
-  bool SubmitDecode(scoped_refptr<VP9Picture> pic,
-                    const Vp9SegmentationParams& segm_params,
-                    const Vp9LoopFilterParams& lf_params,
-                    const Vp9ReferenceFrameVector& reference_frames,
-                    base::OnceClosure done_cb) override;
+  Status SubmitDecode(scoped_refptr<VP9Picture> pic,
+                      const Vp9SegmentationParams& segm_params,
+                      const Vp9LoopFilterParams& lf_params,
+                      const Vp9ReferenceFrameVector& reference_frames,
+                      base::OnceClosure done_cb) override;
 
   bool OutputPicture(scoped_refptr<VP9Picture> pic) override;
 

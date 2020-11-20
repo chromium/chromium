@@ -33,6 +33,24 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
  public:
   class MEDIA_GPU_EXPORT VP9Accelerator {
    public:
+    // Methods may return kTryAgain if they need additional data (provided
+    // independently) in order to proceed. Examples are things like not having
+    // an appropriate key to decode encrypted content. This is not considered an
+    // unrecoverable error, but rather a pause to allow an application to
+    // independently provide the required data. When VP9Decoder::Decode()
+    // is called again, it will attempt to resume processing of the stream
+    // by calling the same method again.
+    enum class Status {
+      // Operation completed successfully.
+      kOk,
+
+      // Operation failed.
+      kFail,
+
+      // Operation failed because some external data is missing. Retry the same
+      // operation later, once the data has been provided.
+      kTryAgain,
+    };
     VP9Accelerator();
     virtual ~VP9Accelerator();
 
@@ -61,11 +79,11 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // |lf_params| does not need to remain valid after this method returns.
     //
     // Return true when successful, false otherwise.
-    virtual bool SubmitDecode(scoped_refptr<VP9Picture> pic,
-                              const Vp9SegmentationParams& segm_params,
-                              const Vp9LoopFilterParams& lf_params,
-                              const Vp9ReferenceFrameVector& reference_frames,
-                              const base::OnceClosure done_cb) = 0;
+    virtual Status SubmitDecode(scoped_refptr<VP9Picture> pic,
+                                const Vp9SegmentationParams& segm_params,
+                                const Vp9LoopFilterParams& lf_params,
+                                const Vp9ReferenceFrameVector& reference_frames,
+                                const base::OnceClosure done_cb) = 0;
 
     // Schedule output (display) of |pic|.
     //
@@ -112,8 +130,9 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
 
  private:
   // Decode and possibly output |pic| (if the picture is to be shown).
-  // Return true on success, false otherwise.
-  bool DecodeAndOutputPicture(scoped_refptr<VP9Picture> pic);
+  // Return kOk on success, kTryAgain if this should be attempted again on the
+  // next Decode call, and kFail otherwise.
+  VP9Accelerator::Status DecodeAndOutputPicture(scoped_refptr<VP9Picture> pic);
 
   // Get frame context state after decoding |pic| from the accelerator, and call
   // |context_refresh_cb| with the acquired state.
@@ -154,6 +173,9 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   gfx::Rect visible_rect_;
   // Profile of input bitstream.
   VideoCodecProfile profile_;
+
+  // Pending picture for decode when accelerator returns kTryAgain.
+  scoped_refptr<VP9Picture> pending_pic_;
 
   size_t size_change_failure_counter_ = 0;
 

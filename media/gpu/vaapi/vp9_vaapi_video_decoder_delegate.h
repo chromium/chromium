@@ -19,17 +19,21 @@ class VP9Picture;
 class VP9VaapiVideoDecoderDelegate : public VP9Decoder::VP9Accelerator,
                                      public VaapiVideoDecoderDelegate {
  public:
-  VP9VaapiVideoDecoderDelegate(DecodeSurfaceHandler<VASurface>* const vaapi_dec,
-                               scoped_refptr<VaapiWrapper> vaapi_wrapper);
+  VP9VaapiVideoDecoderDelegate(
+      DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+      scoped_refptr<VaapiWrapper> vaapi_wrapper,
+      ProtectedSessionUpdateCB on_protected_session_update_cb =
+          base::DoNothing(),
+      CdmContext* cdm_context = nullptr);
   ~VP9VaapiVideoDecoderDelegate() override;
 
   // VP9Decoder::VP9Accelerator implementation.
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
-  bool SubmitDecode(scoped_refptr<VP9Picture> pic,
-                    const Vp9SegmentationParams& seg,
-                    const Vp9LoopFilterParams& lf,
-                    const Vp9ReferenceFrameVector& reference_frames,
-                    base::OnceClosure done_cb) override;
+  Status SubmitDecode(scoped_refptr<VP9Picture> pic,
+                      const Vp9SegmentationParams& seg,
+                      const Vp9LoopFilterParams& lf,
+                      const Vp9ReferenceFrameVector& reference_frames,
+                      base::OnceClosure done_cb) override;
 
   bool OutputPicture(scoped_refptr<VP9Picture> pic) override;
   bool IsFrameContextRequired() const override;
@@ -42,6 +46,7 @@ class VP9VaapiVideoDecoderDelegate : public VP9Decoder::VP9Accelerator,
  private:
   std::unique_ptr<ScopedVABuffer> picture_params_;
   std::unique_ptr<ScopedVABuffer> slice_params_;
+  std::unique_ptr<ScopedVABuffer> crypto_params_;
 
   DISALLOW_COPY_AND_ASSIGN(VP9VaapiVideoDecoderDelegate);
 };

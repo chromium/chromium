@@ -18,6 +18,9 @@
 #include "media/gpu/vp9_picture.h"
 
 namespace media {
+
+using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
+
 namespace {
 
 void FillV4L2VP9LoopFilterParams(
@@ -202,7 +205,7 @@ scoped_refptr<VP9Picture> V4L2LegacyVP9Accelerator::CreateVP9Picture() {
   return new V4L2VP9Picture(std::move(dec_surface));
 }
 
-bool V4L2LegacyVP9Accelerator::SubmitDecode(
+DecodeStatus V4L2LegacyVP9Accelerator::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
     const Vp9LoopFilterParams& lf_params,
@@ -294,7 +297,7 @@ bool V4L2LegacyVP9Accelerator::SubmitDecode(
   for (size_t i = 0; i < base::size(frame_hdr->ref_frame_idx); ++i) {
     uint8_t idx = frame_hdr->ref_frame_idx[i];
     if (idx >= kVp9NumRefFrames)
-      return false;
+      return DecodeStatus::kFail;
 
     struct v4l2_vp9_reference_frame* v4l2_ref_frame =
         &v4l2_decode_param.active_ref_frames[i];
@@ -351,7 +354,7 @@ bool V4L2LegacyVP9Accelerator::SubmitDecode(
   dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
-    return false;
+    return DecodeStatus::kFail;
   }
 
   dec_surface->SetReferenceSurfaces(ref_surfaces);
@@ -359,11 +362,11 @@ bool V4L2LegacyVP9Accelerator::SubmitDecode(
 
   if (!surface_handler_->SubmitSlice(dec_surface.get(), frame_hdr->data,
                                      frame_hdr->frame_size))
-    return false;
+    return DecodeStatus::kFail;
 
   DVLOGF(4) << "Submitting decode for surface: " << dec_surface->ToString();
   surface_handler_->DecodeSurface(dec_surface);
-  return true;
+  return DecodeStatus::kOk;
 }
 
 bool V4L2LegacyVP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> pic) {

@@ -162,6 +162,12 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
       std::move(init_cb).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
       return;
     }
+    if (config.codec() != kCodecH264 && config.codec() != kCodecVP9) {
+      VLOGF(1)
+          << "Vaapi decoder does not support this codec for encrypted content";
+      std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+      return;
+    }
     cdm_context_ = cdm_context;
     cdm_event_cb_registration_ = cdm_context_->RegisterEventCB(
         base::BindRepeating(&VaapiVideoDecoder::OnCdmContextEvent,
@@ -696,8 +702,11 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
 
     decoder_.reset(new VP8Decoder(std::move(accelerator)));
   } else if (profile_ >= VP9PROFILE_MIN && profile_ <= VP9PROFILE_MAX) {
-    auto accelerator =
-        std::make_unique<VP9VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
+    auto accelerator = std::make_unique<VP9VaapiVideoDecoderDelegate>(
+        this, vaapi_wrapper_,
+        BindToCurrentLoop(base::BindRepeating(
+            &VaapiVideoDecoder::ProtectedSessionUpdate, weak_this_)),
+        cdm_context_);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(

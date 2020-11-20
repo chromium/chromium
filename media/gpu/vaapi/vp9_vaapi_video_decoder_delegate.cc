@@ -16,13 +16,17 @@
 
 namespace media {
 
+using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
+
 VP9VaapiVideoDecoderDelegate::VP9VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
-    scoped_refptr<VaapiWrapper> vaapi_wrapper)
+    scoped_refptr<VaapiWrapper> vaapi_wrapper,
+    ProtectedSessionUpdateCB on_protected_session_update_cb,
+    CdmContext* cdm_context)
     : VaapiVideoDecoderDelegate(vaapi_dec,
                                 std::move(vaapi_wrapper),
-                                base::DoNothing(),
-                                nullptr) {}
+                                std::move(on_protected_session_update_cb),
+                                cdm_context) {}
 
 VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() {
   DCHECK(!picture_params_);
@@ -38,7 +42,7 @@ scoped_refptr<VP9Picture> VP9VaapiVideoDecoderDelegate::CreateVP9Picture() {
   return new VaapiVP9Picture(std::move(va_surface));
 }
 
-bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
+DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& seg,
     const Vp9LoopFilterParams& lf,
@@ -54,18 +58,19 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
 
   VADecPictureParameterBufferVP9 pic_param{};
   VASliceParameterBufferVP9 slice_param{};
+  VAEncryptionParameters crypto_param{};
 
   if (!picture_params_) {
     picture_params_ = vaapi_wrapper_->CreateVABuffer(
         VAPictureParameterBufferType, sizeof(pic_param));
     if (!picture_params_)
-      return false;
+      return DecodeStatus::kFail;
   }
   if (!slice_params_) {
     slice_params_ = vaapi_wrapper_->CreateVABuffer(VASliceParameterBufferType,
                                                    sizeof(slice_param));
     if (!slice_params_)
-      return false;
+      return DecodeStatus::kFail;
   }
   // Always re-create |encoded_data| because reusing the buffer causes horrific
   // artifacts in decoded buffers. TODO(b/169725321): This seems to be a driver
@@ -73,7 +78,36 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
   auto encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
                                                      frame_hdr->frame_size);
   if (!encoded_data)
-    return false;
+    return DecodeStatus::kFail;
+
+  bool uses_crypto = false;
+  const DecryptConfig* decrypt_config = pic->decrypt_config();
+  std::vector<VAEncryptionSegmentInfo> encryption_segment_info;
+  if (decrypt_config) {
+    if (!SetDecryptConfig(decrypt_config->Clone()))
+      return DecodeStatus::kFail;
+    if (!decrypt_config->subsamples().empty() &&
+        decrypt_config->subsamples()[0].cypher_bytes) {
+      ProtectedSessionState state = SetupDecryptDecode(
+          false /* full_sample */, &crypto_param, &encryption_segment_info,
+          decrypt_config->subsamples());
+      if (state == ProtectedSessionState::kFailed) {
+        LOG(ERROR)
+            << "SubmitDecode fails because we couldn't setup the protected "
+               "session";
+        return DecodeStatus::kFail;
+      } else if (state != ProtectedSessionState::kCreated) {
+        return DecodeStatus::kTryAgain;
+      }
+      uses_crypto = true;
+      if (!crypto_params_) {
+        crypto_params_ = vaapi_wrapper_->CreateVABuffer(
+            VAEncryptionParameterBufferType, sizeof(crypto_param));
+        if (!crypto_params_)
+          return DecodeStatus::kFail;
+      }
+    }
+  }
 
   pic_param.frame_width = base::checked_cast<uint16_t>(frame_hdr->frame_width);
   pic_param.frame_height =
@@ -162,14 +196,22 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
     seg_param.chroma_ac_quant_scale = seg.uv_dequant[i][1];
   }
 
-  return vaapi_wrapper_->MapAndCopyAndExecute(
-      pic->AsVaapiVP9Picture()->va_surface()->id(),
+  std::vector<std::pair<VABufferID, VaapiWrapper::VABufferDescriptor>> buffers =
       {{picture_params_->id(),
         {picture_params_->type(), picture_params_->size(), &pic_param}},
        {slice_params_->id(),
         {slice_params_->type(), slice_params_->size(), &slice_param}},
        {encoded_data->id(),
-        {encoded_data->type(), frame_hdr->frame_size, frame_hdr->data}}});
+        {encoded_data->type(), frame_hdr->frame_size, frame_hdr->data}}};
+  if (uses_crypto) {
+    buffers.push_back(
+        {crypto_params_->id(),
+         {crypto_params_->type(), crypto_params_->size(), &crypto_param}});
+  }
+  return vaapi_wrapper_->MapAndCopyAndExecute(
+             pic->AsVaapiVP9Picture()->va_surface()->id(), buffers)
+             ? DecodeStatus::kOk
+             : DecodeStatus::kFail;
 }
 
 bool VP9VaapiVideoDecoderDelegate::OutputPicture(

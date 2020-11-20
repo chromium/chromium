@@ -30,11 +30,11 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
 
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
 
-  bool SubmitDecode(scoped_refptr<VP9Picture> picture,
-                    const Vp9SegmentationParams& segmentation_params,
-                    const Vp9LoopFilterParams& loop_filter_params,
-                    const Vp9ReferenceFrameVector& reference_frames,
-                    base::OnceClosure on_finished_cb) override;
+  Status SubmitDecode(scoped_refptr<VP9Picture> picture,
+                      const Vp9SegmentationParams& segmentation_params,
+                      const Vp9LoopFilterParams& loop_filter_params,
+                      const Vp9ReferenceFrameVector& reference_frames,
+                      base::OnceClosure on_finished_cb) override;
 
   bool OutputPicture(scoped_refptr<VP9Picture> picture) override;
 
