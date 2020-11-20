@@ -51,7 +51,7 @@ def build_locale_strings():
     run(grit_cmd)
 
 
-def build_preload_images_js():
+def build_preload_images_js(outdir):
     with open('images/images.gni') as f:
         in_app_assets = ast.literal_eval(
             re.search(r'in_app_assets\s*=\s*(\[.*\])', f.read(),
@@ -64,7 +64,7 @@ def build_preload_images_js():
             '--images_list_file',
             f.name,
             '--output_file',
-            'build/camera/js/preload_images.js',
+            os.path.join(outdir, 'preload_images.js'),
         ]
         subprocess.check_call(cmd)
 
@@ -183,7 +183,7 @@ def build_cca(overlay=None, key=None):
         if d in ['build', 'node_modules', 'strings']:
             continue
         dir_util.copy_tree(d, os.path.join('build/camera', d))
-    build_preload_images_js()
+    build_preload_images_js('build/camera/js')
     shutil.copy2('manifest.json', 'build/camera/manifest.json')
 
     for f in mojo_files:
@@ -225,6 +225,10 @@ def deploy(args):
 def deploy_swa(args):
     cca_root = os.getcwd()
     target_dir = os.path.join(get_chromium_root(), f'out_{args.board}/Release')
+
+    build_preload_images_js(
+        os.path.join(target_dir,
+                     'gen/chromeos/components/camera_app_ui/resources/js'))
 
     build_pak_cmd = [
         'tools/grit/grit.py',

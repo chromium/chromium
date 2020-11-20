@@ -55,6 +55,7 @@ grit("camera_app_resources") {
 
   deps = [
     "//chromeos/components/camera_app_ui:mojo_bindings_js",
+    "//chromeos/components/camera_app_ui/resources/js:gen_preload_images_js",
     "//media/capture/video/chromeos/mojom:cros_camera_js",
     "//mojo/public/js:bindings_lite",
     "//third_party/blink/public/mojom:mojom_platform_js",

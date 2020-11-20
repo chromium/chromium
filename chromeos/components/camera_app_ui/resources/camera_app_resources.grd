@@ -134,6 +134,12 @@
           use_base_dir="false"
           type="BINDATA"/>
 
+      <!-- Dynamic generated -->
+      <include name="IDR_CAMERA_PRELOAD_IMAGES_JS"
+          file="${root_gen_dir}/chromeos/components/camera_app_ui/resources/js/preload_images.js"
+          use_base_dir="false"
+          type="chrome_html"/>
+
       <include name="IDR_CAMERA_FFMPEG_WASM" file="js/lib/ffmpeg.wasm" type="BINDATA" />
 
       <include name="IDR_CAMERA_RECORD_END_OGG" file="sounds/record_end.ogg" type="BINDATA" />

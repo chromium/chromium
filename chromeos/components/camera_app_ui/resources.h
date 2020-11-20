@@ -112,6 +112,7 @@ const struct {
   int id;
 } kGritResourceMap[] = {
     {"js/browser_proxy/browser_proxy.js", IDR_CAMERA_WEBUI_BROWSER_PROXY_JS},
+    {"js/preload_images.js", IDR_CAMERA_PRELOAD_IMAGES_JS},
     {"js/window_controller/window_controller.js",
      IDR_CAMERA_MOJO_WINDOW_CONTROLLER_JS},
     {"js/mojo/camera_intent.mojom-lite.js",
