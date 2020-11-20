@@ -552,9 +552,6 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node) {
     return GetOrCreate(node->GetLayoutObject());
   }
 
-  if (!LayoutTreeBuilderTraversal::Parent(*node))
-    return nullptr;
-
   if (IsA<HTMLHeadElement>(node))
     return nullptr;
 
