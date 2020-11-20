@@ -264,6 +264,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // Creates, removes or updates the identity section as needed. And notifies the
 // consumer.
 - (void)updateIdentitySectionAndNotifyConsumer {
+  // Do not display the identity section in Google Services for MICE.
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    return;
+  }
   TableViewModel* model = self.consumer.tableViewModel;
   BOOL hasIdentitySection =
       [model hasSectionForSectionIdentifier:IdentitySectionIdentifier];
@@ -810,10 +814,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (void)googleServicesSettingsViewControllerLoadModel:
     (GoogleServicesSettingsViewController*)controller {
   DCHECK_EQ(self.consumer, controller);
-  [self loadIdentitySection];
   // For the MICE experiment Chrome will display the Sync section within "Manage
   // Sync Settings".
   if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    [self loadIdentitySection];
     [self loadSyncSection];
   }
   [self loadNonPersonalizedSection];
