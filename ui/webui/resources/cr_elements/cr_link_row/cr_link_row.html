@@ -80,8 +80,9 @@
     </div>
     <slot></slot>
     <cr-icon-button id="icon" iron-icon="[[getIcon_(external)]]" role="link"
-        aria-roledescription$="[[roleDescription]]" aria-describedby="subLabel"
-        aria-labelledby="label" disabled="[[disabled]]"></cr-icon-button>
+        aria-roledescription$="[[roleDescription]]"
+        aria-labelledby="label subLabel" disabled="[[disabled]]">
+    </cr-icon-button>
   </template>
   <script src="cr_link_row.js"></script>
 </dom-module>
