@@ -81,12 +81,6 @@ ScriptEvaluationResult ScriptEvaluationResult::FromModuleAborted() {
                                 ResultType::kAborted, {});
 }
 
-ScriptEvaluationResult& ScriptEvaluationResult::Escape(
-    ScriptState::EscapableScope* scope) {
-  value_ = scope->Escape(value_);
-  return *this;
-}
-
 v8::Local<v8::Value> ScriptEvaluationResult::GetSuccessValue() const {
   DCHECK_EQ(result_type_, ResultType::kSuccess);
   DCHECK(!value_.IsEmpty());

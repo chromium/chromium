@@ -671,6 +671,10 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
 
+  // TODO(crbug.com/1151165): Ideally v8::Context should be entered before
+  // CanExecuteScripts().
+  v8::Context::Scope scope(script_state->GetContext());
+
   // <spec step="3">Check if we can run script with settings. If this returns
   // "do not run" then return NormalCompletion(empty).</spec>
   if (!execution_context->CanExecuteScripts(kAboutToExecuteScript)) {
@@ -683,7 +687,6 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
   v8::MicrotasksScope microtasks_scope(isolate,
                                        ToMicrotaskQueue(execution_context),
                                        v8::MicrotasksScope::kRunMicrotasks);
-  ScriptState::EscapableScope scope(script_state);
 
   // Without TLA: <spec step="5">Let evaluationStatus be null.</spec>
   ScriptEvaluationResult result = ScriptEvaluationResult::FromModuleNotRun();
@@ -784,9 +787,9 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
   }
 
   // <spec step="8">Clean up after running script with settings.</spec>
-  // - Partially implement in MicrotaskScope destructor and the
-  // - ScriptState::EscapableScope destructor.
-  return result.Escape(&scope);
+  // Partially implemented in MicrotaskScope destructor and the
+  // v8::Context::Scope destructor.
+  return result;
 }
 
 void V8ScriptRunner::ReportException(v8::Isolate* isolate,

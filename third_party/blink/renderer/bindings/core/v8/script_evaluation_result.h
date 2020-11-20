@@ -96,8 +96,6 @@ class CORE_EXPORT ScriptEvaluationResult final {
       v8::Local<v8::Value> exception);
   static ScriptEvaluationResult FromModuleAborted();
 
-  ScriptEvaluationResult& Escape(ScriptState::EscapableScope* scope);
-
   ResultType GetResultType() const { return result_type_; }
 
   // Can be called only when GetResultType() == kSuccess.

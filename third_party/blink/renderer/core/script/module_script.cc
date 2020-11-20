@@ -106,7 +106,7 @@ void ModuleScript::Trace(Visitor* visitor) const {
 void ModuleScript::RunScript(LocalDOMWindow*) {
   // We need a HandleScope for the `ScriptEvaluationResult` returned from
   // `RunScriptAndReturnValue`.
-  ScriptState::Scope scope(SettingsObject()->GetScriptState());
+  v8::HandleScope scope(SettingsObject()->GetScriptState()->GetIsolate());
   DVLOG(1) << *this << "::RunScript()";
   ignore_result(RunScriptAndReturnValue());
 }
@@ -115,7 +115,7 @@ bool ModuleScript::RunScriptOnWorkerOrWorklet(
     WorkerOrWorkletGlobalScope& global_scope) {
   // We need a HandleScope for the `ScriptEvaluationResult` returned from
   // `RunScriptAndReturnValue`.
-  ScriptState::Scope scope(SettingsObject()->GetScriptState());
+  v8::HandleScope scope(SettingsObject()->GetScriptState()->GetIsolate());
   DCHECK(global_scope.IsContextThread());
 
   // TODO(nhiroki): Catch an error when an evaluation error happens.
