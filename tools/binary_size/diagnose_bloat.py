@@ -479,7 +479,7 @@ class _DiffArchiveManager(object):
     logging.info('See detailed diff results here: %s',
                  os.path.relpath(diff_path))
 
-  def GenerateHtmlReport(self, before_id, after_id):
+  def GenerateHtmlReport(self, before_id, after_id, is_internal=False):
     """Generate HTML report given two build archives."""
     before = self.build_archives[before_id]
     after = self.build_archives[after_id]
@@ -500,6 +500,11 @@ class _DiffArchiveManager(object):
 
     logging.info('Creating .sizediff')
     _RunCmd(supersize_cmd)
+    oneoffs_dir = 'oneoffs'
+    visibility = '-a public-read '
+    if is_internal:
+      oneoffs_dir = 'private-oneoffs'
+      visibility = ''
 
     unique_name = '{}_{}.sizediff'.format(before.rev, after.rev)
     msg = (
@@ -507,14 +512,16 @@ class _DiffArchiveManager(object):
         'Saved locally to {local}. To view, upload to '
         'https://chrome-supersize.firebaseapp.com/viewer.html.\n'
         'To share, run:\n'
-        '> gsutil.py cp -a public-read {local} '
-        'gs://chrome-supersize/oneoffs/{unique_name}\n\n'
+        '> gsutil.py cp {visibility}{local} '
+        'gs://chrome-supersize/{oneoffs_dir}/{unique_name}\n\n'
         'Then view it at https://chrome-supersize.firebaseapp.com/viewer.html'
-        '?load_url=https://storage.googleapis.com/chrome-supersize/oneoffs/'
-        '{unique_name}'
+        '?load_url=https://storage.googleapis.com/chrome-supersize/'
+        '{oneoffs_dir}/{unique_name}'
         '\n=====================\n')
     msg = msg.format(local=os.path.relpath(report_path),
-                     unique_name=unique_name)
+                     unique_name=unique_name,
+                     visibility=visibility,
+                     oneoffs_dir=oneoffs_dir)
     logging.info(msg)
 
   def Summarize(self):
@@ -926,7 +933,8 @@ def main():
       if i != 0:
         diff_mngr.MaybeDiff(i - 1, i)
 
-    diff_mngr.GenerateHtmlReport(0, i)
+    diff_mngr.GenerateHtmlReport(
+        0, i, is_internal=args.enable_chrome_android_internal)
     diff_mngr.Summarize()
 
 

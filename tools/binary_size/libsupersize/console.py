@@ -145,6 +145,26 @@ class _Session(object):
     after = after if after is not None else self._size_infos[1]
     return diff.Diff(before, after, sort=sort)
 
+  def _PrintUploadCommand(self, file_to_upload, is_internal=False):
+    oneoffs_dir = 'oneoffs'
+    visibility = '-a public-read '
+    if is_internal:
+      oneoffs_dir = 'private-oneoffs'
+      visibility = ''
+
+    shortname = os.path.basename(os.path.normpath(file_to_upload))
+    msg = (
+        'Saved locally to {local}. To share, run:\n'
+        '> gsutil.py cp {visibility}{local} gs://chrome-supersize/'
+        '{oneoffs_dir}\n'
+        '  Then view it at https://chrome-supersize.firebaseapp.com/viewer.html'
+        '?load_url=https://storage.googleapis.com/chrome-supersize/'
+        '{oneoffs_dir}/{shortname}')
+    print(msg.format(local=file_to_upload,
+                     shortname=shortname,
+                     oneoffs_dir=oneoffs_dir,
+                     visibility=visibility))
+
   def _SaveSizeInfo(self, filtered_symbols=None, size_info=None, to_file=None):
     """Saves a .size file containing only filtered_symbols into to_file.
 
@@ -163,14 +183,8 @@ class _Session(object):
         include_padding=filtered_symbols is not None,
         sparse_symbols=filtered_symbols)
 
-    shortname = os.path.basename(os.path.normpath(to_file))
-    msg = (
-        'Saved locally to {local}. To share, run:\n'
-        '> gsutil.py cp -a public-read {local} gs://chrome-supersize/oneoffs\n'
-        '  Then view it at https://chrome-supersize.firebaseapp.com/viewer.html'
-        '?load_url=https://storage.googleapis.com/chrome-supersize/oneoffs/'
-        '{shortname}')
-    print(msg.format(local=to_file, shortname=shortname))
+    is_internal = len(size_info.symbols.WherePathMatches('^clank')) > 0
+    self._PrintUploadCommand(to_file, is_internal)
 
   def _SaveDeltaSizeInfo(self, size_info, to_file=None):
     """Saves a .sizediff file containing only filtered_symbols into to_file.
@@ -183,15 +197,8 @@ class _Session(object):
     assert to_file.endswith('.sizediff'), 'to_file should end with .sizediff'
 
     file_format.SaveDeltaSizeInfo(size_info, to_file)
-
-    shortname = os.path.basename(os.path.normpath(to_file))
-    msg = (
-        'Saved locally to {local}. To share, run:\n'
-        '> gsutil.py cp {local} gs://chrome-supersize/oneoffs && gsutil.py -m '
-        'acl ch -u AllUsers:R gs://chrome-supersize/oneoffs/{shortname}\n'
-        '  Then view it at https://storage.googleapis.com/chrome-supersize'
-        '/viewer.html?load_url=oneoffs%2F{shortname}')
-    print(msg.format(local=to_file, shortname=shortname))
+    is_internal = len(size_info.symbols.WherePathMatches('^clank')) > 0
+    self._PrintUploadCommand(to_file, is_internal)
 
   def _SizeStats(self, size_info=None):
     """Prints some statistics for the given size info.
