@@ -529,13 +529,8 @@ String GetReferrerPolicy(network::mojom::ReferrerPolicy policy) {
     case network::mojom::ReferrerPolicy::kAlways:
       return protocol::Network::Request::ReferrerPolicyEnum::UnsafeUrl;
     case network::mojom::ReferrerPolicy::kDefault:
-      if (ReferrerUtils::IsReducedReferrerGranularityEnabled()) {
-        return protocol::Network::Request::ReferrerPolicyEnum::
-            StrictOriginWhenCrossOrigin;
-      } else {
-        return protocol::Network::Request::ReferrerPolicyEnum::
-            NoReferrerWhenDowngrade;
-      }
+      return protocol::Network::Request::ReferrerPolicyEnum::
+          StrictOriginWhenCrossOrigin;
     case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
       return protocol::Network::Request::ReferrerPolicyEnum::
           NoReferrerWhenDowngrade;

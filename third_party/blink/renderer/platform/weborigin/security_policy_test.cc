@@ -616,35 +616,20 @@ TEST(SecurityPolicyTest, ReferrerForCustomScheme) {
   String kFullReferrer = "my-new-scheme://com.foo.me/this-should-be-truncated";
   String kTruncatedReferrer = "my-new-scheme://com.foo.me/";
 
-  {
-    // With the feature off, the old default policy of
-    // no-referrer-when-downgrade should preserve the entire URL.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kReducedReferrerGranularity);
+  // The default policy of strict-origin-when-cross-origin should truncate the
+  // referrer.
+  EXPECT_EQ(SecurityPolicy::GenerateReferrer(
+                network::mojom::ReferrerPolicy::kDefault,
+                KURL("https://www.example.com/"), kFullReferrer)
+                .referrer,
+            kTruncatedReferrer);
 
-    EXPECT_EQ(SecurityPolicy::GenerateReferrer(
-                  network::mojom::ReferrerPolicy::kDefault,
-                  KURL("https://www.example.com/"), kFullReferrer)
-                  .referrer,
-              kFullReferrer);
-  }
-
-  {
-    // With the feature on, the new default policy of
-    // strict-origin-when-cross-origin should truncate the referrer.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kReducedReferrerGranularity);
-
-    ASSERT_TRUE(ReferrerUtils::IsReducedReferrerGranularityEnabled());
-
-    EXPECT_EQ(SecurityPolicy::GenerateReferrer(
-                  network::mojom::ReferrerPolicy::kDefault,
-                  KURL("https://www.example.com/"), kFullReferrer)
-                  .referrer,
-              kTruncatedReferrer);
-  }
+  // no-referrer-when-downgrade shouldn't truncate the referrer.
+  EXPECT_EQ(SecurityPolicy::GenerateReferrer(
+                network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
+                KURL("https://www.example.com/"), kFullReferrer)
+                .referrer,
+            kFullReferrer);
 }
 
 }  // namespace blink

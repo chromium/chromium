@@ -788,7 +788,6 @@ struct ReferrerOverrideParams {
             ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
     },
     {
-        .feature_to_enable = blink::features::kReducedReferrerGranularity,
         .baseline_policy = network::mojom::ReferrerPolicy::kDefault,
         // kDefault gets resolved into a concrete policy when making requests
         .expected_policy =

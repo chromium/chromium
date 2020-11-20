@@ -38,12 +38,7 @@ network::mojom::ReferrerPolicy ReferrerUtils::NetToMojoReferrerPolicy(
 }
 
 net::ReferrerPolicy ReferrerUtils::GetDefaultNetReferrerPolicy() {
-  // The ReducedReferrerGranularity feature sets the default referrer
-  // policy to strict-origin-when-cross-origin unless forbidden
-  // by the "force legacy policy" global.
-  if (IsReducedReferrerGranularityEnabled())
-    return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+  return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
 }
 
 network::mojom::ReferrerPolicy ReferrerUtils::MojoReferrerPolicyResolveDefault(
@@ -51,13 +46,6 @@ network::mojom::ReferrerPolicy ReferrerUtils::MojoReferrerPolicyResolveDefault(
   if (referrer_policy == network::mojom::ReferrerPolicy::kDefault)
     return NetToMojoReferrerPolicy(GetDefaultNetReferrerPolicy());
   return referrer_policy;
-}
-
-// TODO(crbug.com/1016541) Once the pertinent enterprise policy has
-// been removed in M88, update this to remove the global.
-bool ReferrerUtils::IsReducedReferrerGranularityEnabled() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kReducedReferrerGranularity);
 }
 
 }  // namespace blink
