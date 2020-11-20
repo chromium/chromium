@@ -91,7 +91,7 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesInput& input) {
   // TODO(http://crbug.com/1124301) Implement stretchy operators.
 
   MinMaxSizes sizes;

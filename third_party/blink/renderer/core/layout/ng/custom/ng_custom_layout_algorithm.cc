@@ -26,7 +26,7 @@ NGCustomLayoutAlgorithm::NGCustomLayoutAlgorithm(
 }
 
 MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesInput& input) {
   if (!Node().IsCustomLayoutLoaded())
     return FallbackMinMaxSizes(input);
 

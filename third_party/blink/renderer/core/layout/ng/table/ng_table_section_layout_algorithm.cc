@@ -16,7 +16,7 @@ NGTableSectionLayoutAlgorithm::NGTableSectionLayoutAlgorithm(
     : NGLayoutAlgorithm(params) {}
 
 MinMaxSizesResult NGTableSectionLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) const {
+    const MinMaxSizesInput&) {
   NOTREACHED();  // Table layout does not compute minmax for table row.
   return MinMaxSizesResult();
 }

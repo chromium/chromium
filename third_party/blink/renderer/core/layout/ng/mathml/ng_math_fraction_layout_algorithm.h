@@ -19,7 +19,7 @@ class CORE_EXPORT NGMathFractionLayoutAlgorithm
  private:
   scoped_refptr<const NGLayoutResult> Layout() final;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) final;
 
   void GatherChildren(NGBlockNode* numerator, NGBlockNode* denominator);
 };

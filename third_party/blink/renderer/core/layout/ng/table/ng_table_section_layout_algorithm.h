@@ -23,7 +23,7 @@ class CORE_EXPORT NGTableSectionLayoutAlgorithm
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) override;
 };
 
 }  // namespace blink

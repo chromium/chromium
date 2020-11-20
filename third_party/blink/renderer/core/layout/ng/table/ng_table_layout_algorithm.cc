@@ -570,7 +570,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesInput& input) {
   LayoutNGTable* layout_table = To<LayoutNGTable>(Node().GetLayoutBox());
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   // Tables need autosizer.

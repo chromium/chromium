@@ -42,7 +42,7 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
  private:
   scoped_refptr<const NGLayoutResult> Layout() final;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) final;
 
   void LayoutRowItems(ChildrenVector*,
                       LayoutUnit* max_row_block_baseline,

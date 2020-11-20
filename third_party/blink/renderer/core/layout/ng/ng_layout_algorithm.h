@@ -32,8 +32,7 @@ class NGLayoutAlgorithmOperations {
   // Computes the min-content and max-content intrinsic sizes for the given box.
   // The result will not take any min-width, max-width or width properties into
   // account.
-  virtual MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesInput&) const = 0;
+  virtual MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) = 0;
 };
 
 // Parameters to pass when creating a layout algorithm for a block node.
