@@ -4472,11 +4472,11 @@ void Element::SetInnerHTMLInternal(const String& html,
   if (html.IsEmpty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
   } else {
-    bool allow_shadow_root =
-        options->hasAllowShadowRoot() && options->allowShadowRoot();
+    bool include_shadow_roots =
+        options->hasIncludeShadowRoots() && options->includeShadowRoots();
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-            html, this, kAllowScriptingContent, "innerHTML", allow_shadow_root,
-            exception_state)) {
+            html, this, kAllowScriptingContent, "innerHTML",
+            include_shadow_roots, exception_state)) {
       ContainerNode* container = this;
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
         // Allow replacing innerHTML on declarative shadow templates, prior to
@@ -4544,7 +4544,7 @@ void Element::setOuterHTML(const String& html,
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       html, parent, kAllowScriptingContent, "outerHTML",
-      /*allow_shadow_root=*/false, exception_state);
+      /*include_shadow_roots=*/false, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -4726,7 +4726,7 @@ void Element::insertAdjacentHTML(const String& where,
   // Step 3 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, context_element, kAllowScriptingContent, "insertAdjacentHTML",
-      /*allow_shadow_root=*/false, exception_state);
+      /*include_shadow_roots=*/false, exception_state);
   if (!fragment)
     return;
   InsertAdjacent(where, fragment, exception_state);

@@ -50,13 +50,6 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   bool CanContainRangeEndPoint() const final { return true; }
   virtual bool IsTemplateContent() const { return false; }
 
-  bool allowDeclarativeShadowDom() const {
-    return allow_declarative_shadow_dom_;
-  }
-  void setAllowDeclarativeShadowDom(bool value) {
-    allow_declarative_shadow_dom_ = value;
-  }
-
   // This will catch anyone doing an unnecessary check.
   bool IsDocumentFragment() const = delete;
 
@@ -67,8 +60,6 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   NodeType getNodeType() const final;
   Node* Clone(Document&, CloneChildrenFlag) const override;
   bool ChildTypeAllowed(NodeType) const override;
-
-  bool allow_declarative_shadow_dom_{false};
 };
 
 template <>

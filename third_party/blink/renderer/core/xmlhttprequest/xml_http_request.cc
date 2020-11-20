@@ -349,7 +349,7 @@ void XMLHttpRequest::InitResponseDocument() {
                           .WithURL(response_.ResponseUrl());
   if (is_html) {
     response_document_ = MakeGarbageCollected<HTMLDocument>(init);
-    response_document_->setAllowDeclarativeShadowRoot(false);
+    response_document_->setAllowDeclarativeShadowRoots(false);
   } else
     response_document_ = MakeGarbageCollected<XMLDocument>(init);
 

@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 dictionary SetInnerHTMLOptions {
-  boolean allowShadowRoot = false;
+  boolean includeShadowRoots = false;
 };

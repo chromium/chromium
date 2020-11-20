@@ -19,7 +19,7 @@ function buildTemplate(slotted) {
   const template = document.createElement('template');
   document.body.appendChild(template);
   const html = createDeepShadowTemplateContent(hostChildren, slotted);
-  template.setInnerHTML(html, {allowShadowRoot: true});
+  template.setInnerHTML(html, {includeShadowRoots: true});
   return template;
 }
 

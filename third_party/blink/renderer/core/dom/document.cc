@@ -6944,7 +6944,7 @@ AllowState Document::GetDeclarativeShadowRootAllowState() const {
   return declarative_shadow_root_allow_state_;
 }
 
-void Document::setAllowDeclarativeShadowRoot(bool val) {
+void Document::setAllowDeclarativeShadowRoots(bool val) {
   declarative_shadow_root_allow_state_ =
       val ? AllowState::kAllow : AllowState::kDeny;
 }

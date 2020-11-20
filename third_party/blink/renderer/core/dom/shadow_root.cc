@@ -136,11 +136,11 @@ String ShadowRoot::getInnerHTML(const GetInnerHTMLOptions* options) const {
 void ShadowRoot::SetInnerHTMLInternal(const String& html,
                                       const SetInnerHTMLOptions* options,
                                       ExceptionState& exception_state) {
-  bool allow_shadow_root =
-      options->hasAllowShadowRoot() && options->allowShadowRoot();
+  bool include_shadow_roots =
+      options->hasIncludeShadowRoots() && options->includeShadowRoots();
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-          html, &host(), kAllowScriptingContent, "innerHTML", allow_shadow_root,
-          exception_state)) {
+          html, &host(), kAllowScriptingContent, "innerHTML",
+          include_shadow_roots, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }
 }

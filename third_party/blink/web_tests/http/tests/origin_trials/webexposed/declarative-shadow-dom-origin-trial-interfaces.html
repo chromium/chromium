@@ -13,7 +13,7 @@ test(t => {
   assert_true(HTMLTemplateElement.prototype.hasOwnProperty("shadowRoot"),'Unable to feature detect');
   // Basic feature use
   const div = document.createElement('div');
-  div.setInnerHTML('<div id="host"><template shadowroot="open"></template></div>', {allowShadowRoot: true});
+  div.setInnerHTML('<div id="host"><template shadowroot="open"></template></div>', {includeShadowRoots: true});
   const host = div.querySelector('#host');
   assert_true(!!host.shadowRoot,"No shadow root found");
 }, 'Declarative Shadow DOM enabled for origin-trial enabled document.');

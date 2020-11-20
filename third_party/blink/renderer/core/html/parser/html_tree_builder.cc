@@ -233,13 +233,13 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  Document& document,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool allow_shadow_root)
+                                 bool include_shadow_roots)
     : frameset_ok_(true),
       tree_(parser->ReentryPermit(), document, parser_content_policy),
       insertion_mode_(kInitialMode),
       original_insertion_mode_(kInitialMode),
       should_skip_leading_newline_(false),
-      allow_shadow_root_(allow_shadow_root),
+      include_shadow_roots_(include_shadow_roots),
       parser_(parser),
       script_to_process_start_position_(UninitializedPositionValue1()),
       options_(options) {}
@@ -249,12 +249,12 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  Element* context_element,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool allow_shadow_root)
+                                 bool include_shadow_roots)
     : HTMLTreeBuilder(parser,
                       fragment->GetDocument(),
                       parser_content_policy,
                       options,
-                      allow_shadow_root) {
+                      include_shadow_roots) {
   DCHECK(IsMainThread());
   DCHECK(context_element);
   tree_.InitFragmentParsing(fragment, context_element);
@@ -902,7 +902,7 @@ namespace {
 DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
     AtomicHTMLToken* token,
     const Document& document,
-    bool allow_shadow_root) {
+    bool include_shadow_roots) {
   if (!RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
           document.GetExecutionContext())) {
     return DeclarativeShadowRootType::kNone;
@@ -912,12 +912,12 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
   if (!type_attribute)
     return DeclarativeShadowRootType::kNone;
 
-  if (!allow_shadow_root) {
+  if (!include_shadow_roots) {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "Found declarative shadowroot attribute on a template, but declarative "
-        "Shadow DOM has not been enabled by allowShadowRoot."));
+        "Shadow DOM has not been enabled by includeShadowRoots."));
     return DeclarativeShadowRootType::kNone;
   }
 
@@ -941,7 +941,7 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   tree_.InsertHTMLTemplateElement(
       token,
       DeclarativeShadowRootTypeFromToken(
-          token, tree_.OwnerDocumentForCurrentNode(), allow_shadow_root_));
+          token, tree_.OwnerDocumentForCurrentNode(), include_shadow_roots_));
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
   SetInsertionMode(kTemplateContentsMode);

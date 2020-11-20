@@ -305,10 +305,10 @@ HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
 
   // Allow declarative shadow DOM for the document parser, if not explicitly
   // disabled.
-  bool allow_shadow_root = document.GetDeclarativeShadowRootAllowState() !=
-                           Document::DeclarativeShadowRootAllowState::kDeny;
+  bool include_shadow_roots = document.GetDeclarativeShadowRootAllowState() !=
+                              Document::DeclarativeShadowRootAllowState::kDeny;
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
-      this, document, kAllowScriptingContent, options_, allow_shadow_root);
+      this, document, kAllowScriptingContent, options_, include_shadow_roots);
 }
 
 HTMLDocumentParser::HTMLDocumentParser(
@@ -320,14 +320,14 @@ HTMLDocumentParser::HTMLDocumentParser(
                          kForceSynchronousParsing) {
   // Allow declarative shadow DOM for the fragment parser only if explicitly
   // enabled.
-  bool allow_shadow_root =
+  bool include_shadow_roots =
       fragment->GetDocument().GetDeclarativeShadowRootAllowState() ==
       Document::DeclarativeShadowRootAllowState::kAllow;
 
   // No script_runner_ in fragment parser.
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
       this, fragment, context_element, parser_content_policy, options_,
-      allow_shadow_root);
+      include_shadow_roots);
 
   // For now document fragment parsing never reports errors.
   bool report_errors = false;

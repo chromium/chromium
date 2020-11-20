@@ -109,7 +109,7 @@ Document* DOMImplementation::createHTMLDocument(const String& title) {
           .WithExecutionContext(document_->GetExecutionContext())
           .WithRegistrationContext(document_->RegistrationContext());
   auto* d = MakeGarbageCollected<HTMLDocument>(init);
-  d->setAllowDeclarativeShadowRoot(false);
+  d->setAllowDeclarativeShadowRoots(false);
   d->open();
   d->write("<!doctype html><html><head></head><body></body></html>");
   if (!title.IsNull()) {

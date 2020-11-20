@@ -71,7 +71,7 @@ void SlotAssignmentTest::SetUp() {
 void SlotAssignmentTest::SetBody(const char* html) {
   Element* body = GetDocument().body();
   SetInnerHTMLOptions options;
-  options.setAllowShadowRoot(true);
+  options.setIncludeShadowRoots(true);
   body->setInnerHTMLWithOptions(String::FromUTF8(html), &options);
   RemoveWhiteSpaceOnlyTextNode(*body);
 }

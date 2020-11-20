@@ -1665,7 +1665,7 @@ class CORE_EXPORT Document : public ContainerNode,
     kDeny
   };
   DeclarativeShadowRootAllowState GetDeclarativeShadowRootAllowState() const;
-  void setAllowDeclarativeShadowRoot(bool val);
+  void setAllowDeclarativeShadowRoots(bool val);
 
   void SetFindInPageActiveMatchNode(Node*);
   const Node* GetFindInPageActiveMatchNode() const;

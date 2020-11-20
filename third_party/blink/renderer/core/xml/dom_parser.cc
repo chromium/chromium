@@ -37,8 +37,8 @@ Document* DOMParser::parseFromString(const String& str,
                       .WithTypeFrom(type)
                       .WithExecutionContext(window_)
                       .CreateDocument();
-  doc->setAllowDeclarativeShadowRoot(options->hasAllowShadowRoot() &&
-                                     options->allowShadowRoot());
+  doc->setAllowDeclarativeShadowRoots(options->hasIncludeShadowRoots() &&
+                                      options->includeShadowRoots());
   doc->SetContent(str);
   doc->SetMimeType(AtomicString(type));
   return doc;
