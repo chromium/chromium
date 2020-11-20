@@ -33,6 +33,19 @@ enum class CanvasPixelFormat {
   kF16,
 };
 
+constexpr const char* kSRGBCanvasColorSpaceName = "srgb";
+constexpr const char* kRec2020CanvasColorSpaceName = "rec2020";
+constexpr const char* kP3CanvasColorSpaceName = "p3";
+
+constexpr const char* kUint8CanvasPixelFormatName = "uint8";
+constexpr const char* kF16CanvasPixelFormatName = "float16";
+
+// Return the CanvasColorSpace for the specified |name|. On invalid inputs,
+// returns CanvasColorSpace::kSRGB.
+CanvasColorSpace PLATFORM_EXPORT
+CanvasColorSpaceFromName(const String& color_space_name);
+
+// Return the SkColorSpace for the specified |color_space|.
 sk_sp<SkColorSpace> PLATFORM_EXPORT
 CanvasColorSpaceToSkColorSpace(CanvasColorSpace color_space);
 

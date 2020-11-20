@@ -7,6 +7,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/khronos/GLES3/gl3.h"
@@ -40,6 +41,14 @@ gfx::ColorSpace CanvasColorSpaceToGfxColorSpace(CanvasColorSpace color_space) {
 sk_sp<SkColorSpace> CanvasColorSpaceToSkColorSpace(
     CanvasColorSpace color_space) {
   return CanvasColorSpaceToGfxColorSpace(color_space).ToSkColorSpace();
+}
+
+CanvasColorSpace CanvasColorSpaceFromName(const String& color_space_name) {
+  if (color_space_name == kRec2020CanvasColorSpaceName)
+    return CanvasColorSpace::kRec2020;
+  if (color_space_name == kP3CanvasColorSpaceName)
+    return CanvasColorSpace::kP3;
+  return CanvasColorSpace::kSRGB;
 }
 
 CanvasColorParams::CanvasColorParams() = default;

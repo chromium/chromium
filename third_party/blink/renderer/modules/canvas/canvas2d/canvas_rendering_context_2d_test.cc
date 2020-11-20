@@ -904,7 +904,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
   };
 
   String canvas_pixel_format_names[] = {
-      kRGBA8CanvasPixelFormatName, kF16CanvasPixelFormatName,
+      kUint8CanvasPixelFormatName, kF16CanvasPixelFormatName,
       kF16CanvasPixelFormatName, kF16CanvasPixelFormatName,
       kF16CanvasPixelFormatName};
 

@@ -128,7 +128,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   ImageData* CropRect(const IntRect&, bool flip_y = false);
 
   ImageDataStorageFormat GetImageDataStorageFormat();
-  static CanvasColorSpace GetCanvasColorSpace(const String&);
   static String CanvasColorSpaceName(CanvasColorSpace);
   static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
   static unsigned StorageFormatBytesPerPixel(const String&);

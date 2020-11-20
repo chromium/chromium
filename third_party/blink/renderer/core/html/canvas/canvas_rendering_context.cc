@@ -77,11 +77,11 @@ WTF::String CanvasRenderingContext::ColorSpaceAsString() const {
 WTF::String CanvasRenderingContext::PixelFormatAsString() const {
   switch (color_params_.PixelFormat()) {
     case CanvasPixelFormat::kRGBA8:
-      return kRGBA8CanvasPixelFormatName;
+      return kUint8CanvasPixelFormatName;
     case CanvasPixelFormat::kF16:
       return kF16CanvasPixelFormatName;
     case CanvasPixelFormat::kBGRA8:
-      return kBGRA8CanvasPixelFormatName;
+      return kUint8CanvasPixelFormatName;
   };
   CHECK(false);
   return "";

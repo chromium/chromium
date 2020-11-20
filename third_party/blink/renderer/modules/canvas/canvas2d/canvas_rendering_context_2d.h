@@ -210,11 +210,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void Trace(Visitor*) const override;
 
-  ImageData* getImageData(int sx,
-                          int sy,
-                          int sw,
-                          int sh,
-                          ExceptionState&) override;
+  ImageData* getImageDataInternal(int sx,
+                                  int sy,
+                                  int sw,
+                                  int sh,
+                                  ImageDataColorSettings*,
+                                  ExceptionState&) final;
 
   CanvasColorParams ColorParamsForTest() const {
     return GetCanvas2DColorParams();

@@ -690,11 +690,12 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage() {
   return canvas()->GetCanvas2DLayerBridge()->NewImageSnapshot();
 }
 
-ImageData* CanvasRenderingContext2D::getImageData(
+ImageData* CanvasRenderingContext2D::getImageDataInternal(
     int sx,
     int sy,
     int sw,
     int sh,
+    ImageDataColorSettings* color_settings,
     ExceptionState& exception_state) {
   const IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kCanvasReadback, GetContextType());
@@ -703,7 +704,8 @@ ImageData* CanvasRenderingContext2D::getImageData(
         .Set(surface, 0)
         .Record(ukm_recorder_);
   }
-  return BaseRenderingContext2D::getImageData(sx, sy, sw, sh, exception_state);
+  return BaseRenderingContext2D::getImageDataInternal(
+      sx, sy, sw, sh, color_settings, exception_state);
 }
 
 void CanvasRenderingContext2D::FinalizeFrame() {

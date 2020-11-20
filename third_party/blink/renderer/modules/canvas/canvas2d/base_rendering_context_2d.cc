@@ -1614,6 +1614,26 @@ ImageData* BaseRenderingContext2D::getImageData(
     int sw,
     int sh,
     ExceptionState& exception_state) {
+  return getImageDataInternal(sx, sy, sw, sh, nullptr, exception_state);
+}
+
+ImageData* BaseRenderingContext2D::getImageData(
+    int sx,
+    int sy,
+    int sw,
+    int sh,
+    ImageDataColorSettings* color_settings,
+    ExceptionState& exception_state) {
+  return getImageDataInternal(sx, sy, sw, sh, color_settings, exception_state);
+}
+
+ImageData* BaseRenderingContext2D::getImageDataInternal(
+    int sx,
+    int sy,
+    int sw,
+    int sh,
+    ImageDataColorSettings* color_settings,
+    ExceptionState& exception_state) {
   if (!base::CheckMul(sw, sh).IsValid<int>()) {
     exception_state.ThrowRangeError("Out of memory at ImageData creation");
     return nullptr;
@@ -1657,8 +1677,8 @@ ImageData* BaseRenderingContext2D::getImageData(
   }
 
   const IntRect image_data_rect(sx, sy, sw, sh);
-  ImageDataColorSettings* color_settings =
-      GetColorSettingsAsImageDataColorSettings();
+  if (!color_settings)
+    color_settings = GetColorSettingsAsImageDataColorSettings();
   const ImageDataStorageFormat storage_format =
       ImageData::GetImageDataStorageFormat(color_settings->storageFormat());
   if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {
@@ -1705,8 +1725,10 @@ ImageData* BaseRenderingContext2D::getImageData(
       default:
         NOTREACHED();
     }
+    sk_sp<SkColorSpace> color_space = CanvasColorSpaceToSkColorSpace(
+        CanvasColorSpaceFromName(color_settings->colorSpace()));
     image_info = SkImageInfo::Make(sw, sh, color_type, kUnpremul_SkAlphaType,
-                                   GetCanvas2DColorParams().GetSkColorSpace());
+                                   color_space);
   }
 
   // Compute the size of and allocate |contents|, the ArrayContentsBuffer.

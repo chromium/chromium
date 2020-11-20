@@ -641,18 +641,6 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
   return wrapper;
 }
 
-CanvasColorSpace ImageData::GetCanvasColorSpace(
-    const String& color_space_name) {
-  if (color_space_name == kSRGBCanvasColorSpaceName)
-    return CanvasColorSpace::kSRGB;
-  if (color_space_name == kRec2020CanvasColorSpaceName)
-    return CanvasColorSpace::kRec2020;
-  if (color_space_name == kP3CanvasColorSpaceName)
-    return CanvasColorSpace::kP3;
-  NOTREACHED();
-  return CanvasColorSpace::kSRGB;
-}
-
 String ImageData::CanvasColorSpaceName(CanvasColorSpace color_space) {
   switch (color_space) {
     case CanvasColorSpace::kSRGB:
@@ -785,7 +773,7 @@ CanvasColorParams ImageData::GetCanvasColorParams() {
   if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled())
     return CanvasColorParams();
   CanvasColorSpace color_space =
-      ImageData::GetCanvasColorSpace(color_settings_->colorSpace());
+      CanvasColorSpaceFromName(color_settings_->colorSpace());
   return CanvasColorParams(
       color_space,
       color_settings_->storageFormat() != kUint8ClampedArrayStorageFormatName
