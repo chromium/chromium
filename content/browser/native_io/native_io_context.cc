@@ -16,6 +16,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/native_io/native_io_utils.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "url/origin.h"
 
@@ -25,14 +26,6 @@ namespace {
 
 constexpr base::FilePath::CharType kNativeIODirectoryName[] =
     FILE_PATH_LITERAL("NativeIO");
-
-base::FilePath GetNativeIORootPath(const base::FilePath& profile_root) {
-  if (profile_root.empty())
-    return base::FilePath();
-
-  return profile_root.Append(kNativeIODirectoryName);
-}
-
 }  // namespace
 
 NativeIOContext::NativeIOContext(
@@ -108,6 +101,28 @@ base::FilePath NativeIOContext::RootPathForOrigin(const url::Origin& origin) {
   base::FilePath origin_path = root_path_.AppendASCII(origin_identifier);
   DCHECK(root_path_.IsParent(origin_path));
   return origin_path;
+}
+
+// static
+base::FilePath NativeIOContext::GetNativeIORootPath(
+    const base::FilePath& profile_root) {
+  if (profile_root.empty())
+    return base::FilePath();
+
+  return profile_root.Append(kNativeIODirectoryName);
+}
+
+// static
+blink::mojom::NativeIOErrorPtr NativeIOContext::FileErrorToNativeIOError(
+    base::File::Error file_error,
+    std::string message) {
+  blink::mojom::NativeIOErrorType native_io_error_type =
+      blink::native_io::FileErrorToNativeIOErrorType(file_error);
+  std::string final_message =
+      message.empty()
+          ? blink::native_io::GetDefaultMessage(native_io_error_type)
+          : message;
+  return blink::mojom::NativeIOError::New(native_io_error_type, final_message);
 }
 
 }  // namespace content

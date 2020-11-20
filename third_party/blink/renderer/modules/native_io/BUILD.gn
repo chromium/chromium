@@ -8,6 +8,8 @@ blink_modules_sources("native_io") {
   sources = [
     "global_native_io.cc",
     "global_native_io.h",
+    "native_io_error.cc",
+    "native_io_error.h",
     "native_io_file.cc",
     "native_io_file.h",
     "native_io_file_sync.cc",

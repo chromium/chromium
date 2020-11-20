@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -124,8 +126,10 @@ ScriptPromise NativeIOFile::getLength(ScriptState* script_state,
     return ScriptPromise();
   }
   if (closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The file was already closed");
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "The file was already closed"));
     return ScriptPromise();
   }
   io_pending_ = true;
@@ -158,8 +162,10 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
     return ScriptPromise();
   }
   if (closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The file was already closed");
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "The file was already closed"));
     return ScriptPromise();
   }
   io_pending_ = true;
@@ -199,8 +205,10 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
     return ScriptPromise();
   }
   if (closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The file was already closed");
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "The file was already closed"));
     return ScriptPromise();
   }
   io_pending_ = true;
@@ -249,8 +257,10 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
     return ScriptPromise();
   }
   if (closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The file was already closed");
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "The file was already closed"));
     return ScriptPromise();
   }
   io_pending_ = true;
@@ -294,8 +304,10 @@ ScriptPromise NativeIOFile::flush(ScriptState* script_state,
     return ScriptPromise();
   }
   if (closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The file was already closed");
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "The file was already closed"));
     return ScriptPromise();
   }
   io_pending_ = true;
@@ -391,16 +403,15 @@ void NativeIOFile::DoGetLength(
     NativeIOFile::FileState* file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
-  base::File::Error get_length_error = base::File::FILE_OK;
+  base::File::Error get_length_error;
   int64_t length = -1;
   {
     WTF::MutexLocker mutex_locker(file_state->mutex);
     DCHECK(file_state->file.IsValid())
         << "file I/O operation queued after file closed";
     length = file_state->file.GetLength();
-    if (length < 0) {
-      get_length_error = file_state->file.GetLastFileError();
-    }
+    get_length_error = (length < 0) ? file_state->file.GetLastFileError()
+                                    : base::File::FILE_OK;
   }
 
   PostCrossThreadTask(
@@ -425,14 +436,12 @@ void NativeIOFile::DidGetLength(
   DispatchQueuedClose();
 
   if (length < 0) {
-    DCHECK(get_length_error != base::File::FILE_OK)
+    DCHECK_NE(get_length_error, base::File::FILE_OK)
         << "Negative length reported with no error set";
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "getLength() failed"));
+    blink::RejectNativeIOWithError(resolver, get_length_error);
     return;
   }
-  DCHECK(get_length_error == base::File::FILE_OK)
+  DCHECK_EQ(get_length_error, base::File::FILE_OK)
       << "File error reported when length is nonnegative";
   // getLength returns an unsigned integer, which is different from e.g.,
   // base::File and POSIX. The uses for negative integers are error handling,
@@ -441,9 +450,10 @@ void NativeIOFile::DidGetLength(
   resolver->Resolve(length);
 }
 
-void NativeIOFile::DidSetLength(ScriptPromiseResolver* resolver,
-                                bool backend_success,
-                                base::File backing_file) {
+void NativeIOFile::DidSetLength(
+    ScriptPromiseResolver* resolver,
+    base::File backing_file,
+    mojom::blink::NativeIOErrorPtr set_length_result) {
   DCHECK(backing_file.IsValid()) << "browser returned closed file";
   {
     WTF::MutexLocker locker(file_state_->mutex);
@@ -458,10 +468,8 @@ void NativeIOFile::DidSetLength(ScriptPromiseResolver* resolver,
     return;
   ScriptState::Scope scope(script_state);
 
-  if (!backend_success) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
-        "setLength() failed"));
+  if (set_length_result->type != mojom::blink::NativeIOErrorType::kSuccess) {
+    blink::RejectNativeIOWithError(resolver, std::move(set_length_result));
     return;
   }
 
@@ -512,11 +520,13 @@ void NativeIOFile::DidRead(
   DispatchQueuedClose();
 
   if (read_bytes < 0) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "read() failed"));
+    DCHECK_NE(read_error, base::File::FILE_OK)
+        << "Negative bytes read reported with no error set";
+    blink::RejectNativeIOWithError(resolver, read_error);
     return;
   }
+  DCHECK_EQ(read_error, base::File::FILE_OK)
+      << "Error set but positive number of bytes read.";
   resolver->Resolve(read_bytes);
 }
 
@@ -564,11 +574,13 @@ void NativeIOFile::DidWrite(
   DispatchQueuedClose();
 
   if (written_bytes < 0) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "write() failed"));
+    DCHECK_NE(write_error, base::File::FILE_OK)
+        << "Negative bytes written reported with no error set";
+    blink::RejectNativeIOWithError(resolver, write_error);
     return;
   }
+  DCHECK_EQ(write_error, base::File::FILE_OK);
+
   resolver->Resolve(written_bytes);
 }
 
@@ -579,23 +591,25 @@ void NativeIOFile::DoFlush(
     NativeIOFile::FileState* file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
-  bool success = false;
+  base::File::Error flush_error;
   {
     WTF::MutexLocker mutex_locker(file_state->mutex);
     DCHECK(file_state->file.IsValid())
         << "file I/O operation queued after file closed";
-    success = file_state->file.Flush();
+    bool success = file_state->file.Flush();
+    flush_error =
+        success ? base::File::FILE_OK : file_state->file.GetLastFileError();
   }
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
       CrossThreadBindOnce(&NativeIOFile::DidFlush, std::move(native_io_file),
-                          std::move(resolver), success));
+                          std::move(resolver), flush_error));
 }
 
 void NativeIOFile::DidFlush(
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    bool success) {
+    base::File::Error flush_error) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -606,10 +620,8 @@ void NativeIOFile::DidFlush(
 
   DispatchQueuedClose();
 
-  if (!success) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "flush() failed"));
+  if (flush_error != base::File::FILE_OK) {
+    blink::RejectNativeIOWithError(resolver, flush_error);
     return;
   }
   resolver->Resolve();

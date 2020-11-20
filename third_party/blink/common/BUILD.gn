@@ -140,6 +140,7 @@ source_set("common") {
     "messaging/web_message_port.cc",
     "mime_util/mime_util.cc",
     "mobile_metrics/mobile_friendliness.cc",
+    "native_io/native_io_utils.cc",
     "notifications/notification_mojom_traits.cc",
     "notifications/notification_resources.cc",
     "notifications/platform_notification_data.cc",

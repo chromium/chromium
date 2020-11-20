@@ -98,8 +98,8 @@ class NativeIOFile final : public ScriptWrappable {
 
   // Performs the post file I/O part of setLength(), on the main thread.
   void DidSetLength(ScriptPromiseResolver* resolver,
-                    bool backend_success,
-                    base::File backing_file);
+                    base::File backing_file,
+                    mojom::blink::NativeIOErrorPtr set_length_result);
 
   // Performs the file I/O part of read(), off the main thread.
   static void DoRead(
@@ -139,7 +139,7 @@ class NativeIOFile final : public ScriptWrappable {
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
   // Performs the post file-I/O part of flush(), on the main thread.
   void DidFlush(CrossThreadPersistent<ScriptPromiseResolver> resolver,
-                bool success);
+                base::File::Error flush_error);
 
   // Kicks off closing the file from the main thread.
   void CloseBackingFile();
