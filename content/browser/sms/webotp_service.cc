@@ -179,7 +179,6 @@ void WebOTPService::OnFailure(FailureType failure_type) {
       break;
     case FailureType::kPromptTimeout:
     case FailureType::kPromptCancelled:
-      // TODO(yigu): Land implementation in crrev.com/2427560.
       NOTREACHED();
       break;
   }
