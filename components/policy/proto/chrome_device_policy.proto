@@ -89,9 +89,9 @@ message ReleaseChannelProto {
   // One of "stable-channel", "beta-channel", or "dev-channel"
   optional string release_channel = 1;
 
-  // If |release_channel_delegated| is set to true and the |release_channel|
-  // field is not set or left empty, the user can select the channel. If the
-  // |release_channel| is specified it will always override users choice!
+  // The user can select the channel if |release_channel_delegated| is true.
+  // The value of |release_channel| is only taken into account if
+  // |release_channel_delegated| is set to false.
   optional bool release_channel_delegated = 2;
 
   // |release_lts_tag| is forwarded as the "ltshint" attribute to Omaha.

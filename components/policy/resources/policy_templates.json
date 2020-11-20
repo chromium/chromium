@@ -9689,7 +9689,9 @@
       'id': 91,
       'caption': '''Release channel''',
       'tags': [],
-      'desc': '''Specifies the release channel that this device should be locked to.''',
+      'desc': '''Specifies the release channel that this device should be locked to.
+
+      Setting <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME">ChromeOsReleaseChannel</ph> only has an effect if <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME">ChromeOsReleaseChannelDelegated</ph> is set to False.''',
     },
     {
       'name': 'ChromeOsReleaseChannelDelegated',
@@ -9705,9 +9707,9 @@
       'id': 134,
       'caption': '''Users may configure the Chrome OS release channel''',
       'tags': [],
-      'desc': '''If this policy is set to True and the ChromeOsReleaseChannel policy is not specified then users of the enrolling domain will be allowed to change the release channel of the device. If this policy is set to false the device will be locked in whatever channel it was last set.
+      'desc': '''Users are only allowed to change the release channel of the device if this policy is set to True. If this policy is False or not set, users are not allowed to change the channel.
 
-      The user selected channel will be overridden by the ChromeOsReleaseChannel policy, but if the policy channel is more stable than the one that was installed on the device, then the channel will only switch after the version of the more stable channel reaches a higher version number than the one installed on the device.''',
+      Setting <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME">ChromeOsReleaseChannel</ph> only has an effect if <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME">ChromeOsReleaseChannelDelegated</ph> is set to False.''',
     },
     {
       'name': 'DeviceReleaseLtsTag',
