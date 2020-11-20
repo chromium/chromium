@@ -6,7 +6,7 @@
 
 // An ImageDecoder decodes images.
 [
-    Exposed=(Window,Worker),
+    Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs,
     ImplementedAs=ImageDecoderExternal
 ] interface ImageDecoder {

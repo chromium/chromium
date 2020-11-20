@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/media_buildflags.h"
+#include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
@@ -36,11 +37,26 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
+
+namespace {
+
+void GetGpuFactoriesOnMainThread(
+    media::GpuVideoAcceleratorFactories** gpu_factories_out,
+    base::WaitableEvent* waitable_event) {
+  DCHECK(IsMainThread());
+  *gpu_factories_out = Platform::Current()->GetGpuFactories();
+  waitable_event->Signal();
+}
+
+}  // namespace
 
 template <typename Traits>
 DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
@@ -54,12 +70,14 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
   DCHECK(init->hasError());
 
   ExecutionContext* context = GetExecutionContext();
-
   DCHECK(context);
 
-  parent_media_log_ = Platform::Current()->GetMediaLog(
-      MediaInspectorContextImpl::From(*context),
-      context->GetTaskRunner(TaskType::kInternalMedia));
+  // TODO(crbug.com/1151005): Use a real MediaLog in worker contexts too.
+  if (IsMainThread()) {
+    parent_media_log_ = Platform::Current()->GetMediaLog(
+        MediaInspectorContextImpl::From(*context),
+        context->GetTaskRunner(TaskType::kInternalMedia));
+  }
 
   if (!parent_media_log_)
     parent_media_log_ = std::make_unique<media::NullMediaLog>();
@@ -73,6 +91,21 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
 
   output_cb_ = init->output();
   error_cb_ = init->error();
+
+  if (Traits::kNeedsGpuFactories) {
+    if (IsMainThread()) {
+      gpu_factories_ = Platform::Current()->GetGpuFactories();
+    } else {
+      base::WaitableEvent waitable_event;
+      if (PostCrossThreadTask(
+              *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+              CrossThreadBindOnce(&GetGpuFactoriesOnMainThread,
+                                  CrossThreadUnretained(&gpu_factories_),
+                                  CrossThreadUnretained(&waitable_event)))) {
+        waitable_event.Wait();
+      }
+    }
+  }
 }
 
 template <typename Traits>
@@ -241,7 +274,7 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
 
   if (!decoder_) {
     decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
-                                     media_log_.get());
+                                     gpu_factories_, media_log_.get());
     if (!decoder_) {
       HandleError("Configuration error",
                   media::Status(media::StatusCode::kDecoderCreationFailed,

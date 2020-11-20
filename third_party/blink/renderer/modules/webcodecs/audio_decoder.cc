@@ -28,8 +28,10 @@ namespace blink {
 
 // static
 std::unique_ptr<AudioDecoderTraits::MediaDecoderType>
-AudioDecoderTraits::CreateDecoder(ExecutionContext& execution_context,
-                                  media::MediaLog* media_log) {
+AudioDecoderTraits::CreateDecoder(
+    ExecutionContext& execution_context,
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    media::MediaLog* media_log) {
   return std::make_unique<AudioDecoderBroker>(media_log, execution_context);
 }
 

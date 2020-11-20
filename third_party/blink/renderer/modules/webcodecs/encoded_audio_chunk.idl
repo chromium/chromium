@@ -8,7 +8,7 @@ enum EncodedAudioChunkType {
 };
 
 [
-    Exposed=(Window,Worker),
+    Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs
 ] interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);

@@ -5,7 +5,7 @@
 // https://github.com/WICG/web-codecs
 
 [
-    Exposed=(Window,Worker),
+    Exposed=(Window,DedicatedWorker),
     Serializable,
     RuntimeEnabled=WebCodecs
 ] interface VideoFrame {

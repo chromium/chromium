@@ -5,7 +5,7 @@
 // https://github.com/WICG/web-codecs
 
 [
-    Exposed=(Window,Worker),
+    Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs
 ] interface AudioDecoder {
   // |init| includes an |output| callback for emitting AudioBuffers and an

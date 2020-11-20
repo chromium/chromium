@@ -14,22 +14,6 @@ interface AbortSignal : EventTarget
     getter onabort
     method constructor
     setter onabort
-interface AudioDecoder
-    attribute @@toStringTag
-    getter decodeQueueSize
-    getter state
-    method close
-    method configure
-    method constructor
-    method decode
-    method flush
-    method reset
-interface AudioFrame
-    attribute @@toStringTag
-    getter buffer
-    getter timestamp
-    method close
-    method constructor
 interface BackgroundFetchEvent : ExtendableEvent
     attribute @@toStringTag
     getter registration
@@ -426,12 +410,6 @@ interface DecompressionStream
     getter readable
     getter writable
     method constructor
-interface EncodedAudioChunk
-    attribute @@toStringTag
-    getter data
-    getter timestamp
-    getter type
-    method constructor
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -818,18 +796,6 @@ interface ImageData
     getter width
     method constructor
     method getColorSettings
-interface ImageDecoder
-    static method canDecodeType
-    attribute @@toStringTag
-    getter complete
-    getter frameCount
-    getter repetitionCount
-    getter tracks
-    getter type
-    method constructor
-    method decode
-    method decodeMetadata
-    method selectTrack
 interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method constructor
@@ -1250,13 +1216,6 @@ interface Permissions
     method request
     method requestAll
     method revoke
-interface Plane
-    attribute @@toStringTag
-    getter length
-    getter rows
-    getter stride
-    method constructor
-    method readInto
 interface Profiler
     attribute @@toStringTag
     getter sampleInterval
@@ -1596,24 +1555,6 @@ interface UserActivation
     getter hasBeenActive
     getter isActive
     method constructor
-interface VideoFrame
-    attribute @@toStringTag
-    getter codedHeight
-    getter codedWidth
-    getter cropHeight
-    getter cropLeft
-    getter cropTop
-    getter cropWidth
-    getter displayHeight
-    getter displayWidth
-    getter duration
-    getter format
-    getter planes
-    getter timestamp
-    method clone
-    method constructor
-    method createImageBitmap
-    method destroy
 interface WebGL2RenderingContext
     attribute @@toStringTag
     attribute ACTIVE_ATTRIBUTES

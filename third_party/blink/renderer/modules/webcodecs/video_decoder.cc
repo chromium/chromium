@@ -41,10 +41,12 @@ namespace blink {
 
 // static
 std::unique_ptr<VideoDecoderTraits::MediaDecoderType>
-VideoDecoderTraits::CreateDecoder(ExecutionContext& execution_context,
-                                  media::MediaLog* media_log) {
-  return std::make_unique<VideoDecoderBroker>(
-      execution_context, Platform::Current()->GetGpuFactories(), media_log);
+VideoDecoderTraits::CreateDecoder(
+    ExecutionContext& execution_context,
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    media::MediaLog* media_log) {
+  return std::make_unique<VideoDecoderBroker>(execution_context, gpu_factories,
+                                              media_log);
 }
 
 // static

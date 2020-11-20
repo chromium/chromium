@@ -20,7 +20,8 @@
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/renderers/default_decoder_factory.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webcodecs/decoder_selector.h"
@@ -82,13 +83,11 @@ class MediaAudioTaskWrapper {
     DVLOG(2) << __func__;
     DETACH_FROM_SEQUENCE(sequence_checker_);
 
-    // TODO(chcunningham): Enable this for workers. Currently only a
-    // frame-binding (RenderFrameHostImpl) is exposed.
     // TODO(chcunningham): set_disconnect_handler?
     // Mojo connection setup must occur here on the main thread where its safe
     // to use |execution_context| APIs.
     mojo::PendingRemote<media::mojom::InterfaceFactory> media_interface_factory;
-    execution_context.GetBrowserInterfaceBroker().GetInterface(
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
         media_interface_factory.InitWithNewPipeAndPassReceiver());
 
     // Mojo remote must be bound on media thread where it will be used.

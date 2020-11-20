@@ -387,6 +387,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter timestamp
 [Worker]     getter type
 [Worker]     method constructor
+[Worker] interface EncodedVideoChunk
+[Worker]     attribute @@toStringTag
+[Worker]     getter data
+[Worker]     getter duration
+[Worker]     getter timestamp
+[Worker]     getter type
+[Worker]     method constructor
 [Worker] interface ErrorEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter colno
@@ -1681,6 +1688,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter hasBeenActive
 [Worker]     getter isActive
 [Worker]     method constructor
+[Worker] interface VideoDecoder
+[Worker]     attribute @@toStringTag
+[Worker]     getter decodeQueueSize
+[Worker]     getter state
+[Worker]     method close
+[Worker]     method configure
+[Worker]     method constructor
+[Worker]     method decode
+[Worker]     method flush
+[Worker]     method reset
 [Worker] interface VideoFrame
 [Worker]     attribute @@toStringTag
 [Worker]     getter codedHeight
