@@ -30,6 +30,16 @@ enable_uiaccess_require_admin_manifest =
     "//remoting/host/win/enable_uiaccess_require_admin.manifest"
 
 # Depending on this target gives a default executable manifest with the addition
+# of the requestedExecutionLevel of requireAdministrator.
+windows_manifest("elevated_exe_manifest") {
+  sources = [
+    common_controls_manifest,
+    default_compatibility_manifest,
+    require_administrator_manifest,
+  ]
+}
+
+# Depending on this target gives a default executable manifest with the addition
 # of the DPI aware tag.
 windows_manifest("dpi_aware_exe_manifest") {
   sources = [
