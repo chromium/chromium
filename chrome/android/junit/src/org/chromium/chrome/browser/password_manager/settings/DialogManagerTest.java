@@ -48,9 +48,9 @@ public class DialogManagerTest {
         /** The dialog has not been shown yet. */
         public static final int NEW = 0;
         /** The dialog is showing. */
-        public static final int SHOWING = 0;
+        public static final int SHOWING = 1;
         /** The dialog has been dismissed. */
-        public static final int DISMISSED = 0;
+        public static final int DISMISSED = 2;
 
         @DialogState
         private int mState = NEW;
