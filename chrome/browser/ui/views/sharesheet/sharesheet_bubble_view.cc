@@ -86,6 +86,8 @@ constexpr char kExpandViewTitleFont[] = "Roboto, Medium, 15px";
 constexpr SkColor kShareTitleColor = gfx::kGoogleGrey900;
 constexpr SkColor kShareTargetTitleColor = gfx::kGoogleGrey700;
 
+constexpr auto kAnimateDelay = base::TimeDelta::FromMilliseconds(100);
+
 // Resize Percentage.
 constexpr int kStretchy = 1.0;
 
@@ -288,14 +290,80 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
 }
 
 void SharesheetBubbleView::ShowActionView() {
+  constexpr auto kSharesheetViewChangeOpacityFadeTime =
+      base::TimeDelta::FromMilliseconds(100);
+  constexpr float kShareActionScaleUpFactor = 0.9f;
+  constexpr auto kShareActionScaleUpTime =
+      base::TimeDelta::FromMilliseconds(200);
+
+  main_view_->SetPaintToLayer();
+  ui::Layer* main_view_layer = main_view_->layer();
+  main_view_layer->SetFillsBoundsOpaquely(false);
+  main_view_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
+  // |main_view_| opacity fade out.
+  auto scoped_settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
+      main_view_layer->GetAnimator());
+  scoped_settings->SetTransitionDuration(kSharesheetViewChangeOpacityFadeTime);
+  scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
+  main_view_layer->SetOpacity(kSharesheetOpacityTranslucent);
   main_view_->SetVisible(false);
+
+  share_action_view_->SetPaintToLayer();
+  ui::Layer* share_action_view_layer = share_action_view_->layer();
+  share_action_view_layer->SetFillsBoundsOpaquely(false);
+  share_action_view_layer->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kCornerRadius));
+
   share_action_view_->SetVisible(true);
+  share_action_view_layer->SetOpacity(kSharesheetOpacityTranslucent);
+  gfx::Transform transform = gfx::GetScaleTransform(
+      gfx::Rect(share_action_view_layer->size()).CenterPoint(),
+      kShareActionScaleUpFactor);
+  share_action_view_layer->SetTransform(transform);
+  auto share_action_scoped_settings =
+      std::make_unique<ui::ScopedLayerAnimationSettings>(
+          share_action_view_layer->GetAnimator());
+  share_action_scoped_settings->SetPreemptionStrategy(
+      ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
+
+  // |share_action_view_| scale & opacity fade in.
+  share_action_scoped_settings->SetTransitionDuration(kShareActionScaleUpTime);
+  share_action_scoped_settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN_2);
+  share_action_scoped_settings->SetTransitionDuration(
+      kSharesheetViewChangeOpacityFadeTime);
+  share_action_scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
+
+  // Delay |share_action_view_| animate so that we can see |main_view_| fade out
+  // first.
+  share_action_view_layer->GetAnimator()->SchedulePauseForProperties(
+      kAnimateDelay, ui::LayerAnimationElement::TRANSFORM |
+                         ui::LayerAnimationElement::OPACITY);
+  share_action_view_layer->SetOpacity(kSharesheetOpacityOpaque);
+  share_action_view_layer->SetTransform(gfx::Transform());
 }
 
 void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
+  auto old_bounds = gfx::RectF(width_, height_);
   width_ = width;
   height_ = height;
+
+  // Animate from the old bubble to the new bubble.
+  constexpr auto kBubbleTransformTime = base::TimeDelta::FromMilliseconds(200);
+
+  ui::Layer* layer = View::GetWidget()->GetLayer();
+  const gfx::Transform transform =
+      gfx::TransformBetweenRects(old_bounds, gfx::RectF(width, height));
+  layer->SetTransform(transform);
+  auto scoped_settings =
+      std::make_unique<ui::ScopedLayerAnimationSettings>(layer->GetAnimator());
+  scoped_settings->SetTransitionDuration(kBubbleTransformTime);
+  scoped_settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN_2);
+  layer->GetAnimator()->SchedulePauseForProperties(
+      kAnimateDelay, ui::LayerAnimationElement::TRANSFORM);
+
   UpdateAnchorPosition();
+
+  layer->SetTransform(gfx::Transform());
 }
 
 // This function is called from a ShareAction or after an app launches.
@@ -362,6 +430,7 @@ ax::mojom::Role SharesheetBubbleView::GetAccessibleWindowRole() {
 
 std::unique_ptr<views::NonClientFrameView>
 SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
+  // TODO(crbug.com/1097623) Replace this with layer->SetRoundedCornerRadius.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow(), color());
   bubble_border->SetCornerRadius(kCornerRadius);
@@ -467,9 +536,9 @@ void SharesheetBubbleView::SetToDefaultBubbleSizing() {
 
 void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
   constexpr float kSharesheetScaleUpFactor = 0.8f;
-  constexpr base::TimeDelta kSharesheetScaleUpTime =
+  constexpr auto kSharesheetScaleUpTime =
       base::TimeDelta::FromMilliseconds(150);
-  constexpr base::TimeDelta kSharesheetOpacityFadeInTime =
+  constexpr auto kSharesheetOpacityFadeInTime =
       base::TimeDelta::FromMilliseconds(100);
 
   views::Widget* widget = View::GetWidget();
@@ -495,17 +564,19 @@ void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
 
 void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
     views::Widget::ClosedReason closed_reason) {
-  constexpr base::TimeDelta kSharesheetOpacityFadeOutTime =
+  constexpr auto kSharesheetOpacityFadeOutTime =
       base::TimeDelta::FromMilliseconds(80);
 
   is_bubble_closing_ = true;
   ui::Layer* layer = View::GetWidget()->GetLayer();
-  // If open animation is still running, abort it as we are now closing.
-  layer->GetAnimator()->AbortAllAnimations();
+
   auto scoped_settings =
       std::make_unique<ui::ScopedLayerAnimationSettings>(layer->GetAnimator());
   scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
   scoped_settings->SetTransitionDuration(kSharesheetOpacityFadeOutTime);
+  // This aborts any running animations and starts the current one.
+  scoped_settings->SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   layer->SetOpacity(kSharesheetOpacityTranslucent);
   // We are closing the native widget during the close animation which results
   // in destroying the layer and the animation and the observer not calling
