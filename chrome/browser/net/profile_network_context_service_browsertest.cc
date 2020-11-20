@@ -67,6 +67,10 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 // Most tests for this class are in NetworkContextConfigurationBrowserTest.
 class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
  public:
@@ -660,3 +664,58 @@ INSTANTIATE_TEST_SUITE_P(
     ProfileNetworkContextServiceCertVerifierBuiltinFeaturePolicyTestWithService,
     ::testing::Bool());
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+
+#if defined(OS_CHROMEOS)
+class ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest
+    : public ProfileNetworkContextServiceBrowsertest,
+      public ::testing::WithParamInterface<base::Optional<bool>> {
+ public:
+  ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest() = default;
+  ~ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest() override =
+      default;
+
+  void SetUp() override {
+    if (GetParam().has_value()) {
+      if (GetParam().value()) {
+        scoped_feature_list_.InitWithFeatures(
+            {chromeos::features::kDisableIdleSocketsCloseOnMemoryPressure}, {});
+      } else {
+        scoped_feature_list_.InitWithFeatures(
+            {}, {chromeos::features::kDisableIdleSocketsCloseOnMemoryPressure});
+      }
+    }
+    ProfileNetworkContextServiceBrowsertest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// If the feature is enabled (GetParam()==true),
+// NetworkContextParams.disable_idle_sockets_close_on_memory_pressure is
+// expected to be true.
+// If the feature is not set or disabled (GetParam()==false or nullopt),
+// NetworkContextParams.disable_idle_sockets_close_on_memory_pressure is
+// expected to be false
+IN_PROC_BROWSER_TEST_P(
+    ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest,
+    FeaturePropagates) {
+  ProfileNetworkContextService* profile_network_context_service =
+      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+  base::FilePath empty_relative_partition_path;
+  network::mojom::NetworkContextParams network_context_params;
+  network::mojom::CertVerifierCreationParams cert_verifier_creation_params;
+  profile_network_context_service->ConfigureNetworkContextParams(
+      /*in_memory=*/false, empty_relative_partition_path,
+      &network_context_params, &cert_verifier_creation_params);
+  EXPECT_EQ(
+      GetParam().value_or(false),
+      network_context_params.disable_idle_sockets_close_on_memory_pressure);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest,
+    /*disable_idle_sockets_close_on_memory_pressure=*/
+    ::testing::Values(base::nullopt, true, false));
+#endif  // defined(OS_CHROMEOS)
