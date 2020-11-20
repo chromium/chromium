@@ -109,8 +109,12 @@ void AccessibilityEventRewriterDelegate::SendPointScanPoint(
       chromeos::AccessibilityManager::Get()->profile());
 
   auto event_args = std::make_unique<base::ListValue>();
-  event_args->AppendDouble(point.x());
-  event_args->AppendDouble(point.y());
+  auto point_dict = std::make_unique<base::DictionaryValue>();
+
+  point_dict->SetDouble("x", point.x());
+  point_dict->SetDouble("y", point.y());
+
+  event_args->Append(std::move(point_dict));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET,

@@ -18,6 +18,12 @@ class ActionManager {
 
     /** @private {!Array<!SAConstants.MenuType>} */
     this.menuStack_ = [];
+
+    /** @private {constants.Point} */
+    this.pointScanPoint_ = {x: 0, y: 0};
+
+    /** @private {function(constants.Point)} */
+    this.pointScanListener_ = this.handleOnPointScanSet_.bind(this);
   }
 
   static get instance() {
@@ -77,7 +83,9 @@ class ActionManager {
   static performAction(action) {
     const manager = ActionManager.instance;
     manager.handleGlobalActions_(action) ||
+        manager.handlePointScanActions_(action) ||
         manager.performActionOnCurrentNode_(action);
+    ActionManager.exitCurrentMenu();
   }
 
 
@@ -141,6 +149,11 @@ class ActionManager {
           SwitchAccessMenuAction.MOVE_FORWARD_ONE_CHAR_OF_TEXT,
           SwitchAccessMenuAction.END_TEXT_SELECTION
         ];
+      case SAConstants.MenuType.POINT_SCAN_MENU:
+        return [
+          SwitchAccessMenuAction.LEFT_CLICK,
+          SwitchAccessMenuAction.RIGHT_CLICK,
+        ];
       default:
         return [];
     }
@@ -178,6 +191,9 @@ class ActionManager {
     actions.filter((a) => possibleActions.includes(a));
     if (this.currentMenuType_ === SAConstants.MenuType.MAIN_MENU) {
       actions = this.addGlobalActions_(actions);
+    } else if (this.currentMenuType_ === SAConstants.MenuType.POINT_SCAN_MENU) {
+      actions = this.actionsForType_(SAConstants.MenuType.POINT_SCAN_MENU);
+      actions = this.addGlobalActions_(actions);
     }
     return actions;
   }
@@ -196,10 +212,35 @@ class ActionManager {
             'manageAccessibility/switchAccess');
         return true;
       case SwitchAccessMenuAction.POINT_SCAN:
+        ActionManager.exitCurrentMenu();
         chrome.accessibilityPrivate.activatePointScan();
         chrome.accessibilityPrivate.onPointScanSet.addListener(
-            this.pointScanClick_.bind(this));
-        ActionManager.exitCurrentMenu();
+            this.pointScanListener_);
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * If the action is a point scan action, perform the action and return true.
+   * Otherwise return false.
+   * @param {!SwitchAccessMenuAction} action
+   * @return {boolean}
+   * @private
+   */
+  handlePointScanActions_(action) {
+    switch (action) {
+      case SwitchAccessMenuAction.LEFT_CLICK:
+        EventGenerator.sendMouseClick(
+            this.pointScanPoint_.x, this.pointScanPoint_.y);
+        return true;
+      case SwitchAccessMenuAction.RIGHT_CLICK:
+        EventGenerator.sendMouseClick(
+            this.pointScanPoint_.x, this.pointScanPoint_.y, {
+              mouseButton:
+                  chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT
+            });
         return true;
       default:
         return false;
@@ -252,13 +293,16 @@ class ActionManager {
   }
 
   /**
-   * Performs mouse left click action on the selected point scanning point
-   * coordinates
-   * @param {number} x
-   * @param {number} y
+   * Shows the point scan menu and sets the point scan position
+   * coordinates.
+   * @param {!constants.Point} point
    * @private
    */
-  pointScanClick_(x, y) {
-    EventGenerator.sendMouseClick(x, y);
+  handleOnPointScanSet_(point) {
+    this.pointScanPoint_ = point;
+    this.menuStack_.push(SAConstants.MenuType.POINT_SCAN_MENU);
+    this.openCurrentMenu_();
+    chrome.accessibilityPrivate.onPointScanSet.removeListener(
+        this.pointScanListener_);
   }
 }

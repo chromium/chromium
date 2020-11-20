@@ -827,6 +827,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SWITCH_ACCESS_KEYBOARD" desc="The label for the Switch Access menu option to open the onscreen keyboard.">
         Keyboard
       </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_LEFT_CLICK" desc="The label for the Switch Access menu option to left click.">
+        Left click
+      </message>
       <message name="IDS_ASH_SWITCH_ACCESS_MOVE_BACKWARD_ONE_CHAR_OF_TEXT" desc="The label for the Switch Access menu option to move the cursor backward one character of text.">
         Back by letter
       </message>
@@ -853,6 +856,9 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_SWITCH_ACCESS_POINT_SCAN" desc="The label for the Switch Access menu option to start point scanning.">
         Point scanning
+      </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_RIGHT_CLICK" desc="The label for the Switch Access menu option to right click.">
+        Right Click
       </message>
       <message name="IDS_ASH_SWITCH_ACCESS_SCROLL_DOWN" desc="The label for the Switch Access menu option to scroll the selected view down.">
         Scroll down

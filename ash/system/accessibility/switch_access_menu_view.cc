@@ -96,6 +96,12 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
       menu_button_details->insert(
           {"pointScan",
            {&kSwitchAccessPointScanIcon, IDS_ASH_SWITCH_ACCESS_POINT_SCAN}});
+      menu_button_details->insert(
+          {"leftClick",
+           {&kSwitchAccessLeftClickIcon, IDS_ASH_SWITCH_ACCESS_LEFT_CLICK}});
+      menu_button_details->insert(
+          {"rightClick",
+           {&kSwitchAccessRightClickIcon, IDS_ASH_SWITCH_ACCESS_RIGHT_CLICK}});
     }
   }
   return *menu_button_details;

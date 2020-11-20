@@ -66,7 +66,7 @@ class KeyboardNode extends BasicNode {
     // simulate a mouse click.
     const center = RectUtil.center(keyLocation);
     EventGenerator.sendMouseClick(
-        center.x, center.y, SAConstants.VK_KEY_PRESS_DURATION_MS);
+        center.x, center.y, {delayMs: SAConstants.VK_KEY_PRESS_DURATION_MS});
 
     return SAConstants.ActionResponse.CLOSE_MENU;
   }

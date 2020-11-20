@@ -340,6 +340,9 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   int flags = 0;
   if (type != ui::ET_MOUSE_MOVED) {
     switch (mouse_data->mouse_button) {
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_LEFT:
+        flags |= ui::EF_LEFT_MOUSE_BUTTON;
+        break;
       case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_MIDDLE:
         flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
         break;

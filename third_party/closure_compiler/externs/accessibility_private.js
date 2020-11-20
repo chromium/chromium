@@ -98,6 +98,7 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   JUMP_TO_BEGINNING_OF_TEXT: 'jumpToBeginningOfText',
   JUMP_TO_END_OF_TEXT: 'jumpToEndOfText',
   KEYBOARD: 'keyboard',
+  LEFT_CLICK: 'leftClick',
   MOVE_BACKWARD_ONE_CHAR_OF_TEXT: 'moveBackwardOneCharOfText',
   MOVE_BACKWARD_ONE_WORD_OF_TEXT: 'moveBackwardOneWordOfText',
   MOVE_CURSOR: 'moveCursor',
@@ -107,6 +108,7 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   MOVE_UP_ONE_LINE_OF_TEXT: 'moveUpOneLineOfText',
   PASTE: 'paste',
   POINT_SCAN: 'pointScan',
+  RIGHT_CLICK: 'rightClick',
   SCROLL_DOWN: 'scrollDown',
   SCROLL_LEFT: 'scrollLeft',
   SCROLL_RIGHT: 'scrollRight',
@@ -393,12 +395,12 @@ chrome.accessibilityPrivate.performAcceleratorAction = function(acceleratorActio
 chrome.accessibilityPrivate.isFeatureEnabled = function(feature, callback) {};
 
 /**
- * Updates properties on the Select-to-speak panel.
- * @param {boolean} show True if the panel should be shown, false otherwise
+ * Updates properties of the Select-to-speak panel.
+ * @param {boolean} show True to show panel, false to hide it
  * @param {!chrome.accessibilityPrivate.ScreenRect=} anchor A rectangle
  *     indicating the bounds of the object the panel should be displayed next
- * to.
- * @param {boolean=} isPaused Whether Select-to-speak playback is paused.
+ *     to.
+ * @param {boolean=} isPaused True if Select-to-speak playback is paused.
  */
 chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(
     show, anchor, isPaused) {};

@@ -175,6 +175,7 @@ js_library("action_manager") {
     ":switch_access_constants",
     ":switch_access_node",
     "../common:array_util",
+    "../common:constants",
   ]
   externs_list = [ "$externs_path/automation.js" ]
 }

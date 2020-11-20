@@ -81,7 +81,7 @@ const SAConstants = {
    * @enum {number}
    * @const
    */
-  MenuType: {MAIN_MENU: 0, TEXT_NAVIGATION: 1},
+  MenuType: {MAIN_MENU: 0, TEXT_NAVIGATION: 1, POINT_SCAN_MENU: 2},
 
   /**
    * Preferences that are configurable in Switch Access.

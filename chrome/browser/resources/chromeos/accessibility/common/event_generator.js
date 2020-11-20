@@ -30,10 +30,16 @@ EventGenerator = class {
    *     to simulate a mouse click.
    * @param {number} x
    * @param {number} y
-   * @param {number} delayMs The delay between mouse press and mouse release,
-   *     in milliseconds.
+   * @param {!{
+   *  delayMs: (number|undefined),
+   *  mouseButton:
+   *   (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined)
+   * }} params
    */
-  static sendMouseClick(x, y, delayMs = 0) {
+  static sendMouseClick(x, y, params = {
+    delayMs: 0,
+    mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT
+  }) {
     if (EventGenerator.currentlyMidMouseClick) {
       EventGenerator.mouseClickQueue.push(arguments);
       return;
@@ -45,12 +51,15 @@ EventGenerator = class {
     x = Math.round(x);
     y = Math.round(y);
 
+    const {delayMs, mouseButton} = params;
     let type = chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS;
-    chrome.accessibilityPrivate.sendSyntheticMouseEvent({type, x, y});
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent(
+        {type, x, y, mouseButton});
 
     const callback = () => {
       type = chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
-      chrome.accessibilityPrivate.sendSyntheticMouseEvent({type, x, y});
+      chrome.accessibilityPrivate.sendSyntheticMouseEvent(
+          {type, x, y, mouseButton});
 
       EventGenerator.currentlyMidMouseClick = false;
       if (EventGenerator.mouseClickQueue.length > 0) {
