@@ -538,6 +538,20 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
   window_observer_.Add(transient_child);
 }
 
+void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
+    aura::Window* parent,
+    aura::Window* transient_child) {
+  if (parent != window_ && !::wm::HasTransientAncestor(parent, window_))
+    return;
+
+  transient_child->ClearProperty(chromeos::kIsShowingInOverviewKey);
+  DCHECK(event_targeting_blocker_map_.contains(transient_child));
+  event_targeting_blocker_map_.erase(transient_child);
+
+  if (window_observer_.IsObserving(transient_child))
+    window_observer_.Remove(transient_child);
+}
+
 void ScopedOverviewTransformWindow::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
@@ -556,29 +570,23 @@ void ScopedOverviewTransformWindow::OnWindowPropertyChanged(
   }
 }
 
-void ScopedOverviewTransformWindow::AddHiddenTransientWindows(
-    const std::vector<aura::Window*>& transient_windows) {
-  if (!hidden_transient_children_) {
-    hidden_transient_children_ = std::make_unique<ScopedOverviewHideWindows>(
-        std::move(transient_windows), /*forced_hidden=*/true);
-  } else {
-    for (auto* window : transient_windows)
-      hidden_transient_children_->AddWindow(window);
-  }
-}
-
-void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
-    aura::Window* parent,
-    aura::Window* transient_child) {
-  if (parent != window_ && !::wm::HasTransientAncestor(parent, window_))
+void ScopedOverviewTransformWindow::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  if (window == window_)
     return;
 
-  transient_child->ClearProperty(chromeos::kIsShowingInOverviewKey);
-  DCHECK(event_targeting_blocker_map_.contains(transient_child));
-  event_targeting_blocker_map_.erase(transient_child);
+  // Transient window is repositioned. The new position within the
+  // overview item needs to be recomputed. No need to recompute if the
+  // transient is invisible. It will get placed properly when it reshows on
+  // overview end.
+  if (!window->IsVisible())
+    return;
 
-  if (window_observer_.IsObserving(transient_child))
-    window_observer_.Remove(transient_child);
+  overview_item_->SetBounds(overview_item_->target_bounds(),
+                            OVERVIEW_ANIMATION_NONE);
 }
 
 // static
@@ -590,6 +598,17 @@ void ScopedOverviewTransformWindow::CloseWidget() {
   aura::Window* parent_window = ::wm::GetTransientRoot(window_);
   if (parent_window)
     window_util::CloseWidgetForWindow(parent_window);
+}
+
+void ScopedOverviewTransformWindow::AddHiddenTransientWindows(
+    const std::vector<aura::Window*>& transient_windows) {
+  if (!hidden_transient_children_) {
+    hidden_transient_children_ = std::make_unique<ScopedOverviewHideWindows>(
+        std::move(transient_windows), /*forced_hidden=*/true);
+  } else {
+    for (auto* window : transient_windows)
+      hidden_transient_children_->AddWindow(window);
+  }
 }
 
 }  // namespace ash

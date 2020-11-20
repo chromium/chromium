@@ -148,6 +148,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
 
   aura::Window* window() const { return window_; }
 

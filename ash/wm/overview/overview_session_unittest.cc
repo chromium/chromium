@@ -3203,6 +3203,18 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   check_a11y_overrides("item3", item_widget3, item_widget1, focus_widget);
 }
 
+// Tests that removing a transient child during overview does not result in a
+// crash when exiting overview.
+TEST_P(OverviewSessionTest, RemoveTransientNoCrash) {
+  auto child = CreateTestWindow();
+  auto parent = CreateTestWindow();
+  wm::AddTransientChild(parent.get(), child.get());
+
+  ToggleOverview();
+  wm::RemoveTransientChild(parent.get(), child.get());
+  ToggleOverview();
+}
+
 class TabletModeOverviewSessionTest : public OverviewSessionTest {
  public:
   TabletModeOverviewSessionTest() = default;
