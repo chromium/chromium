@@ -388,6 +388,7 @@ source_set("metrics_collector") {
   ]
 
   deps = [
+    "//chrome/common",
     "//components/keyed_service/content",
     "//components/prefs",
     "//components/safe_browsing/core/common",
