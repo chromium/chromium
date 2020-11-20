@@ -1392,7 +1392,6 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
-    @DisableIf.Build(sdk_is_less_than = P, message = "https://crbug.com/1150937")
     public void testShow_SingleAsHomepage_BottomSheet() {
         // clang-format on
         if (!mImmediateReturn) {
@@ -1408,6 +1407,11 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
+        if (isInstantReturn()) {
+            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
+            // omnibox.
+            return;
+        }
         onView(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
