@@ -58,6 +58,11 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   // Returns the currently-showing ExtensionsMenuView, if any exists.
   static ExtensionsMenuView* GetExtensionsMenuViewForTesting();
 
+  // Returns the children of a section for the given `status`.
+  static std::vector<ExtensionsMenuItemView*>
+  GetSortedItemsForSectionForTesting(
+      ToolbarActionViewController::PageInteractionStatus status);
+
   // TabStripModelObserver:
   void TabChangedAt(content::WebContents* contents,
                     int index,

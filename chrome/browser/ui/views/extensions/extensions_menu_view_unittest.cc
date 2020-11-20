@@ -270,6 +270,34 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreShownInTheMenu) {
   }
 }
 
+TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreSortedInTheMenu) {
+  constexpr char kExtensionZName[] = "Z Extension";
+  AddSimpleExtension(kExtensionZName);
+  constexpr char kExtensionAName[] = "A Extension";
+  AddSimpleExtension(kExtensionAName);
+  constexpr char kExtensionBName[] = "b Extension";
+  AddSimpleExtension(kExtensionBName);
+  constexpr char kExtensionCName[] = "C Extension";
+  AddSimpleExtension(kExtensionCName);
+
+  std::vector<ExtensionsMenuItemView*> menu_items =
+      ExtensionsMenuView::GetSortedItemsForSectionForTesting(
+          ToolbarActionViewController::PageInteractionStatus::kNone);
+  ASSERT_EQ(4u, menu_items.size());
+
+  std::vector<std::string> item_names;
+  for (auto* menu_item : menu_items) {
+    item_names.push_back(
+        base::UTF16ToUTF8(menu_item->primary_action_button_for_testing()
+                              ->label_text_for_testing()));
+  }
+
+  // Basic std::sort would do A,C,Z,b however we want A,b,C,Z
+  EXPECT_THAT(item_names,
+              testing::ElementsAre(kExtensionAName, kExtensionBName,
+                                   kExtensionCName, kExtensionZName));
+}
+
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInToolbar) {
   constexpr char kName[] = "Test Name";
   AddSimpleExtension(kName);

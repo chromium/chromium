@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 
+#include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,8 +41,8 @@ constexpr int EXTENSIONS_SETTINGS_ID = 42;
 
 bool CompareExtensionMenuItemViews(const ExtensionsMenuItemView* a,
                                    const ExtensionsMenuItemView* b) {
-  return a->view_controller()->GetActionName() <
-         b->view_controller()->GetActionName();
+  return base::i18n::ToLower(a->view_controller()->GetActionName()) <
+         base::i18n::ToLower(b->view_controller()->GetActionName());
 }
 
 // A helper method to convert to an ExtensionsMenuItemView. This cannot be used
@@ -509,4 +510,16 @@ void ExtensionsMenuView::Hide() {
 // static
 ExtensionsMenuView* ExtensionsMenuView::GetExtensionsMenuViewForTesting() {
   return g_extensions_dialog;
+}
+
+// static
+std::vector<ExtensionsMenuItemView*>
+ExtensionsMenuView::GetSortedItemsForSectionForTesting(
+    ToolbarActionViewController::PageInteractionStatus status) {
+  const ExtensionsMenuView::Section* section =
+      GetExtensionsMenuViewForTesting()->GetSectionForStatus(status);
+  std::vector<ExtensionsMenuItemView*> menu_item_views;
+  for (views::View* view : section->menu_items->children())
+    menu_item_views.push_back(GetAsMenuItemView(view));
+  return menu_item_views;
 }
