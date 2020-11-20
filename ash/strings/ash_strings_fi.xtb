@@ -185,6 +185,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2718395828230677721">Yövalo</translation>
 <translation id="2727175239389218057">Vastaa</translation>
 <translation id="2727977024730340865">Pienitehoinen laturi kytketty. Akku ei ehkä lataudu luotettavasti.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + haku</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
 <translation id="28232023175184696">Ei internetyhteyttä. Yritä uudelleen klikkaamalla.</translation>
@@ -535,7 +536,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6030495522958826102">Valikko siirretty näytön vasempaan alanurkkaan</translation>
-<translation id="6032620807120418574">Ota koko ruudun kuvakaappaus klikkaamalla minne tahansa</translation>
+<translation id="6032620807120418574">Ota kuvakaappaus koko näytöstä klikkaamalla minne tahansa</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6043212731627905357">Näyttö ja <ph name="DEVICE_TYPE" /> eivät sovi yhteen (näyttöä ei tueta).</translation>
 <translation id="6043994281159824495">Kirjaudu ulos nyt</translation>
@@ -565,6 +566,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6297287540776456956">Valitse alue näyttökynällä.</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> käännettiin asentoon <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Ääni</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on ylläpidetty käyttökerta, jota ylläpitää <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth on päällä</translation>
 <translation id="6381109794406942707">Avaa laitteen lukitus lisäämällä PIN-koodisi.</translation>
 <translation id="639644700271529076">CAPS LOCK on pois päältä</translation>

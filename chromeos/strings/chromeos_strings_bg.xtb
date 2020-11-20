@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Много голямо забавяне на HTTPS</translation>
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
 <translation id="1468664791493211953">Оферти</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> управлява това устройство и може да е в състояние да наблюдава активността ви.</translation>
 <translation id="1478594628797167447">Скенер</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нишки)</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Сканиране във</translation>
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
 <translation id="4548483925627140043">Не бе открит сигнал</translation>
+<translation id="455835558791489930">Батерия с капацитет от <ph name="CHARGE_VALUE" /> мАч</translation>
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
 <translation id="4646949265910132906">Сигурна Wi-Fi връзка</translation>
@@ -138,8 +142,10 @@
 <translation id="6766275201586212568">Неуспешни преобразувания от DNS</translation>
 <translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
 <translation id="6839141349259399400">Не можете да свържете скенерите?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="714876143603641390">Връзка с LAN</translation>
 <translation id="7162487448488904999">Галерия</translation>
+<translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файлов тип</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>

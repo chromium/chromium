@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
+<translation id="1071587090247825784">ফায়ারওয়াল শনাক্ত করা হয়েছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠার সাইজ</translation>
 <translation id="1195447618553298278">অজানা ত্রুটি৷</translation>
 <translation id="1204296502688602597">ডিএনএস লেটেন্সি</translation>
+<translation id="1238612778414822719">HTTPS লেটেন্সি</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">স্ক্যান করতে ক্ষেত্রটি ফিট করান</translation>
 <translation id="1397738625398125236">গেটওয়ে পিং করা যেতে পারে</translation>
+<translation id="1398634363027580500">খুব বেশি HTTPS লেটেন্সি</translation>
 <translation id="1413240736185167732">প্রিন্ট করা যায়নি - ফিল্টার কাজ করছে না</translation>
 <translation id="1468664791493211953">অফার</translation>
 <translation id="1478594628797167447">স্ক্যানার</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">প্রিন্ট করা যায়নি - আউটপুট বিন ভর্তি হয়ে গেছে</translation>
 <translation id="4034824040120875894">প্রিন্টার</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
+<translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
 <translation id="4238516577297848345">প্রিন্ট করার কোনও কাজ চালু নেই</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />টির মধ্যে <ph name="PRINTED_PAGE_NUMBER" /> নম্বর পৃষ্ঠা। প্রিন্ট করা বাতিল করতে এন্টার প্রেস করুন।</translation>
 <translation id="4646949265910132906">নিরাপদ ওয়াই-ফাই কানেকশন</translation>
 <translation id="467510802200863975">পাসওয়ার্ড মিলছে না</translation>
+<translation id="467715984478005772">ফায়ারওয়াল রয়েছে বলে মনে হচ্ছে</translation>
 <translation id="4691278870498629773">বন্ধ হয়ে গেছে - ট্রে লাগানো নেই</translation>
 <translation id="469379815867856270">সিগন্যালের ক্ষমতা</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
@@ -110,6 +115,7 @@
 <translation id="6048107060512778456">প্রিন্ট করা যায়নি - প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="6050189528197190982">গ্রেস্কেল</translation>
 <translation id="6058625436358447366">সম্পূর্ণ করতে, আপনার পুরনো ও নতুন পাসওয়ার্ড লিখুন</translation>
+<translation id="6061772781719867950">HTTP অনুরোধ সফল হয়নি</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
@@ -128,6 +134,8 @@
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
 <translation id="6747215703636344499">বন্ধ হয়ে গেছে - আউটপুট ট্রে ভর্তি হয়ে গেছে</translation>
+<translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
+<translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="6839141349259399400">স্ক্যানারের সাথে কানেক্ট করা যাচ্ছে না?</translation>
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>
 <translation id="7162487448488904999">গ্যালারি</translation>
@@ -135,6 +143,7 @@
 <translation id="7359657277149375382">ফাইলের প্রকার</translation>
 <translation id="7561454561030345039">এই কাজটি আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
@@ -147,6 +156,7 @@
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="8294431847097064396">উৎস</translation>
+<translation id="8302368968391049045">HTTPS ফায়ারওয়াল</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
 <translation id="8352772353338965963">একাধিক সাইন-ইন-এ একটি অ্যাকাউন্ট যোগ করুন৷ সমস্ত সাইন-ইন থাকা অ্যাকাউন্টগুলি কোনো পাসওয়ার্ড ছাড়াই অ্যাক্সেস করা যাবে, তাই এই বৈশিষ্ট্যটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টগুলির সাথে ব্যবহার করা উচিৎ৷</translation>
 <translation id="8364946094152050673">ডোমেন নেম সার্ভার খালি রয়েছে</translation>

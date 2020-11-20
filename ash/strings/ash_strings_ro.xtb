@@ -185,6 +185,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2718395828230677721">Lum. de noapte</translation>
 <translation id="2727175239389218057">Răspunde</translation>
 <translation id="2727977024730340865">V-ați conectat la un încărcător de putere joasă. Încărcarea bateriei poate fi nesigură.</translation>
+<translation id="2778650143428714839">Dispozitivul <ph name="DEVICE_TYPE" /> gestionat de <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
 <translation id="2819276065543622893">Veți fi deconectat(ă) acum.</translation>
 <translation id="28232023175184696">Nu ne putem conecta la internet. Dă clic pentru a încerca din nou.</translation>
@@ -563,6 +564,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6297287540776456956">Folosește creionul pentru a selecta o zonă</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> a fost rotit la <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voce</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> este o sesiune gestionată de <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth este activat</translation>
 <translation id="6381109794406942707">Pentru a debloca dispozitivul, introdu codul PIN.</translation>
 <translation id="639644700271529076">Tasta CAPS LOCK este dezactivată</translation>

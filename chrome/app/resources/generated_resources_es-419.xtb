@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Determina la frecuencia con la que se actualiza la pantalla</translation>
 <translation id="1061904396131502319">Casi es hora de un descanso</translation>
 <translation id="1067048845568873861">Creada</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Otros servicios de Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Otro programa en tu computadora agregó una extensión que puede cambiar el funcionamiento de Chrome.
@@ -925,7 +924,6 @@ De lo contrario, sal de la cuenta ahora para que se reflejen los cambios en este
 Para administrar la configuración de esta cuenta, instala la app de Family Link en tu dispositivo.  Te enviamos un correo electrónico con instrucciones.</translation>
 <translation id="2040460856718599782">Se produjo un error cuando intentábamos autenticarte. Verifica tus credenciales de acceso y vuelve a intentarlo.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Tienes 1 contraseña hackeada}other{Tienes # contraseñas hackeadas}}</translation>
-<translation id="2040863272941698761">Configurar Linux</translation>
 <translation id="204497730941176055">Nombre de la plantilla de certificado de Microsoft</translation>
 <translation id="2045117674524495717">Asistente de combinaciones de teclas</translation>
 <translation id="2045969484888636535">Continuar bloqueando las cookies</translation>
@@ -1257,8 +1255,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2428510569851653187">Describir lo que estabas haciendo cuando se bloqueó la pestaña</translation>
 <translation id="2428939361789119025">Desactivar Wi-Fi</translation>
 <translation id="2431027948063157455">No se pudo cargar el Asistente de Google. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
-<translation id="2431846145771260397">¿Seguro que quieres reservar un espacio fijo en el disco para Linux (Beta)?</translation>
-<translation id="2432753757290432042">Es necesario actualizar Linux (Beta)</translation>
 <translation id="2433452467737464329">Agrega un parámetro de consulta en la URL para actualizar la página de forma automática: chrome://network/?refresh=&lt;sec&gt;.</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Diseño</translation>
@@ -1973,6 +1969,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3264544094376351444">Fuente Sans-serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Cerrar ventana</translation>
+<translation id="3266022278425892773">Entorno de desarrollo de Linux</translation>
 <translation id="3266179261140759675">No permitir que los sitios cerrados envíen y reciban datos</translation>
 <translation id="3266274118485960573">Se está ejecutando la verificación de seguridad.</translation>
 <translation id="3267726687589094446">Seguir permitiendo las descargas automáticas de varios archivos</translation>
@@ -2271,7 +2268,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3600051066689725006">Información de solicitud web</translation>
 <translation id="3600792891314830896">Silenciar los sitios que reproducen sonido</translation>
 <translation id="360180734785106144">Ofrecer funciones nuevas cuando estén disponibles</translation>
-<translation id="3602198818276948261">La configuración del contenedor no permite cambiar el tamaño del disco. Si quieres modificar el espacio reservado para Linux (Beta), realiza una copia de seguridad y, luego, restablécela en un contenedor nuevo.</translation>
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3603622770190368340">Obtener certificado de red</translation>
 <translation id="3604713164406837697">Cambiar el fondo de pantalla</translation>
@@ -3395,6 +3391,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="4927753642311223124">No hay ningún elemento que mostrar.</translation>
 <translation id="4929386379796360314">Destinos de impresión</translation>
+<translation id="4930447554870711875">Desarrolladores</translation>
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4933484234309072027">insertado en <ph name="URL" /></translation>
@@ -3947,7 +3944,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="558918721941304263">Cargando apps…</translation>
 <translation id="5592595402373377407">Aún no hay suficientes datos disponibles.</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
-<translation id="5595727715083333657">El contenedor no admite un cambio de tamaño. Si quieres modificar el espacio preasignado a Linux (Beta), realiza una copia de seguridad y, luego, restablécela en un contenedor nuevo.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5600706100022181951">Para descargar la actualización, se usarán <ph name="UPDATE_SIZE_MB" /> MB de datos móviles. ¿Deseas continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4199,7 +4195,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5893589697005440881">Comparte archivos con personas que estén cerca de tu ubicación.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5900302528761731119">Foto de perfil de Google</translation>
-<translation id="5900358982890952556">Actualizar Linux (Beta)</translation>
 <translation id="5901494423252125310">La tapa de la impresora está abierta</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5904614460720589786">No se pudo instalar <ph name="APP_NAME" /> debido a un problema de configuración. Comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
@@ -4665,6 +4660,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">Para usar <ph name="APP_NAME" />, actualiza el dispositivo.</translation>
 <translation id="6436164536244065364">Ver en Web Store</translation>
+<translation id="6438234780621650381">Restablecer la configuración</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: Reproducción de audio</translation>
 <translation id="6442187272350399447">Impresionante</translation>
 <translation id="6444070574980481588">Establecer fecha y hora</translation>
@@ -5376,7 +5372,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7284411326658527427">Cada persona podrá personalizar su cuenta y proteger la privacidad de sus datos.</translation>
 <translation id="7287143125007575591">Acceso denegado</translation>
 <translation id="7287411021188441799">Restablecer fondo predeterminado</translation>
-<translation id="7288013116963835700">Quitar Linux de <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> ppp</translation>
 <translation id="7289225569524511578">Abrir la app de fondos de pantalla</translation>
 <translation id="7290242001003353852">Este servicio de acceso, alojado por <ph name="SAML_DOMAIN" />, está accediendo a tu cámara.</translation>
@@ -5762,7 +5757,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7730683939467795481">La extensión "<ph name="EXTENSION_NAME" />" modificó esta página</translation>
 <translation id="7732111077498238432">La red está controlada por políticas</translation>
 <translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
-<translation id="7737238973539693982">Borrar Linux (Beta)</translation>
 <translation id="7737948071472253612">No puede usar la cámara</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="7742706086992565332">Puedes establecer el nivel del zoom en sitios web determinados.</translation>
@@ -6232,7 +6226,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="825238165904109940">Mostrar siempre las URL completas</translation>
 <translation id="8252569384384439529">Subiendo…</translation>
 <translation id="8253198102038551905">Haz clic en "+" para ver las propiedades de red.</translation>
-<translation id="8254954272268479918">Cerrar Linux (Beta)</translation>
 <translation id="8255451560461371599">Sin imagen de fondo</translation>
 <translation id="8256319818471787266">Bobby</translation>
 <translation id="8257950718085972371">Seguir bloqueando el acceso a la cámara</translation>
@@ -6966,7 +6959,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9088917181875854783">Confirma que esta clave de acceso se muestra en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="909108997331068008">El perfil de <ph name="EXISTING_USER" /> ya accedió a <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Te recomendamos realizar una copia de seguridad de los archivos en caso de que la actualización no pueda completarse. Si inicias la actualización, se cerrará Linux (Beta). Antes de continuar guarda los archivos abiertos.</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9094038138851891550">El nombre de usuario no es válido</translation>
 <translation id="9094982973264386462">Quitar</translation>
@@ -7045,7 +7037,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9176476835295860688">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />. Si habilitaste la "Actividad de web y de aplicaciones adicional", es posible que se almacenen estos datos en tu Cuenta de Google. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: Se conectó un dispositivo Bluetooth</translation>
 <translation id="9179524979050048593">Nombre de usuario de la pantalla de acceso</translation>
-<translation id="9179734824669616955">Configurar Linux (Beta) en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Este proceso puede demorar unos minutos. Se está iniciando el contenedor de Linux.</translation>
 <translation id="9180380851667544951">El sitio puede compartir la pantalla</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
@@ -7086,7 +7077,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="93610034168535821">Almacenamiento total que usan los sitios:</translation>
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>
 <translation id="93766956588638423">Reparar extensión</translation>
-<translation id="938339467127511841">Almacenamiento en Linux (Beta)</translation>
 <translation id="938470336146445890">Instala un certificado de usuario.</translation>
 <translation id="939252827960237676">No se pudo guardar la captura de pantalla.</translation>
 <translation id="939519157834106403">SSID</translation>

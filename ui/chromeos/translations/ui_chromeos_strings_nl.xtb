@@ -209,6 +209,7 @@
 <translation id="3335337277364016868">Opnamejaar</translation>
 <translation id="3353984535370177728">Een map voor uploaden selecteren</translation>
 <translation id="3356580349448036450">Voltooid</translation>
+<translation id="3369522691271417561">Koerdisch Sorani (met Arabisch toetsenbord)</translation>
 <translation id="3414856743105198592">Als je het verwisselbare medium formatteert, worden alle gegevens gewist. Wil je doorgaan?</translation>
 <translation id="3437801641691368414">Gemaakt op</translation>
 <translation id="3466147780910026086">Je media-apparaat scannen...</translation>
@@ -268,7 +269,6 @@
 <translation id="4158739975813877944">Playlist openen</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
 <translation id="4193154014135846272">Google-document</translation>
-<translation id="4195249722193633765">App met Linux (bèta) installeren</translation>
 <translation id="4197674956721858839">Geselecteerde bestanden inpakken</translation>
 <translation id="421017592316736757">Je moet online zijn om dit bestand te openen.</translation>
 <translation id="4212740939091998969">Er bestaat al een map met de naam '<ph name="FOLDER_NAME" />'. Kies een andere naam.</translation>
@@ -297,7 +297,6 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-bestand</translation>
 <translation id="457386861538956877">Meer...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> aan selectie toegevoegd.</translation>
-<translation id="4582497162516204941">Installeren met Linux (bèta)</translation>
 <translation id="4594543368593301662">Resultaten voor <ph name="SEARCH_TERM" />.</translation>
 <translation id="4598673198033263991">Alfanumeriek met Japans toetsenbord</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> kopiëren naar <ph name="FOLDER_NAME" /></translation>

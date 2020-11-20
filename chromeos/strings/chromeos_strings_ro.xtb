@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Latență foarte mare a solicitărilor HTTPS</translation>
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1468664791493211953">Oferte</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
 <translation id="1478594628797167447">Scaner</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
 <translation id="150962533380566081">PUK nevalid.</translation>
 <translation id="1510238584712386396">Lansator</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire)</translation>
 <translation id="1641857168437328880">Alimentator de documente (o singură față)</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Scanează către</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
 <translation id="4548483925627140043">Nu s-a detectat semnal</translation>
+<translation id="455835558791489930">Baterie de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> din <ph name="TOTAL_PAGE_NUMBER" />. Apasă pe Enter pentru a anula sarcina de printare.</translation>
 <translation id="4646949265910132906">Conexiune Wi-Fi securizată</translation>
@@ -116,7 +120,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6048107060512778456">Nereușită – Blocaj de hârtie</translation>
 <translation id="6050189528197190982">Tonuri de gri</translation>
 <translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
-<translation id="6061772781719867950">Solicitări HTTP nereușite</translation>
+<translation id="6061772781719867950">Solicitări HTTPS nereușite</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
 <translation id="6108689792487843350">Gateway-ul nu poate fi accesat</translation>
 <translation id="6146993107019042706">Pentru a finaliza, introdu noua parolă</translation>
@@ -138,8 +142,10 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="6839141349259399400">Nu te poți conecta la scanere?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
+<translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>

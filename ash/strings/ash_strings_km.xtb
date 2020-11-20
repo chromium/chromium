@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">ពន្លឺពេលយប់</translation>
 <translation id="2727175239389218057">ឆ្លើយតប</translation>
 <translation id="2727977024730340865">បានដោតទៅឆ្នាំងសាកថាមពលខ្សោយ។ ការសាកថ្មប្រហែលជាមិនអាចជឿជាក់បានទេ។</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt+ស្វែងរក</translation>
 <translation id="2819276065543622893">អ្នកនឹងត្រូវចាកចេញឥឡូវនេះ។</translation>
 <translation id="28232023175184696">មិនអាចភ្ជាប់អ៊ីនធឺណិតបានទេ។ សូមចុច​ដើម្បី​ព្យាយាម​ម្ដង​ទៀត។</translation>
@@ -563,6 +564,7 @@
 <translation id="6297287540776456956">ប្រើប៊ិចដើម្បីជ្រើសរើសតំបន់</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> ត្រូវបានបង្វិលទៅ <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">សម្លេង</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> គឺជា​រយៈពេល​ចូលប្រើ​ដែល​ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">ប៊្លូធូស​ត្រូវបាន​បើក</translation>
 <translation id="6381109794406942707">ដើម្បីដោះសោឧបករណ៍នេះ សូមបញ្ចូលកូដ PIN របស់អ្នក។</translation>
 <translation id="639644700271529076">CAPS LOCK ត្រូវបានបិទ</translation>

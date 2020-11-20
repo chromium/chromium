@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">Түнгі жарық</translation>
 <translation id="2727175239389218057">Жауап беру</translation>
 <translation id="2727977024730340865">Төмен қуатты зарядтағышқа жалғанған. Батареяны зарядтау кезінде қиындықтар болуы мүмкін.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="2792498699870441125">Alt+Іздеу</translation>
 <translation id="2819276065543622893">Жүйеден қазір шығасыз.</translation>
 <translation id="28232023175184696">Интернетке қосыла алмай жатыр. Әрекетті қайталау үшін түртіңіз.</translation>
@@ -474,7 +475,7 @@
 <translation id="54609108002486618">Басқарылады</translation>
 <translation id="5465662442746197494">Көмек керек пе?</translation>
 <translation id="5496819745535887422">Әкімші құрылғыны алдыңғы нұсқаға қайтаруда. Құрылғы қайта қосылған кезде, барлық деректер жойылады.</translation>
-<translation id="5516420770350073386">Құпия мазмұнның болуына байланысты әкімші экранды бейнеге жазуды тоқтатты.</translation>
+<translation id="5516420770350073386">Экраныңыздағы мазмұнға байланысты әкімші экранды бейнеге жазуды тоқтатты.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> қосылуда.</translation>
 <translation id="5532994612895037630">Толық экранды жазу үшін кез келген жерді басыңыз.</translation>
@@ -563,6 +564,7 @@
 <translation id="6297287540776456956">Бөлікті таңдау үшін стилусты таңдаңыз</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> дисплейі <ph name="ROTATION" /> бағытында бұрылды</translation>
 <translation id="6315170314923504164">Микрофон</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> басқаратын сеанс.</translation>
 <translation id="6376931439017688372">Bluetooth қосулы</translation>
 <translation id="6381109794406942707">Құрылғының құлпын ашу үшін PIN кодын енгізіңіз.</translation>
 <translation id="639644700271529076">CAPS LOCK өшірулі</translation>
@@ -666,7 +668,7 @@
 <translation id="7377169924702866686">Caps Lock қосулы.</translation>
 <translation id="7378203170292176219">Жазуға керек аймақты таңдау үшін сүйреңіз.</translation>
 <translation id="7378594059915113390">Медианы басқару элементтері</translation>
-<translation id="7378889811480108604">Қуатты үнемдеу режимі өшірулі.</translation>
+<translation id="7378889811480108604">Батареяны үнемдеу режимі өшірулі.</translation>
 <translation id="7392563512730092880">Мұны кейінірек "Параметрлер" бөлімінде реттей аласыз.</translation>
 <translation id="7398254312354928459">Желі ауысты</translation>
 <translation id="7405710164030118432">Құрылғының құлпын ашу үшін Family Link ата-анаға арналған кіру кодын енгізіңіз.</translation>

@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">非常高的 HTTPS 延遲時間</translation>
 <translation id="1413240736185167732">失敗 - 篩選器發生錯誤</translation>
 <translation id="1468664791493211953">優惠</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> 會管理此裝置，並可能監察您的活動。</translation>
 <translation id="1478594628797167447">掃瞄器</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> 管理此使用者，並可能會遠端管理設定並監察使用者活動。</translation>
 <translation id="150962533380566081">PUK 無效。</translation>
 <translation id="1510238584712386396">啟動器</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒)</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">掃瞄儲存位置</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
 <translation id="4548483925627140043">偵測不到訊號</translation>
+<translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
@@ -138,8 +142,10 @@
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">高 DNS 解析失敗率</translation>
 <translation id="6839141349259399400">無法連接至掃瞄器嗎？</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7162487448488904999">媒體庫</translation>
+<translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理員可能會遠端設定裝置。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>

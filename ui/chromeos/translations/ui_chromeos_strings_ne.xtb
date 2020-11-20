@@ -268,7 +268,6 @@
 <translation id="4158739975813877944">प्ले सूची खोल्नुहोस्</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> सारियो।</translation>
 <translation id="4193154014135846272">Google कागजात</translation>
-<translation id="4195249722193633765">Linux (बिटा) सहितको एप स्थापना गर्नुहोस्</translation>
 <translation id="4197674956721858839">जिप चयन</translation>
 <translation id="421017592316736757">यो फाइलको पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" नाम गरेको फोल्डर पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
@@ -297,7 +296,6 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> फाइल</translation>
 <translation id="457386861538956877">थप...</translation>
 <translation id="4579744207439506346">चयनमा <ph name="ENTRY_NAME" /> थपियो।</translation>
-<translation id="4582497162516204941">Linux (बिटा) मार्फत स्थापना गर्नुहोस्</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> का परिणामहरू देखाउँदै।</translation>
 <translation id="4598673198033263991">जापानी किबोर्डसहित अक्षर र अङ्क</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" /> मा <ph name="FILE_NAME" /> कपी गरिँदै छ</translation>
@@ -660,7 +658,7 @@
 <translation id="8151638057146502721">विन्यास गर्नुहोस्</translation>
 <translation id="8153607920959057464">यो फाइल प्रदर्शन हुन सकेन।</translation>
 <translation id="8154842056504218462">सबै प्रविष्टिहरू चयन गरिए।</translation>
-<translation id="8157684860301034423">अनुप्रयोगसम्बन्धी जानकारी भेट्टाउन सकिएन।</translation>
+<translation id="8157684860301034423">एपसम्बन्धी जानकारी भेट्टाउन सकिएन।</translation>
 <translation id="8157939133946352716">7x5</translation>
 <translation id="8159982522558068586">तमिल टाइपराइटर किबोर्ड</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>

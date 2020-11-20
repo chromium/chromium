@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Ја одредува фреквенцијата на освежување на екранот</translation>
 <translation id="1061904396131502319">Речиси е време за пауза</translation>
 <translation id="1067048845568873861">Создадено</translation>
-<translation id="1067291318998134776">Linux (бета)</translation>
 <translation id="1067922213147265141">Други услуги на Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Друга програма на компјутерот додаде екстензија што може да промени како работи Chrome.
@@ -567,7 +566,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Функциите на коишто им треба микрофонот нема да работат</translation>
 <translation id="1621831347985899379">Податоците на <ph name="DEVICE_TYPE" /> ќе се избришат</translation>
-<translation id="1622054403950683339">Заборави ја Wi-Fi-мрежата</translation>
+<translation id="1622054403950683339">Заборави ја Wi-Fi мрежата</translation>
 <translation id="1623132449929929218">Сликите не се достапни во моментов. Повторно поврзете се на интернет за да ги видите колекциите со тапети.</translation>
 <translation id="1623723619460186680">Намалување на синото светло</translation>
 <translation id="1624012933569991823">Поставки</translation>
@@ -930,7 +929,6 @@
 Инсталирајте ја апликацијата Family Link на уредот за да може да управувате со поставките на сметкава.  Ви испративме упатства по е-пошта.</translation>
 <translation id="2040460856718599782">Ах! Нешто тргна наопаку кога се обидовме да ве автентицираме. Проверете ја убаво акредитацијата и обидете се повторно.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Имате 1 компромитирана лозинка}one{Имате # компромитирана лозинка}other{Имате # компромитирани лозинки}}</translation>
-<translation id="2040863272941698761">Поставете го Linux</translation>
 <translation id="204497730941176055">Име на шаблон на сертификат на Microsoft</translation>
 <translation id="2045117674524495717">Помош за кратенка од тастатурата</translation>
 <translation id="2045969484888636535">Продолжи да блокираш колачиња</translation>
@@ -1262,8 +1260,6 @@
 <translation id="2428510569851653187">Опишете што правевте кога падна картичката</translation>
 <translation id="2428939361789119025">Исклучи Wi-Fi</translation>
 <translation id="2431027948063157455">Не може да се вчита „Помошникот на Google“. Проверете ја вашата мрежна врска и обидете се повторно.</translation>
-<translation id="2431846145771260397">Дали сигурно сакате да резервирате фиксна големина на дискот за Linux (бета)?</translation>
-<translation id="2432753757290432042">Потребно е ажурирање на Linux (Бета)</translation>
 <translation id="2433452467737464329">Додајте параметар на барање во URL за автоматско освежување на страницата: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Изглед</translation>
@@ -1978,6 +1974,7 @@
 <translation id="3264544094376351444">Фонт Sans-Serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Затвори го прозорецот</translation>
+<translation id="3266022278425892773">Развојна околина на Linux</translation>
 <translation id="3266179261140759675">Не дозволувај затворените сајтови да испраќаат и примаат податоци</translation>
 <translation id="3266274118485960573">Се извршува безбедносната проверка.</translation>
 <translation id="3267726687589094446">Продолжи со дозволување автоматски преземања на повеќе датотеки</translation>
@@ -2278,7 +2275,6 @@
 <translation id="3600051066689725006">Информации за веб-барањето</translation>
 <translation id="3600792891314830896">Исклучи го звукот на сајтовите што пуштаат звук</translation>
 <translation id="360180734785106144">Да ви нуди нови функции кога ќе станат достапни</translation>
-<translation id="3602198818276948261">Вашиот контејнер не е конфигуриран да поддржува промени на големината на дискот. За да го приспособите количеството простор што е резервирано за Linux (бета), направете бекап, па вратете го во нов контејнер.</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3603622770190368340">Набави сертификат на мрежа</translation>
 <translation id="3604713164406837697">Менување тапет</translation>
@@ -3403,6 +3399,7 @@
 <translation id="4925542575807923399">Администраторот на оваа сметка бара таа да биде првата пријавена сметка во сесија со повеќе пријавувања.</translation>
 <translation id="4927753642311223124">Овде нема што да се види, продолжи.</translation>
 <translation id="4929386379796360314">Дестинации за печатење</translation>
+<translation id="4930447554870711875">Програмери</translation>
 <translation id="4930714375720679147">Вклучи</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="4933484234309072027">вградено на <ph name="URL" /></translation>
@@ -3955,7 +3952,6 @@
 <translation id="558918721941304263">Вчитување апликации…</translation>
 <translation id="5592595402373377407">Уште нема доволно достапни податоци.</translation>
 <translation id="5595485650161345191">Измени адреса</translation>
-<translation id="5595727715083333657">Вашиот контејнер не поддржува промена на големината. За да го приспособите количеството простор што однапред се доделува во Linux (бета), направете бекап, па вратете го во нов контејнер.</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5600706100022181951">Ажурирањето ќе се преземе со користење <ph name="UPDATE_SIZE_MB" /> MB мобилен интернет. Дали сакате да продолжите?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4207,7 +4203,6 @@
 <translation id="5893589697005440881">Споделувајте датотеки со луѓето околу вас</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5900302528761731119">Фотографија на профилот на Google</translation>
-<translation id="5900358982890952556">Надградете го Linux (Beta)</translation>
 <translation id="5901494423252125310">Отворена е вратата на печатачот</translation>
 <translation id="5901630391730855834">Жолта боја</translation>
 <translation id="5904614460720589786">Не може да се постави <ph name="APP_NAME" /> поради конфигурациски проблем. Контактирајте со администраторот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
@@ -4674,6 +4669,7 @@
 <translation id="6434309073475700221">Отфрли</translation>
 <translation id="6434325376267409267">Уредот треба да се ажурира пред да може да користите <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Прикажи во веб-продавница</translation>
+<translation id="6438234780621650381">Ресетирај ги поставките</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - пуштено е аудио</translation>
 <translation id="6442187272350399447">Супер</translation>
 <translation id="6444070574980481588">Постави датум и време</translation>
@@ -5387,7 +5383,6 @@
 <translation id="7284411326658527427">Секое лице може да ја персонализира својата сметка и да ја задржи приватноста на податоците.</translation>
 <translation id="7287143125007575591">Пристапот е одбиен.</translation>
 <translation id="7287411021188441799">Врати ја стандардната заднина</translation>
-<translation id="7288013116963835700">Отстрани го Linux за <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Отворете ја апликацијата за позадини</translation>
 <translation id="7290242001003353852">Услугава за најавување, чиј хост е <ph name="SAML_DOMAIN" />, пристапува до камерата.</translation>
@@ -5773,7 +5768,6 @@
 <translation id="7730683939467795481">Екстензијата „<ph name="EXTENSION_NAME" />“ ја промени страницава</translation>
 <translation id="7732111077498238432">Мрежата се контролира со правило</translation>
 <translation id="7737115349420013392">Се спарува со „<ph name="DEVICE_NAME" />“…</translation>
-<translation id="7737238973539693982">Избриши Linux (Бета)</translation>
 <translation id="7737948071472253612">Не им е дозволено да ја користат камерата</translation>
 <translation id="7740996059027112821">Стандарден</translation>
 <translation id="7742706086992565332">Може да поставите колку да зумирате или одзумирате на одредени веб-сајтови</translation>
@@ -6242,7 +6236,6 @@
 <translation id="825238165904109940">Секогаш прикажувај ги целосните URL-адреси</translation>
 <translation id="8252569384384439529">Се прикачува…</translation>
 <translation id="8253198102038551905">Кликнете на „+" за да ги добиете својствата на мрежата</translation>
-<translation id="8254954272268479918">Исклучи Linux (Бета)</translation>
 <translation id="8255451560461371599">Без заднина</translation>
 <translation id="8256319818471787266">Џеки</translation>
 <translation id="8257950718085972371">Продолжи со блокирање пристап до фотоапарат</translation>
@@ -6982,7 +6975,6 @@
 <translation id="9088917181875854783">Потврдете дали оваа лозинка е прикажана на „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9089416786594320554">Влезни методи</translation>
 <translation id="909108997331068008">Профилот на <ph name="EXISTING_USER" /> е веќе најавен на <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Се препорачува да направите бекап на датотеките во случај надградбата да не може да се доврши. Стартувањето на надградбата ќе предизвика исклучување на Linux (бета). Пред да продолжите зачувајте ги отворените датотеки.</translation>
 <translation id="9094033019050270033">Ажурирај ја лозинката</translation>
 <translation id="9094038138851891550">Погрешно корисничко име</translation>
 <translation id="9094982973264386462">Отстрани</translation>
@@ -7042,7 +7034,7 @@
 <translation id="9159643062839240276">Обидете се:
     <ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />да ги проверите мрежните кабли, модемот и рутерот
-      <ph name="LIST_ITEM" />повторно да се поврзете со Wi-Fi-мрежата
+      <ph name="LIST_ITEM" />повторно да се поврзете со Wi-Fi мрежата
       <ph name="LIST_ITEM" />да извршите проверка преку „Дијагностика за поврзливост на Chrome“
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Слика во слика</translation>
@@ -7061,7 +7053,6 @@
 <translation id="9176476835295860688">Испраќајте податоци за користење и дијагностика. Овој уред во моментов автоматски испраќа дијагностички и податоци за користењето на уредот и апликациите до Google. Овие податоци ќе ни помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Оваа <ph name="BEGIN_LINK1" />поставка<ph name="END_LINK1" /> е наметната од сопственикот. Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“, овие податоци може да се зачувуваат во вашата сметка на Google. <ph name="BEGIN_LINK2" />Дознајте повеќе<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - поврзан е уред со Bluetooth</translation>
 <translation id="9179524979050048593">Корисничко име на екранот за најавување</translation>
-<translation id="9179734824669616955">Поставете Linux (бета) на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Овој процес можеби ќе потрае неколку минути. Се стартува контејнерот за Linux.</translation>
 <translation id="9180380851667544951">Сајтот може да го споделува вашиот екран</translation>
 <translation id="9186963452600581158">Најавете се со сметка на Google на дете</translation>
@@ -7102,7 +7093,6 @@
 <translation id="93610034168535821">Вкупен капацитет искористен од сајтовите:</translation>
 <translation id="936801553271523408">Дијагностички податоци на системот</translation>
 <translation id="93766956588638423">Поправи ја екстензијата</translation>
-<translation id="938339467127511841">Меморија на Linux (бета)</translation>
 <translation id="938470336146445890">Инсталирајте сертификат на корисник.</translation>
 <translation id="939252827960237676">Не успеа да се зачува сликата</translation>
 <translation id="939519157834106403">SSID</translation>

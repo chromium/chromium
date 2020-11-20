@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
-<translation id="151267239139452619">添加到“下载内容”</translation>
 <translation id="1513352483775369820">书签和网络历史记录</translation>
 <translation id="1513858653616922153">删除密码</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
@@ -207,6 +206,7 @@
 <translation id="2450907520913474542">无需离开所在页面，便可了解网站上的主题。“触摸搜索”功能会将被触摸的字词及上下文一起发送给 Google 搜索，后者随即会据此返回相应的定义、图片、搜索结果及其他详情。
 
 轻触并按住任意字词即可进行搜索。要优化您的搜索，请多选或少选一些字词。要修改您的搜索，请打开面板，点按图标打开新标签页，然后在搜索框中做出更改。</translation>
+<translation id="2459390580524506445">增强版语音搜索</translation>
 <translation id="246532703174860178">分享</translation>
 <translation id="2478076885740497414">安装应用</translation>
 <translation id="2479148705183875116">转到“设置”</translation>
@@ -275,6 +275,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 存储数据</translation>
 <translation id="2942036813789421260">预览标签页已关闭</translation>
 <translation id="2956410042958133412">该帐号由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
 <translation id="2962095958535813455">已切换到无痕模式标签页</translation>
 <translation id="2979025552038692506">所选的无痕模式标签页</translation>
 <translation id="2987620471460279764">从其他设备分享的文字</translation>
@@ -324,6 +325,7 @@
 <translation id="32895400574683172">允许显示通知</translation>
 <translation id="3290991969712132877">若要更快速地访问该网页，请通过“更多选项”按钮将它添加到主屏幕</translation>
 <translation id="3295530008794733555">浏览速度更快。耗用的流量更少。</translation>
+<translation id="3297344142967351106">语音协助</translation>
 <translation id="3298243779924642547">精简版</translation>
 <translation id="3303414029551471755">要开始下载该内容吗？</translation>
 <translation id="3315103659806849044">您正在自定义您的“同步功能和 Google 服务”设置。要完成开启同步功能的操作，请点按屏幕底部附近的“确认”按钮。转到上一层级</translation>
@@ -420,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小时}other{# 小时}}</translation>
 <translation id="4045764304651014138">使用情况数据</translation>
 <translation id="4056223980640387499">棕色调</translation>
-<translation id="4057643060762047384">添加到：</translation>
 <translation id="4060598801229743805">选项位于屏幕顶部附近</translation>
 <translation id="4062305924942672200">法律信息</translation>
 <translation id="4084682180776658562">添加书签</translation>
@@ -625,6 +626,7 @@
 <translation id="5524843473235508879">已禁止重定向。</translation>
 <translation id="5527082711130173040">Chrome 需要拥有位置信息使用权才能扫描设备。请<ph name="BEGIN_LINK1" />更新权限<ph name="END_LINK1" />。<ph name="BEGIN_LINK2" />此设备的位置信息使用权也已被停用<ph name="END_LINK2" />。</translation>
 <translation id="5530766185686772672">关闭无痕模式标签页</translation>
+<translation id="5530920986376047241">您可以将所需页面保存到阅读清单中，以便再次查看</translation>
 <translation id="5534640966246046842">已复制网站</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5561549206367097665">正在等待连接到网络…</translation>
@@ -704,6 +706,7 @@
 <translation id="5982307838673692400">打开一个无痕式标签页</translation>
 <translation id="6000066717592683814">继续使用 Google</translation>
 <translation id="6005538289190791541">建议的密码</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 个未读页面}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 个未读页面}}</translation>
 <translation id="6014293228235665243">未读</translation>
 <translation id="6036057147555329831">额外的 ICU</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
@@ -749,7 +752,6 @@
 <translation id="6303969859164067831">退出帐号并关闭同步功能</translation>
 <translation id="6312687380483398334">Web 应用（安静）</translation>
 <translation id="6316139424528454185">Android 版本不受支持</translation>
-<translation id="6321526113093607004">添加到“书签”</translation>
 <translation id="6324034347079777476">Android 系统同步功能已停用</translation>
 <translation id="6333140779060797560">通过<ph name="APPLICATION" />分享</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -938,6 +940,7 @@
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7577900504646297215">管理我的兴趣</translation>
 <translation id="757855969265046257">{FILES,plural, =1{已下载 <ph name="FILES_DOWNLOADED_ONE" /> 个文件}other{已下载 <ph name="FILES_DOWNLOADED_MANY" /> 个文件}}</translation>
+<translation id="7583262514280211622">您的阅读清单会显示在此处</translation>
 <translation id="7588219262685291874">在设备开启省电模式时启用深色主题背景</translation>
 <translation id="7593557518625677601">打开 Android 设置，重新启用 Android 系统同步功能以开始 Chrome 同步</translation>
 <translation id="7596558890252710462">操作系统</translation>
@@ -969,6 +972,7 @@
 <translation id="7772375229873196092">关闭<ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="7778840695157240389">请稍后再回来查看是否有新报道</translation>
+<translation id="7786595606756654269">当您在网上搜索内容以及与已打开的网站互动时，Google 助理可让您畅享更佳的语音使用体验。Google 助理将会收到您使用它时所在网站的网址和内容。</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="7798392620021911922">已恢复 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
@@ -994,6 +998,7 @@
 <translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>
 <translation id="7963646190083259054">供应商：</translation>
 <translation id="7967911570373677897">要扫描二维码，请更改您的设置以允许 Chrome 使用您的摄像头</translation>
+<translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">预加载网页，以便实现更快速的浏览和搜索</translation>
@@ -1055,6 +1060,7 @@
 <translation id="8372925856448695381">可以使用<ph name="LANG" />了。</translation>
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8407396331882458341">1. 选择 <ph name="APP_NAME" />\n2. 点按“始终”</translation>
+<translation id="8410695015584479363">跟踪价格</translation>
 <translation id="8413126021676339697">显示全部历史记录</translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8427875596167638501">预览标签页已在下半屏中打开</translation>

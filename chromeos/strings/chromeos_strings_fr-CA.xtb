@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Latence HTTPS très élevée</translation>
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
 <translation id="1468664791493211953">Offres</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="1478594628797167447">Numériseur</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution)</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Numériser vers</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
 <translation id="4548483925627140043">Signal introuvable</translation>
+<translation id="455835558791489930">Pile de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
@@ -138,8 +142,10 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6839141349259399400">Impossible d'établir la connexion avec les numériseurs?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
+<translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="7561454561030345039">C'est votre administrateur qui gère cette action</translation>

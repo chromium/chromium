@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सकता</translation>
 <translation id="1477626028522505441">सर्वर संबधी समस्‍याओं के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
-<translation id="151267239139452619">डाउनलोड में जोड़ें</translation>
 <translation id="1513352483775369820">बुकमार्क और वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मिटाएं</translation>
 <translation id="1521774566618522728">आज सक्रिय है</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# घंटा}one{# घंटे}other{# घंटे}}</translation>
 <translation id="4045764304651014138">इस्तेमाल के बारे में डेटा</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4057643060762047384">इनमें जोड़ें:</translation>
 <translation id="4060598801229743805">स्क्रीन के शीर्ष भाग में मौजूद विकल्प</translation>
 <translation id="4062305924942672200">कानूनी जानकारी</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">साइन आउट करें और सिंक बंद करें</translation>
 <translation id="6312687380483398334">वेब ऐप्लिकेशन (म्यूट)</translation>
 <translation id="6316139424528454185">Android वर्शन काम नहीं कर रहा है</translation>
-<translation id="6321526113093607004">Bookmarks में जोड़ें</translation>
 <translation id="6324034347079777476">Android सिस्टम समन्वयन अक्षम है</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
 <translation id="6337234675334993532">सुरक्षित करने का तरीका</translation>
@@ -1132,6 +1129,7 @@
 <translation id="8920114477895755567">अभिभावकों के विवरण की प्रतीक्षा कर रहे हैं.</translation>
 <translation id="8922289737868596582">पेज का ऑफ़लाइन उपयोग करने के लिए उन्हें ज़्यादा विकल्प बटन से डाउनलोड करें</translation>
 <translation id="8928626432984354940">बुकमार्क फ़ोल्डर वाली सूची, आधी स्क्रीन पर खोली गई</translation>
+<translation id="8937267401510745927">टास्क पूरे करने में आपकी मदद के लिए, Google उन साइटों के यूआरएल और कॉन्टेंट का इस्तेमाल करेगा जिन पर आप Assistant का इस्तेमाल करते हैं. साथ ही, Google उस जानकारी का भी इस्तेमाल करेगा जिसे आप Assistant की मदद से सबमिट करते हैं. हो सकता है कि यह जानकारी आपके Google खाते में सेव हो. आप Chrome की सेटिंग में जाकर, Assistant को बंद कर सकते हैं.</translation>
 <translation id="8937772741022875483">'डिजिटल वेलबीइंग' से अपनी Chrome गतिविधि हटाना चाहते हैं?</translation>
 <translation id="8942627711005830162">दूसरी विंडो में खोलें</translation>
 <translation id="8951232171465285730">Chrome ने आपके <ph name="MEGABYTES" /> एमबी की बचत की</translation>

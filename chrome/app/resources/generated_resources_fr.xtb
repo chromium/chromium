@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Indique la fréquence à laquelle l'écran est actualisé</translation>
 <translation id="1061904396131502319">Il est presque temps de faire une pause</translation>
 <translation id="1067048845568873861">Date de création</translation>
-<translation id="1067291318998134776">Linux (version bêta)</translation>
 <translation id="1067922213147265141">Autres services Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Une extension qui risque de modifier le fonctionnement de Chrome a été ajoutée via un autre programme sur votre ordinateur.
@@ -86,7 +85,7 @@
 <translation id="1091767800771861448">Appuyez sur ECHAP pour ignorer (versions non officielles uniquement).</translation>
 <translation id="1093457606523402488">Réseaux visibles :</translation>
 <translation id="1094607894174825014">L'opération de lecture ou d'écriture a été demandée avec un décalage incorrect sur l'appareil <ph name="DEVICE_NAME" />.</translation>
-<translation id="1095761715416917775">Veiller à toujours avoir accès à vos données synchronisées</translation>
+<translation id="1095761715416917775">Veillez à toujours avoir accès à vos données synchronisées</translation>
 <translation id="109647177154844434">Si vous désinstallez Parallels Desktop, cela supprimera aussi l'image Windows, y compris ses applications, ses paramètres et ses données. Voulez-vous vraiment continuer ?</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{1 lien}one{# lien}many{# links}other{# liens}}</translation>
 <translation id="1097658378307015415">Avant de vous connecter, veuillez vous connecter en tant qu'invité afin d'activer le réseau <ph name="NETWORK_ID" />.</translation>
@@ -930,7 +929,6 @@ Sinon, déconnectez-vous maintenant pour que les modifications apportées à ce 
 Vous pouvez gérer les paramètres de ce compte en installant l'application Family Link sur votre appareil.  Nous vous avons envoyé des instructions par e-mail.</translation>
 <translation id="2040460856718599782">Petit problème… Une erreur s'est produite lors de la tentative d'authentification. Veuillez vérifier vos identifiants de connexion, puis réessayer.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Vous avez 1 mot de passe compromis}one{Vous avez # mot de passe compromis}many{You have # compromised passwords}other{Vous avez # mots de passe compromis}}</translation>
-<translation id="2040863272941698761">Configurer Linux</translation>
 <translation id="204497730941176055">Nom du modèle de certificat Microsoft</translation>
 <translation id="2045117674524495717">Aide relative aux raccourcis clavier</translation>
 <translation id="2045969484888636535">Continuer à bloquer les cookies</translation>
@@ -1262,8 +1260,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2428510569851653187">Décrivez ce que vous faisiez lorsque l'onglet a planté</translation>
 <translation id="2428939361789119025">Désactiver le Wi-Fi</translation>
 <translation id="2431027948063157455">Impossible de charger l'Assistant Google. Veuillez vérifier votre connexion réseau et réessayer.</translation>
-<translation id="2431846145771260397">Voulez-vous vraiment conserver une taille de disque fixe pour Linux (version bêta) ?</translation>
-<translation id="2432753757290432042">Mise à jour Linux (Bêta) requise</translation>
 <translation id="2433452467737464329">Ajoutez un paramètre de requête dans l'URL pour une actualisation automatique de la page : chrome://network/?refresh=&lt;sec&gt;.</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Apparence</translation>
@@ -1978,6 +1974,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3264544094376351444">Police Sans Serif</translation>
 <translation id="3264582393905923483">Contexte</translation>
 <translation id="3265459715026181080">Fermer la fenêtre</translation>
+<translation id="3266022278425892773">Environnement de développement Linux</translation>
 <translation id="3266179261140759675">Empêcher les sites fermés d'envoyer et de recevoir des données</translation>
 <translation id="3266274118485960573">Contrôle de sécurité en cours.</translation>
 <translation id="3267726687589094446">Continuer à autoriser le téléchargement automatique de plusieurs fichiers</translation>
@@ -2276,7 +2273,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3600051066689725006">Informations sur la requête Web</translation>
 <translation id="3600792891314830896">Couper le son des sites</translation>
 <translation id="360180734785106144">Proposer de nouvelles fonctionnalités dès qu'elles sont disponibles</translation>
-<translation id="3602198818276948261">La configuration de votre conteneur ne vous permet pas de redimensionner des disques. Si vous souhaitez modifier la quantité d'espace réservée pour Linux (bêta), effectuez une sauvegarde, puis une restauration dans un nouveau conteneur.</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3603622770190368340">Obtenir un certificat réseau</translation>
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
@@ -3400,6 +3396,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4925542575807923399">L'administrateur de ce compte a configuré ce dernier de sorte qu'il soit le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="4927753642311223124">Aucune notification</translation>
 <translation id="4929386379796360314">Destinations d'impression</translation>
+<translation id="4930447554870711875">Développeurs</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4933484234309072027">intégration sur <ph name="URL" /></translation>
@@ -3952,7 +3949,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="558918721941304263">Chargement des applications…</translation>
 <translation id="5592595402373377407">Les données disponibles sont insuffisantes pour le moment.</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
-<translation id="5595727715083333657">Votre conteneur ne peut pas être redimensionné. Pour modifier la quantité d'espace pré-allouée à Linux (bêta), faites une sauvegarde, puis une restauration dans un nouveau conteneur.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5600706100022181951">Le téléchargement de la mise à jour utilisera <ph name="UPDATE_SIZE_MB" /> Mo de données mobiles. Voulez-vous continuer ?</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
@@ -4205,7 +4201,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5893589697005440881">Partagez des fichiers avec des personnes à proximité</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5900302528761731119">Photo du profil Google</translation>
-<translation id="5900358982890952556">Mettre à niveau Linux (version bêta)</translation>
 <translation id="5901494423252125310">Capot de l'imprimante ouvert</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5904614460720589786">Impossible d'installer <ph name="APP_NAME" /> en raison d'un problème de configuration. Veuillez contacter votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
@@ -4318,7 +4313,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6031600495088157824">Options de saisie dans la barre d'outils</translation>
 <translation id="6032715498678347852">Pour autoriser l'accès à ce site pour une extension, cliquez sur celle-ci.</translation>
 <translation id="6032912588568283682">Système de fichiers</translation>
-<translation id="603539183851330738">Ce bouton permet d'annuler la correction automatique et de rétablir le mot "<ph name="TYPED_WORD" />". Appuyez sur Entrée pour activer ou sur Échap pour ignorer.</translation>
+<translation id="603539183851330738">Ce bouton permet d'annuler la correction automatique et de rétablir le mot "<ph name="TYPED_WORD" />". Appuyez sur Entrée pour le rétablir ou sur Échap pour ignorer l'annulation.</translation>
 <translation id="6035517790085323771">Qui peut partager des fichiers avec votre appareil</translation>
 <translation id="6038929619733116134">Bloquer si le site affiche des annonces intrusives ou trompeuses</translation>
 <translation id="6039651071822577588">Dictionnaire des propriétés du réseau non conforme.</translation>
@@ -4671,6 +4666,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6434325376267409267">Vous devez mettre à jour votre appareil avant de pouvoir utiliser <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Afficher dans le Web Store</translation>
+<translation id="6438234780621650381">Réinitialiser les paramètres</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Lecture audio</translation>
 <translation id="6442187272350399447">Super</translation>
 <translation id="6444070574980481588">Définir la date et l'heure</translation>
@@ -5382,7 +5378,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7284411326658527427">Chaque personne pourra personnaliser son compte et préserver la confidentialité de ses données.</translation>
 <translation id="7287143125007575591">Accès refusé.</translation>
 <translation id="7287411021188441799">Restaurer l'arrière-plan par défaut</translation>
-<translation id="7288013116963835700">Supprimer Linux de <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> PPP</translation>
 <translation id="7289225569524511578">Ouvrir l'application des fonds d'écran</translation>
 <translation id="7290242001003353852">Ce service de connexion hébergé par <ph name="SAML_DOMAIN" /> accède actuellement à votre caméra.</translation>
@@ -5768,7 +5763,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7730683939467795481">Cette page a été modifiée par l'extension "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7732111077498238432">Le réseau est soumis à des règles</translation>
 <translation id="7737115349420013392">Association avec "<ph name="DEVICE_NAME" />" en cours…</translation>
-<translation id="7737238973539693982">Effacer Linux (Bêta)</translation>
 <translation id="7737948071472253612">Non autorisé à utiliser votre caméra</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Vous pouvez définir le niveau de zoom à appliquer à certains sites Web</translation>
@@ -6238,7 +6232,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="825238165904109940">Toujours afficher les URL en entier</translation>
 <translation id="8252569384384439529">Importation…</translation>
 <translation id="8253198102038551905">Cliquez sur "+" pour accéder aux propriétés réseau.</translation>
-<translation id="8254954272268479918">Arrêter Linux (bêta)</translation>
 <translation id="8255451560461371599">Sans arrière-plan</translation>
 <translation id="8256319818471787266">Médor</translation>
 <translation id="8257950718085972371">Continuer à bloquer l'accès à la caméra</translation>
@@ -6749,7 +6742,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8830796635868321089">Échec de la vérification de mise à jour avec les paramètres de proxy actuels. Veuillez modifier vos <ph name="PROXY_SETTINGS_LINK_START" />paramètres de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="8831140208248705279">Votre <ph name="DEVICE_TYPE" /> et votre téléphone Android fonctionnent mieux ensemble. Connectez-les pour envoyer des SMS depuis votre ordinateur, partager votre connexion Internet et déverrouiller votre <ph name="DEVICE_TYPE" /> avec votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">La configuration réseau est contrôlée par <ph name="USER_EMAIL" />.</translation>
-<translation id="8835786707922974220">Veiller à toujours avoir accès à vos mots de passe enregistrés</translation>
+<translation id="8835786707922974220">Veillez à toujours avoir accès à vos mots de passe enregistrés</translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Annoter l'image</translation>
@@ -6974,7 +6967,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9088917181875854783">Confirmez que cette clé d'accès est affichée sur "<ph name="DEVICE_NAME" />" :</translation>
 <translation id="9089416786594320554">Modes de saisie</translation>
 <translation id="909108997331068008">Le profil créé pour <ph name="EXISTING_USER" /> est déjà connecté au compte <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Nous vous recommandons de sauvegarder vos fichiers pour le cas où la mise à niveau échouerait. Le démarrage de la mise à niveau va entraîner l'arrêt de Linux (version bêta). Veuillez enregistrer les fichiers ouverts avant de continuer.</translation>
 <translation id="9094033019050270033">Modifier le mot de passe</translation>
 <translation id="9094038138851891550">Nom d'utilisateur non valide</translation>
 <translation id="9094982973264386462">Supprimer</translation>
@@ -7053,7 +7045,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9176476835295860688">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ce processus permettra d'améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Appareil Bluetooth connecté</translation>
 <translation id="9179524979050048593">Nom d'utilisateur sur l'écran de connexion</translation>
-<translation id="9179734824669616955">Configurer Linux (version bêta) sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Cette opération peut prendre quelques minutes. Démarrage du conteneur Linux…</translation>
 <translation id="9180380851667544951">Le site peut partager votre écran</translation>
 <translation id="9186963452600581158">Se connecter avec le compte Google d'un enfant</translation>
@@ -7094,7 +7085,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="93610034168535821">Espace de stockage total utilisé par les sites :</translation>
 <translation id="936801553271523408">Données de diagnostic système</translation>
 <translation id="93766956588638423">Réparer l'extension</translation>
-<translation id="938339467127511841">Stockage Linux (version bêta)</translation>
 <translation id="938470336146445890">Veuillez installer un certificat utilisateur.</translation>
 <translation id="939252827960237676">Échec d'enregistrement de la capture d'écran.</translation>
 <translation id="939519157834106403">SSID</translation>

@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Визначає частоту оновлення екрана</translation>
 <translation id="1061904396131502319">Невдовзі час зробити перерву</translation>
 <translation id="1067048845568873861">Створено</translation>
-<translation id="1067291318998134776">Linux (бета-версія)</translation>
 <translation id="1067922213147265141">Інші сервіси Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Інша програма на вашому комп’ютері додала розширення, яке може впливати на роботу Chrome.
@@ -86,7 +85,7 @@
 <translation id="1091767800771861448">Натисніть ESCAPE, щоб пропустити (лише в неофіційних версіях складання).</translation>
 <translation id="1093457606523402488">Видимі мережі:</translation>
 <translation id="1094607894174825014">Запит на операцію перегляду або внесення змін надіслано з недійсним зміщенням на пристрої <ph name="DEVICE_NAME" />.</translation>
-<translation id="1095761715416917775">Забезпечте постійний доступ до своїх синхронізованих даних</translation>
+<translation id="1095761715416917775">Подбайте про те, щоб не втратити доступ до своїх синхронізованих даних</translation>
 <translation id="109647177154844434">Якщо ви видалите додаток Parallels Desktop, то також вилучите образ, додатки, налаштування й дані Windows. Продовжити?</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{1 посилання}one{# посилання}few{# посилань}many{# посилань}other{# посилання}}</translation>
 <translation id="1097658378307015415">Перш ніж увійти, розпочніть сеанс у режимі гостя, щоб активувати мережу <ph name="NETWORK_ID" /></translation>
@@ -122,7 +121,7 @@
 <translation id="1128591060186966949">Змінити пошукову систему</translation>
 <translation id="1129850422003387628">Керувати додатками</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – частина групи "<ph name="GROUP_NAME" />"</translation>
-<translation id="1130712065489627903">Тепер ви можете отримувати сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" />. Якщо відхилити сповіщення на пристрої <ph name="DEVICE_TYPE" />, його також буде відхилено на телефоні. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
+<translation id="1130712065489627903">Тепер на <ph name="DEVICE_TYPE" /> надходитимуть сповіщення з вашого телефона. Закриваючи сповіщення, що надійшло на <ph name="DEVICE_TYPE" />, ви також закриєте його на телефоні. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
 <translation id="1134009406053225289">Відкрити в анонімному вікні</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> з <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Ключ безпеки заблоковано, оскільки ви ввели неправильний PIN-код забагато разів. Щоб розблокувати його, вийміть і знову вставте ключ.</translation>
@@ -931,7 +930,6 @@
 Щоб керувати налаштуваннями облікового запису, можна встановити на пристрої додаток Family Link.  Ми надіслали вказівки в електронному листі.</translation>
 <translation id="2040460856718599782">На жаль, під час спроби автентифікації сталася помилка. Ретельно перевірте свої облікові дані для входу та повторіть спробу.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{У вас є 1 зламаний пароль}one{У вас є # зламаний пароль}few{У вас є # зламані паролі}many{У вас є # зламаних паролів}other{У вас є # зламаного пароля}}</translation>
-<translation id="2040863272941698761">Налаштувати Linux</translation>
 <translation id="204497730941176055">Ім'я шаблону сертифіката Microsoft</translation>
 <translation id="2045117674524495717">Довідник із комбінацій клавіш</translation>
 <translation id="2045969484888636535">Продовжити блокування файлів cookie</translation>
@@ -1035,7 +1033,7 @@
 <translation id="2157474325782140681">Щоб отримати додаткові функції, використовуйте док-станцію Dell, розроблену для цього комп'ютера Chromebook.</translation>
 <translation id="215753907730220065">Вийти з повноекранного режиму</translation>
 <translation id="2157875535253991059">Ця сторінка зараз у повноекранному режимі.</translation>
-<translation id="2160589599612868242">Отримуйте сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
+<translation id="2160589599612868242">Сповіщення з телефона надходитимуть на <ph name="DEVICE_TYPE" /></translation>
 <translation id="216169395504480358">Додати Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронізація почнеться, щойно ви вийдете з її налаштувань</translation>
 <translation id="2162838847352058695">Заборонити сайтам автоматично завантажувати кілька файлів</translation>
@@ -1263,8 +1261,6 @@
 <translation id="2428510569851653187">Опишіть, що ви робили, коли вкладка аварійно завершила роботу</translation>
 <translation id="2428939361789119025">Вимкнути Wi-Fi</translation>
 <translation id="2431027948063157455">Не вдалося завантажити Google Асистент. Перевірте з’єднання з мережею та повторіть спробу.</translation>
-<translation id="2431846145771260397">Зарезервувати фіксований розмір диска для Linux (бета)?</translation>
-<translation id="2432753757290432042">Потрібно оновити Linux (бета-версія)</translation>
 <translation id="2433452467737464329">Додайте в URL-адресу параметр запиту для автоматичного оновлення сторінки: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Зовнішній вигляд</translation>
@@ -1377,7 +1373,7 @@
 <translation id="2538084450874617176">Хто користується пристроєм <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2538361623464451692">Синхронізацію вимкнено</translation>
 <translation id="2540449034743108469">Натисніть "Почати", щоб прослухати дії розширення</translation>
-<translation id="2540651571961486573">Сталася помилка. Код помилки: <ph name="ERROR_CODE" />.</translation>
+<translation id="2540651571961486573">Сталася помилка з кодом <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Оптимізувати трансляцію на повний екран?</translation>
 <translation id="2541706104884128042">Налаштовано новий час сну</translation>
 <translation id="2542050502251273923">Налаштовує рівень налагодження менеджера й інших сервісів з'єднання з мережею за допомогою ff_debug.</translation>
@@ -1774,7 +1770,7 @@
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3001144475369593262">Облікові записи дитини</translation>
 <translation id="3003144360685731741">Рекомендовані мережі</translation>
-<translation id="3003189754374775221">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
+<translation id="3003189754374775221">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, підключитися</translation>
 <translation id="3003623123441819449">Кеш CSS</translation>
 <translation id="3003828226041301643">Не вдається приєднати пристрій до домену. Перевірте обліковий запис, щоб переконатися, що ви можете додавати пристрої.</translation>
 <translation id="3003967365858406397">Пристрій <ph name="PHONE_NAME" /> створить приватне з’єднання Wi-Fi.</translation>
@@ -1883,7 +1879,7 @@
 <translation id="3129215702932019810">Не вдалося запустити додаток</translation>
 <translation id="3130528281680948470">Параметри вашого пристрою буде скинуто, а всі облікові записи користувачів і локальні дані видалено. Цю дію неможливо відмінити.</translation>
 <translation id="313205617302240621">Забули пароль?</translation>
-<translation id="3132277757485842847">Зв'язок із телефоном втрачено. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
+<translation id="3132277757485842847">Зв'язок із телефоном утрачено. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
 <translation id="3132996321662585180">Оновлювати щодня</translation>
 <translation id="313963229645891001">Завантаження: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандартний жовтий аватар</translation>
@@ -1979,6 +1975,7 @@
 <translation id="3264544094376351444">Шрифт Sans-serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Закрити вікно</translation>
+<translation id="3266022278425892773">Середовище Linux для розробки</translation>
 <translation id="3266179261140759675">Заборонити сайтам надсилати й отримувати дані</translation>
 <translation id="3266274118485960573">Триває перевірка безпеки.</translation>
 <translation id="3267726687589094446">Надалі дозволяти автоматичне завантаження декількох файлів</translation>
@@ -2277,7 +2274,6 @@
 <translation id="3600051066689725006">Інформація про веб-запит</translation>
 <translation id="3600792891314830896">Вимкнути звук на сайтах, які відтворюють його</translation>
 <translation id="360180734785106144">Пропонувати нові функції, коли вони з’являються</translation>
-<translation id="3602198818276948261">Ваш контейнер не підтримує зміну розміру диска. Щоб змінити обсяг пам'яті, який попередньо виділено для Linux (бета), створіть резервну копію, а потім відновіть її в новому контейнері.</translation>
 <translation id="3602290021589620013">Попередній перегляд</translation>
 <translation id="3603622770190368340">Отримати сертифікат мережі</translation>
 <translation id="3604713164406837697">Змінити фоновий малюнок</translation>
@@ -2928,7 +2924,7 @@
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4378556263712303865">Заявка пристрою</translation>
 <translation id="4379281552162875326">Видалити "<ph name="APP_NAME" />"?</translation>
-<translation id="4380245540200674032">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>
+<translation id="4380245540200674032">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, мережею керує адміністратор, відомості</translation>
 <translation id="4380648069038809855">Ви перейшли в повноекранний режим</translation>
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> і ще 1 обліковий запис}one{<ph name="EMAIL" /> і ще <ph name="EXTRA_ACCOUNTS" /> обліковий запис}few{<ph name="EMAIL" /> і ще <ph name="EXTRA_ACCOUNTS" /> облікові записи}many{<ph name="EMAIL" /> і ще <ph name="EXTRA_ACCOUNTS" /> облікових записів}other{<ph name="EMAIL" /> і ще <ph name="EXTRA_ACCOUNTS" /> облікового запису}}</translation>
 <translation id="4384312707950789900">Додати до рекомендованих</translation>
@@ -3352,7 +3348,7 @@
 <translation id="4880827082731008257">Пошук в історії</translation>
 <translation id="4881695831933465202">Відкрити</translation>
 <translation id="4882312758060467256">Може запускатися на цьому сайті</translation>
-<translation id="4882670371033027418">Розблоковуйте пристрій <ph name="DEVICE_TYPE" /> швидше за допомогою відбитка пальця</translation>
+<translation id="4882670371033027418">Розблоковуйте <ph name="DEVICE_TYPE" /> швидше за допомогою відбитка пальця</translation>
 <translation id="4882831918239250449">Указуйте, як використовувати історію веб-перегляду для персоналізації Пошуку, оголошень тощо</translation>
 <translation id="4882919381756638075">Сайти зазвичай використовують мікрофон для роботи функцій спілкування, як-от відеочати</translation>
 <translation id="4883436287898674711">Усі сайти <ph name="WEBSITE_1" /></translation>
@@ -3377,7 +3373,7 @@
 <translation id="4902546322522096650">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="49027928311173603">Завантажене із сервера правило недійсне: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Налаштувати мережеві файлообмінники або керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
-<translation id="4906580650526544301">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Докладніше</translation>
+<translation id="4906580650526544301">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва пристрою: <ph name="PHONE_NAME" />, оператор: <ph name="PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона: <ph name="BATTERY_STATUS" />%, відомості</translation>
 <translation id="4907161631261076876">Цей файл рідко завантажують. Він може бути небезпечним.</translation>
 <translation id="4907306957610201395">Категорія дозволу</translation>
 <translation id="4908811072292128752">Щоб одночасно переглядати два сайти, відкрийте нову вкладку</translation>
@@ -3401,6 +3397,7 @@
 <translation id="4925542575807923399">Адміністратору облікового запису потрібно, щоб цей обліковий запис був першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="4927753642311223124">Сповіщень немає.</translation>
 <translation id="4929386379796360314">Місця друку</translation>
+<translation id="4930447554870711875">Розробники</translation>
 <translation id="4930714375720679147">Увімкнути</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4933484234309072027">вбудовано на сайті <ph name="URL" /></translation>
@@ -3953,7 +3950,6 @@
 <translation id="558918721941304263">Завантаження додатків…</translation>
 <translation id="5592595402373377407">Ще недостатньо даних.</translation>
 <translation id="5595485650161345191">Редагувати адресу</translation>
-<translation id="5595727715083333657">Розмір вашого контейнера не можна змінювати. Щоб змінити обсяг пам'яті, що попередньо виділена для Linux (бета), створіть резервну копію, а потім відновіть її в новому контейнері.</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5600706100022181951">Щоб завантажити оновлення, буде використано <ph name="UPDATE_SIZE_MB" /> МБ мобільного Інтернету. Продовжити?</translation>
 <translation id="5601503069213153581">PIN-код</translation>
@@ -4205,7 +4201,6 @@
 <translation id="5893589697005440881">Діліться файлами з людьми поруч</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5900302528761731119">Фото профілю Google</translation>
-<translation id="5900358982890952556">Оновити Linux (бета-версія)</translation>
 <translation id="5901494423252125310">Кришка принтера відкрита</translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5904614460720589786">Не вдалося налаштувати додаток <ph name="APP_NAME" /> через проблему з конфігурацією. Зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
@@ -4318,7 +4313,7 @@
 <translation id="6031600495088157824">Параметри введення на панелі інструментів</translation>
 <translation id="6032715498678347852">Натисніть розширення, щоб надати йому доступ до цього сайту.</translation>
 <translation id="6032912588568283682">Файлова система</translation>
-<translation id="603539183851330738">Кнопка відміни автовиправлення. Відновіть слово "<ph name="TYPED_WORD" />".  Щоб підтвердити, натисніть Enter; щоб відхилити, натисніть Escape.</translation>
+<translation id="603539183851330738">Кнопка відміни автовиправлення. Ви можете відновити слово "<ph name="TYPED_WORD" />".  Щоб підтвердити, натисніть Enter; щоб відхилити, натисніть Escape.</translation>
 <translation id="6035517790085323771">Дозволені відправники даних на ваш пристрій</translation>
 <translation id="6038929619733116134">Блокувати, якщо сайт показує нав’язливі чи оманливі оголошення</translation>
 <translation id="6039651071822577588">Словник власності в мережі має невірну структуру</translation>
@@ -4671,6 +4666,7 @@
 <translation id="6434309073475700221">Відхилити</translation>
 <translation id="6434325376267409267">Щоб користуватися додатком <ph name="APP_NAME" />, потрібно оновити пристрій.</translation>
 <translation id="6436164536244065364">Переглянути у веб-магазині</translation>
+<translation id="6438234780621650381">Скинути налаштування</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – відтворюється аудіо</translation>
 <translation id="6442187272350399447">Фантастика!</translation>
 <translation id="6444070574980481588">Вибрати дату й час</translation>
@@ -5014,7 +5010,7 @@
 <translation id="6853388645642883916">Оновлення в режимі сну</translation>
 <translation id="68541483639528434">Закрити інші вкладки</translation>
 <translation id="6855892664589459354">Резервне копіювання й відновлення Crostini</translation>
-<translation id="6856459657722366306">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
+<translation id="6856459657722366306">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="6856623341093082836">Налаштуйте й відкоригуйте точність сенсорного екрана</translation>
 <translation id="6857699260879628349">Отримати інформацію про налаштування</translation>
 <translation id="6860097299815761905">Налаштування проксі-сервера...</translation>
@@ -5185,7 +5181,7 @@
 <translation id="7044124535091449260">Докладніше про доступ до сайтів</translation>
 <translation id="7044606776288350625">Дані синхронізації</translation>
 <translation id="7047059339731138197">Виберіть фон</translation>
-<translation id="7048024426273850086">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Підключитися</translation>
+<translation id="7048024426273850086">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва пристрою: <ph name="PHONE_NAME" />, оператор: <ph name="PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона: <ph name="BATTERY_STATUS" />%, підключитися</translation>
 <translation id="7049293980323620022">Завантажити файл?</translation>
 <translation id="7051943809462976355">Пошук миші…</translation>
 <translation id="7052237160939977163">Надсилати дані відстеження ефективності</translation>
@@ -5382,7 +5378,6 @@
 <translation id="7284411326658527427">Кожен користувач може персоналізувати обліковий запис і захистити свої дані.</translation>
 <translation id="7287143125007575591">У доступі відмовлено.</translation>
 <translation id="7287411021188441799">Відновити фон за умовчанням</translation>
-<translation id="7288013116963835700">Видалити Linux для пристроїв <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262">Роздільна здатність: <ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /></translation>
 <translation id="7289225569524511578">Відкрити додаток Фоновий малюнок</translation>
 <translation id="7290242001003353852">Ця служба входу в обліковий запис, зареєстрована в домені <ph name="SAML_DOMAIN" />, намагається отримати доступ до вашої камери.</translation>
@@ -5610,7 +5605,7 @@
 <translation id="7556033326131260574">Smart Lock не вдалося підтвердити ваш обліковий запис. Щоб увійти, введіть пароль.</translation>
 <translation id="7556242789364317684">На жаль, <ph name="SHORT_PRODUCT_NAME" /> не може відновити ваші налаштування. Щоб виправити помилку, <ph name="SHORT_PRODUCT_NAME" /> має відновити заводські налаштування вашого пристрою за допомогою функції Powerwash.</translation>
 <translation id="7557194624273628371">Переадресація порту в Linux</translation>
-<translation id="7559269329306630685">Дані про відбитки пальців надійно зберігаються на пристрої <ph name="DEVICE_TYPE" /> і нікуди не надсилаються.</translation>
+<translation id="7559269329306630685">Після цього <ph name="DEVICE_TYPE" /> надійно зберігатиме дані про відбиток і нікуди не надсилатиме їх.</translation>
 <translation id="7559719679815339381">Зачекайте… Додаток-термінал оновлюється. Не витягуйте носій USB.</translation>
 <translation id="7561196759112975576">Завжди</translation>
 <translation id="756445078718366910">Відкрити вікно веб-переглядача</translation>
@@ -5768,7 +5763,6 @@
 <translation id="7730683939467795481">Цю сторінку змінено розширенням "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7732111077498238432">Мережа контролюється правилами</translation>
 <translation id="7737115349420013392">Підключення до пристрою "<ph name="DEVICE_NAME" />"…</translation>
-<translation id="7737238973539693982">Видалення Linux (бета-версія)</translation>
 <translation id="7737948071472253612">Заборонено використовувати камеру</translation>
 <translation id="7740996059027112821">Стандартно</translation>
 <translation id="7742706086992565332">Ви можете вибрати рівень масштабування на певних веб-сайтах</translation>
@@ -6238,7 +6232,6 @@
 <translation id="825238165904109940">Завжди показувати повні URL-адреси</translation>
 <translation id="8252569384384439529">Завантаження…</translation>
 <translation id="8253198102038551905">Натисніть "+", щоб відобразити властивості мережі</translation>
-<translation id="8254954272268479918">Вимкнути Linux (бета-версія)</translation>
 <translation id="8255451560461371599">Без фону</translation>
 <translation id="8256319818471787266">Шибеник</translation>
 <translation id="8257950718085972371">Продовжити блокувати доступ до камери</translation>
@@ -6647,7 +6640,7 @@
 <translation id="8737914367566358838">Виберіть, якою мовою перекласти сторінку</translation>
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> може отримати цей пристрій Chromebook. Налаштування майже завершено.</translation>
 <translation id="8742998548129056176">Це загальна інформація про пристрій і його використання (як-от дані про рівень заряду акумулятора, систему, історію додатків і помилки). Ці відомості використовуватимуться, щоб покращити Android, а деякі зведені дані корисні для додатків і партнерів Google, як-от розробників Android.</translation>
-<translation id="8743164338060742337">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Підключитися</translation>
+<translation id="8743164338060742337">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, мережею керує адміністратор, підключитися</translation>
 <translation id="8743390665131937741">Рівень масштабування лупи для всього екрана:</translation>
 <translation id="8743864605301774756">Оновлено 1 год тому</translation>
 <translation id="8746654918629346731">Ви вже надіслали запит на розширення "<ph name="EXTENSION_NAME" />"</translation>
@@ -6750,7 +6743,7 @@
 <translation id="8830796635868321089">Помилка перевірки наявності оновлень за допомогою поточних налаштувань проксі-сервера. Змініть <ph name="PROXY_SETTINGS_LINK_START" />налаштування проксі-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="8831140208248705279">Підключіть телефон Android до <ph name="DEVICE_TYPE" />, щоб мати змогу надсилати SMS із комп'ютера, надавати доступ до інтернет-з'єднання й розблоковувати <ph name="DEVICE_TYPE" /> за допомогою телефона.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">Користувач <ph name="USER_EMAIL" /> керує налаштуваннями мережі.</translation>
-<translation id="8835786707922974220">Забезпечте постійний доступ до своїх збережених паролів</translation>
+<translation id="8835786707922974220">Подбайте про те, щоб не втратити доступ до своїх збережених паролів</translation>
 <translation id="8838601485495657486">Непрозоро</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
 <translation id="883911313571074303">Додати нотатку до зображення</translation>
@@ -6975,7 +6968,6 @@
 <translation id="9088917181875854783">Підтвердьте, що цей ключ відображається на пристрої "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Методи введення</translation>
 <translation id="909108997331068008">Користувач <ph name="EXISTING_USER" /> уже ввійшов в обліковий запис <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Радимо створити резервну копію файлів на випадок, якщо не вдасться завершити оновлення. Коли ви почнете оновлення, Linux (бета-версія) буде вимкнено. Перш ніж продовжувати, збережіть відкриті файли.</translation>
 <translation id="9094033019050270033">Оновити пароль</translation>
 <translation id="9094038138851891550">Ім'я користувача не дійсне</translation>
 <translation id="9094982973264386462">Видалити</translation>
@@ -7054,7 +7046,6 @@
 <translation id="9176476835295860688">Надсилати дані про використання й діагностику. Цей пристрій наразі автоматично надсилає в Google дані про діагностику та використання пристрою і додатків. Ця інформація допоможе покращити стабільність системи, додатків тощо. Деякі зведені дані також корисні для додатків і партнерів Google, як-от розробників Android. Це <ph name="BEGIN_LINK1" />налаштування<ph name="END_LINK1" /> застосовує власник. Якщо ввімкнено додаткову Історію додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google. <ph name="BEGIN_LINK2" />Докладніше<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – під’єднано пристрій Bluetooth</translation>
 <translation id="9179524979050048593">Ім'я користувача на екрані входу</translation>
-<translation id="9179734824669616955">Налаштування Linux (бета-версія) на вашому <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Це може тривати кілька хвилин. Запускається контейнер Linux.</translation>
 <translation id="9180380851667544951">Сайт може показувати ваш екран</translation>
 <translation id="9186963452600581158">Увійти в обліковий запис Google дитини</translation>
@@ -7095,7 +7086,6 @@
 <translation id="93610034168535821">Загальний обсяг пам'яті, використаний сайтами:</translation>
 <translation id="936801553271523408">Дані діагностики системи</translation>
 <translation id="93766956588638423">Полагодити розширення</translation>
-<translation id="938339467127511841">Обсяг пам’яті Linux (бета-версія)</translation>
 <translation id="938470336146445890">Установіть сертифікат користувача.</translation>
 <translation id="939252827960237676">Не вдалося зберегти знімок екрана</translation>
 <translation id="939519157834106403">SSID</translation>
@@ -7130,7 +7120,7 @@
 <translation id="971774202801778802">URL-адреса закладки</translation>
 <translation id="973473557718930265">Вийти</translation>
 <translation id="975893173032473675">Мова перекладу</translation>
-<translation id="976499800099896273">Вікно відміни автовиправлення: "<ph name="TYPED_WORD" />" виправлено на "<ph name="CORRECTED_WORD" />".  Щоб відкрити його, натисніть стрілку вгору; щоб закрити, натисніть клавішу Escape.</translation>
+<translation id="976499800099896273">Вікно відміни автовиправлення: "<ph name="TYPED_WORD" />" виправлено на "<ph name="CORRECTED_WORD" />".  Щоб відкрити вікно відміни, натисніть стрілку вгору; щоб закрити, натисніть клавішу Escape.</translation>
 <translation id="978146274692397928">Початкова ширина розділових знаків – повна</translation>
 <translation id="97905529126098460">Це вікно закриється, щойно встановлення буде скасовано.</translation>
 <translation id="980731642137034229">Кнопка меню дій</translation>

@@ -185,6 +185,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2718395828230677721">Nattljus</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
 <translation id="28232023175184696">Det gick inte att ansluta till internet. Klicka om du vill försöka igen.</translation>
@@ -563,6 +564,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6297287540776456956">Markera ett område med e-pennan</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> byttes till <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Mikrofon</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> är en hanterad session som hanteras av <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth är aktiverat</translation>
 <translation id="6381109794406942707">Lås upp enheten genom att ange pinkoden.</translation>
 <translation id="639644700271529076">CAPS LOCK är av</translation>

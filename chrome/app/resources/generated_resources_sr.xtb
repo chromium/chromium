@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Одређује учесталост ажурирања екрана</translation>
 <translation id="1061904396131502319">Скоро је време за паузу</translation>
 <translation id="1067048845568873861">Направљено</translation>
-<translation id="1067291318998134776">Linux (бета)</translation>
 <translation id="1067922213147265141">Друге Google услуге</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Други програм на рачунару је додао додатак који може да промени начин на који Chrome функционише.
@@ -928,7 +927,6 @@
 Можете да управљате подешавањима овог налога ако инсталирате апликацију Family Link на уређају.  Послали смо вам упутства у имејлу.</translation>
 <translation id="2040460856718599782">Упс! Нешто је пошло наопако док смо покушавали да потврдимо вашу аутентичност. Проверите поново акредитиве за пријављивање и покушајте поново.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Имате 1 угрожену лозинку}one{Имате # угрожену лозинку}few{Имате # угрожене лозинке}other{Имате # угрожених лозинки}}</translation>
-<translation id="2040863272941698761">Подесите Linux</translation>
 <translation id="204497730941176055">Назив шаблона Microsoft сертификата</translation>
 <translation id="2045117674524495717">Помоћник за тастерске пречице</translation>
 <translation id="2045969484888636535">Настави са блокирањем колачића</translation>
@@ -1260,8 +1258,6 @@
 <translation id="2428510569851653187">Опишите шта сте радили када је картица отказала</translation>
 <translation id="2428939361789119025">Искључите WiFi</translation>
 <translation id="2431027948063157455">Google помоћник није успео да се учита. Проверите мрежну везу, па покушајте поново.</translation>
-<translation id="2431846145771260397">Желите ли стварно да резервишете диск фиксне величине за Linux (бета)?</translation>
-<translation id="2432753757290432042">Потребно је ажурирање за Linux (бета)</translation>
 <translation id="2433452467737464329">Додајте параметар упита у URL да бисте аутоматски освежили страницу: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Изглед</translation>
@@ -1441,7 +1437,7 @@
 <translation id="2627424346328942291">Дељење није успело</translation>
 <translation id="2628770867680720336">Chromebook мора да се врати на фабричка подешавања да би се омогућило ADB отклањање грешака <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Програмирајте Android апликације</translation>
-<translation id="2630681426381349926">Повежите са WiFi-јем да бисте започели</translation>
+<translation id="2630681426381349926">Повежите са WiFi-ем да бисте започели</translation>
 <translation id="2631498379019108537">Приказуј опције уноса у полици</translation>
 <translation id="2633212996805280240">Желите ли да уклоните „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> није могао да доврши инсталацију, али ће наставити да се покреће са слике диска.</translation>
@@ -1470,7 +1466,7 @@
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Функције се разликују у зависности од уређаја</translation>
 <translation id="2659971421398561408">Промена величине диска за Crostini</translation>
 <translation id="2660779039299703961">Догађај</translation>
-<translation id="266079277508604648">Повезивање са штампачем није успело. Проверите да ли је штампач укључен и повезан са Chromebook-ом помоћу WiFi-ја или USB-а.</translation>
+<translation id="266079277508604648">Повезивање са штампачем није успело. Проверите да ли је штампач укључен и повезан са Chromebook-ом помоћу WiFi-а или USB-а.</translation>
 <translation id="2661714428027871023">Прегледајте брже и користите мање података помоћу Lite режима. Кликните да бисте сазнали више.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663302507110284145">Језик</translation>
@@ -1976,6 +1972,7 @@
 <translation id="3264544094376351444">Фонт Sans-serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Затвори прозор</translation>
+<translation id="3266022278425892773">Linux окружење за програмирање</translation>
 <translation id="3266179261140759675">Онемогући сајтовима да шаљу и примају податке</translation>
 <translation id="3266274118485960573">Безбедносна провера је покренута.</translation>
 <translation id="3267726687589094446">Настави да дозвољаваш аутоматска преузимања више датотека</translation>
@@ -2276,7 +2273,6 @@
 <translation id="3600051066689725006">Информације о веб-захтеву</translation>
 <translation id="3600792891314830896">Искључи звук сајтова који пуштају звук</translation>
 <translation id="360180734785106144">да нуди нове функције када постану доступне</translation>
-<translation id="3602198818276948261">Контејнер није конфигурисан за промене величине диска. Да бисте прилагодили количину простора која се резервише за Linux (бета), направите резервну копију и вратите је у нови контејнер.</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3603622770190368340">Добијање сертификата мреже</translation>
 <translation id="3604713164406837697">Промените позадину</translation>
@@ -2323,7 +2319,7 @@
 <translation id="3650753875413052677">Грешка при регистрацији</translation>
 <translation id="3650845953328929506">Отпремање евиденције је на чекању.</translation>
 <translation id="3650952250015018111">Дозволите да „<ph name="APP_NAME" />“ приступа:</translation>
-<translation id="3651488188562686558">прекинути везу са WiFi-јем</translation>
+<translation id="3651488188562686558">прекинути везу са WiFi-ем</translation>
 <translation id="3652817283076144888">Покреће се</translation>
 <translation id="3653160965917900914">Дељења датотека на мрежи</translation>
 <translation id="3653842108912548333">Приступајте Помоћнику помоћу Voice Match-а</translation>
@@ -3206,7 +3202,7 @@
 <translation id="4688036121858134881">ИД локалне евиденције: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Одаберите подешавања демонстрације</translation>
 <translation id="4689421377817139245">Синхронизујте овај обележивач са iPhone-ом</translation>
-<translation id="4690091457710545971">&lt;Четири датотеке које је генерисао Intel фирмвер за WiFi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Прве три датотеке су бинарне датотеке које садрже исписе регистара и Intel потврђује да не садрже личне податке нити податке који могу да идентификују уређај.  Последња датотека је траг извршења Intel фирмвера; из ње су уклоњени било какви лични подаци или подаци који могу да идентификују уређај, али је превелика да бисмо је овде приказали.  Ове датотеке су генерисане као одговор на недавне проблеме са WiFi-јем на уређају и делићемо их са Intel-ом да бисмо решили те проблеме.&gt;</translation>
+<translation id="4690091457710545971">&lt;Четири датотеке које је генерисао Intel фирмвер за WiFi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Прве три датотеке су бинарне датотеке које садрже исписе регистара и Intel потврђује да не садрже личне податке нити податке који могу да идентификују уређај.  Последња датотека је траг извршења Intel фирмвера; из ње су уклоњени било какви лични подаци или подаци који могу да идентификују уређај, али је превелика да бисмо је овде приказали.  Ове датотеке су генерисане као одговор на недавне проблеме са WiFi-ем на уређају и делићемо их са Intel-ом да бисмо решили те проблеме.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> ће моћи да прегледа датотеку <ph name="FILENAME" /> док не затворите све картице овог сајта</translation>
 <translation id="4692623383562244444">Претраживачи</translation>
 <translation id="4693155481716051732">Суши</translation>
@@ -3401,6 +3397,7 @@
 <translation id="4925542575807923399">Администратор за овај налог захтева да овај налог буде први пријављени налог у сесији са вишеструким пријављивањем.</translation>
 <translation id="4927753642311223124">Нема шта да се види овде. Наставите даље.</translation>
 <translation id="4929386379796360314">Одредишта за штампање</translation>
+<translation id="4930447554870711875">Програмери</translation>
 <translation id="4930714375720679147">Укључи</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="4933484234309072027">уграђено у сајт <ph name="URL" /></translation>
@@ -3954,7 +3951,6 @@
 <translation id="558918721941304263">Апликације се учитавају…</translation>
 <translation id="5592595402373377407">Још увек није доступна довољна количина података.</translation>
 <translation id="5595485650161345191">Измена адресе</translation>
-<translation id="5595727715083333657">Контејнер не подржава промену величине. Да бисте прилагодили количину простора која се унапред додељује Linux-у (бета), направите резервну копију и вратите је у новом контејнеру.</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5600706100022181951">Ажурирање ће се преузети уз употребу <ph name="UPDATE_SIZE_MB" /> MB мобилних података. Желите ли да наставите?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4207,7 +4203,6 @@
 <translation id="5893589697005440881">Делите фајлове са људима у близини</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
 <translation id="5900302528761731119">Слика Google профила</translation>
-<translation id="5900358982890952556">Надоградите Linux (бета)</translation>
 <translation id="5901494423252125310">Врата штампача су отворена</translation>
 <translation id="5901630391730855834">Жута</translation>
 <translation id="5904614460720589786">Подешавање апликације <ph name="APP_NAME" /> није успело због проблема са конфигурацијом. Обратите се администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
@@ -4674,6 +4669,7 @@
 <translation id="6434309073475700221">Одбаци</translation>
 <translation id="6434325376267409267">Да бисте користили апликацију <ph name="APP_NAME" />, морате да ажурирате уређај.</translation>
 <translation id="6436164536244065364">Прикажи у Веб продавници</translation>
+<translation id="6438234780621650381">Ресетујте подешавања</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Пушта се аудио садржај</translation>
 <translation id="6442187272350399447">Изузетни</translation>
 <translation id="6444070574980481588">Подесите датум и време</translation>
@@ -5387,7 +5383,6 @@
 <translation id="7284411326658527427">Свака особа може да персонализује налог и чува приватност података.</translation>
 <translation id="7287143125007575591">Приступ је одбијен.</translation>
 <translation id="7287411021188441799">Врати подразумевану позадину</translation>
-<translation id="7288013116963835700">Уклони Linux за <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />×<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Отварање апликације за позадине</translation>
 <translation id="7290242001003353852">Ова услуга пријављивања, коју хостује <ph name="SAML_DOMAIN" />, приступа вашој камери.</translation>
@@ -5773,7 +5768,6 @@
 <translation id="7730683939467795481">Ову страницу је променио додатак „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="7732111077498238432">Мрежу контролишу смернице</translation>
 <translation id="7737115349420013392">Упарује се са „<ph name="DEVICE_NAME" />“ ...</translation>
-<translation id="7737238973539693982">Избришите Linux (бета)</translation>
 <translation id="7737948071472253612">Није им дозвољено да користе камеру</translation>
 <translation id="7740996059027112821">Стандардно</translation>
 <translation id="7742706086992565332">Можете да подесите ниво увећања или умањења приказа на одређеним веб-сајтовима</translation>
@@ -6243,7 +6237,6 @@
 <translation id="825238165904109940">Увек приказуј URL-ове у целости</translation>
 <translation id="8252569384384439529">Отпрема се...</translation>
 <translation id="8253198102038551905">Кликните на „+“ да бисте видели својства мреже</translation>
-<translation id="8254954272268479918">Искључи Linux (бета)</translation>
 <translation id="8255451560461371599">Нема позадине</translation>
 <translation id="8256319818471787266">Искрица</translation>
 <translation id="8257950718085972371">Настави да блокираш приступ камери</translation>
@@ -6981,7 +6974,6 @@
 <translation id="9088917181875854783">Потврдите да се овај приступни кôд приказује на уређају „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9089416786594320554">Методи уноса</translation>
 <translation id="909108997331068008">Профил <ph name="EXISTING_USER" /> је већ пријављен на <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Препоручује се да направите резервне копије у случају да надоградња не може да се доврши. Кад надоградња почне, Linux (бета) ће се искључити. Сачувајте отворене датотеке пре него што наставите.</translation>
 <translation id="9094033019050270033">Ажурирај лозинку</translation>
 <translation id="9094038138851891550">Корисничко име је неважеће</translation>
 <translation id="9094982973264386462">Уклони</translation>
@@ -7060,7 +7052,6 @@
 <translation id="9176476835295860688">Шаљите податке о коришћењу и дијагностичке податке. Овај уређај тренутно аутоматски шаље податке о дијагностици, уређају и коришћењу апликација Google-у. То ће помоћи у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. То <ph name="BEGIN_LINK1" />подешавање<ph name="END_LINK1" /> примењује власник. Ако укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу. <ph name="BEGIN_LINK2" />Сазнајте више<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth уређаје је повезан</translation>
 <translation id="9179524979050048593">Корисничко име на екрану за пријављивање</translation>
-<translation id="9179734824669616955">Подесите Linux (бета) на <ph name="DEVICE_TYPE" />-у</translation>
 <translation id="9180281769944411366">Ово може да потраје неколико минута. Покреће се Linux контејнер.</translation>
 <translation id="9180380851667544951">Сајт може да дели екран</translation>
 <translation id="9186963452600581158">Пријавите се помоћу Google налога детета</translation>
@@ -7101,7 +7092,6 @@
 <translation id="93610034168535821">Укупан меморијски простор који користе сајтови:</translation>
 <translation id="936801553271523408">Системски дијагностички подаци</translation>
 <translation id="93766956588638423">Поправи додатак</translation>
-<translation id="938339467127511841">Linux (бета) меморијски простор</translation>
 <translation id="938470336146445890">Инсталирајте кориснички сертификат.</translation>
 <translation id="939252827960237676">Чување снимка екрана није успело</translation>
 <translation id="939519157834106403">SSID</translation>

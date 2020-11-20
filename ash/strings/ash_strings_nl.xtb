@@ -185,6 +185,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2718395828230677721">Nachtlicht</translation>
 <translation id="2727175239389218057">Reageren</translation>
 <translation id="2727977024730340865">Aangesloten op een laag-vermogen-lader. Opladen van de batterij mogelijk niet betrouwbaar.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> beheerd door <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt+Zoeken</translation>
 <translation id="2819276065543622893">Je wordt nu uitgelogd.</translation>
 <translation id="28232023175184696">Kan geen verbinding maken met internet. Klik om het opnieuw te proberen.</translation>
@@ -563,6 +564,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6297287540776456956">Gebruik de stylus om een gebied te selecteren</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> is gedraaid naar <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Spraak</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth is ingeschakeld</translation>
 <translation id="6381109794406942707">Geef je pincode op om het apparaat te ontgrendelen.</translation>
 <translation id="639644700271529076">CAPS LOCK is uitgeschakeld</translation>

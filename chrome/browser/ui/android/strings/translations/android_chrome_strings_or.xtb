@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ସେୟାର୍ କରାଯାଇ ପାରିବ ନାହିଁ</translation>
 <translation id="1477626028522505441">ସର୍ଭର୍ ସମସ୍ୟା ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହେବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="1506061864768559482">ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
-<translation id="151267239139452619">ଡାଉନଲୋଡଗୁଡ଼ିକରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1513352483775369820">ବୁକ୍‌ମାର୍କ ଏବଂ ୱେବ୍ ଇତିବୃତ୍ତି</translation>
 <translation id="1513858653616922153">ପାସ୍‍ୱାର୍ଡକୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1521774566618522728">ଆଜି ସକ୍ରିୟ ଅଛି</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ଘଣ୍ଟା}other{# ଘଣ୍ଟା}}</translation>
 <translation id="4045764304651014138">ବ୍ୟବହାର ଡାଟା</translation>
 <translation id="4056223980640387499">ସେପିଆ</translation>
-<translation id="4057643060762047384">ଏଥିରେ ଯୋଗ କରନ୍ତୁ:</translation>
 <translation id="4060598801229743805">ସ୍କ୍ରିନ୍‌ର ଶୀର୍ଷଭାଗରେ ବିକଳ୍ପଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="4062305924942672200">ଆଇନଗତ ସୂଚନା</translation>
 <translation id="4084682180776658562">ବୁକମାର୍କ</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6312687380483398334">ୱେବ୍ ଆପଗୁଡ଼ିକ (ନୀରବ)</translation>
 <translation id="6316139424528454185">Android ସଂସ୍କରଣ ଅସମର୍ଥିତ ଅଟେ</translation>
-<translation id="6321526113093607004">ବୁକମାର୍କଗୁଡ଼ିକରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6324034347079777476">Android ସିଷ୍ଟମ୍‌ର ସିଙ୍କ ଅକ୍ଷମ କରାଗଲା</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="6337234675334993532">ଏନକ୍ରିପ୍ସନ୍</translation>
@@ -975,7 +972,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ଓ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ଅଧିକ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ଓ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ଅଧିକ}}</translation>
 <translation id="7778840695157240389">ନୂଆ ଷ୍ଟୋରୀଗୁଡ଼ିକ ପାଇଁ ପରେ ପୁଣି ଦେଖନ୍ତୁ</translation>
-<translation id="7786595606756654269">Google Assistant ୱେବରେ ସନ୍ଧାନ କରିବାକୁ ଏବଂ ଆପଣ ଖୋଲିଥିବା ସାଇଟଗୁଡ଼ିକୁ ବ୍ୟସ୍ତ ରଖିବା ପାଇଁ ଏକ ଉନ୍ନତ ଭଏସ୍ ଅନୁଭୂତି ପ୍ରଦାନ କରେ। ଆପଣ Google Assistant, ମାଧ୍ୟମରେ ବ୍ୟବହାର କରିଥିବା ସାଇଟଗୁଡ଼ିକର URL ଏବଂ ବିଷୟବସ୍ତୁକୁ Assistant ପ୍ରାପ୍ତ କରିବ।</translation>
+<translation id="7786595606756654269">Google Assistant ୱେବରେ ସନ୍ଧାନ କରିବାକୁ ଏବଂ ଆପଣ ଖୋଲିଥିବା ସାଇଟଗୁଡ଼ିକୁ ବ୍ୟସ୍ତ ରଖିବା ପାଇଁ ଏକ ଉନ୍ନତ ଭଏସ୍ ଅନୁଭୂତି ପ୍ରଦାନ କରେ। ଆପଣ Google Assistant ମାଧ୍ୟମରେ ବ୍ୟବହାର କରିଥିବା ସାଇଟଗୁଡ଼ିକର URL ଏବଂ ବିଷୟବସ୍ତୁକୁ Assistant ପ୍ରାପ୍ତ କରିବ।</translation>
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>

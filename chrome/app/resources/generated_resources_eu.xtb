@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Pantaila eguneratzeko maiztasuna zehazten du</translation>
 <translation id="1061904396131502319">Atseden hartzeko garaia izango da laster</translation>
 <translation id="1067048845568873861">Sortze-data</translation>
-<translation id="1067291318998134776">Linux (beta)</translation>
 <translation id="1067922213147265141">Beste Google-ren zerbitzu batzuk</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen luzapen bat gehitu du.
@@ -929,7 +928,6 @@ Bestela, amaitu saioa orain kontu honen aldaketak gailu honetan aplikatzeko.
 Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.  Posta elektronikoz bidali dizkizugu argibideak.</translation>
 <translation id="2040460856718599782">Arazoren bat izan da zu autentifikatzen saiatzean. Egiaztatu bi aldiz saioa hasteko erabili dituzun kredentzialak eta saiatu berriro.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Arriskuan dagoen pasahitz bat daukazu}other{Arriskuan dauden # pasahitz dauzkazu}}</translation>
-<translation id="2040863272941698761">Konfiguratu Linux</translation>
 <translation id="204497730941176055">Microsoft ziurtagiriaren txantiloiaren izena</translation>
 <translation id="2045117674524495717">Lasterbideei buruzko laguntza</translation>
 <translation id="2045969484888636535">Jarraitu cookieak blokeatzen</translation>
@@ -1261,8 +1259,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2428510569851653187">Azaldu zer ari zinen egiten fitxak huts egin duenean</translation>
 <translation id="2428939361789119025">Desaktibatu wifia</translation>
 <translation id="2431027948063157455">Ezin izan da kargatu Google-ren Laguntzailea. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
-<translation id="2431846145771260397">Ziur tamaina finkoko diskoa Linux-erako (beta) gorde nahi duzula?</translation>
-<translation id="2432753757290432042">Linux (Beta) eguneratu egin behar da</translation>
 <translation id="2433452467737464329">Orria automatikoki freskatzeko, gehitu kontsulta-parametro bat URLan: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Itxura</translation>
@@ -1977,6 +1973,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3264544094376351444">Sans-serif letra</translation>
 <translation id="3264582393905923483">Testuingurua</translation>
 <translation id="3265459715026181080">Itxi leihoa</translation>
+<translation id="3266022278425892773">Linux-eko garapen-ingurunea</translation>
 <translation id="3266179261140759675">Ez utzi itxitako webguneei daturik bidaltzen eta jasotzen</translation>
 <translation id="3266274118485960573">Abian da segurtasun-egiaztapena.</translation>
 <translation id="3267726687589094446">Jarraitu baimentzen fitxategi ugariren deskarga automatikoak</translation>
@@ -2277,7 +2274,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3600051066689725006">Web-eskaerari buruzko informazioa</translation>
 <translation id="3600792891314830896">Desaktibatu soinua erreproduzitzen duten webguneen audioa</translation>
 <translation id="360180734785106144">Eskuratu eginbide berriak erabilgarri dauden bezain laster</translation>
-<translation id="3602198818276948261">Edukiontzia ez dago konfiguratuta diskoen tamaina aldatzeko. Linux-ek (Beta) erreserbatuta daukan biltegiratzeko tokia doitzeko, egin babeskopia bat eta, ondoren, lehenera ezazu edukiontzi berri batean.</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3603622770190368340">Eskuratu sareko ziurtagiria</translation>
 <translation id="3604713164406837697">Aldatu horma-papera</translation>
@@ -3402,6 +3398,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4925542575807923399">Saio-hasiera anitzeko saioetan, saioa hasten duen lehen kontua hau izatea eskatzen du kontu honen administratzaileak.</translation>
 <translation id="4927753642311223124">Hemen ez dago ikusteko ezer.</translation>
 <translation id="4929386379796360314">Inprimatzearen helmugak</translation>
+<translation id="4930447554870711875">Garatzaileak</translation>
 <translation id="4930714375720679147">Aktibatu</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933484234309072027"><ph name="URL" /> helbidean kapsulatua</translation>
@@ -3954,7 +3951,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="558918721941304263">Aplikazioak kargatzen…</translation>
 <translation id="5592595402373377407">Ez dago behar adina datu erabilgarri oraindik.</translation>
 <translation id="5595485650161345191">Editatu helbidea</translation>
-<translation id="5595727715083333657">Edukiontziak ez du onartzen tamainaz aldatzea. Linux-ek (Beta) aldez aurretik esleituta duen biltegiratze-tamaina doitzeko, egin babeskopia bat eta, ondoren, lehenera ezazu edukiontzi berri batean.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5600706100022181951">Datu-konexioaren <ph name="UPDATE_SIZE_MB" /> MB erabilita deskargatuko da eguneratzea. Aurrera egin nahi duzu?</translation>
 <translation id="5601503069213153581">PIN kodea</translation>
@@ -4206,7 +4202,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5893589697005440881">Partekatu fitxategiak ingurukoekin</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5900302528761731119">Google-ko profileko argazkia</translation>
-<translation id="5900358982890952556">Bertsio-berritu Linux (Beta)</translation>
 <translation id="5901494423252125310">Inprimagailuaren estalkia irekita dago</translation>
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5904614460720589786">Ezin izan da instalatu <ph name="APP_NAME" /> konfigurazio-arazo batengatik. Jarri administratzailearekin harremanetan. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
@@ -4673,6 +4668,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6434309073475700221">Baztertu</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> erabiltzeko, gailua eguneratu behar duzu.</translation>
 <translation id="6436164536244065364">Ikusi Web Store dendan</translation>
+<translation id="6438234780621650381">Ezarpenak berrezarri dira</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Audioa erreproduzitzen ari da</translation>
 <translation id="6442187272350399447">Txundigarria</translation>
 <translation id="6444070574980481588">Ezarri data eta ordua</translation>
@@ -5386,7 +5382,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7284411326658527427">Bakoitzak bere kontua pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
 <translation id="7287143125007575591">Sarbidea ukatuta dago.</translation>
 <translation id="7287411021188441799">Leheneratu atzeko plano lehenetsia</translation>
-<translation id="7288013116963835700">Kendu Linux hemendik: <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Ireki horma-paperaren aplikazioa</translation>
 <translation id="7290242001003353852">Saioa hasteko zerbitzuaren ostalaria <ph name="SAML_DOMAIN" /> da eta zure kamera erabiltzen ari da.</translation>
@@ -5772,7 +5767,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7730683939467795481">"<ph name="EXTENSION_NAME" />" luzapenak aldaketak egin ditu orrian</translation>
 <translation id="7732111077498238432">Gidalerroen bidez dago kontrolatuta sarea</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" gailuarekin parekatzen…</translation>
-<translation id="7737238973539693982">Ezabatu Linux (Beta)</translation>
 <translation id="7737948071472253612">Ezin dute erabili kamera</translation>
 <translation id="7740996059027112821">Estandarra</translation>
 <translation id="7742706086992565332">Webgune jakin batzuetan webgunea zenbat handitzen edo txikitzen duzun ezartzeko aukera duzu</translation>
@@ -6241,7 +6235,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="825238165904109940">Erakutsi beti URL osoak</translation>
 <translation id="8252569384384439529">Kargatzen…</translation>
 <translation id="8253198102038551905">Sakatu "+" sarearen propietateak ikusteko</translation>
-<translation id="8254954272268479918">Itxi Linux (Beta)</translation>
 <translation id="8255451560461371599">Atzeko planorik gabe</translation>
 <translation id="8256319818471787266">Tximista</translation>
 <translation id="8257950718085972371">Jarraitu kamerarako sarbidea blokeatzen</translation>
@@ -6977,7 +6970,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9088917181875854783">Berretsi pasagakoa "<ph name="DEVICE_NAME" />" gailuan erakusten dela:</translation>
 <translation id="9089416786594320554">Idazketa-metodoak</translation>
 <translation id="909108997331068008"><ph name="EXISTING_USER" /> erabiltzailearen profilak dagoeneko hasita dauka saioa <ph name="NEW_USER" /> kontuan</translation>
-<translation id="9093429538970210897">Fitxategien babeskopia egitea gomendatzen dugu. Horrela, datuak ez dira galduko bertsio-berritzea osatu ezin bada. Bertsio-berritzea hasten denean, itxi egingo da Linux (Beta). Gorde irekitako fitxategiak aurrera egin aurretik.</translation>
 <translation id="9094033019050270033">Aldatu pasahitza</translation>
 <translation id="9094038138851891550">Erabiltzaile-izenak ez du balio</translation>
 <translation id="9094982973264386462">Kendu</translation>
@@ -7056,7 +7048,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9176476835295860688">Bidali erabilera- eta diagnostiko-datuak. Gailu honek automatikoki bidaltzen dizkio Google-ri diagnostikoak eta gailu zein aplikazioen erabilerari buruzko datuak. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Jabeak konfiguratu du <ph name="BEGIN_LINK1" />ezarpen<ph name="END_LINK1" /> hori. Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea. <ph name="BEGIN_LINK2" />Lortu informazio gehiago<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth bidezko gailu bat konektatu da</translation>
 <translation id="9179524979050048593">Saioa hasteko pantailako erabiltzaile-izena</translation>
-<translation id="9179734824669616955">Konfiguratu Linux (Beta) <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="9180281769944411366">Baliteke prozesuak minutu batzuk behar izatea. Linux edukiontzia abiarazten.</translation>
 <translation id="9180380851667544951">Webguneak pantaila parteka dezake</translation>
 <translation id="9186963452600581158">Hasi saioa haurraren Google-ko kontuan</translation>
@@ -7097,7 +7088,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="93610034168535821">Webguneek erabilitako memoria, guztira:</translation>
 <translation id="936801553271523408">Sistemaren diagnostikoaren datuak</translation>
 <translation id="93766956588638423">Konpondu luzapena</translation>
-<translation id="938339467127511841">Linux (beta) biltegia</translation>
 <translation id="938470336146445890">Instalatu erabiltzaile-ziurtagiri bat.</translation>
 <translation id="939252827960237676">Ezin izan da pantaila-argazkia gorde</translation>
 <translation id="939519157834106403">SSID</translation>

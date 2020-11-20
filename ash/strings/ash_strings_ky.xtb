@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">Түнкү режим</translation>
 <translation id="2727175239389218057">Жооп берүү</translation>
 <translation id="2727977024730340865">Кубаттуулугу төмөн кубаттагычка сайылды. Батареяны кубаттоо аракети ишенимдүү эмес.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат</translation>
 <translation id="2792498699870441125">Alt+Издөө</translation>
 <translation id="2819276065543622893">Сиз азыр чыгарыласыз.</translation>
 <translation id="28232023175184696">Интернетке туташпай жатат. Кайра аракет кылуу үчүн таптап коюңуз.</translation>
@@ -563,6 +564,7 @@
 <translation id="6297287540776456956">Тандалган бөлүктө стилусту колдонуу</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> буга <ph name="ROTATION" /> айланды</translation>
 <translation id="6315170314923504164">Үн</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> тарабынан башкарылган сеанс</translation>
 <translation id="6376931439017688372">Bluetooth күйүк</translation>
 <translation id="6381109794406942707">Түзмөктүн кулпусун ачуу үчүн PIN кодуңузду киргизиңиз.</translation>
 <translation id="639644700271529076">CAPS LOCK өчүк</translation>

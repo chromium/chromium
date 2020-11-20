@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">화면 업데이트 빈도 결정</translation>
 <translation id="1061904396131502319">곧 휴식 시간입니다</translation>
 <translation id="1067048845568873861">생성됨</translation>
-<translation id="1067291318998134776">Linux(베타)</translation>
 <translation id="1067922213147265141">다른 Google 서비스</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다. 
@@ -928,7 +927,6 @@
 부모 기기에 Family Link 앱을 설치하여 이 계정의 설정을 관리할 수 있습니다.  안내가 담긴 이메일을 보내 드렸습니다.</translation>
 <translation id="2040460856718599782">인증을 시도하는 중에 문제가 발생했습니다. 로그인 사용자 인증 정보를 확인하고 다시 시도해 주세요.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{유출된 비밀번호가 1개 있습니다.}other{유출된 비밀번호가 #개 있습니다.}}</translation>
-<translation id="2040863272941698761">Linux 설정</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045117674524495717">단축키 도움말</translation>
 <translation id="2045969484888636535">쿠키 계속 차단</translation>
@@ -1260,8 +1258,6 @@
 <translation id="2428510569851653187">탭이 다운되었을 때 무엇을 하고 계셨는지 설명해 주세요.</translation>
 <translation id="2428939361789119025">Wi-Fi 사용 중지</translation>
 <translation id="2431027948063157455">Google 어시스턴트를 로드할 수 없습니다. 네트워크 연결 상태를 확인하고 다시 시도해 보세요.</translation>
-<translation id="2431846145771260397">Linux(베타)에 고정된 크기의 디스크를 예약하시겠습니까?</translation>
-<translation id="2432753757290432042">Linux(베타) 업데이트 필요</translation>
 <translation id="2433452467737464329">URL에 다음 검색어 매개변수를 추가하여 페이지를 자동으로 새로고침: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">모양</translation>
@@ -1976,6 +1972,7 @@
 <translation id="3264544094376351444">Sans-serif</translation>
 <translation id="3264582393905923483">컨텍스트</translation>
 <translation id="3265459715026181080">창 닫기</translation>
+<translation id="3266022278425892773">Linux 개발 환경</translation>
 <translation id="3266179261140759675">닫은 사이트에서 데이터를 주고받지 못하도록 차단</translation>
 <translation id="3266274118485960573">안전 확인을 실행 중입니다.</translation>
 <translation id="3267726687589094446">여러 파일을 자동으로 다운로드하도록 계속 허용</translation>
@@ -2274,7 +2271,6 @@
 <translation id="3600051066689725006">웹 요청 정보</translation>
 <translation id="3600792891314830896">소리를 재생하는 사이트 음소거</translation>
 <translation id="360180734785106144">새로운 기능이 출시되면 즉시 제공합니다.</translation>
-<translation id="3602198818276948261">컨테이너가 디스크 크기 조정을 지원하도록 구성되지 않았습니다. Linux(베타)에 예약되는 공간을 조정하려면 백업한 후 새로운 컨테이너로 복원하세요.</translation>
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3603622770190368340">네트워크 인증서 받기</translation>
 <translation id="3604713164406837697">배경화면 변경</translation>
@@ -3396,6 +3392,7 @@
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
 <translation id="4927753642311223124">표시할 내용이 없습니다.</translation>
 <translation id="4929386379796360314">인쇄 대상</translation>
+<translation id="4930447554870711875">개발자</translation>
 <translation id="4930714375720679147">사용 설정</translation>
 <translation id="4932733599132424254">날짜</translation>
 <translation id="4933484234309072027"><ph name="URL" />에 삽입됨</translation>
@@ -3948,7 +3945,6 @@
 <translation id="558918721941304263">앱 로드 중...</translation>
 <translation id="5592595402373377407">아직 데이터가 충분하지 않습니다.</translation>
 <translation id="5595485650161345191">주소 수정</translation>
-<translation id="5595727715083333657">컨테이너가 크기 조정을 지원하지 않습니다. Linux(베타)에 사전 할당되는 공간을 조정하려면 백업 후 새로운 컨테이너로 복원하세요.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5600706100022181951"><ph name="UPDATE_SIZE_MB" />MB의 모바일 데이터를 사용하여 업데이트를 다운로드합니다. 계속하시겠습니까?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4200,7 +4196,6 @@
 <translation id="5893589697005440881">주변의 사람들과 파일을 공유하세요.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5900302528761731119">Google 프로필 사진</translation>
-<translation id="5900358982890952556">Linux 업그레이드(베타)</translation>
 <translation id="5901494423252125310">프린터 덮개 열림</translation>
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5904614460720589786">구성 문제로 인해 <ph name="APP_NAME" /> 앱을 설정할 수 없습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -4666,6 +4661,7 @@
 <translation id="6434309073475700221">삭제</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 업데이트해야 합니다.</translation>
 <translation id="6436164536244065364">웹 스토어에서 보기</translation>
+<translation id="6438234780621650381">설정 초기화</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 오디오 재생</translation>
 <translation id="6442187272350399447">멋쟁이</translation>
 <translation id="6444070574980481588">날짜 및 시간 설정</translation>
@@ -5377,7 +5373,6 @@
 <translation id="7284411326658527427">모든 사용자는 자신의 계정을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
 <translation id="7287143125007575591">액세스가 거부되었습니다.</translation>
 <translation id="7287411021188441799">기본 배경 복원</translation>
-<translation id="7288013116963835700"><ph name="DEVICE_TYPE" />용 Linux 삭제</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" />dpi</translation>
 <translation id="7289225569524511578">배경화면 앱 열기</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />에서 호스팅하는 이 로그인 서비스는 카메라에 액세스합니다.</translation>
@@ -5763,7 +5758,6 @@
 <translation id="7730683939467795481">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 이 페이지를 변경했습니다.</translation>
 <translation id="7732111077498238432">네트워크는 정책을 통해 제어됩니다</translation>
 <translation id="7737115349420013392">‘<ph name="DEVICE_NAME" />’ 페어링 중...</translation>
-<translation id="7737238973539693982">Linux(베타) 삭제</translation>
 <translation id="7737948071472253612">카메라 사용이 허용되지 않음</translation>
 <translation id="7740996059027112821">표준</translation>
 <translation id="7742706086992565332">특정 웹사이트를 얼마나 확대 또는 축소할지 설정할 수 있습니다.</translation>
@@ -6233,7 +6227,6 @@
 <translation id="825238165904109940">항상 전체 URL 표시</translation>
 <translation id="8252569384384439529">업로드 중...</translation>
 <translation id="8253198102038551905">'+'를 클릭하여 네트워크 속성 보기</translation>
-<translation id="8254954272268479918">Linux(베타) 종료</translation>
 <translation id="8255451560461371599">배경 없음</translation>
 <translation id="8256319818471787266">멍멍이</translation>
 <translation id="8257950718085972371">카메라 액세스 계속 차단</translation>
@@ -6967,7 +6960,6 @@
 <translation id="9088917181875854783">다음 패스키가 '<ph name="DEVICE_NAME" />'에 표시되는지 확인하세요.</translation>
 <translation id="9089416786594320554">입력 방법</translation>
 <translation id="909108997331068008"><ph name="EXISTING_USER" />님의 프로필이 이미 <ph name="NEW_USER" />에 로그인되어 있습니다.</translation>
-<translation id="9093429538970210897">업그레이드를 완료할 수 없는 경우 파일을 백업해 두는 것이 좋습니다. 업그레이드를 시작하면 Linux(베타)가 종료됩니다. 진행하기 전에 열려 있는 파일을 저장하세요.</translation>
 <translation id="9094033019050270033">비밀번호 업데이트</translation>
 <translation id="9094038138851891550">사용자 이름이 잘못되었습니다.</translation>
 <translation id="9094982973264386462">제거</translation>
@@ -7046,7 +7038,6 @@
 <translation id="9176476835295860688">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 블루투스 기기 연결됨</translation>
 <translation id="9179524979050048593">로그인 화면 사용자 이름</translation>
-<translation id="9179734824669616955"><ph name="DEVICE_TYPE" />에 Linux(베타) 설치</translation>
 <translation id="9180281769944411366">이 과정은 몇 분 정도 걸릴 수 있습니다. Linux 컨테이너를 시작합니다.</translation>
 <translation id="9180380851667544951">사이트에서 화면을 공유할 수 있습니다.</translation>
 <translation id="9186963452600581158">자녀의 Google 계정으로 로그인</translation>
@@ -7087,7 +7078,6 @@
 <translation id="93610034168535821">사이트에서 사용 중인 총 저장용량:</translation>
 <translation id="936801553271523408">시스템 진단 데이터</translation>
 <translation id="93766956588638423">확장 프로그램 복구</translation>
-<translation id="938339467127511841">Linux(베타) 저장용량</translation>
 <translation id="938470336146445890">사용자 인증서를 설치하세요.</translation>
 <translation id="939252827960237676">스크린샷을 저장할 수 없습니다.</translation>
 <translation id="939519157834106403">SSID</translation>

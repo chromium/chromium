@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">स्क्रीन अपडेट करत असलेली वारंवारता निर्धारित करतो</translation>
 <translation id="1061904396131502319">विश्रांतीची वेळ झाली आहे</translation>
 <translation id="1067048845568873861">तयार केले</translation>
-<translation id="1067291318998134776">Linux (बीटा)</translation>
 <translation id="1067922213147265141">इतर Google सेवा</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">तुमच्या कॉंप्युटरवरील दुसर्‍या प्रोग्रामने एक एक्स्टेंशन जोडले जो Chrome ची काम करण्‍याची पद्धत कदाचित बदलू शकतो.
@@ -927,7 +926,6 @@
 तुमच्या डिव्हाइसवर Family Link अ‍ॅप इंस्टॉल करून तुम्ही या खात्याची सेटिंग्ज व्यवस्थापित करू शकता.  आम्ही तुम्हाला ईमेलवर सूचना पाठवल्या आहेत.</translation>
 <translation id="2040460856718599782">अरेरे! तुम्हाला ऑथेंटिकेट करण्याचा प्रयत्न करताना काहीतरी चूक झाली. कृपया तुमची साइन इन क्रेडेंशियल दोनदा तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{तुमच्याकडे एक धोक्यात असलेला पासवर्ड आहे}other{तुमच्याकडे # धोक्यात असलेले पासवर्ड आहेत}}</translation>
-<translation id="2040863272941698761">Linux सेट करा</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045117674524495717">कीबोर्ड शॉर्टकट मदतकर्ता</translation>
 <translation id="2045969484888636535">कुकी अवरोधित करणे सुरू ठेवा</translation>
@@ -1259,8 +1257,6 @@
 <translation id="2428510569851653187">टॅब क्रॅश झाला तेव्हा तुम्ही नेमके काय करत होता ते सांगा</translation>
 <translation id="2428939361789119025">वाय-फाय बंद करा</translation>
 <translation id="2431027948063157455">Google Assistant लोड होऊ शकले नाही, कृपया तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="2431846145771260397">तुम्हाला Linux (बीटा) साठी निश्चित आकाराची डिस्क नक्की आरक्षित करायची आहे का?</translation>
-<translation id="2432753757290432042">Linux (बीटा) अपडेट आवश्यक आहे</translation>
 <translation id="2433452467737464329">पृष्ठ स्वयं-रिफ्रेश करण्यासाठी URL मध्ये क्वेरी परम जोडा: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">स्वरूप</translation>
@@ -1975,6 +1971,7 @@
 <translation id="3264544094376351444">Sans-serif font</translation>
 <translation id="3264582393905923483">संदर्भ</translation>
 <translation id="3265459715026181080">विंडो बंद करा</translation>
+<translation id="3266022278425892773">Linux डेव्हलमेंट पर्यावरण</translation>
 <translation id="3266179261140759675">बंद केलेल्या साइटना डेटा पाठवणे आणि मिळवणे यांपासून ब्लॉक करा</translation>
 <translation id="3266274118485960573">सुरक्षा तपासणी रन होत आहे.</translation>
 <translation id="3267726687589094446">एकाधिक फायलींच्या स्वयंचलित डाउनलोडिंगला अनुमती देणे सुरू ठेवा</translation>
@@ -2273,7 +2270,6 @@
 <translation id="3600051066689725006">वेब विनंती माहिती</translation>
 <translation id="3600792891314830896">ध्वनी प्ले करणाऱ्या साइट म्यूट करा</translation>
 <translation id="360180734785106144">नवीन वैशिष्ट्ये उपलब्ध होताच क्षणी ते ऑफर करते</translation>
-<translation id="3602198818276948261">तुमचा कंटेनर डिस्कचा आकार बदलण्यास सपोर्ट करण्यासाठी कॉंफिगर केलेला नाही. Linux (Beta) साठी आरक्षित केलेल्या जागेचे प्रमाण अ‍ॅडजस्ट करण्याकरिता, बॅकअप घ्या आणि त्यानंतर नवीन कंंटेनरमध्ये रिस्टोअर करा.</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3603622770190368340">नेटवर्क सर्टिफिकेट प्राप्त करा</translation>
 <translation id="3604713164406837697">वॉलपेपर बदला</translation>
@@ -3395,6 +3391,7 @@
 <translation id="4925542575807923399">या खात्याच्या ॲडमिनिस्ट्रेटरला हे खाते एका एकाहून अधिक साइन इन सेशनमधील प्रथम साइन इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="4927753642311223124">येथे पाहण्यासाठी काही नाही, पुढे चला.</translation>
 <translation id="4929386379796360314">गंतव्यस्थाने प्रिंट करा</translation>
+<translation id="4930447554870711875">डेव्हलपर</translation>
 <translation id="4930714375720679147">सुरू करा</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4933484234309072027"><ph name="URL" /> वर एम्बेड केलेले</translation>
@@ -3947,7 +3944,6 @@
 <translation id="558918721941304263">ॲप्स लोड करीत आहे...</translation>
 <translation id="5592595402373377407">अद्याप पुरेसा डेटा उपलब्ध नाही.</translation>
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
-<translation id="5595727715083333657">तुमचे कंटेनर आकार बदलण्यास सपोर्ट करत नाही. Linux (Beta) ला आधीच दिलेल्या जागेचे प्रमाण अ‍ॅडजस्ट करण्यासाठी, बॅकअप घ्या आणि त्यानंतर नवीन कंंटेनरमध्ये रिस्टोअर करा.</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5600706100022181951">अपडेट <ph name="UPDATE_SIZE_MB" /> MB मोबाइल डेटा वापरून डाउनलोड केले जाईल. तुम्हाला सुरू ठेवायचे आहे का?</translation>
 <translation id="5601503069213153581">पिन</translation>
@@ -4199,7 +4195,6 @@
 <translation id="5893589697005440881">तुमच्या आसपासच्या लोकांसोबत फाइल शेअर करा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5900302528761731119">Google प्रोफाइल फोटो</translation>
-<translation id="5900358982890952556">Linux (बीटा) अपग्रेड करा</translation>
 <translation id="5901494423252125310">प्रिंटरचे दार उघडे आहे</translation>
 <translation id="5901630391730855834">पिवळा</translation>
 <translation id="5904614460720589786">कॉन्फिगरेशनच्या समस्येमुळे <ph name="APP_NAME" /> सेट करता आले नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
@@ -4666,6 +4661,7 @@
 <translation id="6434309073475700221">टाकून द्या</translation>
 <translation id="6434325376267409267">तुम्ही <ph name="APP_NAME" /> वापरण्यापूर्वी तुमचे डिव्हाइस अपडेट केले जाणे आवश्यक आहे.</translation>
 <translation id="6436164536244065364">वेब स्टोअर मध्‍ये पहा</translation>
+<translation id="6438234780621650381">सेटिंग्ज रीसेट करा</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ऑडिओ प्ले करीत आहे</translation>
 <translation id="6442187272350399447">अप्रतिम</translation>
 <translation id="6444070574980481588">तारीख आणि वेळ सेट करा</translation>
@@ -5377,7 +5373,6 @@
 <translation id="7284411326658527427">प्रत्येक व्यक्ती स्वतःचे खाते पर्सनलाइझ करू शकते आणि डेटा खाजगी ठेवू शकते.</translation>
 <translation id="7287143125007575591">ॲक्सेस नाकारला.</translation>
 <translation id="7287411021188441799">डीफॉल्ट बॅकग्राउंड रिस्टोअर करा</translation>
-<translation id="7288013116963835700"><ph name="DEVICE_TYPE" /> साठी Linux काढून टाका</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">वॉलपेपर ॲप उघडा</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> नी होस्ट केलेली, ही साइन-इन सेवा, आपल्या कॅमेर्‍यामध्ये प्रवेश करीत आहे.</translation>
@@ -5763,7 +5758,6 @@
 <translation id="7730683939467795481">हे पेज "<ph name="EXTENSION_NAME" />" एक्स्टेंशनने बदलले.</translation>
 <translation id="7732111077498238432">नेटवर्क धोरण-नियंत्रित आहे</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सोबत पेअर करत आहे...</translation>
-<translation id="7737238973539693982">Linux (बीटा) हटवा</translation>
 <translation id="7737948071472253612">तुमचा कॅमेरा वापरण्याची अनुमती नाही</translation>
 <translation id="7740996059027112821">मानक</translation>
 <translation id="7742706086992565332">ठरावीक वेबसाइटवर तुम्ही किती झूम इन किंवा आउट करायचे ते सेट करू शकता</translation>
@@ -6231,7 +6225,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="825238165904109940">नेहमी पूर्ण URL दाखवा</translation>
 <translation id="8252569384384439529">अपलोड करत आहे…</translation>
 <translation id="8253198102038551905">नेटवर्क गुणधर्म मिळविण्यासाठी '+' क्लिक करा</translation>
-<translation id="8254954272268479918">Linux (बीटा) बंद करा</translation>
 <translation id="8255451560461371599">कोणतीही बॅकग्राउंड नाही</translation>
 <translation id="8256319818471787266">चमचमते</translation>
 <translation id="8257950718085972371">कॅमेरा ॲक्सेस ब्लॉक करणे सुरू ठेवा</translation>
@@ -6966,7 +6959,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9088917181875854783">कृपया ही पासकी "<ph name="DEVICE_NAME" />" वर दर्शविल्याची पुष्टी करा:</translation>
 <translation id="9089416786594320554">इनपुट पद्धती</translation>
 <translation id="909108997331068008"><ph name="EXISTING_USER" /> यांची प्रोफाइल आधीपासून <ph name="NEW_USER" /> मध्ये साइन इन केलेली आहे</translation>
-<translation id="9093429538970210897">अपग्रेड पूर्ण करता न आल्यास, फाइलचा बॅकअप घेण्याची शिफारस केली जाते. अपग्रेड सुरू केल्यामुळे Linux (बीटा) बंद होईल. कृपया पुढे जाण्यापूर्वी उघड्या असलेल्या फाइल सेव्ह करा.</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट करा</translation>
 <translation id="9094038138851891550">वापरकर्ता नाव चुकीचे आहे</translation>
 <translation id="9094982973264386462">काढून टाका</translation>
@@ -7045,7 +7037,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9176476835295860688">वापर आणि निदान डेटा पाठवा. हे डिव्हाइस सध्या Google ला आपोआप निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवत आहे. हे सिस्ट्म आणि अ‍ॅप स्थिरता आणि इतर सुधारणा करण्यात मदत करेल. काही एकत्रित केलेला डेटा Google अ‍ॅप्स आणि Android डेव्हलपर सारख्या भागीदारांना देखील मदत करेल. या <ph name="BEGIN_LINK1" />सेटिंगची<ph name="END_LINK1" /> मालकाद्वारे अंमलबजावणी केली जाते. जर तुमची अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेली असल्यास, हा डेटा तुमच्या Google खाते वर सेव्ह केला जाऊ शकतो. <ph name="BEGIN_LINK2" />अधिक जाणून घ्या<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - ब्लूटूथ डिव्हाइस कनेक्ट केले</translation>
 <translation id="9179524979050048593">साइन इन स्क्रीन वापरकर्ता नाव</translation>
-<translation id="9179734824669616955">तुमच्या <ph name="DEVICE_TYPE" /> वर Linux (बीटा) सेट करा</translation>
 <translation id="9180281769944411366">या प्रक्रियेला काही मिनिटे लागू शकतात. Linux कंटेनर सुरू करत आहे.</translation>
 <translation id="9180380851667544951">साइट तुमची स्क्रीन शेअर करू शकते</translation>
 <translation id="9186963452600581158">लहान मुलाचे Google खाते वापरून साइन इन करा</translation>
@@ -7068,7 +7059,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" जोडले</translation>
 <translation id="9215742531438648683">Google Play स्टोअर अनइंस्टॉल करा</translation>
 <translation id="9218430445555521422">डीफॉल्ट म्हणून सेट करा</translation>
-<translation id="9219103736887031265">इमेज</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="9220525904950070496">खाते काढून टाका</translation>
 <translation id="9220820413868316583">उचला आणि नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="923467487918828349">सर्व दर्शवा</translation>
@@ -7086,7 +7077,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="93610034168535821">साइटनी वापरलेले एकूण स्टोरेज:</translation>
 <translation id="936801553271523408">सिस्टम निदान डेटा</translation>
 <translation id="93766956588638423">एक्स्टेंशन दुरुस्त करा</translation>
-<translation id="938339467127511841">Linux (Beta) स्टोरेज</translation>
 <translation id="938470336146445890">कृपया वापरकर्ता सर्टिफिकेट इंस्टॉल करा.</translation>
 <translation id="939252827960237676">स्क्रीनशॉट सेव्ह करण्यात अयशस्वी</translation>
 <translation id="939519157834106403">SSID</translation>

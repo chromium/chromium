@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de problèmes liés au serveur.</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
-<translation id="151267239139452619">Ajouter aux téléchargements</translation>
 <translation id="1513352483775369820">Favoris et historique Web</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
@@ -423,7 +422,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}many{# hrs}other{# h}}</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>
 <translation id="4056223980640387499">Sépia</translation>
-<translation id="4057643060762047384">Ajouter à :</translation>
 <translation id="4060598801229743805">Options disponibles à proximité du haut de l'écran</translation>
 <translation id="4062305924942672200">Informations légales</translation>
 <translation id="4084682180776658562">Favori</translation>
@@ -754,7 +752,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6312687380483398334">Applications Web (discrètes)</translation>
 <translation id="6316139424528454185">Version Android non compatible</translation>
-<translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324034347079777476">La synchronisation du système Android est désactivée.</translation>
 <translation id="6333140779060797560">Partager via <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Chiffrement</translation>
@@ -1063,7 +1060,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8372925856448695381">Module linguistique "<ph name="LANG" />" prêt.</translation>
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8407396331882458341">1. Sélectionnez <ph name="APP_NAME" />\n2. Appuyez sur "Toujours"</translation>
-<translation id="8410695015584479363">Activer le suivi des prix</translation>
+<translation id="8410695015584479363">Suivre les prix</translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8427875596167638501">L'onglet "Aperçu" est ouvert à moitié</translation>

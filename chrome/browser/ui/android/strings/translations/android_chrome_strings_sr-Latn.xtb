@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema na serveru.</translation>
 <translation id="1506061864768559482">Pretraživač</translation>
-<translation id="151267239139452619">Dodaj u preuzimanja</translation>
 <translation id="1513352483775369820">Obeleživači i veb-istorija</translation>
 <translation id="1513858653616922153">Izbriši lozinku</translation>
 <translation id="1521774566618522728">Aktivan je danas</translation>
@@ -423,7 +422,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="4034817413553209278">{HOURS,plural, =1{# č}one{# č}few{# č}other{# č}}</translation>
 <translation id="4045764304651014138">Podaci o korišćenju</translation>
 <translation id="4056223980640387499">Sepija</translation>
-<translation id="4057643060762047384">Dodajte</translation>
 <translation id="4060598801229743805">Opcije su dostupne pri vrhu ekrana</translation>
 <translation id="4062305924942672200">Pravne informacije</translation>
 <translation id="4084682180776658562">Obeleživač</translation>
@@ -628,7 +626,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5524843473235508879">Preusmeravanje je blokirano.</translation>
 <translation id="5527082711130173040">Chrome-u je potreban pristup lokaciji da bi tražio uređaje. <ph name="BEGIN_LINK1" />Ažurirajte dozvole<ph name="END_LINK1" />. Pristup lokaciji je takođe <ph name="BEGIN_LINK2" />isključen za ovaj uređaj<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zatvori kartice bez arhiv.</translation>
-<translation id="5530920986376047241">Možete da čuvate stranice na listu za čitanje da biste ih ponovo pronašli</translation>
+<translation id="5530920986376047241">Možete da čuvate stranice na listi za čitanje da biste ih ponovo pronašli</translation>
 <translation id="5534640966246046842">Sajt je kopiran</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5561549206367097665">Čeka se mreža...</translation>
@@ -754,7 +752,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6303969859164067831">Odjavi me i isključi sinhronizaciju</translation>
 <translation id="6312687380483398334">Veb-aplikacije (tihe)</translation>
 <translation id="6316139424528454185">Nepodržana verzija Android-a</translation>
-<translation id="6321526113093607004">Dodaj u obeleživače</translation>
 <translation id="6324034347079777476">Sinhronizacija Android sistema je onemogućena</translation>
 <translation id="6333140779060797560">Deljenje preko <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Šifrovanje</translation>

@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">קביעת התדירות של רענון המסך</translation>
 <translation id="1061904396131502319">עוד מעט זמן להפסקה</translation>
 <translation id="1067048845568873861">נוצר</translation>
-<translation id="1067291318998134776">‏Linux (בטא)</translation>
 <translation id="1067922213147265141">‏שירותי Google אחרים</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">‏תוכנה אחרת במחשב הוסיפה תוסף שעשוי לשנות את אופן הפעולה של Chrome.
@@ -927,7 +926,6 @@
 כדי לנהל את הגדרות החשבון הזה אפשר להתקין את האפליקציה Family Link במכשיר.  שלחנו לך הוראות באימייל.</translation>
 <translation id="2040460856718599782">אופס! משהו השתבש במהלך ניסיון האימות שלך. יש לבדוק שוב את פרטי הכניסה שלך ולנסות שוב.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{יש לך סיסמה אחת שנחשפה}two{יש לך # סיסמאות שנחשפו}many{יש לך # סיסמאות שנחשפו}other{יש לך # סיסמאות שנחשפו}}</translation>
-<translation id="2040863272941698761">‏הגדרת Linux</translation>
 <translation id="204497730941176055">‏שם תבנית אישור של Microsoft</translation>
 <translation id="2045117674524495717">כלי העזרה למקשי קיצור</translation>
 <translation id="2045969484888636535">‏המשך לחסום קובצי Cookie</translation>
@@ -1259,8 +1257,6 @@
 <translation id="2428510569851653187">יש לתאר מה עשית לפני שהכרטיסייה קרסה</translation>
 <translation id="2428939361789119025">‏כיבוי Wi-Fi</translation>
 <translation id="2431027948063157455">‏לא ניתן היה לטעון את Google Assistant. יש לבדוק את חיבור הרשת ולנסות שוב.</translation>
-<translation id="2431846145771260397">‏האם להקצות שטח דיסק קבוע בשביל Linux (בטא)?</translation>
-<translation id="2432753757290432042">‏צריך לעדכן את Linux (בטא)</translation>
 <translation id="2433452467737464329">‏יש להוסיף פרמטר שאילתה בכתובת אתר לריענון אוטומטי של הדף: chrome://network/?refresh=&lt;sec&gt;‎</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">מראה</translation>
@@ -1976,6 +1972,7 @@
 <translation id="3264544094376351444">‏גופן Sans-Serif</translation>
 <translation id="3264582393905923483">הקשר</translation>
 <translation id="3265459715026181080">סגירת חלון</translation>
+<translation id="3266022278425892773">‏סביבת פיתוח של Linux</translation>
 <translation id="3266179261140759675">חסימת האפשרות של אתרים שנסגרו לשלוח ולקבל נתונים</translation>
 <translation id="3266274118485960573">בדיקת הבטיחות פועלת.</translation>
 <translation id="3267726687589094446">להמשיך לאפשר הורדות אוטומטיות של קבצים מרובים</translation>
@@ -2274,7 +2271,6 @@
 <translation id="3600051066689725006">פרטי בקשת אינטרנט</translation>
 <translation id="3600792891314830896">השתקת אתרים שמשמיעים צלילים</translation>
 <translation id="360180734785106144">להציע תכונות חדשות כשהן זמינות</translation>
-<translation id="3602198818276948261">‏הגדרות הקונטיינר אינן תומכות בשינוי גודל האחסון. כדי לשנות את גודל השטח שמוקצה מראש ל-Linux (בטא), יש לגבות את הנתונים ואז לשחזר אותם בקונטיינר חדש.</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3603622770190368340">השגת אישור רשת</translation>
 <translation id="3604713164406837697">שינוי הטפט</translation>
@@ -3398,6 +3394,7 @@
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="4927753642311223124">אין התראות להצגה, המשך הלאה.</translation>
 <translation id="4929386379796360314">יעדי הדפסה</translation>
+<translation id="4930447554870711875">מפתחים</translation>
 <translation id="4930714375720679147">הפעלה</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4933484234309072027">מוטבע ב-<ph name="URL" /></translation>
@@ -3950,7 +3947,6 @@
 <translation id="558918721941304263">המערכת טוענת אפליקציות...</translation>
 <translation id="5592595402373377407">אין עדיין מספיק נתונים זמינים.</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
-<translation id="5595727715083333657">‏אי אפשר לשנות את הגודל של הקונטיינר. כדי לשנות את הנפח שמוקצה מראש ל-Linux (גרסת הבטא), יש לגבות ולאחר מכן לשחזר בקונטיינר חדש.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5600706100022181951">‏ההורדה של העדכון תנצל MB <ph name="UPDATE_SIZE_MB" /> מחבילת הגלישה. להמשיך?</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
@@ -4202,7 +4198,6 @@
 <translation id="5893589697005440881">שיתוף קבצים עם משתמשים בסביבה</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5900302528761731119">‏תמונת פרופיל Google</translation>
-<translation id="5900358982890952556">‏שדרוג Linux (בטא)</translation>
 <translation id="5901494423252125310">דלת המדפסת פתוחה</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5904614460720589786">לא ניתן להתקין את האפליקציה <ph name="APP_NAME" /> עקב בעיה בהגדרות. יש לפנות למנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
@@ -4668,6 +4663,7 @@
 <translation id="6434309073475700221">מחיקה</translation>
 <translation id="6434325376267409267">יש לעדכן את המכשיר כדי שאפשר יהיה להשתמש ב-<ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">הצגה בחנות אינטרנט</translation>
+<translation id="6438234780621650381">איפוס הגדרות</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - אודיו מופעל</translation>
 <translation id="6442187272350399447">מגניב</translation>
 <translation id="6444070574980481588">הגדרת תאריך ושעה</translation>
@@ -5379,7 +5375,6 @@
 <translation id="7284411326658527427">כל משתמש יכול להתאים אישית את החשבון שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="7287143125007575591">אין גישה</translation>
 <translation id="7287411021188441799">שחזור רקע ברירת מחדל</translation>
-<translation id="7288013116963835700">‏הסרת Linux עבור <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262">‏<ph name="HORIZONTAL_DPI" />‏x‏<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">פתיחת אפליקציית הטפט</translation>
 <translation id="7290242001003353852">שירות הכניסה הזה, המתארח ב-<ph name="SAML_DOMAIN" />, ניגש אל המצלמה שלך.</translation>
@@ -5765,7 +5760,6 @@
 <translation id="7730683939467795481">התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף הזה</translation>
 <translation id="7732111077498238432">הרשת כפופה למדיניות</translation>
 <translation id="7737115349420013392">מתבצעת התאמה עם "<ph name="DEVICE_NAME" />" ...</translation>
-<translation id="7737238973539693982">‏מחיקת Linux (בטא)</translation>
 <translation id="7737948071472253612">לא מורשים להשתמש במצלמה</translation>
 <translation id="7740996059027112821">רגילה</translation>
 <translation id="7742706086992565332">ניתן להגדיר את המרחק מהתצוגה באתרים מסוימים</translation>
@@ -6236,7 +6230,6 @@
 <translation id="825238165904109940">‏הצגה של כתובות URL מלאות בכל המקרים</translation>
 <translation id="8252569384384439529">ההעלאה מתבצעת...</translation>
 <translation id="8253198102038551905">יש ללחוץ על '+' כדי לקבל מאפייני רשת</translation>
-<translation id="8254954272268479918">‏כיבוי של Linux (בטא)</translation>
 <translation id="8255451560461371599">ללא רקע</translation>
 <translation id="8256319818471787266">נבחן</translation>
 <translation id="8257950718085972371">המשך לחסום גישה למצלמה</translation>
@@ -6972,7 +6965,6 @@
 <translation id="9088917181875854783">יש לאשר שסיסמה זו מוצגת ב-"<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">שיטות קלט</translation>
 <translation id="909108997331068008">הפרופיל של <ph name="EXISTING_USER" /> כבר מחובר בכתובת <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">‏מומלץ לגבות את הקבצים למקרה שלא ניתן יהיה להשלים את השדרוג. הפעלת השדרוג תגרום לכיבוי של Linux (בטא). לפני המשך התהליך יש לשמור את הקבצים הפתוחים.</translation>
 <translation id="9094033019050270033">עדכון סיסמה</translation>
 <translation id="9094038138851891550">שם משתמש לא חוקי</translation>
 <translation id="9094982973264386462">הסרה</translation>
@@ -7051,7 +7043,6 @@
 <translation id="9176476835295860688">‏שליחה של נתוני אבחון ונתונים על השימוש. המכשיר הזה שולח עכשיו אל Google באופן אוטומטי נתוני אבחון ונתונים לגבי השימוש במכשיר ובאפליקציות. נתונים אלה יעזרו לשמור על יציבות המערכת והאפליקציות, כמו גם לביצוע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ולשותפים של Google, כמו מפתחי Android. ה<ph name="BEGIN_LINK1" />הגדרה<ph name="END_LINK1" /> הזו נאכפת על-ידי הבעלים. אם הופעלה האפשרות 'פעילות באתרי אינטרנט ובאפליקציות נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלך. <ph name="BEGIN_LINK2" />מידע נוסף<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349">‏<ph name="WINDOW_TITLE" /> - מכשיר Bluetooth מחובר</translation>
 <translation id="9179524979050048593">הצגת שם המשתמש במסך הכניסה</translation>
-<translation id="9179734824669616955">‏הגדרת Linux (בטא) ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">‏הפעולה עשויה להימשך מספר דקות. מתבצעת הפעלה של הקונטיינר של Linux.</translation>
 <translation id="9180380851667544951">האתר רשאי לשתף את המסך</translation>
 <translation id="9186963452600581158">‏כניסה באמצעות חשבון Google של ילד או ילדה</translation>
@@ -7092,7 +7083,6 @@
 <translation id="93610034168535821">נפח האחסון הכולל שמנוצל על ידי אתרים:</translation>
 <translation id="936801553271523408">נתוני אבחון של מערכת</translation>
 <translation id="93766956588638423">תיקון התוסף</translation>
-<translation id="938339467127511841">‏אחסון Linux (בטא)</translation>
 <translation id="938470336146445890">יש להתקין אישור משתמש.</translation>
 <translation id="939252827960237676">שמירת צילום המסך נכשלה</translation>
 <translation id="939519157834106403">SSID</translation>

@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">‏وقت استجابة بروتوكول HTTPS طويل جدًا.</translation>
 <translation id="1413240736185167732">تعذَّرت الطباعة - خلل في عامل تصفية الطباعة</translation>
 <translation id="1468664791493211953">العروض</translation>
+<translation id="1476467821656042872">يدير <ph name="MANAGER" /> هذا الجهاز، وقد يتمكَّن من مراقبة نشاطك.</translation>
 <translation id="1478594628797167447">الماسح الضوئي</translation>
+<translation id="1499900233129743732">يدير <ph name="MANAGER" /> هذا المستخدم، ويمكنه إدارة الإعدادات ومراقبة نشاط المستخدم عن بُعد.</translation>
 <translation id="150962533380566081">‏PUK غير صالح.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" />(<ph name="THREAD_COUNT" /> عملية)</translation>
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">حفظ الملفات التي تم مسحها ضوئيًا في</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
 <translation id="4548483925627140043">لم يتم العثور على إشارة.</translation>
+<translation id="455835558791489930">بطارية بسعة <ph name="CHARGE_VALUE" /> ملّي أمبير في الساعة</translation>
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi آمن</translation>
@@ -135,11 +139,13 @@
 <translation id="6643016212128521049">محو</translation>
 <translation id="6704062477274546131">دقة نظام أسماء النطاقات</translation>
 <translation id="6747215703636344499">توقّفت الطابعة - دُرج الإخراج ممتلئ</translation>
-<translation id="6766275201586212568">تعذَّر تحليل نظام أسماء النطاقات.</translation>
-<translation id="6768237774506518020">متوسط تعطُّل نظام أسماء النطاقات عالٍ.</translation>
+<translation id="6766275201586212568">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
+<translation id="6768237774506518020">‏إن متوسط تعطُّل التحويل باستخدام نظام أسماء النطاقات (DNS) عالٍ.</translation>
 <translation id="6839141349259399400">هل يتعذَّر الاتصال بالماسحات الضوئية؟</translation>
+<translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
 <translation id="7162487448488904999">معرض الصور</translation>
+<translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>

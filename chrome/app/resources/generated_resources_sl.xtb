@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Določi hitrost osveževanja zaslona</translation>
 <translation id="1061904396131502319">Skoraj je že čas za odmor</translation>
 <translation id="1067048845568873861">Ustvarjeno</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Druge Googlove storitve</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Drug program v računalniku je dodal razširitev, ki lahko spremeni način delovanja Chroma. 
@@ -932,7 +931,6 @@ V nasprotnem primeru se odjavite, da bodo spremembe tega računa vidne v tej nap
 Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family Link v napravi.  Po e-pošti smo vam poslali navodila.</translation>
 <translation id="2040460856718599782">Pri preverjanju pristnosti je prišlo do težav. Še enkrat preverite poverilnice za prijavo in poskusite znova.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Imate 1 ogroženo geslo}one{Imate # ogroženo geslo}two{Imate # ogroženi gesli}few{Imate # ogrožena gesla}other{Imate # ogroženih gesel}}</translation>
-<translation id="2040863272941698761">Nastavitev Linuxa</translation>
 <translation id="204497730941176055">Microsoftovo ime predloge potrdila</translation>
 <translation id="2045117674524495717">Pomočnik za bližnjične tipke</translation>
 <translation id="2045969484888636535">Še naprej blokiraj piškotke</translation>
@@ -1264,8 +1262,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2428510569851653187">Opišite, kaj ste počeli, ko se je zavihek zrušil</translation>
 <translation id="2428939361789119025">Izklop Wi-Fi-ja</translation>
 <translation id="2431027948063157455">Pomočnika Google ni bilo mogoče naložiti. Preverite omrežno povezavo in poskusite znova.</translation>
-<translation id="2431846145771260397">Ali ste prepričani, da želite rezervirati disk fiksne velikosti za Linux (različica beta)?</translation>
-<translation id="2432753757290432042">Zahtevana je posodobitev Linuxa (beta)</translation>
 <translation id="2433452467737464329">V URL dodajte parameter poizvedbe, da samodejno osvežite stran: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Videz</translation>
@@ -1980,6 +1976,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3264544094376351444">Neserifna pisava</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Zapri okno</translation>
+<translation id="3266022278425892773">Razvojno okolje za Linux</translation>
 <translation id="3266179261140759675">Zaprtim spletnim mestom prepreči pošiljanje in prejemanje podatkov</translation>
 <translation id="3266274118485960573">Varnostno preverjanje se izvaja.</translation>
 <translation id="3267726687589094446">Še naprej dovoli samodejni prenos več datotek</translation>
@@ -2280,7 +2277,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3600051066689725006">Podatki o spletni zahtevi</translation>
 <translation id="3600792891314830896">Izklop zvoka na spletnih mestih, ki predvajajo zvok</translation>
 <translation id="360180734785106144">Ponujanje novih funkcij, ko so na voljo</translation>
-<translation id="3602198818276948261">Vsebnik ni konfiguriran za podporo spreminjanja velikosti diska. Če želite prilagoditi količino prostora, ki je rezerviran za Linux (različica beta), ustvarite varnostno kopijo in jo nato obnovite v novem vsebniku.</translation>
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3603622770190368340">Prejemanje omrežnega potrdila</translation>
 <translation id="3604713164406837697">Sprememba ozadja</translation>
@@ -3405,6 +3401,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4925542575807923399">Skrbnik tega računa zahteva, da je ta račun v seji prijave z več računi prvi prijavljeni račun.</translation>
 <translation id="4927753642311223124">Tu ni ničesar, pomaknite se naprej.</translation>
 <translation id="4929386379796360314">Cilji za tiskanje</translation>
+<translation id="4930447554870711875">Razvijalci</translation>
 <translation id="4930714375720679147">Vklop</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933484234309072027">vdelano v <ph name="URL" /></translation>
@@ -3959,7 +3956,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="558918721941304263">Nalaganje aplikacij ...</translation>
 <translation id="5592595402373377407">Na voljo še ni dovolj podatkov.</translation>
 <translation id="5595485650161345191">Uredi naslov</translation>
-<translation id="5595727715083333657">Vsebnik ne podpira spreminjanja velikosti. Če želite prilagoditi količino prostora, ki je vnaprej dodeljen Linuxu (Beta), ustvarite varnostno kopijo in jo nato obnovite v novem vsebniku.</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="5600706100022181951">Posodobitev bo prenesena v mobilnem omrežju, pri čimer bo prenesenih toliko podatkov: <ph name="UPDATE_SIZE_MB" /> MB. Ali želite nadaljevati?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4212,7 +4208,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5893589697005440881">Deljenje datotek z ljudmi v bližini</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5900302528761731119">Fotografija profila Google</translation>
-<translation id="5900358982890952556">Nadgradnja Linuxa (beta)</translation>
 <translation id="5901494423252125310">Vrata tiskalnika so odprta</translation>
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5904614460720589786">Aplikacije <ph name="APP_NAME" /> ni bilo mogoče nastaviti zaradi težave s konfiguracijo. Obrnite se na skrbnika. Koda napake: <ph name="ERROR_CODE" />.</translation>
@@ -4679,6 +4674,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6434309073475700221">Zavrzi</translation>
 <translation id="6434325376267409267">Preden lahko začnete uporabljati aplikacijo <ph name="APP_NAME" />, morate posodobiti napravo.</translation>
 <translation id="6436164536244065364">Ogled v spletni trgovini</translation>
+<translation id="6438234780621650381">Ponastavitev nastavitev</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – zvok se predvaja</translation>
 <translation id="6442187272350399447">Navdušenec</translation>
 <translation id="6444070574980481588">Nastavitev datuma in časa</translation>
@@ -5392,7 +5388,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7284411326658527427">Vsak lahko individualno prilagodi svoj račun in poskrbi za zasebnost podatkov.</translation>
 <translation id="7287143125007575591">Dostop zavrnjen.</translation>
 <translation id="7287411021188441799">Obnovi privzeto ozadje</translation>
-<translation id="7288013116963835700">Odstrani Linux za napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Odprite aplikacijo za ozadje</translation>
 <translation id="7290242001003353852">Prijavna storitev, ki jo gosti <ph name="SAML_DOMAIN" />, dostopa do vaše kamere.</translation>
@@ -5778,7 +5773,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7730683939467795481">To stran je spremenila razširitev »<ph name="EXTENSION_NAME" />«</translation>
 <translation id="7732111077498238432">Omrežje je upravljano s pravilniki</translation>
 <translation id="7737115349420013392">Seznanjanje z napravo »<ph name="DEVICE_NAME" />« …</translation>
-<translation id="7737238973539693982">Izbris Linuxa (beta)</translation>
 <translation id="7737948071472253612">Ni dovoljena uporaba kamere</translation>
 <translation id="7740996059027112821">Standardno</translation>
 <translation id="7742706086992565332">Nastavite lahko raven povečave oziroma pomanjšave nekaterih spletnih mest.</translation>
@@ -6248,7 +6242,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="825238165904109940">Vedno pokaži celotne URL-je</translation>
 <translation id="8252569384384439529">Nalaganje …</translation>
 <translation id="8253198102038551905">Kliknite »+«, če želite prikazati omrežne nastavitve</translation>
-<translation id="8254954272268479918">Izklopi Linux (beta)</translation>
 <translation id="8255451560461371599">Brez ozadja</translation>
 <translation id="8256319818471787266">Piki</translation>
 <translation id="8257950718085972371">Še naprej preprečuj dostop do kamere</translation>
@@ -6987,7 +6980,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9088917181875854783">Potrdite, da je geslo prikazano v napravi »<ph name="DEVICE_NAME" />«:</translation>
 <translation id="9089416786594320554">Načini vnosa</translation>
 <translation id="909108997331068008">Profil uporabnika <ph name="EXISTING_USER" /> je že prijavljen tukaj: <ph name="NEW_USER" />.</translation>
-<translation id="9093429538970210897">Priporočamo varnostno kopiranje datotek, če nadgradnje ne bi bilo mogoče dokončati. Če začnete nadgradnjo, se bo Linux (beta) zaustavil. Pred nadaljevanjem shranite odprte datoteke.</translation>
 <translation id="9094033019050270033">Posodobi geslo</translation>
 <translation id="9094038138851891550">Neveljavno uporabniško ime</translation>
 <translation id="9094982973264386462">Odstrani</translation>
@@ -7066,7 +7058,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9176476835295860688">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To <ph name="BEGIN_LINK1" />nastavitev<ph name="END_LINK1" /> je uveljavil lastnik naprave. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu za Google. <ph name="BEGIN_LINK2" />Več o tem<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – naprava Bluetooth povezana</translation>
 <translation id="9179524979050048593">Uporabniško ime na zaslonu za prijavo</translation>
-<translation id="9179734824669616955">Nastavitev Linuxa (beta) v napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">To lahko traja nekaj minut. Zagon vsebnika za Linux.</translation>
 <translation id="9180380851667544951">Spletno mesto lahko souporablja vaš zaslon</translation>
 <translation id="9186963452600581158">Prijavite se z otrokovim računom Google</translation>
@@ -7107,7 +7098,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="93610034168535821">Skupna shramba, ki jo uporabljajo spletna mesta:</translation>
 <translation id="936801553271523408">Sistemski diagnostični podatki</translation>
 <translation id="93766956588638423">Popravi razširitev</translation>
-<translation id="938339467127511841">Shramba za Linux (beta)</translation>
 <translation id="938470336146445890">Namestite uporabniško potrdilo.</translation>
 <translation id="939252827960237676">Posnetka zaslona ni bilo mogoče shraniti</translation>
 <translation id="939519157834106403">SSID</translation>

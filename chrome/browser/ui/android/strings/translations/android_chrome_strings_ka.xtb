@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ვერ ზიარდება</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა სერვერთან დაკავშირებული პრობლემების გამო.</translation>
 <translation id="1506061864768559482">საძიებო სისტემა</translation>
-<translation id="151267239139452619">ჩამოტვირთვებში დამატება</translation>
 <translation id="1513352483775369820">სანიშნეები და ვებ-ისტორია</translation>
 <translation id="1513858653616922153">პაროლის წაშლა</translation>
 <translation id="1521774566618522728">აქტიური იყო დღეს</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# სთ}other{# სთ}}</translation>
 <translation id="4045764304651014138">გამოყენების მონაცემები</translation>
 <translation id="4056223980640387499">სეპია</translation>
-<translation id="4057643060762047384">დამატება აქ:</translation>
 <translation id="4060598801229743805">ვარიანტები ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="4062305924942672200">იურიდიული ინფორმაცია</translation>
 <translation id="4084682180776658562">სანიშნე</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">გამოსვლა და სინქრონიზაციის გამორთვა</translation>
 <translation id="6312687380483398334">ვებ-აპები (ჩუმი)</translation>
 <translation id="6316139424528454185">Android-ის ვერსია მხარდაუჭერელია</translation>
-<translation id="6321526113093607004">სანიშნეებში დამატება</translation>
 <translation id="6324034347079777476">Android სისტემის სინქრონიზაცია გათიშულია</translation>
 <translation id="6333140779060797560">გაზიარების პროგრამა: <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">დაშიფვრა</translation>

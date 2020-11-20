@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
-<translation id="151267239139452619">Ավելացնել պահված տեսանյութերին</translation>
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
 <translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ժամ}one{# ժամ}other{# ժամ}}</translation>
 <translation id="4045764304651014138">Օգտագործման տվյալներ</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
-<translation id="4057643060762047384">Ավելացնել՝</translation>
 <translation id="4060598801229743805">Ընտրանքները հասանելի են էկրանի վերին հատվածում</translation>
 <translation id="4062305924942672200">Իրավական տեղեկություններ</translation>
 <translation id="4084682180776658562">Էջանիշ</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">Դուրս գրվել հաշվից և անջատել համաժամացումը</translation>
 <translation id="6312687380483398334">Վեբ հավելվածներ (լուռ)</translation>
 <translation id="6316139424528454185">Android-ի հնացած տարբերակ</translation>
-<translation id="6321526113093607004">Ավելացնել «Էջանիշներ» բաժնում</translation>
 <translation id="6324034347079777476">Android համակարգի համաժամացումն անջատված է</translation>
 <translation id="6333140779060797560">Կիսվել <ph name="APPLICATION" />-ի միջոցով</translation>
 <translation id="6337234675334993532">Գաղտնագրում</translation>
@@ -1132,6 +1129,7 @@
 <translation id="8920114477895755567">Ծնողների տվյալները սպասվում են:</translation>
 <translation id="8922289737868596582">«Այլ տարբերակներ» կոճակի օգնությամբ ներբեռնեք էջերը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="8928626432984354940">Էջանիշներով պանակների ցանկը բացված է կիսով չափ</translation>
+<translation id="8937267401510745927">Ձեր աշխատանքը հեշտացնելու համար Google-ը կստանա կայքերի հասցեներն ու բովանդակությունը, որոնցում օգտվում եք Օգնականից, ինչպես նաև տվյալները, որոնք ուղարկում եք Օգնականի միջոցով։ Այս տեղեկությունները կարող են պահվել ձեր Google հաշվում։ Օգնականը կարող եք անջատել Chrome-ի կարգավորումներում։</translation>
 <translation id="8937772741022875483">Հեռացնե՞լ Chrome-ի պատմությունը Թվային բարեկեցությունից</translation>
 <translation id="8942627711005830162">Բացել նոր պատուհանում</translation>
 <translation id="8951232171465285730">Chrome-ը խնայել է <ph name="MEGABYTES" /> ՄԲ տարածք</translation>

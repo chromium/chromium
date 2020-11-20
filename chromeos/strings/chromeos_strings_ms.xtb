@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Kependaman HTTPS sangat tinggi</translation>
 <translation id="1413240736185167732">Gagal - Penapis gagal</translation>
 <translation id="1468664791493211953">Tawaran</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> mengurus peranti ini dan mungkin dapat memantau aktiviti anda.</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="150962533380566081">PUK tidak sah.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> urutan)</translation>
 <translation id="1641857168437328880">Penyuap Dokumen (Satu sisi)</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1662989795263954667">Dihentikan - Kehabisan dakwat</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Imbas dan simpan pada</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
 <translation id="4548483925627140043">Isyarat tidak ditemukan</translation>
+<translation id="455835558791489930">Bateri <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
 <translation id="4646949265910132906">Sambungan WiFi Selamat</translation>
@@ -138,8 +142,10 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6766275201586212568">Penyelesaian DNS gagal</translation>
 <translation id="6768237774506518020">Kadar kegagalan penyelesaian DNS tinggi</translation>
 <translation id="6839141349259399400">Tidak dapat menyambung kepada pengimbas?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
 <translation id="714876143603641390">Kesambungan LAN</translation>
 <translation id="7162487448488904999">Galeri</translation>
+<translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Jenis fail</translation>
 <translation id="7561454561030345039">Tindakan ini diurus oleh pentadbir anda</translation>

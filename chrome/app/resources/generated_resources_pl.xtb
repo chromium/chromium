@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Określa częstotliwość aktualizacji ekranu</translation>
 <translation id="1061904396131502319">Wielkimi krokami nadchodzi przerwa</translation>
 <translation id="1067048845568873861">Utworzono</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Inne usługi Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Inny program na Twoim komputerze dodał rozszerzenie, które może zmieniać sposób działania Chrome.
@@ -927,7 +926,6 @@ W przeciwnym razie wyloguj się, by zmiany wprowadzone na koncie były widoczne
 Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na swoim urządzeniu.  Wysłaliśmy do Ciebie e-maila z instrukcjami.</translation>
 <translation id="2040460856718599782">Ups, wystąpił błąd podczas próby uwierzytelnienia. Sprawdź poprawność danych logowania i spróbuj ponownie.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Masz 1 przejęte hasło}few{Masz # przejęte hasła}many{Masz # przejętych haseł}other{Masz # przejętego hasła}}</translation>
-<translation id="2040863272941698761">Skonfiguruj Linuksa</translation>
 <translation id="204497730941176055">Nazwa szablonu certyfikatu firmy Microsoft</translation>
 <translation id="2045117674524495717">Informacje o skrótach klawiszowych</translation>
 <translation id="2045969484888636535">Nadal blokuj pliki cookie</translation>
@@ -1259,8 +1257,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2428510569851653187">Opisz, co robiłeś, gdy wystąpiła awaria karty</translation>
 <translation id="2428939361789119025">Wyłączanie sieci Wi-Fi</translation>
 <translation id="2431027948063157455">Nie udało się załadować Asystenta Google. Spróbuj ponownie.</translation>
-<translation id="2431846145771260397">Czy na pewno chcesz zarezerwować dysk o stałym rozmiarze dla systemu Linux (Beta)?</translation>
-<translation id="2432753757290432042">Wymagana aktualizacja Linuksa (Beta)</translation>
 <translation id="2433452467737464329">Aby strona była odświeżana automatycznie, dodaj parametr zapytania w adresie URL: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Wygląd</translation>
@@ -1975,6 +1971,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3264544094376351444">Czcionka bezszeryfowa</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Zamknij okno</translation>
+<translation id="3266022278425892773">Środowisko programistyczne Linuksa</translation>
 <translation id="3266179261140759675">Nie zezwalaj zamkniętym stronom na wysyłanie ani odbieranie danych</translation>
 <translation id="3266274118485960573">Trwa potwierdzanie bezpieczeństwa.</translation>
 <translation id="3267726687589094446">Dalej zezwalaj na automatyczne pobieranie wielu plików</translation>
@@ -2275,7 +2272,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3600051066689725006">Informacje o żądaniu internetowym</translation>
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="360180734785106144">Dowiadujesz się o nowych funkcjach, gdy tylko są dostępne</translation>
-<translation id="3602198818276948261">Konfiguracja kontenera nie pozwala na zmiany rozmiaru dysku. Aby zmienić ilość miejsca zarezerwowanego dla Linuksa (beta), utwórz kopię zapasową i przywróć ją w nowym kontenerze.</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3603622770190368340">Pobierz certyfikat sieci</translation>
 <translation id="3604713164406837697">Zmień tapetę</translation>
@@ -3051,7 +3047,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4522600456902129422">Nadal zezwalaj tej stronie na dostęp do schowka</translation>
 <translation id="4524832533047962394">Ta wersja systemu operacyjnego nie obsługuje użytego trybu rejestrowania. Upewnij się, że używasz najnowszej wersji systemu.</translation>
-<translation id="4527186207340858212">Utworzyć nowy profil do pracy?</translation>
+<translation id="4527186207340858212">Utworzyć nowy profil służbowy?</translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4527929807707405172">Włącz odwrotne przewijanie. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Sugestia tłumaczenia</translation>
@@ -3400,6 +3396,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
 <translation id="4927753642311223124">Nic tu nie ma.</translation>
 <translation id="4929386379796360314">Miejsca docelowe drukowania</translation>
+<translation id="4930447554870711875">Deweloperzy</translation>
 <translation id="4930714375720679147">Włącz</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933484234309072027">umieszczone w witrynie <ph name="URL" /></translation>
@@ -3953,7 +3950,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="558918721941304263">Wczytuję aplikacje…</translation>
 <translation id="5592595402373377407">Brak wystarczającej ilości danych.</translation>
 <translation id="5595485650161345191">Edytuj adres</translation>
-<translation id="5595727715083333657">Kontener nie obsługuje zmiany rozmiaru. Aby zmienić ilość miejsca wstępnie przydzielonego dla Linuksa (beta), utwórz kopię zapasową i przywróć ją w nowym kontenerze.</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5600706100022181951">Pobranie aktualizacji wykorzysta <ph name="UPDATE_SIZE_MB" /> MB mobilnej transmisji danych. Czy chcesz kontynuować?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4205,7 +4201,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5893589697005440881">Udostępniaj pliki osobom w pobliżu.</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5900302528761731119">Zdjęcie z profilu Google</translation>
-<translation id="5900358982890952556">Uaktualnij Linuksa (Beta)</translation>
 <translation id="5901494423252125310">Otwarte drzwiczki drukarki</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5904614460720589786">Z powodu błędu konfiguracji nie udało się skonfigurować <ph name="APP_NAME" />. Skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
@@ -4672,6 +4667,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6434309073475700221">Odrzuć</translation>
 <translation id="6434325376267409267">Zanim będzie można używać <ph name="APP_NAME" />, musisz zaktualizować urządzenie.</translation>
 <translation id="6436164536244065364">Zobacz w Chrome Web Store</translation>
+<translation id="6438234780621650381">Resetowanie ustawień</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – odtwarzanie dźwięku</translation>
 <translation id="6442187272350399447">Świetny</translation>
 <translation id="6444070574980481588">Ustaw datę i godzinę</translation>
@@ -5385,7 +5381,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7284411326658527427">Każda osoba może spersonalizować swoje konto i zachować prywatność swoich danych.</translation>
 <translation id="7287143125007575591">Odmowa dostępu.</translation>
 <translation id="7287411021188441799">Przywróć domyślne tło</translation>
-<translation id="7288013116963835700">Usuń Linuksa: <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Otwórz aplikację tapety</translation>
 <translation id="7290242001003353852">Ta usługa logowania, pochodząca z domeny <ph name="SAML_DOMAIN" />, ma dostęp do kamery.</translation>
@@ -5771,7 +5766,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7730683939467795481">Strona została zmieniona przez rozszerzenie „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="7732111077498238432">W sieci obowiązują zasady</translation>
 <translation id="7737115349420013392">Paruję z urządzeniem „<ph name="DEVICE_NAME" />”…</translation>
-<translation id="7737238973539693982">Usuń Linuksa (Beta)</translation>
 <translation id="7737948071472253612">Nie zezwolono na używanie kamery</translation>
 <translation id="7740996059027112821">Standardowa</translation>
 <translation id="7742706086992565332">Możesz ustawić stopień powiększenia lub pomniejszenia określonych stron</translation>
@@ -6241,7 +6235,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="825238165904109940">Zawsze pokazuj całe adresy URL</translation>
 <translation id="8252569384384439529">Przesyłam…</translation>
 <translation id="8253198102038551905">Kliknij „+”, by zobaczyć właściwości sieci</translation>
-<translation id="8254954272268479918">Wyłącz Linuksa (Beta)</translation>
 <translation id="8255451560461371599">Bez tła</translation>
 <translation id="8256319818471787266">Tofik</translation>
 <translation id="8257950718085972371">Nadal blokuj dostęp do kamery</translation>
@@ -6979,7 +6972,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9088917181875854783">Potwierdź klucz widoczny na urządzeniu „<ph name="DEVICE_NAME" />”:</translation>
 <translation id="9089416786594320554">Wprowadzanie tekstu</translation>
 <translation id="909108997331068008">Profil użytkownika <ph name="EXISTING_USER" /> jest już zalogowany na koncie <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Warto utworzyć kopię zapasową plików, by nie utracić danych, jeśli nie uda się przeprowadzić uaktualnienia. Rozpoczęcie uaktualnienia spowoduje wyłączenie Linuksa (w wersji Beta). Zanim przejdziesz dalej, zapisz otwarte pliki.</translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>
 <translation id="9094038138851891550">Nazwa użytkownika jest nieprawidłowa.</translation>
 <translation id="9094982973264386462">Usuń</translation>
@@ -7058,7 +7050,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9176476835295860688">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – połączono z urządzeniem Bluetooth</translation>
 <translation id="9179524979050048593">Nazwa użytkownika na ekranie logowania</translation>
-<translation id="9179734824669616955">Skonfiguruj Linuksa (Beta) na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Może to potrwać kilka minut. Uruchamiam kontener Linuksa.</translation>
 <translation id="9180380851667544951">Strona może udostępniać ekran</translation>
 <translation id="9186963452600581158">Zaloguj się na konto Google dziecka</translation>
@@ -7099,7 +7090,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="93610034168535821">Całkowita pamięć używana przez strony:</translation>
 <translation id="936801553271523408">Systemowe dane diagnostyczne</translation>
 <translation id="93766956588638423">Napraw rozszerzenie</translation>
-<translation id="938339467127511841">Pamięć (beta) – Linux</translation>
 <translation id="938470336146445890">Zainstaluj certyfikat użytkownika.</translation>
 <translation id="939252827960237676">Nie można zapisać zrzutu ekranu</translation>
 <translation id="939519157834106403">SSID</translation>

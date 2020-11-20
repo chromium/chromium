@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">決定畫面更新的頻率</translation>
 <translation id="1061904396131502319">快到休息時間了</translation>
 <translation id="1067048845568873861">建立時間</translation>
-<translation id="1067291318998134776">Linux (Beta 版)</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">電腦中的其他程式新增了一個擴充功能，可能會使 Chrome 的運作方式發生變更。
@@ -928,7 +927,6 @@
 你可以在裝置上安裝 Family Link 應用程式，以管理這個帳戶的設定。我們已透過電子郵件將相關操作說明傳送給你。</translation>
 <translation id="2040460856718599782">糟糕！嘗試驗證你的身分時發生錯誤。請重新檢查你的登入憑證，然後再試一次。</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{你有 1 組遭外洩的密碼}other{你有 # 組遭外洩的密碼}}</translation>
-<translation id="2040863272941698761">設定 Linux</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
 <translation id="2045117674524495717">鍵盤快速鍵說明</translation>
 <translation id="2045969484888636535">繼續封鎖 Cookie</translation>
@@ -1259,8 +1257,6 @@
 <translation id="2428510569851653187">說明分頁當掉時你正在執行的動作</translation>
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
 <translation id="2431027948063157455">無法載入 Google 助理，請檢查網路連線狀態並重試。</translation>
-<translation id="2431846145771260397">確定要為 Linux (Beta 版) 預留固定大小的磁碟空間嗎？</translation>
-<translation id="2432753757290432042">必須更新 Linux (測試版)</translation>
 <translation id="2433452467737464329">在網址中新增查詢參數即可自動重新整理網頁：chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">外觀</translation>
@@ -1975,6 +1971,7 @@
 <translation id="3264544094376351444">Sans-serif 字型</translation>
 <translation id="3264582393905923483">內容</translation>
 <translation id="3265459715026181080">關閉視窗</translation>
+<translation id="3266022278425892773">Linux 開發環境</translation>
 <translation id="3266179261140759675">禁止已關閉的網站傳送和接收資料</translation>
 <translation id="3266274118485960573">正在執行安全檢查。</translation>
 <translation id="3267726687589094446">繼續允許自動下載多個檔案</translation>
@@ -2273,7 +2270,6 @@
 <translation id="3600051066689725006">網路要求資訊</translation>
 <translation id="3600792891314830896">將播放音訊的網站設為靜音</translation>
 <translation id="360180734785106144">在新功能推出時立即提供你使用</translation>
-<translation id="3602198818276948261">你目前的容器設定不允許調整磁碟大小。如要調整 Linux (Beta 版) 的預留空間大小，請先備份容器中的資料，然後再將這些內容復原到新的容器中。</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3603622770190368340">取得網路憑證</translation>
 <translation id="3604713164406837697">變更桌布</translation>
@@ -3396,6 +3392,7 @@
 <translation id="4925542575807923399">這個帳戶的管理員要求此帳戶必需是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="4927753642311223124">這裡沒有任何通知訊息，以後再來看看吧！</translation>
 <translation id="4929386379796360314">列印目的地</translation>
+<translation id="4930447554870711875">開發人員</translation>
 <translation id="4930714375720679147">開啟</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4933484234309072027">嵌入至 <ph name="URL" /></translation>
@@ -3948,7 +3945,6 @@
 <translation id="558918721941304263">正在載入應用程式...</translation>
 <translation id="5592595402373377407">目前還沒有足夠的資料。</translation>
 <translation id="5595485650161345191">編輯地址</translation>
-<translation id="5595727715083333657">無法調整容器大小。如要調整預先分配給 Linux (Beta 版) 的空間量，請先備份容器，然後再復原為新容器。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5600706100022181951">下載更新將使用 <ph name="UPDATE_SIZE_MB" /> MB 的行動數據。要繼續嗎？</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4200,7 +4196,6 @@
 <translation id="5893589697005440881">與周遭的人分享檔案</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5900302528761731119">Google 個人資料相片</translation>
-<translation id="5900358982890952556">升級 Linux (Beta 版)</translation>
 <translation id="5901494423252125310">印表機的蓋子處於開啟狀態</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5904614460720589786">配置作業發生問題，因此無法設定「<ph name="APP_NAME" />」。請與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -4313,7 +4308,7 @@
 <translation id="6031600495088157824">工具列中的輸入選項</translation>
 <translation id="6032715498678347852">如要授予擴充功能這個網站的存取權，請按一下該擴充功能。</translation>
 <translation id="6032912588568283682">檔案系統</translation>
-<translation id="603539183851330738">復原自動更正內容的按鈕，還原為「<ph name="TYPED_WORD" />」。按下 Enter 鍵即可啟用，按 Esc 鍵可關閉。</translation>
+<translation id="603539183851330738">復原自動更正內容的按鈕，還原為「<ph name="TYPED_WORD" />」。按下 Enter 鍵即可還原，按 Esc 鍵則為取消。</translation>
 <translation id="6035517790085323771">哪些人可與你的裝置分享內容</translation>
 <translation id="6038929619733116134">封鎖干擾性或誤導性的網站廣告</translation>
 <translation id="6039651071822577588">網路屬性字典格式錯誤</translation>
@@ -4666,6 +4661,7 @@
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6434325376267409267">必須先更新裝置才能使用「<ph name="APP_NAME" />」。</translation>
 <translation id="6436164536244065364">在線上應用程式商店中查看</translation>
+<translation id="6438234780621650381">重設設定</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 音訊播放中</translation>
 <translation id="6442187272350399447">真正讚</translation>
 <translation id="6444070574980481588">設定日期和時間</translation>
@@ -5377,7 +5373,6 @@
 <translation id="7284411326658527427">每位使用者都可以建立個人專屬的帳戶，並保護資料的私密性。</translation>
 <translation id="7287143125007575591">存取遭拒。</translation>
 <translation id="7287411021188441799">還原預設背景</translation>
-<translation id="7288013116963835700">移除 <ph name="DEVICE_TYPE" /> 上的 Linux</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">開啟桌布應用程式</translation>
 <translation id="7290242001003353852">這項登入服務 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的攝影機。</translation>
@@ -5763,7 +5758,6 @@
 <translation id="7730683939467795481">「<ph name="EXTENSION_NAME" />」擴充功能已變更這個頁面</translation>
 <translation id="7732111077498238432">網路受到政策控制</translation>
 <translation id="7737115349420013392">正在與「<ph name="DEVICE_NAME" />」配對…</translation>
-<translation id="7737238973539693982">刪除 Linux (測試版)</translation>
 <translation id="7737948071472253612">不得使用攝影機</translation>
 <translation id="7740996059027112821">標準</translation>
 <translation id="7742706086992565332">你可以設定特定網站的縮放比例</translation>
@@ -6055,7 +6049,7 @@
 <translation id="8045923671629973368">輸入應用程式 ID 或線上應用程式商店網址</translation>
 <translation id="8047242494569930800">移至 Google 帳戶</translation>
 <translation id="804786196054284061">使用者授權協議</translation>
-<translation id="8048977114738515028">在裝置上建立桌面捷徑即可直接存取這個設定檔</translation>
+<translation id="8048977114738515028">在裝置上建立桌面捷徑，直接存取這個設定檔</translation>
 <translation id="8049705080247101012">Google 已將「<ph name="EXTENSION_NAME" />」標示為惡意擴充功能並禁止安裝</translation>
 <translation id="8049948037269924837">觸控板反向捲動</translation>
 <translation id="8050038245906040378">Microsoft 商用程式碼簽署</translation>
@@ -6232,7 +6226,6 @@
 <translation id="825238165904109940">一律顯示完整網址</translation>
 <translation id="8252569384384439529">上傳中...</translation>
 <translation id="8253198102038551905">按一下 [+] 即可查看網路屬性</translation>
-<translation id="8254954272268479918">關閉 Linux (Beta 版)</translation>
 <translation id="8255451560461371599">無背景圖片</translation>
 <translation id="8256319818471787266">小黃</translation>
 <translation id="8257950718085972371">繼續封鎖存取攝影機</translation>
@@ -6966,7 +6959,6 @@
 <translation id="9088917181875854783">請確認以下密碼金鑰是否顯示於「<ph name="DEVICE_NAME" />」上：</translation>
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="909108997331068008">「<ph name="EXISTING_USER" />」的設定檔已登入 <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">建議你先備份檔案，以免系統無法完成升級。啟動升級作業會關閉 Linux (Beta 版)，請先儲存已開啟的檔案再繼續。</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9094038138851891550">使用者名稱無效</translation>
 <translation id="9094982973264386462">移除</translation>
@@ -7045,7 +7037,6 @@
 <translation id="9176476835295860688">傳送使用狀況與診斷資料。這個裝置目前會自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google。這些資料將有助於系統和應用程式提高穩定性及做出其他改善。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。這項<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />是由裝置擁有者執行。如果你的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到你的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 已連上藍牙裝置</translation>
 <translation id="9179524979050048593">登入畫面上的使用者名稱</translation>
-<translation id="9179734824669616955">在 <ph name="DEVICE_TYPE" /> 上設定 Linux (測試版)</translation>
 <translation id="9180281769944411366">正在啟動 Linux 容器，過程可能需要幾分鐘。</translation>
 <translation id="9180380851667544951">網站可以分享你的螢幕畫面</translation>
 <translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>
@@ -7086,7 +7077,6 @@
 <translation id="93610034168535821">網站使用的總儲存空間：</translation>
 <translation id="936801553271523408">系統診斷資料</translation>
 <translation id="93766956588638423">修復擴充功能</translation>
-<translation id="938339467127511841">Linux (測試版) 儲存空間</translation>
 <translation id="938470336146445890">請安裝使用者憑證。</translation>
 <translation id="939252827960237676">無法儲存螢幕截圖</translation>
 <translation id="939519157834106403">SSID</translation>
@@ -7121,7 +7111,7 @@
 <translation id="971774202801778802">書籤網址</translation>
 <translation id="973473557718930265">結束</translation>
 <translation id="975893173032473675">翻譯目標語言</translation>
-<translation id="976499800099896273">系統將「<ph name="TYPED_WORD" />」更正為「<ph name="CORRECTED_WORD" />」後，已顯示復原自動更正內容的對話方塊。按向上鍵即可存取，按 Esc 鍵可忽略。</translation>
+<translation id="976499800099896273">系統將「<ph name="TYPED_WORD" />」更正為「<ph name="CORRECTED_WORD" />」後，已顯示復原自動更正內容的對話方塊。按向上鍵即可選取對話方塊，按 Esc 鍵則為忽略。</translation>
 <translation id="978146274692397928">初始標點符號寬度為全形</translation>
 <translation id="97905529126098460">此視窗將在完成取消作業後關閉。</translation>
 <translation id="980731642137034229">動作選單按鈕</translation>

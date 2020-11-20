@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Vonesë shumë e lartë në HTTPS</translation>
 <translation id="1413240736185167732">Dështoi - Filtri dështoi</translation>
 <translation id="1468664791493211953">Ofertat</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> e menaxhon këtë pajisje dhe mund të jetë në gjendje të monitorojë aktivitetin tënd.</translation>
 <translation id="1478594628797167447">Skaner</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> bashkëbisedime)</translation>
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Skano te</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
 <translation id="4548483925627140043">Sinjali nuk u gjet</translation>
+<translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
 <translation id="4646949265910132906">Lidhja e sigurt WiFi</translation>
@@ -137,8 +141,10 @@
 <translation id="6766275201586212568">Rezolucione të dështuara të DNS-së</translation>
 <translation id="6768237774506518020">Normë e lartë e rezolucioneve të dështuara të DNS-së</translation>
 <translation id="6839141349259399400">Nuk mund të lidhesh me skanerët?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
 <translation id="7162487448488904999">Galeria</translation>
+<translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>

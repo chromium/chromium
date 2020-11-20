@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Određuje frekvenciju ažuriranja ekrana</translation>
 <translation id="1061904396131502319">Uskoro će vrijeme za odmor</translation>
 <translation id="1067048845568873861">Kreirano</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Ostale Googleove usluge</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Drugi program na vašem računaru je dodao ekstenziju koja može promijeniti rad Chromea.
@@ -931,7 +930,6 @@ Ako ne želite, odjavite se sada da se promjene na računu primijene na ovom ure
 Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link na svoj uređaj.  Poslali smo vam e-poruku s uputstvom.</translation>
 <translation id="2040460856718599782">Ups!  Došlo je do greške prilikom vaše autentifikacije.  Ponovo provjerite akreditive za prijavu i pokušajte ponovo.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Imate 1 ugroženu lozinku}one{Imate # ugroženu lozinku}few{Imate # ugrožene lozinke}other{Imate # ugroženih lozinki}}</translation>
-<translation id="2040863272941698761">Postavite Linux</translation>
 <translation id="204497730941176055">Naziv šablona za Microsoftovu potvrdu</translation>
 <translation id="2045117674524495717">Pomoćnik za prečice na tastaturi</translation>
 <translation id="2045969484888636535">Nastavi blokirati kolačiće</translation>
@@ -1263,8 +1261,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2428510569851653187">Opišite šta ste radili kada je došlo do pada kartice</translation>
 <translation id="2428939361789119025">Isključite WiFi</translation>
 <translation id="2431027948063157455">Nije moguće učitati Google Asistenta. Provjerite mrežnu vezu i pokušajte ponovo.</translation>
-<translation id="2431846145771260397">Jeste li sigurni da želite rezervirati fiksnu veličinu diska za Linux (Beta)?</translation>
-<translation id="2432753757290432042">Potrebno je ažuriranje beta verzije za Linux</translation>
 <translation id="2433452467737464329">Dodajte parametar upita u URL da automatski osvježite stranicu: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Izgled</translation>
@@ -1979,6 +1975,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3264544094376351444">Sans-serif font</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Zatvori prozor</translation>
+<translation id="3266022278425892773">Linuxovo okruženje za razvoj</translation>
 <translation id="3266179261140759675">Blokiraj zatvorenim web lokacijama slanje i primanje podataka</translation>
 <translation id="3266274118485960573">Sigurnosna provjera je u toku.</translation>
 <translation id="3267726687589094446">Nastavi dozvoljavanje automatskih preuzimanja višestrukih fajlova</translation>
@@ -2279,7 +2276,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3600051066689725006">Informacije o zahtjevu s weba</translation>
 <translation id="3600792891314830896">Isključuje zvuk na web lokacijama koje ga reproduciraju</translation>
 <translation id="360180734785106144">Ponudite nove funkcije kada postanu dostupne</translation>
-<translation id="3602198818276948261">Vaš spremnik nije konfiguriran da podrži promjenu veličine diska. Da podesite količinu prostora koja je rezervirana za Linux (Beta), napravite sigurnosnu kopiju, a zatim je vratite u novi spremnik.</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3603622770190368340">Nabavite novu potvrdu</translation>
 <translation id="3604713164406837697">Promijenite pozadinsku sliku</translation>
@@ -3404,6 +3400,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4925542575807923399">Administrator ovog računa traži da se prvi prijavi na račun u sesiji višestruke prijave.</translation>
 <translation id="4927753642311223124">Ovdje nema ništa, nastavi dalje.</translation>
 <translation id="4929386379796360314">Odredišta za štampanje</translation>
+<translation id="4930447554870711875">Programeri</translation>
 <translation id="4930714375720679147">Uključi</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933484234309072027">ugrađeno na <ph name="URL" /></translation>
@@ -3957,7 +3954,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="558918721941304263">Učitavanje aplikacija...</translation>
 <translation id="5592595402373377407">Još nije dostupno dovoljno podataka.</translation>
 <translation id="5595485650161345191">Uredite adresu</translation>
-<translation id="5595727715083333657">Vaš spremnik ne podržava promjenu veličine. Da podesite količinu prostora koja je prethodno dodijeljena Linuxu (Beta), napravite sigurnosnu kopiju, a zatim je vratite u novi spremnik.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5600706100022181951">Za preuzimanje ažuriranja iskoristit će se <ph name="UPDATE_SIZE_MB" /> MB mobilnih podataka. Želite li nastaviti?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4209,7 +4205,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5893589697005440881">Dijelite fajlove s osobama u okruženju</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
 <translation id="5900302528761731119">Fotografija Google profila</translation>
-<translation id="5900358982890952556">Nadogradite Linux (Beta)</translation>
 <translation id="5901494423252125310">Otvoren je poklopac štampača</translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5904614460720589786">Postavljanje aplikacije <ph name="APP_NAME" /> nije uspjelo zbog problema s konfiguracijom. Kontaktirajte administratora. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
@@ -4676,6 +4671,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6434309073475700221">Odbaci</translation>
 <translation id="6434325376267409267">Da koristite aplikaciju <ph name="APP_NAME" />, najprije trebate ažurirati uređaj.</translation>
 <translation id="6436164536244065364">Prikaži u Web trgovini</translation>
+<translation id="6438234780621650381">Vraćanje postavki na zadano</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – reprodukcija zvuka</translation>
 <translation id="6442187272350399447">Fenomenalan</translation>
 <translation id="6444070574980481588">Postavite datum i vrijeme</translation>
@@ -5389,7 +5385,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7284411326658527427">Svaka osoba može personalizirati svoj račun i čuvati privatnost podataka.</translation>
 <translation id="7287143125007575591">Pristup je odbijen.</translation>
 <translation id="7287411021188441799">Vrati zadanu pozadinu</translation>
-<translation id="7288013116963835700">Ukloni Linux za uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Otvorite aplikaciju za pozadinske slike</translation>
 <translation id="7290242001003353852">Ova usluga prijave, koju hostira domena <ph name="SAML_DOMAIN" />, pristupa vašoj kameri.</translation>
@@ -5775,7 +5770,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7730683939467795481">Ovu stranicu je promijenila ekstenzija "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7732111077498238432">Mrežu kontroliraju pravila</translation>
 <translation id="7737115349420013392">Uparivanje s uređajem "<ph name="DEVICE_NAME" />" ...</translation>
-<translation id="7737238973539693982">Izbrišite Linux (Beta)</translation>
 <translation id="7737948071472253612">Nije dozvoljeno korištenje vaše kamere</translation>
 <translation id="7740996059027112821">Standardno</translation>
 <translation id="7742706086992565332">Možete postaviti koliko želite uvećati ili umanjiti na određenim web lokacijama</translation>
@@ -6245,7 +6239,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="825238165904109940">Uvijek prikaži pune URL-ove</translation>
 <translation id="8252569384384439529">Otpremanje...</translation>
 <translation id="8253198102038551905">Klliknite na "+" da dođete do karakteristika mreže</translation>
-<translation id="8254954272268479918">Isključi Linux (beta)</translation>
 <translation id="8255451560461371599">Nema pozadine</translation>
 <translation id="8256319818471787266">Reks</translation>
 <translation id="8257950718085972371">Nastavi blokirati pristup kameri</translation>
@@ -6983,7 +6976,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9088917181875854783">Potvrdite da se ovaj pristupni kôd prikazuje na uređaju "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Načini unosa</translation>
 <translation id="909108997331068008">Profil koji koristi <ph name="EXISTING_USER" /> je već prijavljen na <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Kreiranje sigurnosne kopije fajlova se preporučuje u slučaju neuspješnog završetka nadogradnje. Započinjanjem nadogradnje će se isključiti Linux (Beta). Sačuvajte otvorene fajlove prije nego što nastavite.</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
 <translation id="9094038138851891550">Korisničko ime je nevažeće</translation>
 <translation id="9094982973264386462">Ukloni</translation>
@@ -7062,7 +7054,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9176476835295860688">Šaljite podatke o korištenju i dijagnostici. Ovaj uređaj trenutno automatski šalje Googleu podatke o dijagnostici, uređaju i korištenju aplikacija. Ovo će pomoći poboljšati stabilnost sistema i aplikacija i još mnogo toga. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Android programeri. Ovu <ph name="BEGIN_LINK1" />postavku<ph name="END_LINK1" /> je nametnuo vlasnik. Ako vam je uključena postavka dodatna Aktivnost na webu i u aplikacijama, ti podaci će možda biti sačuvani na vašem Google računu. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth uređaj je povezan</translation>
 <translation id="9179524979050048593">Korisničko ime na ekranu za prijavu</translation>
-<translation id="9179734824669616955">Postavljanje Linuxa (beta verzija) uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Ovo može potrajati nekoliko minuta. Pokretanje Linux spremnika.</translation>
 <translation id="9180380851667544951">Web-lokacija može dijeliti vaš zaslon</translation>
 <translation id="9186963452600581158">Prijavite se putem Google računa djeteta</translation>
@@ -7103,7 +7094,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="93610034168535821">Ukupna pohrana koju koriste web lokacije:</translation>
 <translation id="936801553271523408">Dijagnostički podaci sistema</translation>
 <translation id="93766956588638423">Popravi ekstenziju</translation>
-<translation id="938339467127511841">Linux (Beta) pohrana</translation>
 <translation id="938470336146445890">Instalirajte korisnički certifikat.</translation>
 <translation id="939252827960237676">Pohranjivanje snimka ekrana nije uspjelo</translation>
 <translation id="939519157834106403">SSID</translation>

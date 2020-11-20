@@ -268,7 +268,6 @@
 <translation id="4158739975813877944">Mở danh sách phát</translation>
 <translation id="4159731583141908892">Đã di chuyển <ph name="FILE_NAME" />.</translation>
 <translation id="4193154014135846272">Tài liệu Google</translation>
-<translation id="4195249722193633765">Cài đặt ứng dụng bằng Linux (Beta)</translation>
 <translation id="4197674956721858839">Chọn file nén zip</translation>
 <translation id="421017592316736757">Bạn phải trực tuyến để truy cập tệp này.</translation>
 <translation id="4212740939091998969">Thư mục có tên "<ph name="FOLDER_NAME" />" đã tồn tại. Hãy chọn một tên khác.</translation>
@@ -297,7 +296,6 @@
 <translation id="4572815280350369984">Tệp <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Thêm...</translation>
 <translation id="4579744207439506346">Đã thêm <ph name="ENTRY_NAME" /> vào lựa chọn.</translation>
-<translation id="4582497162516204941">Cài đặt bằng Linux (Beta)</translation>
 <translation id="4594543368593301662">Đang hiển thị kết quả cho <ph name="SEARCH_TERM" />.</translation>
 <translation id="4598673198033263991">Nhập chữ và số bằng bàn phím tiếng Nhật</translation>
 <translation id="4603392156942865207">Đang sao chép <ph name="FILE_NAME" /> sang <ph name="FOLDER_NAME" /></translation>

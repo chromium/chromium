@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Bestemmer frekvensen for skjermoppdateringer</translation>
 <translation id="1061904396131502319">Snart tid for en pause</translation>
 <translation id="1067048845568873861">Opprettet</translation>
-<translation id="1067291318998134776">Linux (beta)</translation>
 <translation id="1067922213147265141">Andre Google-tjenester</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Et annet program på datamaskinen la til en utvidelse som kan endre måten Chrome fungerer på.
@@ -926,7 +925,6 @@ Alternativt kan du logge av nå slik at endringene på kontoen gjenspeiles på d
 Du kan administrere innstillingene for denne kontoen ved å installere Family Link-appen på enheten din.  Vi har sendt deg en e-post med veiledning.</translation>
 <translation id="2040460856718599782">Beklager!  Det oppsto en feil da vi forsøkte å autentisere deg. Kontrollér påloggingslegitimasjonen, og prøv på nytt.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Du har 1 passord som er utsatt for sikkerhetsbrudd}other{Du har # passord som er utsatt for sikkerhetsbrudd}}</translation>
-<translation id="2040863272941698761">Konfigurer Linux</translation>
 <translation id="204497730941176055">Navn på Microsoft sertifikatmal</translation>
 <translation id="2045117674524495717">Hurtigtasthjelp</translation>
 <translation id="2045969484888636535">Fortsett blokkering av informasjonskapsler</translation>
@@ -1258,8 +1256,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2428510569851653187">Beskriv hva du holdt på med da fanen krasjet</translation>
 <translation id="2428939361789119025">Slå av Wi-Fi</translation>
 <translation id="2431027948063157455">Google-assistenten kunne ikke lastes inn. Kontrollér nettverkstilkoblingen din, og prøv på nytt.</translation>
-<translation id="2431846145771260397">Er du sikker på at du vil reservere en disk med fast størrelse for Linux (beta)?</translation>
-<translation id="2432753757290432042">Oppdatering av Linux (beta) kreves</translation>
 <translation id="2433452467737464329">Legg til en søkeparameter i nettadressen for å automatisk laste inn siden på nytt: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Utseende</translation>
@@ -1974,6 +1970,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3264544094376351444">Uten seriffer</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Lukk vindu</translation>
+<translation id="3266022278425892773">Linux-utviklingsmiljø</translation>
 <translation id="3266179261140759675">Blokkér lukkede nettsteder fra å sende og motta data</translation>
 <translation id="3266274118485960573">Sikkerhetssjekken kjøres akkurat nå.</translation>
 <translation id="3267726687589094446">Tillat fortsatt automatiske nedlastinger av flere filer</translation>
@@ -2274,7 +2271,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3600051066689725006">Informasjon om nettforespørsel</translation>
 <translation id="3600792891314830896">Kutt lyden for nettsteder som spiller av lyd</translation>
 <translation id="360180734785106144">tilby nye funksjoner etter hvert som de blir tilgjengelige</translation>
-<translation id="3602198818276948261">Beholderen er ikke konfigurert med støtte for endring av diskstørrelse. For å justere mengden plass som er reservert for Linux (beta), sikkerhetskopiér disken og gjenopprett den i en ny beholder.</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3603622770190368340">Hent nettverkssertifikat</translation>
 <translation id="3604713164406837697">Endre bakgrunn</translation>
@@ -3397,6 +3393,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4925542575807923399">Administratoren for denne kontoen krever at denne kontoen er den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="4927753642311223124">Her er det ikke noe nytt. Men intet nytt er jo godt nytt!</translation>
 <translation id="4929386379796360314">Destinasjoner for utskrift</translation>
+<translation id="4930447554870711875">Utviklere</translation>
 <translation id="4930714375720679147">Slå på</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4933484234309072027">lagt til på <ph name="URL" /></translation>
@@ -3950,7 +3947,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="558918721941304263">Laster inn apper …</translation>
 <translation id="5592595402373377407">Nok data er ikke tilgjengelig ennå.</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
-<translation id="5595727715083333657">Beholderen støtter ikke størrelsesendringer. For å justere mengden plass som er forhåndsallokert til Linux (beta), sikkerhetskopiér disken og gjenopprett den deretter i en ny beholder.</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5600706100022181951"><ph name="UPDATE_SIZE_MB" /> MB mobildata blir brukt under nedlastingen av oppdateringen. Vil du fortsette?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4202,7 +4198,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5893589697005440881">Del filer med personer rundt deg</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5900302528761731119">Google-profilbilde</translation>
-<translation id="5900358982890952556">Oppgrader Linux (beta)</translation>
 <translation id="5901494423252125310">Skriverdekselet er åpent</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5904614460720589786">Kunne ikke konfigurere <ph name="APP_NAME" /> på grunn av et konfigurasjonsproblem. Kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
@@ -4669,6 +4664,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6434309073475700221">Forkast</translation>
 <translation id="6434325376267409267">Enheten må oppdateres før du kan bruke <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Se i Nettmarked</translation>
+<translation id="6438234780621650381">Tilbakestill innstillingene</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – lyd spilles av</translation>
 <translation id="6442187272350399447">Mega</translation>
 <translation id="6444070574980481588">Angi dato og klokkeslett</translation>
@@ -5382,7 +5378,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7284411326658527427">Hver person kan gi kontoen sin et personlig preg og holde dataene sine private.</translation>
 <translation id="7287143125007575591">Ingen tilgang.</translation>
 <translation id="7287411021188441799">Gjenopprett standardbakgrunnen</translation>
-<translation id="7288013116963835700">Fjern Linux for <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> ppt</translation>
 <translation id="7289225569524511578">Åpne bakgrunnsappen</translation>
 <translation id="7290242001003353852">Denne påloggingstjenesten, som driftes av <ph name="SAML_DOMAIN" />, har tilgang til kameraet ditt</translation>
@@ -5768,7 +5763,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7730683939467795481">Denne siden ble endret av utvidelsen «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="7732111077498238432">Nettverket er kontrollert av regler</translation>
 <translation id="7737115349420013392">Sammenkobler med «<ph name="DEVICE_NAME" />» …</translation>
-<translation id="7737238973539693982">Slett Linux (beta)</translation>
 <translation id="7737948071472253612">Nettsteder som ikke har lov til å bruke kameraet ditt</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Du kan velge hvor mye du vil zoome inn eller ut på bestemte nettsteder</translation>
@@ -6238,7 +6232,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="825238165904109940">Vis alltid fullstendige nettadresser</translation>
 <translation id="8252569384384439529">Laster opp …</translation>
 <translation id="8253198102038551905">Klikk på «+» for å gå til nettverksegenskaper</translation>
-<translation id="8254954272268479918">Slå av Linux (beta)</translation>
 <translation id="8255451560461371599">Ingen bakgrunn</translation>
 <translation id="8256319818471787266">Fido</translation>
 <translation id="8257950718085972371">Fortsett blokkering av kameratilgang</translation>
@@ -6974,7 +6967,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9088917181875854783">Bekreft at dette passordet vises på «<ph name="DEVICE_NAME" />»:</translation>
 <translation id="9089416786594320554">Inndatametoder</translation>
 <translation id="909108997331068008">Profilen til <ph name="EXISTING_USER" /> er allerede logget på <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Det anbefales å sikkerhetskopiere filer, i tilfelle oppgraderingen ikke kan fullføres. Når oppgraderingen påbegynnes, blir Linux (beta) avsluttet. Lagre åpne filer før du fortsetter.</translation>
 <translation id="9094033019050270033">Oppdater passordet</translation>
 <translation id="9094038138851891550">Ugyldig brukernavn</translation>
 <translation id="9094982973264386462">Fjern</translation>
@@ -7053,7 +7045,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9176476835295860688">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – en Bluetooth-enhet er tilkoblet</translation>
 <translation id="9179524979050048593">Brukernavn på påloggingsskjermen</translation>
-<translation id="9179734824669616955">Konfigurer Linux (beta) på <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Denne prosessen kan ta noen minutter. Starter Linux-beholderen.</translation>
 <translation id="9180380851667544951">Nettstedet kan dele skjermen din</translation>
 <translation id="9186963452600581158">Logg på med Google-kontoen til et barn</translation>
@@ -7094,7 +7085,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="93610034168535821">Total mengde lagring som brukes av nettsteder:</translation>
 <translation id="936801553271523408">Systemdiagnostikkdata</translation>
 <translation id="93766956588638423">Reparer utvidelsen</translation>
-<translation id="938339467127511841">Linux-lagring (beta)</translation>
 <translation id="938470336146445890">Installer et brukersertifikat.</translation>
 <translation id="939252827960237676">Lagringen av skjermdumpen mislyktes</translation>
 <translation id="939519157834106403">SSID</translation>

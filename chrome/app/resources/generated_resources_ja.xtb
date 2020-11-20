@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">画面の更新頻度を指定します</translation>
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="1067048845568873861">作成日</translation>
-<translation id="1067291318998134776">Linux（ベータ版）</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のある拡張機能が追加されました。
@@ -928,7 +927,6 @@
 デバイスにファミリー リンク アプリをインストールすると、このアカウントの設定を管理できます。手順を記載したメールをお送りしましたので、ご確認ください。</translation>
 <translation id="2040460856718599782">ユーザー認証時に問題が発生しました。ログイン情報をお確かめのうえ、もう一度お試しください。</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{不正使用されたパスワードが 1 件あります}other{不正使用されたパスワードが # 件あります}}</translation>
-<translation id="2040863272941698761">Linux のセットアップ</translation>
 <translation id="204497730941176055">Microsoft 証明書テンプレート名</translation>
 <translation id="2045117674524495717">キーボード ショートカット ヘルパー</translation>
 <translation id="2045969484888636535">Cookie のブロックを続行する</translation>
@@ -1260,8 +1258,6 @@
 <translation id="2428510569851653187">タブのクラッシュ時に行っていた操作をご説明ください</translation>
 <translation id="2428939361789119025">Wi-Fi をオフにする</translation>
 <translation id="2431027948063157455">Google アシスタントを読み込めませんでした。ネットワーク接続を確認してから、もう一度お試しください。</translation>
-<translation id="2431846145771260397">Linux（ベータ版）用に固定のディスクサイズを予約してもよろしいですか？</translation>
-<translation id="2432753757290432042">Linux（ベータ版）のアップデートが必要です</translation>
 <translation id="2433452467737464329">ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">デザイン</translation>
@@ -1676,7 +1672,7 @@
 <translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
-<translation id="2889481634493693121">スマートフォンで通知をオンにする</translation>
+<translation id="2889481634493693121">スマートフォンからの通知をオンにする</translation>
 <translation id="2889925978073739256">サンドボックスの無効化プラグインを引き続きブロックする</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 個のテキスト}other{# 個のテキスト}}</translation>
@@ -1976,6 +1972,7 @@
 <translation id="3264544094376351444">Sans Serif フォント</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
 <translation id="3265459715026181080">ウインドウを閉じる</translation>
+<translation id="3266022278425892773">Linux 開発環境</translation>
 <translation id="3266179261140759675">閉じたサイトがデータを送受信できないようにする</translation>
 <translation id="3266274118485960573">安全確認を実行しています。</translation>
 <translation id="3267726687589094446">複数ファイルの自動ダウンロードを今後も許可する</translation>
@@ -2274,7 +2271,6 @@
 <translation id="3600051066689725006">ウェブ リクエスト情報</translation>
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
 <translation id="360180734785106144">新機能が利用可能になったときにメッセージを表示する</translation>
-<translation id="3602198818276948261">コンテナはディスクサイズを変更できるように設定されていません。Linux（ベータ版）用に予約されている容量を調整するには、バックアップしてから新しいコンテナに復元してください。</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3603622770190368340">ネットワーク証明書を取得</translation>
 <translation id="3604713164406837697">壁紙の変更</translation>
@@ -3398,6 +3394,7 @@
 <translation id="4925542575807923399">このアカウントの管理者が、マルチ ログイン セッションにおいて最初にこのアカウントにログインすることを要件としています。</translation>
 <translation id="4927753642311223124">表示する通知はありません。続行してください。</translation>
 <translation id="4929386379796360314">印刷先</translation>
+<translation id="4930447554870711875">デベロッパー</translation>
 <translation id="4930714375720679147">ON にする</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4933484234309072027"><ph name="URL" /> に埋め込まれたページ</translation>
@@ -3950,7 +3947,6 @@
 <translation id="558918721941304263">アプリを読み込んでいます...</translation>
 <translation id="5592595402373377407">利用可能なデータがまだ十分にありません。</translation>
 <translation id="5595485650161345191">住所の編集</translation>
-<translation id="5595727715083333657">コンテナのサイズを変更することはできません。Linux（ベータ版）に事前に割り当てられている容量を調整するには、バックアップしてから新しいコンテナに復元してください。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5600706100022181951">アップデートをダウンロードすると、<ph name="UPDATE_SIZE_MB" /> MB のモバイルデータを使用することになります。続行してもよろしいですか？</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4202,7 +4198,6 @@
 <translation id="5893589697005440881">近くのユーザーとファイルを共有できます</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5900302528761731119">Google プロフィール写真</translation>
-<translation id="5900358982890952556">Linux のアップグレード（ベータ版）</translation>
 <translation id="5901494423252125310">プリンタの扉が開いています</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5904614460720589786">設定に問題があったため、<ph name="APP_NAME" /> をセットアップできませんでした。管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -4315,7 +4310,7 @@
 <translation id="6031600495088157824">ツールバーの入力オプション</translation>
 <translation id="6032715498678347852">このサイトに拡張機能がアクセスするのを許可するには、クリックしてください。</translation>
 <translation id="6032912588568283682">ファイル システム</translation>
-<translation id="603539183851330738">自動修正を元に戻すボタン。「<ph name="TYPED_WORD" />」に戻します。実行する場合は Enter キー、拒否する場合は Esc キーを押してください。</translation>
+<translation id="603539183851330738">自動修正を元に戻すボタン。「<ph name="TYPED_WORD" />」に戻します。戻す場合は Enter キー、修正されたままにする場合は Esc キーを押してください。</translation>
 <translation id="6035517790085323771">あなたのデバイスとファイルを共有できる相手</translation>
 <translation id="6038929619733116134">煩わしい広告や誤解を招く広告が表示されるサイトの場合にブロックします</translation>
 <translation id="6039651071822577588">ネットワーク プロパティ辞書が不正です</translation>
@@ -4668,6 +4663,7 @@
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> を使用するには、先にデバイスを更新する必要があります。</translation>
 <translation id="6436164536244065364">ウェブストアで見る</translation>
+<translation id="6438234780621650381">設定のリセット</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - オーディオ再生中です</translation>
 <translation id="6442187272350399447">ビックリ</translation>
 <translation id="6444070574980481588">日時の設定</translation>
@@ -5379,7 +5375,6 @@
 <translation id="7284411326658527427">ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="7287143125007575591">アクセスが拒否されました。</translation>
 <translation id="7287411021188441799">デフォルトの背景に戻す</translation>
-<translation id="7288013116963835700"><ph name="DEVICE_TYPE" /> の Linux を削除する</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">壁紙アプリを開きます</translation>
 <translation id="7290242001003353852">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされており、カメラにアクセスしています。</translation>
@@ -5765,7 +5760,6 @@
 <translation id="7730683939467795481">このページは「<ph name="EXTENSION_NAME" />」拡張機能によって変更されました</translation>
 <translation id="7732111077498238432">ネットワークはポリシーによって管理されています</translation>
 <translation id="7737115349420013392">「<ph name="DEVICE_NAME" />」とペア設定しています…</translation>
-<translation id="7737238973539693982">Linux（ベータ版）の削除</translation>
 <translation id="7737948071472253612">カメラの使用を許可しないサイト</translation>
 <translation id="7740996059027112821">標準</translation>
 <translation id="7742706086992565332">特定のウェブサイトをどの程度拡大または縮小して表示するかを設定できます</translation>
@@ -6235,7 +6229,6 @@
 <translation id="825238165904109940">URL 全体を常に表示</translation>
 <translation id="8252569384384439529">アップロードしています...</translation>
 <translation id="8253198102038551905">ネットワークのプロパティを表示するには [+] をクリック</translation>
-<translation id="8254954272268479918">Linux（ベータ版）を終了</translation>
 <translation id="8255451560461371599">背景なし</translation>
 <translation id="8256319818471787266">スパーキー</translation>
 <translation id="8257950718085972371">カメラへのアクセスを引き続きブロックする</translation>
@@ -6969,7 +6962,6 @@
 <translation id="9088917181875854783">「<ph name="DEVICE_NAME" />」でこのパスキーが表示されていることを確認してください:</translation>
 <translation id="9089416786594320554">入力方法</translation>
 <translation id="909108997331068008"><ph name="EXISTING_USER" /> さんのプロフィールで <ph name="NEW_USER" /> にすでにログインしています</translation>
-<translation id="9093429538970210897">アップグレードを完了できない場合に備えて、ファイルをバックアップしておくことをおすすめします。アップグレードを開始すると、Linux（ベータ版）はシャットダウンされます。続行する前に、開いているファイルを保存してください。</translation>
 <translation id="9094033019050270033">パスワードを更新</translation>
 <translation id="9094038138851891550">無効なユーザー名です</translation>
 <translation id="9094982973264386462">削除</translation>
@@ -7048,7 +7040,6 @@
 <translation id="9176476835295860688">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth デバイスに接続されています</translation>
 <translation id="9179524979050048593">ログイン画面のユーザー名</translation>
-<translation id="9179734824669616955"><ph name="DEVICE_TYPE" /> に Linux（ベータ版）をセットアップ</translation>
 <translation id="9180281769944411366">この処理には数分かかることがあります。Linux コンテナを起動します。</translation>
 <translation id="9180380851667544951">サイトに画面の共有が許可されています</translation>
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
@@ -7089,7 +7080,6 @@
 <translation id="93610034168535821">サイトの合計ストレージ使用状況:</translation>
 <translation id="936801553271523408">システム診断データ</translation>
 <translation id="93766956588638423">拡張機能を修復</translation>
-<translation id="938339467127511841">Linux（ベータ版）ストレージ</translation>
 <translation id="938470336146445890">ユーザー証明書をインストールしてください。</translation>
 <translation id="939252827960237676">スクリーンショットを保存できませんでした</translation>
 <translation id="939519157834106403">SSID</translation>

@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">Шөнийн гэрэл</translation>
 <translation id="2727175239389218057">Хариулах</translation>
 <translation id="2727977024730340865">Бага энергитэй цэнэглэгч залгасан байна. Тэжээлийг цэнэглэхгүй байж болох юм.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг</translation>
 <translation id="2792498699870441125">Alt+ Хайлт</translation>
 <translation id="2819276065543622893">Та нэвтрэх хэсгээс яг одоо гарч байна.</translation>
 <translation id="28232023175184696">Интернэтэд холбогдох боломжгүй байна. Дахин оролдохын тулд товшино уу.</translation>
@@ -564,6 +565,7 @@
 <translation id="6297287540776456956">Бүс сонгохын тулд мэдрэгч үзэг ашиглах</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> -ийг  <ph name="ROTATION" /> руу эргүүлсэн</translation>
 <translation id="6315170314923504164">Дуу хоолой</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> нь <ph name="MANAGER" />-н удирддаг хяналттай харилцан үйлдэл юм</translation>
 <translation id="6376931439017688372">Bluetooth асаалттай байна</translation>
 <translation id="6381109794406942707">Төхөөрөмжийн түгжээг тайлахын тулд ПИН-ээ оруулна уу.</translation>
 <translation id="639644700271529076">CAPS LOCK идэвхгүй байна</translation>

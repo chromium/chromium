@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Определяет частоту, с которой обновляется экран</translation>
 <translation id="1061904396131502319">Скоро перерыв</translation>
 <translation id="1067048845568873861">Создано</translation>
-<translation id="1067291318998134776">Linux (бета)</translation>
 <translation id="1067922213147265141">Другие сервисы Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Одна из программ на вашем компьютере установила расширение, которое может влиять на работу Chrome.
@@ -930,7 +929,6 @@
 Вы можете управлять настройками этого аккаунта, установив приложение Family Link на своем устройстве.  Мы отправили вам инструкции по электронной почте.</translation>
 <translation id="2040460856718599782">Не удалось выполнить аутентификацию. Проверьте учетные данные и повторите попытку.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{У вас есть 1 раскрытый пароль}one{У вас есть # раскрытый пароль}few{У вас есть # раскрытых пароля}many{У вас есть # раскрытых паролей}other{У вас есть # раскрытого пароля}}</translation>
-<translation id="2040863272941698761">Настроить Linux</translation>
 <translation id="204497730941176055">Название шаблона сертификата Microsoft</translation>
 <translation id="2045117674524495717">Справка по быстрым клавишам</translation>
 <translation id="2045969484888636535">Всегда блокировать сохранение cookie</translation>
@@ -1261,8 +1259,6 @@
 <translation id="2428510569851653187">Опишите, что вы делали, когда произошел сбой</translation>
 <translation id="2428939361789119025">Отключить Wi-Fi</translation>
 <translation id="2431027948063157455">Не удалось загрузить Google Ассистента. Проверьте подключение к Интернету и повторите попытку.</translation>
-<translation id="2431846145771260397">Зарезервировать диск фиксированного размера для Linux (бета)?</translation>
-<translation id="2432753757290432042">Обновите Linux (бета)</translation>
 <translation id="2433452467737464329">Добавьте в URL параметр запроса для автоматического обновления страницы: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" />.</translation>
 <translation id="2433507940547922241">Внешний вид</translation>
@@ -1977,6 +1973,7 @@
 <translation id="3264544094376351444">Шрифты без засечек</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Закрыть окно</translation>
+<translation id="3266022278425892773">Среда разработки Linux</translation>
 <translation id="3266179261140759675">Запретить закрытым сайтам завершать отправку и получение данных</translation>
 <translation id="3266274118485960573">Выполняется проверка безопасности.</translation>
 <translation id="3267726687589094446">По-прежнему разрешать автоматическое скачивание нескольких файлов</translation>
@@ -2275,7 +2272,6 @@
 <translation id="3600051066689725006">Информация о веб-запросе</translation>
 <translation id="3600792891314830896">Отключить звуки на сайтах</translation>
 <translation id="360180734785106144">Предлагать новые функции по мере их появления.</translation>
-<translation id="3602198818276948261">Контейнер не поддерживает изменение размера диска. Чтобы скорректировать объем хранилища, зарезервированного для Linux (бета), выполните резервное копирование, а затем запустите новый контейнер и восстановите данные.</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3603622770190368340">Получение сетевого сертификата</translation>
 <translation id="3604713164406837697">Изменить обои</translation>
@@ -3399,6 +3395,7 @@
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
 <translation id="4927753642311223124">Оповещений нет.</translation>
 <translation id="4929386379796360314">Места назначения печати</translation>
+<translation id="4930447554870711875">Для разработчиков</translation>
 <translation id="4930714375720679147">Включить</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4933484234309072027">встроен в <ph name="URL" /></translation>
@@ -3951,7 +3948,6 @@
 <translation id="558918721941304263">Загрузка...</translation>
 <translation id="5592595402373377407">Недостаточно данных.</translation>
 <translation id="5595485650161345191">Изменить адрес</translation>
-<translation id="5595727715083333657">Контейнер не поддерживает изменение размера. Чтобы скорректировать объем хранилища, предварительно определенного для Linux (бета), выполните резервное копирование, а затем восстановите данные, используя новый контейнер.</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5600706100022181951">Чтобы скачать обновление, потребуется <ph name="UPDATE_SIZE_MB" /> МБ мобильного трафика. Продолжить?</translation>
 <translation id="5601503069213153581">PIN-код</translation>
@@ -4203,7 +4199,6 @@
 <translation id="5893589697005440881">Делитесь файлами с пользователями поблизости</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5900302528761731119">Фотография профиля Google</translation>
-<translation id="5900358982890952556">Обновление Linux (бета)</translation>
 <translation id="5901494423252125310">Дверца принтера открыта</translation>
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5904614460720589786">Не удалось настроить <ph name="APP_NAME" /> из-за проблем с конфигурацией. Обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
@@ -4669,6 +4664,7 @@
 <translation id="6434309073475700221">Закрыть</translation>
 <translation id="6434325376267409267">Чтобы использовать <ph name="APP_NAME" />, установите на устройство обновление системы.</translation>
 <translation id="6436164536244065364">Просмотреть в Интернет-магазине</translation>
+<translation id="6438234780621650381">Сброс настроек</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: воспроизводится аудио</translation>
 <translation id="6442187272350399447">Супер</translation>
 <translation id="6444070574980481588">Установите дату и время</translation>
@@ -5380,7 +5376,6 @@
 <translation id="7284411326658527427">У каждого пользователя будет возможность персонализировать свой аккаунт и обеспечивать конфиденциальность данных.</translation>
 <translation id="7287143125007575591">Доступ запрещен.</translation>
 <translation id="7287411021188441799">Восстановить фон по умолчанию</translation>
-<translation id="7288013116963835700">Удалить Linux с устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Откройте приложение "Обои"</translation>
 <translation id="7290242001003353852">Сервису входа, размещенному в домене <ph name="SAML_DOMAIN" />, разрешен доступ к вашей камере.</translation>
@@ -5766,7 +5761,6 @@
 <translation id="7730683939467795481">Эта страница была изменена расширением "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7732111077498238432">В этой сети установлены правила</translation>
 <translation id="7737115349420013392">Подключение к устройству "<ph name="DEVICE_NAME" />"...</translation>
-<translation id="7737238973539693982">Удаление Linux (бета)</translation>
 <translation id="7737948071472253612">Запретить сайтам использовать камеру</translation>
 <translation id="7740996059027112821">Стандартный</translation>
 <translation id="7742706086992565332">Вы можете настроить масштаб страницы для просмотра определенных сайтов.</translation>
@@ -6235,7 +6229,6 @@
 <translation id="825238165904109940">Всегда показывать URL полностью</translation>
 <translation id="8252569384384439529">Загрузка...</translation>
 <translation id="8253198102038551905">Чтобы просмотреть свойства сети, нажмите "+"</translation>
-<translation id="8254954272268479918">Завершить работу Linux (бета)</translation>
 <translation id="8255451560461371599">Без фона</translation>
 <translation id="8256319818471787266">Дружок</translation>
 <translation id="8257950718085972371">Всегда блокировать доступ к камере</translation>
@@ -6972,7 +6965,6 @@
 <translation id="9088917181875854783">Подтвердите ключ доступа, отображенный на экране "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Методы ввода</translation>
 <translation id="909108997331068008">Пользователь <ph name="EXISTING_USER" /> уже вошел в аккаунт <ph name="NEW_USER" />.</translation>
-<translation id="9093429538970210897">Рекомендуем создать резервные копии файлов, чтобы в случае ошибки вы не потеряли свои данные. Как только обновление начнется, работа операционной системы Linux (бета) будет завершена. Прежде чем продолжить, сохраните открытые файлы.</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>
 <translation id="9094038138851891550">Недопустимое имя пользователя.</translation>
 <translation id="9094982973264386462">Удалить</translation>
@@ -7051,7 +7043,6 @@
 <translation id="9176476835295860688">Отправка данных о работе устройства. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Эти данные нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Эта <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> принудительно применяется владельцем. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в вашем аккаунте. <ph name="BEGIN_LINK2" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: подключено устройство Bluetooth</translation>
 <translation id="9179524979050048593">Имя пользователя на экране входа</translation>
-<translation id="9179734824669616955">Установка Linux (бета) на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Подождите несколько минут. Запуск контейнера Linux…</translation>
 <translation id="9180380851667544951">Сайт может открыть доступ к вашему экрану</translation>
 <translation id="9186963452600581158">Войти в аккаунт Google ребенка</translation>
@@ -7092,7 +7083,6 @@
 <translation id="93610034168535821">Объем хранилища, занятый сайтами:</translation>
 <translation id="936801553271523408">Диагностические данные системы</translation>
 <translation id="93766956588638423">Восстановить расширение</translation>
-<translation id="938339467127511841">Хранилище Linux (бета-версия)</translation>
 <translation id="938470336146445890">Установите сертификат пользователя.</translation>
 <translation id="939252827960237676">Не удалось сохранить скриншот</translation>
 <translation id="939519157834106403">SSID</translation>

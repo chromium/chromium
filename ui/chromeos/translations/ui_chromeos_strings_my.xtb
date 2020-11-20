@@ -209,6 +209,7 @@
 <translation id="3335337277364016868">အသံသွင်းခဲ့သည့်နှစ်</translation>
 <translation id="3353984535370177728">တင်ရန် ဖိုလ်ဒါကို ရွေးပါ</translation>
 <translation id="3356580349448036450">ပြီးဆုံးပြီ</translation>
+<translation id="3369522691271417561">အာရဗီအခြေခံ ကီးဘုတ်ဖြင့် ဆိုရာနီကဒ်</translation>
 <translation id="3414856743105198592">ဖြုတ်တပ်ရသော မီဒီယာကို ပြန်လည်ပြင်ဆင်ခြင်းသည် ဒေတာအားလုံးကို ဖျက်ပစ်လိမ့်မည်။သင်ရှေ့ဆက်လိုပါသလား?</translation>
 <translation id="3437801641691368414">ပြုလုပ်ခဲ့သည့်အချိန်</translation>
 <translation id="3466147780910026086">သင့်မီဒီယာကို ဖတ်နေသည်...</translation>
@@ -268,7 +269,6 @@
 <translation id="4158739975813877944">သီချင်းစာရင်းကို ဖွင့်ပါ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
 <translation id="4193154014135846272">Google စာရွက်စာတမ်း</translation>
-<translation id="4195249722193633765">Linux (စမ်းသပ်ဆော့ဖ်ဝဲ) ဖြင့် အက်ပ်ကို ထည့်သွင်းခြင်း</translation>
 <translation id="4197674956721858839">ဇစ်ရွေးချက်မှု</translation>
 <translation id="421017592316736757">ဒီဖိုင်ကို ရယူသုံးရန် သင်သည် အွန်လိုင်း ဖြစ်ရမည်။</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" အမည်ဖြင့် ဖိုင်တွဲ ရှိပြီးဖြစ်ပါသည်။ အခြားအမည်တစ်ခု ရွေးပါ။</translation>
@@ -297,7 +297,6 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ဖိုင်</translation>
 <translation id="457386861538956877">နောက်ထပ်...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> ကို ရွေးချယ်မှုသို့ ထည့်ထားသည်။</translation>
-<translation id="4582497162516204941">Linux (စမ်းသပ်ဆော့ဖ်ဝဲ) ဖြင့် ထည့်သွင်းခြင်း</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> အတွက် ရလဒ်များ ပြထားသည်</translation>
 <translation id="4598673198033263991">ဂျပန်ကီးဘုတ်ဖြင့် အက္ခရာနှင့် ကိန်းဂဏန်းများ</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးနေသည်</translation>

@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">Գիշերային ռեժիմ</translation>
 <translation id="2727175239389218057">Պատասխանել</translation>
 <translation id="2727977024730340865">Միացված է թույլ լիցքավորիչի: Մարտկոցի լիցքավորումը կարող է հուսալի չլինել:</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Դուք հիմա դուրս կգրվեք:</translation>
 <translation id="28232023175184696">Չհաջողվեց միանալ ինտերնետին։ Սեղմեք՝ նորից փորձելու համար:</translation>
@@ -563,6 +564,7 @@
 <translation id="6297287540776456956">Հատվածն ընտրեք ստիլուսի միջոցով</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" />՝ պտտված է <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Ձայնային</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> աշխատաշրջանը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="6376931439017688372">Bluetooth-ը միացված է</translation>
 <translation id="6381109794406942707">Սարքն ապակողպելու համար մուտքագրեք ձեր PIN կոդը։</translation>
 <translation id="639644700271529076">CAPS LOCK-ն անջատված է</translation>

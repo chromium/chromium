@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Latencia de HTTPS moi alta</translation>
 <translation id="1413240736185167732">Produciuse un erro: fallo no filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> xestiona este dispositivo e pode supervisar a túa actividade.</translation>
 <translation id="1478594628797167447">Escáner</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> xestiona este usuario, e pode axustar a súa configuración e supervisar a súa actividade de forma remota.</translation>
 <translation id="150962533380566081">O PUK non é válido.</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos)</translation>
 <translation id="1641857168437328880">Alimentador de documentos (a unha cara)</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">Detívose (esgotouse a tinta)</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Gardar en</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
 <translation id="4548483925627140043">Non se atopou o sinal</translation>
+<translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Para cancelar o traballo de impresión, preme Intro.</translation>
 <translation id="4646949265910132906">Conexión wifi segura</translation>
@@ -138,8 +142,10 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6766275201586212568">Produciuse un erro coas resolucións de DNS</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>
 <translation id="6839141349259399400">Non podes conectarte a ningún escáner?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
+<translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="7561454561030345039">O teu administrador xestiona esta acción</translation>

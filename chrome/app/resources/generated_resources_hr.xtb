@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Određuje učestalost kojom se zaslon ažurira</translation>
 <translation id="1061904396131502319">Ubrzo je vrijeme za pauzu</translation>
 <translation id="1067048845568873861">Izrađeno</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Ostale Googleove usluge</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Drugi program na vašem računalu dodao je proširenje koje može promijeniti Chromeov način rada.
@@ -931,7 +930,6 @@ U suprotnom se odjavite odmah da bi se promjene na računu odrazile na uređaju.
 Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link na svom uređaju.  Poslali smo vam e-poruku s uputama.</translation>
 <translation id="2040460856718599782">Ups! Nešto nije u redu s vašom autentifikacijom. Još jedanput provjerite svoje vjerodajnice za prijavu i pokušajte ponovo.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Imate jednu ugroženu zaporku}one{Imate # ugroženu zaporku}few{Imate # ugrožene zaporke}other{Imate # ugroženih zaporki}}</translation>
-<translation id="2040863272941698761">Postavljanje Linuxa</translation>
 <translation id="204497730941176055">Naziv predloška Microsoftovog certifikata</translation>
 <translation id="2045117674524495717">Pomoć za tipkovničke prečace</translation>
 <translation id="2045969484888636535">Nastavi blokirati kolačiće</translation>
@@ -1263,8 +1261,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2428510569851653187">Opišite što ste radili kada se kartica srušila</translation>
 <translation id="2428939361789119025">Isključite Wi-Fi</translation>
 <translation id="2431027948063157455">Učitavanje Google asistenta nije uspjelo, provjerite mrežnu vezu i pokušajte ponovo.</translation>
-<translation id="2431846145771260397">Jeste li sigurni da želite rezervirati disk fiksne veličine za Linux (Beta)?</translation>
-<translation id="2432753757290432042">Potrebno je ažurirati Linux (Beta)</translation>
 <translation id="2433452467737464329">Dodajte parametar upita u URL da biste automatski osvježili stranicu: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Prikaz</translation>
@@ -1979,6 +1975,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3264544094376351444">Font Sans-serif</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Zatvori prozor</translation>
+<translation id="3266022278425892773">Linuxovo razvojno okruženje</translation>
 <translation id="3266179261140759675">Onemogući zatvorenim web-lokacijama slanje i primanje podataka</translation>
 <translation id="3266274118485960573">U tijeku je sigurnosna provjera.</translation>
 <translation id="3267726687589094446">Nastavi dozvoljavati automatska preuzimanja više datoteka</translation>
@@ -2279,7 +2276,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3600051066689725006">Podaci o web-zahtjevu</translation>
 <translation id="3600792891314830896">Isključen je zvuk na web-lokacijama koje ga reproduciraju</translation>
 <translation id="360180734785106144">ponuditi nove značajke kad postanu dostupne</translation>
-<translation id="3602198818276948261">Vaš spremnik nije konfiguriran za podržavanje promjena veličine diska. Da biste prilagodili količinu prostora koji je rezerviran za Linux (Beta), izradite sigurnosnu kopiju i vratite je u novom spremniku.</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3603622770190368340">Dobivanje certifikata mreže</translation>
 <translation id="3604713164406837697">Promjena pozadinske slike</translation>
@@ -3404,6 +3400,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4925542575807923399">Administrator ovog računa zahtijeva da u sesiji s višestrukom prijavom ovaj račun bude prvi prijavljen.</translation>
 <translation id="4927753642311223124">Nema nikakvih obavijesti.</translation>
 <translation id="4929386379796360314">Odredišta ispisa</translation>
+<translation id="4930447554870711875">Razvojni programeri</translation>
 <translation id="4930714375720679147">Uključi</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933484234309072027">ugrađeno na URL <ph name="URL" /></translation>
@@ -3957,7 +3954,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="558918721941304263">Učitavanje aplikacija...</translation>
 <translation id="5592595402373377407">Još nije dostupno dovoljno podataka.</translation>
 <translation id="5595485650161345191">Uređivanje adrese</translation>
-<translation id="5595727715083333657">Vaš spremnik ne podržava promjenu veličine. Da biste prilagodili količinu prostora koji je unaprijed dodijeljen Linuxu (Beta), izradite sigurnosnu kopiju i vratite je u novom spremniku.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5600706100022181951">Za preuzimanje ažuriranja iskoristit će se <ph name="UPDATE_SIZE_MB" /> MB mobilnih podataka. Želite li nastaviti?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4209,7 +4205,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5893589697005440881">Dijelite datoteke s ljudima u blizini</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="5900302528761731119">Fotografija Google profila</translation>
-<translation id="5900358982890952556">Nadogradnja Linuxa (Beta)</translation>
 <translation id="5901494423252125310">Otvorena su vratašca pisača</translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5904614460720589786">Postavljanje aplikacije <ph name="APP_NAME" /> nije uspjelo zbog problema s konfiguracijom. Obratite se administratoru. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
@@ -4676,6 +4671,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6434309073475700221">Odbaci</translation>
 <translation id="6434325376267409267">Ažurirajte uređaj da biste mogli koristiti <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Pogledaj u web-trgovini</translation>
+<translation id="6438234780621650381">Vraćanje postavki na zadano</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – reprodukcija zvuka</translation>
 <translation id="6442187272350399447">Fenomenalan</translation>
 <translation id="6444070574980481588">Postavite datum i vrijeme</translation>
@@ -5389,7 +5385,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7284411326658527427">Svaka osoba može prilagoditi svoj račun i zadržati privatnost svojih podataka.</translation>
 <translation id="7287143125007575591">Pristup je odbijen.</translation>
 <translation id="7287411021188441799">Vratite zadanu pozadinu</translation>
-<translation id="7288013116963835700">Uklanjanje Linuxa za uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Otvori aplikaciju pozadine</translation>
 <translation id="7290242001003353852">Usluga prijave, koju hostira <ph name="SAML_DOMAIN" />, pristupa vašoj kameri.</translation>
@@ -5775,7 +5770,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7730683939467795481">Stranicu je promijenilo proširenje "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7732111077498238432">Mreža je kontrolirana pravilima</translation>
 <translation id="7737115349420013392">Uparivanje s uređajem "<ph name="DEVICE_NAME" />" ...</translation>
-<translation id="7737238973539693982">Brisanje Linuxa (Beta)</translation>
 <translation id="7737948071472253612">Nije dopuštena upotreba kamere</translation>
 <translation id="7740996059027112821">Standardno</translation>
 <translation id="7742706086992565332">Na određenim web-lokacijama možete postaviti razinu zumiranja</translation>
@@ -6245,7 +6239,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="825238165904109940">Uvijek prikaži cijele URL-ove</translation>
 <translation id="8252569384384439529">Prijenos...</translation>
 <translation id="8253198102038551905">Kliknite "+" za proširenje svojstava mreže</translation>
-<translation id="8254954272268479918">Isključi Linux (Beta)</translation>
 <translation id="8255451560461371599">Bez pozadine</translation>
 <translation id="8256319818471787266">Bobi</translation>
 <translation id="8257950718085972371">Nastavi blokirati pristup kameri</translation>
@@ -6983,7 +6976,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9088917181875854783">Potvrdite da je ova zaporka prikazana na uređaju "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Načini unosa</translation>
 <translation id="909108997331068008">Profil korisnika <ph name="EXISTING_USER" /> već je prijavljen na <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Preporučuje se sigurnosno kopiranje datoteka u slučaju nemogućnosti dovršetka nadogradnje. Pokretanje nadogradnje uzrokovat će isključivanje Linuxa (Beta). Prije nastavka spremite otvorene datoteke.</translation>
 <translation id="9094033019050270033">Ažuriraj zaporku</translation>
 <translation id="9094038138851891550">Korisničko ime nije važeće</translation>
 <translation id="9094982973264386462">Ukloni</translation>
@@ -7062,7 +7054,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9176476835295860688">Slanje podataka o upotrebi i dijagnostici. Ovaj uređaj trenutačno Googleu automatski šalje dijagnostičke podatke te podatke o upotrebi uređaja i aplikacija. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ovu <ph name="BEGIN_LINK1" />postavku<ph name="END_LINK1" /> zadao je vlasnik. Ako je uključena dodatna postavka Aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth uređaj povezan</translation>
 <translation id="9179524979050048593">Korisničko ime na zaslonu za prijavu</translation>
-<translation id="9179734824669616955">Postavite Linux (Beta) na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Taj postupak može potrajati nekoliko minuta. Pokreće se Linuxov spremnik.</translation>
 <translation id="9180380851667544951">Web-lokacija može dijeliti vaš zaslon</translation>
 <translation id="9186963452600581158">Prijavite se djetetovim Google računom</translation>
@@ -7103,7 +7094,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="93610034168535821">Ukupna pohrana koju upotrebljavaju web-lokacije:</translation>
 <translation id="936801553271523408">Podaci o dijagnozi sustava</translation>
 <translation id="93766956588638423">Popravi proširenje</translation>
-<translation id="938339467127511841">Linux (Beta) pohrana</translation>
 <translation id="938470336146445890">Instalirajte korisnički certifikat.</translation>
 <translation id="939252827960237676">Snimka zaslona nije spremljena</translation>
 <translation id="939519157834106403">SSID</translation>

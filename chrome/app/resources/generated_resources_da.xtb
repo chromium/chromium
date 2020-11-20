@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Fastlægger frekvensen for skærmopdateringer</translation>
 <translation id="1061904396131502319">Det er snart tid til en pause</translation>
 <translation id="1067048845568873861">Oprettet</translation>
-<translation id="1067291318998134776">Linux (beta)</translation>
 <translation id="1067922213147265141">Andre Google-tjenester</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Et andet program på din computer har tilføjet en udvidelse, som kan ændre måden, Chrome fungerer på.
@@ -930,7 +929,6 @@ Ellers skal du logge ud nu, så ændringerne på denne konto afspejles på enhed
 Du kan administrere indstillingerne for denne konto ved at installere Family Link-appen på din enhed.  Vi har sendt en mail med vejledning.</translation>
 <translation id="2040460856718599782">Ups! Noget gik galt under forsøget på at godkende dig. Kontrollér dine loginoplysninger, og prøv igen.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Du har 1 kompromitteret adgangskode}one{Du har # kompromitteret adgangskode}other{Du har # kompromitterede adgangskoder}}</translation>
-<translation id="2040863272941698761">Konfigurer Linux</translation>
 <translation id="204497730941176055">Navn på skabelon til Microsoft-certifikat</translation>
 <translation id="2045117674524495717">Hjælp til tastaturgenveje</translation>
 <translation id="2045969484888636535">Fortsæt med at blokere cookies</translation>
@@ -1262,8 +1260,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2428510569851653187">Beskriv, hvad du foretog dig, da fanen gik ned</translation>
 <translation id="2428939361789119025">Deaktiver Wi-Fi</translation>
 <translation id="2431027948063157455">Google Assistent kunne ikke indlæses. Tjek din netværksforbindelse, og prøv igen.</translation>
-<translation id="2431846145771260397">Er du sikker på, at du vil reservere en disk med fast størrelse til Linux (betaversion)?</translation>
-<translation id="2432753757290432042">Linux (beta) skal opdateres</translation>
 <translation id="2433452467737464329">Tilføj et forespørgselsparameter i webadressen for at opdatere siden automatisk: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Udseende</translation>
@@ -1978,6 +1974,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3264544094376351444">Sans-serif-skrifttype</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Luk vindue</translation>
+<translation id="3266022278425892773">Linux-udviklingsmiljø</translation>
 <translation id="3266179261140759675">Bloker websites, så de ikke kan sende og modtage data</translation>
 <translation id="3266274118485960573">Der udføres et sikkerhedstjek.</translation>
 <translation id="3267726687589094446">Fortsæt med at tillade automatiske downloads af flere filer</translation>
@@ -2278,7 +2275,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3600051066689725006">Oplysninger om webanmodning</translation>
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
 <translation id="360180734785106144">Tilbyde nye funktioner, efterhånden som de bliver tilgængelige</translation>
-<translation id="3602198818276948261">Din container er ikke konfigureret til at understøtte ændringer af diskstørrelsen. Du kan justere den mængde plads, der skal reserveres til Linux (beta), ved at sikkerhedskopiere og derefter gendanne i en ny container.</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3603622770190368340">Få fat i et netværkscertifikat</translation>
 <translation id="3604713164406837697">Skift baggrund</translation>
@@ -3403,6 +3399,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4925542575807923399">Kontoadministratoren kræver, at denne konto er den første konto, der logges ind på, i en session med samlet login fra flere konti.</translation>
 <translation id="4927753642311223124">Der er intet at se her, så du kan bare gå videre.</translation>
 <translation id="4929386379796360314">Udskriftsdestinationer</translation>
+<translation id="4930447554870711875">Udviklere</translation>
 <translation id="4930714375720679147">Aktivér</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4933484234309072027">indlejret på <ph name="URL" /></translation>
@@ -3956,7 +3953,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="558918721941304263">Indlæser apps...</translation>
 <translation id="5592595402373377407">Der er ikke nok data til rådighed endnu.</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
-<translation id="5595727715083333657">Din container understøtter ikke størrelsesjusteringer. Du kan justere den mængde plads, der er forudallokeret til Linux (beta), ved at sikkerhedskopiere og derefter gendanne i en ny container.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5600706100022181951">Opdateringen downloades ved brug af <ph name="UPDATE_SIZE_MB" /> MB mobildata. Vil du fortsætte?</translation>
 <translation id="5601503069213153581">Pinkode</translation>
@@ -4208,7 +4204,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5893589697005440881">Del filer med andre omkring dig</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5900302528761731119">Google-profilbillede</translation>
-<translation id="5900358982890952556">Opgrader Linux (beta)</translation>
 <translation id="5901494423252125310">Lågen på printeren er åben</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> kunne ikke konfigureres, da der opstod et konfigurationsproblem. Kontakt din administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
@@ -4676,6 +4671,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6434309073475700221">Kassér</translation>
 <translation id="6434325376267409267">Din enhed skal opdateres, før du kan bruge <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Vis i Webshop</translation>
+<translation id="6438234780621650381">Nulstil indstillinger</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – der afspilles lyd</translation>
 <translation id="6442187272350399447">Supernice</translation>
 <translation id="6444070574980481588">Angiv dato og klokkeslæt</translation>
@@ -5389,7 +5385,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7284411326658527427">Hver person kan tilpasse sin konto og holde sine data private.</translation>
 <translation id="7287143125007575591">Adgang nægtet.</translation>
 <translation id="7287411021188441799">Gendan standardbaggrund</translation>
-<translation id="7288013116963835700">Fjern Linux til <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Åbn baggrundsappen</translation>
 <translation id="7290242001003353852">Denne logintjeneste, som hostes af <ph name="SAML_DOMAIN" />, har adgang til dit kamera.</translation>
@@ -5775,7 +5770,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7730683939467795481">Denne side blev ændret af udvidelsen "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7732111077498238432">Netværket er underlagt politikker</translation>
 <translation id="7737115349420013392">Parrer med "<ph name="DEVICE_NAME" />"...</translation>
-<translation id="7737238973539693982">Fjern Linux (beta)</translation>
 <translation id="7737948071472253612">Har ikke tilladelse til at bruge dit kamera</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Du kan angive, hvor meget der skal zoomes ind eller ud på bestemte websites</translation>
@@ -6244,7 +6238,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="825238165904109940">Vis altid komplette webadresser</translation>
 <translation id="8252569384384439529">Uploader…</translation>
 <translation id="8253198102038551905">Klik på "+" for at få vist netværksegenskaber</translation>
-<translation id="8254954272268479918">Luk Linux (beta)</translation>
 <translation id="8255451560461371599">Ingen baggrund</translation>
 <translation id="8256319818471787266">Fido</translation>
 <translation id="8257950718085972371">Fortsæt blokering af kameraadgang</translation>
@@ -6982,7 +6975,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9088917181875854783">Bekræft, at denne adgangsnøgle vises på "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Inputmetoder</translation>
 <translation id="909108997331068008">Profilen tilhørende <ph name="EXISTING_USER" /> er allerede logget ind på <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Det anbefales at sikkerhedskopiere filer, i tilfælde af at opgraderingen ikke kan fuldføres. Når du starter opgraderingen, lukker Linux (beta) ned. Gem åbne filer, før du fortsætter.</translation>
 <translation id="9094033019050270033">Opdater adgangskoden</translation>
 <translation id="9094038138851891550">Brugernavnet er ugyldigt</translation>
 <translation id="9094982973264386462">Fjern</translation>
@@ -7061,7 +7053,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9176476835295860688">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne <ph name="BEGIN_LINK1" />indstilling<ph name="END_LINK1" /> håndhæves af ejeren. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – en Bluetooth-enhed er forbundet</translation>
 <translation id="9179524979050048593">Brugernavn på loginskærm</translation>
-<translation id="9179734824669616955">Konfigurer Linux (beta) på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Denne proces kan tage et par minutter. Linux-containeren startes.</translation>
 <translation id="9180380851667544951">Websitet kan dele din skærm</translation>
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
@@ -7102,7 +7093,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="93610034168535821">Samlet lagerplads, der anvendes af websites:</translation>
 <translation id="936801553271523408">Data til systemdiagnosticering</translation>
 <translation id="93766956588638423">Reparer udvidelsen</translation>
-<translation id="938339467127511841">Lagerplads i Linux (beta)</translation>
 <translation id="938470336146445890">Installer et brugercertifikat.</translation>
 <translation id="939252827960237676">Screenshottet kunne ikke gemmes</translation>
 <translation id="939519157834106403">SSID</translation>

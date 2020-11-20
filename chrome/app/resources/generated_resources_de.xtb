@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Bestimmt, wie oft das sichtbare Bild auf dem Bildschirm neu aufgebaut wird</translation>
 <translation id="1061904396131502319">Bald ist es Zeit für eine Pause</translation>
 <translation id="1067048845568873861">Erstellt</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Weitere Google-Dienste</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Ein anderes Programm auf Ihrem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
@@ -925,7 +924,6 @@ Falls nicht, können Sie sich jetzt abmelden, damit die Änderungen an diesem Ko
 Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Einstellungen dieses Kontos verwalten.  Eine entsprechende Anleitung haben wir Ihnen per E-Mail gesendet.</translation>
 <translation id="2040460856718599782">Hoppla! Bei der Authentifizierung ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Sie haben 1 gehacktes Passwort}other{Sie haben # gehackte Passwörter}}</translation>
-<translation id="2040863272941698761">Linux einrichten</translation>
 <translation id="204497730941176055">Name der Microsoft-Zertifikatsvorlage</translation>
 <translation id="2045117674524495717">Assistent für Tastenkombinationen</translation>
 <translation id="2045969484888636535">Cookies weiterhin blockieren</translation>
@@ -1256,8 +1254,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2428510569851653187">Beschreiben Sie, was Sie beim Absturz des Tabs getan haben</translation>
 <translation id="2428939361789119025">WLAN deaktivieren</translation>
 <translation id="2431027948063157455">Google Assistant konnte nicht geladen werden. Überprüfen Sie Ihre Netzverbindung und versuchen Sie es noch einmal.</translation>
-<translation id="2431846145771260397">Sind Sie sicher, dass Sie ein Laufwerk mit einer festen Größe für Linux (Beta) reservieren möchten?</translation>
-<translation id="2432753757290432042">Linux (Beta)-Update erforderlich</translation>
 <translation id="2433452467737464329">Fügen Sie einen Anfrageparameter zur URL hinzu, damit die Seite automatisch aktualisiert wird: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Darstellung</translation>
@@ -1972,6 +1968,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3264544094376351444">Schriftart Sans-Serif</translation>
 <translation id="3264582393905923483">Kontext</translation>
 <translation id="3265459715026181080">Fenster schließen</translation>
+<translation id="3266022278425892773">Linux-Entwicklungsumgebung</translation>
 <translation id="3266179261140759675">Verhindern, dass geschlossene Websites Daten senden und empfangen</translation>
 <translation id="3266274118485960573">Der Sicherheitscheck wird ausgeführt.</translation>
 <translation id="3267726687589094446">Weiterhin automatisches Herunterladen mehrerer Dateien zulassen</translation>
@@ -2270,7 +2267,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3600051066689725006">Webanfrageinformationen</translation>
 <translation id="3600792891314830896">Websites stummschalten, die Ton wiedergeben</translation>
 <translation id="360180734785106144">Neue Funktionen anbieten, sobald sie verfügbar sind</translation>
-<translation id="3602198818276948261">Ihr Container unterstützt keine Anpassungen der Laufwerkgröße. Wenn Sie den Speicherplatz anpassen möchten, der für Linux (Beta) reserviert wurde, machen Sie eine Sicherungskopie und stellen Sie die Anwendung in einem neuen Container wieder her.</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3603622770190368340">Netzwerkzertifikat anfordern</translation>
 <translation id="3604713164406837697">Hintergrund ändern</translation>
@@ -3394,6 +3390,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4925542575807923399">Der Administrator dieses Kontos hat festgelegt, dass dieses Konto in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein muss.</translation>
 <translation id="4927753642311223124">Sie haben keine Benachrichtigungen.</translation>
 <translation id="4929386379796360314">Druckziele</translation>
+<translation id="4930447554870711875">Entwickler</translation>
 <translation id="4930714375720679147">Aktivieren</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933484234309072027">auf <ph name="URL" /> eingebettet</translation>
@@ -3946,7 +3943,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="558918721941304263">Apps werden geladen...</translation>
 <translation id="5592595402373377407">Noch nicht genügend Daten vorhanden</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
-<translation id="5595727715083333657">Ihr Container unterstützt keine Größenanpassung. Wenn Sie den Speicherplatz anpassen möchten, der Linux (Beta) zugewiesen wurde, machen Sie einen Back-up und stellen Sie ihn in einem neuen Container wieder her.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5600706100022181951">Der Download des Updates verbraucht <ph name="UPDATE_SIZE_MB" /> MB an mobilen Daten. Möchten Sie fortfahren?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4198,7 +4194,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5893589697005440881">Teilen Sie Dateien ganz einfach mit Menschen in der Nähe</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5900302528761731119">Google Profile-Foto</translation>
-<translation id="5900358982890952556">Linux (Beta) aktualisieren</translation>
 <translation id="5901494423252125310">Druckerklappe offen</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wenden Sie sich an Ihren Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -4664,6 +4659,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6434325376267409267">Ihr Gerät muss aktualisiert werden, bevor Sie <ph name="APP_NAME" /> verwenden können.</translation>
 <translation id="6436164536244065364">Im Web Store ansehen</translation>
+<translation id="6438234780621650381">Einstellungen zurücksetzen</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Audiowiedergabe</translation>
 <translation id="6442187272350399447">Smiley</translation>
 <translation id="6444070574980481588">Datum und Uhrzeit festlegen</translation>
@@ -5375,7 +5371,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7284411326658527427">Jeder Nutzer kann sein Konto personalisieren. Dabei bleiben die Daten der einzelnen Nutzer privat.</translation>
 <translation id="7287143125007575591">Zugriff verweigert</translation>
 <translation id="7287411021188441799">Standardhintergrund wiederherstellen</translation>
-<translation id="7288013116963835700">Linux für <ph name="DEVICE_TYPE" /> entfernen</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Hintergrund-App öffnen</translation>
 <translation id="7290242001003353852">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet und greift auf Ihre Kamera zu.</translation>
@@ -5761,7 +5756,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7730683939467795481">Diese Seite wurde durch die Erweiterung "<ph name="EXTENSION_NAME" />" geändert.</translation>
 <translation id="7732111077498238432">Das Netzwerk ist richtliniengesteuert</translation>
 <translation id="7737115349420013392">Wird mit "<ph name="DEVICE_NAME" />" gekoppelt…</translation>
-<translation id="7737238973539693982">Linux (Beta) löschen</translation>
 <translation id="7737948071472253612">Dürfen meine Kamera nicht verwenden</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Sie können bei bestimmten Websites die maximale oder minimale Vergrößerungsstufe für die Websitedarstellung festlegen</translation>
@@ -6230,7 +6224,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="825238165904109940">Immer vollständige URLs anzeigen</translation>
 <translation id="8252569384384439529">Wird hochgeladen…</translation>
 <translation id="8253198102038551905">Auf "+" klicken, um die Netzwerkeigenschaften anzuzeigen</translation>
-<translation id="8254954272268479918">Linux (Beta) herunterfahren</translation>
 <translation id="8255451560461371599">Kein Hintergrund</translation>
 <translation id="8256319818471787266">Bello</translation>
 <translation id="8257950718085972371">Zugriff auf die Kamera weiter blockieren</translation>
@@ -6964,7 +6957,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="9088917181875854783">Bitte bestätigen Sie, dass dieser Zugangscode auf "<ph name="DEVICE_NAME" />" angezeigt wird:</translation>
 <translation id="9089416786594320554">Eingabemethoden</translation>
 <translation id="909108997331068008">Das Profil von <ph name="EXISTING_USER" /> ist bereits in <ph name="NEW_USER" /> angemeldet</translation>
-<translation id="9093429538970210897">Wir empfehlen, vor diesem Update Dateien zu sichern, für den Fall, dass es nicht abgeschlossen werden kann. Beim Start des Upgrades wird Linux (Beta) heruntergefahren. Speichern Sie bitte die geöffneten Dateien, bevor Sie fortfahren.</translation>
 <translation id="9094033019050270033">Passwort aktualisieren</translation>
 <translation id="9094038138851891550">Nutzername ungültig</translation>
 <translation id="9094982973264386462">Entfernen</translation>
@@ -7043,7 +7035,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="9176476835295860688">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten eventuell in Ihrem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-Gerät verbunden</translation>
 <translation id="9179524979050048593">Nutzername auf Anmeldebildschirm</translation>
-<translation id="9179734824669616955">Linux (Beta) auf Ihrem <ph name="DEVICE_TYPE" /> einrichten</translation>
 <translation id="9180281769944411366">Der Vorgang kann einige Minuten dauern. Linux-Container wird gestartet.</translation>
 <translation id="9180380851667544951">Die Website kann Ihren Bildschirm freigeben</translation>
 <translation id="9186963452600581158">Mit dem Google-Konto eines Kindes anmelden</translation>
@@ -7084,7 +7075,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="93610034168535821">Von Websites belegter Speicherplatz insgesamt:</translation>
 <translation id="936801553271523408">Fehlerberichte des Systems</translation>
 <translation id="93766956588638423">Erweiterung reparieren</translation>
-<translation id="938339467127511841">Linux-Speicher (Beta)</translation>
 <translation id="938470336146445890">Installieren Sie ein Nutzerzertifikat.</translation>
 <translation id="939252827960237676">Screenshot konnte nicht gespeichert werden.</translation>
 <translation id="939519157834106403">SSID</translation>

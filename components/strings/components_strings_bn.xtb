@@ -306,6 +306,7 @@
 <translation id="2102495993840063010">Android অ্যাপ্লিকেশানগুলি</translation>
 <translation id="2107021941795971877">প্রিন্ট সংক্রান্ত সহায়তা</translation>
 <translation id="2108755909498034140">আপনার কম্পিউটার পুনরায় চালু করুন</translation>
+<translation id="2111166930115883695">গেম খেলতে, স্পেসবার প্রেস করুন</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">কার্ড</translation>
 <translation id="2114841414352855701">এড়িয়ে যাওয়া হয়েছে কারণ এটি <ph name="POLICY_NAME" />-দ্বারা ওভাররাইড করা হয়েছিল৷</translation>
@@ -522,6 +523,7 @@
 <translation id="3010559122411665027">তালিকার এন্ট্রি " <ph name="ENTRY_INDEX" /> ": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">স্বয়ংক্রিয়ভাবে ব্লক করা হয়েছে</translation>
 <translation id="3016780570757425217">আপনার লোকেশন জানুন</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, সাজেশনটি সরাতে Tab প্রেস করার পর Enter প্রেস করুন।</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">নীতির ভুল প্রকার</translation>
 <translation id="3037605927509011580">ইস!</translation>
@@ -763,6 +765,7 @@
 <translation id="4056223980640387499">সেপিয়া</translation>
 <translation id="4058922952496707368">কী "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">স্ক্রিন ক্যাপচারের সুবিধা আবার চালু করা হয়েছে।</translation>
 <translation id="4067947977115446013">সঠিক ঠিকানা যোগ করুন</translation>
 <translation id="4072486802667267160">আপনার অর্ডার প্রক্রিয়া করার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</translation>
 <translation id="4075732493274867456">ক্লায়েন্ট ও সার্ভারটি কোনো অভিন্ন SSL প্রোটোকল সংস্করণ বা সাইফার স্যুট সমর্থন করে না।</translation>
@@ -846,6 +849,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> পৃষ্ঠার থাম্বনেল</translation>
 <translation id="42981349822642051">প্রসারিত করুন</translation>
 <translation id="4300675098767811073">ডানদিকে মাল্টিপল পাঞ্চ</translation>
+<translation id="4302514097724775343">ডাইনোসর গেম খেলতে, ট্যাপ করুন</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">আপনার ফাইল অ্যাক্সেস করা যায়নি</translation>
 <translation id="4305817255990598646">পাল্টান</translation>
@@ -1257,6 +1261,7 @@
 <translation id="5963413905009737549">বিভাগ</translation>
 <translation id="5967592137238574583">পরিচিতির তথ্য সম্পাদনা করুন</translation>
 <translation id="5967867314010545767">ইতিহাস থেকে সরান</translation>
+<translation id="5968793460449681917">প্রতি ভিজিটে প্রয়োজন</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1470,6 +1475,7 @@
 <translation id="6895330447102777224">আপনার কার্ডটি নিশ্চিত করা হয়েছে</translation>
 <translation id="6897140037006041989">ব্যবহারকারী এজেন্ট</translation>
 <translation id="6898699227549475383">সংস্থা (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" />-কে অনুমতি দিন:</translation>
 <translation id="6910240653697687763">আপনার MIDI ডিভাইসে <ph name="URL" /> পূর্ণ নিয়ন্ত্রণ পেতে চায়</translation>
 <translation id="6915804003454593391">ব্যবহারকারী:</translation>
 <translation id="6934672428414710184">এই নাম আপনার Google অ্যাকাউন্ট থেকে নেওয়া</translation>
@@ -1905,6 +1911,7 @@
 <translation id="8574899947864779331">কার্ড আরও দ্রুত কনফার্ম করতে টাচ আইডি ব্যবহার করুন</translation>
 <translation id="858637041960032120">ফোননম্বর জুড়ুন</translation>
 <translation id="8589998999637048520">সেরা কোয়ালিটি</translation>
+<translation id="8600271352425265729">শুধুমাত্র এই সময়ে</translation>
 <translation id="860043288473659153">কার্ডধারকের নাম</translation>
 <translation id="8606726445206553943">আপনার MIDI ডিভাইসসমূহ ব্যবহার করুন</translation>
 <translation id="8612761427948161954">হাই <ph name="USERNAME" />,
@@ -1929,6 +1936,7 @@
 <translation id="8703575177326907206"><ph name="DOMAIN" />-এ আপনার কানেকশন এনক্রিপ্ট হয় নি৷</translation>
 <translation id="8705331520020532516">ক্রমিক সংখ্যা</translation>
 <translation id="8710842507289500830">ফন্ট স্টাইল</translation>
+<translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8718314106902482036">পেমেন্ট করা যায়নি</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, সার্চ সাজেশন</translation>
 <translation id="8719528812645237045">উপরে মাল্টিপল পাঞ্চ</translation>
@@ -2062,6 +2070,7 @@
 <translation id="939736085109172342">নতুন ফোল্ডার</translation>
 <translation id="945855313015696284">নিচে দেওয়া তথ্য পরীক্ষা করুন এবং কোনও ভুল কার্ড থাকলে তা মুছে ফেলুন</translation>
 <translation id="950736567201356821">উপরে তিনটি পাঞ্চ</translation>
+<translation id="951941430552851965">আপনার স্ক্রিনে কন্টেন্ট থাকার জন্য অ্যাডমিনিস্ট্রেটর স্ক্রিন ক্যাপচারের সুবিধা পজ করে দিয়েছেন।</translation>
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
 <translation id="962484866189421427">এই কন্টেন্টটি প্রতারণামূলক অ্যাপ ইনস্টল করে দিতে পারে যেগুলি অন্যান্য আপের থেকে আলাদা করা যায় না অথবা যেগুলি এমন ডেটা সংগ্রহ করে যা দিয়ে আপনার উপরে নজর রাখা যাবে। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">অফিসিয়াল বিল্ড</translation>

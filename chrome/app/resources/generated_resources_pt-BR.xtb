@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Determina a frequência com que a tela é atualizada</translation>
 <translation id="1061904396131502319">Está quase na hora de fazer uma pausa</translation>
 <translation id="1067048845568873861">Criado em</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Outros serviços do Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Outro programa no seu computador adicionou uma extensão que pode mudar a forma como o Google Chrome funciona.
@@ -929,7 +928,6 @@ Caso contrário, saia agora para que as alterações na conta sejam aplicadas ne
 Para gerenciar as configurações dessa conta, instale o app Family Link no seu dispositivo.  Enviamos instruções para você por e-mail.</translation>
 <translation id="2040460856718599782">Epa! Ocorreu um erro na tentativa de autenticação. Verifique suas credenciais de login e tente novamente.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Você tem 1 senha comprometida}one{Você tem # senha comprometida}other{Você tem # senhas comprometidas}}</translation>
-<translation id="2040863272941698761">Configurar o Linux</translation>
 <translation id="204497730941176055">Nome do modelo de certificado da Microsoft</translation>
 <translation id="2045117674524495717">Assistente de atalhos do teclado</translation>
 <translation id="2045969484888636535">Continuar bloqueando cookies</translation>
@@ -1261,8 +1259,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2428510569851653187">Descrever o que você estava fazendo quando a guia travou</translation>
 <translation id="2428939361789119025">Desativar o Wi-Fi</translation>
 <translation id="2431027948063157455">Não foi possível carregar o Google Assistente. Verifique sua conexão de rede e tente novamente.</translation>
-<translation id="2431846145771260397">Tem certeza de que quer reservar um disco de tamanho fixo no Linux (Beta)?</translation>
-<translation id="2432753757290432042">Atualização do Linux (Beta) obrigatória</translation>
 <translation id="2433452467737464329">Adicione um parâmetro de consulta ao URL para atualizar automaticamente a página: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Aparência</translation>
@@ -1977,6 +1973,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3264544094376351444">Fonte Sans-Serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Fechar janela</translation>
+<translation id="3266022278425892773">Ambiente para desenvolvedores do Linux</translation>
 <translation id="3266179261140759675">Impedir que sites fechados enviem e recebam dados</translation>
 <translation id="3266274118485960573">A "confirmação de segurança" está sendo executada.</translation>
 <translation id="3267726687589094446">Continuar permitindo download automático de vários arquivos</translation>
@@ -2276,7 +2273,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3600051066689725006">Informações sobre a solicitação da Web</translation>
 <translation id="3600792891314830896">Silenciar sites com áudio</translation>
 <translation id="360180734785106144">Oferecer novos recursos à medida que sejam disponibilizados</translation>
-<translation id="3602198818276948261">A configuração do seu contêiner não é compatível com o redimensionamento de disco. Para ajustar a quantidade de espaço reservada para o Linux (Beta), faça backup e restaure-o em um novo contêiner.</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
 <translation id="3604713164406837697">Mudar plano de fundo</translation>
@@ -3400,6 +3396,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4925542575807923399">O administrador dessa conta exige que ela seja a primeira conta a fazer o login em uma sessão de login múltiplo.</translation>
 <translation id="4927753642311223124">Nada para ver aqui, siga em frente.</translation>
 <translation id="4929386379796360314">Destinos de impressão</translation>
+<translation id="4930447554870711875">Desenvolvedores</translation>
 <translation id="4930714375720679147">Ativar</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933484234309072027">incorporado em <ph name="URL" /></translation>
@@ -3952,7 +3949,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="558918721941304263">Carregando apps…</translation>
 <translation id="5592595402373377407">Ainda não há dados suficientes.</translation>
 <translation id="5595485650161345191">Editar endereço</translation>
-<translation id="5595727715083333657">Seu contêiner não é compatível com redimensionamento. Para ajustar a quantidade de espaço pré-alocada para o Linux (Beta), faça backup e restaure em um novo contêiner.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5600706100022181951">O download da atualização será feito com <ph name="UPDATE_SIZE_MB" /> MB de dados móveis. Quer continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4205,7 +4201,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5893589697005440881">Compartilhe arquivos com pessoas perto de você</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5900302528761731119">Foto do perfil do Google</translation>
-<translation id="5900358982890952556">Fazer upgrade do Linux (Beta)</translation>
 <translation id="5901494423252125310">A porta da impressora está aberta</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5904614460720589786">Não foi possível definir o app <ph name="APP_NAME" /> devido a um problema de configuração. Entre em contato com o administrador. Código do erro: <ph name="ERROR_CODE" />.</translation>
@@ -4672,6 +4667,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">O app <ph name="APP_NAME" /> requer a atualização do dispositivo.</translation>
 <translation id="6436164536244065364">Visualizar na Chrome Web Store</translation>
+<translation id="6438234780621650381">Redefinir configurações</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Reprodução de áudio</translation>
 <translation id="6442187272350399447">Simpatia</translation>
 <translation id="6444070574980481588">Definir data e hora</translation>
@@ -5383,7 +5379,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7284411326658527427">Cada pessoa pode personalizar a própria conta e manter os dados privados.</translation>
 <translation id="7287143125007575591">Acesso negado.</translation>
 <translation id="7287411021188441799">Restaurar plano de fundo padrão</translation>
-<translation id="7288013116963835700">Remover Linux para <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Ativa o app de planos de fundo</translation>
 <translation id="7290242001003353852">Este serviço de login, hospedado por <ph name="SAML_DOMAIN" />, está acessando sua câmara.</translation>
@@ -5769,7 +5764,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7730683939467795481">Esta página foi mudada pela extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="7732111077498238432">A rede é controlada por política</translation>
 <translation id="7737115349420013392">Pareando com "<ph name="DEVICE_NAME" />"…</translation>
-<translation id="7737238973539693982">Excluir o Linux (Beta)</translation>
 <translation id="7737948071472253612">Bloquear o uso da câmera</translation>
 <translation id="7740996059027112821">Padrão</translation>
 <translation id="7742706086992565332">É possível definir o nível de zoom em alguns sites</translation>
@@ -6239,7 +6233,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="825238165904109940">Sempre mostrar URLs completos</translation>
 <translation id="8252569384384439529">Fazendo upload…</translation>
 <translation id="8253198102038551905">Clique em "+" para ver as propriedades da rede</translation>
-<translation id="8254954272268479918">Desligar o Linux (Beta)</translation>
 <translation id="8255451560461371599">Sem plano de fundo</translation>
 <translation id="8256319818471787266">Totó</translation>
 <translation id="8257950718085972371">Continuar bloqueando o acesso à câmera</translation>
@@ -6974,7 +6967,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9088917181875854783">Confirme se esta senha está sendo mostrada em "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="909108997331068008">O perfil de <ph name="EXISTING_USER" /> já está conectado a <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">O backup de arquivos é recomendado quando não é possível concluir o upgrade. O início do upgrade faz com que o Linux (Beta) seja desligado. Salve os arquivos abertos antes de continuar.</translation>
 <translation id="9094033019050270033">Atualizar senha</translation>
 <translation id="9094038138851891550">Nome de usuário inválido</translation>
 <translation id="9094982973264386462">Remover</translation>
@@ -7053,7 +7045,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9176476835295860688">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Essa <ph name="BEGIN_LINK1" />configuração<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Dispositivo Bluetooth conectado</translation>
 <translation id="9179524979050048593">Nome de usuário na tela de login</translation>
-<translation id="9179734824669616955">Configurar o Linux (Beta) no <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">O processo pode levar alguns minutos. Iniciando o contêiner Linux.</translation>
 <translation id="9180380851667544951">O site pode compartilhar sua tela</translation>
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>
@@ -7094,7 +7085,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="93610034168535821">Armazenamento total usado pelos sites:</translation>
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensão</translation>
-<translation id="938339467127511841">Armazenamento no Linux (Beta)</translation>
 <translation id="938470336146445890">Instale um certificado do usuário.</translation>
 <translation id="939252827960237676">Falha ao salvar a captura de tela</translation>
 <translation id="939519157834106403">SSID</translation>

@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Файл <ph name="FILE_NAME" /> не завантажено через проблеми із сервером.</translation>
 <translation id="1506061864768559482">Пошукова система</translation>
-<translation id="151267239139452619">Додати в завантаження</translation>
 <translation id="1513352483775369820">Закладки й історія веб-пошуку</translation>
 <translation id="1513858653616922153">Видалити пароль</translation>
 <translation id="1521774566618522728">У мережі сьогодні</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# год}one{# год}few{# год}many{# год}other{# год}}</translation>
 <translation id="4045764304651014138">Дані про використання</translation>
 <translation id="4056223980640387499">Сепія</translation>
-<translation id="4057643060762047384">Куди додати</translation>
 <translation id="4060598801229743805">Панель інструментів розташовано вгорі екрана</translation>
 <translation id="4062305924942672200">Правова інформація</translation>
 <translation id="4084682180776658562">Закладка</translation>
@@ -708,7 +706,7 @@
 <translation id="5982307838673692400">Відкрити анонімну вкладку</translation>
 <translation id="6000066717592683814">Залишити Google</translation>
 <translation id="6005538289190791541">Запропонований пароль</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Ви маєте <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> сторінку}one{Ви маєте <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінку}few{Ви маєте <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}many{Ви маєте <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінок}other{Ви маєте <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}}</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> сторінка}one{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінка}few{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}many{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінок}other{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}}</translation>
 <translation id="6014293228235665243">Непрочитані</translation>
 <translation id="6036057147555329831">Зайвий модуль ICU</translation>
 <translation id="6039379616847168523">Перейти до наступної вкладки</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">Вийти й вимкнути синхронізацію</translation>
 <translation id="6312687380483398334">Веб-додатки (тихий режим)</translation>
 <translation id="6316139424528454185">Версія Android несумісна</translation>
-<translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6324034347079777476">Синхронізацію системи Android вимкнено</translation>
 <translation id="6333140779060797560">Надіслати через <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифрування</translation>

@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Determina a frequência de atualização do ecrã</translation>
 <translation id="1061904396131502319">Está quase na altura de fazer uma pausa</translation>
 <translation id="1067048845568873861">Data da criação</translation>
-<translation id="1067291318998134776">Linux (beta)</translation>
 <translation id="1067922213147265141">Outros serviços Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Outro programa no computador adicionou uma extensão que pode alterar o funcionamento do Chrome.
@@ -929,7 +928,6 @@ Caso contrário, termine sessão agora para que as alterações efetuadas nesta 
 Pode gerir as definições desta conta ao instalar a aplicação Family Link no seu dispositivo.  Enviámos-lhe instruções por email.</translation>
 <translation id="2040460856718599782">Ups! Ocorreu um erro ao tentar autenticá-lo. Verifique bem as suas credenciais de início de sessão e tente novamente.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Tem 1 palavra-passe comprometida}other{Tem # palavras-passe comprometidas}}</translation>
-<translation id="2040863272941698761">Configurar Linux</translation>
 <translation id="204497730941176055">Nome do modelo de certificado Microsoft</translation>
 <translation id="2045117674524495717">Ajuda dos atalhos de teclado</translation>
 <translation id="2045969484888636535">Continuar a bloquear cookies</translation>
@@ -1260,8 +1258,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2428510569851653187">Descreva o que estava a fazer quando o separador falhou</translation>
 <translation id="2428939361789119025">Desligar o Wi-Fi</translation>
 <translation id="2431027948063157455">Não foi possível carregar o Assistente Google. Verifique a sua ligação à rede e tente novamente.</translation>
-<translation id="2431846145771260397">Tem a certeza de que pretende reservar um disco de tamanho fixo para o Linux (beta)?</translation>
-<translation id="2432753757290432042">É necessária a atualização do Linux (Beta).</translation>
 <translation id="2433452467737464329">Adicione um parâmetro de consulta ao URL para atualizar automaticamente a página: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /> e <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Aspeto</translation>
@@ -1977,6 +1973,7 @@ Pretende pará-lo?</translation>
 <translation id="3264544094376351444">Tipo de letra Sans-Serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Fechar janela</translation>
+<translation id="3266022278425892773">Ambiente de programação Linux</translation>
 <translation id="3266179261140759675">Impedir que os sites fechados enviem e recebam dados</translation>
 <translation id="3266274118485960573">A verificação de segurança está a ser executada.</translation>
 <translation id="3267726687589094446">Continuar a permitir transferências automáticas de vários ficheiros</translation>
@@ -2277,7 +2274,6 @@ Pretende pará-lo?</translation>
 <translation id="3600051066689725006">Informações de pedido da Web</translation>
 <translation id="3600792891314830896">Desativar o som dos sites que reproduzem som</translation>
 <translation id="360180734785106144">Disponibilizar novas funcionalidades à medida que ficam disponíveis</translation>
-<translation id="3602198818276948261">O seu contentor não está configurado para suportar redimensionamentos de discos. Para ajustar a quantidade de espaço reservada para o Linux (beta), faça uma cópia de segurança e, em seguida, restaure para um novo contentor.</translation>
 <translation id="3602290021589620013">Pré-visualizar</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
 <translation id="3604713164406837697">Alterar imagem de fundo</translation>
@@ -3402,6 +3398,7 @@ Pretende pará-lo?</translation>
 <translation id="4925542575807923399">O gestor para esta conta requer que esta conta seja a primeira conta com sessão iniciada num início de sessão integrado.</translation>
 <translation id="4927753642311223124">Nada de novo a apresentar por aqui.</translation>
 <translation id="4929386379796360314">Destinos de impressão</translation>
+<translation id="4930447554870711875">Programadores</translation>
 <translation id="4930714375720679147">Ativar</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933484234309072027">incorporada em <ph name="URL" /></translation>
@@ -3955,7 +3952,6 @@ Pretende pará-lo?</translation>
 <translation id="558918721941304263">A carregar aplicações…</translation>
 <translation id="5592595402373377407">Ainda não estão disponíveis dados suficientes.</translation>
 <translation id="5595485650161345191">Editar morada</translation>
-<translation id="5595727715083333657">O seu contentor não suporta o redimensionamento. Para ajustar a quantidade de espaço que é pré-atribuída ao Linux (beta), faça uma cópia de segurança e, em seguida, restaure para um novo contentor.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5600706100022181951">A atualização será transferida e irá utilizar <ph name="UPDATE_SIZE_MB" /> MB de dados móveis. Pretende continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4208,7 +4204,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5893589697005440881">Partilhe ficheiros com pessoas perto de si.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5900302528761731119">Fotografia do Perfil do Google</translation>
-<translation id="5900358982890952556">Atualize o Linux (Beta)</translation>
 <translation id="5901494423252125310">Porta da impressora aberta</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5904614460720589786">Não foi possível configurar a app <ph name="APP_NAME" /> devido a um problema na configuração. Contacte o seu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
@@ -4675,6 +4670,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6434309073475700221">Rejeitar</translation>
 <translation id="6434325376267409267">O seu dispositivo tem de ser atualizado antes de poder utilizar a app <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Ver na Web Store</translation>
+<translation id="6438234780621650381">Repor definições</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – áudio em reprodução</translation>
 <translation id="6442187272350399447">Fantástico</translation>
 <translation id="6444070574980481588">Definir data e hora</translation>
@@ -5388,7 +5384,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7284411326658527427">Cada pessoa pode personalizar a respetiva conta e manter os dados privados.</translation>
 <translation id="7287143125007575591">Acesso negado.</translation>
 <translation id="7287411021188441799">Restaurar fundo predefinido</translation>
-<translation id="7288013116963835700">Remover o Linux de <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> ppp</translation>
 <translation id="7289225569524511578">Abrir a aplicação da imagem de fundo</translation>
 <translation id="7290242001003353852">Este serviço de início de sessão, alojado por <ph name="SAML_DOMAIN" />, está a aceder à sua câmara.</translation>
@@ -5774,7 +5769,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7730683939467795481">Esta página foi alterada pela extensão "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7732111077498238432">A rede é controlada por políticas.</translation>
 <translation id="7737115349420013392">A sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"…</translation>
-<translation id="7737238973539693982">Eliminar o Linux (Beta)</translation>
 <translation id="7737948071472253612">Sem autorização para utilizar a sua câmara</translation>
 <translation id="7740996059027112821">Padrão</translation>
 <translation id="7742706086992565332">Pode definir o nível de aumento/diminuição do zoom em determinados Websites.</translation>
@@ -6243,7 +6237,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="825238165904109940">Mostrar sempre URLs completos</translation>
 <translation id="8252569384384439529">A carregar…</translation>
 <translation id="8253198102038551905">Clique em "+" para aceder às propriedades de rede</translation>
-<translation id="8254954272268479918">Encerrar o Linux (Beta)</translation>
 <translation id="8255451560461371599">Sem fundo</translation>
 <translation id="8256319818471787266">Pantufa</translation>
 <translation id="8257950718085972371">Continuar a bloquear o acesso à câmara</translation>
@@ -6979,7 +6972,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9088917181875854783">Confirme se esta chave de acesso aparece no "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Métodos de introd.</translation>
 <translation id="909108997331068008">O perfil de <ph name="EXISTING_USER" /> já tem sessão iniciada em <ph name="NEW_USER" />.</translation>
-<translation id="9093429538970210897">Recomenda-se fazer uma cópia de segurança dos ficheiros caso não seja possível concluir a atualização. Iniciar a atualização vai fazer com que o Linux (Beta) seja encerrado. Guarde os ficheiros abertos antes de prosseguir.</translation>
 <translation id="9094033019050270033">Atualizar a palavra-passe</translation>
 <translation id="9094038138851891550">Nome de utilizador inválido</translation>
 <translation id="9094982973264386462">Remover</translation>
@@ -7058,7 +7050,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9176476835295860688">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de aplicações e do dispositivo para a Google. Deste modo, ajudará a melhorar a estabilidade das aplicações e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as aplicações e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – dispositivo Bluetooth ligado</translation>
 <translation id="9179524979050048593">Nome de utilizador do ecrã de início de sessão</translation>
-<translation id="9179734824669616955">Configurar o Linux (Beta) no <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Este processo pode demorar alguns minutos. A iniciar o contentor do Linux…</translation>
 <translation id="9180380851667544951">O site pode partilhar o ecrã.</translation>
 <translation id="9186963452600581158">Iniciar sessão com uma Conta Google de criança</translation>
@@ -7099,7 +7090,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="93610034168535821">Armazenamento total utilizado pelos sites:</translation>
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensão</translation>
-<translation id="938339467127511841">Armazenamento do Linux (beta)</translation>
 <translation id="938470336146445890">Instale um certificado de utilizador.</translation>
 <translation id="939252827960237676">Não foi possível guardar a captura de ecrã</translation>
 <translation id="939519157834106403">SSID</translation>

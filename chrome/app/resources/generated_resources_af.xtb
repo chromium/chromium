@@ -61,7 +61,6 @@
 <translation id="1060292118287751956">Bepaal die frekwensie waarteen die skerm opdateer</translation>
 <translation id="1061904396131502319">Dis amper tyd vir 'n blaaskans</translation>
 <translation id="1067048845568873861">Geskep</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Ander Google-dienste</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">'n Ander program op jou rekenaar het 'n uitbreiding bygevoeg wat dalk die manier sal verander waarop Chrome werk.
@@ -929,7 +928,6 @@ Andersins, meld nou af sodat die veranderinge aan hierdie rekening op hierdie to
 Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op jou toestel te installeer.  Ons het vir jou instruksies in 'n e-pos gestuur.</translation>
 <translation id="2040460856718599782">Oeps! Kon jou nie staaf nie. Gaan asseblief jou aanmeldingeiebewyse weer na en probeer weer.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{Jy het 1 gekompromitteerde wagwoord}other{Jy het # gekompromitteerde wagwoorde}}</translation>
-<translation id="2040863272941698761">Stel Linux op</translation>
 <translation id="204497730941176055">Microsoft-sertifikaattemplaatnaam</translation>
 <translation id="2045117674524495717">Kortpadsleutelhelper</translation>
 <translation id="2045969484888636535">Hou aan om webkoekies te blokkeer</translation>
@@ -1261,8 +1259,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2428510569851653187">Beskryf wat jy besig was om te doen toe die oortjie omgeval het</translation>
 <translation id="2428939361789119025">Skakel Wi-Fi af</translation>
 <translation id="2431027948063157455">Google Assistent kon nie laai nie. Gaan asseblief jou netwerkverbinding na en probeer weer.</translation>
-<translation id="2431846145771260397">Is jy seker jy wil 'n vastegrootteskyf vir Linux (Beta) reserveer?</translation>
-<translation id="2432753757290432042">Linux (Beta)-opdatering word vereis</translation>
 <translation id="2433452467737464329">Voeg 'n navraagparameter in URL by om die blad outomaties te herlaai: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /> <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Voorkoms</translation>
@@ -1977,6 +1973,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3264544094376351444">Sans-serif lettertipe</translation>
 <translation id="3264582393905923483">Konteks</translation>
 <translation id="3265459715026181080">Maak venster toe</translation>
+<translation id="3266022278425892773">Linux-ontwikkelingomgewing</translation>
 <translation id="3266179261140759675">Keer dat werwe wat toe is steeds inligting stuur en ontvang</translation>
 <translation id="3266274118485960573">Veiligheidskontrole vind tans plaas</translation>
 <translation id="3267726687589094446">Hou aan om outomatiese aflaaie van veelvuldige lêers toe te laat</translation>
@@ -2277,7 +2274,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3600051066689725006">Webversoekinligting</translation>
 <translation id="3600792891314830896">Demp werwe wat klank speel</translation>
 <translation id="360180734785106144">Nuwe kenmerke aanbied wanneer hulle beskikbaar is</translation>
-<translation id="3602198818276948261">Jou houer is nie opgestel om die verandering van skyfgroottes te steun nie. Om die hoeveelheid spasie te verstel wat vir Linux (beta) gereserveer word, moet jy rugsteun en dan in 'n nuwe houer terugstel.</translation>
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3603622770190368340">Kry netwerksertifikaat</translation>
 <translation id="3604713164406837697">Verander muurpapier</translation>
@@ -3402,6 +3398,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="4927753642311223124">Niks hier te sien nie, beweeg aan.</translation>
 <translation id="4929386379796360314">Drukbestemmings</translation>
+<translation id="4930447554870711875">Ontwikkelaars</translation>
 <translation id="4930714375720679147">Skakel aan</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933484234309072027">ingebed op <ph name="URL" /></translation>
@@ -3954,7 +3951,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="558918721941304263">Laai tans programme …</translation>
 <translation id="5592595402373377407">Nog nie genoeg data beskikbaar nie.</translation>
 <translation id="5595485650161345191">Wysig adres</translation>
-<translation id="5595727715083333657">Jou houer se grootte kan nie verander word nie. Om die hoeveelheid spasie te verstel wat vooraf aan Linux (beta) toegewys word, moet jy rugsteun en dan in 'n nuwe houer terugstel.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5600706100022181951"><ph name="UPDATE_SIZE_MB" /> MB se mobiele data sal gebruik word om opdatering af te laai. Wil jy voortgaan?</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -4207,7 +4203,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5893589697005440881">Deel lêers met mense rondom jou</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="5900302528761731119">Google-profielfoto</translation>
-<translation id="5900358982890952556">Gradeer Linux op (Beta)</translation>
 <translation id="5901494423252125310">Drukkerdeur is oop</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5904614460720589786">Kon nie <ph name="APP_NAME" /> opstel nie weens 'n opstellingprobleem. Kontak jou administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
@@ -4674,6 +4669,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6434309073475700221">Gooi weg</translation>
 <translation id="6434325376267409267">Jou toestel moet opgedateer word voordat jy <ph name="APP_NAME" /> kan gebruik.</translation>
 <translation id="6436164536244065364">Bekyk in webwinkel</translation>
+<translation id="6438234780621650381">Stel instellings terug</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Oudio speel tans</translation>
 <translation id="6442187272350399447">Fantasties</translation>
 <translation id="6444070574980481588">Stel datum en tyd</translation>
@@ -5387,7 +5383,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7284411326658527427">Elke persoon kan hul rekening personaliseer en data privaat hou.</translation>
 <translation id="7287143125007575591">Toegang geweier.</translation>
 <translation id="7287411021188441799">Laai verstekagtergrond terug</translation>
-<translation id="7288013116963835700">Verwyder Linux vir <ph name="DEVICE_TYPE" /></translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289225569524511578">Maak die muurpapierprogram oop</translation>
 <translation id="7290242001003353852">Hierdie aanmelddiens, waarvan <ph name="SAML_DOMAIN" /> die gasheer is, gaan tans by jou kamera in.</translation>
@@ -5773,7 +5768,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7730683939467795481">Hierdie bladsy is deur die "<ph name="EXTENSION_NAME" />"-uitbreiding verander</translation>
 <translation id="7732111077498238432">Netwerk word deur beleid beheer</translation>
 <translation id="7737115349420013392">Bind tans saam met "<ph name="DEVICE_NAME" />" …</translation>
-<translation id="7737238973539693982">Vee Linux (Beta) uit</translation>
 <translation id="7737948071472253612">Mag nie jou kamera gebruik nie</translation>
 <translation id="7740996059027112821">Standaard</translation>
 <translation id="7742706086992565332">Jy kan stel hoeveel jy in- of uitzoem op sekere webwerwe</translation>
@@ -6242,7 +6236,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="825238165904109940">Wys altyd volle URL'e</translation>
 <translation id="8252569384384439529">Laai tans op …</translation>
 <translation id="8253198102038551905">Klik '+' om netwerkeienskappe te kry</translation>
-<translation id="8254954272268479918">Maak Linux (Beta) toe</translation>
 <translation id="8255451560461371599">Geen agtergrond nie</translation>
 <translation id="8256319818471787266">Sparky</translation>
 <translation id="8257950718085972371">Hou aan om kameratoegang te blokkeer</translation>
@@ -6978,7 +6971,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9088917181875854783">Bevestig asseblief dat hierdie wagsleutel op "<ph name="DEVICE_NAME" />" gewys word:</translation>
 <translation id="9089416786594320554">Invoermetodes</translation>
 <translation id="909108997331068008"><ph name="EXISTING_USER" /> se profiel is reeds aangemeld by <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Dit word aanbeveel dat lêers gerugsteun word ingeval die opgradering nie voltooi kan word nie. As die opgradering begin word, sal dit veroorsaak dat Linux (beta) afgeskakel word. Stoor asseblief oop lêers voordat jy voortgaan.</translation>
 <translation id="9094033019050270033">Dateer wagwoord op</translation>
 <translation id="9094038138851891550">Gebruikernaam is ongeldig</translation>
 <translation id="9094982973264386462">Verwyder</translation>
@@ -7057,7 +7049,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9176476835295860688">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. Hierdie <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> word deur die eienaar afgedwing. As jou bykomende Web- en Programaktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Kom meer te wete<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-toestel is gekoppel</translation>
 <translation id="9179524979050048593">Aanmeldskermgebruikernaam</translation>
-<translation id="9179734824669616955">Stel Linux (Beta) op jou <ph name="DEVICE_TYPE" /> op</translation>
 <translation id="9180281769944411366">Hierdie proses kan 'n paar minute neem. Begin tans die Linux-houer.</translation>
 <translation id="9180380851667544951">Werf kan jou skerm deel</translation>
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
@@ -7098,7 +7089,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="93610034168535821">Algehele berging gebruik deur werwe:</translation>
 <translation id="936801553271523408">Stelsel se diagnostiese data</translation>
 <translation id="93766956588638423">Herstel uitbreiding</translation>
-<translation id="938339467127511841">Linux-berging (beta)</translation>
 <translation id="938470336146445890">Installeer 'n gebruikersertifikaat.</translation>
 <translation id="939252827960237676">Kon nie skermkiekie stoor nie</translation>
 <translation id="939519157834106403">SSID</translation>

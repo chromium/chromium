@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Veľmi vysoká latencia protokolu HTTPS</translation>
 <translation id="1413240736185167732">Nepodarilo sa – zlyhal filter</translation>
 <translation id="1468664791493211953">Ponuky</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> spravuje toto zariadenie a môže monitorovať vašu aktivitu.</translation>
 <translation id="1478594628797167447">Skener</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> spravuje tohto používateľa a môže vzdialene spravovať nastavenia a sledovať aktivitu používateľa.</translation>
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Podávač dokumentov (jednostranný)</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Adresár na skenovanie</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="4548483925627140043">Signál sa nenašiel</translation>
+<translation id="455835558791489930">Batéria s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
 <translation id="4646949265910132906">Zabezpečené pripojenie Wi‑Fi</translation>
@@ -135,11 +139,13 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
-<translation id="6766275201586212568">Neúspešné prevody DNS</translation>
-<translation id="6768237774506518020">Vysoká miera neúspešných prevodov DNS</translation>
+<translation id="6766275201586212568">Neúspešné preklady DNS</translation>
+<translation id="6768237774506518020">Vysoká miera neúspešných prekladov DNS</translation>
 <translation id="6839141349259399400">Nemôžete sa pripojiť k skenerom?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="714876143603641390">Pripojenie cez miestnu sieť</translation>
 <translation id="7162487448488904999">Galéria</translation>
+<translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ súboru</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>

@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Impossible de partager l'élément suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Échec du téléchargement de <ph name="FILE_NAME" /> en raison de problèmes au niveau du serveur.</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
-<translation id="151267239139452619">Ajouter aux téléchargements</translation>
 <translation id="1513352483775369820">Favoris et historique Web</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
@@ -423,7 +422,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}many{# hrs}other{# h}}</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>
 <translation id="4056223980640387499">Sépia</translation>
-<translation id="4057643060762047384">Ajouter à :</translation>
 <translation id="4060598801229743805">Options disponibles vers le haut de l'écran</translation>
 <translation id="4062305924942672200">Mentions juridiques</translation>
 <translation id="4084682180776658562">Favoris</translation>
@@ -754,7 +752,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6312687380483398334">Applications Web (mode silencieux)</translation>
 <translation id="6316139424528454185">Version Android non compatible</translation>
-<translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324034347079777476">La synchronisation du système Android est désactivée</translation>
 <translation id="6333140779060797560">Partager à l'aide de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Chiffrement</translation>
@@ -1132,6 +1129,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8920114477895755567">En attente de détails sur les parents.</translation>
 <translation id="8922289737868596582">Téléchargez des pages à partir du bouton Plus d'options pour les utiliser hors connexion</translation>
 <translation id="8928626432984354940">Liste des dossiers de favoris ouverte à mi-hauteur</translation>
+<translation id="8937267401510745927">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites avec lesquels vous utilisez l'Assistant, ainsi que l'information que vous envoyez par l'intermédiaire de l'Assistant. Cette information peut être stockée dans votre compte Google. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique?</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8951232171465285730">Chrome vous a fait économiser <ph name="MEGABYTES" /> Mo</translation>

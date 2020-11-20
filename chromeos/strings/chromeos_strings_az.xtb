@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Çox yüksək HTTPS gecikməsi</translation>
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
 <translation id="1468664791493211953">Təkliflər</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> bu cihazı idarə edir və fəaliyyətinizə nəzarət edə bilər.</translation>
 <translation id="1478594628797167447">Skaner</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> bu istifadəçini idarə edir və ayarları məsafədən idarə edə və istifadəçinin fəaliyyətini izləyə bilər.</translation>
 <translation id="150962533380566081">Yanlış PUK.</translation>
 <translation id="1510238584712386396">Başladıcı</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu)</translation>
 <translation id="1641857168437328880">Sənəd Bəsləyici (Bir tərəfli)</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Skanı burada saxlayın</translation>
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="4548483925627140043">Siqnal tapılmadı</translation>
+<translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh Batareya</translation>
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
 <translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
@@ -137,8 +141,10 @@
 <translation id="6766275201586212568">DNS həlləri alınmadı</translation>
 <translation id="6768237774506518020">DNS həllinin alınmama faizi yüksəkdir</translation>
 <translation id="6839141349259399400">Skanerlərə qoşula bilmirsiniz?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
 <translation id="714876143603641390">Lan Bağlantısı</translation>
 <translation id="7162487448488904999">Qalereya</translation>
+<translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fayl növü</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
