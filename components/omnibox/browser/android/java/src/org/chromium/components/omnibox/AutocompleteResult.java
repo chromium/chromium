@@ -10,7 +10,10 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.core.util.ObjectsCompat;
 
+import org.chromium.base.annotations.CalledByNative;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,6 +57,21 @@ public class AutocompleteResult {
             List<AutocompleteMatch> suggestions, SparseArray<GroupDetails> groupsDetails) {
         mSuggestions = suggestions != null ? suggestions : new ArrayList<>();
         mGroupsDetails = groupsDetails != null ? groupsDetails : new SparseArray<>();
+    }
+
+    @CalledByNative
+    private static AutocompleteResult build(AutocompleteMatch[] suggestions, int[] groupIds,
+            String[] groupNames, boolean[] groupCollapsedStates) {
+        assert groupIds.length == groupNames.length;
+        assert groupIds.length == groupCollapsedStates.length;
+
+        SparseArray<GroupDetails> groupsDetails = new SparseArray<>(groupIds.length);
+        for (int index = 0; index < groupIds.length; index++) {
+            groupsDetails.put(groupIds[index],
+                    new GroupDetails(groupNames[index], groupCollapsedStates[index]));
+        }
+
+        return new AutocompleteResult(Arrays.asList(suggestions), groupsDetails);
     }
 
     /**

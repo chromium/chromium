@@ -517,44 +517,18 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
 
   autocomplete_controller_->InlineTailPrefixes();
 
-  ScopedJavaLocalRef<jobject> j_autocomplete_result =
-      Java_AutocompleteController_createAutocompleteResult(
-          env, autocomplete_result.size(),
-          autocomplete_result.headers_map().size());
-
-  for (const auto& match : autocomplete_result) {
-    Java_AutocompleteController_addOmniboxSuggestionToResult(
-        env, j_autocomplete_result, match.GetOrCreateJavaObject(env));
-  }
-
-  PopulateOmniboxGroupsDetails(env, j_autocomplete_result,
-                               autocomplete_result.headers_map(),
-                               autocomplete_result.hidden_group_ids());
-
   // Get the inline-autocomplete text.
   base::string16 inline_autocompletion;
   if (auto* default_match = autocomplete_result.default_match())
     inline_autocompletion = default_match->inline_autocompletion;
   ScopedJavaLocalRef<jstring> inline_text =
       ConvertUTF16ToJavaString(env, inline_autocompletion);
-  jlong j_autocomplete_result_raw_ptr =
-      reinterpret_cast<intptr_t>(&(autocomplete_result));
-  Java_AutocompleteController_onSuggestionsReceived(
-      env, java_bridge, j_autocomplete_result, inline_text,
-      j_autocomplete_result_raw_ptr);
-}
 
-void AutocompleteControllerAndroid::PopulateOmniboxGroupsDetails(
-    JNIEnv* env,
-    ScopedJavaLocalRef<jobject> j_autocomplete_result,
-    const SearchSuggestionParser::HeadersMap& native_header_map,
-    const std::set<int>& hidden_group_ids) {
-  for (const auto& group_header : native_header_map) {
-    Java_AutocompleteController_addOmniboxGroupDetailsToResult(
-        env, j_autocomplete_result, group_header.first,
-        ConvertUTF16ToJavaString(env, group_header.second),
-        base::Contains(hidden_group_ids, group_header.first));
-  }
+  jlong j_autocomplete_result_raw_ptr =
+      reinterpret_cast<intptr_t>(&autocomplete_result);
+  Java_AutocompleteController_onSuggestionsReceived(
+      env, java_bridge, autocomplete_result.GetOrCreateJavaObject(env),
+      inline_text, j_autocomplete_result_raw_ptr);
 }
 
 bool AutocompleteControllerAndroid::IsValidMatch(JNIEnv* env,

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.text.TextUtils;
-import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,12 +24,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -307,40 +304,6 @@ public class AutocompleteController {
      */
     void onVoiceResults(@Nullable List<VoiceResult> results) {
         mVoiceSuggestionProvider.setVoiceResults(results);
-    }
-
-    @CalledByNative
-    private static AutocompleteResult createAutocompleteResult(
-            int suggestionsCount, int groupsCount) {
-        return new AutocompleteResult(new ArrayList<AutocompleteMatch>(suggestionsCount),
-                new SparseArray<GroupDetails>(groupsCount));
-    }
-
-    /**
-     * Append suggestion to Suggestions List.
-     *
-     * @param autocompleteResult AutocompleteResult instance.
-     * @param suggestion Suggestion to append.
-     */
-    @CalledByNative
-    private static void addOmniboxSuggestionToResult(
-            AutocompleteResult autocompleteResult, AutocompleteMatch suggestion) {
-        autocompleteResult.getSuggestionsList().add(suggestion);
-    }
-
-    /**
-     * Insert element to GroupDetails map.
-     *
-     * @param autocompleteResult AutocompleteResult instance.
-     * @param groupId ID of a Group.
-     * @param headerText Group title.
-     * @param collapsedByDefault Whether group should be collapsed by default.
-     */
-    @CalledByNative
-    private static void addOmniboxGroupDetailsToResult(AutocompleteResult autocompleteResult,
-            int groupId, String headerText, boolean collapsedByDefault) {
-        autocompleteResult.getGroupsDetails().put(
-                groupId, new GroupDetails(headerText, collapsedByDefault));
     }
 
     /**

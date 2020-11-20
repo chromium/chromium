@@ -194,6 +194,9 @@ struct AutocompleteMatch {
   // NOTE: Android specific methods are defined in autocomplete_match_android.cc
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
       JNIEnv* env) const;
+
+  // Returns a corresponding Java Class object.
+  static jclass GetClazz(JNIEnv* env);
 #endif
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)

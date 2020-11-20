@@ -21,6 +21,11 @@ using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaByteArray;
 using base::android::ToJavaIntArray;
 
+// static
+jclass AutocompleteMatch::GetClazz(JNIEnv* env) {
+  return org_chromium_components_omnibox_AutocompleteMatch_clazz(env);
+}
+
 ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
     JNIEnv* env) const {
   // Short circuit if we already built the match.

@@ -702,10 +702,17 @@ void AutocompleteResult::Reset() {
   matches_.clear();
   headers_map_.clear();
   hidden_group_ids_.clear();
+#if defined(OS_ANDROID)
+  java_result_.Reset();
+#endif
 }
 
 void AutocompleteResult::Swap(AutocompleteResult* other) {
   matches_.swap(other->matches_);
+#if defined(OS_ANDROID)
+  java_result_.Reset();
+  other->java_result_.Reset();
+#endif
 }
 
 void AutocompleteResult::CopyFrom(const AutocompleteResult& other) {
@@ -713,6 +720,9 @@ void AutocompleteResult::CopyFrom(const AutocompleteResult& other) {
     return;
 
   matches_ = other.matches_;
+#if defined(OS_ANDROID)
+  java_result_.Reset();
+#endif
 }
 
 #if DCHECK_IS_ON()

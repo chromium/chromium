@@ -141,14 +141,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   void NotifySuggestionsReceived(
       const AutocompleteResult& autocomplete_result);
 
-  // Construct Java GroupDetails map from supplied HeadersMap and expanded
-  // state.
-  void PopulateOmniboxGroupsDetails(
-      JNIEnv* env,
-      base::android::ScopedJavaLocalRef<jobject> j_autocomplete_result,
-      const SearchSuggestionParser::HeadersMap& header_map,
-      const std::set<int>& hidden_group_ids);
-
   bool IsValidMatch(JNIEnv* env, jint selected_index, jint hash_code);
 
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
