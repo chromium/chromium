@@ -98,7 +98,7 @@ WebPreferences::WebPreferences()
       touch_event_feature_detection_enabled(false),
       pointer_events_max_touch_points(0),
       available_pointer_types(0),
-      primary_pointer_type(ui::POINTER_TYPE_NONE),
+      primary_pointer_type(blink::mojom::PointerType::kPointerNone),
       available_hover_types(0),
       primary_hover_type(ui::HOVER_TYPE_NONE),
       dont_send_key_events_to_javascript(false),

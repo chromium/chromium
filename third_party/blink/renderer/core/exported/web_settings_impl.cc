@@ -259,7 +259,7 @@ void WebSettingsImpl::SetAvailablePointerTypes(int pointers) {
   dev_tools_emulator_->SetAvailablePointerTypes(pointers);
 }
 
-void WebSettingsImpl::SetPrimaryPointerType(ui::PointerType pointer) {
+void WebSettingsImpl::SetPrimaryPointerType(mojom::blink::PointerType pointer) {
   dev_tools_emulator_->SetPrimaryPointerType(pointer);
 }
 

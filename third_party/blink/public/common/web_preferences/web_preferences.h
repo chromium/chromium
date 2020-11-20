@@ -130,7 +130,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool touch_event_feature_detection_enabled;
   int pointer_events_max_touch_points;
   int available_pointer_types;
-  ui::PointerType primary_pointer_type;
+  blink::mojom::PointerType primary_pointer_type;
   int available_hover_types;
   ui::HoverType primary_hover_type;
   bool dont_send_key_events_to_javascript;

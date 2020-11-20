@@ -2572,8 +2572,8 @@ void WebContentsImpl::SetSlowWebPreferences(
 
     std::tie(prefs->available_pointer_types, prefs->available_hover_types) =
         ui::GetAvailablePointerAndHoverTypes();
-    prefs->primary_pointer_type =
-        ui::GetPrimaryPointerType(prefs->available_pointer_types);
+    prefs->primary_pointer_type = static_cast<blink::mojom::PointerType>(
+        ui::GetPrimaryPointerType(prefs->available_pointer_types));
     prefs->primary_hover_type =
         ui::GetPrimaryHoverType(prefs->available_hover_types);
 

@@ -181,7 +181,7 @@ class WebSettings {
   virtual void SetPluginsEnabled(bool) = 0;
   virtual void SetPresentationReceiver(bool) = 0;
   virtual void SetAvailablePointerTypes(int) = 0;
-  virtual void SetPrimaryPointerType(ui::PointerType) = 0;
+  virtual void SetPrimaryPointerType(blink::mojom::PointerType) = 0;
   virtual void SetAvailableHoverTypes(int) = 0;
   virtual void SetPrimaryHoverType(ui::HoverType) = 0;
   virtual void SetPreferHiddenVolumeControls(bool) = 0;

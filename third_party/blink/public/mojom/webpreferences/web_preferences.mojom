@@ -11,9 +11,10 @@ import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 enum PointerType {
-  kPointerFirstType                         = 1,  // 1 << 0
-  kPointerCoarseType                        = 2,  // 1 << 1
-  kPointerFineType                          = 4   // 1 << 2
+  kPointerNone                              = 1,             // 1 << 0
+  kPointerFirstType                         = kPointerNone,
+  kPointerCoarseType                        = 2,             // 1 << 1
+  kPointerFineType                          = 4              // 1 << 2
 };
 
 enum HoverType {

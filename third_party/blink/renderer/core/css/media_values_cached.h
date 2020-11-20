@@ -24,7 +24,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     float device_pixel_ratio;
     int color_bits_per_component;
     int monochrome_bits_per_component;
-    ui::PointerType primary_pointer_type;
+    mojom::blink::PointerType primary_pointer_type;
     int available_pointer_types;
     ui::HoverType primary_hover_type;
     int available_hover_types;
@@ -96,7 +96,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   float DevicePixelRatio() const override;
   int ColorBitsPerComponent() const override;
   int MonochromeBitsPerComponent() const override;
-  ui::PointerType PrimaryPointerType() const override;
+  mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
   ui::HoverType PrimaryHoverType() const override;
   int AvailableHoverTypes() const override;

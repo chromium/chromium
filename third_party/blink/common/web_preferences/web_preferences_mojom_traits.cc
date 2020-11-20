@@ -13,41 +13,6 @@
 namespace mojo {
 
 // static
-blink::mojom::PointerType
-EnumTraits<blink::mojom::PointerType, ui::PointerType>::ToMojom(
-    ui::PointerType scheme) {
-  switch (scheme) {
-    case ui::PointerType::POINTER_TYPE_FIRST:
-      return blink::mojom::PointerType::kPointerFirstType;
-    case ui::PointerType::POINTER_TYPE_COARSE:
-      return blink::mojom::PointerType::kPointerCoarseType;
-    case ui::PointerType::POINTER_TYPE_FINE:
-      return blink::mojom::PointerType::kPointerFineType;
-  }
-  NOTREACHED();
-  return blink::mojom::PointerType::kMinValue;
-}
-
-// static
-bool EnumTraits<blink::mojom::PointerType, ui::PointerType>::FromMojom(
-    blink::mojom::PointerType input,
-    ui::PointerType* out) {
-  switch (input) {
-    case blink::mojom::PointerType::kPointerFirstType:
-      *out = ui::PointerType::POINTER_TYPE_FIRST;
-      return true;
-    case blink::mojom::PointerType::kPointerCoarseType:
-      *out = ui::PointerType::POINTER_TYPE_COARSE;
-      return true;
-    case blink::mojom::PointerType::kPointerFineType:
-      *out = ui::PointerType::POINTER_TYPE_FINE;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 blink::mojom::HoverType EnumTraits<blink::mojom::HoverType,
                                    ui::HoverType>::ToMojom(ui::HoverType type) {
   switch (type) {

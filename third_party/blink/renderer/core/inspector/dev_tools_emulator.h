@@ -42,7 +42,7 @@ class CORE_EXPORT DevToolsEmulator final
   void SetDoubleTapToZoomEnabled(bool);
   bool DoubleTapToZoomEnabled() const;
   void SetAvailablePointerTypes(int);
-  void SetPrimaryPointerType(ui::PointerType);
+  void SetPrimaryPointerType(mojom::blink::PointerType);
   void SetAvailableHoverTypes(int);
   void SetPrimaryHoverType(ui::HoverType);
   void SetMainFrameResizesAreOrientationChanges(bool);
@@ -125,7 +125,7 @@ class CORE_EXPORT DevToolsEmulator final
   mojom::blink::ViewportStyle embedder_viewport_style_;
   bool embedder_plugins_enabled_;
   int embedder_available_pointer_types_;
-  ui::PointerType embedder_primary_pointer_type_;
+  mojom::blink::PointerType embedder_primary_pointer_type_;
   int embedder_available_hover_types_;
   ui::HoverType embedder_primary_hover_type_;
   bool embedder_main_frame_resizes_are_orientation_changes_;

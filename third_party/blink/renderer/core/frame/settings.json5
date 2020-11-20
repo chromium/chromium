@@ -636,9 +636,9 @@
     // These values specify properties of the user's primary pointing device only.
     {
       name: "primaryPointerType",
-      initial: "ui::POINTER_TYPE_NONE",
+      initial: "mojom::blink::PointerType::kPointerNone",
       invalidate: "MediaQuery",
-      type: "ui::PointerType",
+      type: "blink::mojom::PointerType",
     },
     {
       name: "primaryHoverType",

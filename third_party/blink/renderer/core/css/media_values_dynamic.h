@@ -37,7 +37,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   float DevicePixelRatio() const override;
   int ColorBitsPerComponent() const override;
   int MonochromeBitsPerComponent() const override;
-  ui::PointerType PrimaryPointerType() const override;
+  mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
   ui::HoverType PrimaryHoverType() const override;
   int AvailableHoverTypes() const override;

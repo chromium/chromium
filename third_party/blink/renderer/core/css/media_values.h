@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -69,7 +70,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual float DevicePixelRatio() const = 0;
   virtual int ColorBitsPerComponent() const = 0;
   virtual int MonochromeBitsPerComponent() const = 0;
-  virtual ui::PointerType PrimaryPointerType() const = 0;
+  virtual mojom::blink::PointerType PrimaryPointerType() const = 0;
   virtual int AvailablePointerTypes() const = 0;
   virtual ui::HoverType PrimaryHoverType() const = 0;
   virtual int AvailableHoverTypes() const = 0;
@@ -106,7 +107,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   static blink::mojom::DisplayMode CalculateDisplayMode(LocalFrame*);
   static bool CalculateThreeDEnabled(LocalFrame*);
   static bool CalculateInImmersiveMode(LocalFrame*);
-  static ui::PointerType CalculatePrimaryPointerType(LocalFrame*);
+  static mojom::blink::PointerType CalculatePrimaryPointerType(LocalFrame*);
   static int CalculateAvailablePointerTypes(LocalFrame*);
   static ui::HoverType CalculatePrimaryHoverType(LocalFrame*);
   static int CalculateAvailableHoverTypes(LocalFrame*);

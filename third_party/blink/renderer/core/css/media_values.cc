@@ -150,7 +150,8 @@ bool MediaValues::CalculateInImmersiveMode(LocalFrame* frame) {
   return frame->GetSettings()->GetImmersiveModeEnabled();
 }
 
-ui::PointerType MediaValues::CalculatePrimaryPointerType(LocalFrame* frame) {
+mojom::blink::PointerType MediaValues::CalculatePrimaryPointerType(
+    LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
   return frame->GetSettings()->GetPrimaryPointerType();

@@ -25,7 +25,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData()
       device_pixel_ratio(1.0),
       color_bits_per_component(24),
       monochrome_bits_per_component(0),
-      primary_pointer_type(ui::POINTER_TYPE_NONE),
+      primary_pointer_type(mojom::blink::PointerType::kPointerNone),
       available_pointer_types(ui::POINTER_TYPE_NONE),
       primary_hover_type(ui::HOVER_TYPE_NONE),
       available_hover_types(ui::HOVER_TYPE_NONE),
@@ -141,7 +141,7 @@ int MediaValuesCached::MonochromeBitsPerComponent() const {
   return data_.monochrome_bits_per_component;
 }
 
-ui::PointerType MediaValuesCached::PrimaryPointerType() const {
+mojom::blink::PointerType MediaValuesCached::PrimaryPointerType() const {
   return data_.primary_pointer_type;
 }
 

@@ -16,14 +16,6 @@
 namespace mojo {
 
 template <>
-struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::PointerType, ui::PointerType> {
-  static blink::mojom::PointerType ToMojom(ui::PointerType type);
-
-  static bool FromMojom(blink::mojom::PointerType input, ui::PointerType* out);
-};
-
-template <>
 struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::HoverType, ui::HoverType> {
   static blink::mojom::HoverType ToMojom(ui::HoverType type);
 
@@ -346,7 +338,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.available_pointer_types;
   }
 
-  static ui::PointerType primary_pointer_type(
+  static blink::mojom::PointerType primary_pointer_type(
       const blink::web_pref::WebPreferences& r) {
     return r.primary_pointer_type;
   }

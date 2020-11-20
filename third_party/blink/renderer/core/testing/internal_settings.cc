@@ -57,6 +57,8 @@
 
 namespace blink {
 
+using mojom::blink::PointerType;
+
 InternalSettings::Backup::Backup(Settings* settings)
     : original_csp_(RuntimeEnabledFeatures::
                         ExperimentalContentSecurityPolicyFeaturesEnabled()),
@@ -373,11 +375,11 @@ void InternalSettings::setAvailablePointerTypes(
     String token = split_token.StripWhiteSpace();
 
     if (token == "coarse") {
-      pointer_types |= ui::POINTER_TYPE_COARSE;
+      pointer_types |= static_cast<int>(PointerType::kPointerCoarseType);
     } else if (token == "fine") {
-      pointer_types |= ui::POINTER_TYPE_FINE;
+      pointer_types |= static_cast<int>(PointerType::kPointerFineType);
     } else if (token == "none") {
-      pointer_types |= ui::POINTER_TYPE_NONE;
+      pointer_types |= static_cast<int>(PointerType::kPointerNone);
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
@@ -418,13 +420,13 @@ void InternalSettings::setPrimaryPointerType(const String& pointer,
   InternalSettingsGuardForSettings();
   String token = pointer.StripWhiteSpace();
 
-  ui::PointerType type = ui::POINTER_TYPE_NONE;
+  PointerType type = PointerType::kPointerNone;
   if (token == "coarse") {
-    type = ui::POINTER_TYPE_COARSE;
+    type = PointerType::kPointerCoarseType;
   } else if (token == "fine") {
-    type = ui::POINTER_TYPE_FINE;
+    type = PointerType::kPointerFineType;
   } else if (token == "none") {
-    type = ui::POINTER_TYPE_NONE;
+    type = PointerType::kPointerNone;
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
