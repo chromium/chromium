@@ -20,6 +20,7 @@
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/arc/arc_prefs.h"
+#include "components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
 #include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -579,12 +580,26 @@ void ArcDataSnapshotdManager::OnArcInstanceStopped(bool success) {
     OnSnapshotTaken(false /* success */);
     return;
   }
+  data_remove_requested_handler_ = ArcDataRemoveRequestedPrefHandler::Create(
+      delegate_->GetProfilePrefService(),
+      base::BindOnce(
+          &ArcDataSnapshotdManager::OnUnexpectedArcDataRemoveRequested,
+          weak_ptr_factory_.GetWeakPtr()));
+  // OnUnexpectedArcDataRemoveRequested is called already if ARC data removal
+  // is in the process (data_remove_requested_handler_ is nullptr).
+  if (!data_remove_requested_handler_)
+    return;
+
+  // Take a snapshot only if ARC data removal is not requested yet.
   EnsureDaemonStarted(base::BindOnce(&ArcDataSnapshotdManager::TakeSnapshot,
                                      weak_ptr_factory_.GetWeakPtr(),
                                      std::move(account_id)));
 }
 
 void ArcDataSnapshotdManager::OnSnapshotTaken(bool success) {
+  // Stop handling ARC data remove requests.
+  data_remove_requested_handler_.reset();
+
   if (success)
     snapshot_.OnSnapshotTaken();
   else
@@ -613,6 +628,13 @@ void ArcDataSnapshotdManager::OnSnapshotLoaded(base::OnceClosure callback,
     snapshot_.ClearSnapshot(true /* last */);
   EnsureDaemonStopped(base::DoNothing());
   std::move(callback).Run();
+}
+
+void ArcDataSnapshotdManager::OnUnexpectedArcDataRemoveRequested() {
+  // Stop TakeSnapshot flow.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  OnSnapshotTaken(false /* success */);
 }
 
 std::string ArcDataSnapshotdManager::GetCryptohomeAccountId() {

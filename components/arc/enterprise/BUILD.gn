@@ -5,6 +5,8 @@
 static_library("enterprise") {
   sources = [
     "arc_apps_tracker.h",
+    "arc_data_remove_requested_pref_handler.cc",
+    "arc_data_remove_requested_pref_handler.h",
     "arc_data_snapshotd_bridge.cc",
     "arc_data_snapshotd_bridge.h",
     "arc_data_snapshotd_manager.cc",

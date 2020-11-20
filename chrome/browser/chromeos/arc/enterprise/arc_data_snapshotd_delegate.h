@@ -10,6 +10,8 @@
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/session/arc_stop_reason.h"
 
+class PrefService;
+
 namespace arc {
 
 class ArcSessionManager;
@@ -28,6 +30,7 @@ class ArcDataSnapshotdDelegate : public ArcDataSnapshotdManager::Delegate,
   // ArcDataSnapshotdManager::Delegate overrides:
   void RequestStopArcInstance(
       base::OnceCallback<void(bool)> stopped_callback) override;
+  PrefService* GetProfilePrefService() override;
 
   // arc::ArcSessionManagerObserver overrides:
   void OnArcSessionStopped(arc::ArcStopReason reason) override;

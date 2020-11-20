@@ -57,6 +57,11 @@ void ArcDataSnapshotdDelegate::RequestStopArcInstance(
   arc_session_manager_->RequestDisable();
 }
 
+PrefService* ArcDataSnapshotdDelegate::GetProfilePrefService() {
+  DCHECK(arc_session_manager_->profile());
+  return arc_session_manager_->profile()->GetPrefs();
+}
+
 void ArcDataSnapshotdDelegate::OnArcSessionStopped(arc::ArcStopReason reason) {
   switch (reason) {
     case arc::ArcStopReason::SHUTDOWN:

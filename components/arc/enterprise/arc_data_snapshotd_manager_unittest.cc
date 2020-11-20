@@ -55,7 +55,7 @@ class TestUpstartClient : public chromeos::FakeUpstartClient {
 
 class FakeDelegate : public ArcDataSnapshotdManager::Delegate {
  public:
-  FakeDelegate() = default;
+  FakeDelegate() { arc::prefs::RegisterProfilePrefs(pref_service_.registry()); }
   FakeDelegate(const FakeDelegate&) = delete;
   FakeDelegate& operator=(const FakeDelegate&) = delete;
   ~FakeDelegate() override = default;
@@ -68,9 +68,13 @@ class FakeDelegate : public ArcDataSnapshotdManager::Delegate {
     std::move(stopped_callback).Run(true /* success */);
   }
 
+  PrefService* GetProfilePrefService() override { return &pref_service_; }
+
   bool stopped_callback_num() const { return stopped_callback_num_; }
 
  private:
+  TestingPrefServiceSimple pref_service_;
+
   int stopped_callback_num_ = 0;
 };
 
@@ -223,6 +227,11 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
         local_state(), blocked_ui_mode, false /* started */, std::move(last),
         std::move(previous));
     snapshot->Sync();
+  }
+
+  void RequestArcDataRemoval() {
+    delegate_->GetProfilePrefService()->SetBoolean(
+        prefs::kArcDataRemoveRequested, true);
   }
 
   TestUpstartClient* upstart_client() { return upstart_client_.get(); }
@@ -516,6 +525,37 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotSuccess) {
 }
 
 // Test that ARC data removal triggers chrome restart.
+TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotDataRemoval) {
+  // Daemon stopped in ctor, since no need to be running.
+  ExpectStopDaemon(false /* success */);
+  base::RunLoop run_loop;
+  auto* manager = CreateManager(
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+
+  // Logging into public session account.
+  manager->set_state_for_testing(ArcDataSnapshotdManager::State::kMgsToLaunch);
+  auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
+  user_manager()->AddPublicAccountUser(account_id);
+  user_manager()->UserLoggedIn(account_id, account_id.GetUserEmail(), false,
+                               false);
+  manager->OnSessionStateChanged();
+
+  ExpectStartTrackingApps();
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
+  RequestArcDataRemoval();
+  // Installed 10% of tracking apps.
+  apps_tracker()->update_callback().Run(100 /* percent */);
+  // Finished ARC tracking.
+  run_loop.Run();
+
+  ExpectStopTrackingApps();
+  EXPECT_EQ(1, delegate()->stopped_callback_num());
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+}
+
 // Test failure TakeSnapshot flow: when MGS has failed during TakeSnapshot flow.
 TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotMgsFailure) {
   // Daemon stopped in ctor, since no need to be running.

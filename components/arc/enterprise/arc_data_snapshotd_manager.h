@@ -24,6 +24,7 @@ class Value;
 namespace arc {
 namespace data_snapshotd {
 
+class ArcDataRemoveRequestedPrefHandler;
 class ArcDataSnapshotdBridge;
 
 // This class manages ARC data/ directory snapshots and controls the lifetime of
@@ -57,6 +58,10 @@ class ArcDataSnapshotdManager final
     // |stopped_callback| should never be null.
     virtual void RequestStopArcInstance(
         base::OnceCallback<void(bool)> stopped_callback) = 0;
+
+    // Returns a current profile pref service. Should be called only when ARC
+    // session is up and running.
+    virtual PrefService* GetProfilePrefService() = 0;
   };
 
   // This class operates with a snapshot related info either last or
@@ -264,6 +269,9 @@ class ArcDataSnapshotdManager final
   // Called once a snapshot is taken.
   void OnSnapshotLoaded(base::OnceClosure callback, bool success, bool last);
 
+  // Called once unexpected ARC data removal is requested,
+  void OnUnexpectedArcDataRemoveRequested();
+
   // Returns non-empty account ID string if a MGS is active.
   // Otherwise returns an empty string.
   std::string GetCryptohomeAccountId();
@@ -275,6 +283,8 @@ class ArcDataSnapshotdManager final
   std::unique_ptr<Delegate> delegate_;
   std::unique_ptr<ArcAppsTracker> apps_tracker_;
   std::unique_ptr<ArcDataSnapshotdBridge> bridge_;
+  std::unique_ptr<ArcDataRemoveRequestedPrefHandler>
+      data_remove_requested_handler_;
 
   base::OnceClosure attempt_user_exit_callback_;
 
