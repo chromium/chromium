@@ -129,7 +129,7 @@ component("policy") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.netstack",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     ]

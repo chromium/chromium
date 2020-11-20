@@ -15,7 +15,7 @@
 #include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/mediacodec/cpp/fidl.h>
 #include <fuchsia/net/cpp/fidl.h>
-#include <fuchsia/net/interfaces/cpp/fidl.h>
+#include <fuchsia/netstack/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
@@ -90,7 +90,7 @@ constexpr SandboxConfig kGpuConfig = {
 constexpr SandboxConfig kNetworkConfig = {
     base::make_span((const char* const[]){
         fuchsia::net::NameLookup::Name_,
-        fuchsia::net::interfaces::State::Name_,
+        fuchsia::netstack::Netstack::Name_,
         "fuchsia.posix.socket.Provider",
     }),
     kProvideSslConfig,
