@@ -202,6 +202,9 @@ void WebAppInstallTask::InstallWebAppFromInfo(
   FilterAndResizeIconsGenerateMissing(web_application_info.get(),
                                       /*icons_map*/ nullptr);
 
+  if (install_params_)
+    ApplyParamsToWebApplicationInfo(*install_params_, *web_application_info);
+
   install_source_ = install_source;
   background_installation_ = true;
 
@@ -439,6 +442,7 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
   bool bypass_service_worker_check = false;
   if (install_params_) {
     bypass_service_worker_check = install_params_->bypass_service_worker_check;
+
     // Set start_url to fallback_start_url as web_contents may have been
     // redirected. Will be overridden by manifest values if present.
     DCHECK(install_params_->fallback_start_url.is_valid());
@@ -447,16 +451,7 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
     if (install_params_->fallback_app_name.has_value())
       web_app_info->title = install_params_->fallback_app_name.value();
 
-    // If `additional_search_terms` was a manifest property, it would be
-    // sanitized while parsing the manifest. Since it's not, we sanitize it
-    // here.
-    for (std::string& search_term : install_params_->additional_search_terms) {
-      if (!search_term.empty())
-        web_app_info->additional_search_terms.push_back(std::move(search_term));
-    }
-
-    if (install_params_->launch_query_params)
-      web_app_info->launch_query_params = install_params_->launch_query_params;
+    ApplyParamsToWebApplicationInfo(*install_params_, *web_app_info);
   }
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
@@ -464,6 +459,22 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
       base::BindOnce(&WebAppInstallTask::OnDidPerformInstallableCheck,
                      base::Unretained(this), std::move(web_app_info),
                      force_shortcut_app));
+}
+
+void WebAppInstallTask::ApplyParamsToWebApplicationInfo(
+    const InstallManager::InstallParams& install_params,
+    WebApplicationInfo& web_app_info) {
+  // If `additional_search_terms` was a manifest property, it would be
+  // sanitized while parsing the manifest. Since it's not, we sanitize it
+  // here.
+  for (const std::string& search_term :
+       install_params.additional_search_terms) {
+    if (!search_term.empty())
+      web_app_info.additional_search_terms.push_back(search_term);
+  }
+
+  if (install_params.launch_query_params)
+    web_app_info.launch_query_params = install_params.launch_query_params;
 }
 
 void WebAppInstallTask::OnDidPerformInstallableCheck(

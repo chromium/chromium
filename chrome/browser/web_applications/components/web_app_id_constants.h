@@ -32,8 +32,8 @@ constexpr char kGoogleCalendarAppId[] = "anejmkjdeaeoepnomjgklommefloacja";
 constexpr char kGoogleDocsAppId[] = "mpnpojknpmmopombnjdcgaaiekajbnjb";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
-//     "https://drive.google.com/?usp=installed_webapp&lfhs=2"))
-constexpr char kGoogleDriveAppId[] = "igddggibmpopknllnjfdleakbkpgoobf";
+//     "https://drive.google.com/?lfhs=2"))
+constexpr char kGoogleDriveAppId[] = "aghbiahbpaijignceidepookljebhfak";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://www.google.com/maps?force=tt&source=ttpwa"))

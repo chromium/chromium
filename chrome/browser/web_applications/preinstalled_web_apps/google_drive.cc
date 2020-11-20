@@ -111,13 +111,14 @@ ExternalInstallOptions GetConfigForGoogleDrive() {
   options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsGSuite.name;
   options.uninstall_and_replace.push_back("apdfllckaahabafndbhieahigkjlhalf");
   options.load_and_await_service_worker_registration = false;
+  options.launch_query_params = "usp=installed_webapp";
+
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
     auto info = std::make_unique<WebApplicationInfo>();
     info->title =
         base::UTF8ToUTF16(GetTranslatedName("Google Drive", kNameTranslations));
-    info->start_url =
-        GURL("https://drive.google.com/?usp=installed_webapp&lfhs=2");
+    info->start_url = GURL("https://drive.google.com/?lfhs=2");
     info->scope = GURL("https://drive.google.com/");
     info->display_mode = DisplayMode::kStandalone;
     info->icon_bitmaps_any =

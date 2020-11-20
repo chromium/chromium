@@ -189,6 +189,13 @@ class WebAppInstallTask : content::WebContentsObserver {
   void OnGetWebApplicationInfo(
       bool force_shortcut_app,
       std::unique_ptr<WebApplicationInfo> web_app_info);
+
+  // Makes amendments to |web_app_info| based on the options set in
+  // |install_params|.
+  void ApplyParamsToWebApplicationInfo(
+      const InstallManager::InstallParams& install_params,
+      WebApplicationInfo& web_app_info);
+
   void OnDidPerformInstallableCheck(
       std::unique_ptr<WebApplicationInfo> web_app_info,
       bool force_shortcut_app,

@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -494,11 +495,11 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
   base::AutoReset<bool> scope =
       SetExternalAppInstallFeatureAlwaysEnabledForTesting();
 
+  auto& provider = *WebAppProvider::Get(browser()->profile());
 
   base::RunLoop run_loop;
-  WebAppProvider::Get(browser()->profile())
-      ->external_web_app_manager_for_testing()
-      .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
+  provider.external_web_app_manager_for_testing().LoadAndSynchronizeForTesting(
+      base::BindLambdaForTesting(
           [&](std::map<GURL, InstallResultCode> install_results,
               std::map<GURL, bool> uninstall_results) {
             EXPECT_THAT(
@@ -526,6 +527,19 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
             run_loop.Quit();
           }));
   run_loop.Run();
+
+  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleDocsAppId),
+            GURL("https://docs.google.com/document/?usp=installed_webapp"));
+  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleSlidesAppId),
+            GURL("https://docs.google.com/presentation/?usp=installed_webapp"));
+  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleSheetsAppId),
+            GURL("https://docs.google.com/spreadsheets/?usp=installed_webapp"));
+  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleDriveAppId),
+            GURL("https://drive.google.com/?lfhs=2&usp=installed_webapp"));
+  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGmailAppId),
+            GURL("https://mail.google.com/?usp=installed_webapp"));
+  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kYoutubeAppId),
+            GURL("https://www.youtube.com/?feature=ytca"));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
