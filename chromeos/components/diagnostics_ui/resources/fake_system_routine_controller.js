@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {BatteryRateRoutineResult, RoutineName, RoutineResult, RoutineResultInfo, RoutineRunner, StandardRoutineResult} from './diagnostics_types.js';
+import {FakeMethodResolver} from './fake_method_resolver.js';
 
 /**
  * @fileoverview
@@ -14,6 +15,9 @@ import {BatteryRateRoutineResult, RoutineName, RoutineResult, RoutineResultInfo,
 
 export class FakeSystemRoutineController {
   constructor() {
+    /** @private {!FakeMethodResolver} */
+    this.methods_ = new FakeMethodResolver();
+
     /** private !Map<!RoutineName, !RoutineResult> */
     this.routineResults_ = new Map();
 
@@ -42,6 +46,24 @@ export class FakeSystemRoutineController {
      * @private {?RoutineName}
      */
     this.routineName_ = null;
+
+    this.registerMethods();
+  }
+
+  /*
+   * Implements SystemRoutineController.GetSupportedRoutines
+   * @return {!Promise<!{routines: !Array<!RoutineName>}>}
+   */
+  getSupportedRoutines() {
+    return this.methods_.resolveMethod('getSupportedRoutines');
+  }
+
+  /**
+   * Sets the value that will be returned when calling getSupportedRoutines().
+   * @param {!Array<!RoutineName>} routines
+   */
+  setFakeSupportedRoutines(routines) {
+    this.methods_.setResult('getSupportedRoutines', {routines: routines});
   }
 
   /*
@@ -64,6 +86,13 @@ export class FakeSystemRoutineController {
     }
 
     return this.resolver_.promise;
+  }
+
+  /**
+   * Setup method resolvers.
+   */
+  registerMethods() {
+    this.methods_.register('getSupportedRoutines');
   }
 
   /**

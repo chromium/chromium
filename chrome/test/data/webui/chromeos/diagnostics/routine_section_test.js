@@ -6,6 +6,7 @@ import 'chrome://diagnostics/routine_result_entry.js';
 import 'chrome://diagnostics/routine_section.js';
 
 import {RoutineName, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeBatteryRoutineResults, fakeRoutineResults} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {ExecutionProgress} from 'chrome://diagnostics/routine_list_executor.js';
@@ -30,6 +31,11 @@ export function routineSectionTestSuite() {
     // done explicitly.
     routineController = new FakeSystemRoutineController();
     routineController.setDelayTimeInMillisecondsForTesting(-1);
+
+    // Enable all routines by default.
+    routineController.setFakeSupportedRoutines(
+        [...fakeRoutineResults.keys(), ...fakeBatteryRoutineResults.keys()]);
+
     setSystemRoutineControllerForTesting(routineController);
   });
 
@@ -270,6 +276,40 @@ export function routineSectionTestSuite() {
           // Second routine should be completed.
           assertEquals(routines[1], entries[1].item.routine);
           assertEquals(ExecutionProgress.kCompleted, entries[1].item.progress);
+        });
+  });
+
+  test('ResultListFiltersBySupported', () => {
+    /** @type {!Array<!RoutineName>} */
+    const routines = [
+      RoutineName.kCpuCache,
+      RoutineName.kMemory,
+    ];
+
+    routineController.setFakeStandardRoutineResult(
+        RoutineName.kMemory, StandardRoutineResult.kTestPassed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineName.kCpuCache, StandardRoutineResult.kTestPassed);
+    routineController.setFakeSupportedRoutines([RoutineName.kMemory]);
+
+    return initializeRoutineSection(routines)
+        .then(() => {
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          const entries = getEntries();
+          assertEquals(1, entries.length);
+          assertEquals(RoutineName.kMemory, entries[0].item.routine);
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          const entries = getEntries();
+          assertEquals(1, entries.length);
+          assertEquals(RoutineName.kMemory, entries[0].item.routine);
         });
   });
 

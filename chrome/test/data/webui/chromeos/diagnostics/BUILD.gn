@@ -91,6 +91,7 @@ js_library("diagnostics_test_utils") {
     "//chromeos/components/diagnostics_ui/resources:battery_status_card",
     "//chromeos/components/diagnostics_ui/resources:cpu_card",
     "//chromeos/components/diagnostics_ui/resources:data_point",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
     "//chromeos/components/diagnostics_ui/resources:memory_card",
     "//chromeos/components/diagnostics_ui/resources:percent_bar_chart",
     "//chromeos/components/diagnostics_ui/resources:realtime_cpu_chart",

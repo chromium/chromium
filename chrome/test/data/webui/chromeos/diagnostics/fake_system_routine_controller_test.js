@@ -5,7 +5,8 @@
 import {RoutineName, RoutineRunner, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function fakeSystemRoutineContollerTestSuite() {
   /** @type {?FakeSystemRoutineController} */
@@ -172,5 +173,15 @@ export function fakeSystemRoutineContollerTestSuite() {
 
     return runRoutineAndAssertStandardResultManualResolve(
         routineName, expectedResult);
+  });
+
+  test('GetSupportedRoutines', () => {
+    /** @type {!Array<!RoutineName>} */
+    const expected = [RoutineName.kCpuStress, RoutineName.kCpuCache];
+
+    controller.setFakeSupportedRoutines(expected);
+    return controller.getSupportedRoutines().then((result) => {
+      assertDeepEquals(expected, result.routines);
+    });
   });
 }

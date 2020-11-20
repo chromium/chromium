@@ -62,12 +62,15 @@ function setupFakeSystemRoutineController_() {
         /** @type{!StandardRoutineResult} */ (result));
   }
 
-  // Add fake battery routine results.
   for (const [routine, result] of fakeBatteryRoutineResults.entries()) {
     controller.setFakeBatteryRateRoutineResult(
         /** @type {!RoutineName} */ (routine),
         /** @type {!BatteryRateRoutineResult} */ (result));
   }
+
+  // Enable fake set of routines.
+  controller.setFakeSupportedRoutines(
+      [...fakeRoutineResults.keys(), ...fakeBatteryRoutineResults.keys()]);
 
   // Set the fake controller.
   setSystemRoutineControllerForTesting(controller);
