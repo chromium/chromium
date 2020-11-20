@@ -87,10 +87,11 @@ class CONTENT_EXPORT TtsController {
   // Returns true if we're currently speaking an utterance.
   virtual bool IsSpeaking() = 0;
 
-  // Speak the given utterance. If the utterance's can_enqueue flag is true
-  // and another utterance is in progress, adds it to the end of the queue.
-  // Otherwise, interrupts any current utterance and speaks this one
-  // immediately.
+  // Speak the given utterance. If the utterance's should_flush_queue flag is
+  // true, clears the speech queue including the currently speaking utterance
+  // (if one exists), and starts processing the speech queue by speaking the new
+  // utterance immediately. Otherwise, enqueues the new utterance and triggers
+  // continued processing of the speech queue.
   virtual void SpeakOrEnqueue(std::unique_ptr<TtsUtterance> utterance) = 0;
 
   // Stop all utterances and flush the queue. Implies leaving pause mode

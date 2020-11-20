@@ -62,8 +62,8 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance,
                                const double volume) override;
   const UtteranceContinuousParameters& GetContinuousParameters() override;
 
-  void SetCanEnqueue(bool can_enqueue) override;
-  bool GetCanEnqueue() override;
+  void SetShouldClearQueue(bool value) override;
+  bool GetShouldClearQueue() override;
 
   void SetRequiredEventTypes(const std::set<TtsEventType>& types) override;
   const std::set<TtsEventType>& GetRequiredEventTypes() override;
@@ -123,7 +123,7 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance,
   std::string voice_name_;
   std::string lang_;
   UtteranceContinuousParameters continuous_parameters_;
-  bool can_enqueue_;
+  bool should_clear_queue_;
   std::set<TtsEventType> required_event_types_;
   std::set<TtsEventType> desired_event_types_;
 

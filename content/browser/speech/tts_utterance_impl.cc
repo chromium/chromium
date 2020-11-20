@@ -63,7 +63,7 @@ TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
       was_created_with_web_contents_(web_contents != nullptr),
       id_(next_utterance_id_++),
       src_id_(-1),
-      can_enqueue_(false),
+      should_clear_queue_(true),
       char_index_(0),
       finished_(false) {
   options_.reset(new base::DictionaryValue());
@@ -155,12 +155,12 @@ TtsUtteranceImpl::GetContinuousParameters() {
   return continuous_parameters_;
 }
 
-void TtsUtteranceImpl::SetCanEnqueue(bool can_enqueue) {
-  can_enqueue_ = can_enqueue;
+void TtsUtteranceImpl::SetShouldClearQueue(bool value) {
+  should_clear_queue_ = value;
 }
 
-bool TtsUtteranceImpl::GetCanEnqueue() {
-  return can_enqueue_;
+bool TtsUtteranceImpl::GetShouldClearQueue() {
+  return should_clear_queue_;
 }
 
 void TtsUtteranceImpl::SetRequiredEventTypes(

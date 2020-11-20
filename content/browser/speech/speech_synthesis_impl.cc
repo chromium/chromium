@@ -129,7 +129,7 @@ void SpeechSynthesisImpl::Speak(
   tts_utterance->SetText(utterance->text);
   tts_utterance->SetLang(utterance->lang);
   tts_utterance->SetVoiceName(utterance->voice);
-  tts_utterance->SetCanEnqueue(true);
+  tts_utterance->SetShouldClearQueue(false);
   tts_utterance->SetContinuousParameters(utterance->rate, utterance->pitch,
                                          utterance->volume);
 

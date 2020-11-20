@@ -107,8 +107,10 @@ class CONTENT_EXPORT TtsUtterance {
                                        const double volume) = 0;
   virtual const UtteranceContinuousParameters& GetContinuousParameters() = 0;
 
-  virtual void SetCanEnqueue(bool can_enqueue) = 0;
-  virtual bool GetCanEnqueue() = 0;
+  // Prior to processing this utterance, determines whether the utterance queue
+  // gets cleared.
+  virtual void SetShouldClearQueue(bool value) = 0;
+  virtual bool GetShouldClearQueue() = 0;
 
   virtual void SetRequiredEventTypes(const std::set<TtsEventType>& types) = 0;
   virtual const std::set<TtsEventType>& GetRequiredEventTypes() = 0;

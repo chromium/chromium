@@ -264,7 +264,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   utterance->SetSrcUrl(source_url());
   utterance->SetLang(lang);
   utterance->SetContinuousParameters(rate, pitch, volume);
-  utterance->SetCanEnqueue(can_enqueue);
+  utterance->SetShouldClearQueue(!can_enqueue);
   utterance->SetRequiredEventTypes(required_event_types);
   utterance->SetDesiredEventTypes(desired_event_types);
   utterance->SetEngineId(voice_extension_id);
