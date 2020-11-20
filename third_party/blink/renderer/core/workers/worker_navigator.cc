@@ -67,9 +67,4 @@ void WorkerNavigator::NotifyUpdate() {
       *Event::Create(event_type_names::kLanguagechange));
 }
 
-void WorkerNavigator::Trace(Visitor* visitor) const {
-  NavigatorBase::Trace(visitor);
-  Supplementable<WorkerNavigator>::Trace(visitor);
-}
-
 }  // namespace blink
