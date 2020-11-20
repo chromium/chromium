@@ -3646,6 +3646,15 @@ void RenderFrameHostImpl::ShowCreatedWindow(
   // the handle to this class's associated RenderWidgetHostView.
   RenderFrameHostImpl* opener_frame_host =
       FromFrameToken(GetProcess()->GetID(), opener_frame_token);
+
+  // If |opener_frame_host| has been destroyed just return.
+  // TODO(crbug.com/1150976): Get rid of having to look up the opener frame
+  // to find the newly created web contents, because it is actually just
+  // |delegate_|.
+  if (!opener_frame_host) {
+    std::move(callback).Run();
+    return;
+  }
   opener_frame_host->delegate()->ShowCreatedWindow(
       opener_frame_host, GetRenderWidgetHost()->GetRoutingID(), disposition,
       initial_rect, user_gesture);
