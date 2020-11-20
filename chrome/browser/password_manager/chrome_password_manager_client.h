@@ -202,9 +202,7 @@ class ChromePasswordManagerClient
           matching_reused_credentials,
       bool password_field_exists) override;
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   void LogPasswordReuseDetectedEvent() override;
-#endif
 
   ukm::SourceId GetUkmSourceId() override;
   password_manager::PasswordManagerMetricsRecorder* GetMetricsRecorder()

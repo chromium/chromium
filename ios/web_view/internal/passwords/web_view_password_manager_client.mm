@@ -307,4 +307,8 @@ void WebViewPasswordManagerClient::CheckProtectedPasswordEntry(
   // TODO(crbug.com/1147967): Enable PhishGuard in web_view.
 }
 
+void WebViewPasswordManagerClient::LogPasswordReuseDetectedEvent() {
+  // TODO(crbug.com/1147967): Enable PhishGuard in web_view.
+}
+
 }  // namespace ios_web_view

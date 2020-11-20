@@ -316,3 +316,8 @@ void IOSChromePasswordManagerClient::CheckProtectedPasswordEntry(
   // TODO(crbug.com/1147967): This is no-op until the password protection
   // service is enabled.
 }
+
+void IOSChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {
+  // TODO(crbug.com/1147967): This is no-op until the password protection
+  // service is enabled.
+}

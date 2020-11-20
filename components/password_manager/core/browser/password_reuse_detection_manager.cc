@@ -162,11 +162,9 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
   metrics_util::LogPasswordReuse(password_length, saved_passwords,
                                  all_matching_reused_credentials_.size(),
                                  password_field_detected, reused_password_type);
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   if (reused_password_type ==
       metrics_util::PasswordType::PRIMARY_ACCOUNT_PASSWORD)
     client_->LogPasswordReuseDetectedEvent();
-#endif
 
   std::string username = reused_protected_password_hash.has_value()
                              ? reused_protected_password_hash->username

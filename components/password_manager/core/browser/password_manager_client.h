@@ -351,10 +351,8 @@ class PasswordManagerClient {
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
       bool password_field_exists) = 0;
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   // Records a Chrome Sync event that GAIA password reuse was detected.
   virtual void LogPasswordReuseDetectedEvent() = 0;
-#endif
 
   // Gets a ukm::SourceId that is associated with the WebContents object
   // and its last committed main frame navigation.

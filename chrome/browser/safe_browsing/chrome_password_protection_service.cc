@@ -123,7 +123,6 @@ const int kPasswordEventAttributionUserGestureLimit = 2;
 // allowlist for users opted into extended reporting, from non-incognito window.
 const float kProbabilityForSendingReportsFromSafeURLs = 0.01;
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
 // If user specifically mark a site as legitimate, we will keep this decision
 // for 2 days.
 const int kOverrideVerdictCacheDurationSec = 2 * 24 * 60 * 60;
@@ -222,7 +221,6 @@ std::unique_ptr<UserEventSpecifics> GetUserEventSpecifics(
   return GetUserEventSpecificsWithNavigationId(
       GetLastCommittedNavigationID(web_contents));
 }
-#endif
 
 }  // namespace
 
@@ -242,7 +240,6 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
       cache_manager_(VerdictCacheManagerFactory::GetForProfile(profile)) {
   pref_change_registrar_->Init(profile_->GetPrefs());
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   scoped_refptr<password_manager::PasswordStore> password_store =
       GetProfilePasswordStore();
   // Password store can be null in tests.
@@ -269,7 +266,7 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
       base::BindRepeating(
           &ChromePasswordProtectionService::OnEnterprisePasswordUrlChanged,
           base::Unretained(this)));
-#endif
+
   // TODO(nparker) Move the rest of the above code into Init()
   // without crashing unittests.
   Init();
@@ -323,7 +320,6 @@ ChromePasswordProtectionService::GetPasswordProtectionService(
   return nullptr;
 }
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
 // static
 bool ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
     content::WebContents* web_contents,
@@ -1225,7 +1221,6 @@ std::string ChromePasswordProtectionService::GetOrganizationName(
           : GetSignedInNonSyncAccount(username_for_last_shown_warning()).email;
   return email.empty() ? std::string() : gaia::ExtractDomainName(email);
 }
-#endif
 
 // Disabled on Android, because enterprise reporting extension is not supported.
 #if !defined(OS_ANDROID)
@@ -1270,7 +1265,6 @@ void ChromePasswordProtectionService::ReportPasswordChanged() {
 }
 #endif
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
 bool ChromePasswordProtectionService::HasUnhandledEnterprisePasswordReuse(
     content::WebContents* web_contents) const {
   return web_contents_with_unhandled_enterprise_reuses_.find(web_contents) !=
@@ -1394,7 +1388,6 @@ void ChromePasswordProtectionService::UpdateSecurityState(
   ui_manager_->AddToWhitelistUrlSet(url_with_empty_path, web_contents,
                                     /*is_pending=*/true, threat_type);
 }
-#endif
 
 const policy::BrowserPolicyConnector*
 ChromePasswordProtectionService::GetBrowserPolicyConnector() const {

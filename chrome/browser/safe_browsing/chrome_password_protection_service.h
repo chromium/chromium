@@ -103,7 +103,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   static ChromePasswordProtectionService* GetPasswordProtectionService(
       Profile* profile);
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   // Called by SecurityStateTabHelper to determine if page info bubble should
   // show password reuse warning.
   static bool ShouldShowPasswordReusePageInfoBubble(
@@ -184,7 +183,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   // returns an empty string.
   std::string GetOrganizationName(
       ReusedPasswordAccountType password_type) const;
-#endif
 
 // The following functions are disabled on Android, because enterprise reporting
 // extension is not supported.
@@ -203,13 +201,11 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   void ReportPasswordChanged() override;
 #endif
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   // Returns true if there's any enterprise password reuses unhandled in
   // |web_contents|. "Unhandled" is defined as user hasn't clicked on
   // "Change Password" button in modal warning dialog.
   bool HasUnhandledEnterprisePasswordReuse(
       content::WebContents* web_contents) const;
-#endif
 
   // If user has clicked through any Safe Browsing interstitial on this given
   // |web_contents|.
@@ -345,7 +341,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   // If Safe browsing endpoint is not enabled in the country.
   bool IsInExcludedCountry() override;
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   void MaybeLogPasswordReuseDetectedEvent(
       content::WebContents* web_contents) override;
 
@@ -381,7 +376,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   void UpdateSecurityState(SBThreatType threat_type,
                            ReusedPasswordAccountType password_type,
                            content::WebContents* web_contents) override;
-#endif
 
   void RemoveUnhandledSyncPasswordReuseOnURLsDeleted(
       bool all_history,

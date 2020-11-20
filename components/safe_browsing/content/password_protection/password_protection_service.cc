@@ -148,15 +148,13 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
       RequestOutcome reason = GetPingNotSentReason(
           trigger_type, main_frame_url, reused_password_account_type);
       LogNoPingingReason(trigger_type, reason, reused_password_account_type);
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
+
       if (reused_password_account_type.is_account_syncing())
         MaybeLogPasswordReuseLookupEvent(web_contents, reason, password_type,
                                          nullptr);
-#endif  // defined(PASSWORD_REUSE_WARNING_ENABLED)
     }
   }
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   if (CanShowInterstitial(reused_password_account_type, main_frame_url)) {
     LogPasswordAlertModeOutcome(RequestOutcome::SUCCEEDED,
                                 reused_password_account_type);
@@ -165,10 +163,8 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
         reused_password_account_type;
     ShowInterstitial(web_contents, reused_password_account_type);
   }
-#endif  // defined(PASSWORD_REUSE_WARNING_ENABLED)
 }
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
 bool PasswordProtectionService::ShouldShowModalWarning(
     LoginReputationClientRequest::TriggerType trigger_type,
     ReusedPasswordAccountType password_type,
@@ -201,7 +197,6 @@ bool PasswordProtectionService::IsModalWarningShowingInWebContents(
   }
   return false;
 }
-#endif
 
 LoginReputationClientResponse::VerdictType
 PasswordProtectionService::GetCachedVerdict(
@@ -281,7 +276,6 @@ void PasswordProtectionService::RequestFinished(
       return;
     }
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
     if (ShouldShowModalWarning(request->trigger_type(), password_type,
                                response->verdict_type())) {
       username_for_last_shown_warning_ = request->username();
@@ -292,7 +286,6 @@ void PasswordProtectionService::RequestFinished(
                        password_type);
       request->set_is_modal_warning_showing(true);
     }
-#endif
   }
 
   request->HandleDeferredNavigations();

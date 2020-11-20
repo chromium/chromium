@@ -115,9 +115,7 @@ void StubPasswordManagerClient::CheckProtectedPasswordEntry(
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
     bool password_field_exists) {}
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
 void StubPasswordManagerClient::LogPasswordReuseDetectedEvent() {}
-#endif
 
 ukm::SourceId StubPasswordManagerClient::GetUkmSourceId() {
   return ukm_source_id_;

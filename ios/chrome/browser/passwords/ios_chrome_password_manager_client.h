@@ -12,7 +12,7 @@
 #include "components/autofill/core/common/language_code.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
-#import "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -128,6 +128,8 @@ class IOSChromePasswordManagerClient
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials,
       bool password_field_exists) override;
+
+  void LogPasswordReuseDetectedEvent() override;
 
  private:
   __weak id<IOSChromePasswordManagerClientBridge> bridge_;

@@ -128,7 +128,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
           matching_reused_credentials,
       bool password_field_exists);
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   // Records a Chrome Sync event that sync password reuse was detected.
   virtual void MaybeLogPasswordReuseDetectedEvent(
       content::WebContents* web_contents) = 0;
@@ -151,7 +150,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   // Shows chrome://reset-password interstitial.
   virtual void ShowInterstitial(content::WebContents* web_contens,
                                 ReusedPasswordAccountType password_type) = 0;
-#endif
 
 // The following functions are disabled on Android, because enterprise reporting
 // extension is not supported.
@@ -168,11 +166,9 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   virtual void ReportPasswordChanged() = 0;
 #endif
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   virtual void UpdateSecurityState(safe_browsing::SBThreatType threat_type,
                                    ReusedPasswordAccountType password_type,
                                    content::WebContents* web_contents) = 0;
-#endif
 
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager();
 
@@ -395,7 +391,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   // If Safe browsing endpoint is not enabled in the country.
   virtual bool IsInExcludedCountry() = 0;
 
-#if defined(PASSWORD_REUSE_WARNING_ENABLED)
   // Records a Chrome Sync event for the result of the URL reputation lookup
   // if the user enters their sync password on a website.
   virtual void MaybeLogPasswordReuseLookupEvent(
@@ -412,7 +407,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   // the reused |password_type| and the |main_frame_url|.
   virtual bool CanShowInterstitial(ReusedPasswordAccountType password_type,
                                    const GURL& main_frame_url) = 0;
-#endif
 
   void CheckCsdWhitelistOnIOThread(const GURL& url, bool* check_result);
 
