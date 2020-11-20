@@ -577,6 +577,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Sync.ModelTypeTimeUntilEncryptionKeyFound"
+    units="GetUpdatesResponses" expires_after="2021-05-18">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records how long it took from the moment the first update encrypted with
+    this key was received by ModelTypeWorker, to the moment where the key was
+    available to the Cryptographer. The time is measured by the number of
+    GetUpdatesResponse received by the worker *while* the Cryptographer didn't
+    have pending keys (and thus the key should have been known in theory).
+  </summary>
+</histogram>
+
 <histogram base="true" name="Sync.ModelTypeUpdateDrop" enum="SyncModelTypes"
     expires_after="2021-05-01">
 <!-- Name completed by histogram_suffixes name="SyncModelTypeUpdateDrop" -->

@@ -6,15 +6,16 @@
 
 #include <stdint.h>
 
-#include <map>
+#include <set>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -36,6 +37,9 @@
 namespace syncer {
 
 namespace {
+
+const char kTimeUntilEncryptionKeyFoundHistogramPrefix[] =
+    "Sync.ModelTypeTimeUntilEncryptionKeyFound.";
 
 void AdaptClientTagForFullUpdateData(ModelType model_type,
                                      syncer::EntityData* data) {
@@ -62,6 +66,25 @@ void AdaptClientTagForFullUpdateData(ModelType model_type,
   } else {
     NOTREACHED();
   }
+}
+
+// Returns empty string if |entity| is not encrypted.
+// TODO(crbug.com/1109221): Consider moving this to a util file and converting
+// UpdateResponseData::encryption_key_name into a method that calls it. Consider
+// returning a struct containing also the encrypted blob, which would make the
+// code of PopulateUpdateResponseData() simpler.
+std::string GetEncryptionKeyName(const sync_pb::SyncEntity& entity) {
+  if (entity.deleted()) {
+    return std::string();
+  }
+  // Passwords use their own legacy encryption scheme.
+  if (entity.specifics().password().has_encrypted()) {
+    return entity.specifics().password().encrypted().key_name();
+  }
+  if (entity.specifics().has_encrypted()) {
+    return entity.specifics().encrypted().key_name();
+  }
+  return std::string();
 }
 
 }  // namespace
@@ -202,6 +225,10 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
         // Cannot decrypt now, copy the sync entity for later decryption.
         entries_pending_decryption_[update_entity->id_string()] =
             *update_entity;
+        // If there's no entry for this unknown encryption key, create one.
+        DCHECK(!response_data.encryption_key_name.empty());
+        unknown_encryption_keys_by_name_.emplace(
+            response_data.encryption_key_name, UnknownEncryptionKeyInfo());
         SyncRecordModelTypeUpdateDropReason(
             UpdateDropReason::kDecryptionPending, type_);
         break;
@@ -210,6 +237,16 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
         SyncRecordModelTypeUpdateDropReason(UpdateDropReason::kFailedToDecrypt,
                                             type_);
         break;
+    }
+  }
+
+  // Some updates pending decryption might have been overwritten by decryptable
+  // ones. So some encryption keys may no longer fit the definition of unknown.
+  RemoveKeysNoLongerUnknown();
+
+  if (!cryptographer_ || cryptographer_->CanEncrypt()) {
+    for (auto& key_and_info : unknown_encryption_keys_by_name_) {
+      key_and_info.second.gu_responses_while_should_have_been_known++;
     }
   }
 
@@ -233,6 +270,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
                               : update_entity.specifics();
   bool specifics_were_encrypted = false;
 
+  response_data->encryption_key_name = GetEncryptionKeyName(update_entity);
   if (specifics.password().has_encrypted()) {
     // Passwords use their own legacy encryption scheme.
     DCHECK(cryptographer);
@@ -248,8 +286,6 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
     if (!DecryptPasswordSpecifics(*cryptographer, specifics, &data.specifics)) {
       return FAILED_TO_DECRYPT;
     }
-    response_data->encryption_key_name =
-        specifics.password().encrypted().key_name();
     specifics_were_encrypted = true;
   } else if (specifics.has_encrypted()) {
     // Check if specifics are encrypted and try to decrypt if so.
@@ -263,7 +299,6 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
     if (!DecryptSpecifics(*cryptographer, specifics, &data.specifics)) {
       return FAILED_TO_DECRYPT;
     }
-    response_data->encryption_key_name = specifics.encrypted().key_name();
     specifics_were_encrypted = true;
   } else {
     // No encryption.
@@ -505,6 +540,21 @@ void ModelTypeWorker::DecryptStoredEntities() {
         break;
     }
   }
+
+  // Note this can perfectly contain keys that were encrypting corrupt updates
+  // (FAILED_TO_DECRYPT above); all that matters is the key was found.
+  const std::vector<UnknownEncryptionKeyInfo> newly_found_keys =
+      RemoveKeysNoLongerUnknown();
+  for (const UnknownEncryptionKeyInfo& newly_found_key : newly_found_keys) {
+    // Don't record UMA for the dominant case where the key was only unknown
+    // while the cryptographer was pending external interaction.
+    if (newly_found_key.gu_responses_while_should_have_been_known > 0) {
+      base::UmaHistogramCounts1000(
+          base::StrCat({kTimeUntilEncryptionKeyFoundHistogramPrefix,
+                        ModelTypeToString(GetModelType())}),
+          newly_found_key.gu_responses_while_should_have_been_known);
+    }
+  }
 }
 
 void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
@@ -624,6 +674,28 @@ bool ModelTypeWorker::DecryptPasswordSpecifics(
     return false;
   }
   return true;
+}
+
+std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo>
+ModelTypeWorker::RemoveKeysNoLongerUnknown() {
+  std::set<std::string> keys_blocking_updates;
+  for (const auto& id_and_update : entries_pending_decryption_) {
+    const std::string key_name = GetEncryptionKeyName(id_and_update.second);
+    DCHECK(!key_name.empty());
+    keys_blocking_updates.insert(key_name);
+  }
+
+  std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo> removed_keys;
+  base::EraseIf(
+      unknown_encryption_keys_by_name_, [&](const auto& key_and_info) {
+        if (base::Contains(keys_blocking_updates, key_and_info.first)) {
+          return false;
+        }
+        removed_keys.push_back(key_and_info.second);
+        return true;
+      });
+
+  return removed_keys;
 }
 
 GetLocalChangesRequest::GetLocalChangesRequest(
