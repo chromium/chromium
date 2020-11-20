@@ -479,8 +479,11 @@ LocalStorageImpl::LocalStorageImpl(
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "LocalStorage", task_runner, MemoryDumpProvider::Options());
 
-  if (receiver)
+  if (receiver) {
     control_receiver_.Bind(std::move(receiver));
+    control_receiver_.set_disconnect_handler(base::BindOnce(
+        &LocalStorageImpl::ShutdownAndDelete, base::Unretained(this)));
+  }
 }
 
 void LocalStorageImpl::BindStorageArea(
@@ -582,17 +585,13 @@ void LocalStorageImpl::FlushOriginForTesting(const url::Origin& origin) {
   it->second->storage_area()->ScheduleImmediateCommit();
 }
 
-void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
+void LocalStorageImpl::ShutdownAndDelete() {
   DCHECK_NE(connection_state_, CONNECTION_SHUTDOWN);
-  DCHECK(callback);
-
-  control_receiver_.reset();
-  shutdown_complete_callback_ = std::move(callback);
 
   // Nothing to do if no connection to the database was ever finished.
   if (connection_state_ != CONNECTION_FINISHED) {
     connection_state_ = CONNECTION_SHUTDOWN;
-    OnShutdownComplete();
+    OnShutdownComplete(leveldb::Status::OK());
     return;
   }
 
@@ -601,8 +600,9 @@ void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
   // Flush any uncommitted data.
   for (const auto& it : areas_) {
     auto* area = it.second->storage_area();
-    LOCAL_HISTOGRAM_BOOLEAN("LocalStorageContext.ShutDown.MaybeDroppedChanges",
-                            area->has_pending_load_tasks());
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "LocalStorageContext.ShutdownAndDelete.MaybeDroppedChanges",
+        area->has_pending_load_tasks());
     area->ScheduleImmediateCommit();
     // TODO(dmurph): Monitor the above histogram, and if dropping changes is
     // common then handle that here.
@@ -612,7 +612,7 @@ void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
   // Respect the content policy settings about what to
   // keep and what to discard.
   if (force_keep_session_state_) {
-    OnShutdownComplete();
+    OnShutdownComplete(leveldb::Status::OK());
     return;  // Keep everything.
   }
 
@@ -621,7 +621,7 @@ void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
         base::BindOnce(&LocalStorageImpl::OnGotStorageUsageForShutdown,
                        base::Unretained(this)));
   } else {
-    OnShutdownComplete();
+    OnShutdownComplete(leveldb::Status::OK());
   }
 }
 
@@ -797,9 +797,6 @@ void LocalStorageImpl::RunWhenConnected(base::OnceClosure callback) {
 }
 
 void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
-  if (connection_state_ == CONNECTION_SHUTDOWN)
-    return;
-
   DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
 
   if (!directory_.empty() && directory_.IsAbsolute() && !in_memory_only) {
@@ -896,9 +893,6 @@ void LocalStorageImpl::OnGotDatabaseVersion(leveldb::Status status,
 }
 
 void LocalStorageImpl::OnConnectionFinished() {
-  if (connection_state_ == CONNECTION_SHUTDOWN)
-    return;
-
   DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
   // If connection was opened successfully, reset tried_to_recreate_during_open_
   // to enable recreating the database on future errors.
@@ -917,9 +911,6 @@ void LocalStorageImpl::OnConnectionFinished() {
 }
 
 void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
-  if (connection_state_ == CONNECTION_SHUTDOWN)
-    return;
-
   // We're about to set database_ to null, so delete the StorageAreaImpls
   // that might still be using the old database.
   for (const auto& it : areas_)
@@ -1084,22 +1075,15 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
 
   if (!origins_to_delete.empty()) {
     DeleteOrigins(database_.get(), std::move(origins_to_delete),
-                  base::BindOnce(&LocalStorageImpl::OnOriginsDeleted,
+                  base::BindOnce(&LocalStorageImpl::OnShutdownComplete,
                                  base::Unretained(this)));
   } else {
-    OnShutdownComplete();
+    OnShutdownComplete(leveldb::Status::OK());
   }
 }
 
-void LocalStorageImpl::OnOriginsDeleted(leveldb::Status status) {
-  OnShutdownComplete();
-}
-
-void LocalStorageImpl::OnShutdownComplete() {
-  DCHECK(shutdown_complete_callback_);
-  // Flush any final tasks on DB task runner before invoking the callback.
-  leveldb_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
+void LocalStorageImpl::OnShutdownComplete(leveldb::Status status) {
+  delete this;
 }
 
 void LocalStorageImpl::GetStatistics(size_t* total_cache_size,

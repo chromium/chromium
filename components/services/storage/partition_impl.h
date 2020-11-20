@@ -63,8 +63,9 @@ class PartitionImpl : public mojom::Partition {
   mojo::ReceiverSet<mojom::Partition> receivers_;
   std::map<url::Origin, std::unique_ptr<OriginContextImpl>> origin_contexts_;
 
-  std::unique_ptr<SessionStorageImpl> session_storage_;
-  std::unique_ptr<LocalStorageImpl> local_storage_;
+  // These objects own themselves.
+  SessionStorageImpl* session_storage_;
+  LocalStorageImpl* local_storage_;
 
   DISALLOW_COPY_AND_ASSIGN(PartitionImpl);
 };
