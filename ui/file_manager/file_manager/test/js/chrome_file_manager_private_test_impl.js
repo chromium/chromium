@@ -42,6 +42,8 @@ if (window.test === undefined && window.isSWA) {
   };
 } else {
   mockVolumeManager = new MockVolumeManager();
+  window.webkitResolveLocalFileSystemURL =
+      MockVolumeManager.resolveLocalFileSystemURL.bind(null, mockVolumeManager);
 }
 
 /**
@@ -315,6 +317,3 @@ chrome.fileSystem = {
     setTimeout(callback, 0, fs);
   },
 };
-
-window.webkitResolveLocalFileSystemURL =
-    MockVolumeManager.resolveLocalFileSystemURL.bind(null, mockVolumeManager);
