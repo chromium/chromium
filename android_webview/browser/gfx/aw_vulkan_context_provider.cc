@@ -215,6 +215,13 @@ bool AwVulkanContextProvider::Initialize(AwDrawFn_InitVkParams* params) {
   return !!globals_;
 }
 
+bool AwVulkanContextProvider::InitializeGrContext(
+    const GrContextOptions& context_options) {
+  // GrContext is created in Globals, so nothing to do here besides DCHECK.
+  DCHECK(globals_);
+  return globals_->gr_context.get() != nullptr;
+}
+
 void AwVulkanContextProvider::SecondaryCBDrawBegin(
     sk_sp<GrVkSecondaryCBDrawContext> draw_context) {
   DCHECK(draw_context);

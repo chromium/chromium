@@ -123,6 +123,10 @@ const base::Feature kSkiaDawn{"SkiaDawn", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableSharedImageForWebview{
     "EnableSharedImageForWebview", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable GrShaderCache to use with Vulkan backend.
+const base::Feature kEnableGrShaderCacheForVulkan{
+    "EnableGrShaderCacheForVulkan", base::FEATURE_ENABLED_BY_DEFAULT};
+
 bool IsUsingVulkan() {
   bool enable = base::FeatureList::IsEnabled(kVulkan);
 #if defined(OS_ANDROID)
