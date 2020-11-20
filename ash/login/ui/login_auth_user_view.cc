@@ -90,8 +90,6 @@ const int kDistanceFromPinKeyboardToBigUserViewBottomDp = 50;
 // Distance from the top of the user view to the user icon.
 constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 24;
 
-constexpr SkColor kChallengeResponseErrorColor = gfx::kGoogleRed300;
-
 // Date time format containing only the day of the week, for example: "Tuesday".
 constexpr char kDayOfWeekOnlyTimeFormat[] = "EEEE";
 
@@ -444,9 +442,10 @@ class LoginAuthUserView::FingerprintView : public views::View {
     label_->SetTextBasedOnAuthAttempt(success);
 
     if (success) {
-      icon_->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintSuccessIcon,
-                                            kFingerprintIconSizeDp,
-                                            gfx::kGoogleGreen300));
+      icon_->SetImage(gfx::CreateVectorIcon(
+          kLockScreenFingerprintSuccessIcon, kFingerprintIconSizeDp,
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPositive)));
     } else {
       SetIcon(FingerprintState::DISABLED_FROM_ATTEMPTS);
       // base::Unretained is safe because reset_state_ is owned by |this|.
@@ -628,9 +627,10 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
             AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorPrimary));
       case State::kFailure:
-        return gfx::CreateVectorIcon(kLockScreenSmartCardFailureIcon,
-                                     kChallengeResponseIconSizeDp,
-                                     kChallengeResponseErrorColor);
+        return gfx::CreateVectorIcon(
+            kLockScreenSmartCardFailureIcon, kChallengeResponseIconSizeDp,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorAlert));
     }
   }
 

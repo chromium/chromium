@@ -79,6 +79,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   };
 
   enum class ContentLayerType {
+    kLoginScrollBarColor,
     kSeparatorColor,
 
     kTextColorPrimary,
@@ -95,6 +96,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
     // Color for prominent icon, e.g, "Add connection" icon button inside
     // VPN detailed view.
     kIconColorProminent,
+
+    // Background for kIconColorSecondary.
+    kIconColorSecondaryBackground,
 
     // The default color for button labels.
     kButtonLabelColor,

@@ -30,8 +30,6 @@ constexpr int kNonEmptyHeight = 1;
 
 namespace {
 
-constexpr SkColor kMenuBackgroundColor = SkColorSetRGB(0x3C, 0x40, 0x43);
-
 class MenuItemView : public views::Button {
  public:
   MenuItemView(const LoginMenuView::Item& item,
@@ -132,7 +130,6 @@ LoginMenuView::LoginMenuView(const std::vector<Item>& items,
                              LoginButton* opener,
                              const OnSelect& on_select)
     : LoginBaseBubbleView(anchor_view), opener_(opener), on_select_(on_select) {
-  SetBackground(views::CreateSolidBackground(kMenuBackgroundColor));
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   scroller_ = new views::ScrollView();

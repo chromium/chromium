@@ -43,7 +43,9 @@ void PaintLoadingArc(gfx::Canvas* canvas,
              /*sweepAngle=*/360 * loading_fraction, /*forceMoveTo=*/true);
 
   cc::PaintFlags flags;
-  flags.setColor(gfx::kGoogleGrey100);
+  // Use the same color as the arrow icon.
+  flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setAntiAlias(true);
   canvas->DrawPath(path, flags);

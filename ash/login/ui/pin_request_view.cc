@@ -74,11 +74,6 @@ constexpr int kPinRequestViewMinimumHeightDp =
     kAccessCodeToPinKeyboardDistanceDp + kPinKeyboardToFooterDistanceDp +
     kArrowButtonSizeDp + kPinRequestViewMainHorizontalInsetDp;  // = 266
 
-constexpr int kAlpha70Percent = 178;
-constexpr int kAlpha74Percent = 189;
-
-constexpr SkColor kErrorColor = gfx::kGoogleRed300;
-
 bool IsTabletMode() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
@@ -151,21 +146,9 @@ PinRequestViewState PinRequestView::TestApi::state() const {
 
 // static
 SkColor PinRequestView::GetChildUserDialogColor(bool using_blur) {
-  SkColor color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kOpaque);
-
-  SkColor extracted_color =
-      Shell::Get()->wallpaper_controller()->GetProminentColor(
-          color_utils::ColorProfile(color_utils::LumaRange::DARK,
-                                    color_utils::SaturationRange::MUTED));
-
-  if (extracted_color != kInvalidWallpaperColor &&
-      extracted_color != SK_ColorTRANSPARENT) {
-    color = color_utils::GetResultingPaintColor(
-        SkColorSetA(SK_ColorBLACK, kAlpha70Percent), extracted_color);
-  }
-
-  return using_blur ? SkColorSetA(color, kAlpha74Percent) : color;
+  return AshColorProvider::Get()->GetBaseLayerColor(
+      using_blur ? AshColorProvider::BaseLayerType::kTransparent80
+                 : AshColorProvider::BaseLayerType::kOpaque);
 }
 
 // TODO(crbug.com/1061008): Make dialog look good on small screens with high
@@ -505,6 +488,8 @@ void PinRequestView::UpdateState(PinRequestViewState state,
       return;
     }
     case PinRequestViewState::kError: {
+      const SkColor kErrorColor = AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorAlert);
       access_code_view_->SetInputColor(kErrorColor);
       title_label_->SetEnabledColor(kErrorColor);
       // Read out the error.

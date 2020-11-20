@@ -102,7 +102,10 @@ class IconRoundedView : public views::View {
  public:
   IconRoundedView(int size) : radius_(size / 2) {
     icon_ = gfx::ImageSkiaOperations::CreateResizedImage(
-        gfx::CreateVectorIcon(chromeos::kEnterpriseIcon, gfx::kGoogleGrey500),
+        gfx::CreateVectorIcon(
+            chromeos::kEnterpriseIcon,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorSecondary)),
         skia::ImageOperations::RESIZE_BEST,
         gfx::Size(size * kIconProportion, size * kIconProportion));
   }
@@ -125,9 +128,9 @@ class IconRoundedView : public views::View {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary));
+        AshColorProvider::ContentLayerType::kIconColorSecondaryBackground));
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    // The white circle on which we paint the icon.
+    // The colored circle on which we paint the icon.
     canvas->DrawCircle(center_circle, radius_, flags);
     canvas->DrawImageInPath(icon_, image_bounds.x(), image_bounds.y(), path,
                             flags);

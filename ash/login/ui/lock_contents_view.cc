@@ -114,9 +114,6 @@ constexpr int kMediumDensityDistanceBetweenAuthUserAndUsersPortraitDp = 84;
 constexpr int kHorizontalPaddingAuthErrorBubbleDp = 8;
 constexpr int kVerticalPaddingAuthErrorBubbleDp = 8;
 
-// The font color of the bottom status indicator for ADB warning.
-constexpr SkColor kBottomStatusAdbFontColor = gfx::kGoogleRed300;
-
 // Spacing between the bottom status indicator and the shelf.
 constexpr int kBottomStatusIndicatorBottomMarginDp = 16;
 
@@ -778,13 +775,13 @@ void LockContentsView::ShowEnterpriseDomainManager(
     return;
   bottom_status_indicator_->SetIcon(
       chromeos::kEnterpriseIcon,
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+      AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
   bottom_status_indicator_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_DEVICE_INDICATOR, ui::GetChromeOSDeviceName(),
       base::UTF8ToUTF16(entreprise_domain_manager)));
   bottom_status_indicator_->SetEnabledTextColors(
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
+          AshColorProvider::ContentLayerType::kButtonLabelColorPrimary));
   bottom_status_indicator_->set_role_for_accessibility(
       ax::mojom::Role::kButton);
   bottom_status_indicator_status_ = BottomIndicatorState::kManagedDevice;
@@ -797,7 +794,9 @@ void LockContentsView::ShowAdbEnabled() {
       AshColorProvider::ContentLayerType::kIconColorAlert);
   bottom_status_indicator_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SCREEN_UNVERIFIED_CODE_WARNING));
-  bottom_status_indicator_->SetEnabledTextColors(kBottomStatusAdbFontColor);
+  bottom_status_indicator_->SetEnabledTextColors(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorAlert));
   bottom_status_indicator_->set_role_for_accessibility(
       ax::mojom::Role::kStaticText);
   bottom_status_indicator_status_ =

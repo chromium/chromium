@@ -211,12 +211,15 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
 SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
   const bool is_dark_mode = IsDarkModeEnabled();
   switch (type) {
+    case ContentLayerType::kLoginScrollBarColor:
     case ContentLayerType::kSeparatorColor:
     case ContentLayerType::kShelfHandleColor:
       return is_dark_mode ? SkColorSetA(SK_ColorWHITE, 0x24)
                           : SkColorSetA(SK_ColorBLACK, 0x24);
     case ContentLayerType::kIconColorSecondary:
       return gfx::kGoogleGrey500;
+    case ContentLayerType::kIconColorSecondaryBackground:
+      return is_dark_mode ? gfx::kGoogleGrey100 : gfx::kGoogleGrey800;
     case ContentLayerType::kButtonLabelColor:
     case ContentLayerType::kButtonIconColor:
     case ContentLayerType::kAppStateIndicatorColor:

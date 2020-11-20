@@ -53,14 +53,6 @@ constexpr int kLabelMarginDp = 20;
 constexpr int kLeftMarginForSelectionButton = 8;
 constexpr int kRightMarginForSelectionButton = 3;
 
-constexpr SkColor kPublicSessionBackgroundColor =
-    SkColorSetARGB(0xAB, 0x00, 0x00, 0x00);
-constexpr SkColor kBorderColor = SkColorSetA(SK_ColorWHITE, 0x33);
-constexpr SkColor kPublicSessionBlueColor =
-    SkColorSetARGB(0xDE, 0x7B, 0xAA, 0xF7);
-constexpr SkColor kSelectionMenuTitleColor =
-    SkColorSetARGB(0x57, 0xFF, 0xFF, 0xFF);
-
 constexpr int kDropDownIconSizeDp = 16;
 constexpr int kArrowButtonSizeDp = 48;
 constexpr int kAdvancedViewButtonWidthDp = 190;
@@ -232,7 +224,9 @@ class MonitoringWarningView : public NonAccessibleView {
 
     image_ = new views::ImageView();
     image_->SetImage(gfx::CreateVectorIcon(
-        vector_icons::kWarningIcon, kMonitoringWarningIconSizeDp, SK_ColorRED));
+        vector_icons::kWarningIcon, kMonitoringWarningIconSizeDp,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorWarning)));
     image_->SetPreferredSize(
         gfx::Size(kMonitoringWarningIconSizeDp, kMonitoringWarningIconSizeDp));
     image_->SetVisible(false);
@@ -333,7 +327,9 @@ class RightPaneView : public NonAccessibleView {
 
     views::StyledLabel::RangeStyleInfo link_style =
         views::StyledLabel::RangeStyleInfo::CreateForLink(on_learn_more_tapped);
-    link_style.override_color = kPublicSessionBlueColor;
+    const SkColor blue = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonLabelColorBlue);
+    link_style.override_color = blue;
     learn_more_label_->AddStyleRange(gfx::Range(offset, offset + link.length()),
                                      link_style);
     learn_more_label_->SetAutoColorReadabilityEnabled(false);
@@ -344,9 +340,8 @@ class RightPaneView : public NonAccessibleView {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_LOGIN_PUBLIC_SESSION_LANGUAGE_AND_INPUT));
-    advanced_view_button_->SetTextColor(kPublicSessionBlueColor);
-    advanced_view_button_->SetIcon(kLoginScreenButtonDropdownIcon,
-                                   kPublicSessionBlueColor);
+    advanced_view_button_->SetTextColor(blue);
+    advanced_view_button_->SetIcon(kLoginScreenButtonDropdownIcon, blue);
     advanced_view_button_->SetPreferredSize(
         gfx::Size(kAdvancedViewButtonWidthDp, kAdvancedViewButtonHeightDp));
     AddChildView(advanced_view_button_);
@@ -356,6 +351,10 @@ class RightPaneView : public NonAccessibleView {
     advanced_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
     AddChildView(advanced_view_);
+
+    const SkColor selection_menu_title_color =
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorSecondary);
 
     // Creates button to open the menu.
     auto create_menu_button =
@@ -367,8 +366,10 @@ class RightPaneView : public NonAccessibleView {
       button->SetMargins(kLeftMarginForSelectionButton,
                          kRightMarginForSelectionButton);
       button->SetBorder(views::CreateRoundedRectBorder(
-          kBorderThicknessDp, kRoundRectCornerRadiusDp, kBorderColor));
-      button->SetIcon(kLoginScreenMenuDropdownIcon, kSelectionMenuTitleColor);
+          kBorderThicknessDp, kRoundRectCornerRadiusDp,
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kSeparatorColor)));
+      button->SetIcon(kLoginScreenMenuDropdownIcon, selection_menu_title_color);
       return button;
     };
 
@@ -380,7 +381,7 @@ class RightPaneView : public NonAccessibleView {
 
     views::Label* language_title = CreateLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_LANGUAGE_SELECTION_SELECT),
-        kSelectionMenuTitleColor);
+        selection_menu_title_color);
     language_selection_ = create_menu_button(
         base::BindRepeating(&RightPaneView::LanguageSelectionButtonPressed,
                             base::Unretained(this)),
@@ -388,7 +389,7 @@ class RightPaneView : public NonAccessibleView {
 
     views::Label* keyboard_title = CreateLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_KEYBOARD_SELECTION_SELECT),
-        kSelectionMenuTitleColor);
+        selection_menu_title_color);
     keyboard_selection_ = create_menu_button(
         base::BindRepeating(&RightPaneView::KeyboardSelectionButtonPressed,
                             base::Unretained(this)),
@@ -806,8 +807,10 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
       gfx::Size(kNonEmptyWidth, kTopSpacingForUserViewDp));
   left_pane->AddChildView(top_spacing);
   left_pane->AddChildView(user_view_);
-  left_pane->SetBorder(
-      views::CreateSolidSidedBorder(0, 0, 0, kBorderThicknessDp, kBorderColor));
+  left_pane->SetBorder(views::CreateSolidSidedBorder(
+      0, 0, 0, kBorderThicknessDp,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kSeparatorColor)));
 
   right_pane_ = new RightPaneView(
       base::BindRepeating(&LoginExpandedPublicAccountView::ShowWarningDialog,
@@ -885,7 +888,8 @@ void LoginExpandedPublicAccountView::OnPaint(gfx::Canvas* canvas) {
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(kPublicSessionBackgroundColor);
+  flags.setColor(AshColorProvider::Get()->GetShieldLayerColor(
+      AshColorProvider::ShieldLayerType::kShield80));
   flags.setAntiAlias(true);
   canvas->DrawRoundRect(GetContentsBounds(), kRoundRectCornerRadiusDp, flags);
 }
