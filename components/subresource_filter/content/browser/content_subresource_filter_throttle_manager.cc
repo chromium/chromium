@@ -147,10 +147,14 @@ void ContentSubresourceFilterThrottleManager::OnSubresourceFilterGoingAway() {
 void ContentSubresourceFilterThrottleManager::RenderFrameDeleted(
     content::RenderFrameHost* frame_host) {
   frame_host_filter_map_.erase(frame_host);
-  navigated_frames_.erase(frame_host);
   ad_frames_.erase(frame_host);
   navigation_load_policies_.erase(frame_host);
   DestroyRulesetHandleIfNoLongerUsed();
+}
+
+void ContentSubresourceFilterThrottleManager::FrameDeleted(
+    content::RenderFrameHost* frame_host) {
+  navigated_frames_.erase(frame_host->GetFrameTreeNodeId());
 }
 
 // Pull the AsyncDocumentSubresourceFilter and its associated
@@ -272,9 +276,10 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
     return;
   }
 
-  // Reuse the previous activation if this attempted load was neither the
-  // initial load nor committed.
-  if (!navigated_frames_.insert(frame_host).second &&
+  // Do nothing if the navigation was uncommitted and this frame has had a
+  // previous navigation. We will keep using the existing activation.
+  if (!navigated_frames_.insert(navigation_handle->GetFrameTreeNodeId())
+           .second &&
       !navigation_handle->HasCommitted()) {
     return;
   }

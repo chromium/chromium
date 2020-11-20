@@ -151,6 +151,7 @@ class ContentSubresourceFilterThrottleManager
  protected:
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
+  void FrameDeleted(content::RenderFrameHost* frame_host) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
@@ -243,9 +244,9 @@ class ContentSubresourceFilterThrottleManager
            std::unique_ptr<AsyncDocumentSubresourceFilter>>
       frame_host_filter_map_;
 
-  // Set of RenderFrameHosts that have had at least one committed or aborted
-  // navigation.
-  std::set<content::RenderFrameHost*> navigated_frames_;
+  // Set of frames that have had at least one committed or aborted navigation.
+  // Keyed by FrameTreeNode ID.
+  std::set<int> navigated_frames_;
 
   // For each ongoing navigation that requires activation state computation,
   // keeps track of the throttle that is carrying out that computation, so that
