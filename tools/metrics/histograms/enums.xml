@@ -37877,29 +37877,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
   <int value="-1992142310" label="xkb:dk::dan">Danish keyboard</int>
   <int value="-1989523479" label="pa-t-i0-und">Punjabi transliteration</int>
-  <int value="-1972379678" label="vkd_deva_phone_old">
-    Devanagari keyboard (Phonetic) (obsolete)
-  </int>
-  <int value="-1957398030" label="ta-t-i0-und_old">
-    Tamil transliteration (obsolete)
-  </int>
   <int value="-1955862460" label="xkb:ro::rum">Romanian keyboard</int>
   <int value="-1953637256" label="xkb:us:workman-intl:eng">
     US Workman International Keyboard
   </int>
   <int value="-1951732875" label="xkb:be::nld">Belgian keyboard</int>
-  <int value="-1931838225"
-      label="zh-hant-t-i0-cangjie-1987-x-m0-simplified_old">
-    Quick input method (obsolete)
-  </int>
-  <int value="-1899483055" label="vkd_my_old">Myanmar keyboard (obsolete)</int>
   <int value="-1856842164" label="xkb:ge::geo">Georgian keyboard</int>
-  <int value="-1856063724" label="vkd_km_old">Khmer keyboard (obsolete)</int>
   <int value="-1793755122" label="zh-hant-t-i0-cangjie-1987-x-m0-simplified">
     Quick input method
-  </int>
-  <int value="-1749961581" label="vkd_ta_inscript_old">
-    Tamil keyboard (InScript) (obsolete)
   </int>
   <int value="-1710145174" label="xkb:am:phonetic:arm">
     Armenian Phonetic keyboard
@@ -37908,23 +37893,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1668610460" label="xkb:us:dvp:eng">
     US Programmer Dvorak keyboard
   </int>
-  <int value="-1667829653" label="zh-hant-t-i0-cangjie-1987_old">
-    Cangjie input method (obsolete)
-  </int>
   <int value="-1622129313" label="sr-t-i0-und">Serbian transliteration</int>
   <int value="-1616253108" label="ta-t-i0-und">Tamil transliteration</int>
   <int value="-1608984043" label="vkd_my_myansan">Myanmar Myansan keyboard</int>
-  <int value="-1591721678" label="vkd_ne_inscript_old">
-    Nepali keyboard (InScript) (obsolete)
-  </int>
   <int value="-1520893793" label="vkd_te_phone">Telugu keyboard (Phonetic)</int>
   <int value="-1474243589" label="xkb:it::ita">Italian keyboard</int>
   <int value="-1466408010" label="hi-t-i0-und">Hindi transliteration</int>
   <int value="-1408581676" label="xkb:gb:extd:eng">UK keyboard</int>
   <int value="-1402880636" label="xkb:se::swe">Swedish keyboard</int>
-  <int value="-1396156987" label="vkd_ru_phone_aatseel_old">
-    Russian Phonetic (AATSEEL) keyboard (obsolete)
-  </int>
   <int value="-1386518472" label="vkd_ru_phone_aatseel">
     Russian Phonetic (AATSEEL) keyboard
   </int>
@@ -37934,27 +37910,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1356599825" label="bn-t-i0-und">Bengali transliteration</int>
   <int value="-1346114248" label="vkd_vi_vni">Vietnamese keyboard (VNI)</int>
   <int value="-1338032348" label="xkb:de:neo:ger">German NEO 2 keyboard</int>
-  <int value="-1288127107" label="vkd_vi_telex_old">
-    Vietnamese keyboard (Telex) (obsolete)
-  </int>
-  <int value="-1263201701" label="hi-t-i0-und_old">
-    Hindi transliteration (obsolete)
-  </int>
-  <int value="-1242404917" label="sr-t-i0-und_old">
-    Serbian transliteration (obsolete)
-  </int>
   <int value="-1148371254" label="xkb:us:intl:por">
     US International keyboard
   </int>
-  <int value="-1105197074" label="vkd_ar_old">Arabic keyboard (obsolete)</int>
-  <int value="-1096071752" label="vkd_fa_old">Persian keyboard (obsolete)</int>
   <int value="-1093390778" label="vkd_ml_phone">
     Malayalam keyboard (Phonetic)
   </int>
   <int value="-1084450354" label="gu-t-i0-und">Gujarati transliteration</int>
-  <int value="-1065120196" label="vkd_th_old">
-    Thai keyboard (Kedmanee) (obsolete)
-  </int>
   <int value="-1053378431" label="xkb:tr::tur">Turkish keyboard</int>
   <int value="-1044696009" label="ar-t-i0-und">Arabic transliteration</int>
   <int value="-1032532014" label="xkb:bg:phonetic:bul">
@@ -37964,39 +37926,18 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     Canadian English keyboard
   </int>
   <int value="-1021036210" label="xkb:us::ind">US keyboard</int>
-  <int value="-1018545698" label="vkd_ckb_en_old">
-    Sorani Kurdish English-based keyboard (obsolete)
-  </int>
   <int value="-1011117789" label="vkd_ta_itrans">Tamil keyboard (itrans)</int>
   <int value="-994915284" label="xkb:ch:fr:fra">Swiss French keyboard</int>
   <int value="-955047705" label="xkb:sk::slo">Slovakian keyboard</int>
   <int value="-942739805" label="xkb:tr:f:tur">Turkish-F keyboard</int>
   <int value="-923332388" label="xkb:ua::ukr">Ukrainian keyboard</int>
-  <int value="-917118451" label="vkd_vi_tcvn_old">
-    Vietnamese keyboard (TCVN) (obsolete)
-  </int>
-  <int value="-848378885" label="vkd_ethi_old">
-    Ethiopic keyboard (obsolete)
-  </int>
   <int value="-827208209" label="xkb:hu::hun">Hungarian keyboard</int>
-  <int value="-797137387" label="ml-t-i0-und_old">
-    Malayalam transliteration (obsolete)
-  </int>
   <int value="-769279084" label="xkb:us:intl_pc:eng">
     US International (PC) keyboard
   </int>
   <int value="-694112343" label="vkd_ne_phone">Nepali keyboard (Phonetic)</int>
-  <int value="-676861102" label="vkd_vi_viqr_old">
-    Vietnamese keyboard (VIQR) (obsolete)
-  </int>
   <int value="-666585286" label="xkb:bg::bul">Bulgarian keyboard</int>
   <int value="-650362029" label="xkb:ie::ga">Irish keyboard</int>
-  <int value="-639620912" label="te-t-i0-und_old">
-    Telugu transliteration (obsolete)
-  </int>
-  <int value="-622670909" label="zh-hant-t-i0-dayi-1988_old">
-    Dayi input method (obsolete)
-  </int>
   <int value="-607101895" label="zh-t-i0-pinyin">Pinyin input method</int>
   <int value="-547772150" label="xkb:ro:std:rum">
     Romanian standard keyboard
@@ -38008,67 +37949,30 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     US International (PC) keyboard
   </int>
   <int value="-535089160" label="xkb:us::msa">US keyboard</int>
-  <int value="-519506383" label="he-t-i0-und_old">
-    Hebrew transliteration (obsolete)
-  </int>
   <int value="-512360986" label="xkb:us:altgr-intl:eng">
     US Extended keyboard
-  </int>
-  <int value="-498028381" label="sa-t-i0-und_old">
-    Sanskrit transliteration (obsolete)
   </int>
   <int value="-496003957" label="xkb:de::ger">German keyboard</int>
   <int value="-489436211" label="xkb:us:intl_pc:nld">
     US International (PC) keyboard
   </int>
   <int value="-456651526" label="kn-t-i0-und">Kannada transliteration</int>
-  <int value="-439432295" label="vkd_ru_phone_yazhert_old">
-    Russian Phonetic (YaZHert) keyboard (obsolete)
-  </int>
-  <int value="-428164685" label="ml-t-i0-und_old">
-    Malayalam transliteration (obsolete)
-  </int>
   <int value="-383640577" label="or-t-i0-und">Oriya transliteration</int>
-  <int value="-378677550" label="vkd_bn_phone_old">
-    Bengali keyboard (Phonetic) (obsolete)
-  </int>
   <int value="-366323598" label="fa-t-i0-und">Persian transliteration</int>
   <int value="-352571373" label="xkb:rs::srp">Serbian keyboard</int>
   <int value="-329596558" label="te-t-i0-und">Telugu transliteration</int>
   <int value="-299716106" label="xkb:si::slv">Slovenian keyboard</int>
   <int value="-292687390" label="xkb:fi::fin">Finnish keyboard</int>
-  <int value="-280690349" label="vkd_vi_vni_old">
-    Vietnamese keyboard (VNI) (obsolete)
-  </int>
   <int value="-263932473" label="xkb:ch::ger">Swiss keyboard</int>
   <int value="-244167850" label="nacl_mozc_jp">
     Google Japanese Input (for Japanese keyboard)
   </int>
-  <int value="-231610124" label="ne-t-i0-und_old">
-    Nepali transliteration (obsolete)
-  </int>
-  <int value="-225482038" label="vkd_si_old">Sinhala keyboard (obsolete)</int>
-  <int value="-219542410" label="ko-t-i0-und_old">
-    Korean input method (obsolete)
-  </int>
   <int value="-202781885" label="xkb:us:intl:eng">
     US International keyboard
   </int>
-  <int value="-193738949" label="gu-t-i0-und_old">
-    Gujarati transliteration (obsolete)
-  </int>
   <int value="-176093583" label="vkd_bn_phone">Bengali keyboard (Phonetic)</int>
-  <int value="-147742988" label="mr-t-i0-und_old">
-    Marathi transliteration (obsolete)
-  </int>
   <int value="-119597715" label="mr-t-i0-und">Marathi transliteration</int>
-  <int value="-83634292" label="vkd_my_myansan_old">
-    Myanmar Myansan keyboard (obsolete)
-  </int>
   <int value="-70827301" label="xkb:be::fra">Belgian keyboard</int>
-  <int value="-69316526" label="fa-t-i0-und_old">
-    Persian transliteration (obsolete)
-  </int>
   <int value="2215666" label="xkb:jp::jpn">Japanese keyboard</int>
   <int value="23642603" label="yue-hant-t-i0-und">Cantonese input method</int>
   <int value="28549849" label="xkb:pt::por">Portuguese keyboard</int>
@@ -38076,38 +37980,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="68243712" label="vkd_si">Sinhala keyboard</int>
   <int value="87135772" label="xkb:fr::fra">French keyboard</int>
   <int value="132261074" label="ti-t-i0-und">Tigrinya transliteration</int>
-  <int value="150803493" label="vkd_ta_phone_old">
-    Tamil keyboard (Phonetic) (obsolete)
-  </int>
   <int value="193122406" label="xkb:gr::gre">Greek keyboard</int>
   <int value="197116831" label="xkb:es::spa">Spanish keyboard</int>
-  <int value="214846098" label="zh-t-i0-wubi-1986_old">
-    Wubi input method (obsolete)
-  </int>
   <int value="233227876" label="vkd_km">Khmer keyboard</int>
   <int value="319509360" label="xkb:be::ger">Belgian keyboard</int>
   <int value="374544129" label="vkd_th_pattajoti">
     Thai keyboard (Pattachote)
   </int>
   <int value="382485416" label="xkb:lv:apostrophe:lav">Latvian keyboard</int>
-  <int value="398887705" label="ti-t-i0-und_old">
-    Tigrinya transliteration (obsolete)
-  </int>
-  <int value="400837283" label="yue-hant-t-i0-und_old">
-    Cantonese input method (obsolete)
-  </int>
-  <int value="414827905" label="vkd_ta_typewriter_old">
-    Tamil keyboard (Typewriter) (obsolete)
-  </int>
-  <int value="428624332" label="zh-t-i0-pinyin_old">
-    Pinyin input method (obsolete)
-  </int>
-  <int value="452111434" label="kn-t-i0-und_old">
-    Kannada transliteration (obsolete)
-  </int>
-  <int value="467269371" label="el-t-i0-und_old">
-    Greek transliteration (obsolete)
-  </int>
   <int value="469000663" label="xkb:es:cat:cat">Catalan keyboard</int>
   <int value="472995125" label="vkd_ta_phone">Tamil keyboard (Phonetic)</int>
   <int value="484753645" label="xkb:us:workman:eng">US Workman Keyboard</int>
@@ -38115,21 +37995,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="520496071" label="vkd_ckb_en">
     Sorani Kurdish English-based keyboard
   </int>
-  <int value="520692028" label="vkd_ta_itrans_old">
-    Tamil keyboard (itrans) (obsolete)
-  </int>
   <int value="535728072" label="ne-t-i0-und">Nepali transliteration</int>
   <int value="537062379" label="vkd_ru_phone_yazhert">
     Russian Phonetic (YaZHert) keyboard
   </int>
-  <int value="601883646" label="vkd_th_tis_old">
-    Thai keyboard (TIS 820-2531) (obsolete)
-  </int>
   <int value="602570138" label="xkb:mk::mkd">Macedonian keyboard</int>
   <int value="612541362" label="vkd_ar">Arabic keyboard</int>
-  <int value="629336408" label="vkd_ckb_ar_old">
-    Sorani Kurdish Arabic-based keyboard (obsolete)
-  </int>
   <int value="629711326" label="xkb:il::heb">Hebrew keyboard</int>
   <int value="683071754" label="xkb:hr::scr">Croatian keyboard</int>
   <int value="774753710" label="vkd_th_tis">Thai keyboard (TIS 820-2531)</int>
@@ -38143,54 +38014,21 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="828287201" label="vkd_ta_inscript">Tamil keyboard (InScript)</int>
   <int value="843503620" label="ur-t-i0-und">Urdu transliteration</int>
   <int value="871656925" label="xkb:us::fil">US keyboard</int>
-  <int value="1024422775" label="vkd_ml_phone_old">
-    Malayalam keyboard (Phonetic) (obsolete)
-  </int>
   <int value="1028639984" label="he-t-i0-und">Hebrew transliteration</int>
   <int value="1091977227" label="vkd_my">Myanmar keyboard</int>
-  <int value="1127372618" label="vkd_ta_tamil99_old">
-    Tamil keyboard (Tamil99) (obsolete)
-  </int>
   <int value="1190741118" label="am-t-i0-und">Amharic transliteration</int>
-  <int value="1194237527" label="bn-t-i0-und_old">
-    Bengali transliteration (obsolete)
-  </int>
-  <int value="1196273343" label="vkd_te_phone_old">
-    Telugu keyboard (Phonetic) (obsolete)
-  </int>
-  <int value="1201986464" label="pa-t-i0-und_old">
-    Punjabi transliteration (obsolete)
-  </int>
   <int value="1203226200" label="vkd_kn_phone">Kannada keyboard (Phonetic)</int>
-  <int value="1241606786" label="vkd_gu_phone_old">
-    Gujarati keyboard (Phonetic) (obsolete)
-  </int>
   <int value="1275989482" label="xkb:ee::est">Estonian keyboard</int>
   <int value="1292575742" label="el-t-i0-und">Greek transliteration</int>
   <int value="1321401457" label="zh-hant-t-i0-pinyin">
     Traditional Pinyin input method
   </int>
-  <int value="1342665179" label="or-t-i0-und_old">
-    Oriya transliteration (obsolete)
-  </int>
   <int value="1346294191" label="vkd_vi_tcvn">Vietnamese keyboard (TCVN)</int>
-  <int value="1355267172" label="nacl_mozc_jp_old">
-    Google Japanese Input (for Japanese keyboard) (obsolete)
-  </int>
   <int value="1364126694" label="vkd_vi_viqr">Vietnamese keyboard (VIQR)</int>
-  <int value="1376109158" label="zh-hant-t-i0-pinyin_old">
-    Traditional Pinyin input method (obsolete)
-  </int>
-  <int value="1391164751" label="vkd_ne_phone_old">
-    Nepali keyboard (Phonetic) (obsolete)
-  </int>
   <int value="1409029247" label="xkb:ca::fra">Canadian French keyboard</int>
   <int value="1411091864" label="vkd_th">Thai keyboard (Kedmanee)</int>
   <int value="1425002521" label="vkd_ckb_ar">
     Sorani Kurdish Arabic-based keyboard
-  </int>
-  <int value="1486336701" label="zh-hant-t-i0-und_old">
-    Zhuyin input method (obsolete)
   </int>
   <int value="1530194498" label="vkd_deva_phone">
     Devanagari keyboard (Phonetic)
@@ -38202,17 +38040,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1691327142" label="vkd_gu_phone">
     Gujarati keyboard (Phonetic)
   </int>
-  <int value="1698488657" label="ar-t-i0-und_old">
-    Arabic transliteration (obsolete)
-  </int>
   <int value="1718072990" label="xkb:us::eng">US keyboard</int>
-  <int value="1756602568" label="zh-hant-t-i0-array-1992_old">
-    Array input method (obsolete)
-  </int>
   <int value="1763643144" label="xkb:lt::lit">Lithuanian keyboard</int>
-  <int value="1772226972" label="ur-t-i0-und_old">
-    Urdu transliteration (obsolete)
-  </int>
   <int value="1783807851" label="nacl_mozc_us">
     Google Japanese Input (for US keyboard)
   </int>
@@ -38225,13 +38054,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
   <int value="1882667893" label="xkb:us:colemak:eng">US Colemak keyboard</int>
   <int value="1925299009" label="xkb:br::por">Brazilian keyboard</int>
-  <int value="1934249765" label="vkd_th_pattajoti_old">
-    Thai keyboard (Pattachote) (obsolete)
-  </int>
   <int value="1952551273" label="vkd_ta_tamil99">Tamil keyboard (Tamil99)</int>
-  <int value="1957701631" label="am-t-i0-und_old">
-    Amharic transliteration (obsolete)
-  </int>
   <int value="1960657481" label="vkd_vi_telex">Vietnamese keyboard (Telex)</int>
   <int value="1970923579" label="xkb:us:intl:nld">Netherlands keyboard</int>
   <int value="1983264676" label="xkb:no::nob">Norwegian keyboard</int>
@@ -38240,14 +38063,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2018878326" label="zh-hant-t-i0-cangjie-1987">
     Cangjie input method
   </int>
-  <int value="2024146574" label="vkd_lo_old">Lao keyboard (obsolete)</int>
-  <int value="2029882285" label="vkd_kn_phone_old">
-    Kannada keyboard (Phonetic) (obsolete)
-  </int>
   <int value="2031967946" label="xkb:mt::mlt">Maltese keyboard</int>
-  <int value="2051698871" label="nacl_mozc_us_old">
-    Google Japanese Input (for US keyboard) (obsolete)
-  </int>
   <int value="2060414855" label="braille">Braille Keyboard</int>
   <int value="2077260254" label="ko-t-i0-und">Korean input method</int>
   <int value="2121258069" label="xkb:us:dvorak:eng">US Dvorak keyboard</int>
