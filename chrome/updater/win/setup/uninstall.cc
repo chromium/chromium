@@ -36,7 +36,7 @@ namespace {
 
 void DeleteComServer(HKEY root) {
   for (const auto& clsid :
-       {__uuidof(UpdaterClass), __uuidof(UpdaterControlClass),
+       {__uuidof(UpdaterClass), __uuidof(UpdaterInternalClass),
         __uuidof(GoogleUpdate3WebUserClass)}) {
     InstallUtil::DeleteRegistryKey(root, GetComServerClsidRegistryPath(clsid),
                                    WorkItem::kWow64Default);

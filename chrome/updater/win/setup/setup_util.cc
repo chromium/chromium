@@ -115,8 +115,8 @@ base::string16 GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IUpdateState), kUpdaterIndex},
 
       // Updater internal typelib.
-      {__uuidof(IUpdaterControl), kUpdaterInternalIndex},
-      {__uuidof(IUpdaterControlCallback), kUpdaterInternalIndex},
+      {__uuidof(IUpdaterInternal), kUpdaterInternalIndex},
+      {__uuidof(IUpdaterInternalCallback), kUpdaterInternalIndex},
 
       // Updater legacy typelib.
       {__uuidof(IAppBundleWeb), kUpdaterLegacyIndex},
@@ -137,8 +137,8 @@ std::vector<GUID> GetInterfaces() {
       __uuidof(IGoogleUpdate3Web),
       __uuidof(IUpdateState),
       __uuidof(IUpdater),
-      __uuidof(IUpdaterControl),
-      __uuidof(IUpdaterControlCallback),
+      __uuidof(IUpdaterInternal),
+      __uuidof(IUpdaterInternalCallback),
       __uuidof(IUpdaterObserver),
   };
   return kInterfaces;

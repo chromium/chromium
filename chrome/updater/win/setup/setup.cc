@@ -51,7 +51,7 @@ void AddComServerWorkItems(HKEY root,
   }
 
   for (const auto& clsid :
-       {__uuidof(UpdaterClass), __uuidof(UpdaterControlClass),
+       {__uuidof(UpdaterClass), __uuidof(UpdaterInternalClass),
         __uuidof(GoogleUpdate3WebUserClass)}) {
     const base::string16 clsid_reg_path = GetComServerClsidRegistryPath(clsid);
 

@@ -13,10 +13,10 @@ import "ocidl.idl";
   object,
   dual,
   uuid(PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65),
-  helpstring("IUpdaterControlCallback Interface"),
+  helpstring("IUpdaterInternalCallback Interface"),
   pointer_default(unique)
 ]
-interface IUpdaterControlCallback : IUnknown {
+interface IUpdaterInternalCallback : IUnknown {
   HRESULT Run([in] LONG result);
 };
 
@@ -24,12 +24,12 @@ interface IUpdaterControlCallback : IUnknown {
   object,
   dual,
   uuid(PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA),
-  helpstring("IUpdaterControl Interface"),
+  helpstring("IUpdaterInternal Interface"),
   pointer_default(unique)
 ]
-interface IUpdaterControl : IUnknown {
-  HRESULT Run([in] IUpdaterControlCallback* callback);
-  HRESULT InitializeUpdateService([in] IUpdaterControlCallback* callback);
+interface IUpdaterInternal : IUnknown {
+  HRESULT Run([in] IUpdaterInternalCallback* callback);
+  HRESULT InitializeUpdateService([in] IUpdaterInternalCallback* callback);
 };
 
 [
@@ -42,13 +42,13 @@ library UpdaterInternalLib {
 
   [
     uuid(PLACEHOLDER-GUID-1F87FE2F-D6A9-4711-9D11-8187705F8457),
-    helpstring("UpdaterControl Class")
+    helpstring("UpdaterInternal Class")
   ]
-  coclass UpdaterControlClass
+  coclass UpdaterInternalClass
   {
     [default] interface IUnknown;
   }
 
-  interface IUpdaterControl;
-  interface IUpdaterControlCallback;
+  interface IUpdaterInternal;
+  interface IUpdaterInternalCallback;
 };

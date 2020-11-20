@@ -102,24 +102,24 @@ class UpdaterImpl
   ~UpdaterImpl() override = default;
 };
 
-// This class implements the IUpdaterControl interface and exposes it as a COM
+// This class implements the IUpdaterInternal interface and exposes it as a COM
 // object.
-class UpdaterControlImpl
+class UpdaterInternalImpl
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdaterControl> {
+          IUpdaterInternal> {
  public:
-  UpdaterControlImpl() = default;
-  UpdaterControlImpl(const UpdaterControlImpl&) = delete;
-  UpdaterControlImpl& operator=(const UpdaterControlImpl&) = delete;
+  UpdaterInternalImpl() = default;
+  UpdaterInternalImpl(const UpdaterInternalImpl&) = delete;
+  UpdaterInternalImpl& operator=(const UpdaterInternalImpl&) = delete;
 
-  // Overrides for IUpdaterControl.
-  IFACEMETHODIMP Run(IUpdaterControlCallback* callback) override;
+  // Overrides for IUpdaterInternal.
+  IFACEMETHODIMP Run(IUpdaterInternalCallback* callback) override;
   IFACEMETHODIMP InitializeUpdateService(
-      IUpdaterControlCallback* callback) override;
+      IUpdaterInternalCallback* callback) override;
 
  private:
-  ~UpdaterControlImpl() override = default;
+  ~UpdaterInternalImpl() override = default;
 };
 
 }  // namespace updater

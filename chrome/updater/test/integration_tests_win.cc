@@ -168,13 +168,13 @@ void ExpectInterfacesRegistered() {
   Microsoft::WRL::ComPtr<IUpdater> updater;
   EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
 
-  // IUpdaterControl.
-  Microsoft::WRL::ComPtr<IUnknown> updater_control_server;
+  // IUpdaterInternal.
+  Microsoft::WRL::ComPtr<IUnknown> updater_internal_server;
   EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
-      __uuidof(UpdaterControlClass), nullptr, CLSCTX_LOCAL_SERVER,
-      IID_PPV_ARGS(&updater_control_server)));
-  Microsoft::WRL::ComPtr<IUpdaterControl> updater_control;
-  EXPECT_HRESULT_SUCCEEDED(updater_control_server.As(&updater_control));
+      __uuidof(UpdaterInternalClass), nullptr, CLSCTX_LOCAL_SERVER,
+      IID_PPV_ARGS(&updater_internal_server)));
+  Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
+  EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
 
   // IGoogleUpdate3Web and IAppBundleWeb.
   Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;

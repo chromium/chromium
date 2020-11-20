@@ -75,15 +75,15 @@ HRESULT ComServerApp::RegisterClassObjects() {
   factory.Reset();
 
   hr = Microsoft::WRL::Details::CreateClassFactory<
-      Microsoft::WRL::SimpleClassFactory<UpdaterControlImpl>>(
+      Microsoft::WRL::SimpleClassFactory<UpdaterInternalImpl>>(
       &flags, nullptr, __uuidof(IClassFactory), &factory);
   if (FAILED(hr)) {
-    LOG(ERROR) << "Factory creation for UpdaterControlImpl failed; hr: " << hr;
+    LOG(ERROR) << "Factory creation for UpdaterInternalImpl failed; hr: " << hr;
     return hr;
   }
 
-  Microsoft::WRL::ComPtr<IClassFactory> class_factory_updater_control;
-  hr = factory.As(&class_factory_updater_control);
+  Microsoft::WRL::ComPtr<IClassFactory> class_factory_updater_internal;
+  hr = factory.As(&class_factory_updater_internal);
   if (FAILED(hr)) {
     LOG(ERROR) << "IClassFactory object creation failed; hr: " << hr;
     return hr;
@@ -107,13 +107,13 @@ HRESULT ComServerApp::RegisterClassObjects() {
 
   // The pointer in this array is unowned. Do not release it.
   IClassFactory* class_factories[] = {class_factory_updater.Get(),
-                                      class_factory_updater_control.Get(),
+                                      class_factory_updater_internal.Get(),
                                       class_factory_legacy_ondemand.Get()};
   static_assert(
       std::extent<decltype(cookies_)>() == base::size(class_factories),
       "Arrays cookies_ and class_factories must be the same size.");
 
-  IID class_ids[] = {__uuidof(UpdaterClass), __uuidof(UpdaterControlClass),
+  IID class_ids[] = {__uuidof(UpdaterClass), __uuidof(UpdaterInternalClass),
                      __uuidof(GoogleUpdate3WebUserClass)};
   DCHECK_EQ(base::size(cookies_), base::size(class_ids));
   static_assert(std::extent<decltype(cookies_)>() == base::size(class_ids),

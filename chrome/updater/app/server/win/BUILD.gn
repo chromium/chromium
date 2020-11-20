@@ -35,9 +35,9 @@ midl("updater_idl_idl") {
 # These GUIDs must depend on branding and version.
 branding_version_placeholder_guids = [
   "PLACEHOLDER-GUID-C6CE92DB-72CA-42EF-8C98-6EE92481B3C9",  # UpdaterInternalLib
-  "PLACEHOLDER-GUID-1F87FE2F-D6A9-4711-9D11-8187705F8457",  # UpdaterControlClass
-  "PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA",  # IUpdaterControl
-  "PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65",  # IUpdaterControlCallback
+  "PLACEHOLDER-GUID-1F87FE2F-D6A9-4711-9D11-8187705F8457",  # UpdaterInternalClass
+  "PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA",  # IUpdaterInternal
+  "PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65",  # IUpdaterInternalCallback
 ]
 
 uuid5_guids = []

@@ -45,44 +45,44 @@
 
 /* Forward Declarations */ 
 
-#ifndef __IUpdaterControlCallback_FWD_DEFINED__
-#define __IUpdaterControlCallback_FWD_DEFINED__
-typedef interface IUpdaterControlCallback IUpdaterControlCallback;
+#ifndef __IUpdaterInternalCallback_FWD_DEFINED__
+#define __IUpdaterInternalCallback_FWD_DEFINED__
+typedef interface IUpdaterInternalCallback IUpdaterInternalCallback;
 
-#endif 	/* __IUpdaterControlCallback_FWD_DEFINED__ */
-
-
-#ifndef __IUpdaterControl_FWD_DEFINED__
-#define __IUpdaterControl_FWD_DEFINED__
-typedef interface IUpdaterControl IUpdaterControl;
-
-#endif 	/* __IUpdaterControl_FWD_DEFINED__ */
+#endif 	/* __IUpdaterInternalCallback_FWD_DEFINED__ */
 
 
-#ifndef __UpdaterControlClass_FWD_DEFINED__
-#define __UpdaterControlClass_FWD_DEFINED__
+#ifndef __IUpdaterInternal_FWD_DEFINED__
+#define __IUpdaterInternal_FWD_DEFINED__
+typedef interface IUpdaterInternal IUpdaterInternal;
+
+#endif 	/* __IUpdaterInternal_FWD_DEFINED__ */
+
+
+#ifndef __UpdaterInternalClass_FWD_DEFINED__
+#define __UpdaterInternalClass_FWD_DEFINED__
 
 #ifdef __cplusplus
-typedef class UpdaterControlClass UpdaterControlClass;
+typedef class UpdaterInternalClass UpdaterInternalClass;
 #else
-typedef struct UpdaterControlClass UpdaterControlClass;
+typedef struct UpdaterInternalClass UpdaterInternalClass;
 #endif /* __cplusplus */
 
-#endif 	/* __UpdaterControlClass_FWD_DEFINED__ */
+#endif 	/* __UpdaterInternalClass_FWD_DEFINED__ */
 
 
-#ifndef __IUpdaterControl_FWD_DEFINED__
-#define __IUpdaterControl_FWD_DEFINED__
-typedef interface IUpdaterControl IUpdaterControl;
+#ifndef __IUpdaterInternal_FWD_DEFINED__
+#define __IUpdaterInternal_FWD_DEFINED__
+typedef interface IUpdaterInternal IUpdaterInternal;
 
-#endif 	/* __IUpdaterControl_FWD_DEFINED__ */
+#endif 	/* __IUpdaterInternal_FWD_DEFINED__ */
 
 
-#ifndef __IUpdaterControlCallback_FWD_DEFINED__
-#define __IUpdaterControlCallback_FWD_DEFINED__
-typedef interface IUpdaterControlCallback IUpdaterControlCallback;
+#ifndef __IUpdaterInternalCallback_FWD_DEFINED__
+#define __IUpdaterInternalCallback_FWD_DEFINED__
+typedef interface IUpdaterInternalCallback IUpdaterInternalCallback;
 
-#endif 	/* __IUpdaterControlCallback_FWD_DEFINED__ */
+#endif 	/* __IUpdaterInternalCallback_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -94,19 +94,19 @@ extern "C"{
 #endif 
 
 
-#ifndef __IUpdaterControlCallback_INTERFACE_DEFINED__
-#define __IUpdaterControlCallback_INTERFACE_DEFINED__
+#ifndef __IUpdaterInternalCallback_INTERFACE_DEFINED__
+#define __IUpdaterInternalCallback_INTERFACE_DEFINED__
 
-/* interface IUpdaterControlCallback */
+/* interface IUpdaterInternalCallback */
 /* [unique][helpstring][uuid][dual][object] */ 
 
 
-EXTERN_C const IID IID_IUpdaterControlCallback;
+EXTERN_C const IID IID_IUpdaterInternalCallback;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("D272C794-2ACE-4584-B993-3B90C622BE65")
-    IUpdaterControlCallback : public IUnknown
+    IUpdaterInternalCallback : public IUnknown
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE Run( 
@@ -117,32 +117,32 @@ EXTERN_C const IID IID_IUpdaterControlCallback;
     
 #else 	/* C style interface */
 
-    typedef struct IUpdaterControlCallbackVtbl
+    typedef struct IUpdaterInternalCallbackVtbl
     {
         BEGIN_INTERFACE
         
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IUpdaterControlCallback * This,
+            IUpdaterInternalCallback * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IUpdaterControlCallback * This);
+            IUpdaterInternalCallback * This);
         
         ULONG ( STDMETHODCALLTYPE *Release )( 
-            IUpdaterControlCallback * This);
+            IUpdaterInternalCallback * This);
         
         HRESULT ( STDMETHODCALLTYPE *Run )( 
-            IUpdaterControlCallback * This,
+            IUpdaterInternalCallback * This,
             /* [in] */ LONG result);
         
         END_INTERFACE
-    } IUpdaterControlCallbackVtbl;
+    } IUpdaterInternalCallbackVtbl;
 
-    interface IUpdaterControlCallback
+    interface IUpdaterInternalCallback
     {
-        CONST_VTBL struct IUpdaterControlCallbackVtbl *lpVtbl;
+        CONST_VTBL struct IUpdaterInternalCallbackVtbl *lpVtbl;
     };
 
     
@@ -150,17 +150,17 @@ EXTERN_C const IID IID_IUpdaterControlCallback;
 #ifdef COBJMACROS
 
 
-#define IUpdaterControlCallback_QueryInterface(This,riid,ppvObject)	\
+#define IUpdaterInternalCallback_QueryInterface(This,riid,ppvObject)	\
     ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
-#define IUpdaterControlCallback_AddRef(This)	\
+#define IUpdaterInternalCallback_AddRef(This)	\
     ( (This)->lpVtbl -> AddRef(This) ) 
 
-#define IUpdaterControlCallback_Release(This)	\
+#define IUpdaterInternalCallback_Release(This)	\
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IUpdaterControlCallback_Run(This,result)	\
+#define IUpdaterInternalCallback_Run(This,result)	\
     ( (This)->lpVtbl -> Run(This,result) ) 
 
 #endif /* COBJMACROS */
@@ -171,65 +171,65 @@ EXTERN_C const IID IID_IUpdaterControlCallback;
 
 
 
-#endif 	/* __IUpdaterControlCallback_INTERFACE_DEFINED__ */
+#endif 	/* __IUpdaterInternalCallback_INTERFACE_DEFINED__ */
 
 
-#ifndef __IUpdaterControl_INTERFACE_DEFINED__
-#define __IUpdaterControl_INTERFACE_DEFINED__
+#ifndef __IUpdaterInternal_INTERFACE_DEFINED__
+#define __IUpdaterInternal_INTERFACE_DEFINED__
 
-/* interface IUpdaterControl */
+/* interface IUpdaterInternal */
 /* [unique][helpstring][uuid][dual][object] */ 
 
 
-EXTERN_C const IID IID_IUpdaterControl;
+EXTERN_C const IID IID_IUpdaterInternal;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("526DA036-9BD3-4697-865A-DA12D37DFFCA")
-    IUpdaterControl : public IUnknown
+    IUpdaterInternal : public IUnknown
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE Run( 
-            /* [in] */ IUpdaterControlCallback *callback) = 0;
+            /* [in] */ IUpdaterInternalCallback *callback) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE InitializeUpdateService( 
-            /* [in] */ IUpdaterControlCallback *callback) = 0;
+            /* [in] */ IUpdaterInternalCallback *callback) = 0;
         
     };
     
     
 #else 	/* C style interface */
 
-    typedef struct IUpdaterControlVtbl
+    typedef struct IUpdaterInternalVtbl
     {
         BEGIN_INTERFACE
         
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IUpdaterControl * This,
+            IUpdaterInternal * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IUpdaterControl * This);
+            IUpdaterInternal * This);
         
         ULONG ( STDMETHODCALLTYPE *Release )( 
-            IUpdaterControl * This);
+            IUpdaterInternal * This);
         
         HRESULT ( STDMETHODCALLTYPE *Run )( 
-            IUpdaterControl * This,
-            /* [in] */ IUpdaterControlCallback *callback);
+            IUpdaterInternal * This,
+            /* [in] */ IUpdaterInternalCallback *callback);
         
         HRESULT ( STDMETHODCALLTYPE *InitializeUpdateService )( 
-            IUpdaterControl * This,
-            /* [in] */ IUpdaterControlCallback *callback);
+            IUpdaterInternal * This,
+            /* [in] */ IUpdaterInternalCallback *callback);
         
         END_INTERFACE
-    } IUpdaterControlVtbl;
+    } IUpdaterInternalVtbl;
 
-    interface IUpdaterControl
+    interface IUpdaterInternal
     {
-        CONST_VTBL struct IUpdaterControlVtbl *lpVtbl;
+        CONST_VTBL struct IUpdaterInternalVtbl *lpVtbl;
     };
 
     
@@ -237,20 +237,20 @@ EXTERN_C const IID IID_IUpdaterControl;
 #ifdef COBJMACROS
 
 
-#define IUpdaterControl_QueryInterface(This,riid,ppvObject)	\
+#define IUpdaterInternal_QueryInterface(This,riid,ppvObject)	\
     ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
-#define IUpdaterControl_AddRef(This)	\
+#define IUpdaterInternal_AddRef(This)	\
     ( (This)->lpVtbl -> AddRef(This) ) 
 
-#define IUpdaterControl_Release(This)	\
+#define IUpdaterInternal_Release(This)	\
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IUpdaterControl_Run(This,callback)	\
+#define IUpdaterInternal_Run(This,callback)	\
     ( (This)->lpVtbl -> Run(This,callback) ) 
 
-#define IUpdaterControl_InitializeUpdateService(This,callback)	\
+#define IUpdaterInternal_InitializeUpdateService(This,callback)	\
     ( (This)->lpVtbl -> InitializeUpdateService(This,callback) ) 
 
 #endif /* COBJMACROS */
@@ -261,7 +261,7 @@ EXTERN_C const IID IID_IUpdaterControl;
 
 
 
-#endif 	/* __IUpdaterControl_INTERFACE_DEFINED__ */
+#endif 	/* __IUpdaterInternal_INTERFACE_DEFINED__ */
 
 
 
@@ -276,12 +276,12 @@ EXTERN_C const IID IID_IUpdaterControl;
 
 EXTERN_C const IID LIBID_UpdaterInternalLib;
 
-EXTERN_C const CLSID CLSID_UpdaterControlClass;
+EXTERN_C const CLSID CLSID_UpdaterInternalClass;
 
 #ifdef __cplusplus
 
 class DECLSPEC_UUID("1F87FE2F-D6A9-4711-9D11-8187705F8457")
-UpdaterControlClass;
+UpdaterInternalClass;
 #endif
 #endif /* __UpdaterInternalLib_LIBRARY_DEFINED__ */
 

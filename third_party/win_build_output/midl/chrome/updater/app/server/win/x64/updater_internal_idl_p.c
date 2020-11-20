@@ -83,15 +83,15 @@ extern const updater_internal_idl_MIDL_EXPR_FORMAT_STRING updater_internal_idl__
 extern const MIDL_STUB_DESC Object_StubDesc;
 
 
-extern const MIDL_SERVER_INFO IUpdaterControlCallback_ServerInfo;
-extern const MIDL_STUBLESS_PROXY_INFO IUpdaterControlCallback_ProxyInfo;
+extern const MIDL_SERVER_INFO IUpdaterInternalCallback_ServerInfo;
+extern const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalCallback_ProxyInfo;
 
 
 extern const MIDL_STUB_DESC Object_StubDesc;
 
 
-extern const MIDL_SERVER_INFO IUpdaterControl_ServerInfo;
-extern const MIDL_STUBLESS_PROXY_INFO IUpdaterControl_ProxyInfo;
+extern const MIDL_SERVER_INFO IUpdaterInternal_ServerInfo;
+extern const MIDL_STUBLESS_PROXY_INFO IUpdaterInternal_ProxyInfo;
 
 
 
@@ -231,102 +231,102 @@ static const updater_internal_idl_MIDL_TYPE_FORMAT_STRING updater_internal_idl__
    GUID={0x00000000,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}} */
 
 
-/* Object interface: IUpdaterControlCallback, ver. 0.0,
+/* Object interface: IUpdaterInternalCallback, ver. 0.0,
    GUID={0xD272C794,0x2ACE,0x4584,{0xB9,0x93,0x3B,0x90,0xC6,0x22,0xBE,0x65}} */
 
 #pragma code_seg(".orpc")
-static const unsigned short IUpdaterControlCallback_FormatStringOffsetTable[] =
+static const unsigned short IUpdaterInternalCallback_FormatStringOffsetTable[] =
     {
     0
     };
 
-static const MIDL_STUBLESS_PROXY_INFO IUpdaterControlCallback_ProxyInfo =
+static const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalCallback_ProxyInfo =
     {
     &Object_StubDesc,
     updater_internal_idl__MIDL_ProcFormatString.Format,
-    &IUpdaterControlCallback_FormatStringOffsetTable[-3],
+    &IUpdaterInternalCallback_FormatStringOffsetTable[-3],
     0,
     0,
     0
     };
 
 
-static const MIDL_SERVER_INFO IUpdaterControlCallback_ServerInfo = 
+static const MIDL_SERVER_INFO IUpdaterInternalCallback_ServerInfo = 
     {
     &Object_StubDesc,
     0,
     updater_internal_idl__MIDL_ProcFormatString.Format,
-    &IUpdaterControlCallback_FormatStringOffsetTable[-3],
+    &IUpdaterInternalCallback_FormatStringOffsetTable[-3],
     0,
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IUpdaterControlCallbackProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(4) _IUpdaterInternalCallbackProxyVtbl = 
 {
-    &IUpdaterControlCallback_ProxyInfo,
-    &IID_IUpdaterControlCallback,
+    &IUpdaterInternalCallback_ProxyInfo,
+    &IID_IUpdaterInternalCallback,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* IUpdaterControlCallback::Run */
+    (void *) (INT_PTR) -1 /* IUpdaterInternalCallback::Run */
 };
 
-const CInterfaceStubVtbl _IUpdaterControlCallbackStubVtbl =
+const CInterfaceStubVtbl _IUpdaterInternalCallbackStubVtbl =
 {
-    &IID_IUpdaterControlCallback,
-    &IUpdaterControlCallback_ServerInfo,
+    &IID_IUpdaterInternalCallback,
+    &IUpdaterInternalCallback_ServerInfo,
     4,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };
 
 
-/* Object interface: IUpdaterControl, ver. 0.0,
+/* Object interface: IUpdaterInternal, ver. 0.0,
    GUID={0x526DA036,0x9BD3,0x4697,{0x86,0x5A,0xDA,0x12,0xD3,0x7D,0xFF,0xCA}} */
 
 #pragma code_seg(".orpc")
-static const unsigned short IUpdaterControl_FormatStringOffsetTable[] =
+static const unsigned short IUpdaterInternal_FormatStringOffsetTable[] =
     {
     38,
     76
     };
 
-static const MIDL_STUBLESS_PROXY_INFO IUpdaterControl_ProxyInfo =
+static const MIDL_STUBLESS_PROXY_INFO IUpdaterInternal_ProxyInfo =
     {
     &Object_StubDesc,
     updater_internal_idl__MIDL_ProcFormatString.Format,
-    &IUpdaterControl_FormatStringOffsetTable[-3],
+    &IUpdaterInternal_FormatStringOffsetTable[-3],
     0,
     0,
     0
     };
 
 
-static const MIDL_SERVER_INFO IUpdaterControl_ServerInfo = 
+static const MIDL_SERVER_INFO IUpdaterInternal_ServerInfo = 
     {
     &Object_StubDesc,
     0,
     updater_internal_idl__MIDL_ProcFormatString.Format,
-    &IUpdaterControl_FormatStringOffsetTable[-3],
+    &IUpdaterInternal_FormatStringOffsetTable[-3],
     0,
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(5) _IUpdaterControlProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(5) _IUpdaterInternalProxyVtbl = 
 {
-    &IUpdaterControl_ProxyInfo,
-    &IID_IUpdaterControl,
+    &IUpdaterInternal_ProxyInfo,
+    &IID_IUpdaterInternal,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* IUpdaterControl::Run */ ,
-    (void *) (INT_PTR) -1 /* IUpdaterControl::InitializeUpdateService */
+    (void *) (INT_PTR) -1 /* IUpdaterInternal::Run */ ,
+    (void *) (INT_PTR) -1 /* IUpdaterInternal::InitializeUpdateService */
 };
 
-const CInterfaceStubVtbl _IUpdaterControlStubVtbl =
+const CInterfaceStubVtbl _IUpdaterInternalStubVtbl =
 {
-    &IID_IUpdaterControl,
-    &IUpdaterControl_ServerInfo,
+    &IID_IUpdaterInternal,
+    &IUpdaterInternal_ServerInfo,
     5,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
@@ -358,22 +358,22 @@ static const MIDL_STUB_DESC Object_StubDesc =
 
 const CInterfaceProxyVtbl * const _updater_internal_idl_ProxyVtblList[] = 
 {
-    ( CInterfaceProxyVtbl *) &_IUpdaterControlProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdaterControlCallbackProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterInternalProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterInternalCallbackProxyVtbl,
     0
 };
 
 const CInterfaceStubVtbl * const _updater_internal_idl_StubVtblList[] = 
 {
-    ( CInterfaceStubVtbl *) &_IUpdaterControlStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdaterControlCallbackStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterInternalStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterInternalCallbackStubVtbl,
     0
 };
 
 PCInterfaceName const _updater_internal_idl_InterfaceNamesList[] = 
 {
-    "IUpdaterControl",
-    "IUpdaterControlCallback",
+    "IUpdaterInternal",
+    "IUpdaterInternalCallback",
     0
 };
 
