@@ -2881,6 +2881,33 @@ std::unique_ptr<net::test_server::HttpResponse> HandleNonEligibleOrigin(
   return nullptr;
 }
 
+std::unique_ptr<net::test_server::HttpResponse>
+HandleOriginWithIneligibleSubresources(
+    net::EmbeddedTestServer* non_eligible_server,
+    const net::test_server::HttpRequest& request) {
+  GURL url = request.GetURL();
+
+  if (url.path() == "/page.html") {
+    GURL same_origin_resource =
+        non_eligible_server->GetURL("a.test", "/script.js");
+
+    std::unique_ptr<net::test_server::BasicHttpResponse> resp =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    resp->set_code(net::HTTP_OK);
+    resp->set_content_type("text/html");
+    resp->set_content(base::StringPrintf(R"(
+        <html>
+          <head>
+            <script src="%s">
+          </head>
+          <body>Test</body>
+        </html>)",
+                                         same_origin_resource.spec().c_str()));
+    return resp;
+  }
+  return nullptr;
+}
+
 std::unique_ptr<net::test_server::HttpResponse> HandleEligibleOrigin(
     net::EmbeddedTestServer* eligible_server,
     net::EmbeddedTestServer* non_eligible_server,
@@ -2991,6 +3018,63 @@ IN_PROC_BROWSER_TEST_F(
       eligible_origin.GetURL("a.test", "/script.js"),
   };
   EXPECT_EQ(expected_subresources, manager->successfully_loaded_subresources());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrefetchProxyWithNSPBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(NSPWithIneligibleSubresources)) {
+  TestServerConnectionCounter http_counter;
+  net::EmbeddedTestServer non_eligible_origin(
+      net::EmbeddedTestServer::TYPE_HTTP);
+  non_eligible_origin.SetConnectionListener(&http_counter);
+  ASSERT_TRUE(non_eligible_origin.Start());
+
+  net::EmbeddedTestServer eligible_origin(net::EmbeddedTestServer::TYPE_HTTPS);
+  eligible_origin.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  eligible_origin.RegisterRequestHandler(base::BindRepeating(
+      &HandleOriginWithIneligibleSubresources, &non_eligible_origin));
+  ASSERT_TRUE(eligible_origin.Start());
+
+  SetDataSaverEnabled(true);
+  WaitForUpdatedCustomProxyConfig();
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link = eligible_origin.GetURL("a.test", "/page.html");
+
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
+
+  base::RunLoop prefetch_run_loop;
+  base::RunLoop nsp_run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
+      prefetch_run_loop.QuitClosure());
+
+  tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
+
+  GURL doc_url("https://www.google.com/search?q=test");
+  MakeNavigationPrediction(doc_url, {eligible_link});
+
+  // This run loop will quit when all the prefetch responses have been
+  // successfully done and processed.
+  prefetch_run_loop.Run();
+
+  // This run loop will quit when a NSP finishes.
+  nsp_run_loop.Run();
+
+  EXPECT_EQ(0U, http_counter.count());
+
+  // Verify the resource load was reported to the subresource manager.
+  PrefetchProxyService* service =
+      PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
+  PrefetchProxySubresourceManager* manager =
+      service->GetSubresourceManagerForURL(eligible_link);
+  ASSERT_TRUE(manager);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(manager->successfully_loaded_subresources().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,

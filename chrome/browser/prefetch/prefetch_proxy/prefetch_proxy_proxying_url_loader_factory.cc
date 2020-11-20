@@ -365,6 +365,16 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
   // If this request is happening during a prerender then check if it is
   // eligible for caching before putting it on the network.
   if (ShouldHandleRequestForPrerender()) {
+    // Do not allow insecure resources to be fetched due to risk of privacy
+    // leaks in an HSTS setting.
+    if (!request.url.SchemeIs(url::kHttpsScheme)) {
+      std::unique_ptr<AbortRequest> request = std::make_unique<AbortRequest>(
+          std::move(loader_receiver), std::move(client));
+      // The request will manage its own lifecycle based on the mojo pipes.
+      request.release();
+      return;
+    }
+
     // Check if this prerender has exceeded its max number of subresources.
     request_count_++;
     if (request_count_ > PrefetchProxyMaxSubresourcesPerPrerender()) {
