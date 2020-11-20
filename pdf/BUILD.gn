@@ -143,6 +143,7 @@ if (enable_pdf) {
     configs += [ ":pdf_common_config" ]
 
     deps = [
+      ":accessibility_structs",
       ":features",
       ":ppapi_migration",
       "//base",
@@ -183,6 +184,16 @@ if (enable_pdf) {
       "//third_party/pdfium",
       "//ui/base",
     ]
+  }
+
+  source_set("accessibility_structs") {
+    visibility = [ ":*" ]
+
+    sources = [ "accessibility_structs.h" ]
+
+    configs += [ ":pdf_common_config" ]
+
+    deps = [ "//ui/gfx/geometry" ]
   }
 
   source_set("ppapi_migration") {
@@ -233,6 +244,7 @@ if (enable_pdf) {
     public_deps = [ "//third_party/abseil-cpp:absl" ]
 
     deps = [
+      ":accessibility_structs",
       ":features",
       ":internal",
       ":ppapi_migration",
@@ -327,6 +339,7 @@ if (enable_pdf) {
     data = [ "test/data/" ]
 
     deps = [
+      ":accessibility_structs",
       ":assert_enums",
       ":features",
       ":internal",

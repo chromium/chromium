@@ -13,6 +13,7 @@
 
 namespace chrome_pdf {
 
+struct AccessibilityPageInfo;
 class PDFEngine;
 
 // Retrieve |page_info|, |text_runs|, |chars|, and |page_objects| from
@@ -22,7 +23,7 @@ class PDFEngine;
 bool GetAccessibilityInfo(
     PDFEngine* engine,
     int32_t page_index,
-    PP_PrivateAccessibilityPageInfo* page_info,
+    AccessibilityPageInfo& page_info,
     std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>* text_runs,
     std::vector<PP_PrivateAccessibilityCharInfo>* chars,
     pp::PDF::PrivateAccessibilityPageObjects* page_objects);

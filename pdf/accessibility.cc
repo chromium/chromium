@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/numerics/safe_math.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "ppapi/cpp/rect.h"
@@ -183,7 +184,7 @@ void GetAccessibilityFormFieldInfo(
 bool GetAccessibilityInfo(
     PDFEngine* engine,
     int32_t page_index,
-    PP_PrivateAccessibilityPageInfo* page_info,
+    AccessibilityPageInfo& page_info,
     std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>* text_runs,
     std::vector<PP_PrivateAccessibilityCharInfo>* chars,
     pp::PDF::PrivateAccessibilityPageObjects* page_objects) {
@@ -198,12 +199,12 @@ bool GetAccessibilityInfo(
   if (char_count < 0)
     char_count = 0;
 
-  page_info->page_index = page_index;
-  page_info->bounds = PPRectFromRect(engine->GetPageBoundsRect(page_index));
-  page_info->char_count = char_count;
+  page_info.page_index = page_index;
+  page_info.bounds = engine->GetPageBoundsRect(page_index);
+  page_info.char_count = char_count;
 
-  chars->resize(page_info->char_count);
-  for (uint32_t i = 0; i < page_info->char_count; ++i) {
+  chars->resize(page_info.char_count);
+  for (uint32_t i = 0; i < page_info.char_count; ++i) {
     (*chars)[i].unicode_character = engine->GetCharUnicode(page_index, i);
   }
 
@@ -259,14 +260,14 @@ bool GetAccessibilityInfo(
     char_index += text_run_info.len;
   }
 
-  page_info->text_run_count = text_runs->size();
+  page_info.text_run_count = text_runs->size();
   GetAccessibilityLinkInfo(engine, page_index, *text_runs,
                            &page_objects->links);
-  GetAccessibilityImageInfo(engine, page_index, page_info->text_run_count,
+  GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count,
                             &page_objects->images);
   GetAccessibilityHighlightInfo(engine, page_index, *text_runs,
                                 &page_objects->highlights);
-  GetAccessibilityFormFieldInfo(engine, page_index, page_info->text_run_count,
+  GetAccessibilityFormFieldInfo(engine, page_index, page_info.text_run_count,
                                 &page_objects->form_fields);
   return true;
 }
