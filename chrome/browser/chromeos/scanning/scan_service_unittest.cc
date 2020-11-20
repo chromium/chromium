@@ -156,17 +156,19 @@ class ScanServiceTest : public testing::Test {
     mojo_ipc::ScanServiceAsyncWaiter(scan_service_remote_.get())
         .StartScan(scanner_id, std::move(settings),
                    fake_scan_job_observer_.GenerateRemote(), &success);
-    scan_service_remote_.FlushForTesting();
+    task_environment_.RunUntilIdle();
     return success;
   }
 
   // Performs a cancel scan request.
   void CancelScan() {
     scan_service_remote_->CancelScan();
-    scan_service_remote_.FlushForTesting();
+    task_environment_.RunUntilIdle();
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   FakeLorgnetteScannerManager fake_lorgnette_scanner_manager_;
   FakeScanJobObserver fake_scan_job_observer_;
@@ -174,8 +176,6 @@ class ScanServiceTest : public testing::Test {
                             base::FilePath()};
 
  private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   mojo::Remote<mojo_ipc::ScanService> scan_service_remote_;
 };
 

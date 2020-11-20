@@ -11,8 +11,13 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/chromeos/scanning/scanning_type_converters.h"
@@ -47,6 +52,44 @@ std::string PngToJpg(const std::string& png_img) {
   return std::string(jpg_img.begin(), jpg_img.end());
 }
 
+// Saves |scanned_image| to a file after converting it if necessary. Returns
+// true if the save succeeds.
+bool SavePage(const base::FilePath& scan_to_path,
+              const mojo_ipc::FileType file_type,
+              std::string scanned_image,
+              uint32_t page_number,
+              const base::Time::Exploded& start_time) {
+  std::string filename;
+  std::string file_ext;
+  switch (file_type) {
+    case mojo_ipc::FileType::kPng:
+      file_ext = "png";
+      break;
+    case mojo_ipc::FileType::kJpg:
+      file_ext = "jpg";
+      scanned_image = PngToJpg(scanned_image);
+      if (scanned_image.empty())
+        return false;
+
+      break;
+    default:
+      LOG(ERROR) << "Selected file type not supported.";
+      return false;
+  }
+
+  filename = base::StringPrintf(
+      "scan_%02d%02d%02d-%02d%02d%02d_%d.%s", start_time.year, start_time.month,
+      start_time.day_of_month, start_time.hour, start_time.minute,
+      start_time.second, page_number, file_ext.c_str());
+  const auto file_path = scan_to_path.Append(filename);
+  if (!base::WriteFile(file_path, scanned_image)) {
+    LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
@@ -54,7 +97,10 @@ ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
                          base::FilePath google_drive_path)
     : lorgnette_scanner_manager_(lorgnette_scanner_manager),
       my_files_path_(std::move(my_files_path)),
-      google_drive_path_(std::move(google_drive_path)) {
+      google_drive_path_(std::move(google_drive_path)),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK(lorgnette_scanner_manager_);
 }
 
@@ -184,43 +230,35 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
   scan_job_observer_->OnPageComplete(
       std::vector<uint8_t>(scanned_image.begin(), scanned_image.end()));
 
-  std::string filename;
-  std::string file_ext;
-  switch (file_type) {
-    case mojo_ipc::FileType::kPng:
-      file_ext = "png";
-      break;
-    case mojo_ipc::FileType::kJpg:
-      file_ext = "jpg";
-      scanned_image = PngToJpg(scanned_image);
-      if (scanned_image == "") {
-        save_failed_ = true;
-        return;
-      }
-      break;
-    default:
-      LOG(ERROR) << "Selected file type not supported.";
-      save_failed_ = true;
-      return;
-  }
-
-  filename = base::StringPrintf(
-      "scan_%02d%02d%02d-%02d%02d%02d_%d.%s", start_time_.year,
-      start_time_.month, start_time_.day_of_month, start_time_.hour,
-      start_time_.minute, start_time_.second, page_number, file_ext.c_str());
-  const auto file_path = scan_to_path.Append(filename);
-  if (!base::WriteFile(file_path, scanned_image)) {
-    LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
-    save_failed_ = true;
-  }
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&SavePage, scan_to_path, file_type,
+                     std::move(scanned_image), page_number, start_time_),
+      base::BindOnce(&ScanService::OnPageSaved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ScanService::OnScanCompleted(bool success) {
-  scan_job_observer_->OnScanComplete(success && !save_failed_);
+  // Post a task to the task runner to ensure all the pages have been saved
+  // before reporting the scan job as complete.
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce([](bool success) { return success; }, success),
+      base::BindOnce(&ScanService::OnAllPagesSaved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ScanService::OnCancelCompleted(bool success) {
   scan_job_observer_->OnCancelComplete(success);
+}
+
+void ScanService::OnPageSaved(bool success) {
+  if (!success)
+    save_failed_ = true;
+}
+
+void ScanService::OnAllPagesSaved(bool success) {
+  scan_job_observer_->OnScanComplete(success && !save_failed_);
 }
 
 bool ScanService::FilePathSupported(const base::FilePath& file_path) {

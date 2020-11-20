@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -22,6 +23,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace chromeos {
 
@@ -95,6 +100,12 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // LorgnetteScannerManager::CancelScan().
   void OnCancelCompleted(bool success);
 
+  // Called once the task runner finishes saving a page of a scan.
+  void OnPageSaved(bool success);
+
+  // Called once the task runner finishes saving the last page of a scan.
+  void OnAllPagesSaved(bool success);
+
   // TODO(jschettler): Replace this with a generic helper function when one is
   // available.
   // Determines whether the service supports saving scanned images to
@@ -130,6 +141,9 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
 
   // The time a scan was started. Used in filenames when saving scanned images.
   base::Time::Exploded start_time_;
+
+  // Task runner used to convert and save scanned images.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ScanService> weak_ptr_factory_{this};
 };
