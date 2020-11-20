@@ -397,6 +397,31 @@ service_manager::BinderRegistry* CastWebContentsImpl::binder_registry() {
   return &binder_registry_;
 }
 
+bool CastWebContentsImpl::TryBindReceiver(
+    mojo::GenericPendingReceiver& receiver) {
+  const std::string interface_name = *receiver.interface_name();
+  mojo::ScopedMessagePipeHandle interface_pipe = receiver.PassPipe();
+  if (binder_registry_.TryBindInterface(interface_name, &interface_pipe)) {
+    return true;
+  }
+
+  for (auto& entry : interface_providers_map_) {
+    auto const& interface_set = entry.first;
+    // Interface is provided by this InterfaceProvider.
+    if (interface_set.find(interface_name) != interface_set.end()) {
+      auto* interface_provider = entry.second;
+      interface_provider->GetInterfaceByName(interface_name,
+                                             std::move(interface_pipe));
+      return true;
+    }
+  }
+
+  // Unsuccessful, so give the caller its receiver back.
+  receiver =
+      mojo::GenericPendingReceiver(interface_name, std::move(interface_pipe));
+  return false;
+}
+
 void CastWebContentsImpl::RegisterInterfaceProvider(
     const InterfaceSet& interface_set,
     service_manager::InterfaceProvider* interface_provider) {
@@ -504,18 +529,12 @@ void CastWebContentsImpl::OnInterfaceRequestFromFrame(
   if (!can_bind_interfaces()) {
     return;
   }
-  if (binder_registry_.TryBindInterface(interface_name, interface_pipe)) {
-    return;
-  }
-  for (auto& entry : interface_providers_map_) {
-    auto const& interface_set = entry.first;
-    // Interface is provided by this InterfaceProvider.
-    if (interface_set.find(interface_name) != interface_set.end()) {
-      auto* interface_provider = entry.second;
-      interface_provider->GetInterfaceByName(interface_name,
-                                             std::move(*interface_pipe));
-      break;
-    }
+
+  mojo::GenericPendingReceiver receiver(interface_name,
+                                        std::move(*interface_pipe));
+  if (!TryBindReceiver(receiver)) {
+    // If binding was unsuccessful, give the caller its pipe back.
+    *interface_pipe = receiver.PassPipe();
   }
 }
 

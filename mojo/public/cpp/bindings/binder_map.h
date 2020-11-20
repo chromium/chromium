@@ -100,10 +100,22 @@ class BinderMapWithContext {
                   "ContextType is void.");
     auto it = binders_.find(*receiver->interface_name());
     if (it == binders_.end())
-      return false;
+      return default_binder_ && default_binder_.Run(context, *receiver);
 
     it->second->BindInterface(std::move(context), receiver->PassPipe());
     return true;
+  }
+
+  // DO NOT USE. This sets a generic default handler for any receiver that
+  // doesn't match a registered binder. It's a transitional API to help migrate
+  // some older code to BinderMap. Reliance on this mechanism makes security
+  // auditing more difficult. Note that this intentionally only supports use
+  // with a non-void ContextType, since that's the only existing use case.
+  using DefaultBinder =
+      base::RepeatingCallback<bool(ContextValueType context,
+                                   mojo::GenericPendingReceiver&)>;
+  void SetDefaultBinderDeprecated(DefaultBinder binder) {
+    default_binder_ = std::move(binder);
   }
 
  private:
@@ -113,6 +125,7 @@ class BinderMapWithContext {
       std::string,
       std::unique_ptr<internal::GenericCallbackBinderWithContext<ContextType>>>
       binders_;
+  DefaultBinder default_binder_;
 };
 
 // Common alias for BinderMapWithContext that has no context. Binders added to

@@ -64,6 +64,7 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(bool, can_bind_interfaces, (), (override));
 
   service_manager::BinderRegistry* binder_registry() override;
+  bool TryBindReceiver(mojo::GenericPendingReceiver&) override;
 
  private:
   service_manager::BinderRegistry registry_;

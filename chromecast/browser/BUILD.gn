@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -540,6 +541,11 @@ cast_source_set("test_support") {
   ]
 }
 
+mojom("test_interfaces") {
+  testonly = true
+  sources = [ "test_interfaces.test-mojom" ]
+}
+
 cast_source_set("browsertests") {
   testonly = true
   sources = [
@@ -555,6 +561,7 @@ cast_source_set("browsertests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":test_interfaces",
     ":test_support",
     "//base",
     "//chromecast:chromecast_buildflags",
@@ -567,6 +574,8 @@ cast_source_set("browsertests") {
     "//content/test:test_support",
     "//media:test_support",
     "//net:test_support",
+    "//services/service_manager/public/cpp",
+    "//services/service_manager/public/mojom",
   ]
 
   data = [

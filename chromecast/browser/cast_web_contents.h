@@ -16,6 +16,7 @@
 #include "base/strings/string16.h"
 #include "chromecast/common/mojom/feature_manager.mojom.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
@@ -379,6 +380,10 @@ class CastWebContents {
   // Delegate should register its mojo interface binders via this function
   // when it is ready.
   virtual service_manager::BinderRegistry* binder_registry() = 0;
+
+  // Asks the CastWebContents to bind an interface receiver using either its
+  // registry or any registered InterfaceProvider.
+  virtual bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) = 0;
 
   // Used for owner to pass its |InterfaceProvider| pointers to CastWebContents.
   // It is owner's responsibility to make sure each |InterfaceProvider| pointer

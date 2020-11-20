@@ -63,6 +63,7 @@ class CastWebContentsImpl : public CastWebContents,
       const InterfaceSet& interface_set,
       service_manager::InterfaceProvider* interface_provider) override;
   service_manager::BinderRegistry* binder_registry() override;
+  bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) override;
   void BlockMediaLoading(bool blocked) override;
   void BlockMediaStarting(bool blocked) override;
   void EnableBackgroundVideoPlayback(bool enabled) override;

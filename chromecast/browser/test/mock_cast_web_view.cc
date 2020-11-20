@@ -13,6 +13,10 @@ service_manager::BinderRegistry* MockCastWebContents::binder_registry() {
   return &registry_;
 }
 
+bool MockCastWebContents::TryBindReceiver(mojo::GenericPendingReceiver&) {
+  return false;
+}
+
 MockCastWebView::MockCastWebView() {
   mock_cast_web_contents_ = std::make_unique<MockCastWebContents>();
 }

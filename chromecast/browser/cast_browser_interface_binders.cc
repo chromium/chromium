@@ -54,6 +54,26 @@ void BindMediaRemotingRemotee(
       ::media::mojom::Remotee::Name_, &interface_pipe);
 }
 
+// Some Cast internals still dynamically set up interface binders after
+// frame host initialization. This is used to generically forward incoming
+// interface receivers to those objects until they can be reworked as static
+// registrations below.
+bool HandleGenericReceiver(content::RenderFrameHost* frame_host,
+                           mojo::GenericPendingReceiver& receiver) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
+  if (!web_contents)
+    return false;
+
+  // Only WebContents created for Cast Webviews will have a CastWebContents
+  // object associated with them. We ignore these requests for any other
+  // WebContents.
+  auto* cast_web_contents = CastWebContents::FromWebContents(web_contents);
+  if (!cast_web_contents || !cast_web_contents->can_bind_interfaces())
+    return false;
+
+  return cast_web_contents->TryBindReceiver(receiver);
+}
+
 }  // namespace
 
 void PopulateCastFrameBinders(
@@ -65,6 +85,9 @@ void PopulateCastFrameBinders(
       base::BindRepeating(&BindApplicationMediaCapabilities));
   binder_map->Add<::media::mojom::Remotee>(
       base::BindRepeating(&BindMediaRemotingRemotee));
+
+  binder_map->SetDefaultBinderDeprecated(
+      base::BindRepeating(&HandleGenericReceiver));
 }
 
 }  // namespace shell
