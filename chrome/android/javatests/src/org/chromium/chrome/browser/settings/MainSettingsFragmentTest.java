@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -60,6 +62,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SignInPreference.State;
@@ -70,6 +73,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -79,6 +83,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * Test for {@link MainSettings}. Main purpose is to have a sanity check on the xml.
@@ -376,6 +381,19 @@ public class MainSettingsFragmentTest {
         verify(mMockSigninActivityLauncherImpl)
                 .launchActivityForPromoDefaultFlow(any(Activity.class),
                         eq(SigninAccessPoint.SETTINGS), eq(accountInfo.getEmail()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    public void testSyncRowSummaryWhenNoDataTypeSynced() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ProfileSyncService.get().setChosenDataTypes(false, new HashSet<>()); });
+        CoreAccountInfo account = mSyncTestRule.addTestAccount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { SigninTestUtil.signinAndEnableSync(account, ProfileSyncService.get()); });
+        launchSettingsActivity();
+        onView(withText(R.string.sync_data_types_off)).check(matches(isDisplayed()));
     }
 
     @Test

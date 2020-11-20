@@ -32,6 +32,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.base.AccountInfo;
@@ -65,6 +66,7 @@ public class SigninManagerTest {
     private final IdentityMutator mIdentityMutator = mock(IdentityMutator.class);
     private final AndroidSyncSettings mAndroidSyncSettings = mock(AndroidSyncSettings.class);
     private final ExternalAuthUtils mExternalAuthUtils = mock(ExternalAuthUtils.class);
+    private final ProfileSyncService mProfileSyncService = mock(ProfileSyncService.class);
     private IdentityManager mIdentityManager;
 
     private SigninManager mSigninManager;
@@ -72,7 +74,7 @@ public class SigninManagerTest {
     @Before
     public void setUp() {
         mocker.mock(SigninManagerJni.TEST_HOOKS, mNativeMock);
-
+        ProfileSyncService.overrideForTests(mProfileSyncService);
         doReturn(true).when(mNativeMock).isSigninAllowedByPolicy(anyLong());
         // Pretend Google Play services are available as it is required for the sign-in
         doReturn(false).when(mExternalAuthUtils).isGooglePlayServicesMissing(any());
