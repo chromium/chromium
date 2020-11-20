@@ -42,6 +42,7 @@ namespace blink {
 class FetchParameters;
 class KURL;
 class ResourceFetcher;
+class ScriptCachedMetadataHandler;
 class SingleCachedMetadataHandler;
 
 // ScriptResource is a resource representing a JavaScript, either a classic or
@@ -76,6 +77,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
                  StreamingAllowed);
   ~ScriptResource() override;
 
+  size_t CodeCacheSize() const override;
+  void ResponseReceived(const ResourceResponse&) override;
   void ResponseBodyReceived(
       ResponseBodyLoaderDrainableInterface& body_loader,
       scoped_refptr<base::SingleThreadTaskRunner> loader_task_runner) override;
@@ -112,9 +115,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   void SetRevalidatingRequest(const ResourceRequestHead&) override;
 
  protected:
-  CachedMetadataHandler* CreateCachedMetadataHandler(
-      std::unique_ptr<CachedMetadataSender> send_callback) override;
-
+  void DestroyDecodedDataIfPossible() override;
   void DestroyDecodedDataForFailedRevalidation() override;
 
   // ScriptResources are considered finished when either:
@@ -180,6 +181,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   ScriptStreamer::NotStreamingReason no_streamer_reason_ =
       ScriptStreamer::NotStreamingReason::kInvalid;
   StreamingState streaming_state_ = StreamingState::kWaitingForDataPipe;
+  Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
 };
 
 template <>

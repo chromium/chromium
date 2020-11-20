@@ -41,8 +41,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -69,12 +67,6 @@ void NotifyFinishObservers(
     HeapHashSet<WeakMember<ResourceFinishObserver>>* observers) {
   for (const auto& observer : *observers)
     observer->NotifyFinished();
-}
-
-blink::mojom::CodeCacheType ToCodeCacheType(ResourceType resource_type) {
-  return resource_type == ResourceType::kRaw
-             ? blink::mojom::CodeCacheType::kWebAssembly
-             : blink::mojom::CodeCacheType::kJavascript;
 }
 
 void GetSharedBufferMemoryDump(SharedBuffer* buffer,
@@ -175,7 +167,6 @@ Resource::~Resource() {
 
 void Resource::Trace(Visitor* visitor) const {
   visitor->Trace(loader_);
-  visitor->Trace(cache_handler_);
   visitor->Trace(clients_);
   visitor->Trace(clients_awaiting_callback_);
   visitor->Trace(finished_clients_);
@@ -507,23 +498,12 @@ bool Resource::WillFollowRedirect(const ResourceRequest& new_request,
 
 void Resource::SetResponse(const ResourceResponse& response) {
   response_ = response;
-
-  // Currently we support the metadata caching only for HTTP family.
-  if (!GetResourceRequest().Url().ProtocolIsInHTTPFamily() ||
-      !GetResponse().CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
-    cache_handler_.Clear();
-    return;
-  }
-
-  cache_handler_ = CreateCachedMetadataHandler(
-      CachedMetadataSender::Create(GetResponse(), ToCodeCacheType(GetType()),
-                                   GetResourceRequest().RequestorOrigin()));
 }
 
 void Resource::ResponseReceived(const ResourceResponse& response) {
   response_timestamp_ = Now();
   if (is_revalidating_) {
-    if (response.HttpStatusCode() == 304) {
+    if (IsSuccessfulRevalidationResponse(response)) {
       RevalidationSucceeded(response);
       return;
     }
@@ -538,8 +518,6 @@ void Resource::ResponseReceived(const ResourceResponse& response) {
 void Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   DCHECK(!is_revalidating_);
   DCHECK(!GetResponse().IsNull());
-  // Actual metadata transferred here will be lost.
-  DCHECK(!data.size());
 }
 
 String Resource::ReasonNotDeletable() const {
@@ -856,9 +834,6 @@ void Resource::Prune() {
 
 void Resource::OnPurgeMemory() {
   Prune();
-  if (!cache_handler_)
-    return;
-  cache_handler_->ClearCachedMetadata(CachedMetadataHandler::kClearLocally);
 }
 
 void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
@@ -924,10 +899,6 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   overhead_dump->AddScalar("size", "bytes", OverheadSize());
   memory_dump->AddSuballocation(
       overhead_dump->Guid(), String(WTF::Partitions::kAllocatedObjectPoolName));
-
-  const String cache_name = dump_name + "/code_cache";
-  if (cache_handler_)
-    cache_handler_->OnMemoryDump(memory_dump, cache_name);
 }
 
 String Resource::GetMemoryDumpName() const {
@@ -977,7 +948,6 @@ void Resource::RevalidationSucceeded(
 void Resource::RevalidationFailed() {
   SECURITY_CHECK(redirect_chain_.IsEmpty());
   ClearData();
-  cache_handler_.Clear();
   integrity_disposition_ = ResourceIntegrityDisposition::kNotChecked;
   integrity_report_info_.Clear();
   DestroyDecodedDataForFailedRevalidation();
@@ -1188,19 +1158,6 @@ const char* Resource::ResourceTypeToString(
   return InitiatorTypeNameToString(fetch_initiator_name);
 }
 
-// static
-blink::mojom::CodeCacheType Resource::ResourceTypeToCodeCacheType(
-    ResourceType resource_type) {
-  DCHECK(
-      // Cacheable WebAssembly modules are fetched, so raw resource type.
-      resource_type == ResourceType::kRaw ||
-      // Cacheable Javascript is a script resource.
-      resource_type == ResourceType::kScript ||
-      // Also accept mock resources for testing.
-      resource_type == ResourceType::kMock);
-  return ToCodeCacheType(resource_type);
-}
-
 bool Resource::IsLoadEventBlockingResourceType() const {
   switch (type_) {
     case ResourceType::kImage:
@@ -1227,15 +1184,6 @@ bool Resource::IsLoadEventBlockingResourceType() const {
 // static
 void Resource::SetClockForTesting(const base::Clock* clock) {
   g_clock_for_testing = clock;
-}
-
-size_t Resource::CodeCacheSize() const {
-  return cache_handler_ ? cache_handler_->GetCodeCacheSize() : 0;
-}
-
-CachedMetadataHandler* Resource::CreateCachedMetadataHandler(
-    std::unique_ptr<CachedMetadataSender> send_callback) {
-  return nullptr;
 }
 
 }  // namespace blink

@@ -1446,6 +1446,7 @@ source_set("unit_tests") {
     "loader/resource/mock_image_resource_observer.cc",
     "loader/resource/mock_image_resource_observer.h",
     "loader/resource/multipart_image_resource_parser_test.cc",
+    "loader/resource/script_resource_test.cc",
     "loader/resource_load_observer_for_frame_test.cc",
     "loader/threadable_loader_test.cc",
     "loader/threaded_icon_loader_test.cc",

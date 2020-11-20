@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
@@ -125,14 +126,21 @@ ScriptResource::~ScriptResource() = default;
 
 void ScriptResource::Trace(Visitor* visitor) const {
   visitor->Trace(streamer_);
+  visitor->Trace(cached_metadata_handler_);
   TextResource::Trace(visitor);
 }
 
 void ScriptResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
                                   WebProcessMemoryDump* memory_dump) const {
   Resource::OnMemoryDump(level_of_detail, memory_dump);
-  const String name = GetMemoryDumpName() + "/decoded_script";
-  source_text_.OnMemoryDump(memory_dump, name);
+  {
+    const String name = GetMemoryDumpName() + "/decoded_script";
+    source_text_.OnMemoryDump(memory_dump, name);
+  }
+  if (cached_metadata_handler_) {
+    const String name = GetMemoryDumpName() + "/code_cache";
+    cached_metadata_handler_->OnMemoryDump(memory_dump, name);
+  }
 }
 
 const ParkableString& ScriptResource::SourceText() {
@@ -178,22 +186,21 @@ String ScriptResource::TextForInspector() const {
 }
 
 SingleCachedMetadataHandler* ScriptResource::CacheHandler() {
-  return static_cast<SingleCachedMetadataHandler*>(Resource::CacheHandler());
-}
-
-CachedMetadataHandler* ScriptResource::CreateCachedMetadataHandler(
-    std::unique_ptr<CachedMetadataSender> send_callback) {
-  return MakeGarbageCollected<ScriptCachedMetadataHandler>(
-      Encoding(), std::move(send_callback));
+  return cached_metadata_handler_;
 }
 
 void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   // Resource ignores the cached metadata.
   Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer());
-  ScriptCachedMetadataHandler* cache_handler =
-      static_cast<ScriptCachedMetadataHandler*>(Resource::CacheHandler());
-  if (cache_handler) {
-    cache_handler->SetSerializedCachedMetadata(std::move(data));
+  if (cached_metadata_handler_) {
+    cached_metadata_handler_->SetSerializedCachedMetadata(std::move(data));
+  }
+}
+
+void ScriptResource::DestroyDecodedDataIfPossible() {
+  if (cached_metadata_handler_) {
+    cached_metadata_handler_->ClearCachedMetadata(
+        CachedMetadataHandler::kClearLocally);
   }
 }
 
@@ -203,6 +210,7 @@ void ScriptResource::DestroyDecodedDataForFailedRevalidation() {
   DCHECK(!streamer_);
   DCHECK_EQ(streaming_state_, StreamingState::kStreamingDisabled);
   SetDecodedSize(0);
+  cached_metadata_handler_ = nullptr;
 }
 
 void ScriptResource::SetRevalidatingRequest(
@@ -232,6 +240,33 @@ bool ScriptResource::CanUseCacheValidator() const {
 
   return Resource::CanUseCacheValidator();
 }
+
+size_t ScriptResource::CodeCacheSize() const {
+  return cached_metadata_handler_ ? cached_metadata_handler_->GetCodeCacheSize()
+                                  : 0;
+}
+
+void ScriptResource::ResponseReceived(const ResourceResponse& response) {
+  const bool is_successful_revalidation =
+      IsSuccessfulRevalidationResponse(response);
+  Resource::ResponseReceived(response);
+
+  if (is_successful_revalidation) {
+    return;
+  }
+
+  cached_metadata_handler_ = nullptr;
+  // Currently we support the metadata caching only for HTTP family.
+  if (GetResourceRequest().Url().ProtocolIsInHTTPFamily() &&
+      response.CurrentRequestUrl().ProtocolIsInHTTPFamily() &&
+      response.HttpStatusCode() == 200) {
+    cached_metadata_handler_ =
+        MakeGarbageCollected<ScriptCachedMetadataHandler>(
+            Encoding(), CachedMetadataSender::Create(
+                            response, mojom::blink::CodeCacheType::kJavascript,
+                            GetResourceRequest().RequestorOrigin()));
+  }
+}  // namespace blink
 
 void ScriptResource::ResponseBodyReceived(
     ResponseBodyLoaderDrainableInterface& body_loader,

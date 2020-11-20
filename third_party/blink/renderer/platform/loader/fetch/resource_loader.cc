@@ -850,7 +850,16 @@ void ResourceLoader::DidReceiveCachedMetadata(mojo_base::BigBuffer data) {
 }
 
 blink::mojom::CodeCacheType ResourceLoader::GetCodeCacheType() const {
-  return Resource::ResourceTypeToCodeCacheType(resource_->GetType());
+  const auto& request = resource_->GetResourceRequest();
+  if (request.GetRequestDestination() ==
+      network::mojom::RequestDestination::kEmpty) {
+    // For requests initiated by the fetch function, we use code cache for
+    // WASM compiled code.
+    return mojom::blink::CodeCacheType::kWebAssembly;
+  } else {
+    // Otherwise, we use code cache for scripting.
+    return mojom::blink::CodeCacheType::kJavascript;
+  }
 }
 
 void ResourceLoader::SendCachedCodeToResource(mojo_base::BigBuffer data) {

@@ -106,7 +106,7 @@ class V8ScriptRunnerTest : public testing::Test {
     String code = Code();
     ResourceResponse response(Url());
     response.SetHttpStatusCode(200);
-    resource->SetResponse(response);
+    resource->ResponseReceived(response);
     StringUTF8Adaptor code_utf8(code);
     resource->AppendData(code_utf8.data(), code_utf8.size());
     resource->FinishForTest();

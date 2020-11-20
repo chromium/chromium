@@ -12,137 +12,13 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
-#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 namespace {
 
-class MockPlatform final : public TestingPlatformSupportWithMockScheduler {
- public:
-  MockPlatform() = default;
-  ~MockPlatform() override = default;
-
-  // From blink::Platform:
-  void CacheMetadata(blink::mojom::CodeCacheType cache_type,
-                     const WebURL& url,
-                     base::Time,
-                     const uint8_t*,
-                     size_t) override {
-    cached_urls_.push_back(url);
-  }
-
-  void CacheMetadataInCacheStorage(const blink::WebURL& url,
-                                   base::Time,
-                                   const uint8_t*,
-                                   size_t,
-                                   const blink::WebSecurityOrigin&,
-                                   const blink::WebString&) override {
-    cache_storage_cached_urls_.push_back(url);
-  }
-
-  const Vector<WebURL>& CachedURLs() const { return cached_urls_; }
-  const Vector<WebURL>& CacheStorageCachedURLs() const {
-    return cache_storage_cached_urls_;
-  }
-
- private:
-  Vector<WebURL> cached_urls_;
-  Vector<WebURL> cache_storage_cached_urls_;
-};
-
-ResourceResponse CreateTestResourceResponse() {
-  ResourceResponse response(url_test_helpers::ToKURL("https://example.com/"));
-  response.SetHttpStatusCode(200);
-  return response;
-}
-
-void CreateTestResourceAndSetCachedMetadata(const ResourceResponse& response) {
-  const uint8_t kTestData[] = {1, 2, 3, 4, 5};
-  ResourceRequest request(response.CurrentRequestUrl());
-  request.SetRequestorOrigin(
-      SecurityOrigin::Create(response.CurrentRequestUrl()));
-  auto* resource = MakeGarbageCollected<MockResource>(request);
-  resource->SetResponse(response);
-  resource->SendCachedMetadata(kTestData, sizeof(kTestData));
-  return;
-}
-
-}  // anonymous namespace
-
-TEST(ResourceTest, SetCachedMetadata_SendsMetadataToPlatform) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
-  ResourceResponse response(CreateTestResourceResponse());
-  CreateTestResourceAndSetCachedMetadata(response);
-  EXPECT_EQ(1u, mock->CachedURLs().size());
-  EXPECT_EQ(0u, mock->CacheStorageCachedURLs().size());
-}
-
-TEST(
-    ResourceTest,
-    SetCachedMetadata_DoesNotSendMetadataToPlatformWhenFetchedViaServiceWorkerWithSyntheticResponse) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
-
-  // Equivalent to service worker calling respondWith(new Response(...))
-  ResourceResponse response(CreateTestResourceResponse());
-  response.SetWasFetchedViaServiceWorker(true);
-
-  CreateTestResourceAndSetCachedMetadata(response);
-  EXPECT_EQ(0u, mock->CachedURLs().size());
-  EXPECT_EQ(0u, mock->CacheStorageCachedURLs().size());
-}
-
-TEST(
-    ResourceTest,
-    SetCachedMetadata_SendsMetadataToPlatformWhenFetchedViaServiceWorkerWithPassThroughResponse) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
-
-  // Equivalent to service worker calling respondWith(fetch(evt.request.url));
-  ResourceResponse response(CreateTestResourceResponse());
-  response.SetWasFetchedViaServiceWorker(true);
-  response.SetUrlListViaServiceWorker(
-      Vector<KURL>(1, response.CurrentRequestUrl()));
-
-  CreateTestResourceAndSetCachedMetadata(response);
-  EXPECT_EQ(1u, mock->CachedURLs().size());
-  EXPECT_EQ(0u, mock->CacheStorageCachedURLs().size());
-}
-
-TEST(
-    ResourceTest,
-    SetCachedMetadata_DoesNotSendMetadataToPlatformWhenFetchedViaServiceWorkerWithDifferentURLResponse) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
-
-  // Equivalent to service worker calling respondWith(fetch(some_different_url))
-  ResourceResponse response(CreateTestResourceResponse());
-  response.SetWasFetchedViaServiceWorker(true);
-  response.SetUrlListViaServiceWorker(Vector<KURL>(
-      1, url_test_helpers::ToKURL("https://example.com/different/url")));
-
-  CreateTestResourceAndSetCachedMetadata(response);
-  EXPECT_EQ(0u, mock->CachedURLs().size());
-  EXPECT_EQ(0u, mock->CacheStorageCachedURLs().size());
-}
-
-TEST(
-    ResourceTest,
-    SetCachedMetadata_SendsMetadataToPlatformWhenFetchedViaServiceWorkerWithCacheResponse) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
-
-  // Equivalent to service worker calling respondWith(cache.match(some_url));
-  ResourceResponse response(CreateTestResourceResponse());
-  response.SetWasFetchedViaServiceWorker(true);
-  response.SetCacheStorageCacheName("dummy");
-
-  CreateTestResourceAndSetCachedMetadata(response);
-  EXPECT_EQ(0u, mock->CachedURLs().size());
-  EXPECT_EQ(1u, mock->CacheStorageCachedURLs().size());
-}
-
 TEST(ResourceTest, RevalidateWithFragment) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
   KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
@@ -160,7 +36,6 @@ TEST(ResourceTest, RevalidateWithFragment) {
 }
 
 TEST(ResourceTest, Vary) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
   const KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
@@ -228,13 +103,8 @@ TEST(ResourceTest, RevalidationFailed) {
   resource->FinishForTest();
   GetMemoryCache()->Add(resource);
 
-  MockCacheHandler* original_cache_handler = resource->CacheHandler();
-  EXPECT_TRUE(original_cache_handler);
-
   // Simulate revalidation start.
   resource->SetRevalidatingRequest(ResourceRequest(url));
-
-  EXPECT_EQ(original_cache_handler, resource->CacheHandler());
 
   Persistent<MockResourceClient> client =
       MakeGarbageCollected<MockResourceClient>();
@@ -247,8 +117,6 @@ TEST(ResourceTest, RevalidationFailed) {
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_FALSE(resource->ResourceBuffer());
-  EXPECT_TRUE(resource->CacheHandler());
-  EXPECT_NE(original_cache_handler, resource->CacheHandler());
   EXPECT_EQ(resource, GetMemoryCache()->ResourceForURL(url));
 
   resource->AppendData(kData, 4);
@@ -265,7 +133,7 @@ TEST(ResourceTest, RevalidationFailed) {
 
 TEST(ResourceTest, RevalidationSucceeded) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+      platform;
   const KURL url("http://test.example.com/");
   auto* resource = MakeGarbageCollected<MockResource>(url);
   ResourceResponse response(url);
@@ -276,13 +144,8 @@ TEST(ResourceTest, RevalidationSucceeded) {
   resource->FinishForTest();
   GetMemoryCache()->Add(resource);
 
-  MockCacheHandler* original_cache_handler = resource->CacheHandler();
-  EXPECT_TRUE(original_cache_handler);
-
   // Simulate a successful revalidation.
   resource->SetRevalidatingRequest(ResourceRequest(url));
-
-  EXPECT_EQ(original_cache_handler, resource->CacheHandler());
 
   Persistent<MockResourceClient> client =
       MakeGarbageCollected<MockResourceClient>();
@@ -295,7 +158,6 @@ TEST(ResourceTest, RevalidationSucceeded) {
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_EQ(4u, resource->ResourceBuffer()->size());
-  EXPECT_EQ(original_cache_handler, resource->CacheHandler());
   EXPECT_EQ(resource, GetMemoryCache()->ResourceForURL(url));
 
   GetMemoryCache()->Remove(resource);
@@ -307,7 +169,7 @@ TEST(ResourceTest, RevalidationSucceeded) {
 
 TEST(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+      platform;
   const KURL url("http://test.example.com/");
   auto* resource = MakeGarbageCollected<MockResource>(url);
   ResourceResponse response(url);
@@ -339,7 +201,7 @@ TEST(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
 
 TEST(ResourceTest, RevalidationSucceededUpdateHeaders) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+      platform;
   const KURL url("http://test.example.com/");
   auto* resource = MakeGarbageCollected<MockResource>(url);
   ResourceResponse response(url);
@@ -415,7 +277,7 @@ TEST(ResourceTest, RevalidationSucceededUpdateHeaders) {
 
 TEST(ResourceTest, RedirectDuringRevalidation) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+      platform;
   const KURL url("http://test.example.com/1");
   const KURL redirect_target_url("http://test.example.com/2");
 
@@ -432,15 +294,11 @@ TEST(ResourceTest, RedirectDuringRevalidation) {
   EXPECT_EQ(url, resource->GetResourceRequest().Url());
   EXPECT_EQ(url, resource->LastResourceRequest().Url());
 
-  MockCacheHandler* original_cache_handler = resource->CacheHandler();
-  EXPECT_TRUE(original_cache_handler);
-
   // Simulate a revalidation.
   resource->SetRevalidatingRequest(ResourceRequest(url));
   EXPECT_TRUE(resource->IsCacheValidator());
   EXPECT_EQ(url, resource->GetResourceRequest().Url());
   EXPECT_EQ(url, resource->LastResourceRequest().Url());
-  EXPECT_EQ(original_cache_handler, resource->CacheHandler());
 
   Persistent<MockResourceClient> client =
       MakeGarbageCollected<MockResourceClient>();
@@ -457,14 +315,11 @@ TEST(ResourceTest, RedirectDuringRevalidation) {
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(url, resource->GetResourceRequest().Url());
   EXPECT_EQ(redirect_target_url, resource->LastResourceRequest().Url());
-  EXPECT_FALSE(resource->CacheHandler());
 
   // The final response is received.
   ResourceResponse revalidating_response(redirect_target_url);
   revalidating_response.SetHttpStatusCode(200);
   resource->ResponseReceived(revalidating_response);
-
-  EXPECT_TRUE(resource->CacheHandler());
 
   const char kData2[4] = "xyz";
   resource->AppendData(kData2, 3);
@@ -482,13 +337,11 @@ TEST(ResourceTest, RedirectDuringRevalidation) {
   // Test the case where a client is added after revalidation is completed.
   Persistent<MockResourceClient> client2 =
       MakeGarbageCollected<MockResourceClient>();
-  auto* platform = static_cast<TestingPlatformSupportWithMockScheduler*>(
-      Platform::Current());
   resource->AddClient(client2, platform->test_task_runner().get());
 
   // Because the client is added asynchronously,
   // |runUntilIdle()| is called to make |client2| to be notified.
-  platform_->RunUntilIdle();
+  platform->RunUntilIdle();
 
   EXPECT_TRUE(client2->NotifyFinishedCalled());
 
@@ -508,7 +361,7 @@ class ScopedResourceMockClock {
 };
 
 TEST(ResourceTest, StaleWhileRevalidateCacheControl) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler> mock;
   ScopedResourceMockClock clock(mock->test_task_runner()->GetMockClock());
   const KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
@@ -536,7 +389,7 @@ TEST(ResourceTest, StaleWhileRevalidateCacheControl) {
 }
 
 TEST(ResourceTest, StaleWhileRevalidateCacheControlWithRedirect) {
-  ScopedTestingPlatformSupport<MockPlatform> mock;
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler> mock;
   ScopedResourceMockClock clock(mock->test_task_runner()->GetMockClock());
   const KURL url("http://127.0.0.1:8000/foo.html");
   const KURL redirect_target_url("http://127.0.0.1:8000/food.html");
@@ -582,4 +435,5 @@ TEST(ResourceTest, DefaultOverheadSize) {
   EXPECT_EQ(resource->CalculateOverheadSizeForTest(), resource->OverheadSize());
 }
 
+}  // namespace
 }  // namespace blink

@@ -63,8 +63,6 @@ class Clock;
 namespace blink {
 
 class BlobDataHandle;
-class CachedMetadataHandler;
-class CachedMetadataSender;
 class FetchParameters;
 class ResourceClient;
 class ResourceFinishObserver;
@@ -228,7 +226,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   size_t DecodedSize() const { return decoded_size_; }
   size_t OverheadSize() const { return overhead_size_; }
-  size_t CodeCacheSize() const;
+  virtual size_t CodeCacheSize() const { return 0; }
 
   bool IsLoaded() const { return status_ > ResourceStatus::kPending; }
 
@@ -266,8 +264,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   const ResourceResponse& GetResponse() const { return response_; }
 
   // Sets the serialized metadata retrieved from the platform's cache.
-  // Subclasses of Resource that support cached metadata should override this
-  // method with one that fills the current CachedMetadataHandler.
+  // The default implementation does nothing. Subclasses interested in the data
+  // should implement the resource-specific behavior.
   virtual void SetSerializedCachedMetadata(mojo_base::BigBuffer data);
 
   AtomicString HttpContentType() const;
@@ -382,8 +380,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
       ResourceType,
       const AtomicString& fetch_initiator_name);
 
-  static blink::mojom::CodeCacheType ResourceTypeToCodeCacheType(ResourceType);
-
   class ProhibitAddRemoveClientInScope : public base::AutoReset<bool> {
    public:
     ProhibitAddRemoveClientInScope(Resource* resource)
@@ -440,6 +436,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
            finished_clients_.Contains(client);
   }
 
+  bool IsSuccessfulRevalidationResponse(
+      const ResourceResponse& response) const {
+    return IsCacheValidator() && response.HttpStatusCode() == 304;
+  }
+
   struct RedirectPair {
     DISALLOW_NEW();
 
@@ -471,16 +472,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   virtual void SetEncoding(const String&) {}
 
-  // Create a handler for the cached metadata of this resource. Subclasses of
-  // Resource that support cached metadata should override this method with one
-  // that creates an appropriate CachedMetadataHandler implementation, and
-  // override SetSerializedCachedMetadata with an implementation that fills the
-  // cache handler.
-  virtual CachedMetadataHandler* CreateCachedMetadataHandler(
-      std::unique_ptr<CachedMetadataSender> send_callback);
-
-  CachedMetadataHandler* CacheHandler() { return cache_handler_.Get(); }
-
  private:
   friend class ResourceLoader;
 
@@ -499,8 +490,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   ResourceType type_;
   ResourceStatus status_;
-
-  Member<CachedMetadataHandler> cache_handler_;
 
   base::Optional<ResourceError> error_;
 
