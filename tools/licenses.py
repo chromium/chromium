@@ -176,11 +176,46 @@ SPECIAL_CASES = {
         # Absolute path here is resolved as relative to the source root.
         "License File": "/LICENSE.chromium_os",
     },
+    os.path.join('third_party', 'devtools-frontend'): {
+        # TODO(crbug.com/1151057): Remove this special case when issue is fixed.
+        "Name": "Devtools-Frontend",
+        "URL": "https://chromium.googlesource.com/devtools/devtools-frontend",
+        "License": "BSD",
+        "License File": "src/LICENSE",
+    },
     os.path.join('third_party', 'lss'): {
         "Name": "linux-syscall-support",
         "URL": "http://code.google.com/p/linux-syscall-support/",
         "License": "BSD",
         "License File": "/LICENSE",
+    },
+    os.path.join('third_party', 'openscreen', 'src', 'third_party', 'abseil'): {
+        "Name": "abseil",
+        "URL": "https://github.com/abseil/abseil-cpp/",
+        "License": "Apache 2.0",
+        "License File": "/third_party/abseil-cpp/LICENSE",
+    },
+    os.path.join('third_party', 'openscreen', 'src', 'third_party',
+                 'boringssl'):
+    {
+        "Name": "BoringSSL",
+        "URL": "https://boringssl.googlesource.com/boringssl/",
+        "License": "BSDish",
+        "License File": "/third_party/boringssl/src/LICENSE",
+    },
+    os.path.join('third_party', 'openscreen', 'src', 'third_party', 'jsoncpp'):
+    {
+        "Name": "jsoncpp",
+        "URL": "https://github.com/open-source-parsers/jsoncpp",
+        "License": "MIT",
+        "License File": "/third_party/jsoncpp/LICENSE",
+    },
+    os.path.join('third_party', 'openscreen', 'src', 'third_party', 'mozilla'):
+    {
+        "Name": "mozilla",
+        "URL": "https://github.com/mozilla",
+        "License": "MPL 1.1/GPL 2.0/LGPL 2.1",
+        "License File": "LICENSE.txt",
     },
     os.path.join('third_party', 'pdfium'): {
         "Name": "PDFium",
@@ -203,15 +238,15 @@ SPECIAL_CASES = {
         "License": "BSD",
         "License File": "NOT_SHIPPED",
     },
-    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
-                 'lss'): {
+    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party', 'lss'): {
         "Name": "linux-syscall-support",
         "URL": "https://chromium.googlesource.com/linux-syscall-support/",
         "License": "BSD",
         "License File": "NOT_SHIPPED",
     },
     os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
-                 'mini_chromium'): {
+                 'mini_chromium'):
+    {
         "Name": "mini_chromium",
         "URL": "https://chromium.googlesource.com/chromium/mini_chromium/",
         "License": "BSD",
@@ -223,8 +258,8 @@ SPECIAL_CASES = {
         "License": "Apple Public Source License 2.0",
         "License File": "APPLE_LICENSE",
     },
-    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
-                 'zlib'): {
+    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party', 'zlib'):
+    {
         "Name": "zlib",
         "URL": "https://zlib.net/",
         "License": "zlib",
@@ -275,8 +310,8 @@ SPECIAL_CASES = {
         "URL": "http://www.netlib.org/fdlibm/",
         "License": "Freely Distributable",
         # Absolute path here is resolved as relative to the source root.
-        "License File" : "/v8/LICENSE.fdlibm",
-        "License Android Compatible" : "yes",
+        "License File": "/v8/LICENSE.fdlibm",
+        "License Android Compatible": "yes",
     },
     os.path.join('third_party', 'khronos_glcts'): {
         # These sources are not shipped, are not public, and it isn't
