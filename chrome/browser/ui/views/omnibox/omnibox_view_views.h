@@ -13,7 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -680,10 +680,10 @@ class OmniboxViewViews : public OmniboxView,
   // this is set to 7 (the length of "Google ").
   int friendly_suggestion_text_prefix_length_;
 
-  ScopedObserver<ui::Compositor, ui::CompositorObserver>
-      scoped_compositor_observer_{this};
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver>
-      scoped_template_url_service_observer_{this};
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver>
+      scoped_compositor_observation_{this};
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      scoped_template_url_service_observation_{this};
 
   // Send tab to self submenu.
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>

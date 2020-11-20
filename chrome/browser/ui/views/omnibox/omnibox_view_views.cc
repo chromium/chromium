@@ -415,7 +415,7 @@ void OmniboxViewViews::Init() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   GetRenderText()->set_symmetric_selection_visual_bounds(true);
   InstallPlaceholderText();
-  scoped_template_url_service_observer_.Add(
+  scoped_template_url_service_observation_.Observe(
       model()->client()->GetTemplateURLService());
 
   if (popup_window_mode_)
@@ -848,12 +848,13 @@ ui::TextInputType OmniboxViewViews::GetTextInputType() const {
 
 void OmniboxViewViews::AddedToWidget() {
   views::Textfield::AddedToWidget();
-  scoped_compositor_observer_.Add(GetWidget()->GetCompositor());
+  scoped_compositor_observation_.Observe(GetWidget()->GetCompositor());
 }
 
 void OmniboxViewViews::RemovedFromWidget() {
   views::Textfield::RemovedFromWidget();
-  scoped_compositor_observer_.RemoveAll();
+  if (scoped_compositor_observation_.IsObserving())
+    scoped_compositor_observation_.RemoveObservation();
 }
 
 OmniboxViewViews::ElideAnimation*
@@ -2522,7 +2523,8 @@ void OmniboxViewViews::OnCompositingEnded(ui::Compositor* compositor) {
 }
 
 void OmniboxViewViews::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  scoped_compositor_observer_.RemoveAll();
+  if (scoped_compositor_observation_.IsObserving())
+    scoped_compositor_observation_.RemoveObservation();
 }
 
 void OmniboxViewViews::OnTemplateURLServiceChanged() {
