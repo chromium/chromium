@@ -31,13 +31,11 @@ Polymer({
     if (!this.capability) {
       return;
     }
-    const value = this.getSettingValue('mediaSize');
+    const valueToSet = JSON.stringify(this.getSettingValue('mediaSize'));
     for (const option of
          /** @type {!Array<!SelectOption>} */ (this.capability.option)) {
-      if (option.height_microns === value.height_microns &&
-          option.width_microns === value.width_microns) {
-        this.$$('print-preview-settings-select')
-            .selectValue(JSON.stringify(option));
+      if (JSON.stringify(option) === valueToSet) {
+        this.$$('print-preview-settings-select').selectValue(valueToSet);
         return;
       }
     }
