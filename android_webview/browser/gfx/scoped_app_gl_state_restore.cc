@@ -225,20 +225,21 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &g_gl_max_vertex_attribs);
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &g_gl_max_texture_units);
 
-    std::string extensions;
-    const char* extensions_c_str =
+    const char* extensions_string =
         reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-    if (extensions_c_str)
-      extensions = extensions_c_str;
-    g_supports_oes_vertex_array_object =
-        extensions.find("GL_OES_vertex_array_object") != std::string::npos;
-    g_supports_arm_shader_framebuffer_fetch =
-        extensions.find("GL_ARM_shader_framebuffer_fetch") != std::string::npos;
-    g_supports_nv_concervative_raster =
-        extensions.find("GL_NV_conservative_raster") != std::string::npos;
-    g_supports_disable_multisample =
-        extensions.find("GL_EXT_multisample_compatibility") !=
-        std::string::npos;
+
+    if (extensions_string) {
+      gfx::ExtensionSet extensions(gfx::MakeExtensionSet(extensions_string));
+
+      g_supports_oes_vertex_array_object =
+          extensions.contains("GL_OES_vertex_array_object");
+      g_supports_arm_shader_framebuffer_fetch =
+          extensions.contains("GL_ARM_shader_framebuffer_fetch");
+      g_supports_nv_concervative_raster =
+          extensions.contains("GL_NV_conservative_raster");
+      g_supports_disable_multisample =
+          extensions.contains("GL_EXT_multisample_compatibility");
+    }
     g_use_skia_renderer = features::IsUsingSkiaRenderer();
   }
 
