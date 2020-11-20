@@ -242,6 +242,11 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (!node.IsBlockFlow() || node.IsLayoutNGCustom())
       return NGLayoutCacheStatus::kNeedsLayout;
 
+    // Fieldsets stretch their content to the final block-size, which might
+    // affect scrollbars.
+    if (node.IsFieldsetContainer())
+      return NGLayoutCacheStatus::kNeedsLayout;
+
     // If we are the document or body element in quirks mode, changing our size
     // means that a scrollbar was added/removed. Require full layout.
     if (node.IsQuirkyAndFillsViewport())
