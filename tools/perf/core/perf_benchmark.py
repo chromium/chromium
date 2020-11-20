@@ -78,7 +78,7 @@ class PerfBenchmark(benchmark.Benchmark):
     """To be overridden by perf benchmarks."""
     pass
 
-  def CustomizeOptions(self, finder_options):
+  def CustomizeOptions(self, finder_options, possible_browser=None):
     # Subclass of PerfBenchmark should override  SetExtraBrowserOptions to add
     # more browser options rather than overriding CustomizeOptions.
     super(PerfBenchmark, self).CustomizeOptions(finder_options)
@@ -98,7 +98,7 @@ class PerfBenchmark(benchmark.Benchmark):
     if (browser_options.browser_type != 'reference' and
         'no-field-trials' not in browser_options.compatibility_mode):
       variations = self._GetVariationsBrowserArgs(
-          finder_options, browser_options.extra_browser_args)
+          finder_options, browser_options.extra_browser_args, possible_browser)
       browser_options.AppendExtraBrowserArgs(variations)
 
       browser_options.profile_files_to_copy.extend(
@@ -132,15 +132,20 @@ class PerfBenchmark(benchmark.Benchmark):
       return 'chromeos'
     return target_os
 
-  def _GetVariationsBrowserArgs(self, finder_options, current_args):
+  def _GetVariationsBrowserArgs(self,
+                                finder_options,
+                                current_args,
+                                possible_browser=None):
+    if possible_browser is None:
+      possible_browser = browser_finder.FindBrowser(finder_options)
+    if not possible_browser:
+      return []
+
     chrome_root = finder_options.chrome_root
     if chrome_root is None:
       chrome_root = path_module.GetChromiumSrcDir()
 
     variations_dir = os.path.join(chrome_root, 'testing', 'variations')
-    possible_browser = browser_finder.FindBrowser(finder_options)
-    if not possible_browser:
-      return []
 
     return fieldtrial_util.GenerateArgs(
         os.path.join(variations_dir, 'fieldtrial_testing_config.json'),
