@@ -1039,6 +1039,7 @@ if (!is_android) {
       "../browser/federated_learning/floc_id_provider_browsertest.cc",
       "../browser/federated_learning/floc_origin_trial_browsertest.cc",
       "../browser/first_run/first_run_browsertest.cc",
+      "../browser/font_access/font_access_context_browsertest.cc",
       "../browser/geolocation/geolocation_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",
       "../browser/heavy_ad_intervention/heavy_ad_helper_browsertest.cc",

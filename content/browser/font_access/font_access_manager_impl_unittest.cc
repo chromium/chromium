@@ -279,6 +279,24 @@ TEST_F(FontAccessManagerImplTest, PermissionPreviouslyDeniedErrors) {
       }));
   run_loop.Run();
 }
+
+TEST_F(FontAccessManagerImplTest, FontAccessContextFindAllFontsTest) {
+  FontAccessContext* font_access_context =
+      static_cast<FontAccessContext*>(manager_.get());
+
+  base::RunLoop run_loop;
+  font_access_context->FindAllFonts(base::BindLambdaForTesting(
+      [&](FontEnumerationStatus status,
+          std::vector<blink::mojom::FontMetadata> fonts) {
+        EXPECT_EQ(status, FontEnumerationStatus::kOk)
+            << "Enumeration expected to be successful.";
+        EXPECT_GT(fonts.size(), 0u)
+            << "Enumeration expected to yield at least 1 font";
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 #endif
 
 }  // namespace content

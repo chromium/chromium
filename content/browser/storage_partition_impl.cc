@@ -75,6 +75,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/dom_storage_context.h"
+#include "content/public/browser/font_access_context.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/native_file_system_entry_factory.h"
 #include "content/public/browser/network_service_instance.h"
@@ -1443,6 +1444,11 @@ BackgroundSyncContextImpl* StoragePartitionImpl::GetBackgroundSyncContext() {
 storage::FileSystemContext* StoragePartitionImpl::GetFileSystemContext() {
   DCHECK(initialized_);
   return filesystem_context_.get();
+}
+
+FontAccessContext* StoragePartitionImpl::GetFontAccessContext() {
+  DCHECK(initialized_);
+  return font_access_manager_.get();
 }
 
 storage::DatabaseTracker* StoragePartitionImpl::GetDatabaseTracker() {

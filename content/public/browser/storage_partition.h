@@ -62,6 +62,7 @@ class ContentIndexContext;
 class DedicatedWorkerService;
 class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
+class FontAccessContext;
 class GeneratedCodeCacheContext;
 class NativeFileSystemEntryFactory;
 class PlatformNotificationContext;
@@ -121,6 +122,7 @@ class CONTENT_EXPORT StoragePartition {
   virtual AppCacheService* GetAppCacheService() = 0;
   virtual BackgroundSyncContext* GetBackgroundSyncContext() = 0;
   virtual storage::FileSystemContext* GetFileSystemContext() = 0;
+  virtual FontAccessContext* GetFontAccessContext() = 0;
   virtual storage::DatabaseTracker* GetDatabaseTracker() = 0;
   virtual DOMStorageContext* GetDOMStorageContext() = 0;
   virtual storage::mojom::IndexedDBControl& GetIndexedDBControl() = 0;

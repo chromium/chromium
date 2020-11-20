@@ -73,6 +73,7 @@ class BackgroundFetchContext;
 class BlobRegistryWrapper;
 class ConversionManagerImpl;
 class CookieStoreContext;
+class FontAccessContext;
 class GeneratedCodeCacheContext;
 class IndexedDBContextImpl;
 class NativeFileSystemEntryFactory;
@@ -139,6 +140,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   ChromeAppCacheService* GetAppCacheService() override;
   BackgroundSyncContextImpl* GetBackgroundSyncContext() override;
   storage::FileSystemContext* GetFileSystemContext() override;
+  FontAccessContext* GetFontAccessContext() override;
   storage::DatabaseTracker* GetDatabaseTracker() override;
   DOMStorageContextWrapper* GetDOMStorageContext() override;
   LockManager* GetLockManager();  // override; TODO: Add to interface

@@ -21,6 +21,14 @@ enum FontEnumerationStatus {
   kPermissionDenied,
 };
 
+// Bag of data representing a font, used to pass structured data from
+// content to embedder and from browser to renderer.
+struct FontMetadata {
+  string postscript_name;
+  string full_name;
+  string family;
+};
+
 // Implemented in the browser process to pass font data to windows
 // and workers in renderer processes.
 // Provides methods related to enumerating locally installed fonts.

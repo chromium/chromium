@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
@@ -105,6 +106,28 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
 #endif
 }
 
+void FontAccessManagerImpl::FindAllFonts(FindAllFontsCallback callback) {
+#if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
+  std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
+                          {});
+#else
+  // Obtain cached font enumeration.
+  ipc_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](FontAccessManagerImpl* impl, FindAllFontsCallback callback,
+             scoped_refptr<base::TaskRunner> results_task_runner) {
+            FontEnumerationCache::GetInstance()
+                ->QueueShareMemoryRegionWhenReady(
+                    results_task_runner,
+                    base::BindOnce(&FontAccessManagerImpl::DidFindAllFonts,
+                                   base::Unretained(impl),
+                                   std::move(callback)));
+          },
+          base::Unretained(this), std::move(callback), results_task_runner_));
+#endif
+}
+
 void FontAccessManagerImpl::DidRequestPermission(
     EnumerateLocalFontsCallback callback,
     blink::mojom::PermissionStatus status) {
@@ -132,6 +155,37 @@ void FontAccessManagerImpl::DidRequestPermission(
                      },
                      std::move(callback), results_task_runner_));
 #endif
+}
+
+void FontAccessManagerImpl::DidFindAllFonts(
+    FindAllFontsCallback callback,
+    blink::mojom::FontEnumerationStatus status,
+    base::ReadOnlySharedMemoryRegion region) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (status != blink::mojom::FontEnumerationStatus::kOk) {
+    std::move(callback).Run(status, {});
+    return;
+  }
+
+  const base::ReadOnlySharedMemoryMapping mapping = region.Map();
+  if (mapping.size() > INT_MAX) {
+    std::move(callback).Run(
+        blink::mojom::FontEnumerationStatus::kUnexpectedError, {});
+    return;
+  }
+
+  blink::FontEnumerationTable table;
+  table.ParseFromArray(mapping.memory(), static_cast<int>(mapping.size()));
+
+  std::vector<blink::mojom::FontMetadata> data;
+  for (const auto& element : table.fonts()) {
+    auto entry = blink::mojom::FontMetadata(
+        element.postscript_name(), element.full_name(), element.family());
+    data.push_back(std::move(entry));
+  }
+
+  std::move(callback).Run(status, std::move(data));
 }
 
 }  // namespace content
