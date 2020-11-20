@@ -528,6 +528,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void FormElementReset(HTMLFormElement& element) {}
 
+  virtual void PasswordFieldReset(HTMLInputElement& element) {}
+
  protected:
   ChromeClient() = default;
 

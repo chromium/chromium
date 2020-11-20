@@ -3739,8 +3739,6 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   old_password_field.value = ASCIIToUTF16("oldpass");
   form_data.fields.push_back(old_password_field);
 
-  // Form changes: new and confirmation password fields are added by the
-  // website's scripts.
   FormFieldData new_password_field;
   new_password_field.form_control_type = "password";
   new_password_field.unique_renderer_id = FieldRendererId(2);
@@ -3766,6 +3764,67 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr)
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
   manager()->OnPasswordFormCleared(&driver_, form_data);
+}
+
+TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  PasswordForm saved_match(MakeSavedForm());
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_match)));
+
+  for (bool new_password_field_was_cleared : {true, false}) {
+    SCOPED_TRACE(testing::Message("#new password field was cleared = ")
+                 << new_password_field_was_cleared);
+
+    // Create FormData for a form with 1 password field and process it.
+    FormData form_data;
+    form_data.is_form_tag = false;
+    form_data.unique_renderer_id = FormRendererId(0);
+    form_data.url = GURL("http://www.google.com/a/LoginAuth");
+
+    FormFieldData old_password_field;
+    old_password_field.form_control_type = "password";
+    old_password_field.unique_renderer_id = FieldRendererId(1);
+    old_password_field.name = ASCIIToUTF16("oldpass");
+    old_password_field.value = ASCIIToUTF16("oldpass");
+    form_data.fields.push_back(old_password_field);
+
+    FormFieldData new_password_field;
+    new_password_field.form_control_type = "password";
+    new_password_field.unique_renderer_id = FieldRendererId(2);
+    new_password_field.name = ASCIIToUTF16("newpass");
+    new_password_field.autocomplete_attribute = "new-password";
+    form_data.fields.push_back(new_password_field);
+
+    FormFieldData confirm_password_field;
+    confirm_password_field.form_control_type = "password";
+    confirm_password_field.unique_renderer_id = FieldRendererId(3);
+    confirm_password_field.name = ASCIIToUTF16("confpass");
+    form_data.fields.push_back(confirm_password_field);
+
+    manager()->OnPasswordFormsParsed(&driver_, {form_data});
+
+    form_data.fields[0].value = ASCIIToUTF16("oldpass");
+    form_data.fields[1].value = ASCIIToUTF16("newpass");
+    form_data.fields[2].value = ASCIIToUTF16("newpass");
+
+    manager()->OnInformAboutUserInput(&driver_, form_data);
+
+    form_data.fields[0].value = base::string16();
+    form_data.fields[2].value = base::string16();
+    if (new_password_field_was_cleared)
+      form_data.fields[1].value = base::string16();
+
+    std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+    if (new_password_field_was_cleared) {
+      EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr)
+          .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+    } else {
+      EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
+    }
+
+    manager()->OnPasswordFormCleared(&driver_, form_data);
+  }
 }
 #endif  // !defined(OS_IOS)
 

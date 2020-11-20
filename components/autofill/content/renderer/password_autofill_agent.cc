@@ -1384,21 +1384,45 @@ void PasswordAutofillAgent::InformAboutFormClearing(
     FieldRendererId element_id(element.UniqueRendererFormControlId());
     // Notify PasswordManager if |form| has password fields that have user typed
     // input or input autofilled on user trigger.
-    if (element.FormControlTypeForAutofill() == "password" &&
-        (field_data_manager_->DidUserType(element_id) ||
-         field_data_manager_->WasAutofilledOnUserTrigger(element_id))) {
-      const form_util::ExtractMask extract_mask =
-          static_cast<form_util::ExtractMask>(form_util::EXTRACT_VALUE |
-                                              form_util::EXTRACT_OPTIONS);
-      FormData form_data;
-      if (WebFormElementToFormData(form, WebFormControlElement(),
-                                   field_data_manager_.get(), extract_mask,
-                                   &form_data, nullptr)) {
-        GetPasswordManagerDriver()->PasswordFormCleared(form_data);
-      }
+    if (IsPasswordFieldFilledByUser(element)) {
+      NotifyPasswordManagerAboutClearedForm(form);
       return;
     }
   }
+}
+
+void PasswordAutofillAgent::InformAboutFieldClearing(
+    const WebInputElement& cleared_element) {
+  if (!FrameCanAccessPasswordManager())
+    return;
+  DCHECK(cleared_element.Value().IsEmpty());
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDetectFormSubmissionOnFormClear)) {
+    return;
+  }
+  FieldRendererId field_id(cleared_element.UniqueRendererFormControlId());
+  // Ignore fields that had no user input or autofill on user trigger.
+  if (!field_data_manager_->DidUserType(field_id) &&
+      !field_data_manager_->WasAutofilledOnUserTrigger(field_id)) {
+    return;
+  }
+
+  WebFormElement form = cleared_element.Form();
+  if (form.IsNull()) {
+    // Process password field clearing for fields outside the <form> tag.
+    GetPasswordManagerDriver()->PasswordFormCleared(
+        *GetFormDataFromUnownedInputElements());
+    return;
+  }
+  // Process field clearing for a form under a <form> tag.
+  // Only notify PasswordManager in case all user filled password fields were
+  // cleared.
+  bool cleared_all_password_fields = base::ranges::all_of(
+      form.GetFormControlElements(), [this](const auto& el) {
+        return !IsPasswordFieldFilledByUser(el) || el.Value().IsEmpty();
+      });
+  if (cleared_all_password_fields)
+    NotifyPasswordManagerAboutClearedForm(form);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1887,6 +1911,26 @@ bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
     const WebInputElement& password_element) const {
   return should_show_popup_without_passwords_ && !password_element.IsNull() &&
          IsElementEditable(password_element);
+}
+
+bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
+    const WebFormControlElement& element) const {
+  FieldRendererId element_id(element.UniqueRendererFormControlId());
+  return element.FormControlTypeForAutofill() == "password" &&
+         (field_data_manager_->DidUserType(element_id) ||
+          field_data_manager_->WasAutofilledOnUserTrigger(element_id));
+}
+
+void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
+    const WebFormElement& cleared_form) {
+  const auto extract_mask = static_cast<form_util::ExtractMask>(
+      form_util::EXTRACT_VALUE | form_util::EXTRACT_OPTIONS);
+  FormData form_data;
+  if (WebFormElementToFormData(cleared_form, WebFormControlElement(),
+                               field_data_manager_.get(), extract_mask,
+                               &form_data, nullptr)) {
+    GetPasswordManagerDriver()->PasswordFormCleared(form_data);
+  }
 }
 
 }  // namespace autofill

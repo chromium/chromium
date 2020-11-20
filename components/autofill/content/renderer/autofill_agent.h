@@ -196,6 +196,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool ShouldSuppressKeyboard(
       const blink::WebFormControlElement& element) override;
   void FormElementReset(const blink::WebFormElement& form) override;
+  void PasswordFieldReset(const blink::WebInputElement& element) override;
 
   void HandleFocusChangeComplete();
 
