@@ -29,7 +29,7 @@
     // public/common/feature_policy/feature_policy_features.h
     feature_default: {
       default: "EnableForSelf",
-      valid_values: ["DisableForAll", "EnableForAll", "EnableForSelf"]
+      valid_values: ["EnableForAll", "EnableForSelf"]
     }
   },
 
