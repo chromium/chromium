@@ -1820,11 +1820,25 @@ bool BrowserAccessibility::AccessibilityPerformAction(
       manager_->SetScrollOffset(*this, data.target_point);
       return true;
     case ax::mojom::Action::kSetSelection: {
-      // "data.anchor_offset" and "data.focus_ofset" might need to be adjusted
-      // if the anchor or the focus nodes include ignored children.
       ui::AXActionData selection = data;
+
+      // Prioritize target_tree_id if it was provided, as it is possible on
+      // some platforms (such as IAccessible2) to initiate a selection in a
+      // different tree than the current node resides in, as long as the nodes
+      // being selected share an AXTree with each other.
+      BrowserAccessibilityManager* selection_manager = nullptr;
+      if (selection.target_tree_id != ui::AXTreeIDUnknown()) {
+        selection_manager =
+            BrowserAccessibilityManager::FromID(selection.target_tree_id);
+      } else {
+        selection_manager = manager_;
+      }
+      DCHECK(selection_manager);
+
+      // "data.anchor_offset" and "data.focus_offset" might need to be adjusted
+      // if the anchor or the focus nodes include ignored children.
       const BrowserAccessibility* anchor_object =
-          manager()->GetFromID(selection.anchor_node_id);
+          selection_manager->GetFromID(selection.anchor_node_id);
       DCHECK(anchor_object);
       if (!anchor_object->PlatformIsLeaf()) {
         DCHECK_GE(selection.anchor_offset, 0);
@@ -1843,8 +1857,12 @@ bool BrowserAccessibility::AccessibilityPerformAction(
       }
 
       const BrowserAccessibility* focus_object =
-          manager()->GetFromID(selection.focus_node_id);
+          selection_manager->GetFromID(selection.focus_node_id);
       DCHECK(focus_object);
+
+      // Blink only supports selections between two nodes in the same tree.
+      DCHECK_EQ(anchor_object->GetTreeData().tree_id,
+                focus_object->GetTreeData().tree_id);
       if (!focus_object->PlatformIsLeaf()) {
         DCHECK_GE(selection.focus_offset, 0);
         const BrowserAccessibility* focus_child =
@@ -1859,7 +1877,7 @@ bool BrowserAccessibility::AccessibilityPerformAction(
         }
       }
 
-      manager_->SetSelection(selection);
+      selection_manager->SetSelection(selection);
       return true;
     }
     case ax::mojom::Action::kSetValue:

@@ -2766,20 +2766,63 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
       text_after_iframe.As(&text_after_iframe_iaccessible2_4));
 
   LONG n_ranges = 1;
-  IA2Range* ranges =
+  IA2Range* cross_tree_ranges =
       reinterpret_cast<IA2Range*>(CoTaskMemAlloc(sizeof(IA2Range)));
-  ranges[0].anchor = text_in_iframe.Get();
-  ranges[0].anchorOffset = 0;
-  ranges[0].active = text_after_iframe.Get();
-  ranges[0].activeOffset = 2;
+  cross_tree_ranges[0].anchor = text_in_iframe.Get();
+  cross_tree_ranges[0].anchorOffset = 0;
+  cross_tree_ranges[0].active = text_after_iframe.Get();
+  cross_tree_ranges[0].activeOffset = 2;
 
   // This is expected to fail because the anchor and focus nodes are in
   // different trees, which Blink doesn't support.
-  EXPECT_HRESULT_FAILED(
-      text_after_iframe_iaccessible2_4->setSelectionRanges(n_ranges, ranges));
+  EXPECT_HRESULT_FAILED(text_after_iframe_iaccessible2_4->setSelectionRanges(
+      n_ranges, cross_tree_ranges));
 
-  CoTaskMemFree(ranges);
-  ranges = nullptr;
+  CoTaskMemFree(cross_tree_ranges);
+  cross_tree_ranges = nullptr;
+
+  // Now test a variation where the selection start and end are in the same
+  // tree as each other, but a different tree than the caller.
+  IA2Range* same_tree_ranges =
+      reinterpret_cast<IA2Range*>(CoTaskMemAlloc(sizeof(IA2Range)));
+  same_tree_ranges[0].anchor = text_in_iframe.Get();
+  same_tree_ranges[0].anchorOffset = 0;
+  same_tree_ranges[0].active = text_in_iframe.Get();
+  same_tree_ranges[0].activeOffset = 1;
+
+  // This should succeed, however the selection will need to be queried from
+  // a node in the iframe tree.
+  AccessibilityNotificationWaiter selection_waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
+  ASSERT_HRESULT_SUCCEEDED(text_after_iframe_iaccessible2_4->setSelectionRanges(
+      n_ranges, same_tree_ranges));
+  selection_waiter.WaitForNotification();
+
+  Microsoft::WRL::ComPtr<IAccessible2_4> text_in_iframe_iaccessible2_4;
+  ASSERT_HRESULT_SUCCEEDED(text_in_iframe.As(&text_in_iframe_iaccessible2_4));
+
+  IA2Range* result_ranges =
+      reinterpret_cast<IA2Range*>(CoTaskMemAlloc(sizeof(IA2Range)));
+  HRESULT hr = text_in_iframe_iaccessible2_4->get_selectionRanges(
+      &result_ranges, &n_ranges);
+  EXPECT_EQ(S_OK, hr);
+  EXPECT_EQ(1, n_ranges);
+  ASSERT_NE(nullptr, result_ranges);
+  ASSERT_NE(nullptr, result_ranges[0].anchor);
+  EXPECT_EQ(text_in_iframe.Get(), result_ranges[0].anchor);
+  EXPECT_EQ(0, result_ranges[0].anchorOffset);
+  ASSERT_NE(nullptr, result_ranges[0].active);
+  EXPECT_EQ(text_in_iframe.Get(), result_ranges[0].active);
+  EXPECT_EQ(1, result_ranges[0].activeOffset);
+
+  same_tree_ranges[0].anchor->Release();
+  same_tree_ranges[0].active->Release();
+  CoTaskMemFree(same_tree_ranges);
+  same_tree_ranges = nullptr;
+
+  CoTaskMemFree(result_ranges);
+  result_ranges = nullptr;
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestMultiLineSetSelection) {

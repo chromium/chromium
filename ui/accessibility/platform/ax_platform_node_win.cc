@@ -1682,8 +1682,9 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelectionRanges(LONG nRanges,
     return E_INVALIDARG;
 
   // Blink only supports selections within a single tree.
-  if (anchor_node->GetDelegate()->GetTreeData().tree_id !=
-      focus_node->GetDelegate()->GetTreeData().tree_id) {
+  AXTreeID anchor_tree_id = anchor_node->GetDelegate()->GetTreeData().tree_id;
+  AXTreeID focus_tree_id = focus_node->GetDelegate()->GetTreeData().tree_id;
+  if (anchor_tree_id != focus_tree_id) {
     return E_INVALIDARG;
   }
 
@@ -1710,6 +1711,7 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelectionRanges(LONG nRanges,
   AXActionData action_data;
   action_data.action = ax::mojom::Action::kSetSelection;
   action_data.anchor_node_id = anchor_node->GetData().id;
+  action_data.target_tree_id = anchor_tree_id;
   action_data.anchor_offset = int32_t{ranges->anchorOffset};
   action_data.focus_node_id = focus_node->GetData().id;
   action_data.focus_offset = int32_t{ranges->activeOffset};
