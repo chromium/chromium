@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/background/request_queue_store.h"
 
+#include <memory>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -371,10 +372,7 @@ UpdateRequestsResult StoreErrorForAllIds(const std::vector<int64_t>& item_ids) {
 }
 
 bool InitDatabaseSync(sql::Database* db, const base::FilePath& path) {
-  db->set_page_size(4096);
-  db->set_cache_size(500);
   db->set_histogram_tag("BackgroundRequestQueue");
-  db->set_exclusive_locking();
 
   if (path.empty()) {
     if (!db->OpenInMemory())
@@ -596,7 +594,8 @@ RequestQueueStore::~RequestQueueStore() {
 
 void RequestQueueStore::Initialize(InitializeCallback callback) {
   DCHECK(!db_);
-  db_.reset(new sql::Database());
+  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
+      .exclusive_locking = true, .page_size = 4096, .cache_size = 500});
 
   base::PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
