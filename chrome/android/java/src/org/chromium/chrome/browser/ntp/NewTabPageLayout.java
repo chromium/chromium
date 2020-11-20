@@ -497,10 +497,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
         mLogoDelegate.getSearchProviderLogo((logo, fromCache) -> {
             if (logo == null) {
-                if (fromCache) {
-                    return;
-                }
-
                 if (mSearchProviderIsGoogle) {
                     // We received a null logo and the provider is Google; this means there's no
                     // doodle.
@@ -519,6 +515,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
                                 renderer.recordRenderEvent();
                             }));
                 }
+
+                if (fromCache) return;
             }
 
             mSearchProviderLogoView.setDelegate(mLogoDelegate);
