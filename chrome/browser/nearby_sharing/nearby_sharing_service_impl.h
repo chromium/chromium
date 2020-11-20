@@ -177,6 +177,7 @@ class NearbySharingServiceImpl
   bool HasAvailableConnectionMediums();
   void InvalidateSurfaceState();
   bool ShouldStopNearbyProcess();
+  void OnProcessShutdownTimerFired();
   void InvalidateSendSurfaceState();
   void InvalidateScanningState();
   void InvalidateFastInitiationAdvertising();
@@ -337,6 +338,7 @@ class NearbySharingServiceImpl
   NearbyFileHandler file_handler_;
   bool is_screen_locked_ = false;
   base::OneShotTimer rotate_background_advertisement_timer_;
+  base::OneShotTimer process_shutdown_pending_timer_;
 
   // A list of service observers.
   base::ObserverList<NearbySharingService::Observer> observers_;
