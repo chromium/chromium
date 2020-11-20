@@ -30,7 +30,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.feed.shared.ScrollTracker;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -86,8 +85,6 @@ import java.util.Map;
 @JNINamespace("feed")
 public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHandler {
     private static final String TAG = "FeedStreamSurface";
-
-    private static final String FEED_SPLIT_NAME = "feedv2";
 
     private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
     private static final int SNACKBAR_DURATION_MS_LONG = 10000;
@@ -1017,10 +1014,6 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
                 .setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
         animator.start();
         mIsPlaceholderShown = false;
-    }
-
-    private static Context createFeedContext(Context context) {
-        return SplitCompatUtils.createContextForInflation(context, FEED_SPLIT_NAME);
     }
 
     // Detects animation finishes in RecyclerView.
