@@ -42387,6 +42387,8 @@ from previous Chrome versions.
   <int value="-860534647" label="SiteDetails:enabled"/>
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>
   <int value="-856915246" label="enable-new-audio-rendering-mixing-strategy"/>
+  <int value="-856146376"
+      label="disable_idle_sockets_close_on_memory_pressure:disabled"/>
   <int value="-856016114" label="NTPOfflinePages:disabled"/>
   <int value="-855277252" label="CookiesWithoutSameSiteMustBeSecure:disabled"/>
   <int value="-855130893" label="enable-touch-calibration-setting"/>
@@ -42992,6 +42994,8 @@ from previous Chrome versions.
   <int value="-225505731" label="CCTModule:enabled"/>
   <int value="-225228149" label="ContentSettingsRedesign:enabled"/>
   <int value="-222296540" label="VirtualKeyboardBorderedKey:disabled"/>
+  <int value="-222282965"
+      label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
   <int value="-220599034" label="UsePdfCompositorServiceForPrint:enabled"/>
   <int value="-217885320" label="CdmFactoryDaemon:disabled"/>
   <int value="-216219963" label="ash-shelf-color-scheme"/>

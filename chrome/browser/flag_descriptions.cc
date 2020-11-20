@@ -3798,6 +3798,12 @@ const char kDisableCryptAuthV1DeviceSyncDescription[] =
     "Disable the CryptAuth v1 DeviceSync protocol. The v2 DeviceSync flag "
     "should be enabled before this flag is flipped.";
 
+const char kDisableIdleSocketsCloseOnMemoryPressureName[] =
+    "Disable closing idle sockets on memory pressure";
+const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =
+    "If enabled, idle sockets will not be closed when chrome detects memory "
+    "pressure. This applies to web pages only and not to internal requests.";
+
 const char kDisableExplicitDmaFencesName[] = "Disable explicit dma-fences";
 const char kDisableExplicitDmaFencesDescription[] =
     "Always rely on implicit syncrhonization between GPU and display "

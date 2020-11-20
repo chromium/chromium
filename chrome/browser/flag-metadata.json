@@ -894,6 +894,11 @@
     "expiry_milestone": 77
   },
   {
+    "name": "disable-idle-sockets-close-on-memory-pressure",
+    "owners": [ "pmarko" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "disable-javascript-harmony-shipping",
     "owners": [ "adamk", "hablich" ],
     // This flag is used for field debugging along with

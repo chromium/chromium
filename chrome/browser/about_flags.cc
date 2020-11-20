@@ -2772,6 +2772,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableCryptAuthV1DeviceSyncName,
      flag_descriptions::kDisableCryptAuthV1DeviceSyncDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDisableCryptAuthV1DeviceSync)},
+    {"disable-idle-sockets-close-on-memory-pressure",
+     flag_descriptions::kDisableIdleSocketsCloseOnMemoryPressureName,
+     flag_descriptions::kDisableIdleSocketsCloseOnMemoryPressureDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kDisableIdleSocketsCloseOnMemoryPressure)},
     {"disable-office-editing-component-app",
      flag_descriptions::kDisableOfficeEditingComponentAppName,
      flag_descriptions::kDisableOfficeEditingComponentAppDescription, kOsCrOS,
