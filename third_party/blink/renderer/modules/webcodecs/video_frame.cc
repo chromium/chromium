@@ -400,6 +400,7 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
         local_frame->format() == media::PIXEL_FORMAT_I420A)) ||
       (local_frame->HasTextures() &&
        (local_frame->format() == media::PIXEL_FORMAT_I420 ||
+        local_frame->format() == media::PIXEL_FORMAT_I420A ||
         local_frame->format() == media::PIXEL_FORMAT_NV12 ||
         local_frame->format() == media::PIXEL_FORMAT_ABGR ||
         local_frame->format() == media::PIXEL_FORMAT_XRGB))) {

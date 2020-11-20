@@ -1088,14 +1088,14 @@ static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate, pixels_offset) ==
               "offset of ReadbackImagePixelsINTERNALImmediate pixels_offset "
               "should be 40");
 
-struct ConvertYUVMailboxesToRGBINTERNALImmediate {
-  typedef ConvertYUVMailboxesToRGBINTERNALImmediate ValueType;
-  static const CommandId kCmdId = kConvertYUVMailboxesToRGBINTERNALImmediate;
+struct ConvertYUVAMailboxesToRGBINTERNALImmediate {
+  typedef ConvertYUVAMailboxesToRGBINTERNALImmediate ValueType;
+  static const CommandId kCmdId = kConvertYUVAMailboxesToRGBINTERNALImmediate;
   static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
 
   static uint32_t ComputeDataSize() {
-    return static_cast<uint32_t>(sizeof(GLbyte) * 64);
+    return static_cast<uint32_t>(sizeof(GLbyte) * 80);
   }
 
   static uint32_t ComputeSize() {
@@ -1105,41 +1105,51 @@ struct ConvertYUVMailboxesToRGBINTERNALImmediate {
   void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
 
   void Init(GLenum _planes_yuv_color_space,
-            GLboolean _is_nv12,
+            GLenum _plane_config,
+            GLenum _subsampling,
             const GLbyte* _mailboxes) {
     SetHeader();
     planes_yuv_color_space = _planes_yuv_color_space;
-    is_nv12 = _is_nv12;
+    plane_config = _plane_config;
+    subsampling = _subsampling;
     memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
   }
 
   void* Set(void* cmd,
             GLenum _planes_yuv_color_space,
-            GLboolean _is_nv12,
+            GLenum _plane_config,
+            GLenum _subsampling,
             const GLbyte* _mailboxes) {
-    static_cast<ValueType*>(cmd)->Init(_planes_yuv_color_space, _is_nv12,
-                                       _mailboxes);
+    static_cast<ValueType*>(cmd)->Init(_planes_yuv_color_space, _plane_config,
+                                       _subsampling, _mailboxes);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
 
   gpu::CommandHeader header;
   uint32_t planes_yuv_color_space;
-  uint32_t is_nv12;
+  uint32_t plane_config;
+  uint32_t subsampling;
 };
 
-static_assert(sizeof(ConvertYUVMailboxesToRGBINTERNALImmediate) == 12,
-              "size of ConvertYUVMailboxesToRGBINTERNALImmediate should be 12");
 static_assert(
-    offsetof(ConvertYUVMailboxesToRGBINTERNALImmediate, header) == 0,
-    "offset of ConvertYUVMailboxesToRGBINTERNALImmediate header should be 0");
-static_assert(offsetof(ConvertYUVMailboxesToRGBINTERNALImmediate,
+    sizeof(ConvertYUVAMailboxesToRGBINTERNALImmediate) == 16,
+    "size of ConvertYUVAMailboxesToRGBINTERNALImmediate should be 16");
+static_assert(
+    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, header) == 0,
+    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate header should be 0");
+static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
                        planes_yuv_color_space) == 4,
-              "offset of ConvertYUVMailboxesToRGBINTERNALImmediate "
+              "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
               "planes_yuv_color_space should be 4");
-static_assert(
-    offsetof(ConvertYUVMailboxesToRGBINTERNALImmediate, is_nv12) == 8,
-    "offset of ConvertYUVMailboxesToRGBINTERNALImmediate is_nv12 should be 8");
+static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
+                       plane_config) == 8,
+              "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
+              "plane_config should be 8");
+static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
+                       subsampling) == 12,
+              "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
+              "subsampling should be 12");
 
 struct TraceBeginCHROMIUM {
   typedef TraceBeginCHROMIUM ValueType;

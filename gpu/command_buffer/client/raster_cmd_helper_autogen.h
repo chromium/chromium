@@ -247,16 +247,17 @@ void ReadbackImagePixelsINTERNALImmediate(GLint src_x,
   }
 }
 
-void ConvertYUVMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
-                                               GLboolean is_nv12,
-                                               const GLbyte* mailboxes) {
+void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
+                                                GLenum plane_config,
+                                                GLenum subsampling,
+                                                const GLbyte* mailboxes) {
   const uint32_t size =
-      raster::cmds::ConvertYUVMailboxesToRGBINTERNALImmediate::ComputeSize();
-  raster::cmds::ConvertYUVMailboxesToRGBINTERNALImmediate* c =
+      raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate::ComputeSize();
+  raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate* c =
       GetImmediateCmdSpaceTotalSize<
-          raster::cmds::ConvertYUVMailboxesToRGBINTERNALImmediate>(size);
+          raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>(size);
   if (c) {
-    c->Init(planes_yuv_color_space, is_nv12, mailboxes);
+    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
   }
 }
 

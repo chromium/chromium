@@ -449,7 +449,7 @@ TEST_F(RasterFormatTest, ReadbackImagePixelsINTERNALImmediate) {
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
 
-TEST_F(RasterFormatTest, ConvertYUVMailboxesToRGBINTERNALImmediate) {
+TEST_F(RasterFormatTest, ConvertYUVAMailboxesToRGBINTERNALImmediate) {
   const int kSomeBaseValueToTestWith = 51;
   static GLbyte data[] = {
       static_cast<GLbyte>(kSomeBaseValueToTestWith + 0),
@@ -516,18 +516,36 @@ TEST_F(RasterFormatTest, ConvertYUVMailboxesToRGBINTERNALImmediate) {
       static_cast<GLbyte>(kSomeBaseValueToTestWith + 61),
       static_cast<GLbyte>(kSomeBaseValueToTestWith + 62),
       static_cast<GLbyte>(kSomeBaseValueToTestWith + 63),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 64),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 65),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 66),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 67),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 68),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 69),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 70),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 71),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 72),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 73),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 74),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 75),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 76),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 77),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 78),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 79),
   };
-  cmds::ConvertYUVMailboxesToRGBINTERNALImmediate& cmd =
-      *GetBufferAs<cmds::ConvertYUVMailboxesToRGBINTERNALImmediate>();
+  cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate& cmd =
+      *GetBufferAs<cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>();
   void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLboolean>(12), data);
+      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLenum>(12),
+              static_cast<GLenum>(13), data);
   EXPECT_EQ(static_cast<uint32_t>(
-                cmds::ConvertYUVMailboxesToRGBINTERNALImmediate::kCmdId),
+                cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
             cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLenum>(11), cmd.planes_yuv_color_space);
-  EXPECT_EQ(static_cast<GLboolean>(12), cmd.is_nv12);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.plane_config);
+  EXPECT_EQ(static_cast<GLenum>(13), cmd.subsampling);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

@@ -32,6 +32,8 @@ class VideoFrame;
 // images.
 class MEDIA_EXPORT VideoFrameYUVConverter {
  public:
+  static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
+
   static void ConvertYUVVideoFrameNoCaching(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider,

@@ -1906,12 +1906,13 @@ TEST_F(OopPixelTest, ConvertYUVToRGB) {
   auto* sii = raster_context_provider_->SharedImageInterface();
   gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
       ri, sii, options, viz::ResourceFormat::RGBA_8888);
-  gpu::Mailbox y_mailbox = CreateMailboxSharedImage(
-      ri, sii, options, viz::ResourceFormat::LUMINANCE_8);
-  gpu::Mailbox u_mailbox = CreateMailboxSharedImage(
-      ri, sii, uv_options, viz::ResourceFormat::LUMINANCE_8);
-  gpu::Mailbox v_mailbox = CreateMailboxSharedImage(
-      ri, sii, uv_options, viz::ResourceFormat::LUMINANCE_8);
+  gpu::Mailbox yuv_mailboxes[3]{
+      CreateMailboxSharedImage(ri, sii, options,
+                               viz::ResourceFormat::LUMINANCE_8),
+      CreateMailboxSharedImage(ri, sii, uv_options,
+                               viz::ResourceFormat::LUMINANCE_8),
+      CreateMailboxSharedImage(ri, sii, uv_options,
+                               viz::ResourceFormat::LUMINANCE_8)};
 
   size_t y_pixels_size = options.resource_size.GetArea();
   size_t uv_pixels_size = uv_options.resource_size.GetArea();
@@ -1926,27 +1927,28 @@ TEST_F(OopPixelTest, ConvertYUVToRGB) {
 
   // Upload initial yuv image data
   gpu::gles2::GLES2Interface* gl = gles2_context_provider_->ContextGL();
-  UploadPixels(gl, y_mailbox, options.resource_size, GL_LUMINANCE,
+  UploadPixels(gl, yuv_mailboxes[0], options.resource_size, GL_LUMINANCE,
                GL_UNSIGNED_BYTE, y_pix.get());
-  UploadPixels(gl, u_mailbox, uv_options.resource_size, GL_LUMINANCE,
+  UploadPixels(gl, yuv_mailboxes[1], uv_options.resource_size, GL_LUMINANCE,
                GL_UNSIGNED_BYTE, u_pix.get());
-  UploadPixels(gl, v_mailbox, uv_options.resource_size, GL_LUMINANCE,
+  UploadPixels(gl, yuv_mailboxes[2], uv_options.resource_size, GL_LUMINANCE,
                GL_UNSIGNED_BYTE, v_pix.get());
   gl->OrderingBarrierCHROMIUM();
 
-  ri->ConvertYUVMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace, y_mailbox,
-                               u_mailbox, v_mailbox);
+  ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
+                                SkYUVAInfo::PlaneConfig::kY_U_V,
+                                SkYUVAInfo::Subsampling::k420, yuv_mailboxes);
   ri->OrderingBarrierCHROMIUM();
   SkBitmap actual_bitmap = ReadbackMailbox(gl, dest_mailbox, options);
 
   // Create the expected result using SkImage::MakeFromYUVTextures
   GrBackendTexture backend_textures[3];
-  backend_textures[0] = MakeBackendTexture(gl, y_mailbox, options.resource_size,
-                                           GL_LUMINANCE8_EXT);
+  backend_textures[0] = MakeBackendTexture(
+      gl, yuv_mailboxes[0], options.resource_size, GL_LUMINANCE8_EXT);
   backend_textures[1] = MakeBackendTexture(
-      gl, u_mailbox, uv_options.resource_size, GL_LUMINANCE8_EXT);
+      gl, yuv_mailboxes[1], uv_options.resource_size, GL_LUMINANCE8_EXT);
   backend_textures[2] = MakeBackendTexture(
-      gl, v_mailbox, uv_options.resource_size, GL_LUMINANCE8_EXT);
+      gl, yuv_mailboxes[2], uv_options.resource_size, GL_LUMINANCE8_EXT);
 
   SkYUVAInfo yuva_info(
       {options.resource_size.width(), options.resource_size.height()},
@@ -1973,9 +1975,9 @@ TEST_F(OopPixelTest, ConvertYUVToRGB) {
   gpu::SyncToken sync_token;
   gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   sii->DestroySharedImage(sync_token, dest_mailbox);
-  sii->DestroySharedImage(sync_token, y_mailbox);
-  sii->DestroySharedImage(sync_token, u_mailbox);
-  sii->DestroySharedImage(sync_token, v_mailbox);
+  sii->DestroySharedImage(sync_token, yuv_mailboxes[0]);
+  sii->DestroySharedImage(sync_token, yuv_mailboxes[1]);
+  sii->DestroySharedImage(sync_token, yuv_mailboxes[2]);
 }
 
 TEST_F(OopPixelTest, ReadbackImagePixels) {
@@ -2032,10 +2034,11 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
 
   gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
       ri, sii, options, viz::ResourceFormat::RGBA_8888);
-  gpu::Mailbox y_mailbox = CreateMailboxSharedImage(
-      ri, sii, options, viz::ResourceFormat::LUMINANCE_8);
-  gpu::Mailbox uv_mailbox =
-      CreateMailboxSharedImage(ri, sii, uv_options, viz::ResourceFormat::RG_88);
+  gpu::Mailbox y_uv_mailboxes[2]{
+      CreateMailboxSharedImage(ri, sii, options,
+                               viz::ResourceFormat::LUMINANCE_8),
+      CreateMailboxSharedImage(ri, sii, uv_options, viz::ResourceFormat::RG_88),
+  };
 
   size_t y_pixels_size = options.resource_size.GetArea();
   size_t uv_pixels_size = uv_options.resource_size.GetArea() * 2;
@@ -2049,23 +2052,24 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   }
 
   gpu::gles2::GLES2Interface* gl = gles2_context_provider_->ContextGL();
-  UploadPixels(gl, y_mailbox, options.resource_size, GL_LUMINANCE,
+  UploadPixels(gl, y_uv_mailboxes[0], options.resource_size, GL_LUMINANCE,
                GL_UNSIGNED_BYTE, y_pix.get());
-  UploadPixels(gl, uv_mailbox, uv_options.resource_size, GL_RG,
+  UploadPixels(gl, y_uv_mailboxes[1], uv_options.resource_size, GL_RG,
                GL_UNSIGNED_BYTE, uv_pix.get());
   gl->OrderingBarrierCHROMIUM();
 
-  ri->ConvertNV12MailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace, y_mailbox,
-                                uv_mailbox);
+  ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
+                                SkYUVAInfo::PlaneConfig::kY_UV,
+                                SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
   ri->OrderingBarrierCHROMIUM();
   SkBitmap actual_bitmap = ReadbackMailbox(gl, dest_mailbox, options);
 
   // Create the expected result using SkImage::MakeFromYUVTextures
   GrBackendTexture backend_textures[2];
-  backend_textures[0] = MakeBackendTexture(gl, y_mailbox, options.resource_size,
-                                           GL_LUMINANCE8_EXT);
-  backend_textures[1] =
-      MakeBackendTexture(gl, uv_mailbox, uv_options.resource_size, GL_RG8);
+  backend_textures[0] = MakeBackendTexture(
+      gl, y_uv_mailboxes[0], options.resource_size, GL_LUMINANCE8_EXT);
+  backend_textures[1] = MakeBackendTexture(gl, y_uv_mailboxes[1],
+                                           uv_options.resource_size, GL_RG8);
 
   SkYUVAInfo yuva_info(
       {options.resource_size.width(), options.resource_size.height()},
@@ -2091,8 +2095,8 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   gpu::SyncToken sync_token;
   gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   sii->DestroySharedImage(sync_token, dest_mailbox);
-  sii->DestroySharedImage(sync_token, y_mailbox);
-  sii->DestroySharedImage(sync_token, uv_mailbox);
+  sii->DestroySharedImage(sync_token, y_uv_mailboxes[0]);
+  sii->DestroySharedImage(sync_token, y_uv_mailboxes[1]);
 }
 #endif  // !defined(OS_ANDROID)
 

@@ -191,20 +191,12 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   DeleteGpuRasterTexture(texture_id);
 }
 
-void RasterImplementationGLES::ConvertYUVMailboxesToRGB(
+void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
     const gpu::Mailbox& dest_mailbox,
     SkYUVColorSpace planes_yuv_color_space,
-    const gpu::Mailbox& y_plane_mailbox,
-    const gpu::Mailbox& u_plane_mailbox,
-    const gpu::Mailbox& v_plane_mailbox) {
-  NOTREACHED();
-}
-
-void RasterImplementationGLES::ConvertNV12MailboxesToRGB(
-    const gpu::Mailbox& dest_mailbox,
-    SkYUVColorSpace planes_yuv_color_space,
-    const gpu::Mailbox& y_plane_mailbox,
-    const gpu::Mailbox& uv_planes_mailbox) {
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
+    const gpu::Mailbox yuva_plane_mailboxes[]) {
   NOTREACHED();
 }
 

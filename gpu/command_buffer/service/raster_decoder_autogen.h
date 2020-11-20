@@ -368,16 +368,18 @@ error::Error RasterDecoderImpl::HandleReadbackImagePixelsINTERNALImmediate(
   return error::kNoError;
 }
 
-error::Error RasterDecoderImpl::HandleConvertYUVMailboxesToRGBINTERNALImmediate(
+error::Error
+RasterDecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  const volatile raster::cmds::ConvertYUVMailboxesToRGBINTERNALImmediate& c =
+  const volatile raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate& c =
       *static_cast<const volatile raster::cmds::
-                       ConvertYUVMailboxesToRGBINTERNALImmediate*>(cmd_data);
+                       ConvertYUVAMailboxesToRGBINTERNALImmediate*>(cmd_data);
   GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
-  GLboolean is_nv12 = static_cast<GLboolean>(c.is_nv12);
+  GLenum plane_config = static_cast<GLenum>(c.plane_config);
+  GLenum subsampling = static_cast<GLenum>(c.subsampling);
   uint32_t mailboxes_size;
-  if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 64>(1, &mailboxes_size)) {
+  if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 80>(1, &mailboxes_size)) {
     return error::kOutOfBounds;
   }
   if (mailboxes_size > immediate_data_size) {
@@ -389,8 +391,8 @@ error::Error RasterDecoderImpl::HandleConvertYUVMailboxesToRGBINTERNALImmediate(
   if (mailboxes == nullptr) {
     return error::kOutOfBounds;
   }
-  DoConvertYUVMailboxesToRGBINTERNAL(planes_yuv_color_space, is_nv12,
-                                     mailboxes);
+  DoConvertYUVAMailboxesToRGBINTERNAL(planes_yuv_color_space, plane_config,
+                                      subsampling, mailboxes);
   return error::kNoError;
 }
 

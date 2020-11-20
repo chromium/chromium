@@ -1449,8 +1449,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
   // Support uploading for NV12 and I420 video frame only.
-  if (video_frame->format() != PIXEL_FORMAT_I420 &&
-      video_frame->format() != PIXEL_FORMAT_NV12) {
+  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
     return false;
   }
 
@@ -1584,7 +1583,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     return false;
   }
 
-  if (video_frame.format() != media::PIXEL_FORMAT_I420) {
+  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(video_frame)) {
     return false;
   }
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
