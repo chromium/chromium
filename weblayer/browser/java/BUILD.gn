@@ -255,6 +255,7 @@ android_library("java") {
     "//third_party/android_deps:androidx_core_core_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_media_media_java",
+    "//third_party/android_deps:androidx_mediarouter_mediarouter_java",
     "//third_party/android_deps:androidx_preference_preference_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",

@@ -5,6 +5,7 @@
 package org.chromium.components.media_router;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.fragment.app.FragmentManager;
@@ -30,6 +31,14 @@ public abstract class MediaRouterClient {
     public static MediaRouterClient getInstance() {
         return sInstance;
     }
+
+    /**
+     * Returns a context that can be passed to {@link CastContext}.
+     *
+     * The value that {@link getApplicationContext()} returns for this context must be an {@link
+     * Application}.
+     */
+    public abstract Context getContextForRemoting();
 
     /**
      * @param webContents a {@link WebContents} in a tab.

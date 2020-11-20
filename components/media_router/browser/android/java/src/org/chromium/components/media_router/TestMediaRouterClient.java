@@ -4,10 +4,12 @@
 
 package org.chromium.components.media_router;
 
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
@@ -17,6 +19,11 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("media_router")
 public class TestMediaRouterClient extends MediaRouterClient {
     public TestMediaRouterClient() {}
+
+    @Override
+    public Context getContextForRemoting() {
+        return ContextUtils.getApplicationContext();
+    }
 
     @Override
     public int getTabId(WebContents webContents) {

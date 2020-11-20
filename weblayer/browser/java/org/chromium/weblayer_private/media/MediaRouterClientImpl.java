@@ -4,8 +4,10 @@
 
 package org.chromium.weblayer_private.media;
 
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -13,6 +15,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.fragment.app.FragmentManager;
+import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -48,6 +51,11 @@ public class MediaRouterClientImpl extends MediaRouterClient {
 
     public static void serviceDestroyed(int notificationId) {
         MediaSessionNotificationHelper.serviceDestroyed(notificationId);
+    }
+
+    @Override
+    public Context getContextForRemoting() {
+        return getContextForRemotingImpl();
     }
 
     @Override
@@ -144,7 +152,7 @@ public class MediaRouterClientImpl extends MediaRouterClient {
 
         @Override
         public void onMediaSessionUpdated(MediaSessionCompat session) {
-            // TODO(estade): implement.
+            MediaRouter.getInstance(getContextForRemotingImpl()).setMediaSessionCompat(session);
         }
 
         @Override
@@ -163,5 +171,20 @@ public class MediaRouterClientImpl extends MediaRouterClient {
             sRemotingNotificationId = WebLayerImpl.getRemotePlaybackApiNotificationId();
         }
         return sRemotingNotificationId;
+    }
+
+    private static Context getContextForRemotingImpl() {
+        Context context = ContextUtils.getApplicationContext();
+        // The GMS Cast framework assumes the passed {@link Context} returns an instance of {@link
+        // Application} from {@link getApplicationContext()}, so we make sure to remove any
+        // wrappers.
+        while (!(context.getApplicationContext() instanceof Application)) {
+            if (context instanceof ContextWrapper) {
+                context = ((ContextWrapper) context).getBaseContext();
+            } else {
+                return null;
+            }
+        }
+        return context;
     }
 }

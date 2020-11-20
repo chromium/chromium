@@ -41,8 +41,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.media_router.CastSessionUtil;
+import org.chromium.components.media_router.MediaRouterClient;
 import org.chromium.components.media_router.MediaSink;
 import org.chromium.components.media_router.MediaSource;
+import org.chromium.components.media_router.TestMediaRouterClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +89,7 @@ public class BaseSessionControllerTest {
         MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
         mMediaRouterHelper = new MediaRouterTestHelper();
+        MediaRouterClient.setInstance(new TestMediaRouterClient());
         ShadowCastContext.setInstance(mCastContext);
         mMediaRouteSelector =
                 new MediaRouteSelector.Builder()

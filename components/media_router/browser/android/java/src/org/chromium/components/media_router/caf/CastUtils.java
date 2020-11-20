@@ -4,30 +4,16 @@
 
 package org.chromium.components.media_router.caf;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.ContextWrapper;
-
 import com.google.android.gms.cast.framework.CastContext;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.components.media_router.MediaRouterClient;
 
 /** Utility methods for Cast. */
 public class CastUtils {
     /** Helper method to return the {@link CastContext} instance. */
     public static CastContext getCastContext() {
-        Context context = ContextUtils.getApplicationContext();
-        // The GMS Cast framework assumes the passed {@link Context} returns an instance of {@link
-        // Application} from {@link getApplicationContext()}, so we make sure to remove any
-        // wrappers.
-        while (!(context.getApplicationContext() instanceof Application)) {
-            if (context instanceof ContextWrapper) {
-                context = ((ContextWrapper) context).getBaseContext();
-            } else {
-                return null;
-            }
-        }
-        return CastContext.getSharedInstance(context);
+        return CastContext.getSharedInstance(
+                MediaRouterClient.getInstance().getContextForRemoting());
     }
 
     /**
