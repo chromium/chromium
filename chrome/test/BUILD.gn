@@ -1208,6 +1208,7 @@ if (!is_android) {
       "../browser/permissions/permissions_browsertest.h",
       "../browser/picture_in_picture/picture_in_picture_window_controller_browsertest.cc",
       "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
+      "../browser/policy/allow_sync_xhr_in_page_dismissal_browsertest.cc",
       "../browser/policy/autoplay_policy_browsertest.cc",
       "../browser/policy/browsing_history_policy_browsertest.cc",
       "../browser/policy/cast_policy_browsertest.cc",
