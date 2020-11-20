@@ -128,7 +128,7 @@ EnrollmentStatus ChromeOSMetricsProvider::GetEnrollmentStatus() {
 }
 
 void ChromeOSMetricsProvider::Init() {
-  if (profile_provider_ != nullptr)
+  if (profile_provider_)
     profile_provider_->Init();
 }
 
@@ -146,6 +146,16 @@ void ChromeOSMetricsProvider::OnDidCreateMetricsLog() {
     user_count_at_log_initialization_ =
         user_manager::UserManager::Get()->GetLoggedInUsers().size();
   }
+}
+
+void ChromeOSMetricsProvider::OnRecordingEnabled() {
+  if (profile_provider_)
+    profile_provider_->OnRecordingEnabled();
+}
+
+void ChromeOSMetricsProvider::OnRecordingDisabled() {
+  if (profile_provider_)
+    profile_provider_->OnRecordingDisabled();
 }
 
 void ChromeOSMetricsProvider::InitTaskGetFullHardwareClass(

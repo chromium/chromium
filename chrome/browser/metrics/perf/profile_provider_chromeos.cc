@@ -112,6 +112,18 @@ bool ProfileProvider::GetSampledProfiles(
   return result;
 }
 
+void ProfileProvider::OnRecordingEnabled() {
+  for (auto& collector : collectors_) {
+    collector->EnableRecording();
+  }
+}
+
+void ProfileProvider::OnRecordingDisabled() {
+  for (auto& collector : collectors_) {
+    collector->DisableRecording();
+  }
+}
+
 void ProfileProvider::LoggedInStateChanged() {
   if (IsNormalUserLoggedIn()) {
     for (auto& collector : collectors_) {

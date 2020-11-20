@@ -53,6 +53,8 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void Init() override;
   void AsyncInit(base::OnceClosure done_callback) override;
   void OnDidCreateMetricsLog() override;
+  void OnRecordingEnabled() override;
+  void OnRecordingDisabled() override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
   void ProvideStabilityMetrics(

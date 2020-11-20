@@ -53,6 +53,12 @@ class MetricProvider {
   // Called when a session restore has finished.
   void OnSessionRestoreDone(int num_tabs_restored);
 
+  // Enables the collector to save profiles to the local cache.
+  void EnableRecording();
+
+  // Disables the collector to save profiles to the local cache.
+  void DisableRecording();
+
   void OnJankStarted();
   void OnJankStopped();
 
@@ -70,6 +76,9 @@ class MetricProvider {
 
   // Saves a profile to the local cache.
   void AddProfileToCache(std::unique_ptr<SampledProfile> sampled_profile);
+
+  // Indicates if collected profiles can be saved to the local cache.
+  bool recording_enabled_ = true;
 
   // Vector of SampledProfile protobufs containing perf profiles.
   std::vector<SampledProfile> cached_profile_data_;

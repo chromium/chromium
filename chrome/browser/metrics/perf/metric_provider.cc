@@ -146,9 +146,21 @@ void MetricProvider::OnJankStopped() {
                                 base::Unretained(metric_collector_.get())));
 }
 
+void MetricProvider::EnableRecording() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  recording_enabled_ = true;
+}
+
+void MetricProvider::DisableRecording() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  recording_enabled_ = false;
+}
+
 void MetricProvider::AddProfileToCache(
     std::unique_ptr<SampledProfile> sampled_profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!recording_enabled_)
+    return;
   collector_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MetricCollector::AddCachedDataDelta,
                                 base::Unretained(metric_collector_.get()),

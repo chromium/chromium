@@ -35,6 +35,11 @@ class ProfileProvider : public chromeos::PowerManagerClient::Observer,
   // stored profile data. Returns true if it wrote to |sampled_profiles|.
   bool GetSampledProfiles(std::vector<SampledProfile>* sampled_profiles);
 
+  // Called when the metrics recording state changes and the corresponding
+  // callback in ChromeOSMetricsProvider is invoked.
+  void OnRecordingEnabled();
+  void OnRecordingDisabled();
+
  protected:
   // Called when either the login state or the logged in user type changes.
   // Activates the registered collectors to start collecting. Inherited from
