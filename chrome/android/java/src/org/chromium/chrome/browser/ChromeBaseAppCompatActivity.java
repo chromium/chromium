@@ -15,6 +15,7 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
@@ -46,6 +47,8 @@ public class ChromeBaseAppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        getSupportFragmentManager().setFragmentFactory(SplitCompatUtils.createFragmentFactory());
+
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
         super.onCreate(savedInstanceState);

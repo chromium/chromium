@@ -8,12 +8,18 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.view.LayoutInflater;
 
+import androidx.collection.ArraySet;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
+
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.IdentifierNameString;
 
 /** Utils for compatibility with isolated splits. */
 public class SplitCompatUtils {
+    private static final ArraySet<ClassLoader> sInflationClassLoaders = new ArraySet<>();
+
     private SplitCompatUtils() {}
 
     /**
@@ -57,6 +63,9 @@ public class SplitCompatUtils {
         }
         ClassLoader splitClassLoader =
                 BundleUtils.createIsolatedSplitContext(context, splitName).getClassLoader();
+        // All Contexts for a split share a ClassLoader, so the maximum size of this set will be the
+        // number of installed splits.
+        sInflationClassLoaders.add(splitClassLoader);
         return new ContextWrapper(context) {
             @Override
             public ClassLoader getClassLoader() {
@@ -72,5 +81,37 @@ public class SplitCompatUtils {
                 return ret;
             }
         };
+    }
+
+    /**
+     * Returns a FragmentFactory which can load fragment classes from any split which an inflation
+     * context has been created for. This is useful if a fragment lives in an isolated split and is
+     * not retained. It may be recreated on configuration changes, and will need to be loaded from
+     * the correct ClassLoader.
+     */
+    public static FragmentFactory createFragmentFactory() {
+        return new FragmentFactory() {
+            @Override
+            public Fragment instantiate(ClassLoader classLoader, String className) {
+                if (!canLoadClass(classLoader, className)) {
+                    for (ClassLoader cl : sInflationClassLoaders) {
+                        if (canLoadClass(cl, className)) {
+                            classLoader = cl;
+                            break;
+                        }
+                    }
+                }
+                return super.instantiate(classLoader, className);
+            }
+        };
+    }
+
+    private static boolean canLoadClass(ClassLoader classLoader, String className) {
+        try {
+            Class.forName(className, false, classLoader);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }
