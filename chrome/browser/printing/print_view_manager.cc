@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
@@ -28,7 +29,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
 #endif
@@ -187,7 +188,7 @@ bool PrintViewManager::RejectPrintPreviewRequestIfRestricted(
   if (!IsPrintingRestricted())
     return false;
   GetPrintRenderFrame(rfh)->OnPrintPreviewDialogClosed();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::ShowDlpPrintDisabledNotification();
 #endif
   return true;
@@ -224,7 +225,7 @@ bool PrintViewManager::PrintPreview(
     return false;
 
   if (IsPrintingRestricted()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     policy::ShowDlpPrintDisabledNotification();
 #endif
     return false;
@@ -353,7 +354,7 @@ void PrintViewManager::MaybeUnblockScriptedPreviewRPH() {
 }
 
 bool PrintViewManager::IsPrintingRestricted() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't print DLP restricted content on Chrome OS.
   return policy::DlpContentManager::Get()->IsPrintingRestricted(web_contents());
 #else

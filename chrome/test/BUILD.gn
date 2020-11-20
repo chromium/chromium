@@ -4127,6 +4127,7 @@ test("unit_tests") {
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:test_support",
     "//base/util/memory_pressure:test_support",
+    "//build:chromeos_buildflags",
     "//chrome:browser_dependencies",
     "//chrome:child_dependencies",
     "//chrome:resources",

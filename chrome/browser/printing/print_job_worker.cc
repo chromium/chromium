@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
@@ -191,7 +192,7 @@ void PrintJobWorker::SetSettings(base::Value new_settings,
                                 std::move(callback)));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintJobWorker::SetSettingsFromPOD(
     std::unique_ptr<printing::PrintSettings> new_settings,
     SettingsCallback callback) {
@@ -223,7 +224,7 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
     crash_key = std::make_unique<crash_keys::ScopedPrinterInfo>(
         print_backend->GetPrinterDriverInfo(printer_name));
 
-#if defined(OS_LINUX) && defined(USE_CUPS) && !defined(OS_CHROMEOS)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_CUPS)
     PrinterBasicInfo basic_info;
     if (print_backend->GetPrinterBasicInfo(printer_name, &basic_info)) {
       base::Value advanced_settings(base::Value::Type::DICTIONARY);
@@ -233,7 +234,8 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
       new_settings.SetKey(kSettingAdvancedSettings,
                           std::move(advanced_settings));
     }
-#endif  // defined(OS_LINUX) && defined(USE_CUPS) && !defined(OS_CHROMEOS)
+#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
+        // defined(USE_CUPS)
   }
 
   PrintingContext::Result result;
@@ -248,7 +250,7 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
   GetSettingsDone(std::move(callback), result);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintJobWorker::UpdatePrintSettingsFromPOD(
     std::unique_ptr<printing::PrintSettings> new_settings,
     SettingsCallback callback) {

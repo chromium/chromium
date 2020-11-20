@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -86,9 +87,9 @@ class TestPrintViewManager : public PrintViewManagerBase {
   bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
     print_job_ = base::MakeRefCounted<TestPrintJob>();
     print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     print_job_->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return true;
   }
 

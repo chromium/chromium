@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/printing/cloud_print/privet_http_asynchronous_factory.h"
@@ -320,7 +321,7 @@ TEST_F(PrivetNotificationsNotificationTest, DontShowAgain) {
                     .size());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(PrivetNotificationServiceTest, NoNotificationsInGuestMode) {
   content::BrowserTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -336,7 +337,7 @@ TEST(PrivetNotificationServiceTest, NoNotificationsInGuestMode) {
   EXPECT_FALSE(service.device_lister_for_test());
   EXPECT_FALSE(service.traffic_detector_for_test());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 

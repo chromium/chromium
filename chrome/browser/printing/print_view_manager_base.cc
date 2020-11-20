@@ -21,6 +21,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
@@ -769,7 +770,7 @@ bool PrintViewManagerBase::CreateNewPrintJob(
   DCHECK(!print_job_);
   print_job_ = base::MakeRefCounted<PrintJob>();
   print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   PrintJob::Source source = PrintJob::Source::PRINT_PREVIEW;
   if (base::FeatureList::IsEnabled(
           chromeos::features::kPrintJobManagementApp) &&

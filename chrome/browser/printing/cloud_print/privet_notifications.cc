@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -274,7 +275,7 @@ void PrivetNotificationService::PrivetRemoveNotification() {
 }
 
 void PrivetNotificationService::Start() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* identity_manager = IdentityManagerFactory::GetForProfileIfExists(
       Profile::FromBrowserContext(profile_));
 
@@ -283,7 +284,7 @@ void PrivetNotificationService::Start() {
                                signin::ConsentLevel::kNotRequired)) {
     return;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   enable_privet_notification_member_.Init(
       prefs::kLocalDiscoveryNotificationsEnabled,

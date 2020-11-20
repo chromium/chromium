@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/printer_query.h"
@@ -270,7 +271,7 @@ const PrintSettings& PrintJob::settings() const {
   return document()->settings();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintJob::SetSource(PrintJob::Source source,
                          const std::string& source_id) {
   source_ = source;
@@ -284,7 +285,7 @@ PrintJob::Source PrintJob::source() const {
 const std::string& PrintJob::source_id() const {
   return source_id_;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
 class PrintJob::PdfConversionState {

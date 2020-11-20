@@ -13,6 +13,7 @@
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_number.h"
@@ -61,7 +62,7 @@ class PrintJobWorker {
   // Set the new print settings from a dictionary value.
   void SetSettings(base::Value new_settings, SettingsCallback callback);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Set the new print settings from a POD type.
   void SetSettingsFromPOD(std::unique_ptr<printing::PrintSettings> new_settings,
                           SettingsCallback callback);
@@ -150,7 +151,7 @@ class PrintJobWorker {
   // Called on the UI thread to update the print settings.
   void UpdatePrintSettings(base::Value new_settings, SettingsCallback callback);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called on the UI thread to update the print settings.
   void UpdatePrintSettingsFromPOD(
       std::unique_ptr<printing::PrintSettings> new_settings,
