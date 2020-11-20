@@ -84,7 +84,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnDataTransferFinished(
       std::unique_ptr<ui::OSExchangeData> received_data);
   std::string GetNextUnprocessedMimeType();
-  void SetOperation(const int operation);
 
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;

@@ -209,7 +209,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   DCHECK_EQ(data_offer_->mime_types().front(), kMimeTypeChromiumWindow);
 
   // Accept the offer and set the dnd action.
-  data_offer_->SetAction(kDndActionWindowDrag, kDndActionWindowDrag);
+  data_offer_->SetActions(kDndActionWindowDrag);
   data_offer_->Accept(serial, kMimeTypeChromiumWindow);
 }
 

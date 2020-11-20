@@ -27,16 +27,16 @@ class WaylandDataOffer : public WaylandDataOfferBase {
   explicit WaylandDataOffer(wl_data_offer* data_offer);
   ~WaylandDataOffer() override;
 
-  void SetAction(uint32_t dnd_actions, uint32_t preferred_action);
   void Accept(uint32_t serial, const std::string& mime_type);
   void Reject(uint32_t serial);
+  void FinishOffer();
 
   // WaylandDataOfferBase overrides:
   base::ScopedFD Receive(const std::string& mime_type) override;
 
-  void FinishOffer();
-  uint32_t source_actions() const;
-  uint32_t dnd_action() const;
+  uint32_t source_actions() const { return source_actions_; }
+  uint32_t dnd_action() const { return dnd_action_; }
+  void SetActions(uint32_t dnd_actions);
 
  private:
   // wl_data_offer_listener callbacks.

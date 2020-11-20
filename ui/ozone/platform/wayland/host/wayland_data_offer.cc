@@ -24,14 +24,6 @@ WaylandDataOffer::~WaylandDataOffer() {
   data_offer_.reset();
 }
 
-void WaylandDataOffer::SetAction(uint32_t dnd_actions,
-                                 uint32_t preferred_action) {
-  if (wl::get_version_of_object(data_offer_.get()) >=
-      WL_DATA_OFFER_SET_ACTIONS_SINCE_VERSION) {
-    wl_data_offer_set_actions(data_offer_.get(), dnd_actions, preferred_action);
-  }
-}
-
 void WaylandDataOffer::Accept(uint32_t serial, const std::string& mime_type) {
   wl_data_offer_accept(data_offer_.get(), serial, mime_type.c_str());
 }
@@ -68,12 +60,21 @@ void WaylandDataOffer::FinishOffer() {
   }
 }
 
-uint32_t WaylandDataOffer::source_actions() const {
-  return source_actions_;
-}
+void WaylandDataOffer::SetActions(uint32_t dnd_actions) {
+  if (wl::get_version_of_object(data_offer_.get()) <
+      WL_DATA_OFFER_SET_ACTIONS_SINCE_VERSION) {
+    return;
+  }
 
-uint32_t WaylandDataOffer::dnd_action() const {
-  return dnd_action_;
+  // Determine preferred action based on the given |dnd_actions|, prioritizing
+  // "copy" over "move", if both are set.
+  uint32_t preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+  if (dnd_actions & WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY)
+    preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
+  else if (dnd_actions & WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE)
+    preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
+
+  wl_data_offer_set_actions(data_offer_.get(), dnd_actions, preferred_action);
 }
 
 // static

@@ -83,7 +83,7 @@ class MockDropHandler : public WmDropHandler {
                     std::unique_ptr<OSExchangeData> data,
                     int operation,
                     int modifiers));
-  MOCK_METHOD3(OnDragMotion,
+  MOCK_METHOD3(MockDragMotion,
                int(const gfx::PointF& point, int operation, int modifiers));
   MOCK_METHOD0(MockOnDragDrop, void());
   MOCK_METHOD0(OnDragLeave, void());
@@ -92,7 +92,13 @@ class MockDropHandler : public WmDropHandler {
     on_drop_closure_ = closure;
   }
 
+  void SetPreferredOperations(int preferred_operations) {
+    preferred_operations_ = preferred_operations;
+  }
+
   OSExchangeData* dropped_data() { return dropped_data_.get(); }
+
+  int available_operations() const { return available_operations_; }
 
  protected:
   void OnDragDrop(std::unique_ptr<OSExchangeData> data,
@@ -103,10 +109,20 @@ class MockDropHandler : public WmDropHandler {
     on_drop_closure_.Reset();
   }
 
+  int OnDragMotion(const gfx::PointF& point,
+                   int operation,
+                   int modifiers) override {
+    available_operations_ = operation;
+    MockDragMotion(point, operation, modifiers);
+    return preferred_operations_;
+  }
+
  private:
   base::RepeatingClosure on_drop_closure_;
 
   std::unique_ptr<OSExchangeData> dropped_data_;
+  int preferred_operations_ = ui::DragDropTypes::DRAG_COPY;
+  int available_operations_ = ui::DragDropTypes::DRAG_NONE;
 };
 
 class WaylandDataDragControllerTest : public WaylandTest {
@@ -489,6 +505,38 @@ TEST_P(WaylandDataDragControllerTest, StartAndCancel) {
   Sync();
 
   window_->SetPointerFocus(restored_focus);
+}
+
+TEST_P(WaylandDataDragControllerTest, ForeignDragHandleAskAction) {
+  auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
+  data_offer->OnOffer(kMimeTypeText,
+                      ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+  data_offer->OnSourceActions(WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE |
+                              WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+  data_offer->OnAction(WL_DATA_DEVICE_MANAGER_DND_ACTION_ASK);
+
+  gfx::Point entered_point(10, 10);
+  // The server sends an enter event.
+  data_device_manager_->data_device()->OnEnter(
+      1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
+      wl_fixed_from_int(entered_point.y()), data_offer);
+
+  int64_t time = 1;
+  gfx::Point motion_point(11, 11);
+
+  // Verify ask handling with drop handler preferring "copy" operation.
+  drop_handler_->SetPreferredOperations(ui::DragDropTypes::DRAG_COPY);
+  data_device_manager_->data_device()->OnMotion(
+      time, wl_fixed_from_int(motion_point.x()),
+      wl_fixed_from_int(motion_point.y()));
+  Sync();
+
+  EXPECT_EQ(WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
+            data_offer->preferred_action());
+  EXPECT_EQ(WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
+            data_offer->supported_actions());
+
+  data_device_manager_->data_device()->OnLeave();
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

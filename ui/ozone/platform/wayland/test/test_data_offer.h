@@ -34,10 +34,20 @@ class TestDataOffer : public ServerObject {
 
   void Receive(const std::string& mime_type, base::ScopedFD fd);
   void OnOffer(const std::string& mime_type, ui::PlatformClipboard::Data data);
+  void SetActions(uint32_t dnd_actions, uint32_t preferred_action);
+
+  void OnSourceActions(uint32_t source_actions);
+  void OnAction(uint32_t dnd_action);
+
+  uint32_t supported_actions() const { return client_supported_actions_; }
+  uint32_t preferred_action() const { return client_preferred_action_; }
 
  private:
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ui::PlatformClipboard::DataMap data_to_offer_;
+
+  uint32_t client_supported_actions_ = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+  uint32_t client_preferred_action_ = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
 
   base::WeakPtrFactory<TestDataOffer> write_data_weak_ptr_factory_;
 

@@ -54,7 +54,8 @@ void DataOfferSetActions(wl_client* client,
                          wl_resource* resource,
                          uint32_t dnd_actions,
                          uint32_t preferred_action) {
-  NOTIMPLEMENTED();
+  GetUserDataAs<TestDataOffer>(resource)->SetActions(dnd_actions,
+                                                     preferred_action);
 }
 
 }  // namespace
@@ -83,6 +84,21 @@ void TestDataOffer::OnOffer(const std::string& mime_type,
                             ui::PlatformClipboard::Data data) {
   data_to_offer_[mime_type] = data;
   wl_data_offer_send_offer(resource(), mime_type.c_str());
+}
+
+void TestDataOffer::SetActions(uint32_t dnd_actions,
+                               uint32_t preferred_action) {
+  client_supported_actions_ = dnd_actions;
+  client_preferred_action_ = preferred_action;
+  OnAction(client_preferred_action_);
+}
+
+void TestDataOffer::OnSourceActions(uint32_t source_actions) {
+  wl_data_offer_send_source_actions(resource(), source_actions);
+}
+
+void TestDataOffer::OnAction(uint32_t dnd_action) {
+  wl_data_offer_send_action(resource(), dnd_action);
 }
 
 }  // namespace wl

@@ -28,31 +28,22 @@ namespace ui {
 
 namespace {
 
-// Returns actions possible with the given source and drag'n'drop actions.
-// Also converts enums: input params are wl_data_device_manager_dnd_action but
-// the result is ui::DragDropTypes.
-int GetPossibleActions(uint32_t source_actions, uint32_t dnd_action) {
-  // If drag'n'drop action is set, use it but check for ASK action (see below).
-  uint32_t action = dnd_action != WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE
-                        ? dnd_action
-                        : source_actions;
+int DndActionsToDragOperations(uint32_t actions) {
+  int operations = DragDropTypes::DRAG_NONE;
+  if (actions & WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY)
+    operations |= DragDropTypes::DRAG_COPY;
+  if (actions & WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE)
+    operations |= DragDropTypes::DRAG_MOVE;
+  return operations;
+}
 
-  // We accept any action except ASK (see below).
-  int operation = DragDropTypes::DRAG_NONE;
-  if (action & WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY)
-    operation |= DragDropTypes::DRAG_COPY;
-  if (action & WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE)
-    operation |= DragDropTypes::DRAG_MOVE;
-  if (action & WL_DATA_DEVICE_MANAGER_DND_ACTION_ASK) {
-    // This is very rare and non-standard.  Chromium doesn't set this when
-    // anything is dragged from it, neither it provides any UI for asking
-    // the user about the desired drag'n'drop action when data is dragged
-    // from an external source.
-    // We are safe with not adding anything here.  However, keep NOTIMPLEMENTED
-    // for an (unlikely) event of this being hit in distant future.
-    NOTIMPLEMENTED_LOG_ONCE();
-  }
-  return operation;
+uint32_t DragOperationsToDndActions(int operations) {
+  uint32_t dnd_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
+  if (operations & DragDropTypes::DRAG_COPY)
+    dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
+  if (operations & DragDropTypes::DRAG_MOVE)
+    dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
+  return dnd_actions;
 }
 
 const SkBitmap* GetDragImage(const OSExchangeData& data) {
@@ -142,6 +133,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
                                             const gfx::PointF& location,
                                             uint32_t serial) {
   DCHECK(window);
+  DCHECK(data_offer_);
   window_ = window;
 
   // TODO(crbug.com/1004715): Set mime type the client can accept.  Now it sets
@@ -159,19 +151,22 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
   // thus just copy it here.
   if (IsDragSource())
     dragged_data = std::make_unique<OSExchangeData>(data_->provider().Clone());
-  window_->OnDragEnter(location, std::move(dragged_data),
-                       GetPossibleActions(data_offer_->source_actions(),
-                                          data_offer_->dnd_action()));
+
+  int available_operations =
+      DndActionsToDragOperations(data_offer_->source_actions());
+  window_->OnDragEnter(location, std::move(dragged_data), available_operations);
 }
 
 void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
   if (!window_)
     return;
 
-  int client_operation = window_->OnDragMotion(
-      location, GetPossibleActions(data_offer_->source_actions(),
-                                   data_offer_->dnd_action()));
-  SetOperation(client_operation);
+  DCHECK(data_offer_);
+  int available_operations =
+      DndActionsToDragOperations(data_offer_->source_actions());
+  int client_operations = window_->OnDragMotion(location, available_operations);
+
+  data_offer_->SetActions(DragOperationsToDndActions(client_operations));
 }
 
 void WaylandDataDragController::OnDragLeave() {
@@ -345,23 +340,6 @@ std::string WaylandDataDragController::GetNextUnprocessedMimeType() {
     return mime_type;
   }
   return {};
-}
-
-void WaylandDataDragController::SetOperation(const int operation) {
-  uint32_t dnd_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
-  uint32_t preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
-
-  if (operation & DragDropTypes::DRAG_COPY) {
-    dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
-    preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
-  }
-
-  if (operation & DragDropTypes::DRAG_MOVE) {
-    dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
-    if (preferred_action == WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE)
-      preferred_action = WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
-  }
-  data_offer_->SetAction(dnd_actions, preferred_action);
 }
 
 }  // namespace ui
