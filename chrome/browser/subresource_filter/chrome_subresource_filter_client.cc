@@ -187,10 +187,16 @@ void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
       last_intervention =
           profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
               url);
+  // TODO(crbug.com/1131971): If a host triggers multiple times on a single
+  // navigate and the durations don't match, we'll use the last duration rather
+  // than the longest. The metadata should probably store the activation with
+  // the longest duration.
   if (last_intervention &&
       last_intervention->duration_since <
-          subresource_filter::kAdsInterventionDuration.Get())
+          subresource_filter::AdsInterventionManager::GetInterventionDuration(
+              last_intervention->ads_violation)) {
     return;
+  }
 
   profile_context_->ads_intervention_manager()
       ->TriggerAdsInterventionForUrlOnSubsequentLoads(url, triggered_violation);

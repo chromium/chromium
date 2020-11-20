@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/frame_data.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/page_ad_density_tracker.h"
+#include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
@@ -253,6 +254,10 @@ class AdsPageLoadMetricsObserver
   // |ad_frames_data_storage_|.
   FrameTreeData* FindFrameData(FrameTreeNodeId id);
 
+  // When a page has reached its limit of heavy ads interventions, will trigger
+  // ads interventions for all ads on the page if appropriate.
+  void MaybeTriggerStrictHeavyAdIntervention();
+
   // Triggers the heavy ad intervention page in the target frame if it is safe
   // to do so on this origin, and the frame meets the criteria to be considered
   // a heavy ad. This first sends an intervention report to every affected
@@ -261,7 +266,7 @@ class AdsPageLoadMetricsObserver
       content::RenderFrameHost* render_frame_host,
       FrameTreeData* frame_data);
 
-  bool IsBlocklisted();
+  bool IsBlocklisted(bool report);
   HeavyAdBlocklist* GetHeavyAdBlocklist();
 
   // Maps a frame (by id) to the corresponding FrameInstance. Multiple frame ids
@@ -311,7 +316,7 @@ class AdsPageLoadMetricsObserver
   // on the URL of this page. Incognito Profiles will cause this to be set to
   // true. Used as a cache to avoid checking the blocklist once the page is
   // blocklisted. Once blocklisted, a page load cannot be unblocklisted.
-  bool heavy_ads_blocklist_blocklisted_ = false;
+  base::Optional<blocklist::BlocklistReason> heavy_ads_blocklist_reason_;
 
   // Pointer to the blocklist used to throttle the heavy ad intervention. Can
   // be replaced by tests.

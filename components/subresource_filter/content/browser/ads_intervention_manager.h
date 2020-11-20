@@ -64,6 +64,10 @@ class AdsInterventionManager {
     mojom::AdsViolation ads_violation;
   };
 
+  // Gets the duration for the |violation| given, as different violations may
+  // have different durations associated with them.
+  static base::TimeDelta GetInterventionDuration(mojom::AdsViolation violation);
+
   // The content_settings_manager should outlive the ads intervention manager.
   // This is satisfied as the SubresourceFilterContentSettingsManager and the
   // AdsInterventionManager are both bound to the profile.

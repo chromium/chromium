@@ -13,8 +13,12 @@ enum ActivationLevel {
 };
 
 // Enumerates which ads violations are recorded for a page.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please update the enum named
+// AdsViolations in enums.xml when adding a new entry here.
 enum AdsViolation {
     kMobileAdDensityByHeightAbove30,
+    kHeavyAdsInterventionAtHostLimit,
 };
 
 struct ActivationState {

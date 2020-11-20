@@ -54,6 +54,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+#include "components/subresource_filter/core/browser/subresource_filter_features.h"
+
 namespace features {
 
 // Enables or disables the restricted navigation ad tagging feature. When
@@ -1248,6 +1250,27 @@ ad_metrics::FrameTreeData* AdsPageLoadMetricsObserver::FindFrameData(
   return id_and_data->second.Get();
 }
 
+void AdsPageLoadMetricsObserver::MaybeTriggerStrictHeavyAdIntervention() {
+  DCHECK(heavy_ads_blocklist_reason_.has_value());
+  if (heavy_ads_blocklist_reason_ !=
+      blocklist::BlocklistReason::kUserOptedOutOfHost)
+    return;
+
+  auto* client = ChromeSubresourceFilterClient::FromWebContents(
+      GetDelegate().GetWebContents());
+  // AdsPageLoadMetricsObserver is not created unless there is a
+  // ChromeSubresourceFilterClient
+  DCHECK(client);
+
+  // Violations can be triggered multiple times for the same page as
+  // violations after the first are ignored. Ad frame violations are
+  // attributed to the main frame url.
+  client->OnAdsViolationTriggered(
+      GetDelegate().GetWebContents()->GetMainFrame(),
+      subresource_filter::mojom::AdsViolation::
+          kHeavyAdsInterventionAtHostLimit);
+}
+
 void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
     content::RenderFrameHost* render_frame_host,
     FrameTreeData* frame_data) {
@@ -1271,7 +1294,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   }
 
   // Check to see if we are allowed to activate on this host.
-  if (IsBlocklisted()) {
+  if (IsBlocklisted(true)) {
     frame_data->set_heavy_ad_action(ad_metrics::HeavyAdAction::kIgnored);
     return;
   }
@@ -1327,6 +1350,14 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
         GetDelegate().GetWebContents()->GetLastCommittedURL().host(),
         true /* opt_out */,
         static_cast<int>(HeavyAdBlocklistType::kHeavyAdOnlyType));
+    // Once we report, we need to check and see if we are now blocklisted.
+    // If we are, then we might trigger stricter interventions.
+    // TODO(ericrobinson): This does a couple fetches of the blocklist.  It
+    // might be simpler to fetch it once at the start of this function and use
+    // it throughout.
+    if (IsBlocklisted(false)) {
+      MaybeTriggerStrictHeavyAdIntervention();
+    }
   }
 
   // Record this UMA regardless of if we actually unload or not, as sending
@@ -1357,7 +1388,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
       heavy_ads::PrepareHeavyAdPage(), net::ERR_BLOCKED_BY_CLIENT);
 }
 
-bool AdsPageLoadMetricsObserver::IsBlocklisted() {
+bool AdsPageLoadMetricsObserver::IsBlocklisted(bool report) {
   if (!heavy_ad_privacy_mitigations_enabled_)
     return false;
 
@@ -1365,30 +1396,29 @@ bool AdsPageLoadMetricsObserver::IsBlocklisted() {
 
   // Treat instances where the blocklist is unavailable as blocklisted.
   if (!blocklist) {
-    heavy_ads_blocklist_blocklisted_ = true;
+    heavy_ads_blocklist_reason_ =
+        blocklist::BlocklistReason::kBlocklistNotLoaded;
     return true;
   }
 
-  if (heavy_ads_blocklist_blocklisted_) {
-    // Only record that we have disallowed an intervention when we have a
-    // blocklist.
-    RecordHeavyAdInterventionDisallowedByBlocklist(true /* disallowed */);
-    return true;
+  // If we haven't computed a blocklist reason previously or it was allowed
+  // previously, we need to compute/re-compute the value and store it.
+  if (!heavy_ads_blocklist_reason_.has_value() ||
+      heavy_ads_blocklist_reason_ == blocklist::BlocklistReason::kAllowed) {
+    std::vector<blocklist::BlocklistReason> passed_reasons;
+    heavy_ads_blocklist_reason_ = blocklist->IsLoadedAndAllowed(
+        GetDelegate().GetWebContents()->GetLastCommittedURL().host(),
+        static_cast<int>(HeavyAdBlocklistType::kHeavyAdOnlyType),
+        false /* opt_out */, &passed_reasons);
   }
-
-  std::vector<blocklist::BlocklistReason> passed_reasons;
-  auto blocklist_reason = blocklist->IsLoadedAndAllowed(
-      GetDelegate().GetWebContents()->GetLastCommittedURL().host(),
-      static_cast<int>(HeavyAdBlocklistType::kHeavyAdOnlyType),
-      false /* opt_out */, &passed_reasons);
-  heavy_ads_blocklist_blocklisted_ =
-      (blocklist_reason != blocklist::BlocklistReason::kAllowed);
 
   // Record whether this intervention hit the blocklist.
-  RecordHeavyAdInterventionDisallowedByBlocklist(
-      heavy_ads_blocklist_blocklisted_);
+  if (report) {
+    RecordHeavyAdInterventionDisallowedByBlocklist(
+        heavy_ads_blocklist_reason_ != blocklist::BlocklistReason::kAllowed);
+  }
 
-  return heavy_ads_blocklist_blocklisted_;
+  return heavy_ads_blocklist_reason_ != blocklist::BlocklistReason::kAllowed;
 }
 
 HeavyAdBlocklist* AdsPageLoadMetricsObserver::GetHeavyAdBlocklist() {

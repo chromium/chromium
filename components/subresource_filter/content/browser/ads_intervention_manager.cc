@@ -41,6 +41,17 @@ AdsInterventionStatus GetAdsInterventionStatus(bool activation_status,
 
 }  // namespace
 
+// static
+base::TimeDelta AdsInterventionManager::GetInterventionDuration(
+    mojom::AdsViolation violation) {
+  switch (violation) {
+    case mojom::AdsViolation::kHeavyAdsInterventionAtHostLimit:
+      return base::TimeDelta::FromDays(1);
+    default:
+      return kAdsInterventionDuration.Get();
+  }
+}
+
 AdsInterventionManager::AdsInterventionManager(
     SubresourceFilterContentSettingsManager* settings_manager)
     : settings_manager_(settings_manager),
@@ -105,11 +116,17 @@ bool AdsInterventionManager::ShouldActivate(
   // ads.
   bool current_activation_status =
       settings_manager_->GetSiteActivationFromMetadata(url);
-  bool has_active_ads_intervention =
-      last_intervention &&
-      last_intervention->duration_since <
-          subresource_filter::kAdsInterventionDuration.Get();
+  bool has_active_ads_intervention = false;
+
+  // TODO(crbug.com/1131971): If a host triggers multiple times on a single
+  // navigate and the durations don't match, we'll use the last duration rather
+  // than the longest. The metadata should probably store the activation with
+  // the longest duration.
   if (last_intervention) {
+    has_active_ads_intervention =
+        last_intervention->duration_since <
+        AdsInterventionManager::GetInterventionDuration(
+            last_intervention->ads_violation);
     UMA_HISTOGRAM_COUNTS_1000(kTimeSinceAdsInterventionTriggeredHistogramName,
                               last_intervention->duration_since.InHours());
 
