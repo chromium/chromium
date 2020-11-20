@@ -275,7 +275,9 @@ TEST_F(ProcessProxyTest, RegistryTest) {
 }
 
 // Open new process, then kill it. Verifiy that we detect when the process dies.
-TEST_F(ProcessProxyTest, RegistryNotifiedOnProcessExit) {
+//
+// Disabled due to flakiness: https://crbug.com/1151205
+TEST_F(ProcessProxyTest, DISABLED_RegistryNotifiedOnProcessExit) {
   test_runner_.reset(new RegistryNotifiedOnProcessExitTestRunner());
   RunTest();
 }
