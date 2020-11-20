@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 
@@ -50,6 +51,9 @@ class BluetoothScanningPromptController : public ChooserController {
   // any more.
   void ResetEventHandler();
 
+  // Get a weak pointer to this controller.
+  base::WeakPtr<BluetoothScanningPromptController> GetWeakPtr();
+
  private:
   std::vector<std::string> device_ids_;
   std::unordered_map<std::string, base::string16> device_id_to_name_map_;
@@ -57,6 +61,8 @@ class BluetoothScanningPromptController : public ChooserController {
   std::unordered_map<base::string16, int> device_name_counts_;
 
   content::BluetoothScanningPrompt::EventHandler event_handler_;
+
+  base::WeakPtrFactory<BluetoothScanningPromptController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothScanningPromptController);
 };

@@ -137,3 +137,8 @@ void BluetoothScanningPromptController::AddOrUpdateDevice(
 void BluetoothScanningPromptController::ResetEventHandler() {
   event_handler_.Reset();
 }
+
+base::WeakPtr<BluetoothScanningPromptController>
+BluetoothScanningPromptController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}

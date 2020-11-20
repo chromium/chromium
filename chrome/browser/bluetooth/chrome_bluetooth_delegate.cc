@@ -11,7 +11,6 @@
 #include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -69,13 +68,7 @@ ChromeBluetoothDelegate::RunBluetoothChooser(
         frame, event_handler);
   }
 
-  auto controller =
-      std::make_unique<BluetoothChooserController>(frame, event_handler);
-  auto* controller_ptr = controller.get();
-
-  return std::make_unique<BluetoothChooserDesktop>(
-      controller_ptr,
-      chrome::ShowDeviceChooserDialog(frame, std::move(controller)));
+  return std::make_unique<BluetoothChooserDesktop>(frame, event_handler);
 #endif
 }
 
@@ -92,12 +85,7 @@ ChromeBluetoothDelegate::ShowBluetoothScanningPrompt(
     return nullptr;
   }
 
-  auto controller =
-      std::make_unique<BluetoothScanningPromptController>(frame, event_handler);
-  auto* controller_ptr = controller.get();
-  return std::make_unique<BluetoothScanningPromptDesktop>(
-      controller_ptr,
-      chrome::ShowDeviceChooserDialog(frame, std::move(controller)));
+  return std::make_unique<BluetoothScanningPromptDesktop>(frame, event_handler);
 #endif
 }
 

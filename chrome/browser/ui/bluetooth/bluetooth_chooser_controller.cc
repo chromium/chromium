@@ -290,6 +290,11 @@ void BluetoothChooserController::ResetEventHandler() {
   event_handler_.Reset();
 }
 
+base::WeakPtr<BluetoothChooserController>
+BluetoothChooserController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void BluetoothChooserController::ClearAllDevices() {
   devices_.clear();
   device_id_to_name_map_.clear();
