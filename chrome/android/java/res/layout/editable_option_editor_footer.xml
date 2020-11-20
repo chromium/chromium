@@ -8,6 +8,7 @@
         android:orientation="vertical" >
 
     <TextView
+        android:id="@+id/required_fields_notice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

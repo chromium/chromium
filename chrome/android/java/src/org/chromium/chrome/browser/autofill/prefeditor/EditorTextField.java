@@ -257,6 +257,11 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
     }
 
     @Override
+    public boolean isRequired() {
+        return mEditorFieldModel.isRequired();
+    }
+
+    @Override
     public void updateDisplayedError(boolean showError) {
         mInputLayout.setError(showError ? mEditorFieldModel.getErrorMessage() : null);
     }

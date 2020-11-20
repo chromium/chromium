@@ -356,6 +356,18 @@ public class EditorDialog
         cancelButton.setOnClickListener(this);
     }
 
+    private void prepareFooter() {
+        TextView requiredFieldsNotice = mLayout.findViewById(R.id.required_fields_notice);
+        int requiredFieldsNoticeVisibility = View.GONE;
+        for (int i = 0; i < mFieldViews.size(); i++) {
+            if (mFieldViews.get(i).isRequired()) {
+                requiredFieldsNoticeVisibility = View.VISIBLE;
+                break;
+            }
+        }
+        requiredFieldsNotice.setVisibility(requiredFieldsNoticeVisibility);
+    }
+
     /**
      * Create the visual representation of the EditorModel.
      *
@@ -453,6 +465,7 @@ public class EditorDialog
 
                     // The fields may have changed.
                     prepareEditor();
+                    prepareFooter();
                     if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
                 }
             };
@@ -530,6 +543,7 @@ public class EditorDialog
 
         prepareToolbar();
         prepareEditor();
+        prepareFooter();
         prepareButtons();
         show();
     }

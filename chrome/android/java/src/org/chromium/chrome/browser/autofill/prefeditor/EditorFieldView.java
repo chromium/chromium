@@ -16,6 +16,9 @@ interface EditorFieldView {
     /** @return True if this field is valid. */
     boolean isValid();
 
+    /** @return True if this field is required. */
+    boolean isRequired();
+
     /** Scrolls to and focuses the field to bring user's attention to it. */
     void scrollToAndFocus();
 

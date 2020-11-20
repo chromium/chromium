@@ -178,6 +178,11 @@ class EditorDropdownField implements EditorFieldView {
     }
 
     @Override
+    public boolean isRequired() {
+        return mFieldModel.isRequired();
+    }
+
+    @Override
     public void updateDisplayedError(boolean showError) {
         View view = mDropdown.getSelectedView();
         if (view != null && view instanceof TextView) {
