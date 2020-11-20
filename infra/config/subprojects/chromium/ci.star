@@ -2773,7 +2773,6 @@ ci.updater_builder(
         category = "debug|win",
         short_name = "10",
     ),
-    os = os.WINDOWS_10,
     triggered_by = ["win-updater-builder-dbg"],
 )
 
@@ -2783,7 +2782,6 @@ ci.updater_builder(
         category = "release|win",
         short_name = "10",
     ),
-    os = os.WINDOWS_10,
     triggered_by = ["win-updater-builder-rel"],
 )
 
