@@ -72,6 +72,11 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::Get(
   return agent_group;
 }
 
+int32_t AgentSchedulingGroupHost::GetNextID() {
+  static int32_t next_id = 0;
+  return next_id++;
+}
+
 AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process)
     : process_(process),
       association_mode_(base::FeatureList::IsEnabled(

@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -32,6 +33,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   auto frame_info = ::mojom::FrameInfo::New();
 
   frame_info->routing_id = frame->GetRoutingID();
+  frame_info->agent_scheduling_group_id =
+      frame->agent_scheduling_group().id_for_debugging();
   frame_info->process_id = frame->GetProcess()->GetID();
   frame_info->last_committed_url =
       frame->GetLastCommittedURL().is_valid()

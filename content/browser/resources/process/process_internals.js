@@ -87,7 +87,8 @@ function getTreeViewRoot() {
  */
 function frameToTreeItem(frame) {
   // Compose the string which will appear in the entry for this frame.
-  let itemLabel = `Frame[${frame.processId}:${frame.routingId}]:`;
+  let itemLabel = `Frame[${frame.processId}:${frame.routingId}:${
+    frame.agentSchedulingGroupId}]:`;
   if (frame.isBfcached) {
     itemLabel += ` bfcached`;
   }

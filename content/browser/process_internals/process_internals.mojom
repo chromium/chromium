@@ -27,6 +27,7 @@ struct SiteInstanceInfo {
 // Basic information describing a frame and all of its subframes.
 struct FrameInfo {
   int32 routing_id;
+  int32 agent_scheduling_group_id;
   int32 process_id;
 
   SiteInstanceInfo site_instance;

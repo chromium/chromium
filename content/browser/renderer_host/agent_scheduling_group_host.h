@@ -63,6 +63,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // Returns |false| if any part of the initialization failed.
   bool Init();
 
+  int32_t id_for_debugging() const { return id_for_debugging_; }
+
   // IPC and mojo messages to be forwarded to the RenderProcessHost, for now. In
   // the future they will be handled directly by the AgentSchedulingGroupHost.
   // IPC:
@@ -136,6 +138,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
 
   IPC::Listener* GetListener(int32_t routing_id);
 
+  static int32_t GetNextID();
+
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   RenderProcessHost& process_;
 
@@ -151,6 +155,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
     kUnassociated = 1,
   };
   const IPCAssociationMode association_mode_;
+
+  int32_t id_for_debugging_{GetNextID()};
 
   // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
   // `kUnassociated` mode.
