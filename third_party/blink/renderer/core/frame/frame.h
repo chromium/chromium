@@ -210,8 +210,11 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return lifecycle_.GetState() == FrameLifecycle::kAttached;
   }
 
-  // Ad Tagging
+  // Whether the frame is considered to be an ad subframe by Ad Tagging. Returns
+  // true for both root and child ad subframes.
   bool IsAdSubframe() const;
+
+  // Whether the frame is considered to be a root ad subframe by Ad Tagging.
   bool IsAdRoot() const;
 
   // Called to make a frame inert or non-inert. A frame is inert when there

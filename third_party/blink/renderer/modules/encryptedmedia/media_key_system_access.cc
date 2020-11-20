@@ -152,8 +152,7 @@ void ReportMetrics(ExecutionContext* execution_context,
 
   ukm::builders::Media_EME_CreateMediaKeys builder(document->UkmSourceID());
   builder.SetKeySystem(KeySystemForUkm::kWidevine);
-  builder.SetIsAdFrame(
-      static_cast<int>(frame->IsAdRoot() || frame->IsAdSubframe()));
+  builder.SetIsAdFrame(static_cast<int>(frame->IsAdSubframe()));
   builder.SetIsCrossOrigin(static_cast<int>(frame->IsCrossOriginToMainFrame()));
   builder.SetIsTopFrame(static_cast<int>(frame->IsMainFrame()));
   builder.Record(document->UkmRecorder());

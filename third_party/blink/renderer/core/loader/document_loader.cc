@@ -1431,9 +1431,9 @@ void DocumentLoader::DidCommitNavigation() {
   // Report legacy TLS versions after Page::DidCommitLoad, because the latter
   // clears the console.
   if (response_.IsLegacyTLSVersion()) {
-    GetFrameLoader().ReportLegacyTLSVersion(
-        response_.CurrentRequestUrl(), false /* is_subresource */,
-        frame_->IsAdSubframe() || frame_->IsAdRoot());
+    GetFrameLoader().ReportLegacyTLSVersion(response_.CurrentRequestUrl(),
+                                            false /* is_subresource */,
+                                            frame_->IsAdSubframe());
   }
 }
 
