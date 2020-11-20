@@ -19,6 +19,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -62,9 +63,6 @@ constexpr int kNoItemsIndicatorHeightDp = 32;
 constexpr int kNoItemsIndicatorHorizontalPaddingDp = 16;
 constexpr int kNoItemsIndicatorRoundingDp = 16;
 constexpr int kNoItemsIndicatorVerticalPaddingDp = 8;
-constexpr SkColor kNoItemsIndicatorBackgroundColor =
-    SkColorSetA(SK_ColorBLACK, 204);
-constexpr SkColor kNoItemsIndicatorTextColor = SK_ColorWHITE;
 
 // Values for scrolling the grid by using the keyboard.
 // TODO(sammiequon): See if we can use the same values used for web scrolling.
@@ -1217,9 +1215,11 @@ void OverviewSession::UpdateNoWindowsWidget() {
     params.name = "OverviewNoWindowsLabel";
     params.horizontal_padding = kNoItemsIndicatorHorizontalPaddingDp;
     params.vertical_padding = kNoItemsIndicatorVerticalPaddingDp;
-    params.background_color = kNoItemsIndicatorBackgroundColor;
-    params.foreground_color = kNoItemsIndicatorTextColor;
-    params.rounding_dp = kNoItemsIndicatorRoundingDp;
+    auto* color_provider = AshColorProvider::Get();
+    params.background_color = color_provider->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80);
+    params.foreground_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
     params.preferred_height = kNoItemsIndicatorHeightDp;
     params.message_id = IDS_ASH_OVERVIEW_NO_RECENT_ITEMS;
     params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
@@ -1227,6 +1227,10 @@ void OverviewSession::UpdateNoWindowsWidget() {
     params.hide_in_mini_view = true;
     no_windows_widget_ = std::make_unique<RoundedLabelWidget>();
     no_windows_widget_->Init(std::move(params));
+    no_windows_widget_->GetLayer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kNoItemsIndicatorRoundingDp));
+    no_windows_widget_->GetLayer()->SetBackgroundBlur(
+        static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
 
     aura::Window* widget_window = no_windows_widget_->GetNativeWindow();
     widget_window->parent()->StackChildAtBottom(widget_window);
