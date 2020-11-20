@@ -449,8 +449,8 @@ void ServiceWorkerRegistry::UpdateToActiveState(int64_t registration_id,
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   GetRemoteStorageControl()->UpdateToActiveState(
       registration_id, origin,
-      base::BindOnce(&ServiceWorkerRegistry::DidUpdateToActiveState,
-                     weak_factory_.GetWeakPtr(), origin, std::move(callback)));
+      base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerRegistry::UpdateLastUpdateCheckTime(
@@ -461,7 +461,8 @@ void ServiceWorkerRegistry::UpdateLastUpdateCheckTime(
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   GetRemoteStorageControl()->UpdateLastUpdateCheckTime(
       registration_id, origin, last_update_check_time,
-      CreateDatabaseStatusCallback(std::move(callback)));
+      base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerRegistry::UpdateNavigationPreloadEnabled(
@@ -472,7 +473,8 @@ void ServiceWorkerRegistry::UpdateNavigationPreloadEnabled(
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   GetRemoteStorageControl()->UpdateNavigationPreloadEnabled(
       registration_id, origin, enable,
-      CreateDatabaseStatusCallback(std::move(callback)));
+      base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerRegistry::UpdateNavigationPreloadHeader(
@@ -483,7 +485,8 @@ void ServiceWorkerRegistry::UpdateNavigationPreloadHeader(
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   GetRemoteStorageControl()->UpdateNavigationPreloadHeader(
       registration_id, origin, value,
-      CreateDatabaseStatusCallback(std::move(callback)));
+      base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerRegistry::StoreUncommittedResourceId(int64_t resource_id,
@@ -1144,10 +1147,10 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
   std::move(callback).Run(status);
 }
 
-void ServiceWorkerRegistry::DidUpdateToActiveState(
-    const GURL& origin,
+void ServiceWorkerRegistry::DidUpdateRegistration(
     StatusCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       status != storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
     ScheduleDeleteAndStartOver();

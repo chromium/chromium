@@ -322,8 +322,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       ServiceWorkerStorage::OriginState origin_state);
 
-  void DidUpdateToActiveState(
-      const GURL& origin,
+  void DidUpdateRegistration(
       StatusCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidWriteUncommittedResourceIds(
