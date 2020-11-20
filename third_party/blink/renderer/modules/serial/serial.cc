@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
-#include "third_party/blink/renderer/modules/serial/serial_connection_event.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -81,13 +80,13 @@ void Serial::ContextDestroyed() {
 }
 
 void Serial::OnPortAdded(mojom::blink::SerialPortInfoPtr port_info) {
-  DispatchEvent(*SerialConnectionEvent::Create(
-      event_type_names::kConnect, GetOrCreatePort(std::move(port_info))));
+  SerialPort* port = GetOrCreatePort(std::move(port_info));
+  port->DispatchEvent(*Event::CreateBubble(event_type_names::kConnect));
 }
 
 void Serial::OnPortRemoved(mojom::blink::SerialPortInfoPtr port_info) {
-  DispatchEvent(*SerialConnectionEvent::Create(
-      event_type_names::kDisconnect, GetOrCreatePort(std::move(port_info))));
+  SerialPort* port = GetOrCreatePort(std::move(port_info));
+  port->DispatchEvent(*Event::CreateBubble(event_type_names::kDisconnect));
 }
 
 ScriptPromise Serial::getPorts(ScriptState* script_state,

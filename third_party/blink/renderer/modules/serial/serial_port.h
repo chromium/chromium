@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -34,7 +35,7 @@ class SerialPortUnderlyingSink;
 class SerialPortUnderlyingSource;
 class WritableStream;
 
-class SerialPort final : public ScriptWrappable,
+class SerialPort final : public EventTargetWithInlineData,
                          public ActiveScriptWrappable<SerialPort>,
                          public device::mojom::blink::SerialPortClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -44,6 +45,8 @@ class SerialPort final : public ScriptWrappable,
   ~SerialPort() override;
 
   // Web-exposed functions
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(disconnect, kDisconnect)
   SerialPortInfo* getInfo();
   ScriptPromise open(ScriptState*,
                      const SerialOptions* options,
@@ -72,8 +75,12 @@ class SerialPort final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
   // ActiveScriptWrappable
-  ExecutionContext* GetExecutionContext() const;
   bool HasPendingActivity() const override;
+
+  // EventTargetWithInlineData
+  ExecutionContext* GetExecutionContext() const override;
+  const AtomicString& InterfaceName() const override;
+  DispatchEventResult DispatchEventInternal(Event& event) override;
 
   // SerialPortClient
   void OnReadError(device::mojom::blink::SerialReceiveError) override;

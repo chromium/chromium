@@ -21,7 +21,7 @@ serial_test(async (t, fake) => {
       let watcher = new EventWatcher(t, navigator.serial, ['connect']);
       fake.addPort(expectedInfo);
       let evt = await watcher.wait_for(['connect']);
-      let info = evt.port.getInfo();
+      let info = evt.target.getInfo();
       assert_object_equals(expectedInfo, info);
     }, `getInfo() returns ${JSON.stringify(expectedInfo)}`);
   });

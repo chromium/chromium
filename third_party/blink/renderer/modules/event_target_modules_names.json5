@@ -54,6 +54,7 @@
     "ScreenOrientation",
     "Sensor",
     "Serial",
+    "SerialPort",
     "ServiceWorker",
     "ServiceWorkerContainer",
     "ServiceWorkerGlobalScope",

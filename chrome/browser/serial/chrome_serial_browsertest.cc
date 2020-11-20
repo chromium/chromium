@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(SerialTest, RemovePort) {
         removedPromise = new Promise(resolve => {
           navigator.serial.addEventListener(
               'disconnect', e => {
-                resolve(e.port === ports[0]);
+                resolve(e.target === ports[0]);
               }, { once: true });
         });
         return true;

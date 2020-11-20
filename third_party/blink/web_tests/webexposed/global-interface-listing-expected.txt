@@ -7986,12 +7986,10 @@ interface Serial : EventTarget
     method requestPort
     setter onconnect
     setter ondisconnect
-interface SerialConnectionEvent : Event
+interface SerialPort : EventTarget
     attribute @@toStringTag
-    getter port
-    method constructor
-interface SerialPort
-    attribute @@toStringTag
+    getter onconnect
+    getter ondisconnect
     getter readable
     getter writable
     method close
@@ -8000,6 +7998,8 @@ interface SerialPort
     method getSignals
     method open
     method setSignals
+    setter onconnect
+    setter ondisconnect
 interface ServiceWorker : EventTarget
     attribute @@toStringTag
     getter onerror

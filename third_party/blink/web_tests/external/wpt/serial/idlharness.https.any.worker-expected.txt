@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 55 tests; 46 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 tests; 44 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -36,10 +36,10 @@ PASS Serial interface: navigator.serial must inherit property "onconnect" with t
 PASS Serial interface: navigator.serial must inherit property "ondisconnect" with the proper type
 PASS Serial interface: navigator.serial must inherit property "getPorts()" with the proper type
 PASS Serial interface: navigator.serial must not have property "requestPort"
-PASS SerialPort interface: existence and properties of interface object
+FAIL SerialPort interface: existence and properties of interface object assert_equals: prototype of self's property "SerialPort" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
 PASS SerialPort interface object length
 PASS SerialPort interface object name
-PASS SerialPort interface: existence and properties of interface prototype object
+FAIL SerialPort interface: existence and properties of interface prototype object assert_equals: prototype of SerialPort.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
 PASS SerialPort interface: existence and properties of interface prototype object's "constructor" property
 PASS SerialPort interface: existence and properties of interface prototype object's @@unscopables property
 FAIL SerialPort interface: operation open(optional SerialOptions) assert_equals: property has wrong .length expected 0 but got 1

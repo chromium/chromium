@@ -4,12 +4,10 @@
 
 modules_idl_files = [
   "serial.idl",
-  "serial_connection_event.idl",
   "serial_port.idl",
 ]
 
 modules_dictionary_idl_files = [
-  "serial_connection_event_init.idl",
   "serial_input_signals.idl",
   "serial_options.idl",
   "serial_output_signals.idl",

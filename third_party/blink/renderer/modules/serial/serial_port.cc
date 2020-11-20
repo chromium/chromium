@@ -12,8 +12,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_output_signals.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/serial/serial.h"
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_sink.h"
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_source.h"
@@ -509,10 +511,6 @@ void SerialPort::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ExecutionContext* SerialPort::GetExecutionContext() const {
-  return parent_->GetExecutionContext();
-}
-
 bool SerialPort::HasPendingActivity() const {
   // There is no need to check if the execution context has been destroyed, this
   // is handled by the common tracing logic.
@@ -520,6 +518,40 @@ bool SerialPort::HasPendingActivity() const {
   // This object should be considered active as long as it is open so that any
   // chain of streams originating from this port are not closed prematurely.
   return port_.is_bound();
+}
+
+ExecutionContext* SerialPort::GetExecutionContext() const {
+  return parent_->GetExecutionContext();
+}
+
+const AtomicString& SerialPort::InterfaceName() const {
+  return event_target_names::kSerialPort;
+}
+
+DispatchEventResult SerialPort::DispatchEventInternal(Event& event) {
+  event.SetTarget(this);
+
+  // Events fired on a SerialPort instance bubble to the parent Serial instance.
+  event.SetEventPhase(Event::kCapturingPhase);
+  event.SetCurrentTarget(parent_);
+  parent_->FireEventListeners(event);
+  if (event.PropagationStopped())
+    goto doneDispatching;
+
+  event.SetEventPhase(Event::kAtTarget);
+  event.SetCurrentTarget(this);
+  FireEventListeners(event);
+  if (event.PropagationStopped() || !event.bubbles())
+    goto doneDispatching;
+
+  event.SetEventPhase(Event::kBubblingPhase);
+  event.SetCurrentTarget(parent_);
+  parent_->FireEventListeners(event);
+
+doneDispatching:
+  event.SetCurrentTarget(nullptr);
+  event.SetEventPhase(Event::kNone);
+  return EventTarget::GetDispatchEventResult(event);
 }
 
 void SerialPort::OnReadError(device::mojom::blink::SerialReceiveError error) {

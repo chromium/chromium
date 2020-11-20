@@ -8,7 +8,10 @@
     ActiveScriptWrappable,
     Exposed(Window Serial,DedicatedWorker Serial),
     SecureContext
-] interface SerialPort {
+] interface SerialPort : EventTarget {
+    attribute EventHandler onconnect;
+    attribute EventHandler ondisconnect;
+
     [CallWith=ScriptState, RaisesException]
     readonly attribute ReadableStream readable;
     [CallWith=ScriptState, RaisesException]

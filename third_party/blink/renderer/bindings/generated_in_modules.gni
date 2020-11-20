@@ -2258,8 +2258,6 @@ if (!is_android) {
 # Serial
 if (!is_android) {
   generated_dictionary_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_connection_event_init.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_connection_event_init.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_options.cc",
@@ -2282,8 +2280,6 @@ if (!is_android) {
   generated_interface_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_connection_event.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_connection_event.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.h",
   ]

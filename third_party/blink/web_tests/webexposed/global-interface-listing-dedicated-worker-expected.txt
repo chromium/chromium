@@ -1362,12 +1362,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getPorts
 [Worker]     setter onconnect
 [Worker]     setter ondisconnect
-[Worker] interface SerialConnectionEvent : Event
+[Worker] interface SerialPort : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter port
-[Worker]     method constructor
-[Worker] interface SerialPort
-[Worker]     attribute @@toStringTag
+[Worker]     getter onconnect
+[Worker]     getter ondisconnect
 [Worker]     getter readable
 [Worker]     getter writable
 [Worker]     method close
@@ -1376,6 +1374,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getSignals
 [Worker]     method open
 [Worker]     method setSignals
+[Worker]     setter onconnect
+[Worker]     setter ondisconnect
 [Worker] interface ServiceWorkerRegistration : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter active

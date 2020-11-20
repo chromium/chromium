@@ -12,8 +12,6 @@ blink_modules_sources("serial") {
   sources = [
     "serial.cc",
     "serial.h",
-    "serial_connection_event.cc",
-    "serial_connection_event.h",
     "serial_port.cc",
     "serial_port.h",
     "serial_port_underlying_sink.cc",
