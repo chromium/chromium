@@ -148,27 +148,32 @@ bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
 
 bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
     const GURL& url) {
-  // Only set the header for Drive and Gaia always, and other Google properties
-  // if account consistency is enabled. Vasquette, which is integrated with most
-  // Google properties, needs the header to redirect certain user actions to
-  // Chrome native UI. Drive and Gaia need the header to tell if the current
-  // user is connected.
-
   // Consider the account ID sensitive and limit it to secure domains.
   if (!url.SchemeIsCryptographic())
     return false;
 
-  GURL origin(url.GetOrigin());
-  bool is_google_url =
-      google_util::IsGoogleDomainUrl(
-          url, google_util::ALLOW_SUBDOMAIN,
-          google_util::DISALLOW_NON_STANDARD_PORTS) ||
-      google_util::IsYoutubeDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
-                                      google_util::DISALLOW_NON_STANDARD_PORTS);
-  bool is_mirror_enabled =
-      account_consistency_ == AccountConsistencyMethod::kMirror;
-  return (is_mirror_enabled && is_google_url) || IsDriveOrigin(origin) ||
-         gaia::IsGaiaSignonRealm(origin);
+  switch (account_consistency_) {
+    case AccountConsistencyMethod::kDisabled:
+      return false;
+    case AccountConsistencyMethod::kDice:
+      // Google Drive uses the sync account ID present in the X-Chrome-Connected
+      // header to automatically turn on offline mode. So Chrome needs to send
+      // this header to Google Drive when Dice is enabled.
+      return IsDriveOrigin(url.GetOrigin());
+    case AccountConsistencyMethod::kMirror: {
+      // Set the X-Chrome-Connected header for all Google web properties if
+      // Mirror account consistency is enabled. Vasquette, which is integrated
+      // with most Google properties, needs the header to redirect certain user
+      // actions to Chrome native UI.
+      return google_util::IsGoogleDomainUrl(
+                 url, google_util::ALLOW_SUBDOMAIN,
+                 google_util::DISALLOW_NON_STANDARD_PORTS) ||
+             google_util::IsYoutubeDomainUrl(
+                 url, google_util::ALLOW_SUBDOMAIN,
+                 google_util::DISALLOW_NON_STANDARD_PORTS) ||
+             gaia::IsGaiaSignonRealm(url.GetOrigin());
+    }
+  }
 }
 
 std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
