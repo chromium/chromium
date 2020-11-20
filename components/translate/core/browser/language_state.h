@@ -52,11 +52,15 @@ class LanguageState {
   // Returns true if the current page in the associated tab has been translated.
   bool IsPageTranslated() const { return original_lang_ != current_lang_; }
 
-  void SetOriginalLanguage(const std::string& language);
+  // Returns the original language represented as a lowercase alphabetic string
+  // of length 0 to 3 or "zh-CN" or "zh-TW".
   const std::string& original_language() const { return original_lang_; }
+  void SetOriginalLanguage(const std::string& language);
 
-  void SetCurrentLanguage(const std::string& language);
+  // Returns the current language represented as a lowercase alphabetic string
+  // of length 0 to 3 or "zh-CN" or "zh-TW".
   const std::string& current_language() const { return current_lang_; }
+  void SetCurrentLanguage(const std::string& language);
 
   bool page_needs_translation() const { return page_needs_translation_; }
 

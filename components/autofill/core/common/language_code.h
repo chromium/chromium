@@ -9,14 +9,15 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/strong_alias.h"
 
 namespace autofill {
 
-// A LanguageCode is a two-letter lowercase abbreviation according to ISO 639-1
-// or "und", which is the ISO 639-2 code for "undetermined".
+// Following the implicit conventions in //components/translate, a LanguageCode
+// in  is a lowercase alphabetic string of length up to 3, or "zh-CN", or
+// "zh-TW". A non-exhaustive list of common values is
+// translate::kDefaultSupportedLanguages.
 class LanguageCode
     : public base::StrongAlias<class LanguageCodeTag, std::string> {
  private:
@@ -33,10 +34,8 @@ class LanguageCode
 
  private:
   void Check() {
-    LOG_IF(ERROR,
-           !(empty() ||
-             (base::ranges::all_of(value(), &islower) && length() == 2) ||
-             value() == "und" || value() == "zh-CN" || value() == "zh-TW"))
+    DCHECK((length() <= 3 && base::ranges::all_of(value(), &islower)) ||
+           value() == "zh-CN" || value() == "zh-TW")
         << "Unexpected language code '" << value() << "'";
   }
 };
