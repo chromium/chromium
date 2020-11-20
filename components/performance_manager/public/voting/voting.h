@@ -64,6 +64,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/types/pass_key.h"
 #include "base/util/type_safety/id_type.h"
 
@@ -448,8 +449,8 @@ class VoteConsumerDefaultImpl : public VoteConsumer<VoteImpl> {
 
   VotingChannelFactory<VoteImpl> voting_channel_factory_;
 
-  std::map<VoterId<VoteImpl>,
-           std::map<const ContextType*, AcceptedVote<VoteImpl>>>
+  base::flat_map<VoterId<VoteImpl>,
+                 base::flat_map<const ContextType*, AcceptedVote<VoteImpl>>>
       accepted_votes_by_voter_id_;
 };
 
@@ -492,7 +493,7 @@ class VotingChannelWrapper {
  private:
   VotingChannel<VoteImpl> voting_channel_;
 
-  std::map<const ContextType*, VoteReceipt<VoteImpl>> vote_receipts_;
+  base::flat_map<const ContextType*, VoteReceipt<VoteImpl>> vote_receipts_;
 };
 
 /////////////////////////////////////////////////////////////////////

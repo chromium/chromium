@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/decorators/execution_context_priority_decorator.h"
+#include "chrome/browser/performance_manager/decorators/execution_context_priority/root_vote_observer.h"
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
@@ -32,19 +32,17 @@ void SetPriorityAndReason(
 
 }  // namespace
 
-ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator()
-    : vote_consumer_default_impl_(this) {}
-ExecutionContextPriorityDecorator::~ExecutionContextPriorityDecorator() =
-    default;
+RootVoteObserver::RootVoteObserver() : vote_consumer_default_impl_(this) {}
+RootVoteObserver::~RootVoteObserver() = default;
 
-VotingChannel ExecutionContextPriorityDecorator::GetVotingChannel() {
+VotingChannel RootVoteObserver::GetVotingChannel() {
   DCHECK_EQ(0u, vote_consumer_default_impl_.voting_channels_issued());
   auto channel = vote_consumer_default_impl_.BuildVotingChannel();
   voter_id_ = channel.voter_id();
   return channel;
 }
 
-void ExecutionContextPriorityDecorator::OnVoteSubmitted(
+void RootVoteObserver::OnVoteSubmitted(
     VoterId voter_id,
     const ExecutionContext* execution_context,
     const Vote& vote) {
@@ -53,16 +51,15 @@ void ExecutionContextPriorityDecorator::OnVoteSubmitted(
                        PriorityAndReason(vote.value(), vote.reason()));
 }
 
-void ExecutionContextPriorityDecorator::OnVoteChanged(
-    VoterId voter_id,
-    const ExecutionContext* execution_context,
-    const Vote& new_vote) {
+void RootVoteObserver::OnVoteChanged(VoterId voter_id,
+                                     const ExecutionContext* execution_context,
+                                     const Vote& new_vote) {
   DCHECK_EQ(voter_id_, voter_id);
   SetPriorityAndReason(execution_context,
                        PriorityAndReason(new_vote.value(), new_vote.reason()));
 }
 
-void ExecutionContextPriorityDecorator::OnVoteInvalidated(
+void RootVoteObserver::OnVoteInvalidated(
     VoterId voter_id,
     const ExecutionContext* execution_context) {
   SetPriorityAndReason(
