@@ -348,10 +348,12 @@ config("default_cfg_compiler") {
   # This is needed to allow functions to be called by code that is built
   # with CFG enabled, such as system libraries.
   # The CFG guards are only emitted if |win_enable_cfg_guards| is enabled.
-  if (win_enable_cfg_guards) {
-    cflags = [ "/guard:cf" ]
-  } else {
-    cflags = [ "/guard:cf,nochecks" ]
+  if (is_clang) {
+    if (win_enable_cfg_guards) {
+      cflags = [ "/guard:cf" ]
+    } else {
+      cflags = [ "/guard:cf,nochecks" ]
+    }
   }
 }
 
@@ -361,7 +363,9 @@ config("disable_guards_cfg_compiler") {
   # Emit table of address-taken functions for Control-Flow Guard (CFG).
   # This is needed to allow functions to be called by code that is built
   # with CFG enabled, such as system libraries.
-  cflags = [ "/guard:cf,nochecks" ]
+  if (is_clang) {
+    cflags = [ "/guard:cf,nochecks" ]
+  }
 }
 
 config("cfi_linker") {
