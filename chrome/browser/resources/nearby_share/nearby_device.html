@@ -1,6 +1,7 @@
 <style>
   #wrapper {
     align-items: center;
+    background-color: rgb(255, 255, 255);
     border: 1px solid rgba(216, 216, 216, 0.76);
     border-radius: 8px;
     box-sizing: border-box;
@@ -19,11 +20,11 @@
   }
 
   :host(:focus) #wrapper {
-    border-color: rgb(95, 99, 104);
+    border-color: var(--google-grey-refresh-700);
   }
 
   :host([is-selected]) #wrapper {
-    border-color: rgb(66, 133, 244);
+    border-color: var(--google-blue-refresh-500);
   }
 
   :host([is-selected]) #done {
@@ -31,11 +32,11 @@
   }
 
   :host([is-selected]) #name {
-    color: rgb(26, 115, 232);
+    color: var(--google-blue-600);
   }
 
   #done {
-    color: rgb(26, 115, 232);
+    color: var(--google-blue-600);
     display: none;
     flex-shrink: 0;
     height: 17px;
