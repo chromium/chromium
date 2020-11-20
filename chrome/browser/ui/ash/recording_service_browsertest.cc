@@ -207,15 +207,3 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, SuccessiveRecording) {
   test_api.SetUserSelectedRegion(gfx::Rect(50, 200));
   FinishVideoRecordingTest(&test_api);
 }
-
-// Tests that recording will be interrupted once screen capture becomes locked.
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       RecordingInterruptedOnCaptureLocked) {
-  ash::CaptureModeTestApi test_api;
-  test_api.StartForFullscreen(/*for_video=*/true);
-  test_api.PerformCapture();
-  WaitForMilliseconds(1000);
-  ChromeCaptureModeDelegate::Get()->SetIsScreenCaptureLocked(true);
-  const base::FilePath video_path = WaitForVideoFileToBeSaved();
-  VerifyVideoFileAndDelete(video_path);
-}
