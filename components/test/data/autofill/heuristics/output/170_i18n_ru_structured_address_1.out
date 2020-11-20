@@ -3,7 +3,7 @@ NAME_LAST | ln | Фамилия: |  | fn_1-default
 COMPANY_NAME | cm | Название компании: |  | fn_1-default
 ADDRESS_HOME_HOUSE_NUMBER | hn | Дом: |  | fn_1-default
 ADDRESS_HOME_STREET_NAME | sn | Улица: |  | fn_1-default
-ADDRESS_HOME_CITY | ct | Город: |  | fn_1-default
+ADDRESS_HOME_CITY | ct | Населенный пункт: |  | fn_1-default
 ADDRESS_HOME_ZIP | zc | Почтовый индекс: |  | fn_1-default
 ADDRESS_HOME_STATE | st | Область: |  | fn_1-default
 EMAIL_ADDRESS | em | Адрес электронной почты: |  | fn_1-default

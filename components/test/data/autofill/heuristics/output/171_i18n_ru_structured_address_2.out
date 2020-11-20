@@ -6,7 +6,7 @@ ADDRESS_HOME_HOUSE_NUMBER | hn | Номер дома: |  | fn_1-default
 ADDRESS_HOME_CITY | ct | Населённый пункт: |  | fn_1-default
 ADDRESS_HOME_ZIP | zc | Почтовый индекс: |  | fn_1-default
 ADDRESS_HOME_STATE | st | Область: |  | fn_1-default
-EMAIL_ADDRESS | em | Адрес электронной почты: |  | fn_1-default
+EMAIL_ADDRESS | em | Электронная почта: |  | fn_1-default
 PHONE_HOME_WHOLE_NUMBER | ph | Телефон: |  | fn_1-default
 CREDIT_CARD_NAME_FULL | c1 | Имя владельца карты: |  | credit-card-cc
 CREDIT_CARD_NUMBER | c2 | Номер кредитной карты: |  | credit-card-cc

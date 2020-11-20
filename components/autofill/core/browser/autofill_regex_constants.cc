@@ -128,7 +128,7 @@ const char kCityRe[] =
     "|localita"                                         // it-IT
     "|市区町村"                                         // ja-JP
     "|cidade|município"                                 // pt-BR, pt-PT
-    "|Город|Населённый.?пункт"                          // ru
+    "|Город|Насел(е|ё)нный.?пункт"                      // ru
     "|市"                                               // zh-CN
     "|分區"                                             // zh-TW
     "|شهر"                                              // fa
@@ -277,12 +277,12 @@ const char kDayRe[] = "day";
 /////////////////////////////////////////////////////////////////////////////
 const char kEmailRe[] =
     "e.?mail"
-    "|courriel"                 // fr
-    "|correo.*electr(o|ó)nico"  // es-ES
-    "|メールアドレス"           // ja-JP
-    "|Электронной.?Почты"       // ru
-    "|邮件|邮箱"                // zh-CN
-    "|電郵地址"                 // zh-TW
+    "|courriel"                     // fr
+    "|correo.*electr(o|ó)nico"      // es-ES
+    "|メールアドレス"               // ja-JP
+    "|Электронн(ая|ой).?Почт(а|ы)"  // ru
+    "|邮件|邮箱"                    // zh-CN
+    "|電郵地址"                     // zh-TW
     "|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?"
     "മെയിൽ"                                        // ml
     "|ایمیل|پست.*الکترونیک"                        // fa
@@ -360,7 +360,7 @@ const char kHonorificPrefixRe[] =
     "|(salutation(?! and given name))"  // en
     "|titolo"                           // it-IT
     "|titre"                            // fr-FR
-    "|обраще́ние|зва́ние"                 // ru
+    "|обращение|звание"                 // ru
     "|προσφώνηση"                       // el
     "|hitap";                           // tr
 /////////////////////////////////////////////////////////////////////////////

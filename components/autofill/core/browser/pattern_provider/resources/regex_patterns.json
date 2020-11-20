@@ -928,7 +928,7 @@
     "ru": [
       {
         "pattern_identifier": "ru_city_preserving",
-        "positive_pattern": "Город|Населённый.?пункт",
+        "positive_pattern": "Город|Насел(е|ё)нный.?пункт",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -1816,7 +1816,7 @@
     "ru": [
       {
         "pattern_identifier": "ru_email_preserving",
-        "positive_pattern": "Электронной.?Почты",
+        "positive_pattern": "Электронн(ая|ой).?Почт(а|ы)",
         "positive_score": 1.4,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2416,7 +2416,7 @@
     "ru": [
       {
         "pattern_identifier": "ru_honorific_prefix_preserving",
-        "positive_pattern": "обраще́ние|зва́ние",
+        "positive_pattern": "обращение|звание",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": 3,
