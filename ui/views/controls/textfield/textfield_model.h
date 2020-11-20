@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
@@ -233,7 +234,7 @@ class VIEWS_EXPORT TextfieldModel {
   // composition text.
   void SetCompositionText(const ui::CompositionText& composition);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Return the text range corresponding to the autocorrected text.
   const gfx::Range& autocorrect_range() const { return autocorrect_range_; }
 
@@ -337,7 +338,7 @@ class VIEWS_EXPORT TextfieldModel {
 
   gfx::Range composition_range_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   gfx::Range autocorrect_range_;
   // Original text is the text that was replaced by the autocorrect feature.
   // This should be restored if the Undo button corresponding to the Autocorrect

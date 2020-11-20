@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/window.h"
 #include "ui/views/test/test_views_delegate.h"
 
@@ -51,7 +52,7 @@ ViewsTestHelperAura::~ViewsTestHelperAura() {
   // children were these sorts of things and not warn, but doing so while
   // avoiding layering violations is challenging, and since this is just a
   // convenience check anyway, skip it.
-#if DCHECK_IS_ON() && !defined(OS_CHROMEOS)
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
   gfx::NativeWindow root_window = GetContext();
   if (root_window) {
     DCHECK(root_window->children().empty())

@@ -4,12 +4,13 @@
 
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 
+#include "build/chromeos_buildflags.h"
 #include "ui/display/screen.h"
 
 namespace views {
 
 void InstallDesktopScreenIfNecessary() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS ozone builds use another path instead, where display::Screen is
   // properly set. Thus, do early return here.
   return;

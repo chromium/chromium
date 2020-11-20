@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
@@ -131,6 +132,7 @@ source_set("views_examples_proc") {
     ":views_examples_lib",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//cc/paint",
     "//components/viz/host",
     "//components/viz/service",
@@ -144,7 +146,7 @@ source_set("views_examples_proc") {
     "//ui/views:test_support",
   ]
 
-  if (is_win || is_mac || (is_linux && !is_chromeos)) {
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     sources += [
       "examples_skia_gold_pixel_diff.cc",
       "examples_skia_gold_pixel_diff.h",
@@ -168,7 +170,7 @@ source_set("views_examples_proc") {
   if (use_x11) {
     deps += [ "//ui/gfx/x" ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "examples_views_delegate_chromeos.cc",
       "examples_views_delegate_chromeos.h",

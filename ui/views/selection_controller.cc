@@ -9,6 +9,7 @@
 
 #include "base/numerics/ranges.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/metrics.h"
@@ -23,7 +24,9 @@ SelectionController::SelectionController(SelectionControllerDelegate* delegate)
       delegate_(delegate),
       handles_selection_clipboard_(false) {
 // On Linux, update the selection clipboard on a text selection.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   set_handles_selection_clipboard(true);
 #endif
 

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
@@ -534,7 +535,7 @@ component("views") {
     sources += [ "color_chooser/color_chooser_view.cc" ]
   }
 
-  if (is_linux && !is_chromeos) {
+  if (is_linux || is_chromeos_lacros) {
     sources -= [ "window/window_button_order_provider.cc" ]
     public_deps += [ "//ui/base/cursor:theme_manager" ]
     deps += [
@@ -556,7 +557,7 @@ component("views") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "controls/menu/menu_config_chromeos.cc" ]
   }
 
@@ -959,6 +960,7 @@ source_set("test_support") {
     ":views",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//gpu/ipc/service",
     "//ipc:test_support",
     "//mojo/core/embedder",
@@ -1029,7 +1031,7 @@ source_set("test_support") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (use_ozone && is_linux && enable_desktop_aura) {
+  if (use_ozone && (is_linux || is_chromeos_lacros) && enable_desktop_aura) {
     sources += [
       "test/test_desktop_screen_ozone.cc",
       "test/test_desktop_screen_ozone.h",
@@ -1162,6 +1164,7 @@ test("views_unittests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//cc",
     "//cc/paint",
     "//components/vector_icons",
@@ -1222,7 +1225,7 @@ test("views_unittests") {
     ]
   }
 
-  if (is_linux && !is_chromeos) {
+  if (is_linux || is_chromeos_lacros) {
     deps += [ "//ui/base/ime/linux" ]
   }
 
@@ -1332,7 +1335,7 @@ test("views_unittests") {
     }
   }
 
-  if (is_linux && use_ozone) {
+  if ((is_linux || is_chromeos_lacros) && use_ozone) {
     data_deps +=
         [ "//testing/buildbot/filters:linux_ozone_views_unittests_filters" ]
   }
@@ -1364,6 +1367,7 @@ source_set("views_interactive_ui_tests") {
     ":views",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
@@ -1402,7 +1406,7 @@ source_set("views_interactive_ui_tests") {
       "//ui/wm/public",
     ]
 
-    if (is_linux) {
+    if (is_linux || is_chromeos_lacros) {
       sources += [ "widget/desktop_aura/desktop_window_tree_host_linux_interactive_uitest.cc" ]
     }
 
@@ -1430,7 +1434,7 @@ source_set("views_interactive_ui_tests") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources -= [ "corewm/desktop_capture_controller_unittest.cc" ]
   }
 }

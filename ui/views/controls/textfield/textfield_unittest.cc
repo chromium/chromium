@@ -21,6 +21,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -64,11 +65,13 @@
 #include "base/win/windows_version.h"
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/window.h"
 #include "ui/wm/core/ime_util_chromeos.h"
 #endif
@@ -503,11 +506,11 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   }
 
   bool TestingNativeCrOs() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return true;
 #else
     return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
  protected:
@@ -1586,7 +1589,9 @@ TEST_F(TextfieldTest, OnKeyPress) {
 TEST_F(TextfieldTest, OnKeyPressBinding) {
   InitTextfield();
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Install a TextEditKeyBindingsDelegateAuraLinux that does nothing.
   class TestDelegate : public ui::TextEditKeyBindingsDelegateAuraLinux {
    public:
@@ -1624,7 +1629,9 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
   EXPECT_STR_EQ("a", textfield_->GetText());
   textfield_->clear();
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ui::SetTextEditKeyBindingsDelegate(nullptr);
 #endif
 }
@@ -2996,7 +3003,7 @@ TEST_F(TextfieldTest, CommitEmptyComposingTextTest) {
   EXPECT_EQ(composed_text_length, static_cast<uint32_t>(0));
 }
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 // SetCompositionFromExistingText is only available on Windows and Chrome OS.
 TEST_F(TextfieldTest, SetCompositionFromExistingTextTest) {
   InitTextfield();
@@ -3081,7 +3088,7 @@ TEST_F(TextfieldTest, GetCompositionCharacterBounds_ComplexText) {
   // - rects[6] == rects[7]
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(TextfieldTest, SetAutocorrectRangeText) {
   InitTextfield();
 
@@ -3201,7 +3208,7 @@ TEST_F(TextfieldTest, GetAutocorrectCharacterBoundsTest) {
 
 // TODO(crbug.com/1108170): Add a test to check that when the composition /
 // surrounding text is updated, the AutocorrectRange is updated accordingly.
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The word we select by double clicking should remain selected regardless of
 // where we drag the mouse afterwards without releasing the left button.
@@ -3228,7 +3235,9 @@ TEST_F(TextfieldTest, KeepInitiallySelectedWord) {
   EXPECT_EQ(gfx::Range(7, 0), textfield_->GetSelectedRange());
 }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(TextfieldTest, SelectionClipboard) {
   InitTextfield();
   textfield_->SetText(ASCIIToUTF16("0123"));
@@ -3488,7 +3497,7 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   EXPECT_EQ(test_tooltip_text, ASCIIToUTF16(name));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Check that when accessibility virtual keyboard is enabled, windows are
 // shifted up when focused and restored when focus is lost.
 TEST_F(TextfieldTest, VirtualKeyboardFocusEnsureCaretNotInRect) {
@@ -3522,7 +3531,7 @@ TEST_F(TextfieldTest, VirtualKeyboardFocusEnsureCaretNotInRect) {
   // Window should be restored.
   EXPECT_EQ(widget_->GetNativeView()->bounds(), orig_widget_bounds);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TextfieldTouchSelectionTest : public TextfieldTest {
  protected:
@@ -3553,7 +3562,7 @@ class TextfieldTouchSelectionTest : public TextfieldTest {
 };
 
 // Touch selection and dragging currently only works for chromeos.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(TextfieldTouchSelectionTest, TouchSelectionAndDraggingTest) {
   InitTextfield();
   textfield_->SetText(ASCIIToUTF16("hello world"));

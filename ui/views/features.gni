@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
 # Enable desktop-oriented features implemented by DesktopNativeWidgetAura.
-enable_desktop_aura = use_aura && !is_chromeos && !is_chromecast
+enable_desktop_aura = use_aura && !is_chromeos_ash && !is_chromecast

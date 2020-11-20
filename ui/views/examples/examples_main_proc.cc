@@ -24,6 +24,7 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -52,7 +53,7 @@
 #include "ui/wm/core/wm_state.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/views/examples/examples_views_delegate_chromeos.h"
 #endif
 
@@ -158,7 +159,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
   ExamplesExitCode compare_result = ExamplesExitCode::kSucceeded;
 
   {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ExamplesViewsDelegateChromeOS views_delegate;
 #else
     views::DesktopTestViewsDelegate views_delegate;

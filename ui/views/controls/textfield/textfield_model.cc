@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/range/range.h"
@@ -362,7 +363,7 @@ void SelectRangeInCompositionText(gfx::RenderText* render_text,
   DCHECK(range.IsValid());
   uint32_t start = range.GetMin();
   uint32_t end = range.GetMax();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Swap |start| and |end| so that GetCaretBounds() can always return the same
   // value during conversion.
   // TODO(yusukes): Check if this works for other platforms. If it is, use this
@@ -753,7 +754,7 @@ void TextfieldModel::SetCompositionText(
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool TextfieldModel::SetAutocorrectRange(const base::string16& autocorrect_text,
                                          const gfx::Range& autocorrect_range) {
   if (autocorrect_text.empty() || autocorrect_range.is_empty())
