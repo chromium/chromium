@@ -54,7 +54,8 @@ enum class ClipboardHistoryDisplayFormat {
   kText = 0,
   kBitmap = 1,
   kHtml = 2,
-  kMaxValue = 2,
+  kFile = 3,
+  kMaxValue = 3,
 };
 
 // Returns the main format of the specified clipboard `data`.

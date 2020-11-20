@@ -57,8 +57,11 @@ ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     case ui::ClipboardInternalFormat::kRtf:
     case ui::ClipboardInternalFormat::kBookmark:
     case ui::ClipboardInternalFormat::kWeb:
-    case ui::ClipboardInternalFormat::kCustom:
       return ClipboardHistoryDisplayFormat::kText;
+    case ui::ClipboardInternalFormat::kCustom:
+      return ContainsFileSystemData(data)
+                 ? ClipboardHistoryDisplayFormat::kFile
+                 : ClipboardHistoryDisplayFormat::kText;
   }
 }
 

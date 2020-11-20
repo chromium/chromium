@@ -187,6 +187,8 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
           &item, resource_manager, container);
+    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kFile:
+      return std::make_unique<ClipboardHistoryTextItemView>(&item, container);
   }
 }
 

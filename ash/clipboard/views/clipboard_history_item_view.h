@@ -118,7 +118,7 @@ class ClipboardHistoryItemView : public views::View {
   // it is not allowed to read clipboard data.
   bool IsItemEnabled() const;
 
-  const ClipboardHistoryItem* clipboard_history_item() {
+  const ClipboardHistoryItem* clipboard_history_item() const {
     return clipboard_history_item_;
   }
 
