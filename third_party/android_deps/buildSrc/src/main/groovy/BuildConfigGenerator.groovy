@@ -346,7 +346,10 @@ class BuildConfigGenerator extends DefaultTask {
                 break
             case 'androidx_fragment_fragment':
                 sb.append("""\
-                |  deps += [ "//third_party/android_deps/local_modifications/androidx_fragment_fragment:androidx_fragment_fragment_prebuilt_java" ]
+                |  deps += [
+                |    "//third_party/android_deps/utils:java",
+                |    "//third_party/android_deps/local_modifications/androidx_fragment_fragment:androidx_fragment_fragment_prebuilt_java",
+                |  ]
                 |  # Omit this file since we use our own copy, included above.
                 |  # We can remove this once we migrate to AndroidX master for all libraries.
                 |  jar_excluded_patterns = [

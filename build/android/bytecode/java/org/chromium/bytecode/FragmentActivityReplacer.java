@@ -20,15 +20,11 @@ import java.io.IOException;
  * See crbug.com/1144345 for more context.
  */
 public class FragmentActivityReplacer extends ByteCodeRewriter {
-    private static final String FRAGMENT_CLASS_PATH = "androidx/fragment/app/Fragment.class";
-    private static final String FRAGMENT_ACTIVITY_INTERNAL_CLASS_NAME =
-            "androidx/fragment/app/FragmentActivity";
-    private static final String ACTIVITY_INTERNAL_CLASS_NAME = "android/app/Activity";
     private static final String GET_ACTIVITY_METHOD_NAME = "getActivity";
-    private static final String REQUIRE_ACTIVITY_METHOD_NAME = "requireActivity";
+    private static final String NEW_METHOD_DESCRIPTOR = "()Landroid/app/Activity;";
     private static final String OLD_METHOD_DESCRIPTOR =
             "()Landroidx/fragment/app/FragmentActivity;";
-    private static final String NEW_METHOD_DESCRIPTOR = "()Landroid/app/Activity;";
+    private static final String REQUIRE_ACTIVITY_METHOD_NAME = "requireActivity";
 
     public static void main(String[] args) throws IOException {
         // Invoke this script using //build/android/gyp/bytecode_processor.py
@@ -49,7 +45,7 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
     @Override
     protected ClassVisitor getClassVisitorForClass(String classPath, ClassVisitor delegate) {
         ClassVisitor getActivityReplacer = new GetActivityReplacer(delegate);
-        if (classPath.equals(FRAGMENT_CLASS_PATH)) {
+        if (classPath.equals("androidx/fragment/app/Fragment.class")) {
             return new FragmentClassVisitor(getActivityReplacer);
         }
         return getActivityReplacer;
@@ -84,8 +80,7 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
     }
 
     /**
-     * Makes Fragment.getActivity() and Fragment.requireActivity() non-final, and changes their
-     * return types to Activity.
+     * Updates the implementation of Fragment.getActivity() and Fragment.requireActivity().
      */
     private static class FragmentClassVisitor extends ClassVisitor {
         private FragmentClassVisitor(ClassVisitor baseVisitor) {
@@ -95,21 +90,33 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
         @Override
         public MethodVisitor visitMethod(
                 int access, String name, String descriptor, String signature, String[] exceptions) {
-            MethodVisitor base;
-            // Update the descriptor of getActivity/requireActivity, and make them non-final.
+            // Update the descriptor of getActivity() and requireActivity().
+            MethodVisitor baseVisitor;
             if (name.equals(GET_ACTIVITY_METHOD_NAME)
                     || name.equals(REQUIRE_ACTIVITY_METHOD_NAME)) {
-                base = super.visitMethod(
+                baseVisitor = super.visitMethod(
                         access & ~Opcodes.ACC_FINAL, name, NEW_METHOD_DESCRIPTOR, null, exceptions);
             } else {
-                base = super.visitMethod(access, name, descriptor, signature, exceptions);
+                baseVisitor = super.visitMethod(access, name, descriptor, signature, exceptions);
             }
 
-            return new MethodRemapper(base, new Remapper() {
+            // Replace getActivity() with `return ContextUtils.activityFromContext(getContext());`
+            if (name.equals(GET_ACTIVITY_METHOD_NAME)) {
+                baseVisitor.visitVarInsn(Opcodes.ALOAD, 0);
+                baseVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "androidx/fragment/app/Fragment",
+                        "getContext", "()Landroid/content/Context;", false);
+                baseVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "org/chromium/utils/ContextUtils",
+                        "activityFromContext", "(Landroid/content/Context;)Landroid/app/Activity;",
+                        false);
+                baseVisitor.visitInsn(Opcodes.ARETURN);
+                return null;
+            }
+
+            return new MethodRemapper(baseVisitor, new Remapper() {
                 @Override
                 public String mapType(String internalName) {
-                    if (internalName.equals(FRAGMENT_ACTIVITY_INTERNAL_CLASS_NAME)) {
-                        return ACTIVITY_INTERNAL_CLASS_NAME;
+                    if (internalName.equals("androidx/fragment/app/FragmentActivity")) {
+                        return "android/app/Activity";
                     }
                     return internalName;
                 }
