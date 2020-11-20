@@ -3395,10 +3395,6 @@ bool Internals::isTrackingOcclusionForIFrame(HTMLIFrameElement* iframe) const {
   return remote_frame->View()->NeedsOcclusionTracking();
 }
 
-void Internals::DisableFrequencyCappingForOverlayPopupDetection() const {
-  OverlayInterstitialAdDetector::DisableFrequencyCappingForTesting();
-}
-
 void Internals::addEmbedderCustomElementName(const AtomicString& name,
                                              ExceptionState& exception_state) {
   CustomElement::AddEmbedderCustomElementNameForTesting(name, exception_state);

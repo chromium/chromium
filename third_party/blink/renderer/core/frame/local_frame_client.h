@@ -355,6 +355,10 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual void FrameRectsChanged(const IntRect&) {}
 
+  virtual void OnOverlayPopupAdDetected() {}
+
+  virtual void OnLargeStickyAdDetected() {}
+
   virtual void FocusedElementChanged(Element* element) {}
 
   // Returns true when the contents of plugin are handled externally. This means

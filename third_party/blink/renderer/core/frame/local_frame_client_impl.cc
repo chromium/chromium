@@ -1115,6 +1115,16 @@ void LocalFrameClientImpl::OnMainFrameIntersectionChanged(
   web_frame_->Client()->OnMainFrameIntersectionChanged(intersection_rect);
 }
 
+void LocalFrameClientImpl::OnOverlayPopupAdDetected() {
+  DCHECK(web_frame_->Client());
+  web_frame_->Client()->OnOverlayPopupAdDetected();
+}
+
+void LocalFrameClientImpl::OnLargeStickyAdDetected() {
+  DCHECK(web_frame_->Client());
+  web_frame_->Client()->OnLargeStickyAdDetected();
+}
+
 bool LocalFrameClientImpl::IsPluginHandledExternally(
     HTMLPlugInElement& plugin_element,
     const KURL& resource_url,

@@ -53,8 +53,6 @@ class CORE_EXPORT OverlayInterstitialAdDetector {
 
   void MaybeFireDetection(LocalFrame* main_frame);
 
-  static void DisableFrequencyCappingForTesting();
-
  private:
   void OnPopupDetected(LocalFrame* main_frame, bool is_ad);
 

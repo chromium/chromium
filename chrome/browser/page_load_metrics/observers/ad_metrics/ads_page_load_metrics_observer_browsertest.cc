@@ -1580,13 +1580,19 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   waiter->Wait();
   int64_t initial_page_bytes = waiter->current_network_bytes();
 
+  // Make the response large enough so that normal editing to the resource files
+  // won't interfere with the test expectations.
+  const int response_kilobytes = 64;
+  const int response_bytes = response_kilobytes * 1024;
+
   // Ad resource will not finish loading but should be reported to metrics.
   incomplete_resource_response->WaitForRequest();
   incomplete_resource_response->Send(kHttpOkResponseHeader);
-  incomplete_resource_response->Send(std::string(2048, ' '));
+  incomplete_resource_response->Send(std::string(response_bytes, ' '));
 
   // Wait for the resource update to be received for the incomplete response.
-  waiter->AddMinimumNetworkBytesExpectation(2048);
+
+  waiter->AddMinimumNetworkBytesExpectation(response_bytes);
   waiter->Wait();
 
   // Close all tabs instead of navigating as the embedded_test_server will
@@ -1594,25 +1600,29 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // ControllableHttpResponse.
   browser()->tab_strip_model()->CloseAllTabs();
 
-  int expected_page_kilobytes = (initial_page_bytes + 2048) / 1024;
+  int expected_page_kilobytes = (initial_page_bytes + response_bytes) / 1024;
 
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.Ads.Bytes.FullPage.Network", expected_page_kilobytes,
       1);
   histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Network", 2, 1);
+      "PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Network",
+      response_kilobytes, 1);
   histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Total2", 2, 1);
+      "PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Total2",
+      response_kilobytes, 1);
   histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Network", 2, 1);
+      "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Network",
+      response_kilobytes, 1);
   histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Total2", 2, 1);
+      "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Total2", response_kilobytes,
+      1);
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::AdFrameLoad::kEntryName);
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdFrameLoad::kLoading_NetworkBytesName,
-      ukm::GetExponentialBucketMinForBytes(2048));
+      ukm::GetExponentialBucketMinForBytes(response_bytes));
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdFrameLoad::kLoading_CacheBytes2Name, 0);
 }

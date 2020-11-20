@@ -1,0 +1,27 @@
+<html>
+<head>
+<style>
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+p {
+  position: fixed;
+}
+</style>
+</head>
+<body marginwidth="0" marginheight="0">
+<script src="ad_iframe_writer.js"></script>
+<!-- To trigger the first contentful paint -->
+<p>
+This page is large and scrollable and includes an ad_iframe_writer.js.
+To tag frames created by the ad_iframe_writer, add the script to the
+filter list.
+</p>
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+</body>
+</html>

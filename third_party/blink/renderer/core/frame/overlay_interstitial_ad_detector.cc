@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/frame/overlay_interstitial_ad_detector.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -17,8 +19,6 @@
 namespace blink {
 
 namespace {
-
-static bool g_frequency_capping_enabled = true;
 
 constexpr base::TimeDelta kFireInterval = base::TimeDelta::FromSeconds(1);
 constexpr double kLargeAdSizeToViewportSizeThreshold = 0.1;
@@ -75,7 +75,9 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   }
 
   base::Time current_time = base::Time::Now();
-  if (started_detection_ && g_frequency_capping_enabled &&
+  if (started_detection_ &&
+      base::FeatureList::IsEnabled(
+          features::kFrequencyCappingForOverlayPopupDetection) &&
       current_time < last_detection_time_ + kFireInterval)
     return;
 
@@ -201,11 +203,6 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   }
 }
 
-// static
-void OverlayInterstitialAdDetector::DisableFrequencyCappingForTesting() {
-  g_frequency_capping_enabled = false;
-}
-
 void OverlayInterstitialAdDetector::OnPopupDetected(LocalFrame* main_frame,
                                                     bool is_ad) {
   if (!popup_detected_) {
@@ -215,6 +212,7 @@ void OverlayInterstitialAdDetector::OnPopupDetected(LocalFrame* main_frame,
 
   if (is_ad) {
     DCHECK(!popup_ad_detected_);
+    main_frame->Client()->OnOverlayPopupAdDetected();
     UseCounter::Count(main_frame->GetDocument(), WebFeature::kOverlayPopupAd);
     popup_ad_detected_ = true;
   }

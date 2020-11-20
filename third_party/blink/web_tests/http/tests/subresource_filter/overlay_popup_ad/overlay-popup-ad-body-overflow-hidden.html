@@ -18,9 +18,9 @@ p {
 }
 </style>
 
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="resources/overlay-interstitial-ad-testharness.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0" overflow="hidden">
 
@@ -31,10 +31,6 @@ p {
 <div></div>
 
 <script>
-if (window.testRunner) {
-  internals.DisableFrequencyCappingForOverlayPopupDetection();
-}
-
 promise_test(async function(t) {
   // After 1500ms, force a layout update so that the interstitial detector
   // is aware of the first meaningful paint, and future overlay candidates

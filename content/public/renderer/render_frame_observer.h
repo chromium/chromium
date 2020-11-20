@@ -261,6 +261,20 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void OnMainFrameIntersectionChanged(
       const blink::WebRect& intersect_rect) {}
 
+  // Overlay-popup-ad violates The Better Ads Standards
+  // (https://www.betterads.org/standards/). This method will be called when an
+  // overlay-popup-ad is detected, to let the embedder
+  // (i.e. subresource_filter::ContentSubresourceFilterThrottleManager) know the
+  // violation so as to apply further interventions.
+  virtual void OnOverlayPopupAdDetected() {}
+
+  // Large-sticky-ad violates The Better Ads Standards
+  // (https://www.betterads.org/standards/). This method will be called when a
+  // large-sticky-ad is detected, to let the embedder
+  // (i.e. subresource_filter::ContentSubresourceFilterThrottleManager) know the
+  // violation so as to apply further interventions.
+  virtual void OnLargeStickyAdDetected() {}
+
   // Called to give the embedder an opportunity to bind an interface request
   // for a frame. If the request can be bound, |interface_pipe| will be taken.
   virtual void OnInterfaceRequestForFrame(
