@@ -13,6 +13,70 @@
 #include "dbus/property.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
+namespace dbus {
+
+// dbus::Property specialization to read and write
+// hermes::profile::State enum.
+template <>
+Property<hermes::profile::State>::Property()
+    : value_(hermes::profile::State::kInactive) {}
+
+template <>
+bool Property<hermes::profile::State>::PopValueFromReader(
+    MessageReader* reader) {
+  int32_t int_value;
+  if (!reader->PopInt32(&int_value)) {
+    return false;
+  }
+  switch (int_value) {
+    case hermes::profile::State::kActive:
+    case hermes::profile::State::kInactive:
+    case hermes::profile::State::kPending:
+      value_ = static_cast<hermes::profile::State>(int_value);
+      return true;
+  }
+  NOTREACHED() << "Received invalid hermes profile state " << int_value;
+  return false;
+}
+
+template <>
+void Property<hermes::profile::State>::AppendSetValueToWriter(
+    MessageWriter* writer) {
+  writer->AppendInt32(set_value_);
+}
+
+// dbus::Property specialization to read and write
+// hermes::profile::ProfileClass enum.
+template <>
+Property<hermes::profile::ProfileClass>::Property()
+    : value_(hermes::profile::ProfileClass::kOperational) {}
+
+template <>
+bool Property<hermes::profile::ProfileClass>::PopValueFromReader(
+    MessageReader* reader) {
+  int32_t int_value;
+  if (!reader->PopInt32(&int_value)) {
+    return false;
+  }
+  switch (int_value) {
+    case hermes::profile::ProfileClass::kTesting:
+    case hermes::profile::ProfileClass::kProvisioning:
+    case hermes::profile::ProfileClass::kOperational:
+      value_ = static_cast<hermes::profile::ProfileClass>(int_value);
+      return true;
+  }
+  NOTREACHED() << "Received invalid hermes profile class " << int_value;
+  return false;
+}
+
+template <>
+void Property<hermes::profile::ProfileClass>::AppendSetValueToWriter(
+    MessageWriter* writer) {
+  writer->AppendInt32(set_value_);
+}
+
+}  // namespace dbus
+
 namespace chromeos {
 
 namespace {

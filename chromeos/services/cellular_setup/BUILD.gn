@@ -30,6 +30,12 @@ static_library("esim_manager") {
   sources = [
     "esim_manager.cc",
     "esim_manager.h",
+    "esim_mojo_utils.cc",
+    "esim_mojo_utils.h",
+    "esim_profile.cc",
+    "esim_profile.h",
+    "euicc.cc",
+    "euicc.h",
   ]
 
   deps = [

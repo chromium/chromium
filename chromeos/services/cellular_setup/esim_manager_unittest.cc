@@ -4,13 +4,18 @@
 
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
+#include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
+#include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,34 +27,6 @@ namespace cellular_setup {
 namespace {
 const char* kTestEuiccPath = "/org/chromium/Hermes/Euicc/0";
 const char* kTestEid = "12345678901234567890123456789012";
-
-void CopyESimProfileList(
-    std::vector<mojom::ESimProfilePtr>* dest,
-    base::OnceClosure quit_closure,
-    base::Optional<std::vector<mojom::ESimProfilePtr>> esim_profiles) {
-  if (esim_profiles) {
-    for (auto& euicc : *esim_profiles)
-      dest->push_back(std::move(euicc));
-  }
-  std::move(quit_closure).Run();
-}
-
-void CopyInstallResult(mojom::ESimManager::ProfileInstallResult* result_dest,
-                       mojom::ESimProfilePtr* esim_profile_dest,
-                       base::OnceClosure quit_closure,
-                       mojom::ESimManager::ProfileInstallResult result,
-                       mojom::ESimProfilePtr esim_profile) {
-  *result_dest = result;
-  *esim_profile_dest = std::move(esim_profile);
-  std::move(quit_closure).Run();
-}
-
-void CopyOperationResult(mojom::ESimManager::ESimOperationResult* result_dest,
-                         base::OnceClosure quit_closure,
-                         mojom::ESimManager::ESimOperationResult result) {
-  *result_dest = result;
-  std::move(quit_closure).Run();
-}
 
 }  // namespace
 
@@ -65,13 +42,14 @@ class ESimManagerTestObserver : public mojom::ESimManagerObserver {
   void OnAvailableEuiccListChanged() override {
     available_euicc_list_change_count_++;
   }
-  void OnProfileListChanged(const std::string& eid) override {
-    profile_list_change_calls_.push_back(eid);
+  void OnProfileListChanged(mojo::PendingRemote<mojom::Euicc> euicc) override {
+    profile_list_change_calls_.push_back(std::move(euicc));
   }
-  void OnEuiccChanged(mojom::EuiccPtr euicc) override {
+  void OnEuiccChanged(mojo::PendingRemote<mojom::Euicc> euicc) override {
     euicc_change_calls_.push_back(std::move(euicc));
   }
-  void OnProfileChanged(mojom::ESimProfilePtr esim_profile) override {
+  void OnProfileChanged(
+      mojo::PendingRemote<mojom::ESimProfile> esim_profile) override {
     profile_change_calls_.push_back(std::move(esim_profile));
   }
 
@@ -86,34 +64,50 @@ class ESimManagerTestObserver : public mojom::ESimManagerObserver {
     profile_change_calls_.clear();
   }
 
+  mojo::PendingRemote<mojom::Euicc> PopLastChangedEuicc() {
+    mojo::PendingRemote<mojom::Euicc> euicc =
+        std::move(euicc_change_calls_.front());
+    euicc_change_calls_.erase(euicc_change_calls_.begin());
+    return euicc;
+  }
+
+  mojo::PendingRemote<mojom::ESimProfile> PopLastChangedESimProfile() {
+    mojo::PendingRemote<mojom::ESimProfile> esim_profile =
+        std::move(profile_change_calls_.front());
+    profile_change_calls_.erase(profile_change_calls_.begin());
+    return esim_profile;
+  }
+
   int available_euicc_list_change_count() {
     return available_euicc_list_change_count_;
   }
 
-  const std::vector<std::string>& profile_list_change_calls() {
+  const std::vector<mojo::PendingRemote<mojom::Euicc>>&
+  profile_list_change_calls() {
     return profile_list_change_calls_;
   }
 
-  const std::vector<mojom::EuiccPtr>& euicc_change_calls() {
+  const std::vector<mojo::PendingRemote<mojom::Euicc>>& euicc_change_calls() {
     return euicc_change_calls_;
   }
 
-  const std::vector<mojom::ESimProfilePtr>& profile_change_calls() {
+  const std::vector<mojo::PendingRemote<mojom::ESimProfile>>&
+  profile_change_calls() {
     return profile_change_calls_;
   }
 
  private:
   int available_euicc_list_change_count_ = 0;
-  std::vector<std::string> profile_list_change_calls_;
-  std::vector<mojom::EuiccPtr> euicc_change_calls_;
-  std::vector<mojom::ESimProfilePtr> profile_change_calls_;
+  std::vector<mojo::PendingRemote<mojom::Euicc>> profile_list_change_calls_;
+  std::vector<mojo::PendingRemote<mojom::Euicc>> euicc_change_calls_;
+  std::vector<mojo::PendingRemote<mojom::ESimProfile>> profile_change_calls_;
   mojo::Receiver<mojom::ESimManagerObserver> receiver_{this};
 };
 
 class ESimManagerTest : public testing::Test {
  public:
-  using InstallResultPair = std::pair<mojom::ESimManager::ProfileInstallResult,
-                                      mojom::ESimProfilePtr>;
+  using InstallResultPair =
+      std::pair<mojom::ProfileInstallResult, mojom::ESimProfilePtr>;
 
   ESimManagerTest() {
     if (!ShillManagerClient::Get())
@@ -146,12 +140,13 @@ class ESimManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::vector<mojom::EuiccPtr> GetAvailableEuiccs() {
-    std::vector<mojom::EuiccPtr> result;
+  std::vector<mojo::PendingRemote<mojom::Euicc>> GetAvailableEuiccs() {
+    std::vector<mojo::PendingRemote<mojom::Euicc>> result;
     base::RunLoop run_loop;
     esim_manager_->GetAvailableEuiccs(base::BindOnce(
-        [](std::vector<mojom::EuiccPtr>* result, base::OnceClosure quit_closure,
-           std::vector<mojom::EuiccPtr> available_euiccs) {
+        [](std::vector<mojo::PendingRemote<mojom::Euicc>>* result,
+           base::OnceClosure quit_closure,
+           std::vector<mojo::PendingRemote<mojom::Euicc>> available_euiccs) {
           for (auto& euicc : available_euiccs)
             result->push_back(std::move(euicc));
           std::move(quit_closure).Run();
@@ -161,102 +156,32 @@ class ESimManagerTest : public testing::Test {
     return result;
   }
 
-  std::vector<mojom::ESimProfilePtr> GetProfiles(const std::string& eid) {
-    std::vector<mojom::ESimProfilePtr> result;
+  mojom::EuiccPropertiesPtr GetEuiccProperties(
+      const mojo::Remote<mojom::Euicc>& euicc) {
+    mojom::EuiccPropertiesPtr result;
     base::RunLoop run_loop;
-    esim_manager_->GetProfiles(
-        eid,
-        base::BindOnce(&CopyESimProfileList, &result, run_loop.QuitClosure()));
+    euicc->GetProperties(base::BindOnce(
+        [](mojom::EuiccPropertiesPtr* out, base::OnceClosure quit_closure,
+           mojom::EuiccPropertiesPtr properties) {
+          *out = std::move(properties);
+          std::move(quit_closure).Run();
+        },
+        &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result;
   }
 
-  mojom::ESimManager::ESimOperationResult RequestPendingProfiles(
-      const std::string& eid) {
-    mojom::ESimManager::ESimOperationResult result;
+  mojom::ESimProfilePropertiesPtr GetESimProfileProperties(
+      const mojo::Remote<mojom::ESimProfile>& esim_profile) {
+    mojom::ESimProfilePropertiesPtr result;
     base::RunLoop run_loop;
-    esim_manager_->RequestPendingProfiles(
-        eid, base::BindOnce(
-                 [](mojom::ESimManager::ESimOperationResult* result,
-                    base::OnceClosure quit_closure,
-                    mojom::ESimManager::ESimOperationResult status) {
-                   *result = status;
-                   std::move(quit_closure).Run();
-                 },
-                 &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result;
-  }
-
-  InstallResultPair InstallProfileFromActivationCode(
-      const std::string& eid,
-      const std::string& activation_code,
-      const std::string& confirmation_code) {
-    base::RunLoop run_loop;
-    mojom::ESimManager::ProfileInstallResult result;
-    mojom::ESimProfilePtr esim_profile;
-    esim_manager_->InstallProfileFromActivationCode(
-        eid, activation_code, confirmation_code,
-        base::BindOnce(&CopyInstallResult, &result, &esim_profile,
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    return std::make_pair(result, std::move(esim_profile));
-  }
-
-  InstallResultPair InstallProfile(const std::string& iccid,
-                                   const std::string& confirmation_code) {
-    base::RunLoop run_loop;
-    mojom::ESimManager::ProfileInstallResult result;
-    mojom::ESimProfilePtr esim_profile;
-    esim_manager_->InstallProfile(
-        iccid, confirmation_code,
-        base::BindOnce(&CopyInstallResult, &result, &esim_profile,
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    return std::make_pair(result, std::move(esim_profile));
-  }
-
-  mojom::ESimManager::ESimOperationResult UninstallProfile(
-      const std::string& iccid) {
-    base::RunLoop run_loop;
-    mojom::ESimManager::ESimOperationResult result;
-    esim_manager_->UninstallProfile(
-        iccid,
-        base::BindOnce(&CopyOperationResult, &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result;
-  }
-
-  mojom::ESimManager::ESimOperationResult EnableProfile(
-      const std::string& iccid) {
-    base::RunLoop run_loop;
-    mojom::ESimManager::ESimOperationResult result;
-    esim_manager_->EnableProfile(
-        iccid,
-        base::BindOnce(&CopyOperationResult, &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result;
-  }
-
-  mojom::ESimManager::ESimOperationResult DisableProfile(
-      const std::string& iccid) {
-    base::RunLoop run_loop;
-    mojom::ESimManager::ESimOperationResult result;
-    esim_manager_->DisableProfile(
-        iccid,
-        base::BindOnce(&CopyOperationResult, &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result;
-  }
-
-  mojom::ESimManager::ESimOperationResult SetProfileNickname(
-      const std::string& iccid,
-      const base::string16& nickname) {
-    base::RunLoop run_loop;
-    mojom::ESimManager::ESimOperationResult result;
-    esim_manager_->SetProfileNickname(
-        iccid, nickname,
-        base::BindOnce(&CopyOperationResult, &result, run_loop.QuitClosure()));
+    esim_profile->GetProperties(base::BindOnce(
+        [](mojom::ESimProfilePropertiesPtr* out, base::OnceClosure quit_closure,
+           mojom::ESimProfilePropertiesPtr properties) {
+          *out = std::move(properties);
+          std::move(quit_closure).Run();
+        },
+        &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result;
   }
@@ -272,18 +197,21 @@ class ESimManagerTest : public testing::Test {
 
 TEST_F(ESimManagerTest, GetAvailableEuiccs) {
   ASSERT_EQ(0u, GetAvailableEuiccs().size());
-  // Verify that Euicc List change is notified to observer when a
-  // a new Euicc is setup.
   SetupEuicc();
-  EXPECT_EQ(1, observer()->available_euicc_list_change_count());
   // Verify that GetAvailableEuiccs call returns list of euiccs.
-  std::vector<mojom::EuiccPtr> available_euiccs = GetAvailableEuiccs();
+  std::vector<mojo::PendingRemote<mojom::Euicc>> available_euiccs =
+      GetAvailableEuiccs();
   ASSERT_EQ(1u, available_euiccs.size());
-  EXPECT_EQ(kTestEid, available_euiccs.front()->eid);
+  mojo::Remote<mojom::Euicc> euicc(std::move(available_euiccs.front()));
+  mojom::EuiccPropertiesPtr properties = GetEuiccProperties(euicc);
+  EXPECT_EQ(kTestEid, properties->eid);
 }
 
-TEST_F(ESimManagerTest, GetProfiles) {
+TEST_F(ESimManagerTest, ListChangeNotification) {
   SetupEuicc();
+  // Verify that available euicc list change is notified.
+  ASSERT_EQ(1, observer()->available_euicc_list_change_count());
+
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
@@ -291,244 +219,40 @@ TEST_F(ESimManagerTest, GetProfiles) {
   dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "");
   base::RunLoop().RunUntilIdle();
-  HermesProfileClient::Properties* active_profile_properties =
-      HermesProfileClient::Get()->GetProperties(active_profile_path);
-  HermesProfileClient::Properties* pending_profile_properties =
-      HermesProfileClient::Get()->GetProperties(pending_profile_path);
   // Verify the profile list change is notified to observer.
   ASSERT_EQ(2u, observer()->profile_list_change_calls().size());
-  EXPECT_EQ(kTestEid, observer()->profile_list_change_calls().at(0));
-  EXPECT_EQ(kTestEid, observer()->profile_list_change_calls().at(1));
-  // Verify that the added profile is returned in installed list.
-  std::vector<mojom::ESimProfilePtr> profile_list = GetProfiles(kTestEid);
-  ASSERT_EQ(2u, profile_list.size());
-  EXPECT_EQ(active_profile_properties->iccid().value(),
-            profile_list.at(0)->iccid);
-  EXPECT_EQ(pending_profile_properties->iccid().value(),
-            profile_list.at(1)->iccid);
 }
 
-TEST_F(ESimManagerTest, RequestPendingProfiles) {
+TEST_F(ESimManagerTest, EuiccChangeNotification) {
   SetupEuicc();
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  // Verify that pending profile request errors are return properly.
-  euicc_test->QueueHermesErrorStatus(HermesResponseStatus::kErrorNoResponse);
-  mojom::ESimManager::ESimOperationResult result =
-      RequestPendingProfiles(kTestEid);
+  HermesEuiccClient::Properties* dbus_properties =
+      HermesEuiccClient::Get()->GetProperties(dbus::ObjectPath(kTestEuiccPath));
+  dbus_properties->is_active().ReplaceValue(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kFailure, result);
-  EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
-
-  // Verify that successful request notifies observers and returns correct
-  // status code.
-  result = RequestPendingProfiles(kTestEid);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kSuccess, result);
-  EXPECT_EQ(kTestEid, observer()->profile_list_change_calls().front());
+  ASSERT_EQ(1u, observer()->euicc_change_calls().size());
+  mojo::Remote<mojom::Euicc> euicc(observer()->PopLastChangedEuicc());
+  mojom::EuiccPropertiesPtr mojo_properties = GetEuiccProperties(euicc);
+  EXPECT_EQ(kTestEid, mojo_properties->eid);
 }
 
-TEST_F(ESimManagerTest, InstallProfileFromActivationCode) {
-  SetupEuicc();
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  // Verify that install errors return error code properly.
-  euicc_test->QueueHermesErrorStatus(
-      HermesResponseStatus::kErrorInvalidActivationCode);
-  InstallResultPair result_pair =
-      InstallProfileFromActivationCode(kTestEid, "", "");
-  EXPECT_EQ(
-      mojom::ESimManager::ProfileInstallResult::kErrorInvalidActivationCode,
-      result_pair.first);
-  EXPECT_EQ(nullptr, result_pair.second.get());
-
-  // Verify that installing a profile returns proper status code
-  // and profile object.
-  dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "");
-  base::RunLoop().RunUntilIdle();
-  HermesProfileClient::Properties* properties =
-      HermesProfileClient::Get()->GetProperties(profile_path);
-  result_pair = InstallProfileFromActivationCode(
-      kTestEid, properties->activation_code().value(), "");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ProfileInstallResult::kSuccess,
-            result_pair.first);
-  ASSERT_NE(nullptr, result_pair.second.get());
-  EXPECT_EQ(properties->iccid().value(), result_pair.second->iccid);
-  EXPECT_EQ(3u, observer()->profile_list_change_calls().size());
-}
-
-TEST_F(ESimManagerTest, InstallProfile) {
+TEST_F(ESimManagerTest, ESimProfileChangeNotification) {
   SetupEuicc();
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "");
+      dbus::ObjectPath(kTestEuiccPath), hermes::profile::kActive, "");
   base::RunLoop().RunUntilIdle();
-  HermesProfileClient::Properties* properties =
-      HermesProfileClient::Get()->GetProperties(profile_path);
 
-  // Verify that install errors return error code properly.
-  euicc_test->QueueHermesErrorStatus(
-      HermesResponseStatus::kErrorNeedConfirmationCode);
-  InstallResultPair result_pair =
-      InstallProfile(properties->iccid().value(), "");
-  EXPECT_EQ(
-      mojom::ESimManager::ProfileInstallResult::kErrorNeedsConfirmationCode,
-      result_pair.first);
-  EXPECT_EQ(nullptr, result_pair.second.get());
-
-  // Verify that installing pending profile returns proper results.
-  result_pair = InstallProfile(properties->iccid().value(), "");
+  HermesProfileClient::Properties* dbus_properties =
+      HermesProfileClient::Get()->GetProperties(dbus::ObjectPath(profile_path));
+  dbus_properties->state().ReplaceValue(hermes::profile::kInactive);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ProfileInstallResult::kSuccess,
-            result_pair.first);
-  ASSERT_NE(nullptr, result_pair.second.get());
-  ASSERT_EQ(properties->iccid().value(), result_pair.second->iccid);
-  EXPECT_EQ(3u, observer()->profile_list_change_calls().size());
-}
-
-TEST_F(ESimManagerTest, UninstallProfile) {
-  SetupEuicc();
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive, "");
-  dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
-  observer()->Reset();
-  HermesProfileClient::Properties* pending_profile_properties =
-      HermesProfileClient::Get()->GetProperties(pending_profile_path);
-  HermesProfileClient::Properties* active_profile_properties =
-      HermesProfileClient::Get()->GetProperties(active_profile_path);
-
-  // Verify that uninstall error codes are returned properly.
-  euicc_test->QueueHermesErrorStatus(
-      HermesResponseStatus::kErrorInvalidResponse);
-  mojom::ESimManager::ESimOperationResult result =
-      UninstallProfile(active_profile_properties->iccid().value());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kFailure, result);
-  EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
-
-  // Verify that pending profiles cannot be uninstalled
-  observer()->Reset();
-  result = UninstallProfile(pending_profile_properties->iccid().value());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kFailure, result);
-  EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
-
-  // Verify that uninstall removes the profile and notifies observers properly.
-  observer()->Reset();
-  result = UninstallProfile(active_profile_properties->iccid().value());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kSuccess, result);
-  ASSERT_EQ(1u, observer()->profile_list_change_calls().size());
-  EXPECT_EQ(kTestEid, observer()->profile_list_change_calls().front());
-}
-
-TEST_F(ESimManagerTest, EnableProfile) {
-  SetupEuicc();
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  dbus::ObjectPath inactive_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kInactive, "");
-  dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
-  observer()->Reset();
-  HermesProfileClient::Properties* pending_profile_properties =
-      HermesProfileClient::Get()->GetProperties(pending_profile_path);
-  HermesProfileClient::Properties* inactive_profile_properties =
-      HermesProfileClient::Get()->GetProperties(inactive_profile_path);
-
-  // Verify that pending profiles cannot be enabled.
-  mojom::ESimManager::ESimOperationResult result =
-      EnableProfile(pending_profile_properties->iccid().value());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kFailure, result);
-  EXPECT_EQ(0u, observer()->profile_change_calls().size());
-
-  // Verify that enabling profile returns result properly.
-  result = EnableProfile(inactive_profile_properties->iccid().value());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kSuccess, result);
-  EXPECT_EQ(inactive_profile_properties->iccid().value(),
-            observer()->profile_change_calls().front()->iccid);
-  EXPECT_EQ(mojom::ProfileState::kActive,
-            observer()->profile_change_calls().front()->state);
-}
-
-TEST_F(ESimManagerTest, DisableProfile) {
-  SetupEuicc();
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive, "");
-  dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
-  observer()->Reset();
-  HermesProfileClient::Properties* pending_profile_properties =
-      HermesProfileClient::Get()->GetProperties(pending_profile_path);
-  HermesProfileClient::Properties* active_profile_properties =
-      HermesProfileClient::Get()->GetProperties(active_profile_path);
-
-  // Verify that pending profiles cannot be disabled.
-  mojom::ESimManager::ESimOperationResult result =
-      DisableProfile(pending_profile_properties->iccid().value());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kFailure, result);
-  EXPECT_EQ(0u, observer()->profile_change_calls().size());
-
-  // Verify that disabling profile returns result properly.
-  result = DisableProfile(active_profile_properties->iccid().value());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kSuccess, result);
-  EXPECT_EQ(active_profile_properties->iccid().value(),
-            observer()->profile_change_calls().front()->iccid);
-  EXPECT_EQ(mojom::ProfileState::kInactive,
-            observer()->profile_change_calls().front()->state);
-}
-
-TEST_F(ESimManagerTest, SetProfileNickName) {
-  const base::string16 test_nickname = base::UTF8ToUTF16("Test nickname");
-  SetupEuicc();
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive, "");
-  dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
-  observer()->Reset();
-  HermesProfileClient::Properties* pending_profile_properties =
-      HermesProfileClient::Get()->GetProperties(pending_profile_path);
-  HermesProfileClient::Properties* active_profile_properties =
-      HermesProfileClient::Get()->GetProperties(active_profile_path);
-
-  // Verify that pending profiles cannot be modified.
-  mojom::ESimManager::ESimOperationResult result = SetProfileNickname(
-      pending_profile_properties->iccid().value(), test_nickname);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kFailure, result);
-  EXPECT_EQ(0u, observer()->profile_change_calls().size());
-
-  // Verify that nickname can be set on active profiles.
-  result = SetProfileNickname(active_profile_properties->iccid().value(),
-                              test_nickname);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(mojom::ESimManager::ESimOperationResult::kSuccess, result);
-  EXPECT_EQ(active_profile_properties->iccid().value(),
-            observer()->profile_change_calls().front()->iccid);
-  EXPECT_EQ(test_nickname,
-            observer()->profile_change_calls().front()->nickname);
+  ASSERT_EQ(1u, observer()->profile_change_calls().size());
+  mojo::Remote<mojom::ESimProfile> esim_profile(
+      observer()->PopLastChangedESimProfile());
+  mojom::ESimProfilePropertiesPtr mojo_properties =
+      GetESimProfileProperties(esim_profile);
+  EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
 }
 
 }  // namespace cellular_setup
