@@ -7,6 +7,7 @@
 
 import argparse
 import os
+import requests
 import shutil
 import subprocess
 import sys
@@ -15,6 +16,12 @@ import uuid
 
 
 FIREBASE_PROJECT = 'chrome-supersize'
+PROD_URL = 'https://chrome-supersize.firebaseapp.com/'
+CASPIAN_FILES = [
+    'caspian_web.js',
+    'caspian_web.wasm',
+    'caspian_web.wasm.map',
+]
 
 PROD = 'prod'
 STAGING = 'staging'
@@ -72,12 +79,22 @@ def _FirebaseDeploy(project_dir, deploy_mode=PROD):
                           cwd=project_dir)
 
 
+def _DownloadCaspianFiles(project_static_dir):
+  for f in CASPIAN_FILES:
+    response = requests.get(PROD_URL + f)
+    with open(os.path.join(project_static_dir, f), 'wb') as output:
+      output.write(response.content)
+
+
 def _CopyStaticFiles(project_static_dir):
   """Copy over static files from the static directory."""
   static_files = os.path.join(os.path.dirname(__file__), 'static')
-  if not os.path.exists(os.path.join(static_files, 'caspian_web.js')):
-    raise Exception('static/caspian_web.js is missing. See caspian/README.md')
   shutil.copytree(static_files, project_static_dir)
+  if not all(
+      os.path.exists(os.path.join(static_files, f)) for f in CASPIAN_FILES):
+    print('Some caspian files do not exist in ({}). Downloading *all* caspian '
+          'files from currently deployed instance.'.format(static_files))
+    _DownloadCaspianFiles(project_static_dir)
 
 
 def _FillInAndCopyTemplates(project_static_dir):
