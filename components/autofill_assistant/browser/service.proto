@@ -1081,18 +1081,6 @@ message SelectorProto {
     }
   }
 
-  // A way of filtering elements by their text.
-  message TextFilter {
-    // Javascript RE2 regular expression to apply to the text. This is evaluated
-    // with Regexp.test, so it's a "find" and will be satisfied whenever the
-    // text contains at least one substring that matches the given regular
-    // expression.
-    optional string re2 = 1;
-
-    // If true, the regular expression is case-sensitive.
-    optional bool case_sensitive = 2;
-  }
-
   // A way of filtering elements by their pseudo-element content.
   message PseudoElementContent {
     optional PseudoType pseudo_type = 1;
@@ -1260,18 +1248,24 @@ message SelectOptionProto {
 
   oneof value {
     // Value of the option to use.
-    string selected_option = 3;
-    // A value from an Autofill source. Note that this must be proceeded by a
+    TextFilter text_filter_value = 7;
+    // A value from an Autofill source. Note that this must be preceded by a
     // |CollectUserDataAction|.
-    AutofillValue autofill_value = 5;
+    AutofillValueRegexp autofill_value = 8;
   }
 
-  // The strategy used to select a value option. This defaults to
-  // |LABEL_STARTS_WITH| for the legacy case.
-  optional DropdownSelectStrategy select_strategy = 4
-      [default = LABEL_STARTS_WITH];
+  // Defines which attribute to use for comparing the option to the expected
+  // value.
+  enum OptionComparisonAttribute {
+    NOT_SET = 0;
+    // Compare the option's value.
+    VALUE = 1;
+    // Compare the option's label.
+    LABEL = 2;
+  }
+  optional OptionComparisonAttribute option_comparison_attribute = 6;
 
-  reserved 1;
+  reserved 1, 3 to 5;
 }
 
 // Contain a localized text message from the server.
@@ -2293,7 +2287,7 @@ message SetFormFieldValueProto {
       bool use_password = 5;
       // Use the value stored at the specified memory location.
       string client_memory_key = 6;
-      // A value from an Autofill source. Note that this must be proceeded by a
+      // A value from an Autofill source. Note that this must be preceded by a
       // |CollectUserDataAction|.
       AutofillValue autofill_value = 8;
     }
@@ -2745,7 +2739,7 @@ message GetElementStatusProto {
     oneof value_source {
       // The value to check against.
       string value = 1;
-      // A value from an Autofill source. Note that this must be proceeded by a
+      // A value from an Autofill source. Note that this must be preceded by a
       // |CollectUserDataAction|.
       AutofillValue autofill_value = 2;
       // A regular expression.

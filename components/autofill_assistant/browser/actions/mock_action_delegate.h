@@ -151,9 +151,11 @@ class MockActionDelegate : public ActionDelegate {
                     const Selector& selector,
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 
-  MOCK_METHOD4(SelectOption,
-               void(const std::string& value,
-                    DropdownSelectStrategy select_strategy,
+  MOCK_METHOD5(SelectOption,
+               void(const std::string& re2,
+                    bool case_sensitive,
+                    SelectOptionProto::OptionComparisonAttribute
+                        option_comparison_attribute,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 

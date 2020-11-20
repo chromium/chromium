@@ -751,5 +751,29 @@ TEST(UserDataUtilTest, RequestKnownDataFromKnownProfile) {
   EXPECT_EQ(result, "John");
 }
 
+TEST(UserDataUtilTest, EscapeDataFromProfile) {
+  UserData user_data;
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  autofill::test::SetProfileInfo(&contact, "Jo.h*n", /* middle name */ "",
+                                 "Doe", "", "", "", "", "", "", "", "", "");
+  user_data.selected_addresses_["contact"] =
+      std::make_unique<autofill::AutofillProfile>(contact);
+
+  AutofillValueRegexp autofill_value;
+  autofill_value.mutable_profile()->set_identifier("contact");
+  autofill_value.mutable_value_expression()->set_re2(
+      base::StrCat({"^${",
+                    base::NumberToString(static_cast<int>(
+                        autofill::ServerFieldType::NAME_FIRST)),
+                    "}$"}));
+
+  std::string result;
+
+  EXPECT_TRUE(
+      GetFormattedAutofillValue(autofill_value, &user_data, &result).ok());
+  EXPECT_EQ(result, "^Jo\\.h\\*n$");
+}
+
 }  // namespace
 }  // namespace autofill_assistant

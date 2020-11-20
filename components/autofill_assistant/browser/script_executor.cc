@@ -538,11 +538,13 @@ void ScriptExecutor::RetrieveElementFormAndFieldData(
 }
 
 void ScriptExecutor::SelectOption(
-    const std::string& value,
-    DropdownSelectStrategy select_strategy,
+    const std::string& re2,
+    bool case_sensitive,
+    SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->SelectOption(element, value, select_strategy,
+  delegate_->GetWebController()->SelectOption(element, re2, case_sensitive,
+                                              option_comparison_attribute,
                                               std::move(callback));
 }
 

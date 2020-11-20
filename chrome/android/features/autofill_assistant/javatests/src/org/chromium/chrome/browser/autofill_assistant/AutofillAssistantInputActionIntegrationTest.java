@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClickProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
-import org.chromium.chrome.browser.autofill_assistant.proto.DropdownSelectStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.OptionalStep;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
@@ -49,6 +48,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValuePro
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto.KeyPress;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.TextFilter;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -299,8 +299,9 @@ public class AutofillAssistantInputActionIntegrationTest {
                          .setSelectOption(
                                  SelectOptionProto.newBuilder()
                                          .setElement(element)
-                                         .setSelectedOption("one")
-                                         .setSelectStrategy(DropdownSelectStrategy.VALUE_MATCH))
+                                         .setTextFilterValue(TextFilter.newBuilder().setRe2("one"))
+                                         .setOptionComparisonAttribute(
+                                                 SelectOptionProto.OptionComparisonAttribute.VALUE))
                          .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
@@ -310,13 +311,15 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Continue"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSelectOption(
-                                 SelectOptionProto.newBuilder()
-                                         .setElement(element)
-                                         .setSelectedOption("Three")
-                                         .setSelectStrategy(DropdownSelectStrategy.LABEL_MATCH))
-                         .build());
+        list.add(
+                (ActionProto) ActionProto.newBuilder()
+                        .setSelectOption(
+                                SelectOptionProto.newBuilder()
+                                        .setElement(element)
+                                        .setTextFilterValue(TextFilter.newBuilder().setRe2("Three"))
+                                        .setOptionComparisonAttribute(
+                                                SelectOptionProto.OptionComparisonAttribute.LABEL))
+                        .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Label Match")
@@ -326,11 +329,13 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setText("Continue"))))
                          .build());
         list.add((ActionProto) ActionProto.newBuilder()
-                         .setSelectOption(SelectOptionProto.newBuilder()
-                                                  .setElement(element)
-                                                  .setSelectedOption("Zürich")
-                                                  .setSelectStrategy(
-                                                          DropdownSelectStrategy.LABEL_STARTS_WITH))
+                         .setSelectOption(
+                                 SelectOptionProto.newBuilder()
+                                         .setElement(element)
+                                         .setTextFilterValue(
+                                                 TextFilter.newBuilder().setRe2("^Zürich"))
+                                         .setOptionComparisonAttribute(
+                                                 SelectOptionProto.OptionComparisonAttribute.LABEL))
                          .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()

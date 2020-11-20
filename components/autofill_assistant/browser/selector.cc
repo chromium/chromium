@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 
 namespace autofill_assistant {
 
@@ -14,8 +15,7 @@ namespace autofill_assistant {
 // they're not shared outside of this module, for them to be visible to
 // std::make_tuple and std::lexicographical_compare.
 
-bool operator<(const SelectorProto::TextFilter& a,
-               const SelectorProto::TextFilter& b) {
+bool operator<(const TextFilter& a, const TextFilter& b) {
   return std::make_tuple(a.re2(), a.case_sensitive()) <
          std::make_tuple(b.re2(), b.case_sensitive());
 }
@@ -281,8 +281,7 @@ std::ostream& operator<<(std::ostream& out, PseudoType pseudo_type) {
   return out << PseudoTypeName(pseudo_type);
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const SelectorProto::TextFilter& c) {
+std::ostream& operator<<(std::ostream& out, const TextFilter& c) {
   out << "/" << c.re2() << "/";
   if (c.case_sensitive()) {
     out << "i";

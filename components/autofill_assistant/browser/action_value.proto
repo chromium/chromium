@@ -25,6 +25,37 @@ message AutofillValue {
   optional string value_expression = 2;
 }
 
+message AutofillValueRegexp {
+  message Profile { optional string identifier = 1; }
+
+  // The profile to be used. This has to be requested with a
+  // |CollectUserDataAction| first.
+  optional Profile profile = 1;
+
+  // A string containing any number of "${key}" placeholders, where the key is
+  // an integer corresponding to entries from field_types.h or
+  // |AutofillFormatProto::AutofillAssistantCustomField|.
+  // Note that the set of actually available fields are outside of our
+  // control and are retrieved automatically from the provided profile.
+  // The |value_expression| needs to escape all text outside of placeholders,
+  // e.g. a pattern like "+${12}" needs to escape the "+". The pattern keys
+  // ("${12}") should not be escaped, this will be handled during replacement.
+  optional TextFilter value_expression = 2;
+}
+
+// A wrapper for regular expressions, e.g. used for filtering elements by their
+// text.
+message TextFilter {
+  // Javascript RE2 regular expression to apply to the text. This is evaluated
+  // with Regexp.test, so it's a "find" and will be satisfied whenever the
+  // text contains at least one substring that matches the given regular
+  // expression.
+  optional string re2 = 1;
+
+  // If true, the regular expression is case-sensitive.
+  optional bool case_sensitive = 2;
+}
+
 message TextValue {
   oneof value {
     string text = 1;

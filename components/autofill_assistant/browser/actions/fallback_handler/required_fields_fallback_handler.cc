@@ -10,12 +10,14 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/optional.h"
+#include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill_assistant {
 namespace {
@@ -304,16 +306,27 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag(
   VLOG(3) << "Setting fallback value for " << required_field.selector << " ("
           << element_tag << ")";
   if (element_tag == kSelectElementTag) {
-    DropdownSelectStrategy select_strategy;
-    if (required_field.select_strategy != UNSPECIFIED_SELECT_STRATEGY) {
-      select_strategy = required_field.select_strategy;
-    } else {
-      // This is the legacy default.
-      select_strategy = LABEL_STARTS_WITH;
+    SelectOptionProto::OptionComparisonAttribute option_comparison_attribute;
+    std::string re2;
+    switch (required_field.select_strategy) {
+      case UNSPECIFIED_SELECT_STRATEGY:
+      case LABEL_STARTS_WITH:
+        // This is the legacy default.
+        option_comparison_attribute = SelectOptionProto::LABEL;
+        re2 = base::StrCat({"^", re2::RE2::QuoteMeta(value)});
+        break;
+      case LABEL_MATCH:
+        option_comparison_attribute = SelectOptionProto::LABEL;
+        re2 = base::StrCat({"^", re2::RE2::QuoteMeta(value), "$"});
+        break;
+      case VALUE_MATCH:
+        option_comparison_attribute = SelectOptionProto::VALUE;
+        re2 = base::StrCat({"^", re2::RE2::QuoteMeta(value), "$"});
+        break;
     }
 
     action_delegate_->SelectOption(
-        value, select_strategy, *element,
+        re2, /* case_sensitive= */ false, option_comparison_attribute, *element,
         base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                        weak_ptr_factory_.GetWeakPtr(), required_fields_index,
                        std::move(element)));
@@ -345,7 +358,7 @@ void RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement(
 
   DCHECK(required_field.fallback_click_element.has_value());
   Selector value_selector = required_field.fallback_click_element.value();
-  value_selector.MatchingInnerText(value);
+  value_selector.MatchingInnerText(re2::RE2::QuoteMeta(value));
 
   action_delegate_->ShortWaitForElement(
       value_selector,

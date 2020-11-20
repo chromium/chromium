@@ -212,7 +212,7 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
 }
 
 std::string ElementFinder::JsFilterBuilder::AddRegexpInstance(
-    const SelectorProto::TextFilter& filter) {
+    const TextFilter& filter) {
   std::string re_flags = filter.case_sensitive() ? "" : "i";
   std::string re_var = DeclareVariable();
   AddLine({"const ", re_var, " = RegExp(", AddArgument(filter.re2()), ", '",
@@ -221,7 +221,7 @@ std::string ElementFinder::JsFilterBuilder::AddRegexpInstance(
 }
 
 void ElementFinder::JsFilterBuilder::AddRegexpFilter(
-    const SelectorProto::TextFilter& filter,
+    const TextFilter& filter,
     const std::string& property) {
   std::string re_var = AddRegexpInstance(filter);
   AddLine({"elements = elements.filter((e) => ", re_var, ".test(e.", property,

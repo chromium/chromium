@@ -71,22 +71,12 @@ const char* const kScrollIntoViewCenterScript =
 
 // Javascript to select a value from a select box. Also fires a "change" event
 // to trigger any listeners. Changing the index directly does not trigger this.
-// TODO(b/148656337): Remove the need to encode the ENUM values in JS.
 const char* const kSelectOptionScript =
-    R"(function(value, compareStrategy) {
-      const VALUE_MATCH = 1;
-      const LABEL_MATCH = 2;
-      const LABEL_STARTSWITH = 3;
-      const uppercaseValue = value.toUpperCase();
+    R"(function(re2, valueSourceAttribute, caseSensitive) {
+      const regexp = RegExp(re2, caseSensitive ? '' : 'i');
       let found = false;
       for (let i = 0; i < this.options.length; ++i) {
-        const optionValue = this.options[i].value.toUpperCase();
-        const optionLabel = this.options[i].label.toUpperCase();
-        if ((compareStrategy === VALUE_MATCH && optionValue === uppercaseValue)
-              || (compareStrategy === LABEL_MATCH
-                    && optionLabel === uppercaseValue)
-              || (compareStrategy === LABEL_STARTSWITH
-                    && optionLabel.startsWith(uppercaseValue))) {
+        if (regexp.test(this.options[i][valueSourceAttribute])) {
           this.options.selectedIndex = i;
           found = true;
           break;
@@ -919,20 +909,38 @@ void WebController::OnGetFormAndFieldDataForRetrieving(
 
 void WebController::SelectOption(
     const ElementFinder::Result& element,
-    const std::string& value,
-    DropdownSelectStrategy select_strategy,
+    const std::string& re2,
+    bool case_sensitive,
+    SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
     base::OnceCallback<void(const ClientStatus&)> callback) {
 #ifdef NDEBUG
-  VLOG(3) << __func__ << " value=(redacted)"
-          << ", strategy=" << select_strategy;
+  VLOG(3) << __func__ << " re2=(redacted)"
+          << ", case_sensitive=" << case_sensitive
+          << ", option_comparison_attribute=" << option_comparison_attribute;
 #else
-  DVLOG(3) << __func__ << " value=" << value
-           << ", strategy=" << select_strategy;
+  DVLOG(3) << __func__ << " re2=" << re2
+           << ", case_sensitive=" << case_sensitive
+           << ", option_comparison_attribute=" << option_comparison_attribute;
 #endif
 
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgument(value, &arguments);
-  AddRuntimeCallArgument(static_cast<int>(select_strategy), &arguments);
+  AddRuntimeCallArgument(re2, &arguments);
+  switch (option_comparison_attribute) {
+    case SelectOptionProto::VALUE:
+      AddRuntimeCallArgument("value", &arguments);
+      break;
+    case SelectOptionProto::LABEL:
+      AddRuntimeCallArgument("label", &arguments);
+      break;
+    case SelectOptionProto::NOT_SET:
+      ClientStatus error(INVALID_ACTION);
+      FillWebControllerErrorInfo(WebControllerErrorInfoProto::SELECT_OPTION,
+                                 &error);
+      std::move(callback).Run(error);
+      return;
+  }
+  AddRuntimeCallArgument(case_sensitive, &arguments);
+
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())

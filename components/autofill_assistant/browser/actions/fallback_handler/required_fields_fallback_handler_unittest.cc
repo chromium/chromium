@@ -505,9 +505,9 @@ TEST_F(RequiredFieldsFallbackHandlerTest, UsesSelectOptionForDropdowns) {
               GetElementTag(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "SELECT"));
   EXPECT_CALL(mock_action_delegate_,
-              SelectOption("2050", DropdownSelectStrategy::LABEL_STARTS_WITH,
+              SelectOption("^2050", false, SelectOptionProto::LABEL,
                            EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
 
   // Second validation succeeds.
   EXPECT_CALL(mock_web_controller_,

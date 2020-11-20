@@ -34,6 +34,7 @@ class SelectOptionAction : public Action {
   void EndAction(const ClientStatus& status);
 
   std::string value_;
+  bool case_sensitive_ = false;
   ProcessActionCallback process_action_callback_;
 
   base::WeakPtrFactory<SelectOptionAction> weak_ptr_factory_{this};

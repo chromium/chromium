@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
@@ -118,12 +119,11 @@ class ElementFinder : public WebControllerWorker {
     int variable_counter_ = 0;
 
     // Adds a regexp filter.
-    void AddRegexpFilter(const SelectorProto::TextFilter& filter,
-                         const std::string& property);
+    void AddRegexpFilter(const TextFilter& filter, const std::string& property);
 
     // Declares and initializes a variable containing a RegExp object that
     // correspond to |filter| and returns the variable name.
-    std::string AddRegexpInstance(const SelectorProto::TextFilter& filter);
+    std::string AddRegexpInstance(const TextFilter& filter);
 
     // Returns the name of a new unique variable.
     std::string DeclareVariable();
