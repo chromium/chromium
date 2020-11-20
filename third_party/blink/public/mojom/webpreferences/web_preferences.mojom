@@ -90,6 +90,9 @@ enum EffectiveConnectionType {
   // Effective connection type reported when the network has the quality of a 4G
   // connection.
   kEffectiveConnection4GType,
+
+  // Last value of the effective connection type. This value is unused.
+  kEffectiveConnectionTypeLast,
 };
 
 struct WebPreferences {
@@ -398,11 +401,12 @@ struct WebPreferences {
   // See https://github.com/dtapuska/html-translate
   bool translate_service_available;
 
-  // A value other than net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN implies that the
-  // network quality estimate related Web APIs are in the holdback mode. When
-  // the holdback is enabled, the related Web APIs return network quality
-  // estimate corresponding to |network_quality_estimator_web_holdback|
-  // regardless of the actual quality.
+  // A value other than
+  // mojom::blink::EffectiveConnectionType::kEffectiveConnectionUnknownType
+  // implies that the network quality estimate related Web APIs are in the
+  // holdback mode. When the holdback is enabled, the related Web APIs return
+  // network quality estimate corresponding to
+  // |network_quality_estimator_web_holdback| regardless of the actual quality.
   EffectiveConnectionType network_quality_estimator_web_holdback;
 
   // Whether lazy loading of frames and images is enabled.

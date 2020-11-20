@@ -77,62 +77,6 @@ bool EnumTraits<blink::mojom::HoverType, ui::HoverType>::FromMojom(
 }
 
 // static
-blink::mojom::EffectiveConnectionType EnumTraits<
-    blink::mojom::EffectiveConnectionType,
-    net::EffectiveConnectionType>::ToMojom(net::EffectiveConnectionType type) {
-  switch (type) {
-    case net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
-      return blink::mojom::EffectiveConnectionType::
-          kEffectiveConnectionUnknownType;
-    case net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
-      return blink::mojom::EffectiveConnectionType::
-          kEffectiveConnectionOfflineType;
-    case net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
-      return blink::mojom::EffectiveConnectionType::
-          kEffectiveConnectionSlow2GType;
-    case net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_2G:
-      return blink::mojom::EffectiveConnectionType::kEffectiveConnection2GType;
-    case net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_3G:
-      return blink::mojom::EffectiveConnectionType::kEffectiveConnection3GType;
-    case net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G:
-      return blink::mojom::EffectiveConnectionType::kEffectiveConnection4GType;
-    case net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST:
-      break;
-  }
-  NOTREACHED();
-  return blink::mojom::EffectiveConnectionType::kMaxValue;
-}
-
-// static
-bool EnumTraits<blink::mojom::EffectiveConnectionType,
-                net::EffectiveConnectionType>::
-    FromMojom(blink::mojom::EffectiveConnectionType input,
-              net::EffectiveConnectionType* out) {
-  switch (input) {
-    case blink::mojom::EffectiveConnectionType::kEffectiveConnectionUnknownType:
-      *out = net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
-      return true;
-    case blink::mojom::EffectiveConnectionType::kEffectiveConnectionOfflineType:
-      *out = net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_OFFLINE;
-      return true;
-    case blink::mojom::EffectiveConnectionType::kEffectiveConnectionSlow2GType:
-      *out = net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
-      return true;
-    case blink::mojom::EffectiveConnectionType::kEffectiveConnection2GType:
-      *out = net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_2G;
-      return true;
-    case blink::mojom::EffectiveConnectionType::kEffectiveConnection3GType:
-      *out = net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_3G;
-      return true;
-    case blink::mojom::EffectiveConnectionType::kEffectiveConnection4GType:
-      *out = net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 bool StructTraits<blink::mojom::WebPreferencesDataView,
                   blink::web_pref::WebPreferences>::
     Read(blink::mojom::WebPreferencesDataView data,

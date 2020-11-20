@@ -31,16 +31,6 @@ struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::HoverType, ui::HoverType> {
 };
 
 template <>
-struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::EffectiveConnectionType,
-                                      net::EffectiveConnectionType> {
-  static blink::mojom::EffectiveConnectionType ToMojom(
-      net::EffectiveConnectionType policy);
-
-  static bool FromMojom(blink::mojom::EffectiveConnectionType input,
-                        net::EffectiveConnectionType* out);
-};
-
-template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
                                         blink::web_pref::WebPreferences> {
   static const std::map<std::string, base::string16>& standard_font_family_map(
@@ -722,7 +712,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.preferred_contrast;
   }
 
-  static net::EffectiveConnectionType low_priority_iframes_threshold(
+  static blink::mojom::EffectiveConnectionType low_priority_iframes_threshold(
       const blink::web_pref::WebPreferences& r) {
     return r.low_priority_iframes_threshold;
   }
@@ -737,7 +727,8 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.translate_service_available;
   }
 
-  static net::EffectiveConnectionType network_quality_estimator_web_holdback(
+  static blink::mojom::EffectiveConnectionType
+  network_quality_estimator_web_holdback(
       const blink::web_pref::WebPreferences& r) {
     return r.network_quality_estimator_web_holdback;
   }
@@ -746,19 +737,19 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.lazy_load_enabled;
   }
 
-  static const std::map<net::EffectiveConnectionType, int32_t>&
+  static const std::map<blink::mojom::EffectiveConnectionType, int32_t>&
   lazy_frame_loading_distance_thresholds_px(
       const blink::web_pref::WebPreferences& r) {
     return r.lazy_frame_loading_distance_thresholds_px;
   }
 
-  static const std::map<net::EffectiveConnectionType, int32_t>&
+  static const std::map<blink::mojom::EffectiveConnectionType, int32_t>&
   lazy_image_loading_distance_thresholds_px(
       const blink::web_pref::WebPreferences& r) {
     return r.lazy_image_loading_distance_thresholds_px;
   }
 
-  static const std::map<net::EffectiveConnectionType, int32_t>&
+  static const std::map<blink::mojom::EffectiveConnectionType, int32_t>&
   lazy_image_first_k_fully_load(const blink::web_pref::WebPreferences& r) {
     return r.lazy_image_first_k_fully_load;
   }

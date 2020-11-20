@@ -311,9 +311,9 @@ void LazyLoadImageObserver::OnVisibilityChanged(
     visible_load_time_metrics.time_when_first_visible = base::TimeTicks::Now();
     if (visible_load_time_metrics.time_when_first_load_finished.is_null()) {
       // Note: If the WebEffectiveConnectionType enum ever gets out of sync
-      // with net::EffectiveConnectionType, then both the AboveTheFold and
-      // BelowTheFold histograms here will have to be updated to record the
-      // sample in terms of net::EffectiveConnectionType instead of
+      // with mojom::blink::EffectiveConnectionType, then both the AboveTheFold
+      // and BelowTheFold histograms here will have to be updated to record the
+      // sample in terms of mojom::blink::EffectiveConnectionType instead of
       // WebEffectiveConnectionType.
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_ENUMERATION(

@@ -28,6 +28,8 @@ namespace blink {
 
 namespace web_pref {
 
+using blink::mojom::EffectiveConnectionType;
+
 // "Zyyy" is the ISO 15924 script code for undetermined script aka Common.
 const char kCommonScript[] = "Zyyy";
 
@@ -202,11 +204,12 @@ WebPreferences::WebPreferences()
       do_not_update_selection_on_mutating_selection_range(false),
       autoplay_policy(
           blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired),
-      low_priority_iframes_threshold(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
+      low_priority_iframes_threshold(
+          EffectiveConnectionType::kEffectiveConnectionUnknownType),
       picture_in_picture_enabled(true),
       translate_service_available(false),
       network_quality_estimator_web_holdback(
-          net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
+          EffectiveConnectionType::kEffectiveConnectionUnknownType),
       allow_mixed_content_upgrades(true),
       always_show_focus(false),
       touch_drag_drop_enabled(IsTouchDragDropEnabled()) {

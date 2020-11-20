@@ -27,6 +27,8 @@ class WebView;
 
 namespace web_pref {
 
+using blink::mojom::EffectiveConnectionType;
+
 // Map of ISO 15924 four-letter script code to font family.  For example,
 // "Arab" to "My Arabic Font".
 typedef std::map<std::string, base::string16> ScriptFontFamilyMap;
@@ -299,7 +301,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Network quality threshold below which resources from iframes are assigned
   // either kVeryLow or kVeryLow Blink priority.
-  net::EffectiveConnectionType low_priority_iframes_threshold;
+  EffectiveConnectionType low_priority_iframes_threshold;
 
   // Whether Picture-in-Picture is enabled.
   bool picture_in_picture_enabled;
@@ -309,12 +311,13 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // See https://github.com/dtapuska/html-translate
   bool translate_service_available;
 
-  // A value other than net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN implies that the
-  // network quality estimate related Web APIs are in the holdback mode. When
-  // the holdback is enabled, the related Web APIs return network quality
-  // estimate corresponding to |network_quality_estimator_web_holdback|
+  // A value other than
+  // mojom::EffectiveConnectionType::kEffectiveConnectionUnknownType implies
+  // that the network quality estimate related Web APIs are in the holdback
+  // mode. When the holdback is enabled, the related Web APIs return network
+  // quality estimate corresponding to |network_quality_estimator_web_holdback|
   // regardless of the actual quality.
-  net::EffectiveConnectionType network_quality_estimator_web_holdback;
+  EffectiveConnectionType network_quality_estimator_web_holdback;
 
   // Whether lazy loading of frames and images is enabled.
   bool lazy_load_enabled = true;
@@ -323,11 +326,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // viewport before it should start being loaded in, depending on the effective
   // connection type of the current network. Blink will use the default distance
   // threshold for effective connection types that aren't specified here.
-  std::map<net::EffectiveConnectionType, int>
+  std::map<EffectiveConnectionType, int>
       lazy_frame_loading_distance_thresholds_px;
-  std::map<net::EffectiveConnectionType, int>
+  std::map<EffectiveConnectionType, int>
       lazy_image_loading_distance_thresholds_px;
-  std::map<net::EffectiveConnectionType, int> lazy_image_first_k_fully_load;
+  std::map<EffectiveConnectionType, int> lazy_image_first_k_fully_load;
 
   // Setting to false disables upgrades to HTTPS for HTTP resources in HTTPS
   // sites.

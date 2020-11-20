@@ -220,6 +220,8 @@ static const int caretPadding = 10;
 
 namespace blink {
 
+using mojom::blink::EffectiveConnectionType;
+
 // Historically, these values came from Webkit in
 // WebKitLegacy/mac/WebView/WebView.mm (named MinimumZoomMultiplier and
 // MaximumZoomMultiplier there).
@@ -1646,31 +1648,31 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   for (const auto& ect_distance_pair :
        prefs.lazy_frame_loading_distance_thresholds_px) {
     switch (ect_distance_pair.first) {
-      case net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
+      case EffectiveConnectionType::kEffectiveConnectionUnknownType:
         settings->SetLazyFrameLoadingDistanceThresholdPxUnknown(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
+      case EffectiveConnectionType::kEffectiveConnectionOfflineType:
         settings->SetLazyFrameLoadingDistanceThresholdPxOffline(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
+      case EffectiveConnectionType::kEffectiveConnectionSlow2GType:
         settings->SetLazyFrameLoadingDistanceThresholdPxSlow2G(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_2G:
+      case EffectiveConnectionType::kEffectiveConnection2GType:
         settings->SetLazyFrameLoadingDistanceThresholdPx2G(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_3G:
+      case EffectiveConnectionType::kEffectiveConnection3GType:
         settings->SetLazyFrameLoadingDistanceThresholdPx3G(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_4G:
+      case EffectiveConnectionType::kEffectiveConnection4GType:
         settings->SetLazyFrameLoadingDistanceThresholdPx4G(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_LAST:
+      case EffectiveConnectionType::kEffectiveConnectionTypeLast:
         continue;
     }
     NOTREACHED();
@@ -1679,31 +1681,31 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   for (const auto& ect_distance_pair :
        prefs.lazy_image_loading_distance_thresholds_px) {
     switch (ect_distance_pair.first) {
-      case net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
+      case EffectiveConnectionType::kEffectiveConnectionUnknownType:
         settings->SetLazyImageLoadingDistanceThresholdPxUnknown(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
+      case EffectiveConnectionType::kEffectiveConnectionOfflineType:
         settings->SetLazyImageLoadingDistanceThresholdPxOffline(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
+      case EffectiveConnectionType::kEffectiveConnectionSlow2GType:
         settings->SetLazyImageLoadingDistanceThresholdPxSlow2G(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_2G:
+      case EffectiveConnectionType::kEffectiveConnection2GType:
         settings->SetLazyImageLoadingDistanceThresholdPx2G(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_3G:
+      case EffectiveConnectionType::kEffectiveConnection3GType:
         settings->SetLazyImageLoadingDistanceThresholdPx3G(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_4G:
+      case EffectiveConnectionType::kEffectiveConnection4GType:
         settings->SetLazyImageLoadingDistanceThresholdPx4G(
             ect_distance_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_LAST:
+      case EffectiveConnectionType::kEffectiveConnectionTypeLast:
         continue;
     }
     NOTREACHED();
@@ -1711,24 +1713,24 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   for (const auto& fully_load_k_pair : prefs.lazy_image_first_k_fully_load) {
     switch (fully_load_k_pair.first) {
-      case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
+      case EffectiveConnectionType::kEffectiveConnectionOfflineType:
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
+      case EffectiveConnectionType::kEffectiveConnectionUnknownType:
         settings->SetLazyImageFirstKFullyLoadUnknown(fully_load_k_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
+      case EffectiveConnectionType::kEffectiveConnectionSlow2GType:
         settings->SetLazyImageFirstKFullyLoadSlow2G(fully_load_k_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_2G:
+      case EffectiveConnectionType::kEffectiveConnection2GType:
         settings->SetLazyImageFirstKFullyLoad2G(fully_load_k_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_3G:
+      case EffectiveConnectionType::kEffectiveConnection3GType:
         settings->SetLazyImageFirstKFullyLoad3G(fully_load_k_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_4G:
+      case EffectiveConnectionType::kEffectiveConnection4GType:
         settings->SetLazyImageFirstKFullyLoad4G(fully_load_k_pair.second);
         continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_LAST:
+      case EffectiveConnectionType::kEffectiveConnectionTypeLast:
         continue;
     }
     NOTREACHED();
