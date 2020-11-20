@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "weblayer/browser/no_state_prefetch/prerender_processor_impl_delegate_impl.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
@@ -124,6 +125,12 @@ void ForwardToJavaWebContents(content::RenderFrameHost* frame_host,
   if (contents)
     contents->GetJavaInterfaces()->GetInterface(std::move(receiver));
 }
+
+template <typename Interface>
+void ForwardToJavaFrame(content::RenderFrameHost* render_frame_host,
+                        mojo::PendingReceiver<Interface> receiver) {
+  render_frame_host->GetJavaInterfaces()->GetInterface(std::move(receiver));
+}
 #endif
 
 }  // namespace
@@ -151,6 +158,8 @@ void PopulateWebLayerFrameBinders(
       base::BindRepeating(&StubInstalledAppProvider::Create));
   map->Add<blink::mojom::ShareService>(base::BindRepeating(
       &ForwardToJavaWebContents<blink::mojom::ShareService>));
+  map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
+      &ForwardToJavaFrame<payments::mojom::PaymentRequest>));
 #endif
 }
 
