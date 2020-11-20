@@ -32,6 +32,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
 @interface TabStripViewController ()
 
+@property(nonatomic, strong) UIButton* buttonNewTab;
 // The local model backing the collection view.
 @property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
 // Identifier of the selected item. This value is disregarded if |self.items| is
@@ -58,24 +59,30 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   [self.collectionView registerClass:[TabStripCell class]
           forCellWithReuseIdentifier:kReuseIdentifier];
 
-  _buttonNewTab = [[UIButton alloc] init];
-  _buttonNewTab.translatesAutoresizingMaskIntoConstraints = NO;
-  _buttonNewTab.imageView.contentMode = UIViewContentModeCenter;
+  self.buttonNewTab = [[UIButton alloc] init];
+  self.buttonNewTab.translatesAutoresizingMaskIntoConstraints = NO;
+  self.buttonNewTab.imageView.contentMode = UIViewContentModeCenter;
   UIImage* buttonNewTabImage = [[UIImage imageNamed:@"tabstrip_new_tab"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
-  [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
+  [self.buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
+  [self.buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
   UIEdgeInsets imageInsets = UIEdgeInsetsMake(0, kNewTabButtonLeadingImageInset,
                                               kNewTabButtonBottomImageInset, 0);
-  _buttonNewTab.imageEdgeInsets = imageInsets;
-  [self.view addSubview:_buttonNewTab];
+  self.buttonNewTab.imageEdgeInsets = imageInsets;
+  [self.view addSubview:self.buttonNewTab];
   [NSLayoutConstraint activateConstraints:@[
-    [_buttonNewTab.trailingAnchor
+    [self.buttonNewTab.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
-    [_buttonNewTab.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [_buttonNewTab.heightAnchor constraintEqualToAnchor:self.view.heightAnchor],
-    [_buttonNewTab.widthAnchor constraintEqualToConstant:kNewTabButtonWidth],
+    [self.buttonNewTab.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [self.buttonNewTab.heightAnchor
+        constraintEqualToAnchor:self.view.heightAnchor],
+    [self.buttonNewTab.widthAnchor
+        constraintEqualToConstant:kNewTabButtonWidth],
   ]];
+
+  [self.buttonNewTab addTarget:self
+                        action:@selector(sendNewTabCommand)
+              forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:
@@ -165,6 +172,10 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
         return [item.identifier isEqualToString:identifier];
       };
   return [self.items indexOfObjectPassingTest:selectedTest];
+}
+
+- (void)sendNewTabCommand {
+  [self.delegate addNewItem];
 }
 
 @end

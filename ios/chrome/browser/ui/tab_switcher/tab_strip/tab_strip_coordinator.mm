@@ -52,6 +52,7 @@
   self.mediator.webStateList = self.browser->GetWebStateList();
 
   self.tabStripViewController.faviconDataSource = self.mediator;
+  self.tabStripViewController.delegate = self.mediator;
 }
 
 - (void)stop {

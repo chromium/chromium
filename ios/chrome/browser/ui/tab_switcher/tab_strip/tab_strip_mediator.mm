@@ -6,6 +6,7 @@
 
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_consumer.h"
@@ -14,6 +15,8 @@
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/gfx/image/image.h"
@@ -171,6 +174,27 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     if (!favicon.IsEmpty())
       completion(favicon.ToUIImage());
   }
+}
+
+#pragma mark - TabStripConsumerDelegate
+
+- (void)addNewItem {
+  if (!self.webStateList)
+    return;
+
+  web::WebState::CreateParams params(
+      self.webStateList->GetActiveWebState()->GetBrowserState());
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+
+  GURL url(kChromeUINewTabURL);
+  web::NavigationManager::WebLoadParams loadParams(url);
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  self.webStateList->InsertWebState(
+      base::checked_cast<int>(self.webStateList->count()), std::move(webState),
+      (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
+      WebStateOpener());
 }
 
 #pragma mark - Private

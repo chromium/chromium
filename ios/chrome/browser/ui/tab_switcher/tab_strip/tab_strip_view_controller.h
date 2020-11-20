@@ -11,6 +11,7 @@
 
 @class TabStripMediator;
 @protocol TabFaviconDataSource;
+@protocol TabStripConsumerDelegate;
 
 // ViewController for the TabStrip. This ViewController is contained by
 // BrowserViewController. This TabStripViewController is responsible for
@@ -19,8 +20,7 @@
     : UICollectionViewController <TabStripConsumer>
 
 @property(nonatomic, weak) id<TabFaviconDataSource> faviconDataSource;
-
-@property(nonatomic, readonly, retain) UIButton* buttonNewTab;
+@property(nonatomic, weak) id<TabStripConsumerDelegate> delegate;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
