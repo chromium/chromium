@@ -450,6 +450,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                         menuOpenWebApkItem, menu, currentTab,
                         shouldShowHomeScreenMenuItem(
                                 isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
+                if (addToHomescreenMenuItem.isVisible()) {
+                    // addToHomescreenMenuItem in "Add to" dialog uses a different string.
+                    addToHomescreenMenuItem.setTitle(R.string.menu_homescreen);
+                }
             }
         }
 

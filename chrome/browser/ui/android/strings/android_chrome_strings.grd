@@ -2959,13 +2959,10 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Add to…
       </message>
       <message name="IDS_MENU_ADD_TO_DIALOG_TITLE" desc="Menu item for opening the 'Add to' dialog which can add the page to bookmarks, downloads, home screen, etc.">
-        Add to:
+        Add to
       </message>
-      <message name="IDS_MENU_ADD_TO_BOOKMARKS" desc="Menu item to save the web page to 'Bookmarks' section. The word 'Bookmarks' should match the translation in TC ID 1792806198663410166.">
-        Add to Bookmarks
-      </message>
-      <message name="IDS_MENU_ADD_TO_DOWNLOADS" desc="Menu item to download the current web page. The word 'Downloads' should match the translation in TC ID 9040361513231775562.">
-        Add to Downloads
+      <message name="IDS_MENU_HOMESCREEN" desc="Menu item for adding a shortcut to the Home screen (default title). [CHAR-LIMIT=27]">
+        Home screen
       </message>
 
       <!-- Bookmarks strings -->
