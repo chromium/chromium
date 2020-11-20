@@ -337,7 +337,8 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-marshmallow-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    cores = 16,
+    builderless = not settings.is_master,
+    cores = 32,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     ssd = True,
