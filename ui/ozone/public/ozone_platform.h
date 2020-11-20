@@ -74,6 +74,14 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Setting this to true indicates the the platform can do additional
     // initialization for the GpuMemoryBuffer framework.
     bool enable_native_gpu_memory_buffers = false;
+
+    // The direct VideoDecoder is disallowed on some particular SoC/platforms.
+    // This flag is a reflection of whatever the ChromeOS command line builder
+    // says. If false, overlay manager will not use synchronous pageflip
+    // testing with real buffer.
+    // TODO(fangzhoug): Some Chrome OS boards still use the legacy video
+    // decoder. Remove this once ChromeOSVideoDecoder is on everywhere.
+    bool allow_sync_and_real_buffer_page_flip_testing = false;
   };
 
   // Struct used to indicate platform properties.

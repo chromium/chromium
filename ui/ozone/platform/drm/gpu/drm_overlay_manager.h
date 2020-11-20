@@ -23,7 +23,8 @@ class OverlaySurfaceCandidate;
 // of recent configurations.
 class DrmOverlayManager : public OverlayManagerOzone {
  public:
-  DrmOverlayManager();
+  explicit DrmOverlayManager(
+      bool allow_sync_and_real_buffer_page_flip_testing = true);
   ~DrmOverlayManager() override;
 
   // OverlayManagerOzone:

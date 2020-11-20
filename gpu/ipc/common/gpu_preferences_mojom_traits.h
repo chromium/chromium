@@ -194,8 +194,8 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
         prefs.enable_native_gpu_memory_buffers();
 
 #if BUILDFLAG(IS_ASH)
-    out->platform_disallows_chromeos_direct_video_decoder =
-        prefs.platform_disallows_chromeos_direct_video_decoder();
+    out->enable_chromeos_direct_video_decoder =
+        prefs.enable_chromeos_direct_video_decoder();
 #endif
 
     return true;
@@ -389,9 +389,9 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
     return prefs.enable_native_gpu_memory_buffers;
   }
 #if BUILDFLAG(IS_ASH)
-  static bool platform_disallows_chromeos_direct_video_decoder(
+  static bool enable_chromeos_direct_video_decoder(
       const gpu::GpuPreferences& prefs) {
-    return prefs.platform_disallows_chromeos_direct_video_decoder;
+    return prefs.enable_chromeos_direct_video_decoder;
   }
 #endif
 };

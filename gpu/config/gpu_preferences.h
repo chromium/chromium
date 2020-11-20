@@ -271,9 +271,8 @@ struct GPU_EXPORT GpuPreferences {
   // Settings from //media/base/media_switches.h
 
 #if BUILDFLAG(IS_ASH)
-  // The direct VideoDecoder is disallowed in this particular SoC/platform. This
-  // flag is a reflection of whatever ChromeOS command line builder says.
-  bool platform_disallows_chromeos_direct_video_decoder = false;
+  // Enable the hardware-accelerated direct video decoder on ChromeOS.
+  bool enable_chromeos_direct_video_decoder = false;
 #endif
 
   // Disables oppr debug crash dumps.

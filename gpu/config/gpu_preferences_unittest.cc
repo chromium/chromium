@@ -95,8 +95,8 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enable_native_gpu_memory_buffers,
             right.enable_native_gpu_memory_buffers);
 #if BUILDFLAG(IS_ASH)
-  EXPECT_EQ(left.platform_disallows_chromeos_direct_video_decoder,
-            right.platform_disallows_chromeos_direct_video_decoder);
+  EXPECT_EQ(left.enable_chromeos_direct_video_decoder,
+            right.enable_chromeos_direct_video_decoder);
 #endif
 }
 
@@ -185,8 +185,7 @@ TEST(GpuPreferencesTest, EncodeDecode) {
 #endif
     GPU_PREFERENCES_FIELD(enable_native_gpu_memory_buffers, true);
 #if BUILDFLAG(IS_ASH)
-    GPU_PREFERENCES_FIELD(platform_disallows_chromeos_direct_video_decoder,
-                          true);
+    GPU_PREFERENCES_FIELD(enable_chromeos_direct_video_decoder, true);
 #endif
 
     input_prefs.texture_target_exception_list.emplace_back(
@@ -279,7 +278,7 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
 #endif
   PRINT_BOOL(enable_native_gpu_memory_buffers);
 #if BUILDFLAG(IS_ASH)
-  PRINT_BOOL(platform_disallows_chromeos_direct_video_decoder);
+  PRINT_BOOL(enable_chromeos_direct_video_decoder);
 #endif
   printf("}\n");
 }

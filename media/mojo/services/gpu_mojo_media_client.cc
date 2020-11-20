@@ -106,21 +106,12 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
 #endif
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-// Returns true if |gpu_preferences| says that the direct video decoder is
-// supported and the feature flag says so. This only applies to ChromeOS builds,
-// otherwise it returns false.
+// Returns true if |gpu_preferences| says that the direct video decoder is in
+// use.
 bool ShouldUseChromeOSDirectVideoDecoder(
     const gpu::GpuPreferences& gpu_preferences) {
 #if BUILDFLAG(IS_ASH)
-  const bool should_use_direct_video_decoder =
-      !gpu_preferences.platform_disallows_chromeos_direct_video_decoder &&
-      base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder);
-
-  // For testing purposes, the following flag allows using the "other" video
-  // decoder implementation.
-  if (base::FeatureList::IsEnabled(kUseAlternateVideoDecoderImplementation))
-    return !should_use_direct_video_decoder;
-  return should_use_direct_video_decoder;
+  return gpu_preferences.enable_chromeos_direct_video_decoder;
 #else
   return false;
 #endif

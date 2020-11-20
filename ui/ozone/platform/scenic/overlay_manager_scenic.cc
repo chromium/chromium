@@ -32,7 +32,10 @@ class OverlayCandidatesScenic : public OverlayCandidatesOzone {
 
 }  // namespace
 
-OverlayManagerScenic::OverlayManagerScenic() {}
+OverlayManagerScenic::OverlayManagerScenic() {
+  // Fuchsia overlays rely on ShouldUseRealBuffersForPageFlipTest.
+  allow_sync_and_real_buffer_page_flip_testing_ = true;
+}
 
 OverlayManagerScenic::~OverlayManagerScenic() = default;
 

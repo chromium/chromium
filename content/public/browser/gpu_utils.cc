@@ -120,11 +120,28 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.enable_native_gpu_memory_buffers =
       command_line->HasSwitch(switches::kEnableNativeGpuMemoryBuffers);
 
-#if defined(OS_CHROMEOS)
-  gpu_preferences.platform_disallows_chromeos_direct_video_decoder =
-      command_line->HasSwitch(
-          switches::kPlatformDisallowsChromeOSDirectVideoDecoder);
-#endif
+#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  // The direct VideoDecoder is disallowed on some particular SoC/platforms.
+  const bool should_use_direct_video_decoder =
+      !command_line->HasSwitch(
+          switches::kPlatformDisallowsChromeOSDirectVideoDecoder) &&
+      base::FeatureList::IsEnabled(media::kUseChromeOSDirectVideoDecoder);
+
+  // For testing purposes, the following flag allows using the "other" video
+  // decoder implementation.
+  if (base::FeatureList::IsEnabled(
+          media::kUseAlternateVideoDecoderImplementation)) {
+    gpu_preferences.enable_chromeos_direct_video_decoder =
+        !should_use_direct_video_decoder;
+  } else {
+    gpu_preferences.enable_chromeos_direct_video_decoder =
+        should_use_direct_video_decoder;
+  }
+#else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  gpu_preferences.enable_chromeos_direct_video_decoder = false;
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(IS_ASH)
 
 #if defined(OS_ANDROID)
   gpu_preferences.disable_oopr_debug_crash_dump =

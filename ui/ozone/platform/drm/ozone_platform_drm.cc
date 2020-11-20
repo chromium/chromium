@@ -245,8 +245,9 @@ class OzonePlatformDrm : public OzonePlatform {
     surface_factory_ =
         std::make_unique<GbmSurfaceFactory>(drm_thread_proxy_.get());
 
-    overlay_manager_ =
-        std::make_unique<DrmOverlayManagerGpu>(drm_thread_proxy_.get());
+    overlay_manager_ = std::make_unique<DrmOverlayManagerGpu>(
+        drm_thread_proxy_.get(),
+        args.allow_sync_and_real_buffer_page_flip_testing);
 
     // If gpu is in a separate process, rest of the initialization happens after
     // entering the sandbox.

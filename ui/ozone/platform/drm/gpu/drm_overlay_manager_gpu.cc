@@ -8,13 +8,17 @@
 
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_thread_proxy.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
 
-DrmOverlayManagerGpu::DrmOverlayManagerGpu(DrmThreadProxy* drm_thread_proxy)
-    : drm_thread_proxy_(drm_thread_proxy) {}
+DrmOverlayManagerGpu::DrmOverlayManagerGpu(
+    DrmThreadProxy* drm_thread_proxy,
+    bool allow_sync_and_real_buffer_page_flip_testing)
+    : DrmOverlayManager(allow_sync_and_real_buffer_page_flip_testing),
+      drm_thread_proxy_(drm_thread_proxy) {}
 
 DrmOverlayManagerGpu::~DrmOverlayManagerGpu() = default;
 

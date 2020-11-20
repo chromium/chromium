@@ -319,6 +319,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     params.single_process = false;
     params.enable_native_gpu_memory_buffers =
         gpu_preferences.enable_native_gpu_memory_buffers;
+#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+    params.allow_sync_and_real_buffer_page_flip_testing =
+        gpu_preferences_.enable_chromeos_direct_video_decoder;
+#else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+    params.allow_sync_and_real_buffer_page_flip_testing = true;
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(IS_ASH)
     ui::OzonePlatform::InitializeForGPU(params);
     // We need to get supported formats before sandboxing to avoid an known
     // issue which breaks the camera preview. (b/166850715)
@@ -635,6 +643,14 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::InitParams params;
     params.single_process = true;
+#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+    params.allow_sync_and_real_buffer_page_flip_testing =
+        gpu_preferences_.enable_chromeos_direct_video_decoder;
+#else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+    params.allow_sync_and_real_buffer_page_flip_testing = true;
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(IS_ASH)
     ui::OzonePlatform::InitializeForGPU(params);
   }
 #endif

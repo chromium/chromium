@@ -117,7 +117,10 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   }
 
   gpu::SharedImageInterface* sii = nullptr;
-  if (features::ShouldUseRealBuffersForPageFlipTest()) {
+  if (features::ShouldUseRealBuffersForPageFlipTest() &&
+      ui::OzonePlatform::GetInstance()
+          ->GetOverlayManager()
+          ->allow_sync_and_real_buffer_page_flip_testing()) {
     sii = shared_image_interface;
     CHECK(shared_image_interface);
   }
