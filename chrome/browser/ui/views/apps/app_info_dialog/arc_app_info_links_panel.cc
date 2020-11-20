@@ -38,7 +38,7 @@ ArcAppInfoLinksPanel::ArcAppInfoLinksPanel(Profile* profile,
 
   ArcAppListPrefs* const arc_prefs = ArcAppListPrefs::Get(profile_);
   DCHECK(arc_prefs);
-  app_list_observer_.Add(arc_prefs);
+  app_list_observation_.Observe(arc_prefs);
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       ArcAppListPrefs::Get(profile)->GetApp(arc::kSettingsAppId);

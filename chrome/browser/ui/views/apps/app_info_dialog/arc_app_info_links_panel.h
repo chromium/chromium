@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 
@@ -42,8 +42,8 @@ class ArcAppInfoLinksPanel : public AppInfoPanel,
   void UpdateLink(bool enabled);
   void LinkClicked();
 
-  ScopedObserver<ArcAppListPrefs, ArcAppListPrefs::Observer> app_list_observer_{
-      this};
+  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      app_list_observation_{this};
   views::Link* manage_link_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppInfoLinksPanel);

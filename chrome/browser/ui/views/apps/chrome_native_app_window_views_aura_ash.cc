@@ -99,7 +99,7 @@ void ChromeNativeAppWindowViewsAuraAsh::InitializeWindow(
     ash::WindowBackdrop::Get(window)->SetBackdropType(
         ash::WindowBackdrop::BackdropType::kSemiOpaque);
   }
-  observed_window_.Add(window);
+  window_observation_.Observe(window);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -266,7 +266,7 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
   if (IsFrameless())
     return CreateNonStandardAppFrame();
 
-  observed_window_state_.Add(ash::WindowState::Get(GetNativeWindow()));
+  window_state_observation_.Observe(ash::WindowState::Get(GetNativeWindow()));
 
   auto custom_frame_view = std::make_unique<ash::NonClientFrameViewAsh>(widget);
 
@@ -507,9 +507,13 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowPropertyChanged(
 
 void ChromeNativeAppWindowViewsAuraAsh::OnWindowDestroying(
     aura::Window* window) {
-  if (observed_window_state_.IsObservingSources())
-    observed_window_state_.Remove(ash::WindowState::Get(window));
-  observed_window_.Remove(window);
+  if (window_state_observation_.IsObserving()) {
+    DCHECK(window_state_observation_.IsObservingSource(
+        ash::WindowState::Get(window)));
+    window_state_observation_.RemoveObservation();
+  }
+  DCHECK(window_observation_.IsObservingSource(window));
+  window_observation_.RemoveObservation();
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::OnTabletModeToggled(bool enabled) {

@@ -7,7 +7,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/app_window_interactive_uitest_base.h"
@@ -40,7 +40,9 @@ class ViewBoundsChangeWaiter : public views::ViewObserver {
   }
 
  private:
-  explicit ViewBoundsChangeWaiter(views::View* view) { observed_.Add(view); }
+  explicit ViewBoundsChangeWaiter(views::View* view) {
+    observation_.Observe(view);
+  }
   ~ViewBoundsChangeWaiter() override = default;
 
   // ViewObserver:
@@ -48,7 +50,7 @@ class ViewBoundsChangeWaiter : public views::ViewObserver {
 
   base::RunLoop run_loop_;
 
-  ScopedObserver<views::View, views::ViewObserver> observed_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ViewBoundsChangeWaiter);
 };
