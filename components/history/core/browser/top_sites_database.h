@@ -91,7 +91,7 @@ class TopSitesDatabase {
   // invoke recovery code.
   bool InitImpl(const base::FilePath& db_name);
 
-  sql::Database* CreateDB(const base::FilePath& db_name);
+  std::unique_ptr<sql::Database> CreateDB(const base::FilePath& db_name);
 
   std::unique_ptr<sql::Database> db_;
   sql::MetaTable meta_table_;
