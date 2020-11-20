@@ -76,7 +76,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   // invitation. An attached port can be claimed (as a message pipe handle) by
   // the invitee.
   void SendBrokerClientInvitation(
-      base::ProcessHandle target_process,
+      base::Process target_process,
       ConnectionParams connection_params,
       const std::vector<std::pair<std::string, ports::PortRef>>& attached_ports,
       const ProcessErrorCallback& process_error_callback);

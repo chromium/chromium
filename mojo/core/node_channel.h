@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -20,7 +21,6 @@
 #include "mojo/core/connection_params.h"
 #include "mojo/core/embedder/process_error_callback.h"
 #include "mojo/core/ports/name.h"
-#include "mojo/core/scoped_process_handle.h"
 #include "mojo/core/system_impl_export.h"
 
 namespace mojo {
@@ -111,9 +111,9 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   // Returns whether the channel has a bad message handler.
   bool HasBadMessageHandler() { return !process_error_callback_.is_null(); }
 
-  void SetRemoteProcessHandle(ScopedProcessHandle process_handle);
+  void SetRemoteProcessHandle(base::Process process_handle);
   bool HasRemoteProcessHandle();
-  ScopedProcessHandle CloneRemoteProcessHandle();
+  base::Process CloneRemoteProcessHandle();
 
   // Used for context in Delegate calls (via |from_node| arguments.)
   void SetRemoteNodeName(const ports::NodeName& name);
@@ -126,7 +126,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
                   const ports::NodeName& token,
                   const ports::PortName& port_name);
   void AddBrokerClient(const ports::NodeName& client_name,
-                       ScopedProcessHandle process_handle);
+                       base::Process process_handle);
   void BrokerClientAdded(const ports::NodeName& client_name,
                          PlatformHandle broker_channel);
   void AcceptBrokerClient(const ports::NodeName& broker_name,
@@ -191,7 +191,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   ports::NodeName remote_node_name_;
 
   base::Lock remote_process_handle_lock_;
-  ScopedProcessHandle remote_process_handle_;
+  base::Process remote_process_handle_;
 
   DISALLOW_COPY_AND_ASSIGN(NodeChannel);
 };

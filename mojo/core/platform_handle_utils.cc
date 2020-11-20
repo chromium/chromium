@@ -7,10 +7,13 @@
 #include "build/build_config.h"
 
 #if defined(OS_FUCHSIA)
+#include <lib/zx/process.h>
 #include <lib/zx/vmo.h>
 #elif defined(OS_POSIX)
 #include "base/files/scoped_file.h"
 #elif defined(OS_WIN)
+#include <windows.h>
+
 #include "base/win/scoped_handle.h"
 #endif
 
@@ -61,6 +64,46 @@ CreateSharedMemoryRegionHandleFromPlatformHandles(
 #else
   return base::subtle::ScopedFDPair(handle.TakeFD(), readonly_handle.TakeFD());
 #endif
+}
+
+MojoResult UnwrapAndClonePlatformProcessHandle(
+    const MojoPlatformProcessHandle* process_handle,
+    base::Process& process) {
+  if (process_handle->struct_size < sizeof(*process_handle))
+    return MOJO_RESULT_INVALID_ARGUMENT;
+
+#if defined(OS_WIN)
+  base::ProcessHandle in_handle = reinterpret_cast<base::ProcessHandle>(
+      static_cast<uintptr_t>(process_handle->value));
+#else
+  base::ProcessHandle in_handle =
+      static_cast<base::ProcessHandle>(process_handle->value);
+#endif
+
+  if (in_handle == base::kNullProcessHandle) {
+    process = base::Process();
+    return MOJO_RESULT_OK;
+  }
+
+#if defined(OS_WIN)
+  base::ProcessHandle out_handle;
+  if (!::DuplicateHandle(::GetCurrentProcess(), in_handle,
+                         ::GetCurrentProcess(), &out_handle, 0, FALSE,
+                         DUPLICATE_SAME_ACCESS)) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  process = base::Process(out_handle);
+#elif defined(OS_FUCHSIA)
+  zx::process out;
+  if (zx::unowned_process(in_handle)->duplicate(ZX_RIGHT_SAME_RIGHTS, &out) !=
+      ZX_OK) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  process = base::Process(out.release());
+#else
+  process = base::Process(in_handle);
+#endif
+  return MOJO_RESULT_OK;
 }
 
 }  // namespace core

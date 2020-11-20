@@ -6,7 +6,9 @@
 #define MOJO_CORE_PLATFORM_HANDLE_UTILS_H_
 
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/process/process.h"
 #include "mojo/core/system_impl_export.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/c/system/platform_handle.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -28,6 +30,13 @@ base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle
 CreateSharedMemoryRegionHandleFromPlatformHandles(
     PlatformHandle handle,
     PlatformHandle readonly_handle);
+
+// Takes a MojoPlatformProcessHandle, which does not own the handle value
+// contained within, duplicates the value, and stores the strongly-owned result
+// in |process|.
+MojoResult UnwrapAndClonePlatformProcessHandle(
+    const MojoPlatformProcessHandle* process_handle,
+    base::Process& process);
 
 }  // namespace core
 }  // namespace mojo
