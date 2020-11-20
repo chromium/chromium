@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
@@ -115,7 +116,7 @@ class TestGpuService : public mojom::GpuService {
                            EstablishGpuChannelCallback callback) override {}
 
   void CloseChannel(int32_t client_id) override {}
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override {}
@@ -139,7 +140,7 @@ class TestGpuService : public mojom::GpuService {
   void CreateJpegEncodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) override {}
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>

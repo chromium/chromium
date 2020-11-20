@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/host/viz_host_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -43,7 +44,9 @@ class VIZ_HOST_EXPORT HostDisplayClient : public mojom::DisplayClient {
       mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) override;
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
 #endif
 

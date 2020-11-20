@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/switches.h"
@@ -115,7 +116,7 @@ void GLOutputSurfaceBufferQueue::BindFramebuffer() {
   last_bound_texture_ = current_texture_;
   last_bound_mailbox_ = current_buffer;
 
-#if DCHECK_IS_ON() && defined(OS_CHROMEOS)
+#if DCHECK_IS_ON() && BUILDFLAG(IS_CHROMEOS_ASH)
   const GLenum result = gl->CheckFramebufferStatus(GL_FRAMEBUFFER);
   if (result != GL_FRAMEBUFFER_COMPLETE)
     DLOG(ERROR) << " Incomplete fb: " << gl::GLEnums::GetStringError(result);

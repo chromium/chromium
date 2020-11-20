@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_lost_reason.h"
@@ -50,7 +51,7 @@ gpu::ContextCreationAttribs CreateAttributes(
   gpu::ContextCreationAttribs attributes;
   attributes.alpha_size = requires_alpha_channel ? 8 : -1;
   attributes.depth_size = 0;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS uses surfaceless when running on a real device and stencil
   // buffers can then be added dynamically so supporting them does not have an
   // impact on normal usage. If we are not running on a real Chrome OS device

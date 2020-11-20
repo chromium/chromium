@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -27,8 +28,8 @@ const base::Feature kForcePreferredIntervalForVideo{
 // Use the SkiaRenderer.
 const base::Feature kUseSkiaRenderer {
   "UseSkiaRenderer",
-#if defined(OS_WIN) || \
-    (defined(OS_LINUX) && !(defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)))
+#if defined(OS_WIN) || (defined(OS_LINUX) && !(BUILDFLAG(IS_CHROMEOS_ASH) || \
+                                               BUILDFLAG(IS_CHROMECAST)))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -121,7 +122,7 @@ bool IsUsingSkiaRenderer() {
   if (IsUsingVizForWebView())
     return true;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/1145180): SkiaRenderer isn't supported on Chrome
   // OS boards that still use the legacy video decoder.
   auto* command_line = base::CommandLine::ForCurrentProcess();

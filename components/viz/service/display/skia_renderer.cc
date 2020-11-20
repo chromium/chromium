@@ -16,6 +16,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/paint/render_surface_filters.h"
@@ -2090,7 +2091,7 @@ void SkiaRenderer::ScheduleOverlays() {
   DCHECK(output_surface_->capabilities().supports_surfaceless);
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // CrOS and Android SurfaceControl use this code path. Android classic has
   // switched over to OverlayProcessor.
   // TODO(weiliangc): Remove this when CrOS and Android SurfaceControl switch

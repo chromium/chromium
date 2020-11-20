@@ -5,6 +5,7 @@
 #include "components/viz/service/display/viz_pixel_test.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 
 namespace viz {
@@ -13,7 +14,7 @@ namespace viz {
 cc::PixelTest::GraphicsBackend VizPixelTest::RenderTypeToBackend(
     RendererType renderer_type) {
   if (renderer_type == RendererType::kSkiaVk) {
-#if defined(USE_OZONE) && defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if defined(USE_OZONE) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     // TODO(https://crbug.com/1113577): Enable SkiaVulkan backend for
     // PixelTests. For example, RendererPixelTest* hadn't been using
     // SkiaVulkanRenderer until USE_X11 was defined for the OS_LINUX

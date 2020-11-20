@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/constants.h"
 
 namespace switches {
@@ -42,7 +43,7 @@ const char kEnableVizDevTools[] = "enable-viz-devtools";
 // Enables hit-test debug logging.
 const char kEnableVizHitTestDebug[] = "enable-viz-hit-test-debug";
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // ChromeOS uses one of two VideoDecoder implementations based on SoC/board
 // specific configurations that are signalled via this command line flag.
 // TODO(b/159825227): remove when the "old" video decoder is fully launched.

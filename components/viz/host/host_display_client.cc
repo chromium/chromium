@@ -4,6 +4,8 @@
 
 #include "components/viz/host/host_display_client.h"
 
+#include "build/chromeos_buildflags.h"
+
 #if defined(OS_APPLE)
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink.h"
 #endif
@@ -56,7 +58,9 @@ void HostDisplayClient::CreateLayeredWindowUpdater(
 }
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void HostDisplayClient::DidCompleteSwapWithNewSize(const gfx::Size& size) {
   NOTIMPLEMENTED();
 }

@@ -24,7 +24,7 @@ VIZ_COMMON_EXPORT extern const char kEnableHardwareOverlays[];
 VIZ_COMMON_EXPORT extern const char kEnableVizDevTools[];
 VIZ_COMMON_EXPORT extern const char kEnableVizHitTestDebug[];
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 VIZ_COMMON_EXPORT extern const char
     kPlatformDisallowsChromeOSDirectVideoDecoder[];
 #endif

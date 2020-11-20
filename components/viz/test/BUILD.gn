@@ -85,6 +85,7 @@ viz_static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/viz/host",
     "//components/viz/service",
     "//gpu:raster",

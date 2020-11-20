@@ -19,6 +19,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/activity_flags.h"
@@ -43,11 +44,11 @@
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace arc {
 class ProtectedBufferManager;
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace gpu {
 class GpuMemoryBufferFactory;
@@ -127,7 +128,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
                            bool cache_shaders_on_disk,
                            EstablishGpuChannelCallback callback) override;
   void CloseChannel(int32_t client_id) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override;
@@ -146,7 +147,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void CreateJpegEncodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
@@ -317,7 +318,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
                         const std::string& header,
                         const std::string& message);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void CreateArcVideoDecodeAcceleratorOnMainThread(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver);
   void CreateArcVideoEncodeAcceleratorOnMainThread(
@@ -327,7 +328,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
           pba_receiver);
   void CreateArcProtectedBufferManagerOnMainThread(
       mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void RequestHDRStatusOnMainThread(RequestHDRStatusCallback callback);
 
@@ -419,9 +420,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   // Should only be accessed on the IO thread after creation.
   mojo::Receiver<mojom::GpuService> receiver_{this};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Display compositor contexts that don't have a corresponding GPU channel.
   base::ObserverList<gpu::DisplayContext>::Unchecked display_contexts_;
