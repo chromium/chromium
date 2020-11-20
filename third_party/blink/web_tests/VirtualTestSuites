@@ -771,11 +771,6 @@
              "--enable-threaded-compositing"]
   },
   {
-    "prefix": "disable-frequency-capping-for-overlay-popup-detection",
-    "bases": ["http/tests/subresource_filter/overlay_popup_ad"],
-    "args": ["--disable-features=FrequencyCappingForOverlayPopupDetection"]
-  },
-  {
     "prefix": "wheel-event-regions",
     "bases": ["fast/dom/shadow/wheel-event-in-shadow-dom.html",
               "fast/dom/shadow/wheel-event-on-input-in-shadow-dom.html",

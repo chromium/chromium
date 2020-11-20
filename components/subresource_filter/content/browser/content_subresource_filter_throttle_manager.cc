@@ -671,10 +671,4 @@ void ContentSubresourceFilterThrottleManager::SetDocumentLoadStatistics(
     statistics_->OnDocumentLoadStatistics(*statistics);
 }
 
-void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
-    mojom::AdsViolation violation) {
-  client_->OnAdsViolationTriggered(
-      receiver_.GetCurrentTargetFrame()->GetMainFrame(), violation);
-}
-
 }  // namespace subresource_filter

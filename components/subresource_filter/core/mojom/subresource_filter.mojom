@@ -19,8 +19,6 @@ enum ActivationLevel {
 enum AdsViolation {
     kMobileAdDensityByHeightAbove30,
     kHeavyAdsInterventionAtHostLimit,
-    kLargeStickyAd,
-    kOverlayPopupAd,
 };
 
 struct ActivationState {
@@ -89,8 +87,4 @@ interface SubresourceFilterHost {
   // evaluating subresource loads in its allowLoad method. The time metrics are
   // equal to zero if performance measurements were disabled for the load.
   SetDocumentLoadStatistics(DocumentLoadStatistics statistics);
-
-  // Called when a render frame detects an ads violation. It is used to record
-  // ads violations within the ads intervention manager.
-  OnAdsViolationTriggered(AdsViolation violation);
 };

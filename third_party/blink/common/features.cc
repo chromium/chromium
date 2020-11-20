@@ -55,20 +55,6 @@ const base::Feature kFreezePurgeMemoryAllPagesFrozen{
 const base::Feature kFreezeUserAgent{"FreezeUserAgent",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the frequency capping for detecting overlay popups. Overlay-popups
-// are the interstitials that pop up and block the main content of the page.
-const base::Feature kFrequencyCappingForOverlayPopupDetection{
-    "FrequencyCappingForOverlayPopupDetection",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables the frequency capping for detecting large sticky ads.
-// Large-sticky-ads are those ads that stick to the bottom of the page
-// regardless of a user’s efforts to scroll, and take up more than 30% of the
-// screen’s real estate.
-const base::Feature kFrequencyCappingForLargeStickyAdDetection{
-    "FrequencyCappingForLargeStickyAdDetection",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables support for FTP URLs. When disabled FTP URLs will behave the same as
 // any other URL scheme that's unknown to the UA. See https://crbug.com/333943
 const base::Feature kFtpProtocol{"FtpProtocol",

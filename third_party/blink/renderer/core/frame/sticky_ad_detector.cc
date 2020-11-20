@@ -4,10 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/sticky_ad_detector.h"
 
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -69,8 +67,6 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
 
   base::Time current_time = base::Time::Now();
   if (last_detection_time_.has_value() &&
-      base::FeatureList::IsEnabled(
-          features::kFrequencyCappingForLargeStickyAdDetection) &&
       current_time < last_detection_time_.value() + kFireInterval) {
     return;
   }
@@ -134,7 +130,6 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
 }
 
 void StickyAdDetector::OnLargeStickyAdDetected(LocalFrame* main_frame) {
-  main_frame->Client()->OnLargeStickyAdDetected();
   UseCounter::Count(main_frame->GetDocument(), WebFeature::kLargeStickyAd);
   done_detection_ = true;
 }

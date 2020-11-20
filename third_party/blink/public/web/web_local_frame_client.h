@@ -453,12 +453,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void OnMainFrameIntersectionChanged(
       const WebRect& intersection_rect) {}
 
-  // Called when an overlay interstitial pop up ad is detected.
-  virtual void OnOverlayPopupAdDetected() {}
-
-  // Called when a large sticky ad is detected.
-  virtual void OnLargeStickyAdDetected() {}
-
   // Low-level resource notifications ------------------------------------
 
   using ForRedirect = base::StrongAlias<class ForRedirectTag, bool>;

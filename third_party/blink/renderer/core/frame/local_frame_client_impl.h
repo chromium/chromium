@@ -243,10 +243,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void OnMainFrameIntersectionChanged(
       const IntRect& intersection_rect) override;
 
-  void OnOverlayPopupAdDetected() override;
-
-  void OnLargeStickyAdDetected() override;
-
   bool IsPluginHandledExternally(HTMLPlugInElement&,
                                  const KURL&,
                                  const String&) override;

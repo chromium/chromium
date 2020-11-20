@@ -25,9 +25,9 @@ div.bottom {
 }
 </style>
 
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 
@@ -41,12 +41,22 @@ div.bottom {
 <div class="bottom"></div>
 
 <script>
+if (window.testRunner) {
+  internals.DisableFrequencyCappingForOverlayPopupDetection();
+}
 promise_test(async function(t) {
   // After 1500ms, force a layout update so that the interstitial detector
   // is aware of the first meaningful paint, and future overlay candidates
   // will be considered for pop-ups rather than for prestitials.
   await timeout(1500);
   await forceLayoutUpdate();
+
+  // Ensure a user gesture happened in the main frame.
+  if (window.eventSender) {
+    eventSender.mouseMoveTo(1, 1);
+    eventSender.mouseDown(1, 1);
+    eventSender.mouseUp(1, 1);
+  }
 
   // Create the overlay pop-up ad.
   appendAdFrameTo(document.getElementsByTagName('div')[0]);
@@ -62,9 +72,10 @@ promise_test(async function(t) {
   // the overlay candidate's dismissal.
   await forceLayoutUpdate();
 
-  // Expect the OverlayPopupAd UseCounter.
-  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
-}, "Test UseCounter for overlay-popup-ad when the frame itself has a fixed position.");
+  // Expect no OverlayPopupAd UseCounter as the popup was created with user
+  // gesture.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test overlay-popup-ad when the frame itself has a fixed position and it's created with user gesture. In this case, we expect no use counter for kOverlayPopupAd.");
 
 </script>
 </body>

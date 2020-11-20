@@ -302,13 +302,4 @@ void SubresourceFilterAgent::WillCreateWorkerFetchContext(
                          AsWeakPtr())));
 }
 
-void SubresourceFilterAgent::OnOverlayPopupAdDetected() {
-  GetSubresourceFilterHost()->OnAdsViolationTriggered(
-      subresource_filter::mojom::AdsViolation::kOverlayPopupAd);
-}
-void SubresourceFilterAgent::OnLargeStickyAdDetected() {
-  GetSubresourceFilterHost()->OnAdsViolationTriggered(
-      subresource_filter::mojom::AdsViolation::kLargeStickyAd);
-}
-
 }  // namespace subresource_filter

@@ -6022,9 +6022,3 @@ crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Pass Failure ]
 
 # Skip to land change in frontend (https://crrev.com/c/2550061) before this layout test can be updated
 crbug.com/1150854 http/tests/devtools/unit/soft-context-menu.js [ Skip ]
-
-# These tests will only run in the virtual test suite where the frequency
-# capping for overlay popup detection is disabled. This eliminates the need
-# for waitings in web tests to trigger a detection event.
-crbug.com/1032681 http/tests/subresource_filter/overlay_popup_ad/* [ Skip ]
-crbug.com/1032681 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/* [ Pass ]

@@ -25,9 +25,9 @@ div.bottom {
 }
 </style>
 
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 
@@ -44,6 +44,7 @@ div.bottom {
 if (window.testRunner) {
   // Inject a subresource filter to mark 'alpha.png' as a would be disallowed resource.
   testRunner.setDisallowedSubresourcePathSuffixes(["alpha.png"], false /* block_subresources */);
+  internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
 promise_test(() => {
@@ -61,7 +62,7 @@ promise_test(() => {
       ad_img.addEventListener('load', () => {
         resolve();
       });
-      ad_img.src = "../resources/alpha.png";
+      ad_img.src = "resources/alpha.png";
       document.getElementsByTagName('div')[0].appendChild(ad_img);
     });
 
