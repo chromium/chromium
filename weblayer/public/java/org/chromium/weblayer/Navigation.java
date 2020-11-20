@@ -170,6 +170,10 @@ public class Navigation extends IClientNavigation.Stub {
      * reset during the redirect. In other words, if you need to set a referer that applies to
      * redirects, then this must be called from {@link onNavigationRedirected}.
      *
+     * Note that any headers that are set here won't be sent again if the frame html is fetched
+     * again due to a user reloading the page, navigating back and forth etc... when this fetch
+     * couldn't be cached (either in the disk cache or in the back-forward cache).
+     *
      * @param name The name of the header. The name must be rfc 2616 compliant.
      * @param value The value of the header. The value must not contain '\0', '\n' or '\r'.
      *
@@ -192,11 +196,16 @@ public class Navigation extends IClientNavigation.Stub {
      * sticky, it applies to this navigation only (and any redirects or resources that are loaded).
      * This method may only be called from {@link NavigationCallback.onNavigationStarted}.
      *
+     * Note that this user agent won't be sent again if the frame html is fetched again due to a
+     * user reloading the page, navigating back and forth etc... when this fetch couldn't be cached
+     * (either in the disk cache or in the back-forward cache).
+     *
      * @param value The user-agent string. The value must not contain '\0', '\n' or '\r'. An empty
      * string results in the default user-agent string.
      *
      * @throws IllegalArgumentException If supplied an invalid value.
-     * @throws IllegalStateException If not called during start.
+     * @throws IllegalStateException If not called during start or if {@link
+     *         Tab.setDesktopUserAgent} was called with a value of true.
      *
      * @since 84
      */

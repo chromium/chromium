@@ -201,6 +201,8 @@ source_set("weblayer_lib_base") {
     "browser/js_communication/web_message_host_factory_wrapper.h",
     "browser/navigation_controller_impl.cc",
     "browser/navigation_controller_impl.h",
+    "browser/navigation_entry_data.cc",
+    "browser/navigation_entry_data.h",
     "browser/navigation_error_navigation_throttle.cc",
     "browser/navigation_error_navigation_throttle.h",
     "browser/navigation_impl.cc",

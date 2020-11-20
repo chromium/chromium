@@ -241,6 +241,9 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 .setVisible(mBrowser.getActiveTab().canTranslate());
         popup.getMenu().findItem(R.id.webview_compat_menu_id).setVisible(!mEnableWebViewCompat);
         popup.getMenu().findItem(R.id.no_webview_compat_menu_id).setVisible(mEnableWebViewCompat);
+        boolean isDesktopUserAgent = mBrowser.getActiveTab().isDesktopUserAgentEnabled();
+        popup.getMenu().findItem(R.id.desktop_site_menu_id).setVisible(!isDesktopUserAgent);
+        popup.getMenu().findItem(R.id.no_desktop_site_menu_id).setVisible(isDesktopUserAgent);
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.reload_menu_id) {
                 mBrowser.getActiveTab().getNavigationController().reload();
@@ -294,6 +297,14 @@ public class WebLayerShellActivity extends AppCompatActivity {
 
             if (item.getItemId() == R.id.no_webview_compat_menu_id) {
                 restartShell(false);
+            }
+
+            if (item.getItemId() == R.id.desktop_site_menu_id) {
+                mBrowser.getActiveTab().setDesktopUserAgentEnabled(true);
+            }
+
+            if (item.getItemId() == R.id.no_desktop_site_menu_id) {
+                mBrowser.getActiveTab().setDesktopUserAgentEnabled(false);
             }
 
             if (item.getItemId() == R.id.set_translate_target_lang_menu_id) {

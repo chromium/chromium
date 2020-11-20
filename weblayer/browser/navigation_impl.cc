@@ -192,10 +192,17 @@ void NavigationImpl::SetRequestHeader(const std::string& name,
 
 void NavigationImpl::SetUserAgentString(const std::string& value) {
   DCHECK(safe_to_set_user_agent_);
+  // By default renderer initiated navigations inherit the user-agent override
+  // of the current NavigationEntry. But we don't want this per-navigation UA to
+  // be inherited.
+  navigation_handle_->GetWebContents()
+      ->SetRendererInitiatedUserAgentOverrideOption(
+          content::NavigationController::UA_OVERRIDE_FALSE);
   navigation_handle_->GetWebContents()->SetUserAgentOverride(
       blink::UserAgentOverride::UserAgentOnly(value),
       /* override_in_new_tabs */ false);
   navigation_handle_->SetIsOverridingUserAgent(!value.empty());
+  set_user_agent_string_called_ = true;
 }
 
 #if defined(OS_ANDROID)
