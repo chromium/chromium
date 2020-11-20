@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/video_file_handler.h"
 
+#include <limits>
 #include <string>
 
 #include "base/bind.h"
@@ -15,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,9 +47,13 @@ class VideoFileHandlerTest : public ::testing::Test {
   }
 
   // Creates and returns an initialized VideoFileHandler instance.
-  base::SequenceBound<VideoFileHandler> CreateAndInitHandler(size_t capacity) {
-    base::SequenceBound<VideoFileHandler> handler =
-        VideoFileHandler::Create(task_runner(), temp_file(), capacity);
+  base::SequenceBound<VideoFileHandler> CreateAndInitHandler(
+      size_t capacity,
+      size_t low_disk_space_threshold_bytes = 1024,
+      base::OnceClosure on_low_disk_space_callback = base::DoNothing()) {
+    base::SequenceBound<VideoFileHandler> handler = VideoFileHandler::Create(
+        task_runner(), temp_file(), capacity, low_disk_space_threshold_bytes,
+        std::move(on_low_disk_space_callback));
     const bool success =
         RunOnHandlerAndWait(&handler, &VideoFileHandler::Initialize);
     EXPECT_TRUE(success);
@@ -61,12 +67,11 @@ class VideoFileHandlerTest : public ::testing::Test {
     base::RunLoop run_loop;
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE, std::move(task),
-        base::BindOnce(
-            [](base::RunLoop* loop, bool* result, bool success) {
-              *result = success;
-              loop->Quit();
-            },
-            &run_loop, &result));
+        base::OnceCallback<void(bool)>(
+            base::BindLambdaForTesting([&](bool success) {
+              result = success;
+              run_loop.Quit();
+            })));
     run_loop.Run();
     return result;
   }
@@ -86,12 +91,11 @@ class VideoFileHandlerTest : public ::testing::Test {
                            Method method) const {
     base::RunLoop run_loop;
     bool result = false;
-    handler->AsyncCall(method).Then(base::BindOnce(
-        [](base::RunLoop* loop, bool* result, bool success) {
-          *result = success;
-          loop->Quit();
-        },
-        &run_loop, &result));
+    handler->AsyncCall(method).Then(
+        base::BindLambdaForTesting([&](bool success) {
+          result = success;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return result;
   }
@@ -218,16 +222,55 @@ TEST_F(VideoFileHandlerTest, ManualFlush) {
   // It's possible to flush the buffer manually.
   base::RunLoop run_loop;
   handler.AsyncCall(&VideoFileHandler::FlushBufferedChunks)
-      .Then(base::BindOnce(
-          [](base::RunLoop* loop, bool success) {
-            EXPECT_TRUE(success);
-            loop->Quit();
-          },
-          &run_loop));
+      .Then(base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
   run_loop.Run();
   file_content = ReadTempFileContent();
   EXPECT_EQ(file_content, chunk_1);
   EXPECT_TRUE(GetSuccessStatusOnUi(&handler));
+}
+
+TEST_F(VideoFileHandlerTest, LowDiskSpace) {
+  constexpr size_t kCapacity = 10;
+  // Simulate 0 disk space remaining.
+  constexpr size_t kLowDiskSpaceThreshold = std::numeric_limits<size_t>::max();
+  bool low_disk_space_threshold_reached = false;
+  base::SequenceBound<VideoFileHandler> handler = CreateAndInitHandler(
+      kCapacity, kLowDiskSpaceThreshold, base::BindLambdaForTesting([&]() {
+        low_disk_space_threshold_reached = true;
+      }));
+  ASSERT_TRUE(handler);
+
+  // Append a chunk smaller than the capacity. Nothing will be written to the
+  // file yet, and the low disk space notification won't be trigged, not until
+  // the buffer is actually written on the next append.
+  std::string chunk_1 = "12345";
+  handler.AsyncCall(&VideoFileHandler::AppendChunk)
+      .WithArgs(chunk_1)
+      .Then(GetIgnoreResultCallback());
+  std::string file_content = ReadTempFileContent();
+  EXPECT_TRUE(file_content.empty());
+  EXPECT_TRUE(GetSuccessStatusOnUi(&handler));
+  EXPECT_FALSE(low_disk_space_threshold_reached);
+
+  std::string chunk_2 = "1234567";
+  handler.AsyncCall(&VideoFileHandler::AppendChunk)
+      .WithArgs(chunk_2)
+      .Then(GetIgnoreResultCallback());
+  file_content = ReadTempFileContent();
+  // Only the buffered chunk will be written, and the low disk space callback
+  // will be triggered.
+  EXPECT_EQ(file_content, chunk_1);
+  EXPECT_TRUE(GetSuccessStatusOnUi(&handler));
+  EXPECT_TRUE(low_disk_space_threshold_reached);
+
+  // Reaching low disk space threshold is not a failure, and it's still possible
+  // to flush the remaining buffered chunks.
+  handler.Reset();
+  file_content = ReadTempFileContent();
+  EXPECT_EQ(file_content, chunk_1 + chunk_2);
 }
 
 }  // namespace ash

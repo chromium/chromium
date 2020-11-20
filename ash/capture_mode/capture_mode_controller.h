@@ -214,13 +214,19 @@ class ASH_EXPORT CaptureModeController
   // allowed to be captured.
   void InterruptVideoRecording();
 
+  // Called back by |video_file_handler_| when it detects a low disk space
+  // condition. In this case we end the video recording to avoid consuming too
+  // much space, and we make sure the video preview notification shows a message
+  // explaining why the recording ended.
+  void OnLowDiskSpace();
+
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
   CaptureModeType type_ = CaptureModeType::kImage;
   CaptureModeSource source_ = CaptureModeSource::kRegion;
 
   // A blocking task runner for file IO operations.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   mojo::Remote<recording::mojom::RecordingService> recording_service_remote_;
   mojo::Receiver<recording::mojom::RecordingServiceClient>
@@ -236,7 +242,7 @@ class ASH_EXPORT CaptureModeController
   base::FilePath current_video_file_path_;
 
   // Handles the file IO operations of the video file. This enforces doing all
-  // video file related operations on the blocking |task_runner_|.
+  // video file related operations on the |blocking_task_runner_|.
   base::SequenceBound<VideoFileHandler> video_file_handler_;
 
   // We remember the user selected capture region when the source is |kRegion|
@@ -252,6 +258,12 @@ class ASH_EXPORT CaptureModeController
   // If true, the 3-second countdown UI will be skipped, and video recording
   // will start immediately.
   bool skip_count_down_ui_ = false;
+
+  // True if while writing the video chunks by |video_file_handler_| we detected
+  // a low disk space. This value is used only to determine the message shown to
+  // the user in the video preview notification to explain why the recording was
+  // ended, and is then reset back to false.
+  bool low_disk_space_threshold_reached_ = false;
 
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;
