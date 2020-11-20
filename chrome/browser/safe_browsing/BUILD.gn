@@ -113,12 +113,13 @@ static_library("safe_browsing") {
       "trigger_creator.h",
       "ui_manager.cc",
       "ui_manager.h",
+      "url_lookup_service_factory.cc",
+      "url_lookup_service_factory.h",
       "user_interaction_observer.cc",
       "user_interaction_observer.h",
     ]
     deps += [
       ":metrics_collector",
-      ":url_lookup_service_factory",
       ":verdict_cache_manager_factory",
       "//chrome/common/safe_browsing:proto",
       "//components/safe_browsing/content",
@@ -135,9 +136,12 @@ static_library("safe_browsing") {
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/safe_browsing/core/db:allowlist_checker_client",
       "//components/safe_browsing/core/db:metadata_proto",
+      "//components/safe_browsing/core/realtime:url_lookup_service",
       "//components/safe_browsing/core/triggers",
       "//components/safe_browsing/core/triggers:trigger_throttler",
+      "//components/signin/public/identity_manager",
       "//components/site_engagement/core/mojom:mojo_bindings",
+      "//content/public/browser",
       "//services/preferences/public/mojom:mojom",
     ]
     if (safe_browsing_mode == 1) {
@@ -146,6 +150,10 @@ static_library("safe_browsing") {
       sources += [
         "../download/download_completion_blocker.cc",
         "../download/download_completion_blocker.h",
+        "chrome_enterprise_url_lookup_service.cc",
+        "chrome_enterprise_url_lookup_service.h",
+        "chrome_enterprise_url_lookup_service_factory.cc",
+        "chrome_enterprise_url_lookup_service_factory.h",
         "cloud_content_scanning/binary_fcm_service.cc",
         "cloud_content_scanning/binary_fcm_service.h",
         "cloud_content_scanning/binary_upload_service.cc",
@@ -245,25 +253,31 @@ static_library("safe_browsing") {
           "incident_reporting/platform_state_store_win.cc",
         ]
       }
-      public_deps += [
-        ":chrome_enterprise_url_lookup_service",
-        ":chrome_enterprise_url_lookup_service_factory",
-      ]
       deps += [
         ":advanced_protection",
+        ":verdict_cache_manager_factory",
+        "//chrome/common",
         "//chrome/common/safe_browsing:archive_analyzer_results",
         "//chrome/common/safe_browsing:binary_feature_extractor",
         "//chrome/common/safe_browsing:download_type_util",
         "//chrome/services/file_util/public/cpp",
         "//components/content_settings/core/browser",
+        "//components/keyed_service/content",
         "//components/language/core/common",
         "//components/prefs",
         "//components/safe_browsing/core:client_model_proto",
+        "//components/safe_browsing/core:csd_proto",
+        "//components/safe_browsing/core:realtimeapi_proto",
+        "//components/safe_browsing/core:verdict_cache_manager",
         "//components/safe_browsing/core/db",
+        "//components/safe_browsing/core/realtime:policy_engine",
+        "//components/safe_browsing/core/realtime:url_lookup_service_base",
         "//components/security_interstitials/content:security_interstitial_page",
         "//components/security_interstitials/core:unsafe_resource",
+        "//components/sync",
         "//content/public/browser",
         "//net",
+        "//services/network/public/cpp:cpp",
       ]
       if (is_mac) {
         deps += [ "//chrome/common/safe_browsing:disk_image_type_sniffer_mac" ]
@@ -286,62 +300,6 @@ static_library("safe_browsing") {
       ]
     }
   }
-}
-
-if (safe_browsing_mode == 1) {
-  source_set("chrome_enterprise_url_lookup_service_factory") {
-    visibility = [ ":*" ]
-
-    sources = [
-      "chrome_enterprise_url_lookup_service_factory.cc",
-      "chrome_enterprise_url_lookup_service_factory.h",
-    ]
-
-    deps = [
-      ":chrome_enterprise_url_lookup_service",
-      ":verdict_cache_manager_factory",
-      "//chrome/common",
-      "//components/keyed_service/content",
-      "//content/public/browser",
-    ]
-  }
-
-  source_set("chrome_enterprise_url_lookup_service") {
-    visibility = [ ":*" ]
-
-    sources = [
-      "chrome_enterprise_url_lookup_service.cc",
-      "chrome_enterprise_url_lookup_service.h",
-    ]
-
-    deps = [
-      "//components/prefs",
-      "//components/safe_browsing/core:csd_proto",
-      "//components/safe_browsing/core:realtimeapi_proto",
-      "//components/safe_browsing/core:verdict_cache_manager",
-      "//components/safe_browsing/core/realtime:policy_engine",
-      "//components/safe_browsing/core/realtime:url_lookup_service_base",
-      "//components/sync",
-      "//services/network/public/cpp:cpp",
-    ]
-  }
-}
-
-source_set("url_lookup_service_factory") {
-  sources = [
-    "url_lookup_service_factory.cc",
-    "url_lookup_service_factory.h",
-  ]
-
-  deps = [
-    ":verdict_cache_manager_factory",
-    "//chrome/common",
-    "//components/keyed_service/content",
-    "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/core/realtime:url_lookup_service",
-    "//components/signin/public/identity_manager",
-    "//content/public/browser",
-  ]
 }
 
 source_set("verdict_cache_manager_factory") {
