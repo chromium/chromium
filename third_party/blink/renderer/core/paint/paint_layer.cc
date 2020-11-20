@@ -1610,8 +1610,8 @@ void PaintLayer::UpdateScrollableArea() {
   }
 
   GetLayoutObject().SetNeedsPaintPropertyUpdate();
-  // Need to update z-ordering of overlay overflow controls.
-  if (!scrollable_area_ || NeedsReorderOverlayOverflowControls())
+  // To clear z-ordering information of overlay overflow controls.
+  if (NeedsReorderOverlayOverflowControls())
     DirtyStackingContextZOrderLists();
   if (auto* compositor = Compositor())
     compositor->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
