@@ -126,6 +126,8 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
                            NotLinkDoesNotShowBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            DismissBubble);
+  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
+                           ShowBubbleTwice);
 
   static std::unique_ptr<IntentPickerBubbleView> CreateBubbleViewForTesting(
       views::View* anchor_view,

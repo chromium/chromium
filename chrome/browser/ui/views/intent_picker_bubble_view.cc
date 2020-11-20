@@ -141,11 +141,8 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
     const base::Optional<url::Origin>& initiating_origin,
     IntentPickerResponse intent_picker_cb) {
   if (intent_picker_bubble_) {
-    intent_picker_bubble_->Initialize();
-    views::Widget* widget =
-        views::BubbleDialogDelegateView::CreateBubble(intent_picker_bubble_);
-    widget->Show();
-    return widget;
+    intent_picker_bubble_->CloseBubble();
+    intent_picker_bubble_ = nullptr;
   }
   intent_picker_bubble_ = new IntentPickerBubbleView(
       anchor_view, icon_view, icon_type, std::move(app_info),
