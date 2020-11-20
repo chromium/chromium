@@ -161,7 +161,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
       const base::flat_map<base::string16, base::string16>& data) override;
   void WriteBookmark(const std::string& url,
                      const base::string16& title) override;
-  void WriteImage(const SkBitmap& bitmap) override;
+  void WriteImage(const SkBitmap& unsafe_bitmap) override;
   void CommitWrite() override;
 #if defined(OS_MAC)
   void WriteStringToFindPboard(const base::string16& text) override;

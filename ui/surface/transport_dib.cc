@@ -42,6 +42,14 @@ std::unique_ptr<SkCanvas> TransportDIB::GetPlatformCanvas(int w,
   if (!shm_region_.IsValid())
     return nullptr;
 
+  // Calculate the size for the memory region backing the canvas. If not valid
+  // then fail gracefully.
+  size_t canvas_size;
+  // 32-bit RGB data. A size_t causes a type change from int when multiplying.
+  const size_t bpp = 4;
+  if (!base::CheckMul(h, base::CheckMul(w, bpp)).AssignIfValid(&canvas_size))
+    return nullptr;
+
 #if defined(OS_WIN)
   // This DIB already mapped the file into this process, but PlatformCanvas
   // will map it again.
@@ -55,9 +63,8 @@ std::unique_ptr<SkCanvas> TransportDIB::GetPlatformCanvas(int w,
           w, h, opaque, shm_region_.GetPlatformHandle(),
           skia::RETURN_NULL_ON_FAILURE);
 
-  // Calculate the size for the memory region backing the canvas.
   if (canvas)
-    size_ = skia::PlatformCanvasStrideForWidth(w) * h;
+    size_ = canvas_size;
 
   return canvas;
 #else
@@ -99,9 +106,10 @@ bool TransportDIB::VerifyCanvasSize(int w, int h) {
   if (w <= 0 || h <= 0)
     return false;
 
-  const size_t stride = skia::PlatformCanvasStrideForWidth(w);
   size_t canvas_size;
-  if (!base::CheckMul(h, stride).AssignIfValid(&canvas_size))
+  // 32-bit RGB data. A size_t causes a type change from int when multiplying.
+  const size_t bpp = 4;
+  if (!base::CheckMul(h, base::CheckMul(w, bpp)).AssignIfValid(&canvas_size))
     return false;
 
   return canvas_size <= size_;

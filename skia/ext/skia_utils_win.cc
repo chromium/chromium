@@ -7,7 +7,10 @@
 #include <stddef.h>
 #include <windows.h>
 
+#include "base/check_op.h"
 #include "base/debug/gdi_debug_util_win.h"
+#include "base/numerics/checked_math.h"
+#include "base/win/scoped_hdc.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -193,12 +196,71 @@ SkBitmap MapPlatformBitmap(HDC context) {
   return bitmap;
 }
 
-void CreateBitmapHeader(int width, int height, BITMAPINFOHEADER* hdr) {
+void CreateBitmapHeaderForN32SkBitmap(const SkBitmap& bitmap,
+                                      BITMAPINFOHEADER* hdr) {
+  // Native HBITMAPs are XRGB-backed, and we expect SkBitmaps that we will use
+  // with them to also be of the same format.
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+  // The header will be for an RGB bitmap with 32 bits-per-pixel. The SkBitmap
+  // data to go into the bitmap should be of the same size. If the SkBitmap
+  // SkColorType is for a larger number of bits-per-pixel, copying the SkBitmap
+  // into the HBITMAP for this header would cause a write out-of-bounds.
+  CHECK_EQ(4, bitmap.info().bytesPerPixel());
+  // The HBITMAP's bytes will always be tightly packed so we expect the SkBitmap
+  // to be also. Row padding would mean the number of bytes in the SkBitmap and
+  // in the HBITMAP for this header would be different, which can cause out-of-
+  // bound reads or writes.
+  CHECK_EQ(bitmap.rowBytes(), bitmap.width() * static_cast<size_t>(4));
+
+  CreateBitmapHeaderWithColorDepth(bitmap.width(), bitmap.height(), 32, hdr);
+}
+
+base::win::ScopedBitmap CreateHBitmapFromN32SkBitmap(const SkBitmap& bitmap) {
+  BITMAPINFOHEADER header;
+  CreateBitmapHeaderForN32SkBitmap(bitmap, &header);
+
+  int width = bitmap.width();
+  int height = bitmap.height();
+
+  size_t bytes;
+  // Native HBITMAPs store 32-bit RGB data, and the SkBitmap used with it must
+  // also, as verified by CreateBitmapHeaderForN32SkBitmap(). A size_t type
+  // causes a type change from int when multiplying.
+  const size_t bpp = 4;
+  if (!base::CheckMul(height, base::CheckMul(width, bpp)).AssignIfValid(&bytes))
+    return {};
+
+  void* bits;
+  HBITMAP hbitmap;
+  {
+    base::win::ScopedGetDC screen_dc(nullptr);
+    // By giving a null hSection, the |bits| will be destroyed when the
+    // |hbitmap| is destroyed.
+    hbitmap =
+        CreateDIBSection(screen_dc, reinterpret_cast<BITMAPINFO*>(&header),
+                         DIB_RGB_COLORS, &bits, nullptr, 0);
+  }
+  if (hbitmap) {
+    memcpy(bits, bitmap.getPixels(), bytes);
+  } else {
+    // If CreateDIBSection() failed, try to get some useful information out
+    // before we crash for post-mortem analysis.
+    base::debug::CollectGDIUsageAndDie(&header, nullptr);
+  }
+
+  return base::win::ScopedBitmap(hbitmap);
+}
+
+void CreateBitmapHeaderForXRGB888(int width,
+                                  int height,
+                                  BITMAPINFOHEADER* hdr) {
   CreateBitmapHeaderWithColorDepth(width, height, 32, hdr);
 }
 
-HBITMAP CreateHBitmap(int width, int height, bool is_opaque,
-                      HANDLE shared_section, void** data) {
+base::win::ScopedBitmap CreateHBitmapXRGB8888(int width,
+                                              int height,
+                                              HANDLE shared_section,
+                                              void** data) {
   // CreateDIBSection fails to allocate anything if we try to create an empty
   // bitmap, so just create a minimal bitmap.
   if ((width == 0) || (height == 0)) {
@@ -207,7 +269,7 @@ HBITMAP CreateHBitmap(int width, int height, bool is_opaque,
   }
 
   BITMAPINFOHEADER hdr = {0};
-  CreateBitmapHeader(width, height, &hdr);
+  CreateBitmapHeaderWithColorDepth(width, height, 32, &hdr);
   HBITMAP hbitmap = CreateDIBSection(NULL, reinterpret_cast<BITMAPINFO*>(&hdr),
                                      0, data, shared_section, 0);
 
@@ -216,7 +278,7 @@ HBITMAP CreateHBitmap(int width, int height, bool is_opaque,
   if (!hbitmap)
     base::debug::CollectGDIUsageAndDie(&hdr, shared_section);
 
-  return hbitmap;
+  return base::win::ScopedBitmap(hbitmap);
 }
 
 }  // namespace skia

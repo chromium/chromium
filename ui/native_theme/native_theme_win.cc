@@ -779,10 +779,10 @@ void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
     return;
   }
 
-  if (!offscreen_hdc.SelectBitmap(skia::CreateHBitmap(
-          rect.width(), rect.height(), false, nullptr, nullptr))) {
+  base::win::ScopedBitmap hbitmap = skia::CreateHBitmapXRGB8888(
+      rect.width(), rect.height(), nullptr, nullptr);
+  if (!offscreen_hdc.SelectBitmap(hbitmap.release()))
     return;
-  }
 
   // Will be NULL if lower-level Windows calls fail, or if the backing
   // allocated is 0 pixels in size (which should never happen according to

@@ -5,6 +5,7 @@
 #include "extensions/browser/image_sanitizer.h"
 
 #include "base/bind.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/task_runner_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -154,6 +155,14 @@ void ImageSanitizer::ImageFileRead(
 void ImageSanitizer::ImageDecoded(const base::FilePath& image_path,
                                   const SkBitmap& decoded_image) {
   if (decoded_image.isNull()) {
+    ReportError(Status::kDecodingError, image_path);
+    return;
+  }
+  if (decoded_image.colorType() != kN32_SkColorType) {
+    // The renderer should be sending us N32 32bpp bitmaps in reply, otherwise
+    // this can lead to out-of-bounds mistakes when transferring the pixels out
+    // of the bitmap into other buffers.
+    base::debug::DumpWithoutCrashing();
     ReportError(Status::kDecodingError, image_path);
     return;
   }

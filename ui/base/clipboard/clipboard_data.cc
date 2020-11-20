@@ -57,10 +57,8 @@ bool ClipboardData::operator!=(const ClipboardData& that) const {
 }
 
 void ClipboardData::SetBitmapData(const SkBitmap& bitmap) {
-  if (!skia::SkBitmapToN32OpaqueOrPremul(bitmap, &bitmap_)) {
-    NOTREACHED() << "Unable to convert bitmap for clipboard";
-    return;
-  }
+  DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+  bitmap_ = bitmap;
   format_ |= static_cast<int>(ClipboardInternalFormat::kBitmap);
 }
 

@@ -32,8 +32,10 @@
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/skia_util.h"
 
 namespace content {
 
@@ -103,6 +105,7 @@ class MockDraggingRenderViewHostDelegateView
                      RenderWidgetHostImpl* source_rwh) override {
     drag_url_ = drop_data.url;
     html_base_url_ = drop_data.html_base_url;
+    image_ = image;
   }
 
   GURL drag_url() {
@@ -113,9 +116,12 @@ class MockDraggingRenderViewHostDelegateView
     return html_base_url_;
   }
 
+  const gfx::ImageSkia& image() { return image_; }
+
  private:
   GURL drag_url_;
   GURL html_base_url_;
+  gfx::ImageSkia image_;
 };
 
 TEST_F(RenderViewHostTest, StartDragging) {
@@ -156,6 +162,37 @@ TEST_F(RenderViewHostTest, StartDragging) {
   test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(javascript_url, delegate_view.drag_url());
   EXPECT_EQ(http_url, delegate_view.html_base_url());
+}
+
+TEST_F(RenderViewHostTest, StartDraggingWithInvalidBitmap) {
+  TestWebContents* web_contents = contents();
+  MockDraggingRenderViewHostDelegateView delegate_view;
+  web_contents->set_delegate_view(&delegate_view);
+
+  GURL http_url = GURL("http://www.domain.com/index.html");
+
+  DropData drop_data;
+  // If `html` is not populated, `html_base_url` won't be populated when
+  // converting to `DragData` with `DropDataToDragData`.
+  drop_data.html = base::string16();
+  drop_data.url = http_url;
+  drop_data.html_base_url = http_url;
+
+  SkBitmap badbitmap;
+  badbitmap.allocPixels(
+      SkImageInfo::Make(1, 1, kARGB_4444_SkColorType, kPremul_SkAlphaType));
+  badbitmap.eraseColor(SK_ColorGREEN);
+
+  SkBitmap n32bitmap;
+  EXPECT_TRUE(skia::SkBitmapToN32OpaqueOrPremul(badbitmap, &n32bitmap));
+
+  // An N32 bitmap is a valid drag image.
+  test_rvh()->TestStartDragging(drop_data, n32bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(n32bitmap, *delegate_view.image().bitmap()));
+
+  // Other bitmap types are not, and are converted.
+  test_rvh()->TestStartDragging(drop_data, badbitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(n32bitmap, *delegate_view.image().bitmap()));
 }
 
 TEST_F(RenderViewHostTest, DragEnteredFileURLsStillBlocked) {

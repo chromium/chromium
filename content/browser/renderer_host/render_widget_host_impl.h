@@ -926,7 +926,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void DidFirstVisuallyNonEmptyPaint() override;
   void StartDragging(blink::mojom::DragDataPtr drag_data,
                      blink::DragOperationsMask drag_operations_mask,
-                     const SkBitmap& bitmap,
+                     const SkBitmap& unsafe_bitmap,
                      const gfx::Vector2d& bitmap_offset_in_dip,
                      blink::mojom::DragEventSourceInfoPtr event_info) override;
 

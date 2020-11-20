@@ -405,14 +405,13 @@ void ClipboardMac::WriteBookmark(const char* title_data,
 }
 
 void ClipboardMac::WriteBitmap(const SkBitmap& bitmap) {
-  SkBitmap out_bitmap;
-  if (!skia::SkBitmapToN32OpaqueOrPremul(bitmap, &out_bitmap)) {
-    NOTREACHED() << "Unable to convert bitmap for clipboard";
-    return;
-  }
+  // The bitmap type is sanitized to be N32 before we get here. The conversion
+  // to an NSImage would not explode if we got this wrong, so this is not a
+  // security CHECK.
+  DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
-      out_bitmap, base::mac::GetSystemColorSpace());
+      bitmap, base::mac::GetSystemColorSpace());
   if (!image) {
     NOTREACHED() << "SkBitmapToNSImageWithColorSpace failed";
     return;

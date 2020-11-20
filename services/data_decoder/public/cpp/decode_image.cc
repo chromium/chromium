@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
+#include "base/debug/dump_without_crashing.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -23,12 +24,30 @@ namespace {
 void OnDecodeImage(mojo::Remote<mojom::ImageDecoder> decoder,
                    mojom::ImageDecoder::DecodeImageCallback callback,
                    const SkBitmap& bitmap) {
+  if (bitmap.colorType() != kN32_SkColorType) {
+    // The renderer should be sending us N32 32bpp bitmaps in reply, otherwise
+    // this can lead to out-of-bounds mistakes when transferring the pixels out
+    // of the bitmap into other buffers.
+    base::debug::DumpWithoutCrashing();
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
   std::move(callback).Run(bitmap);
 }
 
 void OnDecodeImages(mojo::Remote<mojom::ImageDecoder> decoder,
                     mojom::ImageDecoder::DecodeAnimationCallback callback,
                     std::vector<mojom::AnimationFramePtr> bitmaps) {
+  for (mojom::AnimationFramePtr& frame : bitmaps) {
+    if (frame->bitmap.colorType() != kN32_SkColorType) {
+      // The renderer should be sending us N32 32bpp bitmaps in reply, otherwise
+      // this can lead to out-of-bounds mistakes when transferring the pixels
+      // out of the bitmap into other buffers.
+      base::debug::DumpWithoutCrashing();
+      std::move(callback).Run(std::vector<mojom::AnimationFramePtr>());
+      return;
+    }
+  }
   std::move(callback).Run(std::move(bitmaps));
 }
 

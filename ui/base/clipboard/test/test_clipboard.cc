@@ -333,14 +333,15 @@ void TestClipboard::WriteWebSmartPaste() {
 }
 
 void TestClipboard::WriteBitmap(const SkBitmap& bitmap) {
+  // We expect callers to sanitize `bitmap` to be N32 color type, to avoid
+  // out-of-bounds issues due to unexpected bits-per-pixel while copying the
+  // bitmap's pixel buffer. This DCHECK is to help alert us if we've missed
+  // something.
+  DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
   // Create a dummy entry.
   GetDefaultStore().data[ClipboardFormatType::GetBitmapType()];
-  SkBitmap& dst = GetDefaultStore().image;
-  // Either points bitmap at in_bitmap, or allocates and converts pixels.
-  if (!skia::SkBitmapToN32OpaqueOrPremul(bitmap, &dst)) {
-    NOTREACHED() << "Unable to convert bitmap for clipboard";
-    return;
-  }
+  GetDefaultStore().image = bitmap;
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 

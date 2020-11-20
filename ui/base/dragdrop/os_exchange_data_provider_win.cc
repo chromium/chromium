@@ -696,28 +696,6 @@ void OSExchangeDataProviderWin::SetDragImage(
   // by premultiplied colors, so unpremultiply the bitmap.
   SkBitmap unpremul_bitmap =
       SkBitmapOperations::UnPreMultiply(*image_skia.bitmap());
-  int width = unpremul_bitmap.width();
-  int height = unpremul_bitmap.height();
-  size_t rowbytes = unpremul_bitmap.rowBytes();
-  CHECK_EQ(rowbytes, static_cast<size_t>(width) * 4u);
-
-  void* bits;
-  HBITMAP hbitmap;
-  {
-    BITMAPINFOHEADER header;
-    skia::CreateBitmapHeader(width, height, &header);
-
-    base::win::ScopedGetDC screen_dc(NULL);
-    // By giving a null hSection, the |bits| will be destroyed when the
-    // |hbitmap| is destroyed.
-    hbitmap =
-        CreateDIBSection(screen_dc, reinterpret_cast<BITMAPINFO*>(&header),
-                         DIB_RGB_COLORS, &bits, NULL, 0);
-  }
-  if (!hbitmap)
-    return;
-
-  memcpy(bits, unpremul_bitmap.getPixels(), height * rowbytes);
 
   Microsoft::WRL::ComPtr<IDragSourceHelper> helper;
   HRESULT rv = CoCreateInstance(CLSID_DragDropHelper, 0, CLSCTX_INPROC_SERVER,
@@ -725,12 +703,17 @@ void OSExchangeDataProviderWin::SetDragImage(
   if (!SUCCEEDED(rv))
     return;
 
+  base::win::ScopedBitmap hbitmap =
+      skia::CreateHBitmapFromN32SkBitmap(unpremul_bitmap);
+  if (!hbitmap.is_valid())
+    return;
+
   // InitializeFromBitmap() takes ownership of |hbitmap|.
   SHDRAGIMAGE sdi;
-  sdi.sizeDragImage.cx = width;
-  sdi.sizeDragImage.cy = height;
+  sdi.sizeDragImage.cx = unpremul_bitmap.width();
+  sdi.sizeDragImage.cy = unpremul_bitmap.height();
   sdi.crColorKey = 0xFFFFFFFF;
-  sdi.hbmpDragImage = hbitmap;
+  sdi.hbmpDragImage = hbitmap.release();
   sdi.ptOffset = gfx::PointAtOffsetFromOrigin(cursor_offset).ToPOINT();
   helper->InitializeFromBitmap(&sdi, data_object());
 }

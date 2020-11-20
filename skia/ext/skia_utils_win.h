@@ -5,8 +5,10 @@
 #ifndef SKIA_EXT_SKIA_UTILS_WIN_H_
 #define SKIA_EXT_SKIA_UTILS_WIN_H_
 
+#include "base/win/scoped_gdi_object.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -68,15 +70,38 @@ SK_API void CopyHDC(HDC source, HDC destination, int x, int y, bool is_opaque,
 SK_API sk_sp<SkSurface> MapPlatformSurface(HDC context);
 
 // Creates a bitmap backed by the same pixels backing the HDC's bitmap.
-// Returns an empty bitmap on error.
+// Returns an empty bitmap on error. The HDC's bitmap is assumed to be formatted
+// as 32-bits-per-pixel XRGB8888, as created by CreateHBitmapXRGB8888().
 SK_API SkBitmap MapPlatformBitmap(HDC context);
 
-// Fills in a BITMAPINFOHEADER structure given the bitmap's size.
-SK_API void CreateBitmapHeader(int width, int height, BITMAPINFOHEADER* hdr);
+// Fills in a BITMAPINFOHEADER structure to hold the pixel data from |bitmap|.
+// The |bitmap| must be have a color type of kN32_SkColorType, and the header
+// will be for a bitmap with 32-bits-per-pixel RGB data (the high bits are
+// unused in each pixel).
+SK_API void CreateBitmapHeaderForN32SkBitmap(const SkBitmap& bitmap,
+                                             BITMAPINFOHEADER* hdr);
 
-SK_API HBITMAP CreateHBitmap(int width, int height, bool is_opaque,
-                             HANDLE shared_section = nullptr,
-                             void** data = nullptr);
+// Creates an HBITMAP backed by 32-bits-per-pixel RGB data (the high bits are
+// unused in each pixel), with dimensions and the RGBC pixel data from the
+// SkBitmap. Any alpha channel values are copied into the HBITMAP but are not
+// used. Can return a null HBITMAP on any failure to create the HBITMAP.
+SK_API base::win::ScopedBitmap CreateHBitmapFromN32SkBitmap(
+    const SkBitmap& bitmap);
+
+// Fills in a BITMAPINFOHEADER structure given the bitmap's size. The header
+// will be for a bitmap with 32-bits-per-pixel RGB data (the high bits are
+// unused in each pixel).
+SK_API void CreateBitmapHeaderForXRGB888(int width,
+                                         int height,
+                                         BITMAPINFOHEADER* hdr);
+
+// Creates an HBITMAP backed by 32-bits-per-pixel RGB data (the high bits are
+// unused in each pixel).
+SK_API base::win::ScopedBitmap CreateHBitmapXRGB8888(
+    int width,
+    int height,
+    HANDLE shared_section = nullptr,
+    void** data = nullptr);
 
 }  // namespace skia
 
