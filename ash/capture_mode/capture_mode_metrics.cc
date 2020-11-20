@@ -13,6 +13,8 @@ namespace {
 
 constexpr char kBarButtonHistogramName[] =
     "Ash.CaptureModeController.BarButtons";
+constexpr char kCaptureConfigurationHistogramName[] =
+    "Ash.CaptureModeController.CaptureConfiguration";
 constexpr char kCaptureRegionAdjustmentHistogramName[] =
     "Ash.CaptureModeController.CaptureRegionAdjusted";
 constexpr char kConsecutiveScreenshotHistogramName[] =
@@ -35,11 +37,40 @@ std::string GetCaptureModeHistogramName(std::string prefix) {
   return prefix;
 }
 
+// Maps given |type| and |source| to CaptureModeConfiguration enum.
+CaptureModeConfiguration GetConfiguration(CaptureModeType type,
+                                          CaptureModeSource source) {
+  switch (source) {
+    case CaptureModeSource::kFullscreen:
+      return type == CaptureModeType::kImage
+                 ? CaptureModeConfiguration::kFullscreenScreenshot
+                 : CaptureModeConfiguration::kFullscreenRecording;
+    case CaptureModeSource::kRegion:
+      return type == CaptureModeType::kImage
+                 ? CaptureModeConfiguration::kRegionScreenshot
+                 : CaptureModeConfiguration::kRegionRecording;
+    case CaptureModeSource::kWindow:
+      return type == CaptureModeType::kImage
+                 ? CaptureModeConfiguration::kWindowScreenshot
+                 : CaptureModeConfiguration::kWindowRecording;
+    default:
+      NOTREACHED();
+      return CaptureModeConfiguration::kFullscreenScreenshot;
+  }
+}
+
 }  // namespace
 
 void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type) {
   base::UmaHistogramEnumeration(
       GetCaptureModeHistogramName(kBarButtonHistogramName), button_type);
+}
+
+void RecordCaptureModeConfiguration(CaptureModeType type,
+                                    CaptureModeSource source) {
+  base::UmaHistogramEnumeration(
+      GetCaptureModeHistogramName(kCaptureConfigurationHistogramName),
+      GetConfiguration(type, source));
 }
 
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type) {

@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "ash/capture_mode/capture_mode_types.h"
+
 namespace ash {
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.
@@ -20,6 +22,19 @@ enum class CaptureModeBarButtonType {
   kWindow,
   kExit,
   kMaxValue = kExit,
+};
+
+// Enumeration of the various configurations a user can have while in capture
+// mode. Note that these values are persisted to histograms so existing values
+// should remain unchanged and new values should be added to the end.
+enum class CaptureModeConfiguration {
+  kFullscreenScreenshot,
+  kRegionScreenshot,
+  kWindowScreenshot,
+  kFullscreenRecording,
+  kRegionRecording,
+  kWindowRecording,
+  kMaxValue = kWindowRecording,
 };
 
 // Enumeration of actions that can be taken to enter capture mode. Note that
@@ -36,6 +51,10 @@ enum class CaptureModeEntryType {
 
 // Records capture mode bar button presses given by |button_type|.
 void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type);
+
+// Records a user's configuration when they perform a capture.
+void RecordCaptureModeConfiguration(CaptureModeType type,
+                                    CaptureModeSource source);
 
 // Records the method the user enters capture mode given by |entry_type|.
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type);
