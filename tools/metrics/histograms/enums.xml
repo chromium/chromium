@@ -30622,6 +30622,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="23" label="Opened native context menu. (iOS Only)"/>
 </enum>
 
+<enum name="FeedUserCommandType"/>
+
 <enum name="FeedZeroStateShowReason">
   <int value="0" label="ERROR"/>
   <int value="1" label="NO_CONTENT"/>
