@@ -66,8 +66,10 @@ void ESimProfile::UninstallProfile(UninstallProfileCallback callback) {
 }
 
 void ESimProfile::EnableProfile(EnableProfileCallback callback) {
-  if (properties_->state == mojom::ProfileState::kActive) {
-    NET_LOG(ERROR) << "Profile enable failed: Profile already enabled";
+  if (properties_->state == mojom::ProfileState::kActive ||
+      properties_->state == mojom::ProfileState::kPending) {
+    NET_LOG(ERROR)
+        << "Profile enable failed: Profile already enabled or not installed";
     std::move(callback).Run(mojom::ESimOperationResult::kFailure);
     return;
   }
@@ -79,8 +81,10 @@ void ESimProfile::EnableProfile(EnableProfileCallback callback) {
 }
 
 void ESimProfile::DisableProfile(DisableProfileCallback callback) {
-  if (properties_->state == mojom::ProfileState::kInactive) {
-    NET_LOG(ERROR) << "Profile enable failed: Profile already disabled";
+  if (properties_->state == mojom::ProfileState::kInactive ||
+      properties_->state == mojom::ProfileState::kPending) {
+    NET_LOG(ERROR)
+        << "Profile enable failed: Profile already disabled or not installed";
     std::move(callback).Run(mojom::ESimOperationResult::kFailure);
     return;
   }

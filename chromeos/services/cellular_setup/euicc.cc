@@ -41,12 +41,12 @@ void Euicc::InstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
     InstallProfileFromActivationCodeCallback callback) {
-  ESimProfile* profile_info =
-      GetPendingProfileInfoFromActivationCode(activation_code);
-  if (!profile_info) {
+  ESimProfile* profile_info = nullptr;
+  mojom::ProfileInstallResult status =
+      GetPendingProfileInfoFromActivationCode(activation_code, &profile_info);
+  if (profile_info && status != mojom::ProfileInstallResult::kSuccess) {
     // Return early if profile was found but not in the correct state.
-    std::move(callback).Run(mojom::ProfileInstallResult::kFailure,
-                            mojo::NullRemote());
+    std::move(callback).Run(status, mojo::NullRemote());
     return;
   }
 
@@ -144,8 +144,9 @@ void Euicc::OnRequestPendingEventsResult(
                               : mojom::ESimOperationResult::kFailure);
 }
 
-ESimProfile* Euicc::GetPendingProfileInfoFromActivationCode(
-    const std::string& activation_code) {
+mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(
+    const std::string& activation_code,
+    ESimProfile** profile_info) {
   const auto iter = base::ranges::find_if(
       esim_profiles_, [activation_code](const auto& esim_profile) -> bool {
         return esim_profile->properties()->activation_code == activation_code;
@@ -153,14 +154,15 @@ ESimProfile* Euicc::GetPendingProfileInfoFromActivationCode(
   if (iter == esim_profiles_.end()) {
     NET_LOG(EVENT) << "Get pending profile with activation failed: No profile "
                       "with activation_code.";
-    return nullptr;
+    return mojom::ProfileInstallResult::kFailure;
   }
-  if ((*iter)->properties()->state != mojom::ProfileState::kPending) {
+  *profile_info = iter->get();
+  if ((*profile_info)->properties()->state != mojom::ProfileState::kPending) {
     NET_LOG(ERROR) << "Get pending profile with activation code failed: Profile"
                       "is not in pending state.";
-    return nullptr;
+    return mojom::ProfileInstallResult::kFailure;
   }
-  return iter->get();
+  return mojom::ProfileInstallResult::kSuccess;
 }
 
 ESimProfile* Euicc::GetOrCreateESimProfile(

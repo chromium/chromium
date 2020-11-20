@@ -6,6 +6,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "esim_manager_test_observer.cc",
+    "esim_manager_test_observer.h",
     "fake_activation_delegate.cc",
     "fake_activation_delegate.h",
     "fake_carrier_portal_handler.cc",

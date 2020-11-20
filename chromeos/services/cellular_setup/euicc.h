@@ -63,8 +63,9 @@ class Euicc : public mojom::Euicc {
                               const dbus::ObjectPath* object_path);
   void OnRequestPendingEventsResult(RequestPendingProfilesCallback callback,
                                     HermesResponseStatus status);
-  ESimProfile* GetPendingProfileInfoFromActivationCode(
-      const std::string& activation_code);
+  mojom::ProfileInstallResult GetPendingProfileInfoFromActivationCode(
+      const std::string& activation_code,
+      ESimProfile** profile_info);
   ESimProfile* GetOrCreateESimProfile(
       const dbus::ObjectPath& carrier_profile_path);
   void RemoveUntrackedProfiles(
