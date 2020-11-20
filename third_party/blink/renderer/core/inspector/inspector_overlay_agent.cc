@@ -1573,6 +1573,17 @@ base::Optional<BoxStyle> InspectorOverlayAgent::ToBoxStyle(
   return box_style;
 }
 
+ContrastAlgorithm GetContrastAlgorithm(const String& contrast_algorithm) {
+  namespace ContrastAlgorithmEnum = protocol::Overlay::ContrastAlgorithmEnum;
+  if (contrast_algorithm == ContrastAlgorithmEnum::Aaa) {
+    return ContrastAlgorithm::AAA;
+  } else if (contrast_algorithm == ContrastAlgorithmEnum::Apca) {
+    return ContrastAlgorithm::APCA;
+  } else {
+    return ContrastAlgorithm::AA;
+  }
+}
+
 // static
 std::unique_ptr<InspectorHighlightConfig>
 InspectorOverlayAgent::ToHighlightConfig(
@@ -1613,6 +1624,10 @@ InspectorOverlayAgent::ToHighlightConfig(
   } else {
     highlight_config->color_format = ColorFormat::HEX;
   }
+
+  namespace ContrastAlgorithmEnum = protocol::Overlay::ContrastAlgorithmEnum;
+  highlight_config->contrast_algorithm = GetContrastAlgorithm(
+      config->getContrastAlgorithm(ContrastAlgorithmEnum::Aa));
 
   highlight_config->grid_highlight_config =
       InspectorOverlayAgent::ToGridHighlightConfig(

@@ -5679,6 +5679,12 @@ experimental domain Overlay
       # The hatching color for the box (default: transparent)
       optional DOM.RGBA hatchColor
 
+  type ContrastAlgorithm extends string
+    enum
+      aa
+      aaa
+      apca
+
   # Configuration data for the highlighting of page elements.
   type HighlightConfig extends object
     properties
@@ -5714,6 +5720,8 @@ experimental domain Overlay
       optional GridHighlightConfig gridHighlightConfig
       # The flex container highlight configuration (default: all transparent).
       optional FlexContainerHighlightConfig flexContainerHighlightConfig
+      # The contrast algorithm to use for the contrast ratio (default: aa).
+      optional ContrastAlgorithm contrastAlgorithm
 
   type ColorFormat extends string
     enum

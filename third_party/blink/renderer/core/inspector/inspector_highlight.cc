@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/inspector/dom_traversal_utils.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Overlay.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -229,9 +230,26 @@ String ToHEXA(const Color& color) {
                         color.Blue(), color.Alpha());
 }
 
+namespace ContrastAlgorithmEnum = protocol::Overlay::ContrastAlgorithmEnum;
+
+String ContrastAlgorithmToString(const ContrastAlgorithm& contrast_algorithm) {
+  // It reuses the protocol string constants to avoid duplicating the string
+  // values. These string values are sent to the overlay code that is expected
+  // to handle them properly.
+  switch (contrast_algorithm) {
+    case ContrastAlgorithm::AA:
+      return ContrastAlgorithmEnum::Aa;
+    case ContrastAlgorithm::AAA:
+      return ContrastAlgorithmEnum::Aaa;
+    case ContrastAlgorithm::APCA:
+      return ContrastAlgorithmEnum::Apca;
+  }
+}
+
 void AppendStyleInfo(Node* node,
                      protocol::DictionaryValue* element_info,
-                     const InspectorHighlightContrastInfo& node_contrast) {
+                     const InspectorHighlightContrastInfo& node_contrast,
+                     const ContrastAlgorithm& contrast_algorithm) {
   std::unique_ptr<protocol::DictionaryValue> computed_style =
       protocol::DictionaryValue::create();
   CSSComputedStyleDeclaration* style =
@@ -276,6 +294,8 @@ void AppendStyleInfo(Node* node,
     contrast->setString("fontWeight", node_contrast.font_weight);
     contrast->setString("backgroundColor",
                         ToHEXA(node_contrast.background_color));
+    contrast->setString("contrastAlgorithm",
+                        ContrastAlgorithmToString(contrast_algorithm));
     element_info->setValue("contrast", std::move(contrast));
   }
 }
@@ -1407,8 +1427,10 @@ InspectorHighlight::InspectorHighlight(
     element_info_ = BuildElementInfo(element);
   else if (append_element_info && text_node)
     element_info_ = BuildTextNodeInfo(text_node);
-  if (element_info_ && highlight_config.show_styles)
-    AppendStyleInfo(node, element_info_.get(), node_contrast);
+  if (element_info_ && highlight_config.show_styles) {
+    AppendStyleInfo(node, element_info_.get(), node_contrast,
+                    highlight_config.contrast_algorithm);
+  }
 
   if (element_info_ && is_locked_ancestor)
     element_info_->setString("isLockedAncestor", "true");
