@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1048,7 +1049,7 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
  public:
   AXMenuWidgetObserver(ProfileMenuViewBase* owner, views::Widget* widget)
       : owner_(owner) {
-    observer_.Add(widget);
+    observation_.Observe(widget);
   }
   ~AXMenuWidgetObserver() override = default;
 
@@ -1064,5 +1065,6 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
 
  private:
   ProfileMenuViewBase* owner_;
-  ScopedObserver<views::Widget, views::WidgetObserver> observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
 };

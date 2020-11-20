@@ -120,8 +120,9 @@ class ProfilePickerView : public views::DialogDelegateView,
 
   // Not null iff switching to sign-in is in progress.
   base::OnceClosure switch_failure_callback_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Creation time of the picker, to measure performance on startup. Only set
   // when the picker is shown on startup.

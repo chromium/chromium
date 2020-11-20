@@ -77,7 +77,8 @@ void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
         callback) {
   DCHECK(callback);
   sync_confirmation_callback_ = std::move(callback);
-  scoped_login_ui_service_observer_.Add(
+  DCHECK(!scoped_login_ui_service_observation_.IsObserving());
+  scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
 
   if (enterprise_confirmation_shown_) {
@@ -94,7 +95,8 @@ void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
         callback) {
   DCHECK(callback);
   sync_confirmation_callback_ = std::move(callback);
-  scoped_login_ui_service_observer_.Add(
+  DCHECK(!scoped_login_ui_service_observation_.IsObserving());
+  scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
 
   // Open the browser and when it's done, show the confirmation dialog.
@@ -124,8 +126,9 @@ void ProfilePickerViewSyncDelegate::SwitchToProfile(Profile* new_profile) {
 void ProfilePickerViewSyncDelegate::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   // No need to listen to further confirmations any more.
-  scoped_login_ui_service_observer_.Remove(
-      LoginUIServiceFactory::GetForProfile(profile_));
+  DCHECK(scoped_login_ui_service_observation_.IsObservingSource(
+      LoginUIServiceFactory::GetForProfile(profile_)));
+  scoped_login_ui_service_observation_.RemoveObservation();
 
   DCHECK(sync_confirmation_callback_);
   std::move(sync_confirmation_callback_).Run(result);

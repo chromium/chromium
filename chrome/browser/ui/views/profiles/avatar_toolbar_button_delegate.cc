@@ -109,7 +109,7 @@ void AvatarToolbarButtonDelegate::Init(AvatarToolbarButton* button,
   profile_ = profile;
   error_controller_ =
       std::make_unique<AvatarButtonErrorController>(this, profile_);
-  profile_observer_.Add(&GetProfileAttributesStorage());
+  profile_observation_.Observe(&GetProfileAttributesStorage());
   AvatarToolbarButton::State state = GetState();
   if (state == AvatarToolbarButton::State::kIncognitoProfile ||
       state == AvatarToolbarButton::State::kGuestSession) {
@@ -117,7 +117,7 @@ void AvatarToolbarButtonDelegate::Init(AvatarToolbarButton* button,
   } else if (state != AvatarToolbarButton::State::kGuestSession) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_);
-    identity_manager_observer_.Add(identity_manager);
+    identity_manager_observation_.Observe(identity_manager);
 
     if (identity_manager->AreRefreshTokensLoaded())
       OnRefreshTokensLoaded();

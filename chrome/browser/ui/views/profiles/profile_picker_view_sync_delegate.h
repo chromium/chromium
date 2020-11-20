@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -53,8 +53,8 @@ class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
   OpenBrowserCallback open_browser_callback_;
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
-  ScopedObserver<LoginUIService, LoginUIService::Observer>
-      scoped_login_ui_service_observer_{this};
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      scoped_login_ui_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfilePickerViewSyncDelegate);
 };

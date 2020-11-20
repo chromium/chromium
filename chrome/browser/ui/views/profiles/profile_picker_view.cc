@@ -300,7 +300,7 @@ void ProfilePickerView::OnProfileForSigninCreated(
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 
   // Listen for sign-in getting completed.
-  identity_manager_observer_.Add(
+  identity_manager_observation_.Observe(
       IdentityManagerFactory::GetForProfile(profile));
   // TODO(crbug.com/1126913): When there is back button from the signed-in page,
   // make sure the flow does not create multiple profiles simultaneously.
@@ -443,8 +443,9 @@ void ProfilePickerView::OnExtendedAccountInfoTimeout(const std::string& email) {
 
 void ProfilePickerView::OnProfileNameAvailable() {
   // Stop listening to further changes.
-  identity_manager_observer_.Remove(
-      IdentityManagerFactory::GetForProfile(signed_in_profile_being_created_));
+  DCHECK(identity_manager_observation_.IsObservingSource(
+      IdentityManagerFactory::GetForProfile(signed_in_profile_being_created_)));
+  identity_manager_observation_.RemoveObservation();
 
   if (on_profile_name_available_)
     std::move(on_profile_name_available_).Run();

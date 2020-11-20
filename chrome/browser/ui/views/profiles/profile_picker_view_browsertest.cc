@@ -106,7 +106,7 @@ class WebViewAddedWaiter : public views::ViewObserver {
       views::View* top_view,
       base::RepeatingCallback<views::WebView*()> current_web_view_getter)
       : current_web_view_getter_(current_web_view_getter) {
-    observed_.Add(top_view);
+    observation_.Observe(top_view);
   }
   ~WebViewAddedWaiter() override = default;
 
@@ -124,7 +124,7 @@ class WebViewAddedWaiter : public views::ViewObserver {
 
   base::RunLoop run_loop_;
   base::RepeatingCallback<views::WebView*()> current_web_view_getter_;
-  ScopedObserver<views::View, views::ViewObserver> observed_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
 class BrowserAddedWaiter : public BrowserListObserver {
