@@ -4,9 +4,6 @@
 
 package org.chromium.content.browser.androidoverlay;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -31,13 +28,6 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
     // because there can only be one overlay alive at a time. If we were to support multiple
     // concurrent overlays, we need to revisit this logic.
     private static final int MAX_OVERLAYS = 1;
-
-    // We maintain a thread with a Looper for the AndroidOverlays to use, since Dialog requires one.
-    // We don't want this to be the native thread that's used to create them (the browser UI thread)
-    // since we don't want to block that waiting for sync callbacks from Android, such as
-    // surfaceDestroyed.  Instead, we run all AndroidOverlays on one shared overlay-ui thread.
-    private HandlerThread mOverlayUiThread;
-    private Handler mHandler;
 
     // Number of AndroidOverlays that have been created but not released.
     private int mNumOverlays;
@@ -69,23 +59,11 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
             return;
         }
 
-        startThreadIfNeeded();
         mNumOverlays++;
 
-        DialogOverlayImpl impl = new DialogOverlayImpl(
-                client, config, mHandler, mNotifyReleasedRunnable, false /* asPanel*/);
+        DialogOverlayImpl impl =
+                new DialogOverlayImpl(client, config, mNotifyReleasedRunnable, false /* asPanel*/);
         DialogOverlayImpl.MANAGER.bind(impl, request);
-    }
-
-    /**
-     * Make sure that mOverlayUiThread and mHandler are ready for use, if needed.
-     */
-    private void startThreadIfNeeded() {
-        if (mOverlayUiThread != null) return;
-
-        mOverlayUiThread = new HandlerThread("AndroidOverlayThread");
-        mOverlayUiThread.start();
-        mHandler = new Handler(mOverlayUiThread.getLooper());
     }
 
     /**

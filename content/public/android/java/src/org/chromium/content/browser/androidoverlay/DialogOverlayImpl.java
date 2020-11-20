@@ -5,7 +5,6 @@
 package org.chromium.content.browser.androidoverlay;
 
 import android.content.Context;
-import android.os.Handler;
 import android.os.IBinder;
 import android.view.Surface;
 
@@ -14,12 +13,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.gfx.mojom.Rect;
 import org.chromium.media.mojom.AndroidOverlay;
 import org.chromium.media.mojom.AndroidOverlayClient;
 import org.chromium.media.mojom.AndroidOverlayConfig;
+import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MojoException;
 
 /**
@@ -32,15 +30,8 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
     private static final String TAG = "DialogOverlayImpl";
 
     private AndroidOverlayClient mClient;
-    private Handler mOverlayHandler;
     // Runnable that we'll run when the overlay notifies us that it's been released.
     private Runnable mReleasedRunnable;
-
-    // Runnable that will release |mDialogCore| when posted to mOverlayHandler.  We keep this
-    // separately from mDialogCore itself so that we can call it after we've discarded the latter.
-    private Runnable mReleaseCoreRunnable;
-
-    private final ThreadHoppingHost mHoppingHost;
 
     private DialogOverlayCore mDialogCore;
 
@@ -58,21 +49,17 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
     /**
      * @param client Mojo client interface.
      * @param config initial overlay configuration.
-     * @param handler handler that posts to the overlay thread.  This is the android UI thread that
-     * the dialog uses, not the browser UI thread.
      * @param provider the overlay provider that owns us.
      * @param asPanel the overlay should be a panel, above the compositor.  This is for testing.
      */
     public DialogOverlayImpl(AndroidOverlayClient client, final AndroidOverlayConfig config,
-            Handler overlayHandler, Runnable releasedRunnable, final boolean asPanel) {
+            Runnable releasedRunnable, final boolean asPanel) {
         ThreadUtils.assertOnUiThread();
 
         mClient = client;
         mReleasedRunnable = releasedRunnable;
-        mOverlayHandler = overlayHandler;
 
         mDialogCore = new DialogOverlayCore();
-        mHoppingHost = new ThreadHoppingHost(this);
 
         // Register to get token updates.  Note that this may not call us back directly, since
         // |mDialogCore| hasn't been initialized yet.
@@ -80,39 +67,17 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
                 config.routingToken.high, config.routingToken.low, config.powerEfficient);
 
         if (mNativeHandle == 0) {
-            mClient.onDestroyed();
+            notifyDestroyed();
             cleanup();
             return;
         }
 
-        // Post init to the overlay thread.
         final DialogOverlayCore dialogCore = mDialogCore;
         final Context context = ContextUtils.getApplicationContext();
         DialogOverlayImplJni.get().getCompositorOffset(
                 mNativeHandle, DialogOverlayImpl.this, config.rect);
-        mOverlayHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                dialogCore.initialize(context, config, mHoppingHost, asPanel);
-                // Now that |mDialogCore| has been initialized, we are ready for token callbacks.
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mNativeHandle != 0) {
-                            DialogOverlayImplJni.get().completeInit(
-                                    mNativeHandle, DialogOverlayImpl.this);
-                        }
-                    }
-                });
-            }
-        });
-
-        mReleaseCoreRunnable = new Runnable() {
-            @Override
-            public void run() {
-                dialogCore.release();
-            }
-        };
+        dialogCore.initialize(context, config, this, asPanel);
+        DialogOverlayImplJni.get().completeInit(mNativeHandle, DialogOverlayImpl.this);
     }
 
     // AndroidOverlay impl.
@@ -128,13 +93,9 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         // TODO(liberato): verify that this actually works, else add an explicit shutdown and hope
         // that the client calls it.
 
-        // Allow surfaceDestroyed to proceed, if it's waiting.
-        mHoppingHost.onClose();
-
         // Notify |mDialogCore| that it has been released.
-        if (mReleaseCoreRunnable != null) {
-            mOverlayHandler.post(mReleaseCoreRunnable);
-            mReleaseCoreRunnable = null;
+        if (mDialogCore != null) {
+            mDialogCore.release();
 
             // Note that we might get messagaes from |mDialogCore| after this, since they might be
             // dispatched before |r| arrives.  Clearing |mDialogCore| causes us to ignore them.
@@ -166,14 +127,7 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
 
         // |rect| is relative to the compositor surface.  Convert it to be relative to the screen.
         DialogOverlayImplJni.get().getCompositorOffset(mNativeHandle, DialogOverlayImpl.this, rect);
-
-        final DialogOverlayCore dialogCore = mDialogCore;
-        mOverlayHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                dialogCore.layoutSurface(rect);
-            }
-        });
+        mDialogCore.layoutSurface(rect);
     }
 
     // Receive the compositor offset, as part of scheduleLayout.  Adjust the layout position.
@@ -203,47 +157,13 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         if (mDialogCore == null) return;
 
         // Notify the client that the overlay is gone.
-        if (mClient != null) mClient.onDestroyed();
+        notifyDestroyed();
 
-        // Also clear out |mDialogCore| to prevent us from sending useless messages to it.  Note
-        // that we might have already sent useless messages to it, and it should be robust against
-        // that sort of thing.
+        // Also clear out |mDialogCore| to prevent us from sending useless messages to it.
         cleanup();
 
         // Note that we don't notify |mReleasedRunnable| yet, though we could.  We wait for the
         // client to close their connection first.
-    }
-
-    // DialogOverlayCore.Host impl.
-    // Due to threading issues, |mHoppingHost| doesn't forward this.
-    @Override
-    public void waitForClose() {
-        assert false : "Not reached";
-    }
-
-    // DialogOverlayCore.Host impl
-    @Override
-    public void enforceClose() {
-        // Pretend that the client closed us, even if they didn't.  It's okay if this is called more
-        // than once.  The client might have already called it, or might call it later.
-        close();
-    }
-
-    /**
-     * Send |token| to the |mDialogCore| on the overlay thread.
-     */
-    private void sendWindowTokenToCore(final IBinder token) {
-        ThreadUtils.assertOnUiThread();
-
-        if (mDialogCore != null) {
-            final DialogOverlayCore dialogCore = mDialogCore;
-            mOverlayHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    dialogCore.onWindowToken(token);
-                }
-            });
-        }
     }
 
     /**
@@ -260,7 +180,7 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         // skipping sending null if we haven't sent any non-null token yet.  If we're transitioning
         // between windows, that might make the client's job easier. It wouldn't have to guess when
         // a new token is available.
-        sendWindowTokenToCore(token);
+        mDialogCore.onWindowToken(token);
     }
 
     /**
@@ -271,10 +191,10 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         ThreadUtils.assertOnUiThread();
 
         // Notify the client that the overlay is going away.
-        if (mClient != null) mClient.onDestroyed();
+        notifyDestroyed();
 
         // Notify |mDialogCore| that it lost the token, if it had one.
-        sendWindowTokenToCore(null);
+        if (mDialogCore != null) mDialogCore.onWindowToken(null);
 
         cleanup();
     }
@@ -319,10 +239,32 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         mClient = null;
     }
 
-    /**
-     * Notify the native side that we are ready for token / dismissed callbacks.  This may result in
-     * a callback before it returns.
-     */
+    private void notifyDestroyed() {
+        if (mClient == null) return;
+
+        // This is the last message to the client.
+        final AndroidOverlayClient client = mClient;
+        mClient = null;
+
+        // If we've not provided a surface, then we don't need to wait for a reply.  This happens,
+        // for example, if we fail immediately.
+        if (mSurfaceId == 0) {
+            client.onDestroyed();
+            return;
+        }
+
+        // Notify the client that the overlay is gone, synchronously.  We have to do this once we
+        // have a Surface, since we could get a surfaceDestroyed from Android at any time.  If we
+        // signal async destruction, then get surfaceDestroyed, then we're stuck.  So, clean up
+        // synchronously even if Android is not waiting for us right now.
+
+        // Don't try this at home.  It's hacky.  All of DialogOverlay is deprecated.  It will be
+        // removed once Android O is no longer supported.
+        final AndroidOverlayClient.Proxy proxy = (AndroidOverlayClient.Proxy) client;
+        final MessagePipeHandle handle = proxy.getProxyHandler().passHandle();
+        final int nativeHandle = handle.releaseNativeHandle();
+        DialogOverlayImplJni.get().notifyDestroyedSynchronously(nativeHandle);
+    }
 
     @NativeMethods
     interface Natives {
@@ -364,5 +306,13 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
          * @param surfaceId Id that was returned by registerSurface.
          */
         Surface lookupSurfaceForTesting(int surfaceId);
+
+        /**
+         * Send a synchronous OnDestroyed message to the client.
+         * @param messagePipe Mojo message pipe ID.
+         * @param version Mojo interface version.
+         * @return none, but the message pipe is closed.
+         */
+        void notifyDestroyedSynchronously(int messagePipeHandle);
     }
 }

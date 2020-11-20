@@ -134,8 +134,6 @@ public class DialogOverlayCoreTest {
     void checkOverlayDidntCall() {
         assertEquals(null, mHost.surface());
         assertEquals(0, mHost.destroyedCount());
-        assertEquals(0, mHost.waitCloseCount());
-        assertEquals(0, mHost.enforceCloseCount());
     }
 
     // Return the SurfaceHolder callback that was provided to takeSurface(), if any.
@@ -158,8 +156,6 @@ public class DialogOverlayCoreTest {
     class HostMock implements DialogOverlayCore.Host {
         private Surface mSurface;
         private int mDestroyedCount;
-        private int mWaitCloseCount;
-        private int mEnforceCloseCount;
 
         @Override
         public void onSurfaceReady(Surface surface) {
@@ -171,30 +167,12 @@ public class DialogOverlayCoreTest {
             mDestroyedCount++;
         }
 
-        @Override
-        public void waitForClose() {
-            mWaitCloseCount++;
-        }
-
-        @Override
-        public void enforceClose() {
-            mEnforceCloseCount++;
-        }
-
         public Surface surface() {
             return mSurface;
         }
 
         public int destroyedCount() {
             return mDestroyedCount;
-        }
-
-        public int waitCloseCount() {
-            return mWaitCloseCount;
-        }
-
-        public int enforceCloseCount() {
-            return mEnforceCloseCount;
         }
     };
 
@@ -271,8 +249,6 @@ public class DialogOverlayCoreTest {
 
         mCore.release();
         assertEquals(0, mHost.destroyedCount());
-        assertEquals(0, mHost.waitCloseCount());
-        assertEquals(0, mHost.enforceCloseCount());
         checkDialogIsNotShown();
     }
 
@@ -286,11 +262,7 @@ public class DialogOverlayCoreTest {
         // Destroy the surface.
         holderCallback().surfaceDestroyed(mHolder);
         // |mCore| should have waited for cleanup during surfaceDestroyed.
-        assertEquals(1, mHost.waitCloseCount());
-        // Since we waited for cleanup, also pretend that the release was posted during the wait and
-        // will arrive after the wait completes.
         mCore.release();
-        assertEquals(1, mHost.enforceCloseCount());
 
         checkOverlayWasDestroyed();
     }

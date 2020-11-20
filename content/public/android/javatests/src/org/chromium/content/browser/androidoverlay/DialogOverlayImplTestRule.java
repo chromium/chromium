@@ -4,9 +4,6 @@
 
 package org.chromium.content.browser.androidoverlay;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-
 import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -28,10 +25,6 @@ import java.util.concurrent.TimeUnit;
  * TestRule for tests for DialogOverlayImpl.
  */
 public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
-    // overlay-ui thread.
-    private HandlerThread mOverlayUiThread;
-    private Handler mOverlayUiHandler;
-
     // Runnable that will be called on the browser UI thread when an overlay is released.
     private Runnable mReleasedRunnable;
 
@@ -52,9 +45,10 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
         // AndroidOverlayClient
         public static final int SURFACE_READY = 0;
         public static final int DESTROYED = 1;
-        public static final int POWER_EFFICIENT = 2;
-        public static final int CLOSE = 3;
-        public static final int CONNECTION_ERROR = 4;
+        public static final int SYNCHRONOUSLY_DESTROYED = 2;
+        public static final int POWER_EFFICIENT = 3;
+        public static final int CLOSE = 4;
+        public static final int CONNECTION_ERROR = 5;
         // AndroidOverlayProviderImpl.Callbacks
         public static final int RELEASED = 100;
         // Internal to test only.
@@ -98,6 +92,12 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
         @Override
         public void onDestroyed() {
             mPending.add(new Event(DESTROYED));
+        }
+
+        @Override
+        public void onSynchronouslyDestroyed(OnSynchronouslyDestroyedResponse response) {
+            mPending.add(new Event(SYNCHRONOUSLY_DESTROYED));
+            response.call();
         }
 
         @Override
@@ -207,11 +207,6 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
                             }
                         });
 
-                // Set up the overlay UI thread
-                mOverlayUiThread = new HandlerThread("TestOverlayUI");
-                mOverlayUiThread.start();
-                mOverlayUiHandler = new Handler(mOverlayUiThread.getLooper());
-
                 // Just delegate to |mClient| when an overlay is released.
                 mReleasedRunnable = new Runnable() {
                     @Override
@@ -247,7 +242,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
                 config.rect.height = height;
                 config.secure = mSecure;
                 DialogOverlayImpl impl = new DialogOverlayImpl(
-                        mClient, config, mOverlayUiHandler, mReleasedRunnable, true /* asPanel */);
+                        mClient, config, mReleasedRunnable, true /* asPanel */);
 
                 return impl;
             }

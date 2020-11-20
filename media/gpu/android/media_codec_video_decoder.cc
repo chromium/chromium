@@ -601,7 +601,8 @@ void MediaCodecVideoDecoder::OnSurfaceDestroyed(AndroidOverlay* overlay) {
   if (target_surface_bundle_ && target_surface_bundle_->overlay() == overlay)
     target_surface_bundle_ = texture_owner_bundle_;
 
-  // Transition the codec away from the overlay if necessary.
+  // Transition the codec away from the overlay if necessary.  This must be
+  // complete before this function returns.
   if (SurfaceTransitionPending())
     TransitionToTargetSurface();
 }

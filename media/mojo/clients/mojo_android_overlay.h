@@ -33,6 +33,8 @@ class MojoAndroidOverlay : public AndroidOverlay,
   // mojom::AndroidOverlayClient
   void OnSurfaceReady(uint64_t surface_key) override;
   void OnDestroyed() override;
+  void OnSynchronouslyDestroyed(
+      OnSynchronouslyDestroyedCallback done_cb) override;
   void OnPowerEfficientState(bool is_power_efficient) override;
 
  private:
