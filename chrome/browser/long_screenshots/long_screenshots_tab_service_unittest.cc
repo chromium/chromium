@@ -22,6 +22,9 @@
 
 namespace long_screenshots {
 
+using paint_preview::DirectoryKey;
+using paint_preview::FileManager;
+
 namespace {
 
 constexpr char kFeatureName[] = "tab_service_test";
@@ -131,6 +134,14 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
                      key),
       base::BindOnce([](bool exists) { EXPECT_TRUE(exists); }));
   task_environment()->RunUntilIdle();
+
+  service->DeleteAllLongScreenshotFiles();
+  task_environment()->RunUntilIdle();
+  service->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
+      base::BindOnce([](bool exists) { EXPECT_FALSE(exists); }));
+  task_environment()->RunUntilIdle();
 }
 
 // Test when PaintPreviewRecorder returns a failure status code.
@@ -147,6 +158,22 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
       base::BindOnce([](LongScreenshotsTabService::Status status) {
         EXPECT_EQ(status, LongScreenshotsTabService::Status::kCaptureFailed);
       }));
+  task_environment()->RunUntilIdle();
+
+  auto file_manager = service->GetFileManager();
+  auto key = file_manager->CreateKey(kTabId);
+  service->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
+      base::BindOnce([](bool exists) { EXPECT_TRUE(exists); }));
+  task_environment()->RunUntilIdle();
+
+  service->DeleteAllLongScreenshotFiles();
+  task_environment()->RunUntilIdle();
+  service->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
+      base::BindOnce([](bool exists) { EXPECT_FALSE(exists); }));
   task_environment()->RunUntilIdle();
 }
 }  // namespace long_screenshots

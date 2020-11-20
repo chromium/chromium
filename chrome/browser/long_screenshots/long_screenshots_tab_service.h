@@ -26,6 +26,9 @@ namespace long_screenshots {
 
 // A service for capturing Long Screenshots using PaintPreview. Writes the
 // retrieved bitmap to file.
+// TODO(tgupta): Handle the deletion of old files when the long screenshots
+// feature ends or when Chrome starts up (to handle when Chrome is killed in the
+// background and there was no opportunity to clean the files).
 class LongScreenshotsTabService
     : public paint_preview::PaintPreviewBaseService {
  public:
@@ -52,6 +55,9 @@ class LongScreenshotsTabService
   void CaptureTab(int tab_id,
                   content::WebContents* contents,
                   FinishedCallback callback);
+
+  // Delete all old long screenshot files.
+  void DeleteAllLongScreenshotFiles();
 
  private:
   // Retrieves the content::WebContents from the |frame_tree_node_id|

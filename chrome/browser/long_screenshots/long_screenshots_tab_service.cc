@@ -11,6 +11,9 @@
 
 namespace long_screenshots {
 
+using paint_preview::DirectoryKey;
+using paint_preview::FileManager;
+
 namespace {
 // TODO(tgupta): Evaluate whether this is the right size.
 constexpr size_t kMaxPerCaptureSizeBytes = 5 * 1000L * 1000L;  // 5 MB.
@@ -104,20 +107,37 @@ void LongScreenshotsTabService::OnCaptured(
     FinishedCallback callback,
     paint_preview::PaintPreviewBaseService::CaptureStatus status,
     std::unique_ptr<paint_preview::CaptureResult> result) {
-  // TODO(tgupta): Continue to flesh this out to manage the documents. Consider
-  // having more detailed status messages to return to the caller.
+  auto* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  if (web_contents)
+    web_contents->DecrementCapturerCount(true);
+
   if (status != PaintPreviewBaseService::CaptureStatus::kOk ||
       !result->capture_success) {
     std::move(callback).Run(Status::kCaptureFailed);
     return;
   }
-  std::move(callback).Run(Status::kOk);
+
+  auto file_manager = GetFileManager();
+  GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::SerializePaintPreviewProto, GetFileManager(),
+                     key, result->proto, true),
+      base::BindOnce(&LongScreenshotsTabService::OnFinished,
+                     weak_ptr_factory_.GetWeakPtr(), tab_id,
+                     std::move(callback)));
 }
 
 void LongScreenshotsTabService::OnFinished(int tab_id,
                                            FinishedCallback callback,
                                            bool success) {
-  // TODO(tgupta): Complete this function
+  std::move(callback).Run(success ? Status::kOk
+                                  : Status::kProtoSerializationFailed);
+}
+
+void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
+  GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&FileManager::DeleteAll, GetFileManager()));
 }
 
 }  // namespace long_screenshots
