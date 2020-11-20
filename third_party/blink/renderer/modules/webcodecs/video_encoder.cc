@@ -70,19 +70,22 @@ std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
       continue;
 
     if (supported_profile.min_resolution.width() > options.width ||
-        supported_profile.min_resolution.height() > options.height)
+        supported_profile.min_resolution.height() > options.height) {
       continue;
+    }
 
     if (supported_profile.max_resolution.width() < options.width ||
-        supported_profile.max_resolution.height() < options.height)
+        supported_profile.max_resolution.height() < options.height) {
       continue;
+    }
 
     double max_supported_framerate =
         double{supported_profile.max_framerate_numerator} /
         supported_profile.max_framerate_denominator;
     if (options.framerate.has_value() &&
-        options.framerate.value() > max_supported_framerate)
+        options.framerate.value() > max_supported_framerate) {
       continue;
+    }
 
     found_supported_profile = true;
     break;
@@ -319,6 +322,7 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     case AccelerationPreference::kRequire: {
       auto result =
           CreateAcceleratedVideoEncoder(config.profile, config.options);
+      is_hw_accelerated_ = !!result;
       if (result)
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
       return result;
@@ -326,6 +330,7 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     case AccelerationPreference::kAllow:
       if (auto result =
               CreateAcceleratedVideoEncoder(config.profile, config.options)) {
+        is_hw_accelerated_ = true;
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
         return result;
       }
@@ -345,6 +350,7 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
         default:
           return nullptr;
       }
+      is_hw_accelerated_ = false;
       if (!result)
         return nullptr;
       return std::make_unique<media::OffloadingVideoEncoder>(std::move(result));
@@ -584,7 +590,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
   };
 
   scoped_refptr<media::VideoFrame> frame = request->frame->frame();
-  if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (frame->HasGpuMemoryBuffer() && !is_hw_accelerated_) {
     frame = ConvertToI420Frame(frame);
     if (!frame) {
       HandleError("Unexpected frame format.",
