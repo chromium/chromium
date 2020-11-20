@@ -24,6 +24,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -99,8 +100,16 @@ void GlanceableInfoView::OnWeatherInfoUpdated() {
 void GlanceableInfoView::Show() {
   AmbientBackendModel* ambient_backend_model =
       delegate_->GetAmbientBackendModel();
-  weather_condition_icon_->SetImage(
-      ambient_backend_model->weather_condition_icon());
+
+  // When ImageView has an |image_| with different size than the |image_size_|,
+  // it will resize and draw the |image_|. The quality is not as good as if we
+  // resize the |image_| to be the same as the |image_size_| with |RESIZE_BEST|
+  // method.
+  gfx::ImageSkia icon = ambient_backend_model->weather_condition_icon();
+  gfx::ImageSkia icon_resized = gfx::ImageSkiaOperations::CreateResizedImage(
+      icon, skia::ImageOperations::RESIZE_BEST,
+      gfx::Size(kWeatherIconSizeDip, kWeatherIconSizeDip));
+  weather_condition_icon_->SetImage(icon_resized);
 
   temperature_->SetText(GetTemperatureText());
 }
