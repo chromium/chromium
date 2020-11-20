@@ -134,12 +134,9 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // null string. https://url.spec.whatwg.org/#host-registrable-domain
   String RegistrableDomain() const;
 
-  // Returns 0 if the effective port of this origin is the default for its
-  // scheme.
-  uint16_t Port() const { return port_; }
   // Returns the effective port, even if it is the default port for the
   // scheme (e.g. "http" => 80).
-  uint16_t EffectivePort() const { return effective_port_; }
+  uint16_t Port() const { return port_; }
 
   // Returns true if a given URL is secure, based either directly on its
   // own protocol, or, when relevant, on the protocol of its "inner URL"
@@ -372,8 +369,6 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   bool SerializesAsNull() const;
 
  private:
-  constexpr static const uint16_t kInvalidPort = 0;
-
   friend struct mojo::UrlOriginAdapter;
   friend struct blink::SecurityOriginHash;
 
@@ -417,8 +412,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   const String protocol_ = g_empty_string;
   const String host_ = g_empty_string;
   String domain_ = g_empty_string;
-  const uint16_t port_ = kInvalidPort;
-  const uint16_t effective_port_ = kInvalidPort;
+  const uint16_t port_ = 0;
   const base::Optional<url::Origin::Nonce> nonce_if_opaque_;
   bool universal_access_ = false;
   bool domain_was_set_in_dom_ = false;

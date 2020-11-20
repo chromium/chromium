@@ -68,12 +68,10 @@ class WebSecurityOrigin {
 
   BLINK_PLATFORM_EXPORT WebString Protocol() const;
   BLINK_PLATFORM_EXPORT WebString Host() const;
-  BLINK_PLATFORM_EXPORT uint16_t Port() const;
 
-  // |Port()| will return 0 if the port is the default for an origin. This
-  // method instead returns the effective port, even if it is the default port
-  // (e.g. "http" => 80).
-  BLINK_PLATFORM_EXPORT uint16_t EffectivePort() const;
+  // Like url::Origin::port, this returns the default port for standard URLs
+  // with no explicit port set.
+  BLINK_PLATFORM_EXPORT uint16_t Port() const;
 
   // A unique WebSecurityOrigin is the least privileged WebSecurityOrigin.
   BLINK_PLATFORM_EXPORT bool IsOpaque() const;

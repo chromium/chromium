@@ -56,8 +56,7 @@ struct StructTraits<url::mojom::OriginDataView,
   }
   static uint16_t port(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
-    return UrlOriginAdapter::GetOriginOrPrecursorOriginIfOpaque(origin)
-        ->EffectivePort();
+    return UrlOriginAdapter::GetOriginOrPrecursorOriginIfOpaque(origin)->Port();
   }
   static base::Optional<base::UnguessableToken> nonce_if_opaque(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
