@@ -12,6 +12,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -108,12 +111,14 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     chrome::AppInstallationAcceptanceCallback callback,
     chrome::PwaInProductHelpState iph_state,
-    PrefService* prefs)
+    PrefService* prefs,
+    feature_engagement::Tracker* tracker)
     : LocationBarBubbleDelegateView(anchor_view, nullptr),
       web_app_info_(std::move(web_app_info)),
       callback_(std::move(callback)),
       iph_state_(iph_state),
-      prefs_(prefs) {
+      prefs_(prefs),
+      tracker_(tracker) {
   DCHECK(web_app_info_);
   DCHECK(prefs_);
 
@@ -232,6 +237,7 @@ bool PWAConfirmationBubbleView::Accept() {
     UMA_HISTOGRAM_ENUMERATION("WebApp.InstallIphPromo.Result",
                               web_app::InstallIphResult::kInstalled);
     web_app::RecordInstallIphInstalled(prefs_, app_id);
+    tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;
@@ -262,12 +268,14 @@ void ShowPWAInstallBubble(content::WebContents* web_contents,
   PageActionIconView* icon =
       browser_view->toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kPwaInstall);
-  PrefService* prefs =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          ->GetPrefs();
-  g_bubble_ =
-      new PWAConfirmationBubbleView(anchor_view, icon, std::move(web_app_info),
-                                    std::move(callback), iph_state, prefs);
+  auto* browser_context = web_contents->GetBrowserContext();
+  PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(browser_context);
+  g_bubble_ = new PWAConfirmationBubbleView(
+      anchor_view, icon, std::move(web_app_info), std::move(callback),
+      iph_state, prefs, tracker);
 
   views::BubbleDialogDelegateView::CreateBubble(g_bubble_)->Show();
 

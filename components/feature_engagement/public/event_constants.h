@@ -54,6 +54,9 @@ extern const char kWebUITabStripClosed[];
 // The WebUI tab strip was opened by the user.
 extern const char kWebUITabStripOpened[];
 
+// The PWA was installed by the user.
+extern const char kDesktopPwaInstalled[];
+
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 
