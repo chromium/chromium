@@ -1477,6 +1477,8 @@ static inline const LayoutObject& ScrollbarStyleSource(
         doc_element->GetLayoutObject()->StyleRef().HasPseudoElementStyle(
             kPseudoIdScrollbar))
       return *doc_element->GetLayoutObject();
+  } else if (!layout_box.GetNode() && layout_box.Parent()) {
+    return *layout_box.Parent();
   }
 
   return layout_box;
