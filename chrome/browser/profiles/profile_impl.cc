@@ -39,6 +39,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
@@ -166,7 +167,7 @@
 #include "services/service_manager/public/cpp/service.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/chromeos/app_mode/app_launch_utils.h"
 #include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
@@ -310,7 +311,7 @@ std::string ExitTypeToSessionTypePrefValue(Profile::ExitType type) {
   return std::string();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Checks if |new_locale| is the same as |pref_locale| or |pref_locale| is used
 // to show UI translation for |new_locale|. (e.g. "it" is used for "it-CH")
 bool LocaleNotChanged(const std::string& pref_locale,
@@ -319,7 +320,7 @@ bool LocaleNotChanged(const std::string& pref_locale,
   language::ConvertToActualUILocale(&new_locale_converted);
   return pref_locale == new_locale_converted;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -359,7 +360,7 @@ std::unique_ptr<Profile> Profile::CreateProfile(const base::FilePath& path,
   std::unique_ptr<Profile> profile = base::WrapUnique(new ProfileImpl(
       path, delegate, create_mode, creation_time, io_task_runner));
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !defined(OS_ANDROID) && \
-    !defined(OS_CHROMEOS)
+    !BUILDFLAG(IS_CHROMEOS_ASH)
   if (create_mode == CREATE_MODE_SYNCHRONOUS && profile->IsLegacySupervised())
     return nullptr;
 #endif
@@ -411,11 +412,11 @@ void ProfileImpl::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kForceEphemeralProfiles, false);
   registry->RegisterBooleanPref(prefs::kEnableMediaRouter, true);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(
       prefs::kOobeMarketingOptInScreenFinished, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kShowCastIconInToolbar, false);
 #endif  // !defined(OS_ANDROID)
@@ -441,7 +442,7 @@ ProfileImpl::ProfileImpl(
   DCHECK(!path.empty()) << "Using an empty path will attempt to write "
                         << "profile files to the root directory!";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_regular_profile =
       chromeos::ProfileHelper::IsRegularProfile(this);
 
@@ -492,7 +493,7 @@ ProfileImpl::ProfileImpl(
 
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_regular_profile) {
     // |chromeos::InitializeAccountManager| is called during a User's session
     // initialization but some tests do not properly login to a User Session.
@@ -557,7 +558,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   bool force_immediate_policy_load = !async_prefs;
 
   policy::UserCloudPolicyManager* user_cloud_policy_manager;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (force_immediate_policy_load)
     chromeos::DeviceSettingsService::Get()->LoadImmediately();
 
@@ -579,7 +580,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
           force_immediate_policy_load, this);
 
   bool is_signin_profile = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   is_signin_profile = chromeos::ProfileHelper::IsSigninProfile(this);
 #endif
   ::RegisterProfilePrefs(is_signin_profile,
@@ -679,7 +680,7 @@ void ProfileImpl::DoFinalInit() {
   // ChromeOS because Chrome is always running, no need for special keep-alive
   // or launch-on-startup support unless kKeepAliveForTest is set.
   bool init_background_mode_manager = true;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kKeepAliveForTest))
     init_background_mode_manager = false;
@@ -702,7 +703,7 @@ void ProfileImpl::DoFinalInit() {
   // as a URLDataSource early.
   dom_distiller::RegisterViewerSource(this);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   MigrateSigninScopedDeviceId(this);
 
   if (chromeos::UserSessionManager::GetInstance()
@@ -711,7 +712,7 @@ void ProfileImpl::DoFinalInit() {
   }
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Listen for bookmark model load, to bootstrap the sync service.
   // On CrOS sync service will be initialized after sign in.
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(this);
@@ -722,7 +723,7 @@ void ProfileImpl::DoFinalInit() {
 
   PushMessagingServiceImpl::InitializeForProfile(this);
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   signin_ui_util::InitializePrefsForProfile(this);
 #endif
 
@@ -960,7 +961,7 @@ bool ProfileImpl::IsLegacySupervised() const {
 }
 
 bool ProfileImpl::AllowsBrowserWindows() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::ProfileHelper::IsSigninProfile(this) ||
       chromeos::ProfileHelper::IsLockScreenAppProfile(this)) {
     return false;
@@ -994,7 +995,7 @@ void ProfileImpl::OnLocaleReady() {
   extensions::ExtensionPrefs::Get(this)->MigrateObsoleteExtensionPrefs();
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If this is a kiosk profile, reset some of its prefs which should not
   // persist between sessions.
   if (chrome::IsRunningInForcedAppMode()) {
@@ -1022,7 +1023,7 @@ void ProfileImpl::OnLocaleReady() {
 
   g_browser_process->profile_manager()->InitProfileUserPrefs(this);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   arc::ArcServiceLauncher::Get()->MaybeSetProfile(this);
 #endif
 
@@ -1052,7 +1053,7 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
     return;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (create_mode == CREATE_MODE_SYNCHRONOUS) {
     // Synchronous create mode implies that either it is restart after crash,
     // or we are in tests. In both cases the first loaded locale is correct.
@@ -1074,7 +1075,7 @@ bool ProfileImpl::WasCreatedByVersionOrLater(const std::string& version) {
 }
 
 void ProfileImpl::SetExitType(ExitType exit_type) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::ProfileHelper::IsSigninProfile(this))
     return;
 #endif
@@ -1160,7 +1161,7 @@ policy::SchemaRegistryService* ProfileImpl::GetPolicySchemaRegistryService() {
   return schema_registry_service_.get();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 policy::UserCloudPolicyManagerChromeOS*
 ProfileImpl::GetUserCloudPolicyManagerChromeOS() {
   return user_cloud_policy_manager_chromeos_.get();
@@ -1174,11 +1175,11 @@ ProfileImpl::GetActiveDirectoryPolicyManager() {
 policy::UserCloudPolicyManager* ProfileImpl::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 policy::ConfigurationPolicyProvider*
 ProfileImpl::configuration_policy_provider() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (user_cloud_policy_manager_chromeos_)
     return user_cloud_policy_manager_chromeos_.get();
   if (active_directory_policy_manager_)
@@ -1355,7 +1356,7 @@ void ProfileImpl::EnsureSessionServiceCreated() {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
                                   AppLocaleChangedVia via) {
   if (new_locale.empty()) {
@@ -1463,7 +1464,7 @@ void ProfileImpl::InitChromeOSPreferences() {
       this, chromeos::ProfileHelper::Get()->GetUserByProfile(this));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ProfileImpl::SetCreationTimeForTesting(base::Time creation_time) {
   prefs_->SetTime(prefs::kProfileCreationTime, creation_time);

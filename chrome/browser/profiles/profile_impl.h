@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data_handle.h"
 #include "chrome/common/buildflags.h"
@@ -35,7 +36,7 @@
 class MediaDeviceIDSalt;
 class PrefService;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
 class KioskTest;
 class LocaleChangeGuard;
@@ -142,14 +143,14 @@ class ProfileImpl : public Profile {
   PrefService* GetOffTheRecordPrefs() override;
   PrefService* GetReadOnlyOffTheRecordPrefs() override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::UserCloudPolicyManagerChromeOS* GetUserCloudPolicyManagerChromeOS()
       override;
   policy::ActiveDirectoryPolicyManager* GetActiveDirectoryPolicyManager()
       override;
 #else
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
   const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
       const override;
@@ -166,17 +167,17 @@ class ProfileImpl : public Profile {
   bool ShouldRestoreOldSessionCookies() const override;
   bool ShouldPersistSessionCookies() const override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ChangeAppLocale(const std::string& locale, AppLocaleChangedVia) override;
   void OnLogin() override;
   void InitChromeOSPreferences() override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetCreationTimeForTesting(base::Time creation_time) override;
   void RecordMainFrameNavigation() override {}
 
  private:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class chromeos::KioskTest;
   friend class chromeos::SupervisedUserTestBase;
 #endif
@@ -260,7 +261,7 @@ class ProfileImpl : public Profile {
 
   // configuration_policy_provider() is either of these, or nullptr in some
   // tests.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
       user_cloud_policy_manager_chromeos_;
   std::unique_ptr<policy::ActiveDirectoryPolicyManager>
@@ -302,7 +303,7 @@ class ProfileImpl : public Profile {
   // SimpleKeyedServiceFactory.
   std::unique_ptr<ProfileKey> key_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::Preferences> chromeos_preferences_;
 
   std::unique_ptr<chromeos::LocaleChangeGuard> locale_change_guard_;

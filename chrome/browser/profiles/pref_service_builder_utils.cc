@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -68,7 +69,7 @@ void CreateProfileReadme(const base::FilePath& profile_path) {
 void RegisterProfilePrefs(bool is_signin_profile,
                           const std::string& locale,
                           user_prefs::PrefRegistrySyncable* pref_registry) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_signin_profile)
     RegisterSigninProfilePrefs(pref_registry);
   else

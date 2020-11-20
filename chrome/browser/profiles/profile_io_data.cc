@@ -20,6 +20,7 @@
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
@@ -34,7 +35,7 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
@@ -47,7 +48,7 @@
 #include "components/user_manager/user_manager.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -55,7 +56,7 @@ using content::ResourceContext;
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The following four functions are responsible for initializing NSS for each
 // profile on ChromeOS, which has a separate NSS database and TPM slot
 // per-profile.
@@ -176,7 +177,7 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
     crypto::InitializePrivateSoftwareSlotForChromeOSUser(username_hash);
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -185,7 +186,7 @@ void ProfileIOData::InitializeOnUIThread(Profile* profile) {
 
   auto params = std::make_unique<ProfileParams>();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   // No need to initialize NSS for users with empty username hash:
@@ -256,9 +257,9 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
     content::kChromeUIScheme,
     content::kChromeUIUntrustedScheme,
     url::kDataScheme,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     content::kExternalFileScheme,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_ANDROID)
     url::kContentScheme,
 #endif  // defined(OS_ANDROID)
@@ -306,7 +307,7 @@ void ProfileIOData::Init() const {
   DCHECK(!initialized_);
   DCHECK(profile_params_.get());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   username_hash_ = profile_params_->username_hash;
   // If we're using the system slot for certificate management, we also must
   // have access to the user's slots.

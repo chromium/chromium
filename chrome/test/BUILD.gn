@@ -765,6 +765,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//base/util/memory_pressure:test_support",
       "//build:branding_buildflags",
+      "//build:chromeos_buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
       "//chrome:strings",

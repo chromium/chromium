@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -62,9 +63,9 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #endif  // !defined (OS_ANDROID)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/user_manager.h"
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 using base::UserMetricsAction;
 using content::BrowserThread;
@@ -204,7 +205,7 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
     is_first_run = chrome::startup::IS_FIRST_RUN;
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
     ProfileAttributesEntry* entry;
     if (g_browser_process->profile_manager()->GetProfileAttributesStorage().
@@ -215,7 +216,7 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
       return;
     }
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (unblock_extensions)
@@ -292,10 +293,10 @@ bool HasProfileSwitchTargets(Profile* profile) {
 }
 
 void ProfileBrowserCloseSuccess(const base::FilePath& profile_path) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   UserManager::Show(base::FilePath(),
                     profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void CloseGuestProfileWindows() {
@@ -324,10 +325,10 @@ void LockBrowserCloseSuccess(const base::FilePath& profile_path) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   chrome::HideTaskManager();
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   UserManager::Show(profile_path,
                     profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void LockProfile(Profile* profile) {

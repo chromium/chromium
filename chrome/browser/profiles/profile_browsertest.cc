@@ -31,6 +31,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
@@ -70,7 +71,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
@@ -218,7 +219,7 @@ void SpinThreads() {
 class ProfileBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
         chromeos::switches::kIgnoreUserProfileMappingForTests);
 #endif
@@ -528,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   ASSERT_NE(loaded_profiles.size(), 0UL);
   Profile* profile = loaded_profiles[0];
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto* loaded_profile : loaded_profiles) {
     if (!chromeos::ProfileHelper::IsSigninProfile(loaded_profile)) {
       profile = loaded_profile;
@@ -914,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
             Browser::GetBrowserCreationStatusForProfile(otr_profile));
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 class EphemeralGuestProfileBrowserTest : public ProfileBrowserTest {
  public:
   EphemeralGuestProfileBrowserTest() {
@@ -971,4 +972,4 @@ IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
   EXPECT_NE(guest_path1, guest_path2);
 }
 
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

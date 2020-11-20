@@ -50,7 +50,7 @@ class SchemaRegistryService;
 class ProfilePolicyConnector;
 class UserCloudPolicyManager;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class ActiveDirectoryPolicyManager;
 class UserCloudPolicyManagerChromeOS;
 #endif
@@ -339,7 +339,7 @@ class Profile : public content::BrowserContext {
   // Returns the SchemaRegistryService.
   virtual policy::SchemaRegistryService* GetPolicySchemaRegistryService() = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the UserCloudPolicyManagerChromeOS.
   virtual policy::UserCloudPolicyManagerChromeOS*
   GetUserCloudPolicyManagerChromeOS() = 0;
@@ -360,7 +360,7 @@ class Profile : public content::BrowserContext {
   virtual base::FilePath last_selected_directory() = 0;
   virtual void set_last_selected_directory(const base::FilePath& path) = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   enum AppLocaleChangedVia {
     // Caused by chrome://settings change.
     APP_LOCALE_CHANGED_VIA_SETTINGS,
@@ -389,7 +389,7 @@ class Profile : public content::BrowserContext {
 
   // Initializes Chrome OS's preferences.
   virtual void InitChromeOSPreferences() = 0;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns the home page for this profile.
   virtual GURL GetHomePage() = 0;
@@ -438,7 +438,7 @@ class Profile : public content::BrowserContext {
   // Returns whether it is a system profile.
   virtual bool IsSystemProfile() const;
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(https://crbug.com/1129543): Implement this method.
   // In Lacros, there is exactly one profile associated with the currently
   // logged in user on ChromeOS.

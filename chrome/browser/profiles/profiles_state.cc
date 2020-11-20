@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/browser.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/login/login_state/login_state.h"
 #else
 #include <algorithm>
@@ -44,7 +44,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
@@ -131,7 +131,7 @@ base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path) {
   return email.empty() ? profile_name_to_display : email;
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item) {
   if (item.legacy_supervised) {
     return l10n_util::GetStringFUTF16(
@@ -164,7 +164,7 @@ void UpdateProfileName(Profile* profile,
                           base::UTF16ToUTF8(new_profile_name));
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsRegularOrGuestSession(Browser* browser) {
   Profile* profile = browser->profile();
@@ -204,7 +204,7 @@ bool IsProfileLocked(const base::FilePath& profile_path) {
   return entry->IsSigninRequired();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void UpdateIsProfileLockEnabledIfNeeded(Profile* profile) {
   if (!profile->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain).
       empty())
@@ -245,7 +245,7 @@ bool SetActiveProfileToGuestIfLocked() {
 
   return true;
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   // The BrowsingDataRemover relies on many objects that aren't created in unit
@@ -266,7 +266,7 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   profile->Wipe();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 bool AreAllNonChildNonSupervisedProfilesLocked() {
   bool at_least_one_regular_profile_present = false;
 
@@ -290,11 +290,11 @@ bool AreAllNonChildNonSupervisedProfilesLocked() {
 #endif
 
 bool IsPublicSession() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::LoginState::IsInitialized()) {
     return chromeos::LoginState::Get()->IsPublicSessionUser();
   }
-#elif BUILDFLAG(IS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosChromeServiceImpl::Get());
   return chromeos::LacrosChromeServiceImpl::Get()
              ->init_params()
@@ -304,7 +304,7 @@ bool IsPublicSession() {
 }
 
 bool ArePublicSessionRestrictionsEnabled() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::LoginState::IsInitialized()) {
     return chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
   }
@@ -312,7 +312,7 @@ bool ArePublicSessionRestrictionsEnabled() {
   return false;
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 base::string16 GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
   DCHECK(account_info.IsValid());
@@ -323,7 +323,7 @@ base::string16 GetDefaultNameForNewSignedInProfile(
   return l10n_util::GetStringUTF16(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // !defined(OS_ANDROID)
 

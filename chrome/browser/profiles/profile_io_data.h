@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/content_browser_client.h"
@@ -39,7 +40,7 @@ class ProfileIOData {
   // Initializes the ProfileIOData object.
   void Init() const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string username_hash() const {
     return username_hash_;
   }
@@ -58,7 +59,7 @@ class ProfileIOData {
     ProfileParams();
     ~ProfileParams();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     std::string username_hash;
     bool user_is_affiliated = false;
 #endif
@@ -83,7 +84,7 @@ class ProfileIOData {
   // Deleted after lazy initialization.
   mutable std::unique_ptr<ProfileParams> profile_params_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   mutable std::string username_hash_;
 #endif
 

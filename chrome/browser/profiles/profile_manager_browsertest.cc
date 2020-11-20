@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -37,7 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/path_service.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
@@ -206,7 +207,7 @@ base::FilePath GetFirstNonSigninNonLockScreenAppProfile(
     ProfileAttributesStorage* storage) {
   std::vector<ProfileAttributesEntry*> entries =
       storage->GetAllProfilesAttributesSortedByName();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::FilePath signin_path =
       chromeos::ProfileHelper::GetSigninProfileDir();
   const base::FilePath lock_screen_apps_path =
@@ -239,7 +240,7 @@ class ProfileManagerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
         chromeos::switches::kIgnoreUserProfileMappingForTests);
 #endif
@@ -247,7 +248,7 @@ class ProfileManagerBrowserTest : public InProcessBrowserTest {
 };
 
 // CrOS multi-profiles implementation is too different for these tests.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, DeleteSingletonProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -393,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, DeleteAllProfiles) {
   Profile* last_used = ProfileManager::GetLastUsedProfile();
   EXPECT_EQ(new_profile_path, last_used->GetPath());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, ProfileFromProfileKey) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -441,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, ProfileFromProfileKey) {
             profile_manager->GetProfileFromProfileKey(otr_2b->GetProfileKey()));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ProfileManagerCrOSBrowserTest : public ProfileManagerBrowserTest {
  protected:
@@ -466,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerCrOSBrowserTest, GetLastUsedProfile) {
   EXPECT_EQ(profile_path.value(), last_used_profile->GetPath().value());
 }
 
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Times out (http://crbug.com/159002)
 IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest,
@@ -653,10 +654,12 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
 }
 
 // The test makes sense on those platforms where the keychain exists.
-#if !defined(OS_WIN) && !defined(OS_CHROMEOS)
+#if !defined(OS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Suddenly started failing on Linux, see http://crbug.com/660488.
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_DeletePasswords DISABLED_DeletePasswords
 #else
 #define MAYBE_DeletePasswords DeletePasswords
@@ -697,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, MAYBE_DeletePasswords) {
   verify_delete.Wait();
   EXPECT_EQ(0u, verify_delete.GetPasswords().size());
 }
-#endif  // !defined(OS_WIN) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests Profile::HasOffTheRecordProfile, Profile::IsValidProfile and the
 // profile counts in ProfileManager with respect to the creation and destruction

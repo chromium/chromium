@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -59,11 +60,11 @@ class ProfileListDesktopBrowserTest : public InProcessBrowserTest {
 // SignOut is flaky on Windows (crbug.com/357329)
 // and Mac (crbug.com/674497, crbug.com/1110452).
 #define MAYBE_SignOut DISABLED_SignOut
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 // This test doesn't make sense for Chrome OS since it has a different
 // multi-profiles menu in the system tray instead.
 #define MAYBE_SignOut DISABLED_SignOut
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Flaky on Linux debug builds with libc++ (https://crbug.com/734875)
 #define MAYBE_SignOut DISABLED_SignOut
 #else
@@ -106,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SignOut) {
   UserManager::Hide();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // This test doesn't make sense for Chrome OS since it has a different
 // multi-profiles menu in the system tray instead.
 #define MAYBE_SwitchToProfile DISABLED_SwitchToProfile

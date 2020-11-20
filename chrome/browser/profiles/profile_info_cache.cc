@@ -19,6 +19,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -47,10 +48,10 @@ const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
     "last_downloaded_gaia_picture_url_with_size";
 const char kAccountIdKey[] = "account_id_key";
 const char kProfileCountLastUpdatePref[] = "profile.profile_counts_reported";
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kLegacyProfileNameMigrated[] = "legacy.profile.name.migrated";
 bool migration_enabled_for_testing = false;
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void DeleteBitmap(const base::FilePath& image_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -71,7 +72,7 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
     base::DictionaryValue* info = nullptr;
     cache->GetDictionaryWithoutPathExpansion(it.key(), &info);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !defined(OS_ANDROID) && \
-    !defined(OS_CHROMEOS)
+    !BUILDFLAG(IS_CHROMEOS_ASH)
     std::string supervised_user_id;
     info->GetString(ProfileAttributesEntry::kSupervisedUserId,
                     &supervised_user_id);
@@ -116,7 +117,7 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
   LoadGAIAPictureIfNeeded();
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   bool migrate_legacy_profile_names =
       (!prefs_->GetBoolean(kLegacyProfileNameMigrated) ||
        migration_enabled_for_testing);
@@ -129,7 +130,7 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
       prefs_, kProfileCountLastUpdatePref, base::TimeDelta::FromHours(24),
       base::BindRepeating(&ProfileMetrics::LogNumberOfProfiles, this));
   repeating_timer_->Start();
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ProfileInfoCache::~ProfileInfoCache() = default;
@@ -143,7 +144,7 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
                                          const std::string& supervised_user_id,
                                          const AccountId& account_id) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !defined(OS_ANDROID) && \
-    !defined(OS_CHROMEOS)
+    !BUILDFLAG(IS_CHROMEOS_ASH)
   // Silently ignore legacy supervised user profiles.
   if (!supervised_user_id.empty() &&
       supervised_user_id != supervised_users::kChildAccountSUID) {
@@ -196,7 +197,7 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
 }
 
 void ProfileInfoCache::DisableProfileMetricsForTesting() {
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   repeating_timer_.reset();
 #endif
 }
@@ -494,9 +495,9 @@ const base::FilePath& ProfileInfoCache::GetUserDataDir() const {
 void ProfileInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileInfoCache);
   registry->RegisterTimePref(kProfileCountLastUpdatePref, base::Time());
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kLegacyProfileNameMigrated, false);
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 const base::DictionaryValue* ProfileInfoCache::GetInfoForProfileAtIndex(
@@ -559,7 +560,7 @@ void ProfileInfoCache::LoadGAIAPictureIfNeeded() {
 }
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   for (size_t i = 0; i < entries.size(); i++) {
@@ -595,7 +596,7 @@ void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
 void ProfileInfoCache::SetLegacyProfileMigrationForTesting(bool value) {
   migration_enabled_for_testing = value;
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ProfileInfoCache::DownloadAvatars() {
 #if !defined(OS_ANDROID)

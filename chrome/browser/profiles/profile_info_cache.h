@@ -20,6 +20,7 @@
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_info_cache_observer.h"
@@ -176,7 +177,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
   void LoadGAIAPictureIfNeeded();
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Migrate any legacy profile names ("First user", "Default Profile") to
   // new style default names ("Person 1"). Rename any duplicates of "Person n"
   // i.e. Two or more profiles with the profile name "Person 1" would be
@@ -185,7 +186,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
   static void SetLegacyProfileMigrationForTesting(bool value);
 
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::vector<std::string> keys_;
   const base::FilePath user_data_dir_;

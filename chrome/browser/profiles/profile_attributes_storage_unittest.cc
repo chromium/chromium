@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -690,7 +691,7 @@ TEST_F(ProfileAttributesStorageTest, AvatarIconIndex) {
 #endif
 
 // High res avatar downloading is only supported on desktop.
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
   storage()->set_disable_avatar_download_for_testing(false);
 

@@ -13,6 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_process_host.h"
 
@@ -120,7 +121,7 @@ void ProfileDestroyer::DestroyRegularProfileNow(Profile* const profile) {
   // RenderProcessHosts in --single-process mode, to avoid race conditions.
   if (!content::RenderProcessHost::run_renderer_in_process()) {
     DCHECK_EQ(profile_hosts_count, 0u);
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // ChromeOS' system profile can be outlived by its off-the-record profile
     // (see https://crbug.com/828479).
     DCHECK_EQ(off_the_record_profile_hosts_count, 0u);

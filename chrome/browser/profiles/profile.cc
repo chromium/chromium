@@ -43,7 +43,7 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -66,7 +66,7 @@
 #include "extensions/browser/pref_names.h"
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
@@ -321,7 +321,7 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 true);
   registry->RegisterIntegerPref(prefs::kProfileIconVersion, 0);
   registry->RegisterBooleanPref(prefs::kAllowDinosaurEasterEgg, true);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(dilmah): For OS_CHROMEOS we maintain kApplicationLocale in both
   // local state and user's profile.  For other platforms we maintain
   // kApplicationLocale only in local state.
@@ -337,7 +337,7 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   data_reduction_proxy::RegisterSyncableProfilePrefs(registry);
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Preferences related to the avatar bubble and user manager tutorials.
   registry->RegisterIntegerPref(prefs::kProfileAvatarTutorialShown, 0);
 #endif
@@ -387,7 +387,9 @@ bool Profile::IsIncognitoProfile() const {
 
 // static
 bool Profile::IsEphemeralGuestProfileEnabled() {
-#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || \
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
     defined(OS_MAC)
   return base::FeatureList::IsEnabled(
       features::kEnableEphemeralGuestProfilesOnDesktop);
@@ -397,13 +399,13 @@ bool Profile::IsEphemeralGuestProfileEnabled() {
 }
 
 bool Profile::IsGuestSession() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool is_guest_session =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kGuestSession);
   return is_guest_session;
 #else
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosChromeServiceImpl::Get());
   if (chromeos::LacrosChromeServiceImpl::Get()->init_params()->session_type !=
       crosapi::mojom::SessionType::kUnknown) {
@@ -411,9 +413,9 @@ bool Profile::IsGuestSession() const {
                ->init_params()
                ->session_type == crosapi::mojom::SessionType::kGuestSession;
   }
-#endif  // BUILDFLAG(IS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return is_guest_profile_ && !IsEphemeralGuestProfileEnabled();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool Profile::IsEphemeralGuestProfile() const {
@@ -429,7 +431,7 @@ bool Profile::IsPrimaryOTRProfile() const {
 }
 
 bool Profile::CanUseDiskWhenOffTheRecord() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Guest mode on ChromeOS uses an in-memory file system to store the profile
   // in, so despite this being an off the record profile, it is still okay to
   // store data on disk.
