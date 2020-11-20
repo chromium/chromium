@@ -310,7 +310,7 @@ void VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread(StatusCB done_cb) {
 
   // If flush is not supported FlushCompleted() will be called by
   // BitstreamBufferReady() when |pending_encodes_| is empty.
-  if (accelerator_->IsFlushSupported()) {
+  if (flush_support_) {
     accelerator_->Flush(
         base::BindOnce(&VideoEncodeAcceleratorAdapter::FlushCompleted,
                        base::Unretained(this)));
@@ -339,6 +339,7 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
   accelerator_->UseOutputBitstreamBuffer(
       BitstreamBuffer(buffer_id, region->Duplicate(), region->GetSize()));
   InitCompleted(Status());
+  flush_support_ = accelerator_->IsFlushSupported();
 }
 
 void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
@@ -403,7 +404,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
     }
   }
   output_cb_.Run(std::move(result), std::move(desc));
-  if (pending_encodes_.empty() && !accelerator_->IsFlushSupported()) {
+  if (pending_encodes_.empty() && !flush_support_) {
     // Manually call FlushCompleted(), since |accelerator_| won't do it for us.
     FlushCompleted(true);
   }

@@ -67,6 +67,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   void RequestEncodingParametersChange(
       const media::VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate) override;
+  void IsFlushSupported(IsFlushSupportedCallback callback) override;
+  void Flush(FlushCallback callback) override;
 
  private:
   friend class MojoVideoEncodeAcceleratorIntegrationTest;

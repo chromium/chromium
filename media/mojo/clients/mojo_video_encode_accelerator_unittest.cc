@@ -91,6 +91,20 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   MOCK_METHOD2(RequestEncodingParametersChange,
                void(const media::VideoBitrateAllocation&, uint32_t));
 
+  void IsFlushSupported(IsFlushSupportedCallback callback) override {
+    DoIsFlushSupported();
+    std::move(callback).Run(true);
+  }
+  MOCK_METHOD0(DoIsFlushSupported, void());
+  void Flush(FlushCallback callback) override {
+    FlushCallback mock_callback;
+    DoFlush(std::move(mock_callback));
+    // Actually, this callback should run on DoFlush, but in test, manally run
+    // it on Flush.
+    std::move(callback).Run(true);
+  }
+  MOCK_METHOD1(DoFlush, void(FlushCallback));
+
   void set_initialization_success(bool success) {
     initialization_success_ = success;
   }
@@ -305,6 +319,24 @@ TEST_F(MojoVideoEncodeAcceleratorTest, InitializeFailure) {
       kInitialBitrate);
   EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get()));
   base::RunLoop().RunUntilIdle();
+}
+
+// This test verifies the IsFlushSupported() and Flush() communication.
+TEST_F(MojoVideoEncodeAcceleratorTest, IsFlushSupportedAndFlush) {
+  std::unique_ptr<MockVideoEncodeAcceleratorClient> mock_vea_client =
+      std::make_unique<MockVideoEncodeAcceleratorClient>();
+  Initialize(mock_vea_client.get());
+
+  EXPECT_CALL(*mock_mojo_vea(), DoIsFlushSupported());
+  bool ret = mojo_vea()->IsFlushSupported();
+  base::RunLoop().RunUntilIdle();
+  if (ret) {
+    EXPECT_CALL(*mock_mojo_vea(), DoFlush(_));
+    auto flush_callback =
+        base::BindOnce([](bool status) { EXPECT_EQ(status, true); });
+    mojo_vea()->Flush(std::move(flush_callback));
+    base::RunLoop().RunUntilIdle();
+  }
 }
 
 }  // namespace media
