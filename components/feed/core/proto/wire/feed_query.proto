@@ -8,10 +8,9 @@ package feedwire1;
 
 option optimize_for = LITE_RUNTIME;
 
+import "components/feed/core/proto/wire/chrome_fulfillment_info.proto";
 option java_package = "org.chromium.components.feed.core.proto.wire";
 option java_outer_classname = "FeedQueryProto";
-
-import "components/feed/core/proto/wire/chrome_fulfillment_info.proto";
 
 message FeedQuery {
   enum RequestReason {
