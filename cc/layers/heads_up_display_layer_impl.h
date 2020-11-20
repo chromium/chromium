@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/metrics/web_vital_metrics.h"
 #include "cc/resources/memory_history.h"
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/debug_rect_history.h"
@@ -68,6 +69,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void SetHUDTypeface(sk_sp<SkTypeface> typeface);
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
+  void SetWebVitalMetrics(std::unique_ptr<WebVitalMetrics> web_vital_metrics);
 
   // This evicts hud quad appended during render pass preparation.
   void EvictHudQuad(const viz::CompositorRenderPassList& list);
@@ -150,6 +152,8 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   int layout_shift_rects_fade_step_ = 0;
   std::vector<DebugRect> paint_rects_;
   std::vector<DebugRect> layout_shift_debug_rects_;
+
+  std::unique_ptr<WebVitalMetrics> web_vital_metrics_;
 
   base::TimeTicks time_of_last_graph_update_;
 };

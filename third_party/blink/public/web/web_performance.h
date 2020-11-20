@@ -108,6 +108,7 @@ class WebPerformance {
   BLINK_EXPORT uint64_t LargestImagePaintSize() const;
   BLINK_EXPORT double LargestTextPaint() const;
   BLINK_EXPORT uint64_t LargestTextPaintSize() const;
+  BLINK_EXPORT base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
   BLINK_EXPORT double ExperimentalLargestImagePaint() const;
   BLINK_EXPORT uint64_t ExperimentalLargestImagePaintSize() const;
   BLINK_EXPORT double ExperimentalLargestTextPaint() const;

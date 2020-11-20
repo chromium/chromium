@@ -144,6 +144,7 @@ class CONTENT_EXPORT CompositorImpl
       cc::ActiveFrameSequenceTrackers trackers) override {}
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
+  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override;
   void NotifyThroughputTrackerResults(
       cc::CustomTrackerResults results) override {}
   void DidObserveFirstScrollDelay(

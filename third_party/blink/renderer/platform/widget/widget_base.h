@@ -139,6 +139,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       cc::ActiveFrameSequenceTrackers trackers) override;
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
+  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override;
   void BeginUpdateLayers() override;
   void EndUpdateLayers() override;
   void UpdateVisualState() override;

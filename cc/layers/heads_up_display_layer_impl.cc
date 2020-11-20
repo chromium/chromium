@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iomanip>
 #include <utility>
 #include <vector>
 
@@ -89,6 +90,12 @@ class DummyImageProvider : public ImageProvider {
     return ScopedResult();
   }
 };
+
+std::string ToStringTwoDecimalPrecision(double input) {
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(2) << input;
+  return stream.str();
+}
 
 }  // namespace
 
@@ -522,6 +529,11 @@ void HeadsUpDisplayLayerImpl::SetLayoutShiftRects(
   layout_shift_rects_ = rects;
 }
 
+void HeadsUpDisplayLayerImpl::SetWebVitalMetrics(
+    std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
+  web_vital_metrics_ = std::move(web_vital_metrics);
+}
+
 void HeadsUpDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   LayerImpl::PushPropertiesTo(layer);
 
@@ -531,6 +543,7 @@ void HeadsUpDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetHUDTypeface(typeface_);
   layer_impl->SetLayoutShiftRects(layout_shift_rects_);
   layout_shift_rects_.clear();
+  layer_impl->SetWebVitalMetrics(std::move(web_vital_metrics_));
 }
 
 void HeadsUpDisplayLayerImpl::UpdateHudContents() {
@@ -1036,14 +1049,40 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
                                                     int right,
                                                     int top,
                                                     int width) const {
-  std::string loading_status = "-";
-  // TODO(weiliangc): Update loading status with actual number.
+  std::string largest_contentful_paint = "-";
+  SkColor largest_contentful_paint_color = DebugColors::HUDTitleColor();
+  if (web_vital_metrics_) {
+    if (web_vital_metrics_->largest_contentful_paint.has_value()) {
+      double time = web_vital_metrics_->largest_contentful_paint->InSecondsF();
+      largest_contentful_paint = ToStringTwoDecimalPrecision(time) + " s";
+      if (time < 2.5f)
+        largest_contentful_paint_color = SK_ColorGREEN;
+      else if (time < 4.f)
+        largest_contentful_paint_color = SK_ColorYELLOW;
+      else
+        largest_contentful_paint_color = SK_ColorRED;
+    }
+  }
+  std::string first_input_delay = "-";
+  SkColor first_input_delay_color = DebugColors::HUDTitleColor();
+  if (web_vital_metrics_) {
+    if (web_vital_metrics_->first_input_delay.has_value()) {
+      double delay = web_vital_metrics_->first_input_delay->InMillisecondsF();
+      first_input_delay = ToStringTwoDecimalPrecision(delay) + " ms";
+      if (delay < 100.f)
+        first_input_delay_color = SK_ColorGREEN;
+      else if (delay < 300.f)
+        first_input_delay_color = SK_ColorYELLOW;
+      else
+        first_input_delay_color = SK_ColorRED;
+    }
+  }
 
   const int kPadding = 4;
   const int kTitleFontHeight = 13;
   const int kFontHeight = 12;
 
-  const int height = kTitleFontHeight + kFontHeight + 3 * kPadding;
+  const int height = 2 * kTitleFontHeight + 2 * kFontHeight + 5 * kPadding;
   const int left = 0;
   const SkRect area = SkRect::MakeXYWH(left, top, width, height);
 
@@ -1053,9 +1092,20 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
   SkPoint metrics_pos = SkPoint::Make(left + width - kPadding,
                                       top + 2 * kFontHeight + 2 * kPadding);
   flags.setColor(DebugColors::HUDTitleColor());
-  DrawText(canvas, flags, "Load time", TextAlign::kLeft, kTitleFontHeight,
-           left + kPadding, top + kFontHeight + kPadding);
-  DrawText(canvas, flags, loading_status, TextAlign::kRight, kFontHeight,
+  DrawText(canvas, flags, "Largest contentful paint", TextAlign::kLeft,
+           kTitleFontHeight, left + kPadding, top + kFontHeight + kPadding);
+  flags.setColor(largest_contentful_paint_color);
+  DrawText(canvas, flags, largest_contentful_paint, TextAlign::kRight,
+           kFontHeight, metrics_pos);
+
+  metrics_pos = SkPoint::Make(left + width - kPadding,
+                              top + 4 * kFontHeight + 4 * kPadding);
+  flags.setColor(DebugColors::HUDTitleColor());
+  DrawText(canvas, flags, "First input delay:", TextAlign::kLeft,
+           kTitleFontHeight, left + kPadding,
+           top + 3 * kFontHeight + 3 * kPadding);
+  flags.setColor(first_input_delay_color);
+  DrawText(canvas, flags, first_input_delay, TextAlign::kRight, kFontHeight,
            metrics_pos);
 
   return area;

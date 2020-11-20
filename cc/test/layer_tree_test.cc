@@ -418,6 +418,9 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() override {
     return nullptr;
   }
+  std::unique_ptr<WebVitalMetrics> GetWebVitalMetrics() override {
+    return nullptr;
+  }
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override {
     test_hooks_->NotifyThroughputTrackerResults(std::move(results));
   }

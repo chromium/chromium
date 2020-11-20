@@ -24,6 +24,7 @@
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -182,7 +183,6 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
 
   return remote_frame->GetFrameSinkId();
 }
-
 }  // namespace
 
 bool WebFrameWidgetBase::ignore_input_events_ = false;
@@ -1866,6 +1866,25 @@ WebFrameWidgetBase::GetBeginMainFrameMetrics() {
       ->View()
       ->EnsureUkmAggregator()
       .GetBeginMainFrameMetrics();
+}
+
+std::unique_ptr<cc::WebVitalMetrics> WebFrameWidgetBase::GetWebVitalMetrics() {
+  if (!LocalRootImpl())
+    return nullptr;
+
+  // This class should be called at most once per commit.
+  WebPerformance perf = LocalRootImpl()->Performance();
+  auto metrics = std::make_unique<cc::WebVitalMetrics>();
+  if (perf.FirstInputDelay().has_value())
+    metrics->first_input_delay = *perf.FirstInputDelay();
+
+  base::TimeTicks start = perf.NavigationStartAsMonotonicTime();
+  base::TimeTicks largest_contentful_paint =
+      perf.LargestContentfulPaintAsMonotonicTime();
+  if (largest_contentful_paint >= start)
+    metrics->largest_contentful_paint = largest_contentful_paint - start;
+
+  return metrics;
 }
 
 void WebFrameWidgetBase::BeginUpdateLayers() {

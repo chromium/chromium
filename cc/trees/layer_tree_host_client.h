@@ -25,6 +25,7 @@ struct BeginFrameArgs;
 namespace cc {
 struct BeginMainFrameMetrics;
 struct ElementId;
+struct WebVitalMetrics;
 
 struct ApplyViewportChangesArgs {
   // Scroll offset delta of the inner (visual) viewport.
@@ -181,6 +182,9 @@ class LayerTreeHostClient {
   // RecordEndOfFrameMetrics.
   virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() = 0;
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
+
+  // Should only be implemented by Blink.
+  virtual std::unique_ptr<WebVitalMetrics> GetWebVitalMetrics() = 0;
 
   virtual void RunPaintBenchmark(int repeat_count,
                                  PaintBenchmarkResult& result) {}

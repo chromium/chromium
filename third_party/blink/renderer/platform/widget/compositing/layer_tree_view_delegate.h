@@ -15,6 +15,7 @@ namespace cc {
 class LayerTreeFrameSink;
 struct BeginMainFrameMetrics;
 struct ElementId;
+struct WebVitalMetrics;
 class RenderFrameMetadataObserver;
 }  // namespace cc
 
@@ -100,6 +101,8 @@ class LayerTreeViewDelegate {
   // RecordEndOfFrameMetrics.
   virtual std::unique_ptr<cc::BeginMainFrameMetrics>
   GetBeginMainFrameMetrics() = 0;
+
+  virtual std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() = 0;
 
   // Notification of the beginning and end of LayerTreeHost::UpdateLayers, for
   // metrics collection.

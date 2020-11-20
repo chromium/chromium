@@ -5,6 +5,7 @@
 #include "cc/layers/heads_up_display_layer.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "base/trace_event/trace_event.h"
@@ -68,6 +69,11 @@ void HeadsUpDisplayLayer::SetLayoutShiftRects(
   layout_shift_rects_ = rects;
 }
 
+void HeadsUpDisplayLayer::UpdateWebVitalMetrics(
+    std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
+  web_vital_metrics_ = std::move(web_vital_metrics);
+}
+
 void HeadsUpDisplayLayer::PushPropertiesTo(LayerImpl* layer) {
   Layer::PushPropertiesTo(layer);
   TRACE_EVENT0("cc", "HeadsUpDisplayLayer::PushPropertiesTo");
@@ -77,6 +83,8 @@ void HeadsUpDisplayLayer::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetHUDTypeface(typeface_);
   layer_impl->SetLayoutShiftRects(layout_shift_rects_);
   layout_shift_rects_.clear();
+  if (web_vital_metrics_)
+    layer_impl->SetWebVitalMetrics(std::move(web_vital_metrics_));
 }
 
 }  // namespace cc

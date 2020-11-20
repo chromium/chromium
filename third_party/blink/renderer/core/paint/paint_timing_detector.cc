@@ -262,6 +262,7 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
           std::min(image_paint_time, removed_image_paint_time);
     }
   }
+  UpdateLargestContentfulPaintTime();
   DidChangePerformanceTiming();
   return true;
 }
@@ -280,8 +281,21 @@ bool PaintTimingDetector::NotifyIfChangedLargestTextPaint(
     largest_text_paint_time_ = text_paint_time;
     largest_text_paint_size_ = text_paint_size;
   }
+  UpdateLargestContentfulPaintTime();
   DidChangePerformanceTiming();
   return true;
+}
+
+void PaintTimingDetector::UpdateLargestContentfulPaintTime() {
+  if (largest_text_paint_size_ > largest_image_paint_size_) {
+    largest_contentful_paint_time_ = largest_text_paint_time_;
+  } else if (largest_text_paint_size_ < largest_image_paint_size_) {
+    largest_contentful_paint_time_ = largest_image_paint_time_;
+  } else {
+    // Size is the same, take the shorter time.
+    largest_contentful_paint_time_ =
+        std::min(largest_text_paint_time_, largest_image_paint_time_);
+  }
 }
 
 bool PaintTimingDetector::HasLargestImagePaintChanged(

@@ -34,6 +34,7 @@
 #include "cc/input/input_handler.h"
 #include "cc/layers/layer.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
+#include "cc/metrics/web_vital_metrics.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/trees/layer_tree_host.h"
@@ -706,6 +707,10 @@ void CompositorImpl::DidCommit(base::TimeTicks) {
 
 std::unique_ptr<cc::BeginMainFrameMetrics>
 CompositorImpl::GetBeginMainFrameMetrics() {
+  return nullptr;
+}
+
+std::unique_ptr<cc::WebVitalMetrics> CompositorImpl::GetWebVitalMetrics() {
   return nullptr;
 }
 

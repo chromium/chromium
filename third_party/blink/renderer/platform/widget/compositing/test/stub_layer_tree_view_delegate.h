@@ -48,6 +48,9 @@ class StubLayerTreeViewDelegate : public LayerTreeViewDelegate {
       override {
     return nullptr;
   }
+  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override {
+    return nullptr;
+  }
   void BeginUpdateLayers() override {}
   void EndUpdateLayers() override {}
   void UpdateVisualState() override {}

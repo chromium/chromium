@@ -19,6 +19,7 @@
 namespace cc {
 class LayerTreeFrameSink;
 struct BeginMainFrameMetrics;
+struct WebVitalMetrics;
 }  // namespace cc
 
 namespace blink {
@@ -66,6 +67,10 @@ class WidgetBaseClient {
   // RecordEndOfFrameMetrics.
   virtual std::unique_ptr<cc::BeginMainFrameMetrics>
   GetBeginMainFrameMetrics() {
+    return nullptr;
+  }
+
+  virtual std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() {
     return nullptr;
   }
 

@@ -207,6 +207,10 @@ uint64_t WebPerformance::LargestTextPaintSize() const {
   return private_->timing()->LargestTextPaintSize();
 }
 
+base::TimeTicks WebPerformance::LargestContentfulPaintAsMonotonicTime() const {
+  return private_->timing()->LargestContentfulPaintAsMonotonicTime();
+}
+
 double WebPerformance::ExperimentalLargestImagePaint() const {
   return MillisecondsToSeconds(
       private_->timing()->ExperimentalLargestImagePaint());

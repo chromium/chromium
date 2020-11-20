@@ -28,6 +28,7 @@
 #include "cc/debug/layer_tree_debug_state.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/layers/layer.h"
+#include "cc/metrics/web_vital_metrics.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_mutator.h"
 #include "cc/trees/render_frame_metadata_observer.h"
@@ -325,6 +326,12 @@ LayerTreeView::GetBeginMainFrameMetrics() {
   if (!delegate_)
     return nullptr;
   return delegate_->GetBeginMainFrameMetrics();
+}
+
+std::unique_ptr<cc::WebVitalMetrics> LayerTreeView::GetWebVitalMetrics() {
+  if (!delegate_)
+    return nullptr;
+  return delegate_->GetWebVitalMetrics();
 }
 
 void LayerTreeView::NotifyThroughputTrackerResults(

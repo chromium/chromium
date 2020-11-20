@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
+#include "cc/metrics/web_vital_metrics.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/geometry/rect.h"
@@ -25,6 +27,8 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
 
   void UpdateLocationAndSize(const gfx::Size& device_viewport,
                              float device_scale_factor);
+  void UpdateWebVitalMetrics(
+      std::unique_ptr<WebVitalMetrics> web_vital_metrics);
 
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
@@ -43,6 +47,8 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
 
   sk_sp<SkTypeface> typeface_;
   std::vector<gfx::Rect> layout_shift_rects_;
+
+  std::unique_ptr<WebVitalMetrics> web_vital_metrics_;
 };
 
 }  // namespace cc
