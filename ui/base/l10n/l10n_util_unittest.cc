@@ -19,6 +19,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -78,7 +79,7 @@ TEST_F(L10nUtilTest, GetString) {
 // On Android, we are disabling this test since GetApplicationLocale() just
 // returns the system's locale, which, similarly, is not easily unit tested.
 
-#if defined(OS_POSIX) && defined(USE_GLIB) && !defined(OS_CHROMEOS)
+#if defined(OS_POSIX) && defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 const bool kPlatformHasDefaultLocale = 1;
 const bool kUseLocaleFromEnvironment = 1;
 const bool kSupportsLocalePreference = 0;

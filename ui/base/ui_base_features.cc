@@ -22,7 +22,7 @@ const base::Feature kCalculateNativeWinOcclusion{
 const base::Feature kColorProviderRedirection = {
     "ColorProviderRedirection", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Integrate input method specific settings to Chrome OS settings page.
 // https://crbug.com/895886.
 const base::Feature kSettingsShowsPerKeyboardSettings = {
@@ -36,7 +36,7 @@ const base::Feature kNewShortcutMapping = {"NewShortcutMapping",
 bool IsNewShortcutMappingEnabled() {
   return base::FeatureList::IsEnabled(kNewShortcutMapping);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
@@ -69,7 +69,7 @@ bool IsNotificationIndicatorEnabled() {
 
 // Enables GPU rasterization for all UI drawing (where not blocklisted).
 const base::Feature kUiGpuRasterization = {"UiGpuRasterization",
-#if defined(OS_APPLE) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_FUCHSIA)
                                            base::FEATURE_ENABLED_BY_DEFAULT
 #else
                                            base::FEATURE_DISABLED_BY_DEFAULT
@@ -100,8 +100,10 @@ const base::Feature kCompositorThreadedScrollbarScrolling = {
 // native apps on Windows.
 const base::Feature kExperimentalFlingAnimation {
   "ExperimentalFlingAnimation",
-#if defined(OS_WIN) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS) && !BUILDFLAG(IS_LACROS))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+                        !BUILDFLAG(IS_CHROMEOS_LACROS))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -212,7 +214,7 @@ bool IsUseCommonSelectPopupEnabled() {
   return base::FeatureList::IsEnabled(features::kUseCommonSelectPopup);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kHandwritingGesture = {"HandwritingGesture",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
@@ -239,7 +241,7 @@ bool IsUsingOzonePlatform() {
   // Only allow enabling and disabling the OzonePlatform on USE_X11 && USE_OZONE
   // builds.
   static const bool using_ozone_platform =
-#if defined(USE_X11) && defined(USE_OZONE) && !BUILDFLAG(IS_LACROS)
+#if defined(USE_X11) && defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
       base::FeatureList::IsEnabled(kUseOzonePlatform);
 #elif defined(USE_X11) && !defined(USE_OZONE)
       // This shouldn't be switchable for pure X11 builds.

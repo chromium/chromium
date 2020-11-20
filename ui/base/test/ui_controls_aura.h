@@ -6,6 +6,7 @@
 #define UI_TEST_BASE_UI_CONTROLS_AURA_H_
 
 #include "base/callback_forward.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_widget_types.h"
@@ -53,7 +54,7 @@ class UIControlsAura {
 
 #if defined(OS_WIN)
   virtual bool SendTouchEvents(int action, int num, int x, int y) = 0;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   virtual bool SendTouchEvents(int action, int id, int x, int y) = 0;
   virtual bool SendTouchEventsNotifyWhenDone(int action,
                                              int id,

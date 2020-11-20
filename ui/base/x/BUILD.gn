@@ -76,6 +76,7 @@ component("x") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//net",
     "//skia",
     "//ui/base:data_exchange",

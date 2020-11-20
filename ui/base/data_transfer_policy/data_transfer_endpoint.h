@@ -7,6 +7,7 @@
 
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "build/chromeos_buildflags.h"
 #include "url/origin.h"
 
 namespace ui {
@@ -17,12 +18,12 @@ namespace ui {
 enum class EndpointType {
   kDefault = 0,  // This type shouldn't be used if any of the following types is
                  // a better match.
-#if defined(OS_CHROMEOS) || (OS_LINUX) || (OS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || (OS_LINUX) || (OS_FUCHSIA)
   kGuestOs = 1,  // Guest OS: PluginVM, Crostini.
-#endif           // defined(OS_CHROMEOS) || (OS_LINUX) || (OS_FUCHSIA)
-#if defined(OS_CHROMEOS)
+#endif           // BUILDFLAG(IS_CHROMEOS_ASH) || (OS_LINUX) || (OS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   kArc = 2,               // ARC.
-#endif                    // defined(OS_CHROMEOS)
+#endif                    // BUILDFLAG(IS_CHROMEOS_ASH)
   kUrl = 3,               // Website URL e.g. www.example.com.
   kClipboardHistory = 4,  // Clipboard History UI has privileged access to any
                           // clipboard data.

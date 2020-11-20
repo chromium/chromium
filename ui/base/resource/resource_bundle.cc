@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/filter/gzip_header.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/brotli/include/brotli/decode.h"
@@ -54,7 +55,7 @@
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/gfx/platform_font_skia.h"
 #endif
 
@@ -557,7 +558,7 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
   if (image.IsEmpty()) {
     DCHECK(!data_packs_.empty()) << "Missing call to SetResourcesDataDLL?";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ui::ScaleFactor scale_factor_to_load = GetMaxScaleFactor();
 #elif defined(OS_WIN)
     ui::ScaleFactor scale_factor_to_load =
@@ -969,7 +970,7 @@ void ResourceBundle::AddDataPack(std::unique_ptr<DataPack> data_pack) {
 }
 
 void ResourceBundle::InitDefaultFontList() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // InitDefaultFontList() is called earlier than overriding the locale strings.
   // So we call the |GetLocalizedStringImpl()| which doesn't set the flag
   // |can_override_locale_string_resources_| to false. This is okay, because the

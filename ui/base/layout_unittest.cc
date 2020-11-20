@@ -5,9 +5,10 @@
 #include "ui/base/layout.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "ui/base/ui_base_switches.h"
 #endif

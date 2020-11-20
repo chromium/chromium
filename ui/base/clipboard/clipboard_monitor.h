@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace ui {
 
@@ -31,7 +32,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMonitor {
   // Notifies all observers for clipboard data change.
   virtual void NotifyClipboardDataChanged();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Notifies all observers for clipboard data read.
   virtual void NotifyClipboardDataRead();
 #endif

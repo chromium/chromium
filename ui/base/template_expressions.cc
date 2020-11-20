@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
 
 #if DCHECK_IS_ON()
@@ -121,7 +122,7 @@ bool EscapeForJS(const std::string& in_string,
 bool HasUnexpectedPlaceholder(const std::string& key,
                               const std::string& replacement) {
   // TODO(crbug.com/988031): Fix display aria labels.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (key == "displayResolutionText")
     return false;
 #endif

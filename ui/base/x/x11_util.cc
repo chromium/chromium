@@ -42,6 +42,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -1081,7 +1082,7 @@ bool IsSyncExtensionAvailable() {
 // builds as long as our EGL impl for Ozone/X11 is not mature enough and we do
 // not receive swap completions on time, which results in weird resize behaviour
 // as X Server waits for the XSyncCounter changes.
-#if defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_OZONE)
   return false;
 #else
   static bool result =

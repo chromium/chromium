@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/linux/gtk/gtk.gni")
@@ -373,7 +374,7 @@ component("base") {
     sources += [ "emoji/emoji_panel_helper_mac.mm" ]
   } else if (is_win) {
     sources += [ "emoji/emoji_panel_helper_win.cc" ]
-  } else if (is_chromeos) {
+  } else if (is_chromeos_ash) {
     sources += [ "emoji/emoji_panel_helper_chromeos.cc" ]
   } else {
     # Empty implementation for all other platforms.
@@ -433,6 +434,7 @@ component("base") {
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
     "//base/util/type_safety:type_safety",
+    "//build:chromeos_buildflags",
     "//net",
     "//third_party/brotli:dec",
     "//third_party/icu",
@@ -485,7 +487,7 @@ component("base") {
     # X11 drag and drop wants to use common drag and drop types.
     allow_circular_includes_from = [ "//ui/base/x" ]
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       deps += [ "//ui/gfx/x" ]
     }
   }
@@ -502,7 +504,7 @@ component("base") {
       "//ui/gfx/x",
     ]
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       # These Aura X11 files aren't used on ChromeOS.
       sources += [
         "dragdrop/os_exchange_data_provider_x11.cc",
@@ -528,7 +530,7 @@ component("base") {
     ]
   }
 
-  if (is_chromeos || (use_aura && is_linux)) {
+  if (is_chromeos_ash || (use_aura && (is_linux || is_chromeos_lacros))) {
     sources += [
       "dragdrop/os_exchange_data_provider_non_backed.cc",
       "dragdrop/os_exchange_data_provider_non_backed.h",
@@ -634,7 +636,7 @@ component("features") {
 }
 
 # TODO(crbug.com/1091985): Support CrOS.
-if (is_win || is_mac || (is_linux && !is_chromeos)) {
+if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
   static_library("pixel_diff_test_support") {
     testonly = true
     sources = [
@@ -646,6 +648,7 @@ if (is_win || is_mac || (is_linux && !is_chromeos)) {
     deps = [
       "//base",
       "//base/test:test_config",
+      "//build:chromeos_buildflags",
       "//testing/gtest",
       "//ui/gfx",
       "//ui/snapshot",
@@ -744,6 +747,7 @@ static_library("test_support") {
     "//base",
     "//base/test:test_config",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
@@ -780,7 +784,7 @@ static_library("test_support") {
     }
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "ime/chromeos/input_method_allowlist.cc",
       "ime/chromeos/input_method_allowlist.h",
@@ -920,6 +924,7 @@ test("ui_base_unittests") {
     ":ui_base_unittests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//net",
     "//net:test_support",
@@ -998,7 +1003,7 @@ test("ui_base_unittests") {
   }
 
   # TODO(crbug.com/1091985): Support CrOS.
-  if (is_win || is_mac || (is_linux && !is_chromeos)) {
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     sources += [
       "test/skia_gold_matching_algorithm_unittest.cc",
       "test/skia_gold_pixel_diff_unittest.cc",
@@ -1023,7 +1028,7 @@ test("ui_base_unittests") {
       ]
       deps += [ "//ui/base/ime/win" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "ime/chromeos/extension_ime_util_unittest.cc",
         "ime/chromeos/ime_keyboard_unittest.cc",
@@ -1032,7 +1037,7 @@ test("ui_base_unittests") {
       ]
       deps += [ "//ui/base/ime/chromeos" ]
     }
-    if (is_linux && use_aura && !is_chromeos) {
+    if ((is_linux || is_chromeos_lacros) && use_aura) {
       if (use_x11 || use_ozone) {
         sources += [ "ime/linux/input_method_auralinux_unittest.cc" ]
         deps += [
@@ -1047,7 +1052,7 @@ test("ui_base_unittests") {
     if (use_x11) {
       sources += [ "ime/linux/composition_text_util_pango_unittest.cc" ]
     }
-    if (is_chromeos || use_ozone) {
+    if (is_chromeos_ash || use_ozone) {
       sources += [ "ime/character_composer_unittest.cc" ]
     }
   }
@@ -1131,7 +1136,7 @@ test("ui_base_unittests") {
     deps += [ "//ui/gfx/x:unit_test" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//ui/events:dom_keycode_converter" ]
   }
 

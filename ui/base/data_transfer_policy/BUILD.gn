@@ -17,6 +17,7 @@ component("data_transfer_policy") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//url",
   ]
 }

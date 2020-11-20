@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -27,14 +28,14 @@ bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
     case ClipboardBuffer::kCopyPaste:
       return true;
     case ClipboardBuffer::kSelection:
-#if defined(USE_OZONE) && !defined(OS_CHROMEOS)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS_ASH)
       if (features::IsUsingOzonePlatform()) {
         ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
         CHECK(clipboard);
         return clipboard->IsSelectionBufferAvailable();
       }
 #endif
-#if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_CHROMEOS)
+#if !defined(OS_WIN) && !defined(OS_APPLE) && !BUILDFLAG(IS_CHROMEOS_ASH)
       return true;
 #else
       return false;

@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/network_interfaces.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test_x11.h"
@@ -217,7 +218,7 @@ void XWindow::Init(const Configuration& config) {
   if (!activatable_ || config.override_redirect)
     req.override_redirect = x11::Bool32(true);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   req.override_redirect = x11::Bool32(UseTestConfigForPlatformWindows());
 #endif
 

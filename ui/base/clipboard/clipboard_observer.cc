@@ -4,11 +4,13 @@
 
 #include "ui/base/clipboard/clipboard_observer.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace ui {
 
 void ClipboardObserver::OnClipboardDataChanged() {}
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ClipboardObserver::OnClipboardDataRead() {}
 #endif
 
