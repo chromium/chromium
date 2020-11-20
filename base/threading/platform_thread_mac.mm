@@ -148,9 +148,12 @@ thread_time_constraint_policy_data_t GetTimeConstraints(
   mach_timebase_info(&tb_info);
 
   if (!realtime_period.is_zero()) {
-    uint32_t abs_realtime_period =
-        saturated_cast<uint32_t>(realtime_period.InNanoseconds() *
-                                 (double(tb_info.denom) / tb_info.numer));
+    // Limit the lowest value to 2.9 ms we used to have historically. The lower
+    // the period, the more CPU frequency may go up, and we don't want to risk
+    // worsening the thermal situation.
+    uint32_t abs_realtime_period = saturated_cast<uint32_t>(
+        std::max(realtime_period.InNanoseconds(), 2900000LL) *
+        (double(tb_info.denom) / tb_info.numer));
     TimeConstraints config = g_time_constraints.load();
     time_constraints.period = abs_realtime_period;
     time_constraints.constraint = std::min(
