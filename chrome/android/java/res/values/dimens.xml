@@ -553,4 +553,6 @@
     <dimen name="sharing_hub_preview_icon_rounded_corner_radius">4dp</dimen>
     <dimen name="sharing_hub_preview_icon_size">48dp</dimen>
     <dimen name="sharing_hub_preview_inner_icon_size">24dp</dimen>
+    <dimen name="sharing_hub_3p_icon_size">36dp</dimen>
+    <dimen name="sharing_hub_3p_icon_padding_top">20dp</dimen>
 </resources>

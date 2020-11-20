@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -100,8 +101,9 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         createFirstPartyRecyclerViews(firstPartyModels);
 
         RecyclerView thirdParty = this.getContentView().findViewById(R.id.share_sheet_other_apps);
-        populateView(
-                thirdPartyModels, this.getContentView().findViewById(R.id.share_sheet_other_apps));
+        populateView(thirdPartyModels,
+                this.getContentView().findViewById(R.id.share_sheet_other_apps),
+                /*firstParty=*/false);
         thirdParty.addOnScrollListener(
                 new ScrollEventReporter("SharingHubAndroid.ThirdPartyAppsScrolled"));
     }
@@ -113,20 +115,21 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             View divider = this.getContentView().findViewById(R.id.share_sheet_divider);
             divider.setVisibility(View.VISIBLE);
             firstPartyRow.setVisibility(View.VISIBLE);
-            populateView(firstPartyModels, firstPartyRow);
+            populateView(firstPartyModels, firstPartyRow, /*firstParty=*/true);
             firstPartyRow.addOnScrollListener(
                     new ScrollEventReporter("SharingHubAndroid.FirstPartyAppsScrolled"));
         }
     }
 
-    private void populateView(List<PropertyModel> models, RecyclerView view) {
+    private void populateView(List<PropertyModel> models, RecyclerView view, boolean firstParty) {
         ModelList modelList = new ModelList();
         for (PropertyModel model : models) {
             modelList.add(new ListItem(SHARE_SHEET_ITEM, model));
         }
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(modelList);
         adapter.registerType(SHARE_SHEET_ITEM, new LayoutViewBuilder(R.layout.share_sheet_item),
-                ShareSheetBottomSheetContent::bindShareItem);
+                (firstParty ? ShareSheetBottomSheetContent::bindShareItem
+                            : ShareSheetBottomSheetContent::bind3PShareItem));
         view.setAdapter(adapter);
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
@@ -143,6 +146,26 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             view.setText(model.get(ShareSheetItemViewProperties.LABEL));
         } else if (ShareSheetItemViewProperties.CLICK_LISTENER.equals(propertyKey)) {
             parent.setOnClickListener(model.get(ShareSheetItemViewProperties.CLICK_LISTENER));
+        }
+    }
+
+    private static void bind3PShareItem(
+            PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
+        bindShareItem(model, parent, propertyKey);
+        if (ShareSheetItemViewProperties.ICON.equals(propertyKey)) {
+            ImageView view = (ImageView) parent.findViewById(R.id.icon);
+
+            final int iconSize =
+                    ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
+                            R.dimen.sharing_hub_3p_icon_size);
+            final int paddingTop =
+                    ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
+                            R.dimen.sharing_hub_3p_icon_padding_top);
+            ViewGroup.LayoutParams params = view.getLayoutParams();
+            params.height = iconSize;
+            params.width = iconSize;
+            view.requestLayout();
+            parent.setPadding(0, paddingTop, 0, 0);
         }
     }
 
