@@ -318,6 +318,7 @@ class PasswordManagerInteractiveTestSubmissionDetectionOnFormClear
 IN_PROC_BROWSER_TEST_F(
     PasswordManagerInteractiveTestSubmissionDetectionOnFormClear,
     ChangePwdFormCleared) {
+  base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
@@ -350,6 +351,11 @@ IN_PROC_BROWSER_TEST_F(
   // Check that credentials are stored.
   WaitForPasswordStore();
   CheckThatCredentialsStored("temp", "new_pw");
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SuccessfulSubmissionIndicatorEvent",
+      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED,
+      1);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
