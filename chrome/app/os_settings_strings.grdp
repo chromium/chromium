@@ -2698,6 +2698,9 @@
   </message>
 
   <!-- Reset Page (OS settings)-->
+  <message name="IDS_SETTINGS_RESET_TITLE" desc="Title of a section of settings. This section describes settings for resetting the device.">
+    Reset settings
+  </message>
   <message name="IDS_SETTINGS_FACTORY_RESET" desc="Name of the factory reset option on the Chrome settings page">
     Powerwash
   </message>
