@@ -160,7 +160,9 @@ void FakeBluetoothAdapterClient::StartDiscovery(
     FakeBluetoothDeviceClient* device_client =
         static_cast<FakeBluetoothDeviceClient*>(
             bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient());
-    device_client->BeginDiscoverySimulation(dbus::ObjectPath(kAdapterPath));
+    if (enable_discovery_simulation_) {
+      device_client->BeginDiscoverySimulation(dbus::ObjectPath(kAdapterPath));
+    }
   }
 }
 
@@ -249,6 +251,10 @@ void FakeBluetoothAdapterClient::MakeSetDiscoveryFilterFail() {
 
 void FakeBluetoothAdapterClient::MakeStartDiscoveryFail() {
   set_start_discovery_should_fail_ = true;
+}
+
+void FakeBluetoothAdapterClient::SetDiscoverySimulation(bool enabled) {
+  enable_discovery_simulation_ = enabled;
 }
 
 void FakeBluetoothAdapterClient::SetDiscoveryFilter(

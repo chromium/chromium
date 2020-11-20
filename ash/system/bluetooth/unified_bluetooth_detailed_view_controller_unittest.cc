@@ -36,7 +36,6 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
   ~UnifiedBluetoothDetailedViewControllerTest() override = default;
 
   void SetUp() override {
-    bluez::BluezDBusManager::InitializeFake();
     AshTestBase::SetUp();
 
     // Set fake adapter client to powered-on and initialize with zero simulation
@@ -44,10 +43,7 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
     adapter_client_ = static_cast<bluez::FakeBluetoothAdapterClient*>(
         bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient());
     adapter_client_->SetSimulationIntervalMs(0);
-    adapter_client_
-        ->GetProperties(
-            dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath))
-        ->powered.ReplaceValue(true);
+    SetAdapterPowered(true);
 
     // Enable fake device client and initialize with zero simulation interval.
     device_client_ = static_cast<bluez::FakeBluetoothDeviceClient*>(
@@ -70,6 +66,14 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  void SetAdapterPowered(bool powered) {
+    adapter_client_
+        ->GetProperties(
+            dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath))
+        ->powered.ReplaceValue(powered);
+    task_environment()->RunUntilIdle();
+  }
+
   void AddTestDevice() {
     bluez::FakeBluetoothDeviceClient::IncomingDeviceProperties props;
     props.device_path = "/fake/hci0/dev123";
@@ -81,8 +85,22 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
         props);
   }
 
+  void RemoveAllDevices() {
+    dbus::ObjectPath fake_adapter_path(
+        bluez::FakeBluetoothAdapterClient::kAdapterPath);
+    std::vector<dbus::ObjectPath> device_paths =
+        device_client_->GetDevicesForAdapter(fake_adapter_path);
+    for (auto& device_path : device_paths) {
+      device_client_->RemoveDevice(fake_adapter_path, device_path);
+    }
+  }
+
   UnifiedBluetoothDetailedViewController* bt_detailed_view_controller() {
     return bt_detailed_view_controller_.get();
+  }
+
+  bluez::FakeBluetoothAdapterClient* adapter_client() {
+    return adapter_client_;
   }
 
  private:
@@ -118,6 +136,31 @@ TEST_F(UnifiedBluetoothDetailedViewControllerTest, UpdateScrollListTest) {
   AddTestDevice();
   task_environment()->FastForwardBy(kUpdateFrequencyMs);
   EXPECT_EQ(scroll_content_size + 1u, scroll_content->children().size());
+}
+
+TEST_F(UnifiedBluetoothDetailedViewControllerTest,
+       UpdateScrollListPowerCycleTest) {
+  // Disable discovery simulation and remove all existing
+  // devices so that only the "Scanning" message is displayed.
+  adapter_client()->SetDiscoverySimulation(false);
+  RemoveAllDevices();
+
+  tray::BluetoothDetailedView* bluetooth_detailed_view =
+      static_cast<tray::BluetoothDetailedView*>(
+          bt_detailed_view_controller()->CreateView());
+  task_environment()->FastForwardBy(kUpdateFrequencyMs);
+
+  const views::View* scroll_content = bluetooth_detailed_view->GetViewByID(
+      tray::BluetoothDetailedView::kScrollContentID);
+  // Only the scanning message should be displayed.
+  EXPECT_EQ(1u, scroll_content->children().size());
+
+  // Verify that if bluetooth is powered off and back on again
+  // the scroll list is cleared and populated back again properly.
+  SetAdapterPowered(false);
+  EXPECT_EQ(0u, scroll_content->children().size());
+  SetAdapterPowered(true);
+  EXPECT_EQ(1u, scroll_content->children().size());
 }
 
 }  // namespace ash

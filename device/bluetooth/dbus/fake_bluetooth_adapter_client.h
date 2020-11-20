@@ -93,6 +93,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
   // Make StartDiscovery fail when called next time.
   void MakeStartDiscoveryFail();
 
+  // Sets whether discovery simulation should be enabled or not.
+  void SetDiscoverySimulation(bool enabled);
+
   // Mark the adapter and second adapter as visible or invisible.
   void SetVisible(bool visible);
   void SetSecondVisible(bool visible);
@@ -151,6 +154,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
 
   // When set, next call to StartDiscovery would fail.
   bool set_start_discovery_should_fail_ = false;
+
+  // When set, enables discovery simulation.
+  bool enable_discovery_simulation_ = true;
 
   // Current timeout interval used when posting delayed tasks.
   int simulation_interval_ms_;
