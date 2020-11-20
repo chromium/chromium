@@ -92,5 +92,13 @@
 //
 #define MSG_HOST_STARTED                 ((DWORD)0x40000005L)
 
+//
+// MessageId: MSG_HOST_LOG_EVENT
+//
+// MessageText:
+//
+//
+#define MSG_HOST_LOG_EVENT               ((DWORD)0x40000006L)
+
  // This line makes sure that mc.exe does not complain about a single '.' at
  // the end of the file.

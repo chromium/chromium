@@ -85,5 +85,16 @@ Language={{ lang | replace("-", "_") }}
 .
 {%- endfor %}
 
+MessageId=6
+Severity=Informational
+Facility=Host
+SymbolicName=MSG_HOST_LOG_EVENT
+{%- for lang in languages %}
+  {%- do SelectLanguage(lang) %}
+Language={{ lang | replace("-", "_") }}
+{% trans %}HOST_LOG_EVENT{% endtrans %}
+.
+{%- endfor %}
+
 ; // This line makes sure that mc.exe does not complain about a single '.' at
 ; // the end of the file.

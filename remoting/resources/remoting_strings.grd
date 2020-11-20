@@ -804,6 +804,9 @@
       <message name="IDS_HOST_STOPPED" desc="The message reported to the EventLog by Chromoting Host every time it is stopped.">
         Host stopped.
       </message>
+      <message name="IDS_HOST_LOG_EVENT" desc="The message reported to the EventLog by Chromoting Host every time it logs a message. Since we are just logging debugging messages directly, no localizable text is required in this string.">
+        <ph name="ORIGINAL_LOG_MESSAGE">%1</ph>
+      </message>
       <message desc="This text is used on a button or context-menu or similar control. When chosen or pressed, it deletes a selected item from a list." meaning="Delete an item from a list." name="IDS_DELETE_LIST_ITEM" formatter_data="android_java">
         Delete
       </message>
