@@ -901,20 +901,6 @@ void XRSystem::ExitPresent(base::OnceClosure on_exited) {
     if (doc->IsXrOverlay()) {
       Element* fullscreen_element = Fullscreen::FullscreenElementFrom(*doc);
       DVLOG(3) << __func__ << ": fullscreen_element=" << fullscreen_element;
-
-      // Restore the FrameView background color that was changed in
-      // OnRequestSessionReturned. The layout view can be null on navigation.
-      auto* layout_view = doc->GetLayoutView();
-      if (layout_view) {
-        auto* frame_view = layout_view->GetFrameView();
-        // SetBaseBackgroundColor updates composited layer mappings.
-        // That DCHECKs IsAllowedToQueryCompositingState which requires
-        // DocumentLifecycle >= kInCompositingUpdate.
-        frame_view->UpdateLifecycleToCompositingInputsClean(
-            DocumentUpdateReason::kBaseColor);
-        frame_view->SetBaseBackgroundColor(original_base_background_color_);
-      }
-
       if (fullscreen_element) {
         fullscreen_exit_observer_ =
             MakeGarbageCollected<OverlayFullscreenExitObserver>(this);
@@ -1520,18 +1506,6 @@ void XRSystem::OnRequestSessionReturned(
         // element is already in fullscreen mode, and the session can
         // proceed.
         session->SetDOMOverlayElement(query->DOMOverlayElement());
-
-        // Save the current base background color (restored in ExitPresent),
-        // and set a transparent background for the FrameView.
-        auto* frame_view =
-            DomWindow()->document()->GetLayoutView()->GetFrameView();
-        // SetBaseBackgroundColor updates composited layer mappings.
-        // That DCHECKs IsAllowedToQueryCompositingState which requires
-        // DocumentLifecycle >= kInCompositingUpdate.
-        frame_view->UpdateLifecycleToCompositingInputsClean(
-            DocumentUpdateReason::kBaseColor);
-        original_base_background_color_ = frame_view->BaseBackgroundColor();
-        frame_view->SetBaseBackgroundColor(Color::kTransparent);
       }
     }
 
