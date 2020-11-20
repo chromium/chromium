@@ -216,29 +216,12 @@ void SetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  if (!HANDLE_EINTR(mprotect(address, length, GetAccessFlags(accessibility))))
-    return;
-
-  // mprotect() failed, let's get more data on errno in crash reports. Values
-  // taken from man mprotect(2) on Linux:
-  switch (errno) {
-    case EACCES:
-      PCHECK(false);
-      break;
-    case EINVAL:
-      PCHECK(false);
-      break;
-    case ENOMEM:
-      PCHECK(false);
-      break;
-    default:
-      PCHECK(false);
-      break;
-  }
+  PA_PCHECK(0 == HANDLE_EINTR(
+                     mprotect(address, length, GetAccessFlags(accessibility))));
 }
 
 void FreePagesInternal(void* address, size_t length) {
-  PCHECK(!munmap(address, length));
+  PA_PCHECK(0 == munmap(address, length));
 }
 
 void* TrimMappingInternal(void* base,
@@ -294,7 +277,7 @@ void DiscardSystemPagesInternal(void* address, size_t length) {
     // MADV_FREE_REUSABLE sometimes fails, so fall back to MADV_DONTNEED.
     ret = madvise(address, length, MADV_DONTNEED);
   }
-  PCHECK(0 == ret);
+  PA_PCHECK(ret == 0);
 #else
   // We have experimented with other flags, but with suboptimal results.
   //
@@ -302,7 +285,7 @@ void DiscardSystemPagesInternal(void* address, size_t length) {
   // performance benefits unclear.
   //
   // Therefore, we just do the simple thing: MADV_DONTNEED.
-  PCHECK(!madvise(address, length, MADV_DONTNEED));
+  PA_PCHECK(0 == madvise(address, length, MADV_DONTNEED));
 #endif
 }
 

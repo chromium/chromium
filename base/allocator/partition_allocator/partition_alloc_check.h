@@ -8,10 +8,12 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/check.h"
+#include "base/debug/alias.h"
+#include "base/immediate_crash.h"
 
 // When PartitionAlloc is used as the default allocator, we cannot use the
 // regular (D)CHECK() macros, as they allocate internally. When an assertion is
-// triggered, they format strings, leading to reentrency in the code, which none
+// triggered, they format strings, leading to reentrancy in the code, which none
 // of PartitionAlloc is designed to support (and especially not for error
 // paths).
 //
@@ -29,9 +31,17 @@
 #define PA_DCHECK(condition) EAT_CHECK_STREAM_PARAMS(!(condition))
 #endif  // DCHECK_IS_ON()
 
+#define PA_PCHECK(condition)    \
+  if (!(condition)) {           \
+    int error = errno;          \
+    base::debug::Alias(&error); \
+    IMMEDIATE_CRASH();          \
+  }
+
 #else
 #define PA_CHECK(condition) CHECK(condition)
 #define PA_DCHECK(condition) DCHECK(condition)
+#define PA_PCHECK(condition) PCHECK(condition)
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)
