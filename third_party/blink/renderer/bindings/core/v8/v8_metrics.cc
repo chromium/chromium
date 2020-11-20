@@ -26,7 +26,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
       .SetModuleSize(
           ukm::GetExponentialBucketMinForBytes(event.module_size_in_bytes))
       .SetFunctionCount(event.function_count)
-      .SetWallClockTime(event.wall_clock_time_in_us)
+      .SetWallClockDuration(event.wall_clock_duration_in_us)
       .Record(ukm->recorder);
 }
 
@@ -46,7 +46,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
       .SetCodeSize(
           ukm::GetExponentialBucketMinForBytes(event.code_size_in_bytes))
       .SetLiftoffBailoutCount(event.liftoff_bailout_count)
-      .SetWallClockTime(event.wall_clock_time_in_us)
+      .SetWallClockDuration(event.wall_clock_duration_in_us)
       .Record(ukm->recorder);
 }
 
@@ -59,7 +59,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
   ukm::builders::V8_Wasm_ModuleInstantiated(ukm->source_id)
       .SetSuccess(event.success ? 1 : 0)
       .SetImportedFunctionCount(event.imported_function_count)
-      .SetWallClockTime(event.wall_clock_time_in_us)
+      .SetWallClockDuration(event.wall_clock_duration_in_us)
       .Record(ukm->recorder);
 }
 
@@ -73,7 +73,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
       .SetLazy(event.lazy ? 1 : 0)
       .SetCodeSize(
           ukm::GetExponentialBucketMinForBytes(event.code_size_in_bytes))
-      .SetWallClockTime(event.wall_clock_time_in_us)
+      .SetWallClockDuration(event.wall_clock_duration_in_us)
       .Record(ukm->recorder);
 }
 

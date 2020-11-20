@@ -13809,7 +13809,23 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="WallClockDuration">
+    <summary>
+      The total time the compilation took in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="WallClockTime">
+    <obsolete>
+      Removed 11/2020
+    </obsolete>
     <summary>
       The total time the compilation took in microseconds.
     </summary>
@@ -13882,9 +13898,25 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="WallClockTime">
+  <metric name="WallClockDuration">
     <summary>
       The total time the decoding took in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WallClockTime">
+    <obsolete>
+      Removed 11/2020
+    </obsolete>
+    <summary>
+      The total time the compilation took in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -13930,9 +13962,25 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="WallClockTime">
+  <metric name="WallClockDuration">
     <summary>
       The total time the instantiation took in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WallClockTime">
+    <obsolete>
+      Removed 11/2020
+    </obsolete>
+    <summary>
+      The total time the compilation took in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -13979,7 +14027,23 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="WallClockDuration">
+    <summary>
+      The total time the compilation took in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="WallClockTime">
+    <obsolete>
+      Removed 11/2020
+    </obsolete>
     <summary>
       The total time the compilation took in microseconds.
     </summary>
