@@ -37,27 +37,31 @@ void NoticeCardTracker::OnOpenAction(int index) {
 }
 
 bool NoticeCardTracker::HasAcknowledgedNoticeCard() const {
-  constexpr char kNoticeCardViewsCountThresholdParamName[] =
-      "notice-card-views-count-threshold";
-  constexpr char kNoticeCardClicksCountThresholdParamName[] =
-      "notice-card-clicks-count-threshold";
-
   if (!base::FeatureList::IsEnabled(feed::kInterestFeedNoticeCardAutoDismiss))
     return false;
 
   int views_count_threshold = base::GetFieldTrialParamByFeatureAsInt(
       feed::kInterestFeedNoticeCardAutoDismiss,
       kNoticeCardViewsCountThresholdParamName, 3);
-  int views_count = prefs::GetNoticeCardViewsCount(*profile_prefs_);
-  if (views_count >= views_count_threshold) {
-    return true;
-  }
-
+  DCHECK(views_count_threshold >= 0);
   int clicks_count_threshold = base::GetFieldTrialParamByFeatureAsInt(
       feed::kInterestFeedNoticeCardAutoDismiss,
       kNoticeCardClicksCountThresholdParamName, 1);
-  int clicks_count = prefs::GetNoticeCardClicksCount(*profile_prefs_);
-  if (clicks_count >= clicks_count_threshold) {
+  DCHECK(clicks_count_threshold >= 0);
+
+  DCHECK(views_count_threshold > 0 || clicks_count_threshold > 0)
+      << "all notice card auto-dismiss thresholds are set to 0 when there "
+         "should be at least one threshold above 0";
+
+  if (views_count_threshold > 0 &&
+      prefs::GetNoticeCardViewsCount(*profile_prefs_) >=
+          views_count_threshold) {
+    return true;
+  }
+
+  if (clicks_count_threshold > 0 &&
+      prefs::GetNoticeCardClicksCount(*profile_prefs_) >=
+          clicks_count_threshold) {
     return true;
   }
 

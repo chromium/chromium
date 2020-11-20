@@ -9,6 +9,11 @@ class PrefService;
 
 namespace feed {
 
+constexpr char kNoticeCardViewsCountThresholdParamName[] =
+    "notice-card-views-count-threshold";
+constexpr char kNoticeCardClicksCountThresholdParamName[] =
+    "notice-card-clicks-count-threshold";
+
 // Tracker for the notice card related actions that also provide signals based
 // on those.
 class NoticeCardTracker {

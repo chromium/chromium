@@ -123,5 +123,29 @@ TEST_F(NoticeCardTrackerTest, DontAcknowledgedNoticeCardWhenFeatureDisabled) {
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
 }
 
+TEST_F(NoticeCardTrackerTest,
+       DontAcknowledgedNoticeCardFromViewsCountWhenThresholdIsZero) {
+  base::FieldTrialParams params;
+  params[kNoticeCardViewsCountThresholdParamName] = "0";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      feed::kInterestFeedNoticeCardAutoDismiss, params);
+
+  NoticeCardTracker tracker(&profile_prefs_);
+  EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
+}
+
+TEST_F(NoticeCardTrackerTest,
+       DontAcknowledgedNoticeCardFromClicksCountWhenThresholdIsZero) {
+  base::FieldTrialParams params;
+  params[kNoticeCardClicksCountThresholdParamName] = "0";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      feed::kInterestFeedNoticeCardAutoDismiss, params);
+
+  NoticeCardTracker tracker(&profile_prefs_);
+  EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
+}
+
 }  // namespace
 }  // namespace feed
