@@ -134,13 +134,19 @@ void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
 class FrameHostComponent : public fuchsia::sys::ComponentController {
  public:
   // Creates a FrameHostComponent with lifetime managed by |controller_request|.
-  static void Start(
+  // Returns the incoming service directory, in case the CastRunner needs to use
+  // it to connect to the MetricsRecorder.
+  static base::WeakPtr<const sys::ServiceDirectory>
+  StartAndReturnIncomingServiceDirectory(
       std::unique_ptr<base::fuchsia::StartupContext> startup_context,
       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
           controller_request,
-      fuchsia::web::FrameHost* frame_host_impl) {
-    new FrameHostComponent(std::move(startup_context),
-                           std::move(controller_request), frame_host_impl);
+      fuchsia::web::FrameHost* const frame_host_impl) {
+    // |frame_host_component| deletes itself when the client disconnects.
+    auto* frame_host_component =
+        new FrameHostComponent(std::move(startup_context),
+                               std::move(controller_request), frame_host_impl);
+    return frame_host_component->weak_incoming_services_.GetWeakPtr();
   }
 
  private:
@@ -148,9 +154,10 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
       std::unique_ptr<base::fuchsia::StartupContext> startup_context,
       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
           controller_request,
-      fuchsia::web::FrameHost* frame_host_impl)
+      fuchsia::web::FrameHost* const frame_host_impl)
       : startup_context_(std::move(startup_context)),
-        frame_host_binding_(startup_context_->outgoing(), frame_host_impl) {
+        frame_host_binding_(startup_context_->outgoing(), frame_host_impl),
+        weak_incoming_services_(startup_context_->svc()) {
     startup_context_->ServeOutgoingDirectory();
     binding_.Bind(std::move(controller_request));
     binding_.set_error_handler([this](zx_status_t) { Kill(); });
@@ -168,6 +175,8 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
   const base::fuchsia::ScopedServiceBinding<fuchsia::web::FrameHost>
       frame_host_binding_;
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
+
+  base::WeakPtrFactory<const sys::ServiceDirectory> weak_incoming_services_;
 };
 
 }  // namespace
@@ -488,20 +497,26 @@ void CastRunner::OnCameraServiceRequest(
 
 void CastRunner::OnMetricsRecorderServiceRequest(
     fidl::InterfaceRequest<fuchsia::legacymetrics::MetricsRecorder> request) {
-  // TODO(crbug.com/1120914): Allow for the FrameHostComponent being created
-  // before any Cast components are launched in the |main_context_|.
+  // TODO(crbug.com/1065707): Remove this hack once the service can be routed
+  // through the Runner's incoming service directory, in Component Framework v2.
+
+  // Attempt to connect via any CastComponent's incoming services.
   WebComponent* any_component = main_context_->GetAnyComponent();
-  if (!any_component) {
-    LOG(WARNING) << "Ignoring MetricsRecorder request.";
+  if (any_component) {
+    VLOG(1) << "Connecting MetricsRecorder via CastComponent.";
+    CastComponent* component = reinterpret_cast<CastComponent*>(any_component);
+    component->startup_context()->svc()->Connect(std::move(request));
     return;
   }
 
-  // TODO(crbug.com/1065707): Remove this hack once Runners are using
-  // Component Framework v2.
-  CastComponent* component = reinterpret_cast<CastComponent*>(any_component);
-  DCHECK(component);
+  // Attempt to connect via a FrameHostComponent's services, if available.
+  if (frame_host_component_incoming_services_) {
+    VLOG(1) << "Connecting MetricsRecorder via FrameHostComponent.";
+    frame_host_component_incoming_services_->Connect(std::move(request));
+    return;
+  }
 
-  component->startup_context()->svc()->Connect(std::move(request));
+  LOG(WARNING) << "Ignoring MetricsRecorder request.";
 }
 
 void CastRunner::StartComponentInternal(
@@ -512,9 +527,10 @@ void CastRunner::StartComponentInternal(
   // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
   // used to route fuchsia.web.FrameHost capabilities cleanly.
   if (enable_frame_host_component_ && (url.spec() == kFrameHostComponentName)) {
-    FrameHostComponent::Start(std::move(startup_context),
-                              std::move(controller_request),
-                              main_context_.get());
+    frame_host_component_incoming_services_ =
+        FrameHostComponent::StartAndReturnIncomingServiceDirectory(
+            std::move(startup_context), std::move(controller_request),
+            main_context_.get());
     return;
   }
 

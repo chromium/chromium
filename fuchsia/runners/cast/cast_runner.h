@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/fuchsia/startup_context.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "fuchsia/runners/cast/cast_component.h"
 #include "fuchsia/runners/cast/pending_cast_component.h"
@@ -142,6 +143,12 @@ class CastRunner : public fuchsia::sys::Runner,
   base::Optional<std::vector<std::vector<uint8_t>>> cors_exempt_headers_;
   chromium::cast::CorsExemptHeaderProviderPtr cors_exempt_headers_provider_;
   std::vector<base::OnceClosure> on_have_cors_exempt_headers_;
+
+  // Reference to the service directory of the most recent FrameHost component.
+  // Used to route MetricsRecorder requests from the web.Context, if there are
+  // no CastComponents available through which to do so.
+  base::WeakPtr<const sys::ServiceDirectory>
+      frame_host_component_incoming_services_;
 
   // Last component that was created with permission to access MICROPHONE.
   CastComponent* audio_capturer_component_ = nullptr;
