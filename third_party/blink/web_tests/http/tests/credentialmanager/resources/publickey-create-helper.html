@@ -1,17 +1,8 @@
 <!DOCTYPE HTML>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js"></script>
-<script src="/gen/mojo/public/mojom/base/unguessable_token.mojom-lite.js"></script>
-<script src="/gen/mojo/public/mojom/base/big_buffer.mojom-lite.js"></script>
-<script src="/gen/mojo/public/mojom/base/string16.mojom-lite.js"></script>
-<script src="/gen/mojo/public/mojom/base/time.mojom-lite.js"></script>
-<script src="/gen/url/mojom/origin.mojom-lite.js"></script>
-<script src="/gen/url/mojom/url.mojom-lite.js"></script>
-<script src="/gen/third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-lite.js"></script>
-<script src="/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom-lite.js"></script>
-<script src="/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-lite.js"></script>
-<script src="test-inputs.js"></script>
-<script src="virtual-navigator-credentials.js"></script>
-<script>
+<script type="module">
+import {CHALLENGE, PUBLIC_KEY_PARAMETERS, PUBLIC_KEY_USER} from './test-inputs.js';
+import {TestAuthenticatorManager} from './virtual-navigator-credentials.js';
+
 let queryParams = new URLSearchParams(window.location.search);
 var relyingPartyId = queryParams.has('rpId') ? queryParams.get('rpId') : document.domain;
 var customPublicKey = {
@@ -22,7 +13,8 @@ var customPublicKey = {
 };
 let responder =  window.opener || window.parent;
 
-navigator.credentials.test.createAuthenticator().then(() => {
+const manager = new TestAuthenticatorManager;
+manager.createAuthenticator().then(() => {
   return navigator.credentials.create({publicKey : customPublicKey});
 }).then(r => responder.postMessage("SUCCESS", "*"))
   .catch(t => responder.postMessage(t.name, "*"));;

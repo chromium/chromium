@@ -1,45 +1,29 @@
-'use strict';
-
-// A minimal HTML document that loads this very file. This can be
-// document.write()'en to nested documents to include test input/outputs.
-const HTML_WITH_TEST_INPUTS = "<script src='/credentialmanager/resources/test-inputs.js'></script>";
-
-// Constructs a script that loads this very script file, and runs |code| once
-// loaded. This can be window.eval()'ed in nested documents to include test
-// input/outputs (and then run the |code| under test).
-function getScriptThatLoadsTestInputsAndRuns(code) {
-  return "var script = document.createElement('script');"
-       + "script.src = '/credentialmanager/resources/test-inputs.js';"
-       + "script.onload = _ => {" + code + "};"
-       + "document.head.appendChild(script);"
-}
-
 // Common mock values for the mockAuthenticator.
-var CHALLENGE = new TextEncoder().encode("climb a mountain");
+export const CHALLENGE = new TextEncoder().encode("climb a mountain");
 
-var PUBLIC_KEY_RP = {
+export const PUBLIC_KEY_RP = {
     id: "subdomain.example.test",
     name: "Acme"
 };
 
-var PUBLIC_KEY_USER = {
+export const PUBLIC_KEY_USER = {
     id: new TextEncoder().encode("1098237235409872"),
     name: "avery.a.jones@example.com",
     displayName: "Avery A. Jones",
     icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
 };
 
-var PUBLIC_KEY_PARAMETERS =  [{
+export const PUBLIC_KEY_PARAMETERS = [{
     type: "public-key",
     alg: -7,
 },];
 
-var AUTHENTICATOR_SELECTION_CRITERIA = {
+export const AUTHENTICATOR_SELECTION_CRITERIA = {
     requireResidentKey: false,
     userVerification: "preferred",
 };
 
-var MAKE_CREDENTIAL_OPTIONS = {
+export const MAKE_CREDENTIAL_OPTIONS = {
     challenge: CHALLENGE,
     rp: PUBLIC_KEY_RP,
     user: PUBLIC_KEY_USER,
@@ -48,53 +32,68 @@ var MAKE_CREDENTIAL_OPTIONS = {
     excludeCredentials: [],
 };
 
-var ACCEPTABLE_CREDENTIAL_ID = new TextEncoder().encode("acceptableCredential");
+export const ACCEPTABLE_CREDENTIAL_ID =
+    new TextEncoder().encode("acceptableCredential");
 
-var ACCEPTABLE_CREDENTIAL = {
+export const ACCEPTABLE_CREDENTIAL = {
     type: "public-key",
     id: ACCEPTABLE_CREDENTIAL_ID,
     transports: ["usb", "nfc", "ble"]
 };
 
-var GET_CREDENTIAL_OPTIONS = {
+export const GET_CREDENTIAL_OPTIONS = {
     challenge: CHALLENGE,
     rpId: "subdomain.example.test",
     allowCredentials: [ACCEPTABLE_CREDENTIAL],
     userVerification: "preferred",
 };
 
-var RAW_ID = new TextEncoder("utf-8").encode("rawId");
-var ID = btoa("rawId");
-var CLIENT_DATA_JSON = new TextEncoder("utf-8").encode("clientDataJSON");
-var ATTESTATION_OBJECT = new TextEncoder("utf-8").encode("attestationObject");
-var AUTHENTICATOR_DATA = new TextEncoder("utf-8").encode("authenticatorData");
-var SIGNATURE = new TextEncoder("utf-8").encode("signature");
-var CABLE_REGISTRATION  = {
+export const RAW_ID = new TextEncoder("utf-8").encode("rawId");
+export const ID = btoa("rawId");
+export const CLIENT_DATA_JSON =
+    new TextEncoder("utf-8").encode("clientDataJSON");
+export const ATTESTATION_OBJECT =
+    new TextEncoder("utf-8").encode("attestationObject");
+export const AUTHENTICATOR_DATA =
+    new TextEncoder("utf-8").encode("authenticatorData");
+export const SIGNATURE = new TextEncoder("utf-8").encode("signature");
+export const CABLE_REGISTRATION = {
     versions: [1],
     rpPublicKey: new TextEncoder("utf-8").encode("SixteenByteRpKey"),
 };
 
-var CABLE_AUTHENTICATION = {
+export const CABLE_AUTHENTICATION = {
     version: 1,
     clientEid: new TextEncoder("utf-8").encode("SixteenByteClEid"),
     authenticatorEid: new TextEncoder("utf-8").encode("SixteenByteAuEid"),
     sessionPreKey: new TextEncoder("utf-8").encode('x'.repeat(32)),
 };
 
-var CREATE_CREDENTIALS =
-    "navigator.credentials.create({publicKey : MAKE_CREDENTIAL_OPTIONS})"
-    + ".then(c => window.parent.postMessage(String(c), '*'))";
-    + ".catch(e => window.parent.postMessage(String(e), '*'));";
+function wrapScriptWithImportedTestInput(inputName, script) {
+  return "(async function() {" +
+      `  const {${inputName}} = ` +
+      "      await import('/credentialmanager/resources/test-inputs.js');" +
+      "  return " + script + "})();";
+}
 
-var GET_CREDENTIAL = "navigator.credentials.get({publicKey : GET_CREDENTIAL_OPTIONS})"
-    + ".then(c => window.parent.postMessage(String(c), '*'))";
-    + ".catch(e => window.parent.postMessage(String(e), '*'));";
+export const CREATE_CREDENTIALS = wrapScriptWithImportedTestInput(
+    "MAKE_CREDENTIAL_OPTIONS",
+    "navigator.credentials.create({publicKey : MAKE_CREDENTIAL_OPTIONS})" +
+        ".then(c => window.parent.postMessage(String(c), \'*\'))" +
+        ".catch(e => window.parent.postMessage(String(e), \'*\'));");
 
-function encloseInScriptTag(code) {
+
+export const GET_CREDENTIAL = wrapScriptWithImportedTestInput(
+    "GET_CREDENTIAL_OPTIONS",
+    "navigator.credentials.get({publicKey : GET_CREDENTIAL_OPTIONS})" +
+        ".then(c => window.parent.postMessage(String(c), \'*\'))" +
+        ".catch(e => window.parent.postMessage(String(e), \'*\'));");
+
+export function encloseInScriptTag(code) {
   return "<script>" + code + "</scr" + "ipt>";
 }
 
-function deepCopy(value) {
+export function deepCopy(value) {
   if ([Number, String, Boolean, Uint8Array].includes(value.constructor))
     return value;
 
@@ -105,7 +104,7 @@ function deepCopy(value) {
 }
 
 // Verifies if |r| is the valid response to credentials.create(publicKey).
-function assertValidMakeCredentialResponse(r) {
+export function assertValidMakeCredentialResponse(r) {
     assert_equals(r.id, ID, 'id');
     assert_true(r.rawId instanceof ArrayBuffer);
     assert_array_equals(new Uint8Array(r.rawId),
@@ -122,7 +121,7 @@ function assertValidMakeCredentialResponse(r) {
 }
 
 // Verifies if |r| is the valid response to credentials.get(publicKey).
-function assertValidGetCredentialResponse(r) {
+export function assertValidGetCredentialResponse(r) {
     assert_equals(r.id, ID, 'id');
     assert_true(r.rawId instanceof ArrayBuffer);
     assert_array_equals(new Uint8Array(r.rawId),
@@ -146,15 +145,15 @@ function assertValidGetCredentialResponse(r) {
 
 // Sets up a virtual authenticator with |authenticatorArgs| for the duration of
 // the tests run in |t|.
-function authenticatorSetup(name, t, authenticatorArgs) {
+export function authenticatorSetup(manager, name, t, authenticatorArgs) {
   promise_test(
-      () => navigator.credentials.test.createAuthenticator(authenticatorArgs),
+      () => manager.createAuthenticator(authenticatorArgs),
       name + ': Setup up the testing environment.');
   try {
     t();
   } finally {
     promise_test(
-        () => navigator.credentials.test.clearAuthenticators(),
+        () => manager.clearAuthenticators(),
         name + ': Clean up testing environment.');
   }
 }

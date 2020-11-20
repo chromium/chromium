@@ -1,4 +1,7 @@
-'use strict';
+import {CredentialManager, CredentialManagerError, CredentialManagerReceiver, CredentialType} from '/gen/third_party/blink/public/mojom/credentialmanager/credential_manager.mojom.m.js';
+import {SmsStatus, WebOTPService, WebOTPServiceReceiver} from '/gen/third_party/blink/public/mojom/sms/webotp_service.mojom.m.js';
+import {Authenticator, AuthenticatorReceiver, AuthenticatorStatus, AuthenticatorTransport} from '/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom.m.js';
+import {ATTESTATION_OBJECT, AUTHENTICATOR_DATA, CLIENT_DATA_JSON, ID, RAW_ID, SIGNATURE} from './test-inputs.js';
 
 // Converts an ECMAScript String object to an instance of
 // mojo_base.mojom.String16.
@@ -11,12 +14,12 @@ function stringToMojoString16(string) {
 }
 
 // Mocks the CredentialManager interface defined in credential_manager.mojom.
-class MockCredentialManager {
+export class MockCredentialManager {
   constructor() {
     this.reset();
 
-    this.interceptor_ = new MojoInterfaceInterceptor(
-        blink.mojom.CredentialManager.$interfaceName);
+    this.interceptor_ =
+        new MojoInterfaceInterceptor(CredentialManager.$interfaceName);
     this.interceptor_.oninterfacerequest = e => {
       this.bindHandleToReceiver(e.handle);
     };
@@ -24,7 +27,7 @@ class MockCredentialManager {
   }
 
   bindHandleToReceiver(handle) {
-    this.receiver_ = new blink.mojom.CredentialManagerReceiver(this);
+    this.receiver_ = new CredentialManagerReceiver(this);
     this.receiver_.$.bindHandle(handle);
   }
 
@@ -41,7 +44,7 @@ class MockCredentialManager {
 
   // Mock functions:
   async get(mediation, includePasswords, federations) {
-    if (this.error_ == blink.mojom.CredentialManagerError.SUCCESS) {
+    if (this.error_ == CredentialManagerError.SUCCESS) {
       return {error: this.error_, credential: this.credentialInfo_};
     } else {
       return {error: this.error_, credential: null};
@@ -58,15 +61,14 @@ class MockCredentialManager {
 
   // Resets state of mock CredentialManager.
   reset() {
-    this.error_ = blink.mojom.CredentialManagerError.SUCCESS;
-    this.credentialInfo_ = this.constructCredentialInfo_(
-        blink.mojom.CredentialType.EMPTY, '', '', '', '');
+    this.error_ = CredentialManagerError.SUCCESS;
+    this.credentialInfo_ =
+        this.constructCredentialInfo_(CredentialType.EMPTY, '', '', '', '');
   }
 
   setResponse(id, password, name, icon) {
     this.credentialInfo_ = this.constructCredentialInfo_(
-        blink.mojom.CredentialType.PASSWORD, id, password, name,
-        icon);
+        CredentialType.PASSWORD, id, password, name, icon);
   }
 
   setError(error) {
@@ -75,12 +77,12 @@ class MockCredentialManager {
 }
 
 // Class that mocks Authenticator interface defined in authenticator.mojom.
-class MockAuthenticator {
+export class MockAuthenticator {
   constructor() {
     this.reset();
 
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.Authenticator.$interfaceName);
+        new MojoInterfaceInterceptor(Authenticator.$interfaceName);
     this.interceptor_.oninterfacerequest = e => {
       this.bindHandleToReceiver(e.handle);
     };
@@ -88,14 +90,14 @@ class MockAuthenticator {
   }
 
   bindHandleToReceiver(handle) {
-    this.receiver_ = new blink.mojom.AuthenticatorReceiver(this);
+    this.receiver_ = new AuthenticatorReceiver(this);
     this.receiver_.$.bindHandle(handle);
   }
 
   // Returns a MakeCredentialResponse to the client.
   async makeCredential(options) {
     var response = null;
-    if (this.status_ == blink.mojom.AuthenticatorStatus.SUCCESS) {
+    if (this.status_ == AuthenticatorStatus.SUCCESS) {
       let info = { id: this.id_,
             authenticatorData: this.authenticatorData_,
             rawId: this.rawId_,
@@ -103,7 +105,7 @@ class MockAuthenticator {
           };
       response = { info: info,
             attestationObject: this.attestationObject_,
-            transports: [blink.mojom.AuthenticatorTransport.INTERNAL],
+            transports: [AuthenticatorTransport.INTERNAL],
             echoHmacCreateSecret: false,
             hmacCreateSecret: false,
             publicKeyAlgo: 0,
@@ -116,7 +118,7 @@ class MockAuthenticator {
 
   async getAssertion(options) {
     var response = null;
-  if (this.status_ == blink.mojom.AuthenticatorStatus.SUCCESS) {
+    if (this.status_ == AuthenticatorStatus.SUCCESS) {
       let info = { id: this.id_,
             authenticatorData: this.authenticatorData_,
             rawId: this.rawId_,
@@ -142,7 +144,7 @@ class MockAuthenticator {
 
   // Resets state of mock Authenticator.
   reset() {
-    this.status_ = blink.mojom.AuthenticatorStatus.UNKNOWN_ERROR;
+    this.status_ = AuthenticatorStatus.UNKNOWN_ERROR;
     this.id_ = null;
     this.rawId_ = new Uint8Array(0);
     this.clientDataJson_ = new Uint8Array(0);
@@ -154,23 +156,21 @@ class MockAuthenticator {
 
   // Sets everything needed for a MakeCredential success response.
   setDefaultsForSuccessfulMakeCredential() {
-    mockAuthenticator.setRawId(RAW_ID);
-    mockAuthenticator.setId(ID);
-    mockAuthenticator.setClientDataJson(CLIENT_DATA_JSON);
-    mockAuthenticator.setAttestationObject(ATTESTATION_OBJECT);
-    mockAuthenticator.setAuthenticatorStatus(
-        blink.mojom.AuthenticatorStatus.SUCCESS);
+    this.setRawId(RAW_ID);
+    this.setId(ID);
+    this.setClientDataJson(CLIENT_DATA_JSON);
+    this.setAttestationObject(ATTESTATION_OBJECT);
+    this.setAuthenticatorStatus(AuthenticatorStatus.SUCCESS);
   }
 
   // Sets everything needed for a GetAssertion success response.
   setDefaultsForSuccessfulGetAssertion() {
-    mockAuthenticator.setRawId(RAW_ID);
-    mockAuthenticator.setId(ID);
-    mockAuthenticator.setClientDataJson(CLIENT_DATA_JSON);
-    mockAuthenticator.setAuthenticatorData(AUTHENTICATOR_DATA);
-    mockAuthenticator.setSignature(SIGNATURE);
-    mockAuthenticator.setAuthenticatorStatus(
-        blink.mojom.AuthenticatorStatus.SUCCESS);
+    this.setRawId(RAW_ID);
+    this.setId(ID);
+    this.setClientDataJson(CLIENT_DATA_JSON);
+    this.setAuthenticatorData(AUTHENTICATOR_DATA);
+    this.setSignature(SIGNATURE);
+    this.setAuthenticatorStatus(AuthenticatorStatus.SUCCESS);
   }
 
   setAuthenticatorStatus(status) {
@@ -207,12 +207,12 @@ class MockAuthenticator {
 }
 
 // Mocks the WebOTPService interface defined in webotp_service.mojom.
-class MockWebOTPService {
+export class MockWebOTPService {
   constructor() {
     this.reset();
 
-    this.interceptor_ = new MojoInterfaceInterceptor(
-        blink.mojom.WebOTPService.$interfaceName, 'context', true);
+    this.interceptor_ =
+        new MojoInterfaceInterceptor(WebOTPService.$interfaceName);
     this.interceptor_.oninterfacerequest = (e) => {
       this.bindHandleToReceiver(e.handle);
     };
@@ -220,7 +220,7 @@ class MockWebOTPService {
   }
 
   bindHandleToReceiver(handle) {
-    this.receiver_ = new blink.mojom.WebOTPServiceReceiver(this);
+    this.receiver_ = new WebOTPServiceReceiver(this);
     this.receiver_.$.bindHandle(handle);
   }
 
@@ -234,7 +234,7 @@ class MockWebOTPService {
   // Resets state of mock WebOTPService.
   reset() {
     this.otp_ = '';
-    this.status_ = blink.mojom.SmsStatus.kTimeout;
+    this.status_ = SmsStatus.kTimeout;
   }
 
   setOtp(otp) {
@@ -245,7 +245,3 @@ class MockWebOTPService {
     this.status_ = status;
   }
 }
-
-var mockAuthenticator = new MockAuthenticator();
-var mockCredentialManager = new MockCredentialManager();
-var mockWebOTPService = new MockWebOTPService();

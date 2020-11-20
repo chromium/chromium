@@ -249,30 +249,13 @@
     return foundAuthenticator;
   }
 
-  function loadVirtualAuthenticatorManager() {
-    if (virtualAuthenticatorManager_) {
-      return Promise.resolve(virtualAuthenticatorManager_);
+  async function loadVirtualAuthenticatorManager() {
+    if (!virtualAuthenticatorManager_) {
+      const {VirtualAuthenticatorManager} = await import(
+          '/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.m.js');
+      virtualAuthenticatorManager_ = VirtualAuthenticatorManager.getRemote();
     }
-
-    return Promise.all([
-      "/gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js",
-      "/gen/mojo/public/mojom/base/time.mojom-lite.js",
-      "/gen/url/mojom/url.mojom-lite.js",
-      "/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom-lite.js",
-      "/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-lite.js",
-    ].map(dependency => new Promise((resolve, reject) => {
-      let script = document.createElement("script");
-      script.src = dependency;
-      script.async = false;
-      script.onload = resolve;
-      document.head.appendChild(script);
-    }))).then(() => {
-      virtualAuthenticatorManager_ = new blink.test.mojom.VirtualAuthenticatorManagerRemote;
-      Mojo.bindInterface(
-          blink.test.mojom.VirtualAuthenticatorManager.$interfaceName,
-          virtualAuthenticatorManager_.$.bindNewPipeAndPassReceiver().handle);
-      return virtualAuthenticatorManager_;
-    });
+    return virtualAuthenticatorManager_;
   }
 
   function urlSafeBase64ToUint8Array(base64url) {
@@ -297,6 +280,11 @@
   window.test_driver_internal.add_virtual_authenticator = async function(options) {
     let manager = await loadVirtualAuthenticatorManager();
 
+    const {AuthenticatorAttachment, AuthenticatorTransport} = await import(
+        '/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom.m.js');
+    const {ClientToAuthenticatorProtocol, Ctap2Version} = await import(
+        '/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.m.js');
+
     options = Object.assign({
       hasResidentKey: false,
       hasUserVerification: false,
@@ -307,35 +295,35 @@
     let mojoOptions = {};
     switch (options.protocol) {
       case "ctap1/u2f":
-        mojoOptions.protocol = blink.test.mojom.ClientToAuthenticatorProtocol.U2F;
+        mojoOptions.protocol = ClientToAuthenticatorProtocol.U2F;
         break;
       case "ctap2":
-        mojoOptions.protocol = blink.test.mojom.ClientToAuthenticatorProtocol.CTAP2;
-        mojoOptions.ctap2Version = blink.test.mojom.Ctap2Version.CTAP2_0;
+        mojoOptions.protocol = ClientToAuthenticatorProtocol.CTAP2;
+        mojoOptions.ctap2Version = Ctap2Version.CTAP2_0;
         break;
       case "ctap2_1":
-        mojoOptions.protocol = blink.test.mojom.ClientToAuthenticatorProtocol.CTAP2;
-        mojoOptions.ctap2Version = blink.test.mojom.Ctap2Version.CTAP2_1;
+        mojoOptions.protocol = ClientToAuthenticatorProtocol.CTAP2;
+        mojoOptions.ctap2Version = Ctap2Version.CTAP2_1;
         break;
       default:
         throw "Unknown protocol "  + options.protocol;
     }
     switch (options.transport) {
       case "usb":
-        mojoOptions.transport = blink.mojom.AuthenticatorTransport.USB;
-        mojoOptions.attachment = blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM;
+        mojoOptions.transport = AuthenticatorTransport.USB;
+        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
         break;
       case "nfc":
-        mojoOptions.transport = blink.mojom.AuthenticatorTransport.NFC;
-        mojoOptions.attachment = blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM;
+        mojoOptions.transport = AuthenticatorTransport.NFC;
+        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
         break;
       case "ble":
-        mojoOptions.transport = blink.mojom.AuthenticatorTransport.BLE;
-        mojoOptions.attachment = blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM;
+        mojoOptions.transport = AuthenticatorTransport.BLE;
+        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
         break;
       case "internal":
-        mojoOptions.transport = blink.mojom.AuthenticatorTransport.INTERNAL;
-        mojoOptions.attachment = blink.mojom.AuthenticatorAttachment.PLATFORM;
+        mojoOptions.transport = AuthenticatorTransport.INTERNAL;
+        mojoOptions.attachment = AuthenticatorAttachment.PLATFORM;
         break;
       default:
         throw "Unknown transport "  + options.transport;
