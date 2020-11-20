@@ -303,8 +303,18 @@ using web::wk_navigation_util::IsPlaceholderUrl;
       DCHECK(!self.navigationManagerImpl->GetPendingItem());
       currentItem = self.navigationManagerImpl->GetLastCommittedItem();
     }
-    if (currentItem && webViewURL != currentItem->GetURL())
-      currentItem->SetURL(webViewURL);
+
+    if (currentItem && webViewURL != currentItem->GetURL()) {
+      BOOL isRestoredURL = NO;
+      if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+          web::wk_navigation_util::IsRestoreSessionUrl(webViewURL)) {
+        GURL restoredURL;
+        web::wk_navigation_util::ExtractTargetURL(webViewURL, &restoredURL);
+        isRestoredURL = restoredURL == currentItem->GetURL();
+      }
+      if (!isRestoredURL)
+        currentItem->SetURL(webViewURL);
+    }
 
     [self.delegate navigationObserver:self
         URLDidChangeWithoutDocumentChange:URL];
