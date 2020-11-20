@@ -126,6 +126,11 @@ GURL GetRobotsServerURL(const url::SchemeHostPort& origin) {
   DCHECK(ShouldEnableLoginRobotsCheckedCompression());
   DCHECK(origin.IsValid());
 
+  GURL origin_url = origin.GetURL();
+  GURL::Replacements origin_replacement;
+  origin_replacement.SetPathStr("/robots.txt");
+  origin_url = origin_url.ReplaceComponents(origin_replacement);
+
   auto lite_page_robots_origin = base::GetFieldTrialParamValueByFeature(
       blink::features::kSubresourceRedirect, "lite_page_robots_origin");
   GURL lite_page_robots_url(lite_page_robots_origin.empty()
@@ -133,8 +138,7 @@ GURL GetRobotsServerURL(const url::SchemeHostPort& origin) {
                                 : lite_page_robots_origin);
 
   std::string query_str =
-      "u=" +
-      net::EscapeQueryParamValue(origin.GetURL().spec(), true /* use_plus */);
+      "u=" + net::EscapeQueryParamValue(origin_url.spec(), true /* use_plus */);
 
   GURL::Replacements replacements;
   replacements.SetPathStr("/robots");

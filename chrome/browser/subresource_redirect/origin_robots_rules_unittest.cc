@@ -93,7 +93,8 @@ class SubresourceRedirectOriginRobotsRulesTest : public testing::Test {
                         net::HttpStatusCode http_status = net::HTTP_OK,
                         bool is_cache_hit = false,
                         const std::string& retry_after = "") {
-    GURL url(lite_pages_url + net::EscapeQueryParamValue(robots_origin, true));
+    GURL url(lite_pages_url +
+             net::EscapeQueryParamValue(robots_origin + "robots.txt", true));
     network::mojom::URLResponseHeadPtr head =
         network::CreateURLResponseHead(http_status);
     head->was_fetched_via_cache = is_cache_hit;

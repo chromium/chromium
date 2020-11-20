@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,9 +33,10 @@ TEST(SubresourceRedirectUtilTest, GetRobotsServerURL) {
 
   for (auto* origin :
        {"https://foo.com/", "https://www.foo.com/", "http://foo.com/"}) {
-    EXPECT_EQ(GURL("https://litepages.googlezip.net/robots?u=" +
-                   EscapeURLForQueryParam(origin)),
-              GetRobotsServerURL(url::SchemeHostPort(GURL(origin))));
+    EXPECT_EQ(
+        GURL("https://litepages.googlezip.net/robots?u=" +
+             EscapeURLForQueryParam(base::StrCat({origin, "robots.txt"}))),
+        GetRobotsServerURL(url::SchemeHostPort(GURL(origin))));
   }
 }
 
@@ -49,9 +51,10 @@ TEST(SubresourceRedirectUtilTest, GetRobotsServerURL_ModifiedLitePagesOrigin) {
 
   for (auto* origin :
        {"https://foo.com/", "https://www.foo.com/", "http://foo.com/"}) {
-    EXPECT_EQ(GURL("https://modified.litepages.com/robots?u=" +
-                   EscapeURLForQueryParam(origin)),
-              GetRobotsServerURL(url::SchemeHostPort(GURL(origin))));
+    EXPECT_EQ(
+        GURL("https://modified.litepages.com/robots?u=" +
+             EscapeURLForQueryParam(base::StrCat({origin, "robots.txt"}))),
+        GetRobotsServerURL(url::SchemeHostPort(GURL(origin))));
   }
 }
 
