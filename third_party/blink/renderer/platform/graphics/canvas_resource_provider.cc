@@ -1134,8 +1134,9 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
                         : cc::PlaybackImageProvider::RasterMode::kGpu;
     }
     canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-        ImageDecodeCacheRGBA8(), cache_f16, gfx::ColorSpace::CreateSRGB(),
-        color_params_.GetSkColorType(), raster_mode);
+        ImageDecodeCacheRGBA8(), cache_f16,
+        ColorParams().GetStorageGfxColorSpace(), color_params_.GetSkColorType(),
+        raster_mode);
   }
   return canvas_image_provider_.get();
 }

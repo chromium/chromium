@@ -46,7 +46,7 @@ var rec2020TransparentBlackImage = [0.16858, 0.16858, 0.16858, 0.50195];
 
 function testPixels(ctx, tests, sourceType)
 {
-    var actual, expected, tolerance = 0.01;
+    var actual, expected, tolerance = 0.02;
     if (sourceType === 'video')
         tolerance = 0.04;
     for (var i = 0; i < tests.length; i++) {
