@@ -48,6 +48,13 @@ void NotifyCompressedImageFetchFailed(content::WebContents* web_contents,
 // |origin|.
 GURL GetRobotsServerURL(const url::SchemeHostPort& origin);
 
+// Returns a random duration LitePages service should bypass for, when a
+// LitePages response fails without RetryAfter header.
+base::TimeDelta GetLitePagesBypassRandomDuration();
+
+// Returns the maximum duration LitePages service should be bypassed.
+base::TimeDelta GetLitePagesBypassMaxDuration();
+
 }  // namespace subresource_redirect
 
 #endif  // CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_UTIL_H_

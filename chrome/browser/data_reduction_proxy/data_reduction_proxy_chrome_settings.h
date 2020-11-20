@@ -29,8 +29,8 @@ class DataReductionProxyData;
 class DataStore;
 }  // namespace data_reduction_proxy
 
-class HttpsImageCompressionBypassDecider;
 class HttpsImageCompressionInfoBarDecider;
+class LitePagesServiceBypassDecider;
 class PrefService;
 
 // Data reduction proxy settings class suitable for use with a Chrome browser.
@@ -87,9 +87,8 @@ class DataReductionProxyChromeSettings
     return https_image_compression_infobar_decider_.get();
   }
 
-  HttpsImageCompressionBypassDecider* https_image_compression_bypass_decider()
-      const {
-    return https_image_compression_bypass_decider_.get();
+  LitePagesServiceBypassDecider* litepages_service_bypass_decider() const {
+    return litepages_service_bypass_decider_.get();
   }
 
  private:
@@ -104,10 +103,10 @@ class DataReductionProxyChromeSettings
   std::unique_ptr<HttpsImageCompressionInfoBarDecider>
       https_image_compression_infobar_decider_;
 
-  // Maintains the decider for this profile to contain logic for https image
-  // compression bypass.
-  std::unique_ptr<HttpsImageCompressionBypassDecider>
-      https_image_compression_bypass_decider_;
+  // Maintains the decider for this profile to contain logic for LitePages
+  // service bypass.
+  std::unique_ptr<LitePagesServiceBypassDecider>
+      litepages_service_bypass_decider_;
 
   // Null before InitDataReductionProxySettings is called.
   Profile* profile_;

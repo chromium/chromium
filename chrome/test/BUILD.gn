@@ -3674,8 +3674,8 @@ test("unit_tests") {
     "../browser/resources_util_unittest.cc",
     "../browser/security_events/security_event_recorder_impl_unittest.cc",
     "../browser/signin/e2e_tests/test_accounts_util_unittest.cc",
-    "../browser/subresource_redirect/https_image_compression_bypass_decider_unittest.cc",
     "../browser/subresource_redirect/https_image_compression_infobar_decider_unittest.cc",
+    "../browser/subresource_redirect/litepages_service_bypass_decider_unittest.cc",
     "../browser/subresource_redirect/origin_robots_rules_unittest.cc",
     "../browser/subresource_redirect/subresource_redirect_util_unit_test.cc",
 

@@ -4,11 +4,12 @@
 
 #include "chrome/browser/subresource_redirect/subresource_redirect_util.h"
 
+#include "base/rand_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
-#include "chrome/browser/subresource_redirect/https_image_compression_bypass_decider.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
+#include "chrome/browser/subresource_redirect/litepages_service_bypass_decider.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/escape.h"
@@ -95,8 +96,8 @@ bool ShowInfoBarAndGetImageCompressionState(
     return false;
   }
 
-  if (data_reduction_proxy_settings->https_image_compression_bypass_decider()
-          ->ShouldBypassNow()) {
+  if (!data_reduction_proxy_settings->litepages_service_bypass_decider()
+           ->ShouldAllowNow()) {
     return false;
   }
 
@@ -118,8 +119,8 @@ bool ShowInfoBarAndGetImageCompressionState(
 void NotifyCompressedImageFetchFailed(content::WebContents* web_contents,
                                       base::TimeDelta retry_after) {
   GetDataReductionProxyChromeSettings(web_contents)
-      ->https_image_compression_bypass_decider()
-      ->NotifyCompressedImageFetchFailed(retry_after);
+      ->litepages_service_bypass_decider()
+      ->NotifyFetchFailure(retry_after);
 }
 
 GURL GetRobotsServerURL(const url::SchemeHostPort& origin) {
@@ -147,6 +148,23 @@ GURL GetRobotsServerURL(const url::SchemeHostPort& origin) {
   lite_page_robots_url = lite_page_robots_url.ReplaceComponents(replacements);
   DCHECK(lite_page_robots_url.is_valid());
   return lite_page_robots_url;
+}
+
+base::TimeDelta GetLitePagesBypassRandomDuration() {
+  // Default is a random duration between 1 to 5 minutes.
+  return base::TimeDelta::FromSeconds(
+      base::RandInt(base::GetFieldTrialParamByFeatureAsInt(
+                        blink::features::kSubresourceRedirect,
+                        "litepages_bypass_random_duration_min_secs", 60),
+                    base::GetFieldTrialParamByFeatureAsInt(
+                        blink::features::kSubresourceRedirect,
+                        "litepages_bypass_random_duration_max_secs", 300)));
+}
+
+base::TimeDelta GetLitePagesBypassMaxDuration() {
+  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+      blink::features::kSubresourceRedirect,
+      "litepages_bypass_max_duration_secs", 300));
 }
 
 }  // namespace subresource_redirect

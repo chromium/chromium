@@ -13,8 +13,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/subresource_redirect/https_image_compression_bypass_decider.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
+#include "chrome/browser/subresource_redirect/litepages_service_bypass_decider.h"
 #include "chrome/browser/subresource_redirect/subresource_redirect_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -219,9 +219,8 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
   void VerifyPublicImageCompressionUkm(uint64_t hash, size_t num_images) {
     const auto metrics = GetImageCompressionUkmMetrics();
     if (num_images) {
-      EXPECT_THAT(metrics, testing::Contains(
-                               testing::Pair(hash,
-                                             testing::Gt(num_images * 500))));
+      EXPECT_THAT(metrics, testing::Contains(testing::Pair(
+                               hash, testing::Gt(num_images * 500))));
     } else {
       EXPECT_EQ(metrics.find(hash), metrics.end());
     }
@@ -296,18 +295,17 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
   }
 
   void VerifyAndClearBypassTimeout(base::TimeDelta minimum_bypass_until) {
-    auto* https_image_compression_bypass_decider =
+    auto* litepages_service_bypass_decider =
         DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetBrowserContext())
-            ->https_image_compression_bypass_decider();
-    EXPECT_LE(
-        base::TimeTicks::Now() + minimum_bypass_until,
-        https_image_compression_bypass_decider->GetBypassUntilTimeForTesting()
-            .value());
-    https_image_compression_bypass_decider->SetBypassUntilTimeForTesting(
+            ->litepages_service_bypass_decider();
+    EXPECT_LE(base::TimeTicks::Now() + minimum_bypass_until,
+              litepages_service_bypass_decider->GetBypassUntilTimeForTesting()
+                  .value());
+    litepages_service_bypass_decider->SetBypassUntilTimeForTesting(
         base::TimeTicks::Now());
   }
 
@@ -527,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   histogram_tester()->ExpectUniqueSample(
       "SubresourceRedirect.CompressionFetchTimeout", true, 1);
   histogram_tester()->ExpectUniqueSample(
-      "SubresourceRedirect.PageLoad.BypassResult", false, 1);
+      "SubresourceRedirect.LitePagesService.BypassResult", false, 1);
   histogram_tester()->ExpectTotalCount("SubresourceRedirect.BypassDuration", 1);
 
   // The second navigation should not attempt subresource redirect.
@@ -538,9 +536,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
 
   base::RunLoop().RunUntilIdle();
   RetryForHistogramUntilCountReached(
-      histogram_tester(), "SubresourceRedirect.PageLoad.BypassResult", 2);
+      histogram_tester(), "SubresourceRedirect.LitePagesService.BypassResult",
+      2);
   histogram_tester()->ExpectBucketCount(
-      "SubresourceRedirect.PageLoad.BypassResult", true, 1);
+      "SubresourceRedirect.LitePagesService.BypassResult", true, 1);
 
   // The third navigation should attempt subresource redirect, once the bypass
   // is cleared.
@@ -1268,7 +1267,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   RetryForHistogramUntilCountReached(histogram_tester(),
                                      "SubresourceRedirect.BypassDuration", 1);
   histogram_tester()->ExpectUniqueSample(
-      "SubresourceRedirect.PageLoad.BypassResult", false, 1);
+      "SubresourceRedirect.LitePagesService.BypassResult", false, 1);
   histogram_tester()->ExpectTotalCount("SubresourceRedirect.BypassDuration", 1);
 
   // The second navigation should not attempt subresource redirect.
@@ -1279,9 +1278,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
 
   base::RunLoop().RunUntilIdle();
   RetryForHistogramUntilCountReached(
-      histogram_tester(), "SubresourceRedirect.PageLoad.BypassResult", 2);
+      histogram_tester(), "SubresourceRedirect.LitePagesService.BypassResult",
+      2);
   histogram_tester()->ExpectBucketCount(
-      "SubresourceRedirect.PageLoad.BypassResult", true, 1);
+      "SubresourceRedirect.LitePagesService.BypassResult", true, 1);
 
   // The third navigation should attempt subresource redirect, once the bypass
   // is cleared.
