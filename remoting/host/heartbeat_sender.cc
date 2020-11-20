@@ -136,12 +136,11 @@ HeartbeatSender::HeartbeatClientImpl::~HeartbeatClientImpl() = default;
 void HeartbeatSender::HeartbeatClientImpl::Heartbeat(
     std::unique_ptr<apis::v1::HeartbeatRequest> request,
     HeartbeatResponseCallback callback) {
-  std::string host_offline_reason_or_empty_log =
+  std::string host_offline_reason =
       request->has_host_offline_reason()
-          ? (", host_offline_reason: " + request->host_offline_reason())
+          ? (" host_offline_reason: " + request->host_offline_reason())
           : "";
-  HOST_LOG << "Sending outgoing heartbeat. tachyon_id: "
-           << request->tachyon_id() << host_offline_reason_or_empty_log;
+  HOST_LOG << "Sending outgoing heartbeat." << host_offline_reason;
 
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(kTrafficAnnotation);
