@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
-import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -80,7 +79,6 @@ public class ReadLaterIphTest {
 
     @Before
     public void setUp() {
-        Looper.prepare();
         // Pretend the feature engagement feature is already initialized. Otherwise
         // UserEducationHelper#requestShowIPH() calls get dropped during test.
         doAnswer(invocation -> {

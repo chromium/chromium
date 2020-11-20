@@ -17,8 +17,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
 
-import android.os.Looper;
-
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.assertion.ViewAssertions;
@@ -71,7 +69,6 @@ public class ToolbarButtonIphTest {
 
     @Before
     public void setUp() {
-        Looper.prepare();
         MockitoAnnotations.initMocks(this);
         // Pretend the feature engagement feature is already initialized. Otherwise
         // UserEducationHelper#requestShowIPH() calls get dropped during test.
