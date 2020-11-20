@@ -52,6 +52,7 @@ public interface LocationBarDataProvider {
 
     /** Returns whether the currently active page is loading. */
     default boolean isLoading() {
+        if (isInOverviewAndShowingOmnibox()) return false;
         Tab tab = getTab();
         return tab != null && tab.isLoading();
     }
