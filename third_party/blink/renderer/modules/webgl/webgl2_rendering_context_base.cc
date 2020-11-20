@@ -854,7 +854,7 @@ void WebGL2RenderingContextBase::readPixels(GLint x,
                                         size))
     return;
 
-  ClearIfComposited();
+  ClearIfComposited(kClearCallerOther);
 
   {
     ScopedDrawingBufferBinder binder(GetDrawingBuffer(), framebuffer);
@@ -2114,7 +2114,7 @@ void WebGL2RenderingContextBase::copyTexSubImage3D(GLenum target,
   if (!ValidateReadBufferAndGetInfo("copyTexSubImage3D",
                                     read_framebuffer_binding))
     return;
-  ClearIfComposited();
+  ClearIfComposited(kClearCallerOther);
   ScopedDrawingBufferBinder binder(GetDrawingBuffer(),
                                    read_framebuffer_binding);
   ContextGL()->CopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y,

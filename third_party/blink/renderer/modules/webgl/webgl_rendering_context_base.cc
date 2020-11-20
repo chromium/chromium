@@ -570,6 +570,29 @@ class ScopedUnpackParametersResetRestore {
   bool enabled_;
 };
 
+class ScopedDisableRasterizerDiscard {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedDisableRasterizerDiscard(WebGLRenderingContextBase* context,
+                                          bool was_enabled)
+      : context_(context), was_enabled_(was_enabled) {
+    if (was_enabled_) {
+      context_->disable(GL_RASTERIZER_DISCARD);
+    }
+  }
+
+  ~ScopedDisableRasterizerDiscard() {
+    if (was_enabled_) {
+      context_->enable(GL_RASTERIZER_DISCARD);
+    }
+  }
+
+ private:
+  WebGLRenderingContextBase* context_;
+  bool was_enabled_;
+};
+
 static void FormatWebGLStatusString(const StringView& gl_info,
                                     const StringView& info_string,
                                     StringBuilder& builder) {
@@ -1239,6 +1262,8 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   stencil_func_mask_back_ = 0xFFFFFFFF;
   num_gl_errors_to_console_allowed_ = kMaxGLErrorsAllowedToConsole;
 
+  rasterizer_discard_enabled_ = false;
+
   clear_color_[0] = clear_color_[1] = clear_color_[2] = clear_color_[3] = 0;
   scissor_enabled_ = false;
   clear_depth_ = 1;
@@ -1532,14 +1557,17 @@ void WebGLRenderingContextBase::OnErrorMessage(const char* message,
 }
 
 WebGLRenderingContextBase::HowToClear
-WebGLRenderingContextBase::ClearIfComposited(GLbitfield mask) {
+WebGLRenderingContextBase::ClearIfComposited(
+    WebGLRenderingContextBase::ClearCaller caller,
+    GLbitfield mask) {
   if (isContextLost())
     return kSkipped;
 
   GLbitfield buffers_needing_clearing =
       GetDrawingBuffer()->GetBuffersToAutoClear();
 
-  if (buffers_needing_clearing == 0 || (mask && framebuffer_binding_))
+  if (buffers_needing_clearing == 0 || (mask && framebuffer_binding_) ||
+      (rasterizer_discard_enabled_ && caller == kClearCallerDrawOrClear))
     return kSkipped;
 
   if (isContextLost()) {
@@ -1588,10 +1616,15 @@ WebGLRenderingContextBase::ClearIfComposited(GLbitfield mask) {
   ContextGL()->ColorMask(
       true, true, true,
       !GetDrawingBuffer()->DefaultBufferRequiresAlphaChannelToBePreserved());
-  // If the WebGL 2.0 clearBuffer APIs already have been used to
-  // selectively clear some of the buffers, don't destroy those
-  // results.
-  GetDrawingBuffer()->ClearFramebuffers(clear_mask & buffers_needing_clearing);
+  {
+    ScopedDisableRasterizerDiscard scoped_disable(this,
+                                                  rasterizer_discard_enabled_);
+    // If the WebGL 2.0 clearBuffer APIs already have been used to
+    // selectively clear some of the buffers, don't destroy those
+    // results.
+    GetDrawingBuffer()->ClearFramebuffers(clear_mask &
+                                          buffers_needing_clearing);
+  }
 
   // Call the DrawingBufferClient method to restore scissor test, mask, and
   // clear values, because we dirtied them above.
@@ -1669,7 +1702,7 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   if (isContextLost() || !GetDrawingBuffer())
     return false;
 
-  bool must_clear_now = ClearIfComposited() != kSkipped;
+  bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
   if (!must_paint_to_canvas_ && !must_clear_now)
     return false;
 
@@ -1772,7 +1805,7 @@ sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToDataArray(
     SourceDrawingBuffer source_buffer) {
   if (isContextLost())
     return nullptr;
-  ClearIfComposited();
+  ClearIfComposited(kClearCallerOther);
   GetDrawingBuffer()->ResolveAndBindForReadAndDraw();
   ScopedFramebufferRestorer restorer(this);
   return GetDrawingBuffer()->PaintRenderingResultsToDataArray(source_buffer);
@@ -2212,7 +2245,7 @@ void WebGLRenderingContextBase::clear(GLbitfield mask) {
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
 
-  if (ClearIfComposited(mask) != kCombinedClear) {
+  if (ClearIfComposited(kClearCallerDrawOrClear, mask) != kCombinedClear) {
     // If clearing the default back buffer's depth buffer, also clear the
     // stencil buffer, if one was allocated implicitly. This avoids performance
     // problems on some GPUs.
@@ -2390,7 +2423,7 @@ void WebGLRenderingContextBase::copyTexImage2D(GLenum target,
   WebGLFramebuffer* read_framebuffer_binding = nullptr;
   if (!ValidateReadBufferAndGetInfo("copyTexImage2D", read_framebuffer_binding))
     return;
-  ClearIfComposited();
+  ClearIfComposited(kClearCallerOther);
   ScopedDrawingBufferBinder binder(GetDrawingBuffer(),
                                    read_framebuffer_binding);
   ContextGL()->CopyTexImage2D(target, level, internalformat, x, y, width,
@@ -2413,7 +2446,7 @@ void WebGLRenderingContextBase::copyTexSubImage2D(GLenum target,
   if (!ValidateReadBufferAndGetInfo("copyTexSubImage2D",
                                     read_framebuffer_binding))
     return;
-  ClearIfComposited();
+  ClearIfComposited(kClearCallerOther);
   ScopedDrawingBufferBinder binder(GetDrawingBuffer(),
                                    read_framebuffer_binding);
   ContextGL()->CopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width,
@@ -2632,6 +2665,8 @@ void WebGLRenderingContextBase::disable(GLenum cap) {
   }
   if (cap == GL_SCISSOR_TEST)
     scissor_enabled_ = false;
+  if (cap == GL_RASTERIZER_DISCARD)
+    rasterizer_discard_enabled_ = false;
   ContextGL()->Disable(cap);
 }
 
@@ -2813,6 +2848,8 @@ void WebGLRenderingContextBase::enable(GLenum cap) {
   }
   if (cap == GL_SCISSOR_TEST)
     scissor_enabled_ = true;
+  if (cap == GL_RASTERIZER_DISCARD)
+    rasterizer_discard_enabled_ = true;
   ContextGL()->Enable(cap);
 }
 
@@ -4682,7 +4719,7 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
                                         buffer_size.ValueOrDie())) {
     return;
   }
-  ClearIfComposited();
+  ClearIfComposited(kClearCallerOther);
 
   uint8_t* data = static_cast<uint8_t*>(pixels->BaseAddressMaybeShared()) +
                   offset_in_bytes.ValueOrDie();
@@ -8235,7 +8272,7 @@ bool WebGLRenderingContextBase::ValidateDrawElements(const char* function_name,
 }
 
 void WebGLRenderingContextBase::OnBeforeDrawCall() {
-  ClearIfComposited();
+  ClearIfComposited(kClearCallerDrawOrClear);
   MarkContextChanged(kCanvasChanged);
 }
 

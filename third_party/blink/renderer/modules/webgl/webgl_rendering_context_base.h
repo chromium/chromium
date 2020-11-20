@@ -895,6 +895,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                // not the internal clamped value.
   GLuint stencil_func_mask_, stencil_func_mask_back_;
 
+  // WebGL 2.0 only, but putting it here saves multiple virtual functions.
+  bool rasterizer_discard_enabled_;
+
   bool is_depth_stencil_supported_;
 
   bool synthesized_errors_to_console_ = true;
@@ -1082,7 +1085,15 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     // doesn't have to call glClear() again.
     kCombinedClear
   };
-  HowToClear ClearIfComposited(GLbitfield clear_mask = 0);
+  enum ClearCaller {
+    // Caller of ClearIfComposited is a user-level draw or clear call.
+    kClearCallerDrawOrClear,
+    // Caller of ClearIfComposited is anything else, including
+    // readbacks or copies.
+    kClearCallerOther,
+  };
+
+  HowToClear ClearIfComposited(ClearCaller caller, GLbitfield clear_mask = 0);
 
   // Convert texture internal format.
   GLenum ConvertTexInternalFormat(GLenum internalformat, GLenum type);
