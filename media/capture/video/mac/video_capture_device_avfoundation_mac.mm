@@ -652,9 +652,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       return;
     }
     IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
-    DCHECK(ioSurface);
-    DCHECK(CVPixelBufferGetPixelFormatType(pixelBuffer) ==
-           kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);  // NV12
+    CHECK(ioSurface);
+    CHECK_EQ(CVPixelBufferGetPixelFormatType(pixelBuffer),
+             kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);  // NV12
     const media::VideoCaptureFormat captureFormat(
         gfx::Size(CVPixelBufferGetWidth(pixelBuffer),
                   CVPixelBufferGetHeight(pixelBuffer)),
