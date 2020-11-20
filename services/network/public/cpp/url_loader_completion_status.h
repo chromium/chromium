@@ -87,7 +87,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   base::Optional<net::SSLInfo> ssl_info;
 
   // More detailed reason for failing the response with
-  // ERR_net::ERR_BLOCKED_BY_RESPONSE |error_code|.
+  // net::ERR_BLOCKED_BY_RESPONSE |error_code|.
   base::Optional<mojom::BlockedByResponseReason> blocked_by_response_reason;
 
   // Set when response blocked by CORB needs to be reported to the DevTools
