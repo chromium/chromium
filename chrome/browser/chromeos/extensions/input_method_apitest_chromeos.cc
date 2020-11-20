@@ -26,10 +26,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/chromeos/input_method_descriptor.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_allowlist.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
 
+using chromeos::extension_ime_util::GetInputMethodIDByEngineID;
+using chromeos::input_method::InputMethodDescriptor;
 using chromeos::input_method::InputMethodManager;
 
 namespace {
@@ -40,6 +42,16 @@ const char kBackgroundReady[] = "ready";
 const char kTestIMEID[] = "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest";
 const char kTestIMEID2[] = "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest2";
 
+const InputMethodDescriptor CreateInputMethodDescriptor(
+    const std::string& engineId,
+    const std::string& indicator,
+    const std::string& layout,
+    const std::vector<std::string>& language_codes) {
+  return InputMethodDescriptor(GetInputMethodIDByEngineID(engineId), "",
+                               indicator, {layout}, language_codes, true,
+                               GURL(), GURL());
+}
+
 // Class that listens for the JS message.
 class TestListener : public content::NotificationObserver {
  public:
@@ -47,6 +59,21 @@ class TestListener : public content::NotificationObserver {
     registrar_.Add(this,
                    extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
                    content::NotificationService::AllSources());
+
+    xkb_input_method_descriptors_ = {
+        CreateInputMethodDescriptor("xkb:us::eng", "US", "us",
+                                    {"en", "en-US", "en-AU", "en-NZ"}),
+        CreateInputMethodDescriptor("xkb:fr::fra", "FR", "fr(oss)",
+                                    {"fr", "fr-FR"}),
+        CreateInputMethodDescriptor("xkb:fr:bepo:fra", "FR", "fr(bepo)",
+                                    {"fr", "fr-FR"}),
+        CreateInputMethodDescriptor("xkb:be::fra", "BE", "fr(be)", {"fr"}),
+        CreateInputMethodDescriptor("xkb:ca::fra", "CA", "ca", {"fr", "fr-CA"}),
+        CreateInputMethodDescriptor("xkb:ch:fr::fra", "CH", "ch(fr)",
+                                    {"fr", "fr-CH"}),
+        CreateInputMethodDescriptor("xkb:ca:multix:fra", "CA", "ca(multix)",
+                                    {"fr", "fr-CA"}),
+    };
   }
 
   ~TestListener() override {}
@@ -62,12 +89,11 @@ class TestListener : public content::NotificationObserver {
       // background.
       InputMethodManager* manager = InputMethodManager::Get();
       manager->GetInputMethodUtil()->InitXkbInputMethodsForTesting(
-          *chromeos::input_method::allowlist::GetSupportedInputMethods());
+          xkb_input_method_descriptors_);
 
       std::vector<std::string> keyboard_layouts;
       keyboard_layouts.push_back(
-          chromeos::extension_ime_util::GetInputMethodIDByEngineID(
-              kInitialInputMethodOnLoginScreen));
+          GetInputMethodIDByEngineID(kInitialInputMethodOnLoginScreen));
       manager->GetActiveIMEState()->EnableLoginLayouts(kLoginScreenUILanguage,
                                                        keyboard_layouts);
     }
@@ -75,6 +101,7 @@ class TestListener : public content::NotificationObserver {
 
  private:
   content::NotificationRegistrar registrar_;
+  std::vector<InputMethodDescriptor> xkb_input_method_descriptors_;
 };
 
 class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
