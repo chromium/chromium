@@ -115,8 +115,6 @@ SessionStorageImpl::SessionStorageImpl(
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "SessionStorage", std::move(memory_dump_task_runner),
           base::trace_event::MemoryDumpProvider::Options());
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &SessionStorageImpl::ShutdownAndDelete, base::Unretained(this)));
 }
 
 SessionStorageImpl::~SessionStorageImpl() {
@@ -381,8 +379,12 @@ void SessionStorageImpl::CleanUpStorage(CleanUpStorageCallback callback) {
   }
 }
 
-void SessionStorageImpl::ShutdownAndDelete() {
+void SessionStorageImpl::ShutDown(base::OnceClosure callback) {
   DCHECK_NE(connection_state_, CONNECTION_SHUTDOWN);
+  DCHECK(callback);
+
+  receiver_.reset();
+  shutdown_complete_callback_ = std::move(callback);
 
   // The namespaces will DCHECK if they are destructed with pending clones. It
   // is valid to drop these on shutdown.
@@ -393,7 +395,7 @@ void SessionStorageImpl::ShutdownAndDelete() {
   // Nothing to do if no connection to the database was ever finished.
   if (connection_state_ != CONNECTION_FINISHED) {
     connection_state_ = CONNECTION_SHUTDOWN;
-    OnShutdownComplete(leveldb::Status::OK());
+    OnShutdownComplete();
     return;
   }
   connection_state_ = CONNECTION_SHUTDOWN;
@@ -402,7 +404,7 @@ void SessionStorageImpl::ShutdownAndDelete() {
   for (const auto& it : data_maps_) {
     auto* area = it.second->storage_area();
     LOCAL_HISTOGRAM_BOOLEAN(
-        "SessionStorageContext.ShutdownAndDelete.MaybeDroppedChanges",
+        "SessionStorageContext.ShutDown.MaybeDroppedChanges",
         area->has_pending_load_tasks());
     area->ScheduleImmediateCommit();
     // TODO(dmurph): Monitor the above histogram, and if dropping changes is
@@ -410,7 +412,7 @@ void SessionStorageImpl::ShutdownAndDelete() {
     area->CancelAllPendingRequests();
   }
 
-  OnShutdownComplete(leveldb::Status::OK());
+  OnShutdownComplete();
 }
 
 void SessionStorageImpl::PurgeMemory() {
@@ -603,6 +605,9 @@ void SessionStorageImpl::OnDataMapDestruction(
 }
 
 void SessionStorageImpl::OnCommitResult(leveldb::Status status) {
+  if (connection_state_ == CONNECTION_SHUTDOWN)
+    return;
+
   DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
   UMA_HISTOGRAM_ENUMERATION("SessionStorageContext.CommitResult",
                             leveldb_env::GetLevelDBStatusUMAValue(status),
@@ -838,6 +843,9 @@ void SessionStorageImpl::OnGotDatabaseMetadata(
     ValueAndStatus version,
     KeyValuePairsAndStatus namespaces,
     ValueAndStatus next_map_id) {
+  if (connection_state_ == CONNECTION_SHUTDOWN)
+    return;
+
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> migration_tasks;
 
   MetadataParseResult version_parse =
@@ -964,6 +972,9 @@ SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNextMapId(
 }
 
 void SessionStorageImpl::OnConnectionFinished() {
+  if (connection_state_ == CONNECTION_SHUTDOWN)
+    return;
+
   DCHECK(!database_ || connection_state_ == CONNECTION_IN_PROGRESS);
 
   // If connection was opened successfully, reset tried_to_recreate_during_open_
@@ -985,6 +996,9 @@ void SessionStorageImpl::OnConnectionFinished() {
 }
 
 void SessionStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
+  if (connection_state_ == CONNECTION_SHUTDOWN)
+    return;
+
   // We're about to set database_ to null, so delete the StorageAreas
   // that might still be using the old database.
   for (const auto& it : data_maps_)
@@ -1042,8 +1056,11 @@ void SessionStorageImpl::OnDBDestroyed(bool recreate_in_memory,
   InitiateConnection(recreate_in_memory);
 }
 
-void SessionStorageImpl::OnShutdownComplete(leveldb::Status status) {
-  delete this;
+void SessionStorageImpl::OnShutdownComplete() {
+  DCHECK(shutdown_complete_callback_);
+  // Flush any final tasks on DB task runner before invoking the callback.
+  leveldb_task_runner_->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
 }
 
 void SessionStorageImpl::GetStatistics(size_t* total_cache_size,

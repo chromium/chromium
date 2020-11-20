@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -57,10 +58,6 @@ class SessionStorageImplTest : public testing::Test {
   SessionStorageImplTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
 
   ~SessionStorageImplTest() override {
-    // There may be pending tasks to clean up files in the temp dir. Make sure
-    // they run so temp dir deletion can succeed.
-    RunUntilIdle();
-
     EXPECT_TRUE(temp_dir_.Delete());
   }
 
@@ -85,13 +82,13 @@ class SessionStorageImplTest : public testing::Test {
   SessionStorageImpl* session_storage_impl() {
     if (!session_storage_) {
       remote_session_storage_.reset();
-      session_storage_ = new SessionStorageImpl(
+      session_storage_ = std::make_unique<SessionStorageImpl>(
           temp_path(), blocking_task_runner_,
           base::SequencedTaskRunnerHandle::Get(), backing_mode_,
           kSessionStorageDirectory,
           remote_session_storage_.BindNewPipeAndPassReceiver());
     }
-    return session_storage_;
+    return session_storage_.get();
   }
 
   mojom::SessionStorageControl* session_storage() {
@@ -101,9 +98,11 @@ class SessionStorageImplTest : public testing::Test {
 
   void ShutDownSessionStorage() {
     remote_session_storage_.FlushForTesting();
-    session_storage_->ShutdownAndDelete();
-    session_storage_ = nullptr;
-    RunUntilIdle();
+
+    base::RunLoop loop;
+    session_storage_->ShutDown(loop.QuitClosure());
+    loop.Run();
+    session_storage_.reset();
   }
 
   void DoTestPut(const std::string& namespace_id,
@@ -161,7 +160,7 @@ class SessionStorageImplTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})};
-  SessionStorageImpl* session_storage_ = nullptr;
+  std::unique_ptr<SessionStorageImpl> session_storage_;
   mojo::Remote<mojom::SessionStorageControl> remote_session_storage_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionStorageImplTest);

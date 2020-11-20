@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
@@ -67,6 +68,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
       std::string leveldb_name,
       mojo::PendingReceiver<mojom::SessionStorageControl> receiver);
 
+  ~SessionStorageImpl() override;
+
   // mojom::SessionStorageControl implementation:
   void BindNamespace(
       const std::string& namespace_id,
@@ -94,10 +97,11 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
                        bool should_persist) override;
 
   // Called when the client (i.e. the corresponding browser storage partition)
-  // disconnects. Schedules the commit of any unsaved changes then deletes this
-  // object. All data on disk (where there was no call to
-  // |DeleteNamespace| will stay on disk for later restoring.
-  void ShutdownAndDelete();
+  // disconnects. Schedules the commit of any unsaved changes. All data on disk
+  // (where there was no call to DeleteNamespace will stay on disk for later
+  // restoring. `callback` is invoked when shutdown is complete, which may
+  // happen even before ShutDown returns.
+  void ShutDown(base::OnceClosure callback);
 
   // Clears unused storage areas, when thresholds are reached.
   void PurgeUnusedAreasIfNeeded();
@@ -148,9 +152,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     kSuccess = 6,
     kMaxValue = kSuccess
   };
-
-  // Object deletion is done through |ShutdownAndDelete()|.
-  ~SessionStorageImpl() override;
 
   scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
       SessionStorageMetadata::NamespaceEntry namespace_entry,
@@ -223,7 +224,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void DeleteAndRecreateDatabase(const char* histogram_name);
   void OnDBDestroyed(bool recreate_in_memory, leveldb::Status status);
 
-  void OnShutdownComplete(leveldb::Status status);
+  void OnShutdownComplete();
 
   void GetStatistics(size_t* total_cache_size, size_t* unused_areas_count);
 
@@ -281,6 +282,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   // Name of an extra histogram to log open results to, if not null.
   const char* open_result_histogram_ = nullptr;
+
+  base::OnceClosure shutdown_complete_callback_;
 
   base::WeakPtrFactory<SessionStorageImpl> weak_ptr_factory_{this};
 };
