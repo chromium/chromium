@@ -90,32 +90,20 @@ builder(
 builder(
     name = "WebRTC Chromium FYI Mac Builder",
     cores = 8,
-    caches = [xcode_cache.x12a7209],
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
 )
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder (dbg)",
     cores = 8,
-    caches = [xcode_cache.x12a7209],
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
 )
 
 builder(
     name = "WebRTC Chromium FYI Mac Tester",
-    caches = [xcode_cache.x12a7209],
     os = os.MAC_ANY,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
     triggered_by = ["WebRTC Chromium FYI Mac Builder"],
 )
 
