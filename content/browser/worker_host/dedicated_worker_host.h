@@ -66,6 +66,12 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   const blink::DedicatedWorkerToken& GetToken() const { return token_; }
   RenderProcessHost* GetProcessHost() const { return worker_process_host_; }
   const url::Origin& GetWorkerOrigin() const { return worker_origin_; }
+  const GlobalFrameRoutingId& GetAncestorRenderFrameHostId() const {
+    return ancestor_render_frame_host_id_;
+  }
+  const base::Optional<GURL>& GetFinalResponseURL() const {
+    return final_response_url_;
+  }
 
   void CreateContentSecurityNotifier(
       mojo::PendingReceiver<blink::mojom::ContentSecurityNotifier> receiver);
@@ -221,6 +227,8 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   // context_url.
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;  // Never null.
+  // Will be set once the worker script started loading.
+  base::Optional<GURL> final_response_url_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 

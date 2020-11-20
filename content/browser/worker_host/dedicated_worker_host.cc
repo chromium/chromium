@@ -67,8 +67,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
 
   scoped_process_host_observation_.Observe(worker_process_host_);
 
-  service_->NotifyWorkerCreated(token_, worker_process_host_->GetID(),
-                                ancestor_render_frame_host_id_, this);
+  service_->NotifyWorkerCreated(this);
 }
 
 DedicatedWorkerHost::~DedicatedWorkerHost() {
@@ -251,6 +250,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 
   // TODO(https://crbug.com/986188): Check if the main script's final response
   // URL is committable.
+  final_response_url_ = final_response_url;
   service_->NotifyWorkerFinalResponseURLDetermined(token_, final_response_url);
 
   // TODO(cammie): Change this approach when we support shared workers
