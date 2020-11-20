@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
@@ -257,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, UninstallAndReplace) {
 
 // The offline manifest JSON config functionality is only available on Chrome
 // OS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Check that offline fallback installs work offline.
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
@@ -487,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
             base::nullopt);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Icon resourcs are only available on Chrome branded builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

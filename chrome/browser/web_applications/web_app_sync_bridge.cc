@@ -15,6 +15,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/optional.h"
 #include "base/types/pass_key.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
@@ -39,7 +40,7 @@
 namespace web_app {
 
 bool AreAppsLocallyInstalledByDefault() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, sync always locally installs an app.
   return true;
 #else

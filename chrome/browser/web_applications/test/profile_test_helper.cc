@@ -5,8 +5,9 @@
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
@@ -25,7 +26,7 @@ std::string TestProfileTypeToString(
 }
 
 void ConfigureCommandLineForGuestMode(base::CommandLine* command_line) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   command_line->AppendSwitch(chromeos::switches::kGuestSession);
   command_line->AppendSwitch(::switches::kIncognito);
   command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "hash");

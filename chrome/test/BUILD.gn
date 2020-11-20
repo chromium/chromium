@@ -6252,6 +6252,7 @@ if (!is_android) {
       "//mojo/public/cpp/system",
     ]
     deps = [
+      "//build:chromeos_buildflags",
       "//chrome/common/profiler",
       "//components/captive_portal/core:buildflags",
       "//components/metrics:test_support",

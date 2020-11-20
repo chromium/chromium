@@ -6,13 +6,14 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace web_app {
 
 // This block defines stub implementations of OS specific methods for
 // FileHandling. Currently, Windows, MacOSX and Desktop Linux (but not Chrome
 // OS) have their own implementations.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool ShouldRegisterFileHandlersWithOs() {
   return false;
 }

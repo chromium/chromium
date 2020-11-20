@@ -11,6 +11,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -55,7 +56,7 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
 
     std::string font_name =
         l10n_util::GetStringUTF8(IDS_SANS_SERIF_FONT_FAMILY);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
       // With adaptive icons, we generate full size square icons as they will be
       // masked by the OS.

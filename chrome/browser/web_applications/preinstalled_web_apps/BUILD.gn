@@ -16,6 +16,7 @@ source_set("preinstalled_web_apps") {
     "//base",
     "//build:branding_buildflags",
     "//chrome/browser:browser_process",
+    "//build:chromeos_buildflags",
     "//chrome/browser/web_applications/components",
     "//skia",
     "//ui/base",

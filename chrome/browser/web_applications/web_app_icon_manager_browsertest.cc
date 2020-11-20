@@ -4,6 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -103,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     run_loop.Run();
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   gfx::ImageSkia image_skia;
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     app_service_test().FlushMojoCalls();
@@ -129,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
   base::RunLoop run_loop;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     controller->SetReadIconCallbackForTesting(base::BindLambdaForTesting(
         [controller, &image_skia, &run_loop, this]() {

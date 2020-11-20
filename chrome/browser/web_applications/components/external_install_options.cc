@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 
 namespace web_app {
 
@@ -40,9 +41,9 @@ bool ExternalInstallOptions::operator==(
                   run_on_os_login, is_disabled,
                   override_previous_user_uninstall, only_for_new_users,
                   user_type_allowlist, gate_on_feature,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                   disable_if_arc_supported, disable_if_tablet_form_factor,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                   bypass_service_worker_check, require_manifest,
                   force_reinstall, wait_for_windows_closed, install_placeholder,
                   reinstall_placeholder, launch_query_params,
@@ -56,10 +57,10 @@ bool ExternalInstallOptions::operator==(
              other.add_to_management, other.run_on_os_login, other.is_disabled,
              other.override_previous_user_uninstall, other.only_for_new_users,
              other.user_type_allowlist, other.gate_on_feature,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
              other.disable_if_arc_supported,
              other.disable_if_tablet_form_factor,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
              other.bypass_service_worker_check, other.require_manifest,
              other.force_reinstall, other.wait_for_windows_closed,
              other.install_placeholder, other.reinstall_placeholder,
@@ -116,12 +117,12 @@ std::ostream& operator<<(std::ostream& out,
          << "\n only_for_new_users: " << install_options.only_for_new_users
          << "\n user_type_allowlist: " << install_options.user_type_allowlist
          << "\n gate_on_feature: " << install_options.gate_on_feature
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
          << "\n disable_if_arc_supported: "
          << install_options.disable_if_arc_supported
          << "\n disable_if_tablet_form_factor: "
          << install_options.disable_if_tablet_form_factor
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
          << "\n bypass_service_worker_check: "
          << install_options.bypass_service_worker_check
          << "\n require_manifest: " << install_options.require_manifest

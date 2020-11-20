@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/installable/installable_data.h"
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -53,7 +54,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -114,7 +115,7 @@ class WebAppInstallTaskTest : public WebAppTest {
     controller().Init();
     install_finalizer_->Start();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     arc_test_.SetUp(profile());
 
     auto* arc_bridge_service =
@@ -130,7 +131,7 @@ class WebAppInstallTaskTest : public WebAppTest {
   }
 
   void TearDown() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     arc_test_.arc_service_manager()
         ->arc_bridge_service()
         ->intent_helper()
@@ -338,7 +339,7 @@ class WebAppInstallTaskTest : public WebAppTest {
   // Owned by install_task_:
   TestDataRetriever* data_retriever_ = nullptr;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ArcAppTest arc_test_;
   std::unique_ptr<arc::ArcIntentHelperBridge> intent_helper_bridge_;
   std::unique_ptr<arc::FakeIntentHelperInstance> fake_intent_helper_instance_;
@@ -795,7 +796,7 @@ TEST_F(WebAppInstallTaskTest, FinalizerMethodsCalled) {
   EXPECT_EQ(1u, test_os_integration_manager().num_create_shortcuts_calls());
   EXPECT_EQ(1, test_install_finalizer().num_reparent_tab_calls());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const size_t expected_num_add_app_to_quick_launch_bar_calls = 0;
 #else
   const size_t expected_num_add_app_to_quick_launch_bar_calls = 1;
@@ -955,7 +956,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifestWithFallback_NoIcons) {
   run_loop.Run();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
   arc_test_.app_instance()->set_is_installable(true);
 

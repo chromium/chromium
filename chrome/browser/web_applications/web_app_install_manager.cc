@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
@@ -26,7 +27,7 @@ namespace web_app {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr bool kLocallyInstallWebAppsOnSync = true;
 #else
 constexpr bool kLocallyInstallWebAppsOnSync = false;

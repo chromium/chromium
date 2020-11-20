@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -508,7 +509,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutLocations& creation_locations,
                              ShortcutCreationReason /*creation_reason*/,
                              const ShortcutInfo& shortcut_info) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   return CreateDesktopShortcut(shortcut_info, creation_locations);
@@ -519,7 +520,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 
 bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   return DeleteDesktopShortcuts(shortcut_info.profile_path,
                                 shortcut_info.extension_id);
 #endif
@@ -549,7 +550,7 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DeleteAllDesktopShortcuts(profile_path);
 #endif
 }

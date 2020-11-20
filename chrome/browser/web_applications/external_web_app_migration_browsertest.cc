@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -35,7 +36,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
@@ -290,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigratePreferences) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   app_list::AppListSyncableService* app_list_syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile());
   AppListModelUpdater* app_list_model_updater =
@@ -310,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigratePreferences) {
     EXPECT_FALSE(IsWebAppInstalled());
     EXPECT_TRUE(IsExtensionAppInstalled());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ChromeAppListItem* app_list_item =
         app_list_model_updater->FindItem(kExtensionId);
     app_list_item->SetPosition(syncer::StringOrdinal("testapplistposition"));
@@ -358,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigratePreferences) {
   {
     const AppId web_app_id = GetWebAppId();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Chrome OS shelf/list position should migrate.
     EXPECT_EQ(app_list_model_updater->FindItem(web_app_id)
                   ->position()

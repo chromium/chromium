@@ -26,6 +26,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
@@ -45,17 +46,17 @@
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The sub-directory of the extensions directory in which to scan for external
 // web apps (as opposed to external extensions or external ARC apps).
 const base::FilePath::CharType kWebAppsSubDirectory[] =
@@ -265,7 +266,7 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
           return true;
         }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         // Remove if ARC is supported and app should be disabled.
         if (options.disable_if_arc_supported && arc::IsArcAvailable()) {
           ++disabled_count;
@@ -278,7 +279,7 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
           ++disabled_count;
           return true;
         }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
         // Remove if only for new users, user isn't new and app was not
         // installed previously.
@@ -357,7 +358,7 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
 base::FilePath ExternalWebAppManager::GetConfigDir() {
   base::FilePath dir;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // As of mid 2018, only Chrome OS has default/external web apps, and
   // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
   // which includes OS_CHROMEOS.

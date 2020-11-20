@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -41,7 +42,7 @@
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
@@ -71,7 +72,7 @@
 #include "chrome/browser/chromeos/web_applications/telemetry_extension_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 
@@ -86,7 +87,7 @@ const char kFileHandlingOriginTrial[] = "FileHandling";
 const int kInstallFailureAttempts = 3;
 
 // Use #if defined to avoid compiler error on unused function.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A convenience method to create OriginTrialsMap. Note, we only support simple
 // cases for chrome:// and chrome-untrusted:// URLs. We don't support complex
@@ -100,12 +101,12 @@ url::Origin GetOrigin(const char* url) {
 
   return origin;
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
   base::flat_map<SystemAppType, SystemAppInfo> infos;
 // TODO(calamity): Split this into per-platform functions.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // SystemAppInfo's |name| field should be defined. These names are persisted
   // to logs and should not be renamed.
   // If new names are added, update tool/metrics/histograms/histograms.xml:
@@ -236,7 +237,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
   infos.at(SystemAppType::SAMPLE).capture_navigations = true;
 #endif  // !defined(OFFICIAL_BUILD)
 
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return infos;
 }
@@ -278,7 +279,7 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
 std::set<SystemAppType> GetDisabledSystemWebApps() {
   std::set<SystemAppType> disabled_system_apps;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state)  // Sometimes it's not available in tests.
     return disabled_system_apps;
@@ -301,7 +302,7 @@ std::set<SystemAppType> GetDisabledSystemWebApps() {
         break;
     }
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return disabled_system_apps;
 }
@@ -332,7 +333,7 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
   if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
     return true;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   switch (type) {
     case SystemAppType::SETTINGS:
       return true;
@@ -368,7 +369,7 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
   }
 #else
   return false;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 SystemWebAppManager::SystemWebAppManager(Profile* profile)
@@ -439,14 +440,14 @@ void SystemWebAppManager::Start() {
   // trial names. Ideally, construct them from some static const char*.
 #endif  // DCHECK_IS_ON()
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Set up terminal data source. Terminal source is needed for install.
   // TODO(crbug.com/1080384): Move once chrome-untrusted has WebUIControllers.
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::TERMINAL)) {
     content::URLDataSource::Add(profile_,
                                 TerminalSource::ForTerminal(profile_));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::vector<ExternalInstallOptions> install_options_list;
   const bool should_force_install_apps = ShouldForceInstallApps();
@@ -471,7 +472,7 @@ void SystemWebAppManager::Start() {
                        weak_ptr_factory_.GetWeakPtr(),
                        should_force_install_apps, install_start_time));
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* const local_state = g_browser_process->local_state();
   if (local_state) {  // Sometimes it's not available in tests.
     local_state_pref_change_registrar_.Init(local_state);
@@ -485,7 +486,7 @@ void SystemWebAppManager::Start() {
                      base::Unretained(this)));
     }
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
@@ -638,11 +639,11 @@ base::Optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
   if (!it->second.capture_navigations)
     return base::nullopt;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (type == SystemAppType::CAMERA &&
       url.spec() != chromeos::kChromeUICameraAppMainURL)
     return base::nullopt;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return type;
 }
@@ -866,7 +867,7 @@ bool SystemWebAppManager::CheckAndIncrementRetryAttempts() {
 }
 
 void SystemWebAppManager::OnAppsPolicyChanged() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!on_apps_synchronized_->is_signaled())
     return;
 
@@ -877,7 +878,7 @@ void SystemWebAppManager::OnAppsPolicyChanged() {
         base::Contains(disabled_system_apps, id_and_type.second);
     registry_controller_->SetAppIsDisabled(id_and_type.first, is_disabled);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace web_app

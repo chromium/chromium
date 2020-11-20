@@ -8,6 +8,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -17,11 +18,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 
@@ -67,7 +68,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   EXPECT_FALSE(AreWebAppsEnabled(system_profile));
   EXPECT_FALSE(AreWebAppsEnabled(system_profile->GetPrimaryOTRProfile()));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* signin_profile =
       profile_manager.CreateTestingProfile(chrome::kInitialProfile);
   EXPECT_FALSE(AreWebAppsEnabled(signin_profile));
@@ -125,7 +126,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
   EXPECT_FALSE(
       AreWebAppsUserInstallable(system_profile->GetPrimaryOTRProfile()));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* signin_profile =
       profile_manager.CreateTestingProfile(chrome::kInitialProfile);
   EXPECT_FALSE(AreWebAppsUserInstallable(signin_profile));

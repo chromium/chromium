@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -291,7 +292,7 @@ FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
 ScopedOsHooksSuppress OsIntegrationManager::ScopedSuppressOsHooksForTesting() {
 // Creating OS hooks on ChromeOS doesn't write files to disk, so it's
 // unnecessary to suppress and it provides better crash coverage.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<base::AutoReset<bool>>(
       &g_suppress_os_hooks_for_testing_, true);
 #else

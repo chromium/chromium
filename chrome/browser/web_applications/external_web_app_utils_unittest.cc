@@ -8,14 +8,15 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 
@@ -66,7 +67,7 @@ class ExternalWebAppUtilsTest : public testing::Test {
 
 // ParseConfig() is also tested by ExternalWebAppManagerTest.
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -164,7 +165,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(true, false),
                          BoolParamToString);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
 #if defined(OS_WIN)

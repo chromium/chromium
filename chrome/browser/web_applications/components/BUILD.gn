@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 source_set("components") {
   sources = [
     "app_icon_manager.cc",
@@ -89,11 +91,11 @@ source_set("components") {
     "web_app_icon_downloader.h",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "web_app_shortcut_chromeos.cc" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux.cc",
@@ -130,6 +132,7 @@ source_set("components") {
       [ "//components/services/app_service/public/cpp:app_share_target" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
@@ -187,7 +190,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux_unittest.cc",
@@ -198,6 +201,7 @@ source_set("unit_tests") {
   deps = [
     ":components",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/web_applications:web_app_test_group",
     "//chrome/browser/web_applications:web_applications",
@@ -210,7 +214,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chrome/browser/chromeos" ]
   }
 
@@ -224,7 +228,7 @@ source_set("browser_tests") {
 
   sources = [ "web_app_url_loader_browsertest.cc" ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [ "web_app_file_handler_registration_linux_browsertest.cc" ]
   }
 

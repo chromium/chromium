@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 group("web_app_group") {
   public_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -74,6 +76,7 @@ source_set("web_applications") {
   deps = [
     ":web_app_group",
     "//chrome/browser:browser_process",
+    "//build:chromeos_buildflags",
     "//chrome/browser/web_applications/components",
     "//chrome/browser/web_applications/preinstalled_web_apps",
     "//chrome/common",
@@ -89,7 +92,7 @@ source_set("web_applications") {
     "//skia",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//ash/public/cpp",
       "//chromeos/components/camera_app_ui",
@@ -206,6 +209,7 @@ source_set("web_applications_unit_tests") {
     ":web_applications_on_extensions_test_support",
     ":web_applications_test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser/web_applications/components",
     "//chrome/browser/web_applications/preinstalled_web_apps",
@@ -221,7 +225,7 @@ source_set("web_applications_unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/chromeos",
       "//chromeos/constants",
@@ -261,6 +265,7 @@ source_set("web_applications_browser_tests") {
     ":web_applications_on_extensions_test_support",
     ":web_applications_test_support",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/extensions:test_support",
@@ -275,7 +280,7 @@ source_set("web_applications_browser_tests") {
     "//extensions/browser:test_support",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/chromeos",
       "//chrome/browser/ui",

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/installable/installable_metrics.h"
@@ -33,7 +34,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/arc/arc_service_manager.h"
@@ -47,7 +48,7 @@ namespace web_app {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kChromeOsPlayPlatform[] = "chromeos_play";
 const char kPlayIntentPrefix[] =
     "https://play.google.com/store/apps/details?id=";
@@ -64,7 +65,7 @@ std::string ExtractQueryValueForName(const GURL& url, const std::string& name) {
 }
 #else
 constexpr bool kAddAppsToQuickLaunchBarByDefault = true;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -535,7 +536,7 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
     std::vector<GURL> icon_urls,
     ForInstallableSite for_installable_site,
     bool skip_page_favicons) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Background installations are not a user-triggered installs, and thus cannot
   // be sent to the store.
   if (base::FeatureList::IsEnabled(features::kApkWebAppInstalls) &&
@@ -582,7 +583,7 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
     }
   }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   OnDidCheckForIntentToPlayStore(std::move(web_app_info), std::move(icon_urls),
                                  for_installable_site, skip_page_favicons,
                                  /*intent=*/"",
@@ -596,7 +597,7 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
     bool skip_page_favicons,
     const std::string& intent,
     bool should_intent_to_store) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (should_intent_to_store && !intent.empty()) {
     auto* arc_service_manager = arc::ArcServiceManager::Get();
     if (arc_service_manager) {
@@ -610,7 +611,7 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
       }
     }
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   data_retriever_->GetIcons(
       web_contents(), icon_urls, skip_page_favicons,

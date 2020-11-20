@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -674,9 +675,9 @@ TEST_F(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
   const std::string url_path{"https://example.com/path"};
   const GURL url{url_path};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool expect_locally_installed = true;
-#else  // !defined(OS_CHROMEOS)
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   bool expect_locally_installed = false;
 #endif
 
@@ -750,9 +751,9 @@ TEST_F(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
 TEST_F(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
   const GURL url{"https://example.com/path"};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool expect_locally_installed = true;
-#else  // !defined(OS_CHROMEOS)
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   bool expect_locally_installed = false;
 #endif
 
@@ -1053,9 +1054,9 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_LoadSuccess) {
   const AppId app_id2 =
       InstallBookmarkAppFromSync(url2, /*server_open_as_window=*/false);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(registrar().GetAppById(app_id1)->is_locally_installed());
-#else  // !defined(OS_CHROMEOS)
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(registrar().GetAppById(app_id1)->is_locally_installed());
 #endif
 
@@ -1090,9 +1091,9 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_LoadFailed) {
   auto app_id2 =
       InstallBookmarkAppFromSync(url2, /*server_open_as_window=*/true);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(registrar().GetAppById(app_id1)->is_locally_installed());
-#else  // !defined(OS_CHROMEOS)
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(registrar().GetAppById(app_id1)->is_locally_installed());
 #endif
 

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/branding_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 
@@ -71,12 +72,12 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
   for (ExternalInstallOptions& app_data : GetPreinstalledAppData()) {
     DCHECK_EQ(app_data.install_source, ExternalInstallSource::kExternalDefault);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Non-Chrome OS platforms are not permitted to fetch the web app install
     // URLs during start up.
     DCHECK(app_data.only_use_app_info_factory);
     DCHECK(app_data.app_info_factory);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Preinstalled web apps should not have OS shortcuts of any kind.
     app_data.add_to_applications_menu = false;
