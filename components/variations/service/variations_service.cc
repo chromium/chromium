@@ -625,7 +625,10 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
           cookies_allowed: NO
           setting: "This feature cannot be disabled by settings."
           policy_exception_justification:
-            "Not implemented, considered not required."
+            "The ChromeVariations policy prevents Variations from applying, "
+            "but Google Chrome still downloads Variations from the server "
+            "periodically. This way, the downloaded Variations apply "
+            "immediately on restart if you unset the ChromeVariations policy."
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
