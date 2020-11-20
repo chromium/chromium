@@ -347,16 +347,17 @@ TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
   const int kOverlapSize = 15;
   const int kWindowHeight = 200;
   const int kWindowWidth = 200;
+  const gfx::Rect bounds(shelf_bounds.height() - kOverlapSize,
+                         shelf_bounds.y() - kWindowHeight + kOverlapSize,
+                         kWindowWidth, kWindowHeight);
   views::Widget* widget = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-  params.bounds = gfx::Rect(shelf_bounds.height() - kOverlapSize,
-                            shelf_bounds.y() - kWindowHeight + kOverlapSize,
-                            kWindowWidth, kWindowHeight);
+  params.bounds = bounds;
   params.context = GetContext();
   // Widget is now owned by the parent window.
   widget->Init(std::move(params));
   // Explicitly set the bounds which will allow the widget to overlap the shelf.
-  widget->SetBounds(params.bounds);
+  widget->SetBounds(bounds);
   widget->Show();
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   EXPECT_TRUE(widget_bounds.Intersects(shelf_bounds));

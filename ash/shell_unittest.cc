@@ -324,10 +324,9 @@ TEST_F(ShellTest, CreateModalWindow) {
 }
 
 TEST_F(ShellTest, CreateLockScreenModalWindow) {
+  // Create a normal window.
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::TYPE_WINDOW);
-
-  // Create a normal window.
   views::Widget* widget = CreateTestWindow(std::move(widget_params));
   widget->Show();
   EXPECT_TRUE(widget->GetNativeView()->HasFocus());
@@ -338,7 +337,9 @@ TEST_F(ShellTest, CreateLockScreenModalWindow) {
 
   GetSessionControllerClient()->LockScreen();
   // Create a LockScreen window.
-  views::Widget* lock_widget = CreateTestWindow(std::move(widget_params));
+  views::Widget::InitParams lock_widget_params(
+      views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget* lock_widget = CreateTestWindow(std::move(lock_widget_params));
   Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                       kShellWindowId_LockScreenContainer)
       ->AddChild(lock_widget->GetNativeView());

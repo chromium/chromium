@@ -621,8 +621,9 @@ void DockedMagnifierControllerImpl::CreateMagnifierViewport() {
   params.accept_events = false;
   params.bounds = viewport_bounds;
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-  params.parent =
+  aura::Window* const parent =
       GetViewportParentContainerForRoot(current_source_root_window_);
+  params.parent = parent;
   params.name = kDockedMagnifierViewportWindowName;
   viewport_widget_->Init(std::move(params));
 
@@ -632,7 +633,7 @@ void DockedMagnifierControllerImpl::CreateMagnifierViewport() {
   separator_layer_->SetColor(SK_ColorBLACK);
   separator_layer_->SetBounds(
       SeparatorBoundsFromViewportBounds(viewport_bounds));
-  params.parent->layer()->Add(separator_layer_.get());
+  parent->layer()->Add(separator_layer_.get());
 
   // 3- Create a background layer that will show a dark gray color behind the
   //    magnifier layer. It has the same bounds as the viewport.

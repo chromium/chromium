@@ -203,6 +203,7 @@ class AmbientURLLoaderImpl : public AmbientURLLoader {
     auto simple_loader = CreateSimpleURLLoader(url);
     auto loader_factory = AmbientClient::Get()->GetURLLoaderFactory();
     auto* loader_ptr = simple_loader.get();
+    auto* loader_factory_ptr = loader_factory.get();
 
     // Create a temporary file path as target for download to guard against race
     // conditions in reading.
@@ -212,7 +213,7 @@ class AmbientURLLoaderImpl : public AmbientURLLoader {
     // Download to temp file first to guarantee entire image is written without
     // errors before attempting to read it.
     loader_ptr->DownloadToFile(
-        loader_factory.get(),
+        loader_factory_ptr,
         base::BindOnce(&AmbientURLLoaderImpl::OnUrlDownloadedToFile,
                        weak_factory_.GetWeakPtr(), std::move(callback),
                        std::move(simple_loader), std::move(loader_factory),

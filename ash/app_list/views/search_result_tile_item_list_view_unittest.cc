@@ -182,7 +182,7 @@ class SearchResultTileItemListViewTest
         result->set_title(base::ASCIIToUTF16("RecommendedApp ") +
                           base::NumberToString16(i));
         result->SetRating(1 + i);
-        results->AddAt(result->display_index(), std::move(result));
+        results->AddAt(display_indexes[i], std::move(result));
       }
     }
 
