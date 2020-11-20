@@ -325,7 +325,7 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M88',
-          'revision': 'version:88.0.4324.2',
+          'revision': 'version:88.0.4324.12',
         }
       ],
     },
@@ -417,7 +417,7 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M88',
-          'revision': 'version:88.0.4324.2',
+          'revision': 'version:88.0.4324.12',
         }
       ],
     },
