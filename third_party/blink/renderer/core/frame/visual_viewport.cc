@@ -599,15 +599,12 @@ void VisualViewport::InitializeScrollbars() {
 
   needs_paint_property_update_ = true;
 
+  scrollbar_layer_horizontal_ = nullptr;
+  scrollbar_layer_vertical_ = nullptr;
   if (VisualViewportSuppliesScrollbars() &&
       !GetPage().GetSettings().GetHideScrollbars()) {
-    DCHECK(!scrollbar_layer_horizontal_);
-    DCHECK(!scrollbar_layer_vertical_);
     UpdateScrollbarLayer(kHorizontalScrollbar);
     UpdateScrollbarLayer(kVerticalScrollbar);
-  } else {
-    scrollbar_layer_horizontal_ = nullptr;
-    scrollbar_layer_vertical_ = nullptr;
   }
 
   // Ensure existing LocalFrameView scrollbars are removed if the visual
