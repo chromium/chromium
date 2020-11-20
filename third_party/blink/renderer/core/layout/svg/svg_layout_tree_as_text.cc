@@ -252,27 +252,10 @@ static void WriteSVGPaintingResource(WTF::TextStream& ts,
   ts << " [id=\"" << resource.Target()->GetIdAttribute() << "\"]";
 }
 
-static base::Optional<Color> ResolveColor(const ComputedStyle& style,
-                                          const SVGPaint& paint,
-                                          const SVGPaint& visited_paint) {
-  if (!paint.HasColor())
-    return base::nullopt;
-  Color color = style.ResolvedColor(paint.GetColor());
-  if (style.InsideLink() != EInsideLink::kInsideVisitedLink)
-    return color;
-  // FIXME: This code doesn't support the uri component of the visited link
-  // paint, https://bugs.webkit.org/show_bug.cgi?id=70006
-  if (!visited_paint.HasColor())
-    return color;
-  const Color& visited_color = style.ResolvedColor(visited_paint.GetColor());
-  return Color(visited_color.Red(), visited_color.Green(), visited_color.Blue(),
-               color.Alpha());
-}
-
 static bool WriteSVGPaint(WTF::TextStream& ts,
                           const ComputedStyle& style,
                           const SVGPaint& paint,
-                          const SVGPaint& visited_paint,
+                          const CSSProperty& property,
                           const char* paint_name) {
   TextStreamSeparator s(" ");
   if (const StyleSVGResource* resource = paint.Resource()) {
@@ -283,9 +266,10 @@ static bool WriteSVGPaint(WTF::TextStream& ts,
       return true;
     }
   }
-  if (base::Optional<Color> color = ResolveColor(style, paint, visited_paint)) {
+  if (paint.HasColor()) {
+    Color color = style.VisitedDependentColor(property);
     ts << " [" << paint_name << "={" << s;
-    ts << "[type=SOLID] [color=" << *color << "]";
+    ts << "[type=SOLID] [color=" << color << "]";
     return true;
   }
   return false;
@@ -304,7 +288,7 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
                     ComputedStyleInitialValues::InitialOpacity());
   if (object.IsSVGShape()) {
     if (WriteSVGPaint(ts, style, svg_style.StrokePaint(),
-                      svg_style.InternalVisitedStrokePaint(), "stroke")) {
+                      GetCSSPropertyStroke(), "stroke")) {
       const LayoutSVGShape& shape = static_cast<const LayoutSVGShape&>(object);
       DCHECK(shape.GetElement());
       SVGLengthContext length_context(shape.GetElement());
@@ -327,8 +311,8 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
       ts << "}]";
     }
 
-    if (WriteSVGPaint(ts, style, svg_style.FillPaint(),
-                      svg_style.InternalVisitedFillPaint(), "fill")) {
+    if (WriteSVGPaint(ts, style, svg_style.FillPaint(), GetCSSPropertyFill(),
+                      "fill")) {
       WriteIfNotDefault(ts, "opacity", svg_style.FillOpacity(), 1.0f);
       WriteIfNotDefault(ts, "fill rule", svg_style.FillRule(), RULE_NONZERO);
       ts << "}]";

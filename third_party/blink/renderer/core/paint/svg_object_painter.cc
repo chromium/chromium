@@ -15,21 +15,6 @@ namespace blink {
 
 namespace {
 
-Color ResolveColor(const ComputedStyle& style,
-                   const SVGPaint& paint,
-                   const SVGPaint& visited_paint) {
-  Color color = style.ResolvedColor(paint.GetColor());
-  if (style.InsideLink() != EInsideLink::kInsideVisitedLink)
-    return color;
-  // FIXME: This code doesn't support the uri component of the visited link
-  // paint, https://bugs.webkit.org/show_bug.cgi?id=70006
-  if (!visited_paint.HasColor())
-    return color;
-  const Color& visited_color = style.ResolvedColor(visited_paint.GetColor());
-  return Color(visited_color.Red(), visited_color.Green(), visited_color.Blue(),
-               color.Alpha());
-}
-
 void CopyStateFromGraphicsContext(GraphicsContext& context, PaintFlags& flags) {
   // TODO(fs): The color filter can be set when generating a picture for a mask
   // due to color-interpolation. We could also just apply the
@@ -105,10 +90,9 @@ bool SVGObjectPainter::PreparePaint(
     }
   }
   if (paint.HasColor()) {
-    const SVGPaint& visited_paint =
-        apply_to_fill ? svg_style.InternalVisitedFillPaint()
-                      : svg_style.InternalVisitedStrokePaint();
-    const Color color = ResolveColor(style, paint, visited_paint);
+    const CSSProperty& property =
+        apply_to_fill ? GetCSSPropertyFill() : GetCSSPropertyStroke();
+    const Color color = style.VisitedDependentColor(property);
     flags.setColor(ScaleAlpha(color.Rgb(), alpha));
     flags.setShader(nullptr);
     CopyStateFromGraphicsContext(paint_info.context, flags);

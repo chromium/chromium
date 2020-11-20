@@ -1976,7 +1976,7 @@
     },
     {
       name: "fill",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,
       inherited: true,
       svg: true,
@@ -3470,7 +3470,7 @@
     },
     {
       name: "stroke",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,
       inherited: true,
       svg: true,
@@ -5965,7 +5965,7 @@
     {
       name: "-internal-visited-fill",
       visited_property_for: "fill",
-      property_methods: ["ParseSingleValue"],
+      property_methods: ["ParseSingleValue", "ColorIncludingFallback"],
       inherited: true,
       svg: true,
       initial: "InitialFillPaint",
@@ -5991,7 +5991,7 @@
     {
       name: "-internal-visited-stroke",
       visited_property_for: "stroke",
-      property_methods: ["ParseSingleValue"],
+      property_methods: ["ParseSingleValue", "ColorIncludingFallback"],
       inherited: true,
       svg: true,
       initial: "InitialStrokePaint",

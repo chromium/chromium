@@ -2560,6 +2560,15 @@ const CSSValue* Fill::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForSVGPaint(svg_style.FillPaint(), style);
 }
 
+const blink::Color Fill::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style) const {
+  DCHECK(!visited_link);
+  DCHECK(style.SvgStyle().FillPaint().HasColor());
+  StyleColor fill_color = style.SvgStyle().FillPaint().GetColor();
+  return fill_color.Resolve(style.GetCurrentColor(), style.UsedColorScheme());
+}
+
 const CSSValue* FillOpacity::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3637,6 +3646,23 @@ const CSSValue* InternalVisitedFill::ParseSingleValue(
   return css_parsing_utils::ParsePaintStroke(range, context);
 }
 
+const blink::Color InternalVisitedFill::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style) const {
+  DCHECK(visited_link);
+  const SVGPaint& paint = style.SvgStyle().InternalVisitedFillPaint();
+
+  // FIXME: This code doesn't support the uri component of the visited link
+  // paint, https://bugs.webkit.org/show_bug.cgi?id=70006
+  if (!paint.HasColor()) {
+    return To<Longhand>(GetCSSPropertyFill())
+        .ColorIncludingFallback(false, style);
+  }
+  StyleColor visited_fill_color = paint.GetColor();
+  return visited_fill_color.Resolve(style.GetInternalVisitedCurrentColor(),
+                                    style.UsedColorScheme());
+}
+
 const blink::Color InternalVisitedColumnRuleColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
@@ -3673,6 +3699,23 @@ const CSSValue* InternalVisitedStroke::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ParsePaintStroke(range, context);
+}
+
+const blink::Color InternalVisitedStroke::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style) const {
+  DCHECK(visited_link);
+  const SVGPaint& paint = style.SvgStyle().InternalVisitedStrokePaint();
+
+  // FIXME: This code doesn't support the uri component of the visited link
+  // paint, https://bugs.webkit.org/show_bug.cgi?id=70006
+  if (!paint.HasColor()) {
+    return To<Longhand>(GetCSSPropertyStroke())
+        .ColorIncludingFallback(false, style);
+  }
+  StyleColor visited_stroke_color = paint.GetColor();
+  return visited_stroke_color.Resolve(style.GetInternalVisitedCurrentColor(),
+                                      style.UsedColorScheme());
 }
 
 const blink::Color InternalVisitedTextDecorationColor::ColorIncludingFallback(
@@ -6141,6 +6184,15 @@ const CSSValue* Stroke::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForSVGPaint(svg_style.StrokePaint(), style);
+}
+
+const blink::Color Stroke::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style) const {
+  DCHECK(!visited_link);
+  DCHECK(style.SvgStyle().StrokePaint().HasColor());
+  StyleColor stroke_color = style.SvgStyle().StrokePaint().GetColor();
+  return stroke_color.Resolve(style.GetCurrentColor(), style.UsedColorScheme());
 }
 
 const CSSValue* StrokeDasharray::ParseSingleValue(

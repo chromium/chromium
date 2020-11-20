@@ -119,7 +119,9 @@ class InternalVisitedBorderTopColor;
 class InternalVisitedCaretColor;
 class InternalVisitedColor;
 class InternalVisitedColumnRuleColor;
+class InternalVisitedFill;
 class InternalVisitedOutlineColor;
+class InternalVisitedStroke;
 class InternalVisitedTextDecorationColor;
 class InternalVisitedTextEmphasisColor;
 class InternalVisitedTextFillColor;
@@ -224,7 +226,9 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::InternalVisitedCaretColor;
   friend class css_longhand::InternalVisitedColor;
   friend class css_longhand::InternalVisitedColumnRuleColor;
+  friend class css_longhand::InternalVisitedFill;
   friend class css_longhand::InternalVisitedOutlineColor;
+  friend class css_longhand::InternalVisitedStroke;
   friend class css_longhand::InternalVisitedTextDecorationColor;
   friend class css_longhand::InternalVisitedTextEmphasisColor;
   friend class css_longhand::InternalVisitedTextFillColor;
@@ -2569,13 +2573,6 @@ class ComputedStyle : public ComputedStyleBase,
   CORE_EXPORT Color
   VisitedDependentColor(const CSSProperty& color_property) const;
 
-  // Helper for resolving a StyleColor which may contain currentColor or a
-  // system color keyword. This is intended for cases such as SVG <paint> where
-  // a given property consists of a StyleColor plus additional information. For
-  // <color> properties, prefer VisitedDependentColor() or
-  // Longhand::ColorIncludingFallback() instead.
-  Color ResolvedColor(const StyleColor& color) const;
-
   // -webkit-appearance utility functions.
   bool HasEffectiveAppearance() const {
     return EffectiveAppearance() != kNoControlPart;
@@ -2894,6 +2891,13 @@ class ComputedStyle : public ComputedStyleBase,
 
   Color GetCurrentColor() const;
   Color GetInternalVisitedCurrentColor() const;
+
+  // Helper for resolving a StyleColor which may contain currentColor or a
+  // system color keyword. This is intended for cases where a given property
+  // consists of a StyleColor plus additional information. For <color>
+  // properties, prefer VisitedDependentColor() or
+  // Longhand::ColorIncludingFallback() instead.
+  Color ResolvedColor(const StyleColor& color) const;
 
   static bool ShadowListHasCurrentColor(const ShadowList*);
 
