@@ -71,6 +71,7 @@ DocumentAnimations::DocumentAnimations(Document* document)
 
 void DocumentAnimations::AddTimeline(AnimationTimeline& timeline) {
   timelines_.insert(&timeline);
+  unvalidated_timelines_.insert(&timeline);
 }
 
 void DocumentAnimations::UpdateAnimationTimingForAnimationFrame() {
@@ -159,6 +160,15 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
   return animations;
 }
 
+void DocumentAnimations::ValidateTimelines() {
+  for (auto& timeline : unvalidated_timelines_) {
+    if (auto* scroll_timeline = DynamicTo<CSSScrollTimeline>(timeline.Get()))
+      scroll_timeline->ValidateState();
+  }
+
+  unvalidated_timelines_.clear();
+}
+
 void DocumentAnimations::CacheCSSScrollTimeline(CSSScrollTimeline& timeline) {
   // We cache the least seen CSSScrollTimeline for a given name.
   cached_css_timelines_.Set(timeline.Name(), &timeline);
@@ -172,6 +182,7 @@ CSSScrollTimeline* DocumentAnimations::FindCachedCSSScrollTimeline(
 void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
+  visitor->Trace(unvalidated_timelines_);
   visitor->Trace(cached_css_timelines_);
 }
 

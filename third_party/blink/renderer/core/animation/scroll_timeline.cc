@@ -614,6 +614,14 @@ void ScrollTimeline::InvalidateEffectTargetStyle() {
     animation->InvalidateEffectTargetStyle();
 }
 
+void ScrollTimeline::ValidateState() {
+  auto state = ComputeTimelineState();
+  if (timeline_state_snapshotted_ == state)
+    return;
+  timeline_state_snapshotted_ = state;
+  InvalidateEffectTargetStyle();
+}
+
 CompositorAnimationTimeline* ScrollTimeline::EnsureCompositorTimeline() {
   if (compositor_timeline_)
     return compositor_timeline_.get();

@@ -2492,6 +2492,9 @@ bool LocalFrameView::UpdateLifecyclePhases(
 
 void LocalFrameView::UpdateLifecyclePhasesInternal(
     DocumentLifecycle::LifecycleState target_state) {
+  // RunScrollTimelineSteps must not run more than once.
+  bool should_run_scroll_timeline_steps = true;
+
   // Run style, layout, compositing and prepaint lifecycle phases and deliver
   // resize observations if required. Resize observer callbacks/delegates have
   // the potential to dirty layout (until loop limit is reached) and therefore
@@ -2551,6 +2554,24 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       }
     }
 
+    // Some features may require several passes over style and layout
+    // within the same lifecycle update.
+    bool needs_to_repeat_lifecycle = false;
+
+    // ScrollTimelines may be associated with a source that never had a
+    // a chance to get a layout box at the time style was calculated; when
+    // this situation happens, RunScrollTimelineSteps will re-snapshot all
+    // affected timelines and dirty style for associated effect targets.
+    //
+    // https://github.com/w3c/csswg-drafts/issues/5261
+    if (RuntimeEnabledFeatures::CSSScrollTimelineEnabled() &&
+        should_run_scroll_timeline_steps) {
+      should_run_scroll_timeline_steps = false;
+      needs_to_repeat_lifecycle = RunScrollTimelineSteps();
+      if (needs_to_repeat_lifecycle)
+        continue;
+    }
+
     // ResizeObserver and post-layout IntersectionObserver observation
     // deliveries may dirty style and layout. RunResizeObserverSteps will return
     // true if any observer ran that may have dirtied style or layout;
@@ -2558,7 +2579,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // observations led to content-visibility intersection changing visibility
     // state synchronously (which happens on the first intersection
     // observeration of a context).
-    bool needs_to_repeat_lifecycle = RunResizeObserverSteps(target_state);
+    needs_to_repeat_lifecycle = RunResizeObserverSteps(target_state);
     // Only run the rest of the steps here if resize observer is done.
     if (needs_to_repeat_lifecycle)
       continue;
@@ -2587,6 +2608,22 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
   ForAllRemoteFrameViews(
       [](RemoteFrameView& frame_view) { frame_view.UpdateCompositingRect(); });
+}
+
+bool LocalFrameView::RunScrollTimelineSteps() {
+  DCHECK_GE(Lifecycle().GetState(),
+            DocumentLifecycle::kCompositingAssignmentsClean);
+  bool re_run_lifecycles = false;
+  ForAllNonThrottledLocalFrameViews(
+      [&re_run_lifecycles](LocalFrameView& frame_view) {
+        frame_view.GetFrame()
+            .GetDocument()
+            ->GetDocumentAnimations()
+            .ValidateTimelines();
+        re_run_lifecycles |= (frame_view.Lifecycle().GetState() <
+                              DocumentLifecycle::kCompositingAssignmentsClean);
+      });
+  return re_run_lifecycles;
 }
 
 bool LocalFrameView::RunResizeObserverSteps(

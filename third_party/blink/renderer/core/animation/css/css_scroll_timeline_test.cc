@@ -4,10 +4,16 @@
 
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -21,6 +27,10 @@ class CSSScrollTimelineTest : public PageTestBase,
 
   bool HasObservers(const AtomicString& id) {
     return GetDocument().GetIdTargetObserverRegistry().HasObservers(id);
+  }
+
+  DocumentAnimations& GetDocumentAnimations() const {
+    return GetDocument().GetDocumentAnimations();
   }
 };
 
@@ -215,6 +225,132 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
 
   EXPECT_NE(animations2[2]->timeline(), animations1[0]->timeline());
   EXPECT_NE(animations2[2]->timeline(), animations1[1]->timeline());
+}
+
+TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { color: green; }
+        to { color: green; }
+      }
+      @scroll-timeline timeline {
+        source: selector(#scroller);
+        time-range: 10s;
+        start: auto;
+        end: auto;
+      }
+      #scroller {
+        height: 100px;
+        overflow: scroll;
+      }
+      #scroller > div {
+        height: 200px;
+      }
+      #element {
+        color: red;
+        animation: anim 10s timeline;
+      }
+    </style>
+    <div id=element></div>
+    <div id=scroller>
+      <div id=contents></div>
+    </div>
+  )HTML");
+
+  Element* element = GetDocument().getElementById("element");
+  ASSERT_TRUE(element);
+
+  // According to the rules of the spec [1], the timeline is now inactive,
+  // because #scroller did not have a layout box at the time style recalc
+  // for #element happened.
+  //
+  // However, we do an additional style/layout pass if we detect new
+  // CSSScrollTimelines in this situation, hence we ultimately do expect
+  // the animation to apply [2].
+  //
+  // See also DocumentAnimations::ValidateTimelines.
+  //
+  // [1] https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
+  // [2] https://github.com/w3c/csswg-drafts/issues/5261
+  EXPECT_EQ(MakeRGB(0, 128, 0),
+            element->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+}
+
+namespace {
+
+class AnimationTriggeringDelegate : public ResizeObserver::Delegate {
+ public:
+  explicit AnimationTriggeringDelegate(Element* element) : element_(element) {}
+
+  void OnResize(
+      const HeapVector<Member<ResizeObserverEntry>>& entries) override {
+    element_->setAttribute(blink::html_names::kClassAttr, "animate");
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ResizeObserver::Delegate::Trace(visitor);
+    visitor->Trace(element_);
+  }
+
+ private:
+  Member<Element> element_;
+};
+
+}  // namespace
+
+TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { width: 100px; }
+        to { width: 100px; }
+      }
+      @scroll-timeline timeline {
+        source: selector(#scroller);
+        time-range: 10s;
+      }
+      #scroller {
+        height: 100px;
+        overflow: scroll;
+      }
+      #scroller > div {
+        height: 200px;
+      }
+      #element {
+        width: 1px;
+      }
+      #element.animate {
+        animation: anim 10s timeline;
+      }
+    </style>
+    <div id=main></div>
+  )HTML");
+
+  ASSERT_TRUE(
+      GetDocumentAnimations().GetUnvalidatedTimelinesForTesting().IsEmpty());
+
+  Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  element->setAttribute(blink::html_names::kIdAttr, "element");
+
+  Element* scroller = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  scroller->setAttribute(blink::html_names::kIdAttr, "scroller");
+  scroller->AppendChild(MakeGarbageCollected<HTMLDivElement>(GetDocument()));
+
+  Element* main = GetDocument().getElementById("main");
+  ASSERT_TRUE(main);
+  main->AppendChild(element);
+  main->AppendChild(scroller);
+
+  auto* delegate = MakeGarbageCollected<AnimationTriggeringDelegate>(element);
+  ResizeObserver* observer =
+      ResizeObserver::Create(GetDocument().domWindow(), delegate);
+  observer->observe(element);
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u,
+            GetDocumentAnimations().GetUnvalidatedTimelinesForTesting().size());
 }
 
 }  // namespace blink

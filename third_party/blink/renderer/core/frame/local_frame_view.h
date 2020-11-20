@@ -955,6 +955,8 @@ class CORE_EXPORT LocalFrameView final
   bool UpdateViewportIntersectionsForSubtree(unsigned parent_flags) override;
   void DeliverSynchronousIntersectionObservations();
 
+  bool RunScrollTimelineSteps();
+
   bool NotifyResizeObservers(DocumentLifecycle::LifecycleState target_state);
   bool RunResizeObserverSteps(DocumentLifecycle::LifecycleState target_state);
   void ClearResizeObserverLimit();
