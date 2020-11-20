@@ -72,8 +72,7 @@ void ResetShortcuts(std::vector<ShortcutInformation> shortcuts,
     // Additional Chrome profiles may have custom icons so the icon location
     // should be preserved.
     base::FilePath icon_location(shortcut.icon_location);
-    // TODO(bdea): Get the correct icon_index from the lnk_parser.
-    updated_properties.set_icon(icon_location, /*icon_index=*/0);
+    updated_properties.set_icon(icon_location, shortcut.icon_index);
     base::CommandLine current_args(
         base::CommandLine::FromString(base::StringPrintf(
             L"unused_program %ls", shortcut.command_line_arguments.c_str())));

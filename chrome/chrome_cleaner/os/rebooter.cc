@@ -29,7 +29,7 @@ const char* kSwitchesToPropagate[]{
     kChromeVersionSwitch, kDumpRawLogsSwitch,   kEnableCrashReportingSwitch,
     kEngineSwitch,        kExecutionModeSwitch, kLogUploadRetryIntervalSwitch,
     kNoSelfDeleteSwitch,  kTestingSwitch,       kUmaUserSwitch,
-};
+    kResetShortcutsSwitch};
 
 // The name of the task to run post reboot.
 std::wstring PostRebootRunTaskName(const std::wstring& product_shortname) {
