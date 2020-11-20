@@ -184,7 +184,7 @@ public class SyncErrorCardPreference extends Preference
      * {@link ProfileDataCache.Observer} implementation.
      */
     @Override
-    public void onProfileDataUpdated(String accountId) {
+    public void onProfileDataUpdated(String accountEmail) {
         update();
     }
 }

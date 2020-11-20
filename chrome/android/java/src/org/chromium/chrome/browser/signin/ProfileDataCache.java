@@ -53,9 +53,9 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     public interface Observer {
         /**
          * Notifies that an account's profile data has been updated.
-         * @param accountId An account ID.
+         * @param accountEmail An account email.
          */
-        void onProfileDataUpdated(String accountId);
+        void onProfileDataUpdated(String accountEmail);
     }
 
     /**
@@ -162,7 +162,6 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
      * @param badgeResId Resource id of the badge to be attached. If it is 0 then no badge is
      *         attached
      */
-    @MainThread
     public void updateBadgeConfig(@DrawableRes int badgeResId) {
         ThreadUtils.assertOnUiThread();
         assert mBadgeConfig != null;
@@ -243,21 +242,21 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     }
 
     @Override
-    public void onProfileDownloaded(String accountId, String fullName, String givenName,
-            Bitmap bitmap) {
+    public void onProfileDownloaded(
+            String accountEmail, String fullName, String givenName, Bitmap bitmap) {
         ThreadUtils.assertOnUiThread();
         updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(
-                accountId, prepareAvatar(bitmap, accountId), fullName, givenName));
+                accountEmail, prepareAvatar(bitmap, accountEmail), fullName, givenName));
     }
 
     @Override
-    public void onProfileDataUpdated(String accountId) {
+    public void onProfileDataUpdated(String accountEmail) {
         assert mProfileDataSource != null;
         ProfileDataSource.ProfileData profileData =
-                mProfileDataSource.getProfileDataForAccount(accountId);
+                mProfileDataSource.getProfileDataForAccount(accountEmail);
         if (profileData == null) {
-            mCachedProfileData.remove(accountId);
-            notifyObservers(accountId);
+            mCachedProfileData.remove(accountEmail);
+            notifyObservers(accountEmail);
         } else {
             updateCachedProfileDataAndNotifyObservers(createDisplayableProfileData(profileData));
         }

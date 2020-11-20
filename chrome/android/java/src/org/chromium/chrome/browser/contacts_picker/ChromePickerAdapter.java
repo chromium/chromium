@@ -67,8 +67,8 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     // ProfileDataCache.Observer:
 
     @Override
-    public void onProfileDataUpdated(String accountId) {
-        if (!mWaitingOnOwnerInfo || !TextUtils.equals(accountId, getOwnerEmail())) {
+    public void onProfileDataUpdated(String accountEmail) {
+        if (!mWaitingOnOwnerInfo || !TextUtils.equals(accountEmail, getOwnerEmail())) {
             return;
         }
 

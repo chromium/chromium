@@ -400,7 +400,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
     // ProfileDataCache.Observer implementation:
     @Override
-    public void onProfileDataUpdated(String accountId) {
+    public void onProfileDataUpdated(String accountEmail) {
         updateAccountsList();
     }
 

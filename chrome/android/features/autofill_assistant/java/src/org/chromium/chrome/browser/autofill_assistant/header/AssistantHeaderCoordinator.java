@@ -114,8 +114,8 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
     }
 
     @Override
-    public void onProfileDataUpdated(String account) {
-        if (!mSignedInAccountName.equals(account)) {
+    public void onProfileDataUpdated(String accountEmail) {
+        if (!mSignedInAccountName.equals(accountEmail)) {
             return;
         }
         setProfileImageFor(mSignedInAccountName);

@@ -271,7 +271,7 @@ public abstract class SignInPromo extends OptionalLeaf {
 
         // ProfileDataCache.Observer implementation.
         @Override
-        public void onProfileDataUpdated(String accountId) {
+        public void onProfileDataUpdated(String accountEmail) {
             notifyDataChanged();
         }
     }

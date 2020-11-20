@@ -71,9 +71,9 @@ public interface ProfileDataSource {
     interface Observer {
         /**
          * Notifies that an account's profile data has been updated.
-         * @param accountId An account ID.
+         * @param accountEmail An account email.
          */
-        void onProfileDataUpdated(String accountId);
+        void onProfileDataUpdated(String accountEmail);
     }
 
     /**
