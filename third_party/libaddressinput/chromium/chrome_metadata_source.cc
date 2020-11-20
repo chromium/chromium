@@ -94,6 +94,9 @@ void ChromeMetadataSource::Download(const std::string& key,
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
+  // Limit the request duration to 5 seconds.
+  loader->SetTimeoutDuration(base::TimeDelta::FromSeconds(5));
+
   auto it = requests_.insert(
       requests_.begin(),
       std::make_unique<Request>(key, std::move(loader), downloaded));
