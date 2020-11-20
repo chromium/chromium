@@ -1029,6 +1029,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/engagement/android:java",
     "//chrome/browser/enterprise/util:java",
+    "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/image_descriptions:javatests",
