@@ -59,6 +59,7 @@ source_set("trust_tokens") {
     "trust_token_key_filtering.h",
     "trust_token_operation_metrics_recorder.cc",
     "trust_token_operation_metrics_recorder.h",
+    "trust_token_parameterization.cc",
     "trust_token_parameterization.h",
     "trust_token_persister.h",
     "trust_token_request_canonicalizer.cc",

@@ -189,10 +189,9 @@ TEST(TrustTokenKeyCommitments, FiltersKeys) {
   expired_key->expiry = base::Time::Now() - base::TimeDelta::FromMinutes(1);
   commitment_result->keys.push_back(std::move(expired_key));
 
-  static_assert(kMaximumConcurrentlyValidTrustTokenVerificationKeys < 100,
-                "If the constant grows large, consider rewriting this test.");
-  for (size_t i = 0; i < kMaximumConcurrentlyValidTrustTokenVerificationKeys;
-       ++i) {
+  size_t max_keys = TrustTokenMaxKeysForVersion(
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb);
+  for (size_t i = 0; i < max_keys; ++i) {
     auto not_expired_key = mojom::TrustTokenVerificationKey::New();
     not_expired_key->expiry =
         base::Time::Now() + base::TimeDelta::FromMinutes(1);
@@ -204,15 +203,13 @@ TEST(TrustTokenKeyCommitments, FiltersKeys) {
       base::Time::Now() + base::TimeDelta::FromMinutes(2);
 
   // We expect to get rid of the expired key and the farthest-in-the-future key
-  // (since there are more than kMaximum... many keys yet to expire).
+  // (since there are more than |max_keys| many keys yet to expire).
   base::flat_map<url::Origin, mojom::TrustTokenKeyCommitmentResultPtr> to_set;
   to_set.insert_or_assign(origin.origin(), commitment_result.Clone());
   commitments.Set(std::move(to_set));
 
   auto result = GetCommitmentForOrigin(commitments, origin);
-  EXPECT_EQ(
-      result->keys.size(),
-      static_cast<size_t>(kMaximumConcurrentlyValidTrustTokenVerificationKeys));
+  EXPECT_EQ(result->keys.size(), max_keys);
   EXPECT_TRUE(std::all_of(result->keys.begin(), result->keys.end(),
                           [](const mojom::TrustTokenVerificationKeyPtr& key) {
                             return key->expiry ==
