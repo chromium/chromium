@@ -92,7 +92,10 @@ GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
 
 GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (vda_)
+  // Normally client_count_ should always be > 0 if vda_ is set, but if it
+  // isn't and we underflow then we won't be able to create any new decoder
+  // forever (b/173700103). So let's use an extra check to avoid this...
+  if (vda_ && client_count_ > 0)
     client_count_--;
 }
 
@@ -350,6 +353,9 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
         mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
   }
 
+  client_count_++;
+  VLOGF(2) << "Number of concurrent clients: " << client_count_;
+
   secure_mode_ = base::nullopt;
   error_state_ = false;
   pending_requests_ = {};
@@ -376,12 +382,8 @@ void GpuArcVideoDecodeAccelerator::OnInitializeDone(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (result == mojom::VideoDecodeAccelerator::Result::SUCCESS) {
-    client_count_++;
-    VLOGF(2) << "Number of concurrent clients: " << client_count_;
-  } else {
+  if (result != mojom::VideoDecodeAccelerator::Result::SUCCESS)
     error_state_ = true;
-  }
 
   // Report initialization status to UMA.
   UMA_HISTOGRAM_ENUMERATION(
