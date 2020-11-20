@@ -130,23 +130,21 @@ AccessContextAuditDatabase::AccessRecord::operator=(const AccessRecord& other) =
 
 AccessContextAuditDatabase::AccessContextAuditDatabase(
     const base::FilePath& path_to_database_dir)
-    : db_file_path_(path_to_database_dir.Append(kDatabaseName)) {}
+    : db_({.exclusive_locking = true,
+           .page_size = 4096,
+           // Cache values generated assuming ~5000 individual pieces of client
+           // storage API data, each accessed in an average of 3 different
+           // contexts (complete speculation, most will be 1, some will be >50),
+           // with an average of 40bytes per audit entry.
+           // TODO(crbug.com/1083384): Revist these numbers.
+           .cache_size = 128}),
+      db_file_path_(path_to_database_dir.Append(kDatabaseName)) {}
 
 void AccessContextAuditDatabase::Init(bool restore_non_persistent_cookies) {
   db_.set_histogram_tag("Access Context Audit");
 
   db_.set_error_callback(
       base::BindRepeating(&DatabaseErrorCallback, &db_, db_file_path_));
-
-  // Cache values generated assuming ~5000 individual pieces of client storage
-  // API data, each accessed in an average of 3 different contexts (complete
-  // speculation, most will be 1, some will be >50), with an average of
-  // 40bytes per audit entry.
-  // TODO(crbug.com/1083384): Revist these numbers.
-  db_.set_page_size(4096);
-  db_.set_cache_size(128);
-
-  db_.set_exclusive_locking();
 
   if (!db_.Open(db_file_path_))
     return;
