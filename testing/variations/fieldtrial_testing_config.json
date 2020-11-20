@@ -3926,7 +3926,7 @@
                     "name": "Password_IPH_Enabled",
                     "params": {
                         "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_password_filling_iph_trigger;comparator:<1;window:90;storage:360",
+                        "event_trigger": "name:keyboard_accessory_password_filling_iph_trigger;comparator:<10;window:90;storage:360",
                         "event_used": "name:keyboard_accessory_password_suggestion_accepted;comparator:<2;window:90;storage:360",
                         "session_rate": "<1"
                     },
