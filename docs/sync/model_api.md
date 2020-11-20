@@ -265,7 +265,6 @@ the next client restart.
     [`ChromeSyncClient::CreateDataTypeControllers`][CreateDataTypeControllers].
 *   Add your KeyedService dependency to
     [`ProfileSyncServiceFactory`][ProfileSyncServiceFactory].
-*   Add to the [start order list][kStartOrder].
 *   Add an field for encrypted data to [`NigoriSpecifics`][NigoriSpecifics].
 *   If your type should have its own toggle in sync settings, add an entry to
     the [`UserSelectableType`][UserSelectableType] enum, add a
@@ -285,7 +284,6 @@ the next client restart.
 [CreateCommonDataTypeControllers]: https://cs.chromium.org/search/?q="ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers"
 [CreateDataTypeControllers]: https://cs.chromium.org/search/?q="ChromeSyncClient::CreateDataTypeControllers"
 [ProfileSyncServiceFactory]: https://cs.chromium.org/search/?q=:ProfileSyncServiceFactory%5C(%5C)
-[kStartOrder]: https://cs.chromium.org/search/?q="kStartOrder[]"
 [NigoriSpecifics]: https://cs.chromium.org/chromium/src/components/sync/protocol/nigori_specifics.proto
 [UserSelectableType]: https://cs.chromium.org/chromium/src/components/sync/base/user_selectable_type.h?type=cs&q="enum+class+UserSelectableType"
 [pref_names]: https://cs.chromium.org/chromium/src/components/sync/base/pref_names.h

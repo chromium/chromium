@@ -16,39 +16,6 @@
 
 namespace syncer {
 
-namespace {
-
-static const ModelType kStartOrder[] = {
-    NIGORI,  //  Listed for completeness.
-    DEVICE_INFO,
-    PROXY_TABS,  //  Listed for completeness.
-
-    // Kick off the loading of the non-UI types first so they can load in
-    // parallel with the UI types.
-    // TODO(crbug.com/1102837): Evaluate whether this still makes sense. Loading
-    // is non-blocking, so the order of kicking things off shouldn't matter.
-    PASSWORDS, AUTOFILL, AUTOFILL_PROFILE, AUTOFILL_WALLET_DATA,
-    AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER, EXTENSION_SETTINGS,
-    APP_SETTINGS, TYPED_URLS, HISTORY_DELETE_DIRECTIVES,
-
-    // Chrome OS settings affect the initial desktop appearance before the
-    // browser window opens, so start them before browser data types.
-    OS_PRIORITY_PREFERENCES, OS_PREFERENCES,
-
-    // UI thread data types.
-    BOOKMARKS, PREFERENCES, PRIORITY_PREFERENCES, EXTENSIONS, APPS, APP_LIST,
-    ARC_PACKAGE, READING_LIST, THEMES, SEARCH_ENGINES, SESSIONS, DICTIONARY,
-    DEPRECATED_FAVICON_IMAGES, DEPRECATED_FAVICON_TRACKING, PRINTERS,
-    USER_CONSENTS, USER_EVENTS, SHARING_MESSAGE, SUPERVISED_USER_SETTINGS,
-    SUPERVISED_USER_ALLOWLISTS, SEND_TAB_TO_SELF, SECURITY_EVENTS, WEB_APPS,
-    WIFI_CONFIGURATIONS};
-
-static_assert(base::size(kStartOrder) ==
-                  ModelType::NUM_ENTRIES - FIRST_REAL_MODEL_TYPE,
-              "When adding a new type, update kStartOrder.");
-
-}  // namespace
-
 ModelLoadManager::ModelLoadManager(
     const DataTypeController::TypeMap* controllers,
     ModelLoadManagerDelegate* processor)
@@ -161,11 +128,10 @@ void ModelLoadManager::StopDatatypeImpl(
 }
 
 void ModelLoadManager::LoadDesiredTypes() {
-  // Load in kStartOrder.
-  for (ModelType type : kStartOrder) {
-    if (!desired_types_.Has(type))
-      continue;
-
+  // Note: |desired_types_| might be modified during iteration (e.g. in
+  // ModelLoadCallback()), so make a copy.
+  const ModelTypeSet types = desired_types_;
+  for (ModelType type : types) {
     auto dtc_iter = controllers_->find(type);
     DCHECK(dtc_iter != controllers_->end());
     DataTypeController* dtc = dtc_iter->second.get();
