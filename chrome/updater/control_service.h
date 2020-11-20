@@ -10,14 +10,17 @@
 
 namespace updater {
 
-// The ControlService is the cross-platform abstraction for performing admin
-// tasks on the updater.
-class ControlService : public base::RefCountedThreadSafe<ControlService> {
+// The UpdateServiceInternal is a service abstraction to expose functionality
+// made available only to callers which are part of the same instance of
+// the updater installation. In other words, only a client and a service with
+// identical build versions can communicate using this interface.
+class UpdateServiceInternal
+    : public base::RefCountedThreadSafe<UpdateServiceInternal> {
  public:
-  // Runs the ControlService and checks for updates if needed.
+  // Runs the UpdateServiceInternal and checks for updates if needed.
   virtual void Run(base::OnceClosure callback) = 0;
 
-  // When ControlServiceProxy::InitializeUpdateService is invoked, the
+  // When UpdateServiceInternalProxy::InitializeUpdateService is invoked, the
   // server will wake and do its ModeCheck. As a result, the candidate can be
   // qualified and promoted (thus initializing the UpdateService for this
   // candidate). This is intended as a way for --install and --register to have
@@ -30,13 +33,13 @@ class ControlService : public base::RefCountedThreadSafe<ControlService> {
   virtual void Uninitialize() = 0;
 
  protected:
-  friend class base::RefCountedThreadSafe<ControlService>;
+  friend class base::RefCountedThreadSafe<UpdateServiceInternal>;
 
-  virtual ~ControlService() = default;
+  virtual ~UpdateServiceInternal() = default;
 };
 
-// A factory method to create a ControlService class instance.
-scoped_refptr<ControlService> CreateControlService();
+// A factory method to create a UpdateServiceInternal class instance.
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal();
 
 }  // namespace updater
 

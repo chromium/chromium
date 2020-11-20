@@ -51,7 +51,7 @@ base::OnceClosure AppServer::ModeCheck() {
     uninstall_ = true;
     return base::BindOnce(&AppServer::ActiveDuty, this,
                           MakeInactiveUpdateService(),
-                          MakeInactiveControlService());
+                          MakeInactiveUpdateServiceInternal());
   }
 
   if (active_version != base::Version("0") && active_version != this_version) {
@@ -68,9 +68,10 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   config_ = base::MakeRefCounted<Configurator>(std::move(global_prefs));
-  return base::BindOnce(&AppServer::ActiveDuty, this,
-                        base::MakeRefCounted<UpdateServiceImpl>(config_),
-                        base::MakeRefCounted<ControlServiceImpl>(config_));
+  return base::BindOnce(
+      &AppServer::ActiveDuty, this,
+      base::MakeRefCounted<UpdateServiceImpl>(config_),
+      base::MakeRefCounted<UpdateServiceInternalImpl>(config_));
 }
 
 void AppServer::Uninitialize() {
@@ -94,7 +95,7 @@ void AppServer::Qualify(std::unique_ptr<LocalPrefs> local_prefs) {
 
   // Start ActiveDuty with inactive service implementations. To use active
   // implementations, the server would have to ModeCheck again.
-  ActiveDuty(MakeInactiveUpdateService(), MakeInactiveControlService());
+  ActiveDuty(MakeInactiveUpdateService(), MakeInactiveUpdateServiceInternal());
 }
 
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {

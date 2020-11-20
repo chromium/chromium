@@ -238,10 +238,10 @@ HRESULT UpdaterControlImpl::Run(IUpdaterControlCallback* callback) {
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](scoped_refptr<ControlService> control_service,
+          [](scoped_refptr<UpdateServiceInternal> update_service_internal,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
              IUpdaterControlCallbackPtr callback) {
-            control_service->Run(base::BindOnce(
+            update_service_internal->Run(base::BindOnce(
                 [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                    IUpdaterControlCallbackPtr callback) {
                   task_runner->PostTaskAndReplyWithResult(
@@ -255,7 +255,7 @@ HRESULT UpdaterControlImpl::Run(IUpdaterControlCallback* callback) {
                 },
                 task_runner, callback));
           },
-          com_server->control_service(), task_runner,
+          com_server->update_service_internal(), task_runner,
           IUpdaterControlCallbackPtr(callback)));
 
   // Always return S_OK from this function. Errors must be reported using the
@@ -275,10 +275,10 @@ HRESULT UpdaterControlImpl::InitializeUpdateService(
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](scoped_refptr<ControlService> control_service,
+          [](scoped_refptr<UpdateServiceInternal> update_service_internal,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
              IUpdaterControlCallbackPtr callback) {
-            control_service->InitializeUpdateService(base::BindOnce(
+            update_service_internal->InitializeUpdateService(base::BindOnce(
                 [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                    IUpdaterControlCallbackPtr callback) {
                   task_runner->PostTaskAndReplyWithResult(
@@ -293,7 +293,7 @@ HRESULT UpdaterControlImpl::InitializeUpdateService(
                 },
                 task_runner, callback));
           },
-          com_server->control_service(), task_runner,
+          com_server->update_service_internal(), task_runner,
           IUpdaterControlCallbackPtr(callback)));
 
   // Always return S_OK from this function. Errors must be reported using the

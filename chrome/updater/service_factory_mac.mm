@@ -13,8 +13,8 @@ scoped_refptr<UpdateService> CreateUpdateService() {
   return base::MakeRefCounted<UpdateServiceProxy>(GetProcessScope());
 }
 
-scoped_refptr<ControlService> CreateControlService() {
-  return base::MakeRefCounted<ControlServiceProxy>(GetProcessScope());
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal() {
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(GetProcessScope());
 }
 
 }  // namespace updater

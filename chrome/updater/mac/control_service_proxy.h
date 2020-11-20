@@ -14,7 +14,7 @@
 #include "chrome/updater/control_service.h"
 #include "chrome/updater/service_scope.h"
 
-@class CRUControlServiceProxyImpl;
+@class CRUUpdateServiceInternalProxyImpl;
 
 namespace base {
 class SequencedTaskRunner;
@@ -23,21 +23,21 @@ class SequencedTaskRunner;
 namespace updater {
 
 // All functions and callbacks must be called on the same sequence.
-class ControlServiceProxy : public ControlService {
+class UpdateServiceInternalProxy : public UpdateServiceInternal {
  public:
-  explicit ControlServiceProxy(ServiceScope scope);
+  explicit UpdateServiceInternalProxy(ServiceScope scope);
 
-  // Overrides for ControlService.
+  // Overrides for UpdateServiceInternal.
   void Run(base::OnceClosure callback) override;
   void InitializeUpdateService(base::OnceClosure callback) override;
   void Uninitialize() override;
 
  private:
-  ~ControlServiceProxy() override;
+  ~UpdateServiceInternalProxy() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::scoped_nsobject<CRUControlServiceProxyImpl> client_;
+  base::scoped_nsobject<CRUUpdateServiceInternalProxyImpl> client_;
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
 };
 

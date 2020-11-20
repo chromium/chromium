@@ -42,7 +42,7 @@ class UpdaterControlCallback
   // Overrides for IUpdaterControlCallback.
   //
   // Invoked by COM RPC on the apartment thread (STA) when the call to any of
-  // the non-blocking `ControlServiceProxy` functions completes.
+  // the non-blocking `UpdateServiceInternalProxy` functions completes.
   IFACEMETHODIMP Run(LONG result) override;
 
   // Disconnects this callback from its subject and ensures the callbacks are
@@ -109,23 +109,23 @@ void UpdaterControlCallback::RunOnSTA() {
 
 }  // namespace
 
-ControlServiceProxy::ControlServiceProxy(ServiceScope /*scope*/)
+UpdateServiceInternalProxy::UpdateServiceInternalProxy(ServiceScope /*scope*/)
     : STA_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
 
-ControlServiceProxy::~ControlServiceProxy() = default;
+UpdateServiceInternalProxy::~UpdateServiceInternalProxy() = default;
 
-void ControlServiceProxy::Uninitialize() {
+void UpdateServiceInternalProxy::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ControlServiceProxy::Run(base::OnceClosure callback) {
+void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   STA_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ControlServiceProxy::RunOnSTA, this,
+          &UpdateServiceInternalProxy::RunOnSTA, this,
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                  base::OnceClosure callback) {
@@ -134,7 +134,7 @@ void ControlServiceProxy::Run(base::OnceClosure callback) {
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void ControlServiceProxy::RunOnSTA(base::OnceClosure callback) {
+void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
   DCHECK(STA_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUnknown> server;
@@ -179,13 +179,14 @@ void ControlServiceProxy::RunOnSTA(base::OnceClosure callback) {
   }
 }
 
-void ControlServiceProxy::InitializeUpdateService(base::OnceClosure callback) {
+void UpdateServiceInternalProxy::InitializeUpdateService(
+    base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   STA_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ControlServiceProxy::InitializeUpdateServiceOnSTA, this,
+          &UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA, this,
           base::BindOnce(
               [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                  base::OnceClosure callback) {
@@ -195,7 +196,7 @@ void ControlServiceProxy::InitializeUpdateService(base::OnceClosure callback) {
               STA_task_runner_, std::move(callback))));
 }
 
-void ControlServiceProxy::InitializeUpdateServiceOnSTA(
+void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
     base::OnceClosure callback) {
   DCHECK(STA_task_runner_->BelongsToCurrentThread());
 

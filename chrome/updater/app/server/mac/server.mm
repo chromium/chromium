@@ -38,13 +38,14 @@ void AppServerMac::Uninitialize() {
   // These delegates need to have a reference to the AppServer. To break the
   // circular reference, we need to reset them.
   update_check_delegate_.reset();
-  control_service_delegate_.reset();
+  update_service_internal_delegate_.reset();
 
   AppServer::Uninitialize();
 }
 
-void AppServerMac::ActiveDuty(scoped_refptr<UpdateService> update_service,
-                              scoped_refptr<ControlService> control_service) {
+void AppServerMac::ActiveDuty(
+    scoped_refptr<UpdateService> update_service,
+    scoped_refptr<UpdateServiceInternal> update_service_internal) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -55,19 +56,20 @@ void AppServerMac::ActiveDuty(scoped_refptr<UpdateService> update_service,
   }
   std::string service = command_line.GetSwitchValueASCII(kServerServiceSwitch);
 
-  if (service == kServerControlServiceSwitchValue) {
+  if (service == kServerUpdateServiceInternalSwitchValue) {
     @autoreleasepool {
       // Sets up a listener and delegate for the CRUControlling XPC connection.
-      control_service_delegate_.reset([[CRUControlServiceXPCDelegate alloc]
-          initWithControlService:control_service
-                       appServer:scoped_refptr<AppServerMac>(this)]);
+      update_service_internal_delegate_.reset(
+          [[CRUUpdateServiceInternalXPCDelegate alloc]
+              initWithUpdateServiceInternal:update_service_internal
+                                  appServer:scoped_refptr<AppServerMac>(this)]);
 
-      control_service_listener_.reset([[NSXPCListener alloc]
+      update_service_internal_listener_.reset([[NSXPCListener alloc]
           initWithMachServiceName:GetVersionedServiceMachName().get()]);
-      control_service_listener_.get().delegate =
-          control_service_delegate_.get();
+      update_service_internal_listener_.get().delegate =
+          update_service_internal_delegate_.get();
 
-      [control_service_listener_ resume];
+      [update_service_internal_listener_ resume];
     }
   } else if (service == kServerUpdateServiceSwitchValue) {
     @autoreleasepool {

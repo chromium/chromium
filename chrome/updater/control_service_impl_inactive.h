@@ -9,9 +9,9 @@
 
 namespace updater {
 
-class ControlService;
+class UpdateServiceInternal;
 
-scoped_refptr<ControlService> MakeInactiveControlService();
+scoped_refptr<UpdateServiceInternal> MakeInactiveUpdateServiceInternal();
 
 }  // namespace updater
 

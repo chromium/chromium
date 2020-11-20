@@ -41,7 +41,7 @@ extern const char kServerSwitch[];
 extern const char kServerServiceSwitch[];
 
 // Valid values for the kServerServiceSwitch.
-extern const char kServerControlServiceSwitchValue[];
+extern const char kServerUpdateServiceInternalSwitchValue[];
 extern const char kServerUpdateServiceSwitchValue[];
 
 // This switch starts the COM service. This switch is invoked by the Service

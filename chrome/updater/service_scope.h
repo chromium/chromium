@@ -10,7 +10,7 @@
 
 namespace updater {
 
-// Scope of the update/control service invocation.
+// Scope of the service invocation.
 enum class ServiceScope {
   // The updater is running in the logged in user's scope.
   kUser = 1,

@@ -206,31 +206,33 @@
 
 @end
 
-@interface CRUControlServiceXPCImpl : NSObject <CRUControlling>
+@interface CRUUpdateServiceInternalXPCImpl : NSObject <CRUControlling>
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Designated initializers.
 - (instancetype)
-    initWithControlService:(updater::ControlService*)service
-                 appServer:(scoped_refptr<updater::AppServerMac>)appServer
-            callbackRunner:
-                (scoped_refptr<base::SequencedTaskRunner>)callbackRunner
+    initWithUpdateServiceInternal:(updater::UpdateServiceInternal*)service
+                        appServer:
+                            (scoped_refptr<updater::AppServerMac>)appServer
+                   callbackRunner:
+                       (scoped_refptr<base::SequencedTaskRunner>)callbackRunner
     NS_DESIGNATED_INITIALIZER;
 
 @end
 
-@implementation CRUControlServiceXPCImpl {
-  updater::ControlService* _service;
+@implementation CRUUpdateServiceInternalXPCImpl {
+  updater::UpdateServiceInternal* _service;
   scoped_refptr<updater::AppServerMac> _appServer;
   scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
 }
 
 - (instancetype)
-    initWithControlService:(updater::ControlService*)service
-                 appServer:(scoped_refptr<updater::AppServerMac>)appServer
-            callbackRunner:
-                (scoped_refptr<base::SequencedTaskRunner>)callbackRunner {
+    initWithUpdateServiceInternal:(updater::UpdateServiceInternal*)service
+                        appServer:
+                            (scoped_refptr<updater::AppServerMac>)appServer
+                   callbackRunner:(scoped_refptr<base::SequencedTaskRunner>)
+                                      callbackRunner {
   if (self = [super init]) {
     _service = service;
     _appServer = appServer;
@@ -251,8 +253,8 @@
 
   _appServer->TaskStarted();
   _callbackRunner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&updater::ControlService::Run, _service, std::move(cb)));
+      FROM_HERE, base::BindOnce(&updater::UpdateServiceInternal::Run, _service,
+                                std::move(cb)));
 }
 
 - (void)performInitializeUpdateServiceWithReply:(void (^)(void))reply {
@@ -266,7 +268,7 @@
   _appServer->TaskStarted();
   _callbackRunner->PostTask(
       FROM_HERE,
-      base::BindOnce(&updater::ControlService::InitializeUpdateService,
+      base::BindOnce(&updater::UpdateServiceInternal::InitializeUpdateService,
                      _service, std::move(cb)));
 }
 
@@ -308,15 +310,17 @@
 
 @end
 
-@implementation CRUControlServiceXPCDelegate {
-  scoped_refptr<updater::ControlService> _service;
+@implementation CRUUpdateServiceInternalXPCDelegate {
+  scoped_refptr<updater::UpdateServiceInternal> _service;
   scoped_refptr<updater::AppServerMac> _appServer;
   scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
 }
 
-- (instancetype)
-    initWithControlService:(scoped_refptr<updater::ControlService>)service
-                 appServer:(scoped_refptr<updater::AppServerMac>)appServer {
+- (instancetype)initWithUpdateServiceInternal:
+                    (scoped_refptr<updater::UpdateServiceInternal>)service
+                                    appServer:
+                                        (scoped_refptr<updater::AppServerMac>)
+                                            appServer {
   if (self = [super init]) {
     _service = service;
     _appServer = appServer;
@@ -332,11 +336,11 @@
 
   newConnection.exportedInterface = updater::GetXPCControllingInterface();
 
-  base::scoped_nsobject<CRUControlServiceXPCImpl> object(
-      [[CRUControlServiceXPCImpl alloc]
-          initWithControlService:_service.get()
-                       appServer:_appServer
-                  callbackRunner:_callbackRunner.get()]);
+  base::scoped_nsobject<CRUUpdateServiceInternalXPCImpl> object(
+      [[CRUUpdateServiceInternalXPCImpl alloc]
+          initWithUpdateServiceInternal:_service.get()
+                              appServer:_appServer
+                         callbackRunner:_callbackRunner.get()]);
   newConnection.exportedObject = object.get();
   [newConnection resume];
   return YES;

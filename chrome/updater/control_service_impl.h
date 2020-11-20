@@ -27,18 +27,19 @@ class Configurator;
 class PersistedData;
 
 // All functions and callbacks must be called on the same sequence.
-class ControlServiceImpl : public ControlService {
+class UpdateServiceInternalImpl : public UpdateServiceInternal {
  public:
-  explicit ControlServiceImpl(scoped_refptr<updater::Configurator> config);
+  explicit UpdateServiceInternalImpl(
+      scoped_refptr<updater::Configurator> config);
 
-  // Overrides for updater::ControlService.
+  // Overrides for updater::UpdateServiceInternal.
   void Run(base::OnceClosure callback) override;
   void InitializeUpdateService(base::OnceClosure callback) override;
 
   void Uninitialize() override;
 
  private:
-  ~ControlServiceImpl() override;
+  ~UpdateServiceInternalImpl() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -86,7 +87,7 @@ class ControlServiceImpl : public ControlService {
   bool WaitingOnUninstallPings() const;
 
   // Returns a list of apps that need to be unregistered.
-  std::vector<ControlServiceImpl::PingInfo> GetAppIDsToRemove(
+  std::vector<UpdateServiceInternalImpl::PingInfo> GetAppIDsToRemove(
       const std::vector<AppInfo>& apps);
 
   // Unregisters the apps in |app_ids_to_remove| and starts an update check

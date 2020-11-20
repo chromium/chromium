@@ -149,13 +149,14 @@ void ComServerApp::Stop() {
       FROM_HERE, base::BindOnce([]() {
         scoped_refptr<ComServerApp> this_server = AppServerSingletonInstance();
         this_server->update_service_ = nullptr;
-        this_server->control_service_ = nullptr;
+        this_server->update_service_internal_ = nullptr;
         this_server->Shutdown(0);
       }));
 }
 
-void ComServerApp::ActiveDuty(scoped_refptr<UpdateService> update_service,
-                              scoped_refptr<ControlService> control_service) {
+void ComServerApp::ActiveDuty(
+    scoped_refptr<UpdateService> update_service,
+    scoped_refptr<UpdateServiceInternal> update_service_internal) {
   if (!com_initializer_.Succeeded()) {
     PLOG(ERROR) << "Failed to initialize COM";
     Shutdown(-1);
@@ -163,7 +164,7 @@ void ComServerApp::ActiveDuty(scoped_refptr<UpdateService> update_service,
   }
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
   update_service_ = update_service;
-  control_service_ = control_service;
+  update_service_internal_ = update_service_internal;
   CreateWRLModule();
   HRESULT hr = RegisterClassObjects();
   if (FAILED(hr))

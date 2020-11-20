@@ -18,17 +18,17 @@ class SingleThreadTaskRunner;
 namespace updater {
 
 // All functions and callbacks must be called on the same sequence.
-class ControlServiceProxy : public ControlService {
+class UpdateServiceInternalProxy : public UpdateServiceInternal {
  public:
-  explicit ControlServiceProxy(ServiceScope scope);
+  explicit UpdateServiceInternalProxy(ServiceScope scope);
 
-  // Overrides for ControlService.
+  // Overrides for UpdateServiceInternal.
   void Run(base::OnceClosure callback) override;
   void InitializeUpdateService(base::OnceClosure callback) override;
   void Uninitialize() override;
 
  private:
-  ~ControlServiceProxy() override;
+  ~UpdateServiceInternalProxy() override;
 
   // These function are invoked on the |com_task_runner_|.
   void RunOnSTA(base::OnceClosure callback);

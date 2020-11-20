@@ -10,7 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 
 namespace updater {
-class ControlService;
+class UpdateServiceInternal;
 class UpdateService;
 class AppServerMac;
 }
@@ -27,15 +27,17 @@ class AppServerMac;
 
 @end
 
-@interface CRUControlServiceXPCDelegate : NSObject <NSXPCListenerDelegate>
+@interface CRUUpdateServiceInternalXPCDelegate
+    : NSObject <NSXPCListenerDelegate>
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Designated initializer.
-- (instancetype)
-    initWithControlService:(scoped_refptr<updater::ControlService>)service
-                 appServer:(scoped_refptr<updater::AppServerMac>)appServer
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUpdateServiceInternal:
+                    (scoped_refptr<updater::UpdateServiceInternal>)service
+                                    appServer:
+                                        (scoped_refptr<updater::AppServerMac>)
+                                            appServer NS_DESIGNATED_INITIALIZER;
 
 @end
 

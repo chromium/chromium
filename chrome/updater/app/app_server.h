@@ -14,7 +14,7 @@
 namespace updater {
 
 class Configurator;
-class ControlService;
+class UpdateServiceInternal;
 class GlobalPrefs;
 class LocalPrefs;
 class UpdateService;
@@ -41,8 +41,9 @@ class AppServer : public App {
 
   // Set up the server for normal active version functions using the provided
   // services.
-  virtual void ActiveDuty(scoped_refptr<UpdateService> update_service,
-                          scoped_refptr<ControlService> control_service) = 0;
+  virtual void ActiveDuty(
+      scoped_refptr<UpdateService> update_service,
+      scoped_refptr<UpdateServiceInternal> update_service_internal) = 0;
 
   // Set up all non-side-by-side RPC interfaces to point to this candidate
   // server.

@@ -145,7 +145,7 @@ int UninstallCandidate(bool is_machine) {
     updater::UnregisterWakeTask();
   }
 
-  // TODO(crbug.com/1140562): Remove the ControlService server as well.
+  // TODO(crbug.com/1140562): Remove the UpdateServiceInternal server as well.
 
   return RunUninstallScript(false);
 }

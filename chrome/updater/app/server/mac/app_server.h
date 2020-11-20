@@ -27,7 +27,7 @@ class SequencedTaskRunner;
 
 namespace updater {
 
-class ControlService;
+class UpdateServiceInternal;
 class UpdateService;
 
 class AppServerMac : public AppServer {
@@ -44,8 +44,9 @@ class AppServerMac : public AppServer {
   ~AppServerMac() override;
 
   // Overrides of AppServer.
-  void ActiveDuty(scoped_refptr<UpdateService> update_service,
-                  scoped_refptr<ControlService> control_service) override;
+  void ActiveDuty(
+      scoped_refptr<UpdateService> update_service,
+      scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapRPCInterfaces() override;
   void UninstallSelf() override;
 
@@ -57,8 +58,9 @@ class AppServerMac : public AppServer {
   base::scoped_nsobject<CRUUpdateCheckServiceXPCDelegate>
       update_check_delegate_;
   base::scoped_nsobject<NSXPCListener> update_check_listener_;
-  base::scoped_nsobject<CRUControlServiceXPCDelegate> control_service_delegate_;
-  base::scoped_nsobject<NSXPCListener> control_service_listener_;
+  base::scoped_nsobject<CRUUpdateServiceInternalXPCDelegate>
+      update_service_internal_delegate_;
+  base::scoped_nsobject<NSXPCListener> update_service_internal_listener_;
 
   // Task runner bound to the main sequence and the update service instance.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

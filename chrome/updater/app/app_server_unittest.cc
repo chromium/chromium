@@ -38,7 +38,8 @@ class AppServerTest : public AppServer {
 
   MOCK_METHOD(void,
               ActiveDuty,
-              (scoped_refptr<UpdateService>, scoped_refptr<ControlService>),
+              (scoped_refptr<UpdateService>,
+               scoped_refptr<UpdateServiceInternal>),
               (override));
   MOCK_METHOD(bool, SwapRPCInterfaces, (), (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));

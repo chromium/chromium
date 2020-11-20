@@ -15,14 +15,14 @@
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/service_scope.h"
 
-// Interface to communicate with the XPC Control Service.
-@interface CRUControlServiceProxyImpl : NSObject <CRUControlling>
+// Interface to communicate with the XPC Update Service Internal.
+@interface CRUUpdateServiceInternalProxyImpl : NSObject <CRUControlling>
 
 - (instancetype)initPrivileged;
 
 @end
 
-@implementation CRUControlServiceProxyImpl {
+@implementation CRUUpdateServiceInternalProxyImpl {
   base::scoped_nsobject<NSXPCConnection> _controlXPCConnection;
 }
 
@@ -88,19 +88,19 @@
 
 namespace updater {
 
-ControlServiceProxy::ControlServiceProxy(ServiceScope scope)
+UpdateServiceInternalProxy::UpdateServiceInternalProxy(ServiceScope scope)
     : callback_runner_(base::SequencedTaskRunnerHandle::Get()) {
   switch (scope) {
     case ServiceScope::kSystem:
-      client_.reset([[CRUControlServiceProxyImpl alloc] initPrivileged]);
+      client_.reset([[CRUUpdateServiceInternalProxyImpl alloc] initPrivileged]);
       break;
     case ServiceScope::kUser:
-      client_.reset([[CRUControlServiceProxyImpl alloc] init]);
+      client_.reset([[CRUUpdateServiceInternalProxyImpl alloc] init]);
       break;
   }
 }
 
-void ControlServiceProxy::Run(base::OnceClosure callback) {
+void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   __block base::OnceClosure block_callback = std::move(callback);
@@ -112,7 +112,8 @@ void ControlServiceProxy::Run(base::OnceClosure callback) {
   [client_ performControlTasksWithReply:reply];
 }
 
-void ControlServiceProxy::InitializeUpdateService(base::OnceClosure callback) {
+void UpdateServiceInternalProxy::InitializeUpdateService(
+    base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   __block base::OnceClosure block_callback = std::move(callback);
@@ -124,11 +125,11 @@ void ControlServiceProxy::InitializeUpdateService(base::OnceClosure callback) {
   [client_ performInitializeUpdateServiceWithReply:reply];
 }
 
-void ControlServiceProxy::Uninitialize() {
+void UpdateServiceInternalProxy::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-ControlServiceProxy::~ControlServiceProxy() {
+UpdateServiceInternalProxy::~UpdateServiceInternalProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

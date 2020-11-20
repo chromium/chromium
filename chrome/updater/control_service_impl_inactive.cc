@@ -13,11 +13,11 @@ namespace updater {
 
 namespace {
 
-class ControlServiceImplInactive : public ControlService {
+class UpdateServiceInternalImplInactive : public UpdateServiceInternal {
  public:
-  ControlServiceImplInactive() = default;
+  UpdateServiceInternalImplInactive() = default;
 
-  // Overrides for updater::ControlService.
+  // Overrides for updater::UpdateServiceInternal.
   void Run(base::OnceClosure callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      std::move(callback));
@@ -31,13 +31,13 @@ class ControlServiceImplInactive : public ControlService {
   void Uninitialize() override {}
 
  private:
-  ~ControlServiceImplInactive() override = default;
+  ~UpdateServiceInternalImplInactive() override = default;
 };
 
 }  // namespace
 
-scoped_refptr<ControlService> MakeInactiveControlService() {
-  return base::MakeRefCounted<ControlServiceImplInactive>();
+scoped_refptr<UpdateServiceInternal> MakeInactiveUpdateServiceInternal() {
+  return base::MakeRefCounted<UpdateServiceInternalImplInactive>();
 }
 
 }  // namespace updater

@@ -31,7 +31,9 @@ const char kWakeSwitch[] = "wake";
 const char kTagSwitch[] = "tag";
 
 const char kServerServiceSwitch[] = "service";
-const char kServerControlServiceSwitchValue[] = "control";
+
+// TODO(crbug.com/1151106) - consider changing the command line literal.
+const char kServerUpdateServiceInternalSwitchValue[] = "control";
 const char kServerUpdateServiceSwitchValue[] = "update";
 
 #if defined(OS_WIN)

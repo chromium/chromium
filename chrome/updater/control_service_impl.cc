@@ -28,7 +28,7 @@
 
 namespace updater {
 
-ControlServiceImpl::ControlServiceImpl(
+UpdateServiceInternalImpl::UpdateServiceInternalImpl(
     scoped_refptr<updater::Configurator> config)
     : config_(config),
       persisted_data_(
@@ -36,19 +36,20 @@ ControlServiceImpl::ControlServiceImpl(
       update_client_(update_client::UpdateClientFactory(config_)),
       number_of_pings_remaining_(0) {}
 
-void ControlServiceImpl::Run(base::OnceClosure callback) {
+void UpdateServiceInternalImpl::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = std::move(callback);
   UnregisterMissingApps(GetRegisteredApps());
 }
 
-void ControlServiceImpl::InitializeUpdateService(base::OnceClosure callback) {
+void UpdateServiceInternalImpl::InitializeUpdateService(
+    base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run();
 }
 
-std::vector<ControlServiceImpl::AppInfo>
-ControlServiceImpl::GetRegisteredApps() {
+std::vector<UpdateServiceInternalImpl::AppInfo>
+UpdateServiceInternalImpl::GetRegisteredApps() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<AppInfo> apps_to_unregister;
@@ -65,12 +66,12 @@ ControlServiceImpl::GetRegisteredApps() {
   return apps_to_unregister;
 }
 
-bool ControlServiceImpl::WaitingOnUninstallPings() const {
+bool UpdateServiceInternalImpl::WaitingOnUninstallPings() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return number_of_pings_remaining_ > 0;
 }
 
-void ControlServiceImpl::MaybeCheckForUpdates() {
+void UpdateServiceInternalImpl::MaybeCheckForUpdates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scoped_refptr<UpdateServiceImpl> update_service =
       base::MakeRefCounted<UpdateServiceImpl>(config_);
@@ -107,24 +108,24 @@ void ControlServiceImpl::MaybeCheckForUpdates() {
           base::BindOnce(std::move(callback_)), config_));
 }
 
-void ControlServiceImpl::UnregisterMissingApps(
+void UpdateServiceInternalImpl::UnregisterMissingApps(
     const std::vector<AppInfo>& apps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ControlServiceImpl::GetAppIDsToRemove, this, apps),
-      base::BindOnce(&ControlServiceImpl::RemoveAppIDsAndSendUninstallPings,
-                     this));
+      base::BindOnce(&UpdateServiceInternalImpl::GetAppIDsToRemove, this, apps),
+      base::BindOnce(
+          &UpdateServiceInternalImpl::RemoveAppIDsAndSendUninstallPings, this));
 }
 
-void ControlServiceImpl::UnregisterMissingAppsDone() {
+void UpdateServiceInternalImpl::UnregisterMissingAppsDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MaybeCheckForUpdates();
 }
 
-std::vector<ControlServiceImpl::PingInfo> ControlServiceImpl::GetAppIDsToRemove(
-    const std::vector<AppInfo>& apps) {
+std::vector<UpdateServiceInternalImpl::PingInfo>
+UpdateServiceInternalImpl::GetAppIDsToRemove(const std::vector<AppInfo>& apps) {
   std::vector<PingInfo> app_ids_to_remove;
   for (const auto& app : apps) {
     // Skip if app_id is equal to updater app id.
@@ -143,7 +144,7 @@ std::vector<ControlServiceImpl::PingInfo> ControlServiceImpl::GetAppIDsToRemove(
   return app_ids_to_remove;
 }
 
-void ControlServiceImpl::RemoveAppIDsAndSendUninstallPings(
+void UpdateServiceInternalImpl::RemoveAppIDsAndSendUninstallPings(
     const std::vector<PingInfo>& app_ids_to_remove) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -163,31 +164,31 @@ void ControlServiceImpl::RemoveAppIDsAndSendUninstallPings(
       number_of_pings_remaining_++;
       update_client_->SendUninstallPing(
           app_id, app_version, ping_reason,
-          base::BindOnce(&ControlServiceImpl::UninstallPingSent, this));
+          base::BindOnce(&UpdateServiceInternalImpl::UninstallPingSent, this));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;
     }
   }
 }
 
-void ControlServiceImpl::UninstallPingSent(update_client::Error error) {
+void UpdateServiceInternalImpl::UninstallPingSent(update_client::Error error) {
   number_of_pings_remaining_--;
 
   if (error != update_client::Error::NONE)
     VLOG(0) << __func__ << ": Error: " << static_cast<int>(error);
 
   if (!WaitingOnUninstallPings())
-    std::move(
-        base::BindOnce(&ControlServiceImpl::UnregisterMissingAppsDone, this))
+    std::move(base::BindOnce(
+                  &UpdateServiceInternalImpl::UnregisterMissingAppsDone, this))
         .Run();
 }
 
-void ControlServiceImpl::Uninitialize() {
+void UpdateServiceInternalImpl::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefsCommitPendingWrites(config_->GetPrefService());
 }
 
-ControlServiceImpl::~ControlServiceImpl() {
+UpdateServiceInternalImpl::~UpdateServiceInternalImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   config_->GetPrefService()->SchedulePendingLossyWrites();
 }

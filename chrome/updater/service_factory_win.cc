@@ -35,9 +35,9 @@ scoped_refptr<UpdateService> CreateUpdateService() {
   return base::MakeRefCounted<UpdateServiceProxy>(GetProcessScope());
 }
 
-scoped_refptr<ControlService> CreateControlService() {
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal() {
   WRLModuleInitializer::Get();
-  return base::MakeRefCounted<ControlServiceProxy>(GetProcessScope());
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(GetProcessScope());
 }
 
 }  // namespace updater

@@ -151,7 +151,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateControlLaunchdPlist(
       base::SysUTF8ToNSString(updater_path.value()),
       MakeProgramArgument(kServerSwitch),
       MakeProgramArgumentWithValue(kServerServiceSwitch,
-                                   kServerControlServiceSwitchValue),
+                                   kServerUpdateServiceInternalSwitchValue),
       MakeProgramArgument(kEnableLoggingSwitch),
       MakeProgramArgumentWithValue(kLoggingModuleSwitch,
                                    kLoggingModuleSwitchValue),
