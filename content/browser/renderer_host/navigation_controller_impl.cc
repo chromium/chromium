@@ -319,7 +319,7 @@ mojom::NavigationType GetNavigationType(const GURL& old_url,
       break;  // Fall through to rest of function.
   }
 
-  if (entry->restore_type() == RestoreType::LAST_SESSION_EXITED_CLEANLY) {
+  if (entry->restore_type() != RestoreType::NONE) {
     return entry->GetHasPostData() ? mojom::NavigationType::RESTORE_WITH_POST
                                    : mojom::NavigationType::RESTORE;
   }

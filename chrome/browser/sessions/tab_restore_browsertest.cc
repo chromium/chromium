@@ -49,7 +49,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "url/gurl.h"
@@ -82,6 +84,9 @@ class TabRestoreTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     active_browser_list_ = BrowserList::GetInstance();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
   }
 
   Browser* GetBrowser(int index) {
@@ -1427,4 +1432,75 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreAfterMultipleRestarts) {
   // Restore url1 from two sessions ago.
   ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 2));
   EXPECT_EQ(url1_, browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL());
+}
+
+// Test that it is possible to navigate back to a restored about:blank history
+// entry with a non-null initiator origin.  This test cases covers
+// https://crbug.com/1116320 - a scenario where the restore type is different
+// from LAST_SESSION_EXITED_CLEANLY (e.g. the test below uses CURRENT_SESSION).
+//
+// See also MultiOriginSessionRestoreTest.BackToAboutBlank1
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL initial_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
+  url::Origin initial_origin = url::Origin::Create(initial_url);
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  // Open about:blank in a new tab.
+  content::WebContents* old_popup = nullptr;
+  {
+    EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+    content::WebContents* tab1 =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(ExecJs(tab1, "window.open('about:blank')"));
+    old_popup = popup_observer.GetWebContents();
+    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(GURL(url::kAboutBlankURL),
+              old_popup->GetMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(initial_origin,
+              old_popup->GetMainFrame()->GetLastCommittedOrigin());
+  }
+
+  // Navigate the popup to another site.
+  GURL other_url = embedded_test_server()->GetURL("bar.com", "/title1.html");
+  url::Origin other_origin = url::Origin::Create(other_url);
+  {
+    content::TestNavigationObserver nav_observer(old_popup);
+    ASSERT_TRUE(content::ExecJs(
+        old_popup, content::JsReplace("location = $1", other_url)));
+    nav_observer.Wait();
+  }
+  EXPECT_EQ(other_url, old_popup->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin, old_popup->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_TRUE(old_popup->GetController().CanGoBack());
+
+  // Close the popup.
+  int closed_tab_index = browser()->tab_strip_model()->active_index();
+  EXPECT_EQ(1, closed_tab_index);
+  CloseTab(closed_tab_index);
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Reopen the popup.
+  content::WebContents* new_popup = nullptr;
+  {
+    content::WebContentsAddedObserver restored_tab_observer;
+    RestoreTab(0, closed_tab_index);
+    EXPECT_EQ(2, browser()->tab_strip_model()->count());
+    new_popup = restored_tab_observer.GetWebContents();
+  }
+  EXPECT_EQ(other_url, new_popup->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin, new_popup->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_TRUE(new_popup->GetController().CanGoBack());
+  int reopened_tab_index = browser()->tab_strip_model()->active_index();
+  EXPECT_EQ(1, reopened_tab_index);
+
+  // Navigate the popup back to about:blank.
+  GoBack(browser());
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            new_popup->GetMainFrame()->GetLastCommittedURL());
+  // TODO(lukasza): https://crbug.com/888079: The browser process should tell
+  // the renderer which (initiator-based) origin to commit.  Right now, Blink
+  // just falls back to an opaque origin.
+  EXPECT_TRUE(new_popup->GetMainFrame()->GetLastCommittedOrigin().opaque());
 }

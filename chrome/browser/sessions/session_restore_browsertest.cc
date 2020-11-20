@@ -2239,6 +2239,8 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, SecFetchSite) {
 // Test that it is possible to navigate back to a restored about:blank history
 // entry with a non-null initiator origin.  This test cases covers the original
 // repro steps reported in https://crbug.com/1026474.
+//
+// See also TabRestoreTest.BackToAboutBlank
 IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
   // Open about:blank in a new tab.
   GURL initial_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
