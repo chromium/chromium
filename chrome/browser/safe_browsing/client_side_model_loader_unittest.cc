@@ -367,10 +367,10 @@ TEST_F(ModelLoaderTest, ModelNamesTest) {
   std::unique_ptr<ModelLoader> loader;
   loader.reset(new ModelLoader(base::RepeatingClosure(), nullptr,
                                false /* is_extended_reporting */));
-  EXPECT_EQ(loader->name(), "client_model_v5_variation_4.pb");
+  EXPECT_EQ(loader->name(), "client_model_v5_variation_6.pb");
   EXPECT_EQ(loader->url_.spec(),
             "https://ssl.gstatic.com/safebrowsing/csd/"
-            "client_model_v5_variation_4.pb");
+            "client_model_v5_variation_6.pb");
 
   // Model 1, no extended reporting.
   SetFinchModelNumber(1);

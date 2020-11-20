@@ -399,20 +399,20 @@ TEST_F(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   ASSERT_NE(csd_service_->model_loader_, nullptr);
   EXPECT_EQ(csd_service_->model_loader_->name(),
-            "client_model_v5_variation_4.pb");
+            "client_model_v5_variation_6.pb");
 
   // Safe Browsing extended reporting is enabled
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
                                    true);
   ASSERT_NE(csd_service_->model_loader_, nullptr);
   EXPECT_EQ(csd_service_->model_loader_->name(),
-            "client_model_v5_ext_variation_4.pb");
+            "client_model_v5_ext_variation_6.pb");
 
   // Safe Browsing enhanced protection is enabled.
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   ASSERT_NE(csd_service_->model_loader_, nullptr);
   EXPECT_EQ(csd_service_->model_loader_->name(),
-            "client_model_v5_ext_variation_4.pb");
+            "client_model_v5_ext_variation_6.pb");
 }
 
 }  // namespace safe_browsing
