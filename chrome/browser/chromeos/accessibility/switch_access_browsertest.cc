@@ -67,12 +67,15 @@ class SwitchAccessTest : public InProcessBrowserTest {
       let expectedRole = '';
       let expectedName = '';
       let successCallback = null;
+      let transcript = [];
 
       function checkFocusRingState() {
         if (expectedType != '' &&
             focusRingState[expectedType].role == expectedRole &&
             focusRingState[expectedType].name == expectedName) {
           if (successCallback) {
+            transcript.push(`Success type=${expectedType} ` +
+                            `role=${expectedRole} name=${expectedName}`);
             successCallback();
             successCallback = null;
           }
@@ -80,6 +83,7 @@ class SwitchAccessTest : public InProcessBrowserTest {
       }
 
       function waitForFocusRing(type, role, name, callback) {
+        transcript.push(`Waiting for type=${type} role=${role} name=${name}`);
         expectedType = type;
         expectedRole = role;
         expectedName = name;
@@ -107,9 +111,15 @@ class SwitchAccessTest : public InProcessBrowserTest {
           focusRingState['preview']['role'] = '';
           focusRingState['preview']['name'] = '';
         }
+        transcript.push(`Focus ring state: ${JSON.stringify(focusRingState)}`);
         checkFocusRingState();
       });
       window.domAutomationController.send('ready');
+
+      setInterval(() => {
+        console.error('Test still running. Transcript so far:\n' +
+                      transcript.join('\n'));
+      }, 5000);
       )JS";
 
     // Wait for the extension to load.
@@ -200,6 +210,29 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
   // Next is the back button.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
   WaitForFocusRing("primary", "back", "");
+
+  // Press the select key to press the back button, which should focus
+  // on the Top container, with Northwest as the preview.
+  SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
+  WaitForFocusRing("primary", "genericContainer", "Top");
+  WaitForFocusRing("preview", "button", "Northwest");
+
+  // Navigate to the next group by pressing the next switch.
+  // Now we should be focused on the Bottom container, with
+  // Southwest as the preview.
+  SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
+  WaitForFocusRing("primary", "genericContainer", "Bottom");
+  WaitForFocusRing("preview", "button", "Southwest");
+
+  // Press the select key to enter the container, which should focus
+  // Southwest.
+  SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
+  WaitForFocusRing("primary", "button", "Southwest");
+
+  // Go to the next element by pressing the next switch. That should
+  // focus Southeast.
+  SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
+  WaitForFocusRing("primary", "button", "Southeast");
 }
 
 }  // namespace chromeos
