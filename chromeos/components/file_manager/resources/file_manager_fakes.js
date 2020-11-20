@@ -21,7 +21,7 @@ window.chrome.storage = {
      * @param {!Array<string>|string} keys
      * @param {function((!Object)} callback
      */
-    get : (keys, callback) => {
+    get: (keys, callback) => {
       const inKeys = Array.isArray(keys) ? keys : [keys];
       const result = {};
       inKeys.forEach(key => {
@@ -51,7 +51,7 @@ window.chrome.storage = {
      * @param {!Array<string>|string} keys
      * @param {function((!Object)} callback
      */
-    get : (keys, callback) => {
+    get: (keys, callback) => {
       const inKeys = Array.isArray(keys) ? keys : [keys];
       const result = {};
       inKeys.forEach(key => {
@@ -186,11 +186,16 @@ window.FileBrowserBackground = class {
    * @param {function()} callback Ready callback.
    */
   ready(callback) {
-    window.fileManagerLoadScript('strings.js').then(() => {
+    const script = document.createElement('script');
+
+    script.onload = () => {
       this.stringData = window.loadTimeData.data_;
       window.loadTimeData.data_ = null;
       callback();
-    });
+    };
+
+    document.head.append(script);
+    script.src = 'strings.js';
   }
 }
 
