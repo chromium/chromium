@@ -18,6 +18,13 @@
         width: var(--cr-card-radio-button-width, 200px);
       }
 
+      /* TODO(crbug/1148515): Reenable the ripple effect after fixing
+       * paper-ripple to accomodate for cr-card-radio-button.
+       */
+      paper-ripple {
+        --paper-ripple-opacity: 0;
+      }
+
       :host([checked]) {
         border-color: var(--cr-checked-color);
       }
