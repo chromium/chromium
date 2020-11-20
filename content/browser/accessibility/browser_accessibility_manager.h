@@ -52,6 +52,7 @@ class BrowserAccessibilityManagerAuraLinux;
 #elif defined(OS_MAC)
 class BrowserAccessibilityManagerMac;
 #endif
+class WebContentsAccessibility;
 
 // To be called when a BrowserAccessibilityManager fires a generated event.
 // Provides the host, the event fired, and which node id the event was for.
@@ -106,6 +107,8 @@ class CONTENT_EXPORT BrowserAccessibilityDelegate {
   // Returns true if this delegate represents the main (topmost) frame in a
   // tree of frames.
   virtual bool AccessibilityIsMainFrame() = 0;
+  virtual WebContentsAccessibility*
+  AccessibilityGetWebContentsAccessibility() = 0;
 };
 
 // This is all of the information about the current find in page result,
@@ -139,10 +142,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
       ui::AXRange<BrowserAccessibilityPositionInstance::element_type>;
 
  public:
-  // Creates the platform-specific BrowserAccessibilityManager, but
-  // with no parent window pointer. Only useful for unit tests.
+  // Creates the platform-specific BrowserAccessibilityManager.
   static BrowserAccessibilityManager* Create(
       const ui::AXTreeUpdate& initial_tree,
+      BrowserAccessibilityDelegate* delegate);
+  static BrowserAccessibilityManager* Create(
       BrowserAccessibilityDelegate* delegate);
 
   static BrowserAccessibilityManager* FromID(ui::AXTreeID ax_tree_id);

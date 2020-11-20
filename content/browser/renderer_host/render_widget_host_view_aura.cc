@@ -1060,21 +1060,6 @@ blink::mojom::InputEventResultState RenderWidgetHostViewAura::FilterInputEvent(
                   : blink::mojom::InputEventResultState::kNotConsumed;
 }
 
-BrowserAccessibilityManager*
-RenderWidgetHostViewAura::CreateBrowserAccessibilityManager(
-    BrowserAccessibilityDelegate* delegate,
-    bool for_root_frame) {
-  BrowserAccessibilityManager* manager = nullptr;
-#if defined(OS_WIN)
-  manager = new BrowserAccessibilityManagerWin(
-      BrowserAccessibilityManagerWin::GetEmptyDocument(), delegate);
-#else
-  manager = BrowserAccessibilityManager::Create(
-      BrowserAccessibilityManager::GetEmptyDocument(), delegate);
-#endif
-  return manager;
-}
-
 gfx::AcceleratedWidget
 RenderWidgetHostViewAura::AccessibilityGetAcceleratedWidget() {
 #if defined(OS_WIN)

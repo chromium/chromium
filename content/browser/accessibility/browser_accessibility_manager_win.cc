@@ -62,6 +62,13 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
   return new BrowserAccessibilityManagerWin(initial_tree, delegate);
 }
 
+// static
+BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    BrowserAccessibilityDelegate* delegate) {
+  return new BrowserAccessibilityManagerWin(
+      BrowserAccessibilityManagerWin::GetEmptyDocument(), delegate);
+}
+
 BrowserAccessibilityManagerWin*
 BrowserAccessibilityManager::ToBrowserAccessibilityManagerWin() {
   return static_cast<BrowserAccessibilityManagerWin*>(this);

@@ -31,6 +31,7 @@ class TestBrowserAccessibilityDelegate : public BrowserAccessibilityDelegate {
       int opt_request_id,
       base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                               int hit_node_id)> opt_callback) override;
+  WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
 
   bool got_fatal_error() const;
   void reset_got_fatal_error();

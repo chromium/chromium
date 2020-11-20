@@ -447,6 +447,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                               int hit_node_id)> opt_callback) override;
   bool AccessibilityIsMainFrame() override;
+  WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
 
   // RenderProcessHostObserver implementation.
   void RenderProcessExited(RenderProcessHost* host,
@@ -1841,6 +1842,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<mojo::MessageFilter> CreateMessageFilterForAssociatedReceiver(
       const char* interface_name);
 
+  int accessibility_fatal_error_count_for_testing() const {
+    return accessibility_fatal_error_count_;
+  }
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -2766,9 +2771,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // assigned) and a complete replacement accessibility tree.
   int accessibility_reset_token_ = 0;
 
-  // A count of the number of times we needed to reset accessibility, so
-  // we don't keep trying to reset forever.
-  int accessibility_reset_count_ = 0;
+  // A count of the number of times we received an unexpected fatal
+  // accessibility error and needed to reset accessibility, so we don't keep
+  // trying to reset forever.
+  int accessibility_fatal_error_count_ = 0;
 
   // The last AXTreeData for this frame received from the RenderFrame.
   ui::AXTreeData ax_tree_data_;

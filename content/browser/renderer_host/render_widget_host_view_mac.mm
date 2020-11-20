@@ -1378,14 +1378,6 @@ void RenderWidgetHostViewMac::SetDisplayFeatureForTesting(
     display_feature_ = base::nullopt;
 }
 
-BrowserAccessibilityManager*
-RenderWidgetHostViewMac::CreateBrowserAccessibilityManager(
-    BrowserAccessibilityDelegate* delegate,
-    bool for_root_frame) {
-  return new BrowserAccessibilityManagerMac(
-      BrowserAccessibilityManagerMac::GetEmptyDocument(), delegate);
-}
-
 gfx::NativeViewAccessible
 RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessible() {
   return GetInProcessNSView();

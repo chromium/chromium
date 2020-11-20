@@ -1946,14 +1946,14 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
   if (accessibility_reset_token_ || !render_accessibility_)
     return;
 
-  accessibility_reset_count_++;
-  if (accessibility_reset_count_ > max_accessibility_resets_) {
+  accessibility_fatal_error_count_++;
+  if (accessibility_fatal_error_count_ > max_accessibility_resets_) {
     // This will both create an "Aw Snap..." and generate a second crash report
     // in addition to the DumpWithoutCrashing() for the first reset.
     render_accessibility_->FatalError();
   } else {
     // Crash keys set in BrowserAccessibilityManager::Unserialize().
-    if (accessibility_reset_count_ == 1) {
+    if (accessibility_fatal_error_count_ == 1) {
       // Only send crash report first time -- don't skew crash stats too much.
       base::debug::DumpWithoutCrashing();
     }
@@ -2039,6 +2039,14 @@ void RenderFrameHostImpl::AccessibilityHitTest(
 
 bool RenderFrameHostImpl::AccessibilityIsMainFrame() {
   return is_main_frame();
+}
+
+WebContentsAccessibility*
+RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
+  RenderWidgetHostViewBase* view = GetViewForAccessibility();
+  if (!view)
+    return nullptr;
+  return view->GetWebContentsAccessibility();
 }
 
 void RenderFrameHostImpl::RenderProcessExited(
@@ -5580,10 +5588,8 @@ void RenderFrameHostImpl::HandleAXEvents(
   }
   accessibility_reset_token_ = 0;
 
-  RenderWidgetHostViewBase* view = GetViewForAccessibility();
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.is_mode_off() || !view ||
-      IsInactiveAndDisallowReactivation()) {
+  if (accessibility_mode.is_mode_off() || IsInactiveAndDisallowReactivation()) {
     std::move(callback).Run();
     return;
   }
@@ -5635,29 +5641,25 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
   if (accessibility_reset_token_ || IsInactiveAndDisallowReactivation())
     return;
 
-  RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
-      render_view_host_->GetWidget()->GetView());
-  if (view) {
-    ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-    if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs)) {
-      BrowserAccessibilityManager* manager =
-          GetOrCreateBrowserAccessibilityManager();
-      if (manager)
-        manager->OnLocationChanges(changes);
-    }
-
-    // Send the updates to the automation extension API.
-    std::vector<AXLocationChangeNotificationDetails> details;
-    details.reserve(changes.size());
-    for (auto& change : changes) {
-      AXLocationChangeNotificationDetails detail;
-      detail.id = change->id;
-      detail.ax_tree_id = GetAXTreeID();
-      detail.new_location = change->new_location;
-      details.push_back(detail);
-    }
-    delegate_->AccessibilityLocationChangesReceived(details);
+  ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
+  if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs)) {
+    BrowserAccessibilityManager* manager =
+        GetOrCreateBrowserAccessibilityManager();
+    if (manager)
+      manager->OnLocationChanges(changes);
   }
+
+  // Send the updates to the automation extension API.
+  std::vector<AXLocationChangeNotificationDetails> details;
+  details.reserve(changes.size());
+  for (auto& change : changes) {
+    AXLocationChangeNotificationDetails detail;
+    detail.id = change->id;
+    detail.ax_tree_id = GetAXTreeID();
+    detail.new_location = change->new_location;
+    details.push_back(detail);
+  }
+  delegate_->AccessibilityLocationChangesReceived(details);
 }
 
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
@@ -7079,12 +7081,12 @@ void RenderFrameHostImpl::UpdateAXTreeData() {
 
 BrowserAccessibilityManager*
 RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
-  RenderWidgetHostViewBase* view = GetViewForAccessibility();
-  if (view && !browser_accessibility_manager_ &&
-      !no_create_browser_accessibility_manager_for_testing_) {
-    browser_accessibility_manager_.reset(
-        view->CreateBrowserAccessibilityManager(this, is_main_frame()));
-  }
+  if (browser_accessibility_manager_ ||
+      no_create_browser_accessibility_manager_for_testing_)
+    return browser_accessibility_manager_.get();
+
+  browser_accessibility_manager_.reset(
+      BrowserAccessibilityManager::Create(this));
   return browser_accessibility_manager_.get();
 }
 
@@ -8795,7 +8797,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // navigation isn't right. This should be moved to DidCommitNewDocument().
   loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
 
-  accessibility_reset_count_ = 0;
+  accessibility_fatal_error_count_ = 0;
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(

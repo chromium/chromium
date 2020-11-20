@@ -1686,17 +1686,6 @@ RenderWidgetHostViewAndroid::FilterInputEvent(
   return blink::mojom::InputEventResultState::kNotConsumed;
 }
 
-BrowserAccessibilityManager*
-RenderWidgetHostViewAndroid::CreateBrowserAccessibilityManager(
-    BrowserAccessibilityDelegate* delegate,
-    bool for_root_frame) {
-  auto* wcax = GetWebContentsAccessibilityAndroid();
-  return new BrowserAccessibilityManagerAndroid(
-      BrowserAccessibilityManagerAndroid::GetEmptyDocument(),
-      for_root_frame && host() && wcax ? wcax->GetWeakPtr() : nullptr,
-      delegate);
-}
-
 blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::LockMouse(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
@@ -2351,6 +2340,11 @@ void RenderWidgetHostViewAndroid::DidNavigate() {
     delegated_frame_host_->DidNavigate();
   }
   is_first_navigation_ = false;
+}
+
+WebContentsAccessibility*
+RenderWidgetHostViewAndroid::GetWebContentsAccessibility() {
+  return web_contents_accessibility_;
 }
 
 viz::ScopedSurfaceIdAllocator
