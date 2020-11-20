@@ -222,7 +222,9 @@ def _ParseManifestAttributes(apk_path):
   skip_extract_lib = bool(parse_attr('android:extractNativeLibs'))
   sdk_version = parse_attr('android:minSdkVersion')
   is_feature_split = parse_attr('android:isFeatureSplit')
-  on_demand = bool(is_feature_split and parse_attr('dist:onDemand'))
+  # Can use <dist:on-demand>, or <module dist:onDemand="true">.
+  on_demand = parse_attr('dist:onDemand') or 'dist:on-demand' in output
+  on_demand = bool(on_demand and is_feature_split)
 
   return sdk_version, skip_extract_lib, on_demand
 
