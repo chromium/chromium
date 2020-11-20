@@ -75,7 +75,10 @@ Polymer({
     });
 
     this.updateChannelInfo_();
-    this.updateDeviceName_();
+
+    if (this.isHostnameSettingEnabled_) {
+      this.updateDeviceName_();
+    }
   },
 
   /**
