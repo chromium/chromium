@@ -337,6 +337,7 @@ default_compiler_configs = [
 
 if (is_win) {
   default_compiler_configs += [
+    "//build/config/win:default_cfg_compiler",
     "//build/config/win:default_crt",
     "//build/config/win:lean_and_mean",
     "//build/config/win:nominmax",
