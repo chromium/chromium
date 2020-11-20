@@ -8,7 +8,5 @@ blink_modules_sources("buckets") {
   sources = [
     "bucket_manager.cc",
     "bucket_manager.h",
-    "navigator_storage_buckets.cc",
-    "navigator_storage_buckets.h",
   ]
 }

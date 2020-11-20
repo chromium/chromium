@@ -8,17 +8,25 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ExceptionState;
+class NavigatorBase;
 
-class MODULES_EXPORT BucketManager final : public ScriptWrappable {
+class MODULES_EXPORT BucketManager final : public ScriptWrappable,
+                                           public Supplement<NavigatorBase> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  BucketManager();
+  static const char kSupplementName[];
+
+  // Web-exposed as navigator.storageBuckets
+  static BucketManager* storageBuckets(NavigatorBase&, ExceptionState&);
+
+  explicit BucketManager(NavigatorBase&);
   ~BucketManager() override = default;
 
   ScriptPromise openOrCreate(ScriptState* script_state,

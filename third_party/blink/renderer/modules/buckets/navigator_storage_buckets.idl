@@ -6,8 +6,8 @@
 
 [
     SecureContext,
-    ImplementedAs=NavigatorStorageBuckets
+    ImplementedAs=BucketManager,
+    RuntimeEnabled=StorageBuckets
 ] partial interface Navigator {
-    [CallWith=ScriptState, RaisesException, RuntimeEnabled=StorageBuckets]
-      readonly attribute BucketManager storageBuckets;
+    [RaisesException] readonly attribute BucketManager storageBuckets;
 };

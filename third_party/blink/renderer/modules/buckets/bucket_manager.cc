@@ -4,9 +4,24 @@
 
 #include "third_party/blink/renderer/modules/buckets/bucket_manager.h"
 
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
+
 namespace blink {
 
-BucketManager::BucketManager() = default;
+const char BucketManager::kSupplementName[] = "BucketManager";
+
+BucketManager::BucketManager(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator) {}
+
+BucketManager* BucketManager::storageBuckets(NavigatorBase& navigator,
+                                             ExceptionState& exception_state) {
+  auto* supplement = Supplement<NavigatorBase>::From<BucketManager>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<BucketManager>(navigator);
+    Supplement<NavigatorBase>::ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
 
 ScriptPromise BucketManager::openOrCreate(ScriptState* script_state,
                                           const String& name,
@@ -41,6 +56,7 @@ ScriptPromise BucketManager::Delete(ScriptState* script_state,
 
 void BucketManager::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
 }
 
 }  // namespace blink
