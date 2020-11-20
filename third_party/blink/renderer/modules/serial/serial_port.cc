@@ -122,7 +122,7 @@ class ContinueCloseFunction : public ScriptFunction {
       : ScriptFunction(script_state), port_(port) {}
 
   ScriptValue Call(ScriptValue) override {
-    return port_->ContinueClose(GetScriptState()).GetScriptValue();
+    return port_->ContinueClose(GetScriptState()).AsScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {

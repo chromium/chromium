@@ -99,7 +99,7 @@ class NavigatorShareTest : public testing::Test {
     EXPECT_EQ(mock_share_service_.error() == mojom::ShareError::OK
                   ? v8::Promise::kFulfilled
                   : v8::Promise::kRejected,
-              promise.V8Value().As<v8::Promise>()->State());
+              promise.V8Promise()->State());
   }
 
   MockShareService& mock_share_service() { return mock_share_service_; }

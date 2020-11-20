@@ -103,7 +103,7 @@ void NativeFileSystemDirectoryIterator::DidReadDirectory(
   if (pending_next_) {
     ScriptState::Scope scope(pending_next_->GetScriptState());
     pending_next_->Resolve(
-        next(pending_next_->GetScriptState()).GetScriptValue());
+        next(pending_next_->GetScriptState()).AsScriptValue());
     pending_next_ = nullptr;
   }
 }

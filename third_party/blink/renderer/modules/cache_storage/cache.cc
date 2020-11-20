@@ -589,7 +589,7 @@ class Cache::FetchHandler final : public ScriptFunction {
     // If we return our real result and an exception occurs then unhandled
     // promise errors will occur.
     ScriptValue rtn =
-        ScriptPromise::CastUndefined(GetScriptState()).GetScriptValue();
+        ScriptPromise::CastUndefined(GetScriptState()).AsScriptValue();
 
     // If there is no loader, we were created as a reject handler.
     if (!response_loader_) {

@@ -437,9 +437,9 @@ WebSocketStream::WebSocketStream(ExecutionContext* execution_context,
       closed_resolver_(
           MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
       connection_(script_state->GetIsolate(),
-                  connection_resolver_->Promise().V8Value().As<v8::Promise>()),
+                  connection_resolver_->Promise().V8Promise()),
       closed_(script_state->GetIsolate(),
-              closed_resolver_->Promise().V8Value().As<v8::Promise>()) {}
+              closed_resolver_->Promise().V8Promise()) {}
 
 WebSocketStream::~WebSocketStream() = default;
 

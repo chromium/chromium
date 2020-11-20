@@ -55,7 +55,7 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
       return PromiseReject(script_state, exception);
     }
 
-    return promise.V8Value().As<v8::Promise>();
+    return promise.V8Promise();
   }
 
   // SetController() must be called before Run() is.
@@ -101,7 +101,7 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
       return PromiseReject(script_state, exception);
     }
 
-    return promise.V8Value().As<v8::Promise>();
+    return promise.V8Promise();
   }
 
   // SetController() must be called before Run() is.

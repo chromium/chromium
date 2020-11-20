@@ -78,9 +78,14 @@ class CORE_EXPORT ScriptPromise final {
     return promise_.IsUndefined() || promise_.IsNull();
   }
 
-  ScriptValue GetScriptValue() const { return promise_; }
+  ScriptValue AsScriptValue() const { return promise_; }
 
   v8::Local<v8::Value> V8Value() const { return promise_.V8Value(); }
+  v8::Local<v8::Promise> V8Promise() const {
+    // This is safe because `promise_` always stores a promise value as long
+    // as it's non-empty.
+    return V8Value().As<v8::Promise>();
+  }
 
   v8::Isolate* GetIsolate() const { return script_state_->GetIsolate(); }
 

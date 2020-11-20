@@ -324,21 +324,21 @@ void WakeLockTestingContext::WaitForPromiseRejection(ScriptPromise promise) {
 // static
 v8::Promise::PromiseState ScriptPromiseUtils::GetPromiseState(
     const ScriptPromise& promise) {
-  return promise.V8Value().As<v8::Promise>()->State();
+  return promise.V8Promise()->State();
 }
 
 // static
 DOMException* ScriptPromiseUtils::GetPromiseResolutionAsDOMException(
     const ScriptPromise& promise) {
-  return V8DOMException::ToImplWithTypeCheck(
-      promise.GetIsolate(), promise.V8Value().As<v8::Promise>()->Result());
+  return V8DOMException::ToImplWithTypeCheck(promise.GetIsolate(),
+                                             promise.V8Promise()->Result());
 }
 
 // static
 WakeLockSentinel* ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
     const ScriptPromise& promise) {
-  return V8WakeLockSentinel::ToImplWithTypeCheck(
-      promise.GetIsolate(), promise.V8Value().As<v8::Promise>()->Result());
+  return V8WakeLockSentinel::ToImplWithTypeCheck(promise.GetIsolate(),
+                                                 promise.V8Promise()->Result());
 }
 
 }  // namespace blink

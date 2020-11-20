@@ -78,7 +78,7 @@ v8::Local<v8::Value> ParametrizedModuleTestBase::GetResult(
   }
 
   ScriptPromise script_promise = result.GetPromise(script_state);
-  v8::Local<v8::Promise> promise = script_promise.V8Value().As<v8::Promise>();
+  v8::Local<v8::Promise> promise = script_promise.V8Promise();
   if (promise->State() == v8::Promise::kFulfilled) {
     return promise->Result();
   }
@@ -106,7 +106,7 @@ v8::Local<v8::Value> ParametrizedModuleTestBase::GetException(
            ScriptEvaluationResult::ResultType::kSuccess);
 
   ScriptPromise script_promise = result.GetPromise(script_state);
-  v8::Local<v8::Promise> promise = script_promise.V8Value().As<v8::Promise>();
+  v8::Local<v8::Promise> promise = script_promise.V8Promise();
   if (promise->State() == v8::Promise::kRejected) {
     return promise->Result();
   }

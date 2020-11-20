@@ -178,8 +178,7 @@ TEST(CredentialsContainerTest,
 
   mock_credential_manager.InvokeGetCallback();
 
-  EXPECT_EQ(v8::Promise::kPending,
-            promise.V8Value().As<v8::Promise>()->State());
+  EXPECT_EQ(v8::Promise::kPending, promise.V8Promise()->State());
 }
 
 TEST(CredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
@@ -191,8 +190,7 @@ TEST(CredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
           ->store(context.GetScriptState(),
                   MakeGarbageCollected<MockPublicKeyCredential>());
 
-  EXPECT_EQ(v8::Promise::kRejected,
-            promise.V8Value().As<v8::Promise>()->State());
+  EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
 }
 
 TEST(CredentialsContainerTest,
@@ -208,7 +206,7 @@ TEST(CredentialsContainerTest,
       CredentialsContainer::credentials(*context.DomWindow().navigator())
           ->store(context.GetScriptState(), credential);
 
-  auto v8promise = promise.V8Value().As<v8::Promise>();
+  auto v8promise = promise.V8Promise();
   EXPECT_EQ(v8::Promise::kRejected, v8promise->State());
 
   auto* exception = ToScriptWrappable(v8promise->Result().As<v8::Object>())
@@ -231,7 +229,7 @@ TEST(CredentialsContainerTest,
       CredentialsContainer::credentials(*context.DomWindow().navigator())
           ->store(context.GetScriptState(), credential);
 
-  auto v8promise = promise.V8Value().As<v8::Promise>();
+  auto v8promise = promise.V8Promise();
   EXPECT_EQ(v8::Promise::kRejected, v8promise->State());
 
   auto* exception = ToScriptWrappable(v8promise->Result().As<v8::Object>())
@@ -278,7 +276,7 @@ TEST(CredentialsContainerTest,
           ->create(context.GetScriptState(), credential_options,
                    IGNORE_EXCEPTION_FOR_TESTING);
 
-  auto v8promise = promise.V8Value().As<v8::Promise>();
+  auto v8promise = promise.V8Promise();
   EXPECT_EQ(v8::Promise::kRejected, v8promise->State());
 
   auto* exception = ToScriptWrappable(v8promise->Result().As<v8::Object>())

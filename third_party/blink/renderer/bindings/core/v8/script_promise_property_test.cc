@@ -510,7 +510,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
     GarbageCollectedScriptWrappable* reason =
         MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
     GetProperty()->Reject(reason);
-    EXPECT_FALSE(promise.V8Value().As<v8::Promise>()->HasHandler());
+    EXPECT_FALSE(promise.V8Promise()->HasHandler());
   }
 
   GetProperty()->Reset();
@@ -524,7 +524,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
     GarbageCollectedScriptWrappable* reason =
         MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
     GetProperty()->Reject(reason);
-    EXPECT_TRUE(promise.V8Value().As<v8::Promise>()->HasHandler());
+    EXPECT_TRUE(promise.V8Promise()->HasHandler());
   }
 
   GetProperty()->Reset();
@@ -538,7 +538,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
     GarbageCollectedScriptWrappable* reason =
         MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
     GetProperty()->Reject(reason);
-    EXPECT_TRUE(promise.V8Value().As<v8::Promise>()->HasHandler());
+    EXPECT_TRUE(promise.V8Promise()->HasHandler());
   }
 }
 

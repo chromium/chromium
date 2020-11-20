@@ -94,7 +94,7 @@ class WaitUntilObserver::ThenFunction final : public ScriptFunction {
           WTF::Bind(&WaitUntilObserver::OnPromiseRejected,
                     WrapPersistent(observer_.Get())));
       observer_ = nullptr;
-      return ScriptPromise::Reject(GetScriptState(), value).GetScriptValue();
+      return ScriptPromise::Reject(GetScriptState(), value).AsScriptValue();
     }
 
     event_loop->EnqueueMicrotask(

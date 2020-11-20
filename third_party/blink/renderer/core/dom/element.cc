@@ -5500,7 +5500,7 @@ ScriptValue Element::requestPointerLock(ScriptState* script_state,
           GetExecutionContext())) {
     if (exception_state.HadException())
       resolver->Reject(exception_state);
-    return promise.GetScriptValue();
+    return promise.AsScriptValue();
   }
 
   // The current spec for PointerLock does not have any language about throwing
