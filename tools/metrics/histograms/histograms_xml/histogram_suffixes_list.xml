@@ -14597,6 +14597,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="History" label="Only counting memory used by History service."/>
   <suffix name="LevelDatabase"
       label="Only counting memory used by Level databases."/>
+  <suffix name="Malloc.ThreadCache"
+      label="Memory used by all thread caches, recorded when PartitionAlloc
+             is used as malloc()."/>
   <suffix name="Net"
       label="Only counting memory used by Networking sockets and caches."/>
   <suffix name="Net.UrlRequestContext"
@@ -14605,6 +14608,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NumberOfNodes" label=""/>
   <suffix name="OmniboxSuggestions"
       label="Only counting memory used by Omnibox suggestions provider."/>
+  <suffix name="PartitionAlloc.Partitions.FastMalloc.ThreadCache"
+      label="Memory used by all thread caches for the FastMalloc partition.
+             Recorded in blink processes, unless PartitionAlloc is used as
+             malloc()."/>
   <suffix name="SiteStorage.IndexDB"
       label="Only counting memory used by IndexedDB API."/>
   <suffix name="SiteStorage.LocalStorage"

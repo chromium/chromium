@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/allocator/buildflags.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
@@ -208,6 +209,10 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"malloc/allocated_objects", "Malloc.AllocatedObjects", MetricSize::kLarge,
      kEffectiveSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetMalloc_AllocatedObjects},
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    {"malloc/thread_cache", "Malloc.ThreadCache", MetricSize::kSmall, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
+#endif
     {"mojo", "NumberOfMojoHandles", MetricSize::kSmall,
      MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
      &Memory_Experimental::SetNumberOfMojoHandles},
@@ -249,6 +254,11 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      "PartitionAlloc.Partitions.FastMalloc", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_FastMalloc},
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    {"partition_alloc/partitions/fast_malloc/thread_cache",
+     "PartitionAlloc.Partitions.FastMalloc.ThreadCache", MetricSize::kSmall,
+     kSize, EmitTo::kSizeInUmaOnly, nullptr},
+#endif
     {"partition_alloc/partitions/layout", "PartitionAlloc.Partitions.Layout",
      MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_Layout},
