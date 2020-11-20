@@ -257,17 +257,6 @@ public abstract class AppHooks {
     }
 
     /**
-     * TODO(crbug.com/1102812) : Remove this method after updating the downstream to use the new
-     * method {@link getOfflinePagesCctAllowlist} instead.
-     * @return A list of allowlisted apps that are allowed to receive notification when the
-     * set of offlined pages downloaded on their behalf has changed. Apps are listed by their
-     * package name.
-     */
-    public List<String> getOfflinePagesCctWhitelist() {
-        return Collections.emptyList();
-    }
-
-    /**
      * @return A list of allowlisted apps that are allowed to receive notification when the
      * set of offlined pages downloaded on their behalf has changed. Apps are listed by their
      * package name.
