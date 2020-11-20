@@ -51,6 +51,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/third_party/mozilla/url_parse.h"
 #include "url/url_constants.h"
 
 namespace net {
@@ -4233,6 +4234,294 @@ TEST_F(CookieMonsterLegacyCookieAccessTest, NonlegacyCookie) {
                                  CookieOptions()));
   EXPECT_EQ("cookie=oatmeal_raisin",
             GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
+}
+
+TEST_F(CookieMonsterTest, IsCookieSentToSamePortThatSetIt) {
+  // Note: `IsCookieSentToSamePortThatSetIt()` only uses the source_scheme if
+  // the port is valid, specified, and doesn't match the url's port. So for test
+  // cases where the above aren't true the value of source_scheme is irreleant.
+
+  // Test unspecified.
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("https://foo.com"), url::PORT_UNSPECIFIED,
+                CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kSourcePortUnspecified);
+
+  // Test invalid.
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("https://foo.com"), url::PORT_INVALID,
+                CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kInvalid);
+
+  // Test same.
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("https://foo.com"), 443, CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kYes);
+
+  ASSERT_EQ(
+      CookieMonster::IsCookieSentToSamePortThatSetIt(
+          GURL("https://foo.com:1234"), 1234, CookieSourceScheme::kSecure),
+      CookieMonster::CookieSentToSamePort::kYes);
+
+  // Test different but default.
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("https://foo.com"), 80, CookieSourceScheme::kNonSecure),
+            CookieMonster::CookieSentToSamePort::kNoButDefault);
+
+  ASSERT_EQ(
+      CookieMonster::IsCookieSentToSamePortThatSetIt(
+          GURL("https://foo.com:443"), 80, CookieSourceScheme::kNonSecure),
+      CookieMonster::CookieSentToSamePort::kNoButDefault);
+
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("wss://foo.com"), 80, CookieSourceScheme::kNonSecure),
+            CookieMonster::CookieSentToSamePort::kNoButDefault);
+
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("http://foo.com"), 443, CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kNoButDefault);
+
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("ws://foo.com"), 443, CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kNoButDefault);
+
+  // Test different.
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("http://foo.com:9000"), 85, CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kNo);
+
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("https://foo.com"), 80, CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kNo);
+
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("wss://foo.com"), 80, CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kNo);
+
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("http://foo.com"), 443, CookieSourceScheme::kNonSecure),
+            CookieMonster::CookieSentToSamePort::kNo);
+
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("ws://foo.com"), 443, CookieSourceScheme::kNonSecure),
+            CookieMonster::CookieSentToSamePort::kNo);
+
+  ASSERT_EQ(CookieMonster::IsCookieSentToSamePortThatSetIt(
+                GURL("http://foo.com:444"), 443, CookieSourceScheme::kSecure),
+            CookieMonster::CookieSentToSamePort::kNo);
+}
+
+TEST_F(CookieMonsterTest, CookieDomainSetHistogram) {
+  base::HistogramTester histograms;
+  const char kHistogramName[] = "Cookie.DomainSet";
+
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
+
+  histograms.ExpectTotalCount(kHistogramName, 0);
+
+  // Set a host only cookie (non-Domain).
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), "A=B"));
+  histograms.ExpectTotalCount(kHistogramName, 1);
+  histograms.ExpectBucketCount(kHistogramName, false, 1);
+
+  // Set a domain cookie.
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(),
+                        "A=B; Domain=" + https_www_foo_.host()));
+  histograms.ExpectTotalCount(kHistogramName, 2);
+  histograms.ExpectBucketCount(kHistogramName, true, 1);
+
+  // Invalid cookies don't count toward the histogram.
+  EXPECT_FALSE(
+      SetCookie(cm.get(), https_www_foo_.url(), "A=B; Domain=other.com"));
+  histograms.ExpectTotalCount(kHistogramName, 2);
+  histograms.ExpectBucketCount(kHistogramName, false, 1);
+}
+
+TEST_F(CookieMonsterTest, CookiePortReadHistogram) {
+  base::HistogramTester histograms;
+  const char kHistogramName[] = "Cookie.Port.Read.RemoteHost";
+  const char kHistogramNameLocal[] = "Cookie.Port.Read.Localhost";
+
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
+
+  histograms.ExpectTotalCount(kHistogramName, 0);
+
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://www.foo.com"), "A=B"));
+
+  // May as well check that it didn't change the histogram...
+  histograms.ExpectTotalCount(kHistogramName, 0);
+
+  // Now read it from some different ports. This requires some knowledge of how
+  // `ReducePortRangeForCookieHistogram` maps ports, but that's probably fine.
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://www.foo.com")), "A=B");
+  // https default is 443, so check that.
+  histograms.ExpectTotalCount(kHistogramName, 1);
+  histograms.ExpectBucketCount(kHistogramName,
+                               ReducePortRangeForCookieHistogram(443), 1);
+
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://www.foo.com:82")), "A=B");
+  histograms.ExpectTotalCount(kHistogramName, 2);
+  histograms.ExpectBucketCount(kHistogramName,
+                               ReducePortRangeForCookieHistogram(82), 1);
+
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://www.foo.com:8080")), "A=B");
+  histograms.ExpectTotalCount(kHistogramName, 3);
+  histograms.ExpectBucketCount(kHistogramName,
+                               ReducePortRangeForCookieHistogram(8080), 1);
+
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://www.foo.com:1234")), "A=B");
+  histograms.ExpectTotalCount(kHistogramName, 4);
+  histograms.ExpectBucketCount(kHistogramName,
+                               ReducePortRangeForCookieHistogram(1234), 1);
+
+  // Histogram should not increment if nothing is read.
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://www.other.com")), "");
+  histograms.ExpectTotalCount(kHistogramName, 4);
+
+  // Make sure the correct histogram is chosen for localhost.
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://localhost"), "local=host"));
+
+  histograms.ExpectTotalCount(kHistogramNameLocal, 0);
+
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://localhost:82")), "local=host");
+  histograms.ExpectTotalCount(kHistogramNameLocal, 1);
+  histograms.ExpectBucketCount(kHistogramNameLocal,
+                               ReducePortRangeForCookieHistogram(82), 1);
+}
+
+TEST_F(CookieMonsterTest, CookiePortSetHistogram) {
+  base::HistogramTester histograms;
+  const char kHistogramName[] = "Cookie.Port.Set.RemoteHost";
+  const char kHistogramNameLocal[] = "Cookie.Port.Set.Localhost";
+
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
+
+  histograms.ExpectTotalCount(kHistogramName, 0);
+
+  // Set some cookies. This requires some knowledge of how
+  // ReducePortRangeForCookieHistogram maps ports, but that's probably fine.
+
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://www.foo.com"), "A=B"));
+  histograms.ExpectTotalCount(kHistogramName, 1);
+  histograms.ExpectBucketCount(kHistogramName,
+                               ReducePortRangeForCookieHistogram(443), 1);
+
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://www.foo.com:80"), "A=B"));
+  histograms.ExpectTotalCount(kHistogramName, 2);
+  histograms.ExpectBucketCount(kHistogramName,
+                               ReducePortRangeForCookieHistogram(80), 1);
+
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://www.foo.com:9000"), "A=B"));
+  histograms.ExpectTotalCount(kHistogramName, 3);
+  histograms.ExpectBucketCount(kHistogramName,
+                               ReducePortRangeForCookieHistogram(9000), 1);
+
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://www.foo.com:1234"), "A=B"));
+  histograms.ExpectTotalCount(kHistogramName, 4);
+  histograms.ExpectBucketCount(kHistogramName,
+                               ReducePortRangeForCookieHistogram(1234), 1);
+
+  // Histogram should not increment for invalid cookie.
+  EXPECT_FALSE(SetCookie(cm.get(), GURL("https://www.foo.com"),
+                         "A=B; Domain=malformedcookie.com"));
+  histograms.ExpectTotalCount(kHistogramName, 4);
+
+  // Nor should it increment for a read operation
+  EXPECT_NE(GetCookies(cm.get(), GURL("https://www.foo.com")), "");
+  histograms.ExpectTotalCount(kHistogramName, 4);
+
+  // Make sure the correct histogram is chosen for localhost.
+  histograms.ExpectTotalCount(kHistogramNameLocal, 0);
+
+  EXPECT_TRUE(
+      SetCookie(cm.get(), GURL("https://localhost:1234"), "local=host"));
+  histograms.ExpectTotalCount(kHistogramNameLocal, 1);
+  histograms.ExpectBucketCount(kHistogramNameLocal,
+                               ReducePortRangeForCookieHistogram(1234), 1);
+}
+
+TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
+  base::HistogramTester histograms;
+  const char kHistogramName[] = "Cookie.Port.ReadDiffersFromSet.RemoteHost";
+  const char kHistogramNameLocal[] = "Cookie.Port.ReadDiffersFromSet.Localhost";
+
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
+
+  histograms.ExpectTotalCount(kHistogramName, 0);
+
+  // Set some cookies. One with a port, one without, and one with an invalid
+  // port.
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://www.foo.com/withport"),
+                        "A=B; Path=/withport"));  // Port 443
+
+  auto unspecified_cookie = CanonicalCookie::Create(
+      GURL("https://www.foo.com/withoutport"), "C=D; Path=/withoutport",
+      base::Time::Now(), base::nullopt);
+  // Force to be unspecified.
+  unspecified_cookie->SetSourcePort(url::PORT_UNSPECIFIED);
+  EXPECT_TRUE(SetCanonicalCookieReturnAccessResult(
+                  cm.get(), std::move(unspecified_cookie),
+                  GURL("https://www.foo.com/withoutport"),
+                  false /*can_modify_httponly*/)
+                  .status.IsInclude());
+
+  auto invalid_cookie = CanonicalCookie::Create(
+      GURL("https://www.foo.com/invalidport"), "E=F; Path=/invalidport",
+      base::Time::Now(), base::nullopt);
+  // Force to be invalid.
+  invalid_cookie->SetSourcePort(99999);
+  EXPECT_TRUE(SetCanonicalCookieReturnAccessResult(
+                  cm.get(), std::move(invalid_cookie),
+                  GURL("https://www.foo.com/invalidport"),
+                  false /*can_modify_httponly*/)
+                  .status.IsInclude());
+
+  // Try same port.
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://www.foo.com/withport")), "A=B");
+  histograms.ExpectTotalCount(kHistogramName, 1);
+  histograms.ExpectBucketCount(kHistogramName,
+                               CookieMonster::CookieSentToSamePort::kYes, 1);
+
+  // Try different port.
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://www.foo.com:8080/withport")),
+            "A=B");
+  histograms.ExpectTotalCount(kHistogramName, 2);
+  histograms.ExpectBucketCount(kHistogramName,
+                               CookieMonster::CookieSentToSamePort::kNo, 1);
+
+  // Try different port, but it's the default for a different scheme.
+  EXPECT_EQ(GetCookies(cm.get(), GURL("http://www.foo.com/withport")), "A=B");
+  histograms.ExpectTotalCount(kHistogramName, 3);
+  histograms.ExpectBucketCount(
+      kHistogramName, CookieMonster::CookieSentToSamePort::kNoButDefault, 1);
+
+  // Now try it with an unspecified port cookie.
+  EXPECT_EQ(GetCookies(cm.get(), GURL("http://www.foo.com/withoutport")),
+            "C=D");
+  histograms.ExpectTotalCount(kHistogramName, 4);
+  histograms.ExpectBucketCount(
+      kHistogramName,
+      CookieMonster::CookieSentToSamePort::kSourcePortUnspecified, 1);
+
+  // Finally try it with an invalid port cookie.
+  EXPECT_EQ(GetCookies(cm.get(), GURL("http://www.foo.com/invalidport")),
+            "E=F");
+  histograms.ExpectTotalCount(kHistogramName, 5);
+  histograms.ExpectBucketCount(
+      kHistogramName, CookieMonster::CookieSentToSamePort::kInvalid, 1);
+
+  // Make sure the correct histogram is chosen for localhost.
+  histograms.ExpectTotalCount(kHistogramNameLocal, 0);
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://localhost"), "local=host"));
+
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://localhost")), "local=host");
+  histograms.ExpectTotalCount(kHistogramNameLocal, 1);
+  histograms.ExpectBucketCount(kHistogramNameLocal,
+                               CookieMonster::CookieSentToSamePort::kYes, 1);
 }
 
 }  // namespace net

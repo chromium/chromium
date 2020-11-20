@@ -237,6 +237,11 @@ class NET_EXPORT CookieMonster : public CookieStore {
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
                            CookieDeleteEquivalentHistogramTest);
 
+  // For CookieSentToSamePort enum.
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
+                           CookiePortReadDiffersFromSetHistogram);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest, IsCookieSentToSamePortThatSetIt);
+
   // Internal reasons for deletion, used to populate informative histograms
   // and to provide a public cause for onCookieChange notifications.
   //
@@ -308,6 +313,28 @@ class NET_EXPORT CookieMonster : public CookieStore {
     COOKIE_SOURCE_NONSECURE_COOKIE_CRYPTOGRAPHIC_SCHEME,
     COOKIE_SOURCE_NONSECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME,
     COOKIE_SOURCE_LAST_ENTRY
+  };
+
+  // Enum for collecting metrics on how frequently a cookie is sent to the same
+  // port it was set by.
+  //
+  // kNoButDefault exists because we expect for cookies being sent between
+  // schemes to have a port mismatch and want to separate those out from other,
+  // more interesting, cases.
+  //
+  // Do not reorder or renumber. Used for metrics.
+  enum class CookieSentToSamePort {
+    kSourcePortUnspecified = 0,  // Cookie's source port is unspecified, we
+                                 // can't know if this is the same port or not.
+    kInvalid = 1,  // The source port was corrupted to be PORT_INVALID, we
+                   // can't know if this is the same port or not.
+    kNo = 2,       // Source port and destination port are different.
+    kNoButDefault =
+        3,     // Source and destination ports are different but they're
+               // the defaults for their scheme. This can mean that an http
+               // cookie was sent to a https origin or vice-versa.
+    kYes = 4,  // They're the same.
+    kMaxValue = kYes
   };
 
   // Record statistics every kRecordStatisticsIntervalSeconds of uptime.
@@ -547,6 +574,16 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // synchronously.
   void DoCookieCallbackForHostOrDomain(base::OnceClosure callback,
                                        base::StringPiece host_or_domain);
+
+  // Checks to see if a cookie is being sent to the same port it was set by. For
+  // metrics.
+  //
+  // This is in CookieMonster because only CookieMonster uses it. It's otherwise
+  // a standalone utility function.
+  static CookieSentToSamePort IsCookieSentToSamePortThatSetIt(
+      const GURL& destination,
+      int source_port,
+      CookieSourceScheme source_scheme);
 
   // Histogram variables; see CookieMonster::InitializeHistograms() in
   // cookie_monster.cc for details.

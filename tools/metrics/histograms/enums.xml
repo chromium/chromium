@@ -13066,6 +13066,16 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Extended"/>
 </enum>
 
+<enum name="CookieSentToSamePort">
+  <int value="0" label="Cookie source port was unspecified."/>
+  <int value="1" label="Cookie source port was invalid."/>
+  <int value="2" label="Source and destination ports do not match."/>
+  <int value="3"
+      label="Source and destination ports do not match but are the defaults
+             for their scheme."/>
+  <int value="4" label="Source and destination ports match."/>
+</enum>
+
 <enum name="CookieSourceScheme">
   <int value="0" label="Secure cookie, source scheme is cryptographic"/>
   <int value="1" label="Secure cookie, source scheme is not cryptographic"/>
