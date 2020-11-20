@@ -195,6 +195,8 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:test_support",
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/shill:test_support",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/tpm:test_support",
     "//components/account_id",
     "//dbus",
@@ -220,6 +222,7 @@ source_set("unit_tests") {
     "native_timer_unittest.cc",
     "oobe_configuration_client_unittest.cc",
     "pipe_reader_unittest.cc",
+    "tpm_manager/tpm_manager_client_unittest.cc",
     "update_engine_client_unittest.cc",
     "util/version_loader_unittest.cc",
   ]
