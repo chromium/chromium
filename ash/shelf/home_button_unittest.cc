@@ -34,6 +34,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -179,6 +180,81 @@ class HomeButtonVisibilityWithAccessibilityFeaturesTest
 // The parameter indicates whether the kHideShelfControlsInTabletMode feature
 // is enabled.
 INSTANTIATE_TEST_SUITE_P(All, HomeButtonTest, testing::Bool());
+
+// Tests that the shelf navigation widget clip rect is not clipping the intended
+// home button bounds.
+TEST_P(HomeButtonTest, ClipRectDoesNotClipHomeButtonBounds) {
+  ShelfNavigationWidget* const nav_widget =
+      GetPrimaryShelf()->navigation_widget();
+  ShelfNavigationWidget::TestApi test_api(nav_widget);
+  ASSERT_TRUE(test_api.IsHomeButtonVisible());
+  ASSERT_TRUE(home_button());
+
+  auto home_button_bounds = [&]() -> gfx::Rect {
+    return home_button()->GetBoundsInScreen();
+  };
+
+  auto clip_rect_bounds = [&]() -> gfx::Rect {
+    gfx::Rect clip_bounds = nav_widget->GetLayer()->clip_rect();
+    wm::ConvertRectToScreen(nav_widget->GetNativeWindow(), &clip_bounds);
+    return clip_bounds;
+  };
+
+  std::string display_configs[] = {
+      "1+1-1200x1000",
+      "1+1-1000x1200",
+      "1+1-800x600",
+      "1+1-600x800",
+  };
+
+  for (const auto& display_config : display_configs) {
+    SCOPED_TRACE(display_config);
+    UpdateDisplay(display_config);
+
+    EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
+
+    // Enter tablet mode - note that home button may be invisible in this case.
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    ShelfViewTestAPI shelf_test_api(
+        GetPrimaryShelf()->GetShelfViewForTesting());
+    shelf_test_api.RunMessageLoopUntilAnimationsDone(
+        test_api.GetBoundsAnimator());
+
+    if (home_button() && test_api.IsHomeButtonVisible())
+      EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
+
+    // Create a test widget to transition to in-app shelf.
+    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+    shelf_test_api.RunMessageLoopUntilAnimationsDone(
+        test_api.GetBoundsAnimator());
+
+    if (home_button() && test_api.IsHomeButtonVisible())
+      EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
+
+    // Back to home launcher shelf.
+    widget.reset();
+    shelf_test_api.RunMessageLoopUntilAnimationsDone(
+        test_api.GetBoundsAnimator());
+
+    if (home_button() && test_api.IsHomeButtonVisible())
+      EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
+
+    // Open another window and go back to clamshell.
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+    widget = CreateTestWidget();
+    shelf_test_api.RunMessageLoopUntilAnimationsDone(
+        test_api.GetBoundsAnimator());
+
+    EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
+
+    // Verify bounds after the test widget is closed.
+    widget.reset();
+    shelf_test_api.RunMessageLoopUntilAnimationsDone(
+        test_api.GetBoundsAnimator());
+
+    EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
+  }
+}
 
 TEST_P(HomeButtonTest, SwipeUpToOpenFullscreenAppList) {
   Shelf* shelf = GetPrimaryShelf();

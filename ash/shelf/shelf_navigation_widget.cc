@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/transform_util.h"
@@ -595,7 +596,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
       SetBounds(target_bounds_);
   }
 
-  if (update_bounds && Shell::Get()->IsInTabletMode())
+  if (update_bounds)
     GetLayer()->SetClipRect(clip_rect_);
 
   views::View* const back_button = delegate_->back_button();
@@ -626,7 +627,9 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
 
   if (animate) {
     if (bounds_animator_->GetTargetBounds(home_button) != home_button_bounds) {
-      bounds_animator_->SetAnimationDuration(animation_duration);
+      bounds_animator_->SetAnimationDuration(
+          ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+          animation_duration);
       bounds_animator_->AnimateViewTo(
           home_button, home_button_bounds,
           std::make_unique<BoundsAnimationReporter>(
