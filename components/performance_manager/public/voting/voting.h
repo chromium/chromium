@@ -465,6 +465,9 @@ class VotingChannelWrapper {
   VotingChannelWrapper();
   ~VotingChannelWrapper();
 
+  VotingChannelWrapper(VotingChannelWrapper&&);
+  VotingChannelWrapper& operator=(VotingChannelWrapper&&);
+
   // Sets the underlying VotingChannel. Can only be invoked once, and it must be
   // done before any calls to the functions to submit/change/invalidate votes.
   void SetVotingChannel(VotingChannel<VoteImpl> voting_channel);
@@ -483,6 +486,8 @@ class VotingChannelWrapper {
 
   // Returns true if the underlying VotingChannel is valid.
   bool IsValid() const;
+
+  VoterId<VoteImpl> voter_id() const { return voting_channel_.voter_id(); }
 
  private:
   VotingChannel<VoteImpl> voting_channel_;
@@ -978,6 +983,14 @@ VotingChannelWrapper<VoteImpl>::VotingChannelWrapper() = default;
 
 template <class VoteImpl>
 VotingChannelWrapper<VoteImpl>::~VotingChannelWrapper() = default;
+
+template <class VoteImpl>
+VotingChannelWrapper<VoteImpl>::VotingChannelWrapper(VotingChannelWrapper&&) =
+    default;
+
+template <class VoteImpl>
+VotingChannelWrapper<VoteImpl>& VotingChannelWrapper<VoteImpl>::operator=(
+    VotingChannelWrapper<VoteImpl>&&) = default;
 
 template <class VoteImpl>
 void VotingChannelWrapper<VoteImpl>::SetVotingChannel(

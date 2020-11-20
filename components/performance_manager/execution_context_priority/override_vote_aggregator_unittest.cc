@@ -11,183 +11,191 @@ namespace performance_manager {
 namespace execution_context_priority {
 
 using DummyVoter = voting::test::DummyVoter<Vote>;
-using DummyVoteConsumer = voting::test::DummyVoteConsumer<Vote>;
+using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 // Some dummy execution contexts.
-const ExecutionContext* kDummyExecutionContext =
+const ExecutionContext* kExecutionContext0 =
     reinterpret_cast<const ExecutionContext*>(0xDEADBEEF);
+const ExecutionContext* kExecutionContext1 =
+    reinterpret_cast<const ExecutionContext*>(0xBAADF00D);
 
-TEST(OverrideVoteAggregatorTest, BlackboxTest) {
-  // Priorities to use for default and override votes. The override priority is
-  // lower on purpose.
-  static constexpr base::TaskPriority kDefaultPriority =
-      base::TaskPriority::HIGHEST;
-  static constexpr base::TaskPriority kOverridePriority =
-      base::TaskPriority::LOWEST;
+static const Vote kLowPriorityVote0(base::TaskPriority::LOWEST, "low reason 0");
+static const Vote kLowPriorityVote1(base::TaskPriority::LOWEST, "low reason 1");
 
-  static const char kReason[] = "another reason";
+static const Vote kMediumPriorityVote0(base::TaskPriority::USER_VISIBLE,
+                                       "medium reason 0");
+static const Vote kMediumPriorityVote1(base::TaskPriority::USER_VISIBLE,
+                                       "medium reason 1");
 
-  // Builds the small hierarchy of voters as follows:
-  //
-  //        consumer
-  //           |
-  //          agg
-  //         /   \
-  //        /     \
-  //   voter0     voter1
-  // (override) (default)
-  DummyVoteConsumer consumer;
-  OverrideVoteAggregator agg;
-  DummyVoter voter0;
-  DummyVoter voter1;
+static const Vote kHighPriorityVote0(base::TaskPriority::HIGHEST,
+                                     "high reason 0");
+static const Vote kHighPriorityVote1(base::TaskPriority::HIGHEST,
+                                     "high reason 1");
 
-  voting::VoterId<Vote> agg_id = voting::kInvalidVoterId<Vote>;
-  {
-    auto channel = consumer.voting_channel_factory_.BuildVotingChannel();
-    agg_id = channel.voter_id();
-    agg.SetUpstreamVotingChannel(std::move(channel));
+class OverrideVoteAggregatorTest : public testing::Test {
+ public:
+  OverrideVoteAggregatorTest() = default;
+  ~OverrideVoteAggregatorTest() override = default;
+
+  void SetUp() override {
+    VotingChannel channel = observer_.BuildVotingChannel();
+    aggregator_voter_id_ = channel.voter_id();
+    aggregator_.SetUpstreamVotingChannel(std::move(channel));
   }
 
-  voter0.SetVotingChannel(agg.GetOverrideVotingChannel());
-  voter1.SetVotingChannel(agg.GetDefaultVotingChannel());
-  EXPECT_TRUE(agg.IsSetup());
+  void TearDown() override {}
 
-  // Submitting a default vote should immediately propagate to the consumer.
-  voter1.EmitVote(kDummyExecutionContext, kDefaultPriority);
-  EXPECT_EQ(0u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(1u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           DummyVoter::kReason);
+  VoterId aggregator_voter_id() const { return aggregator_voter_id_; }
 
-  // Canceling the default vote should clear all votes.
-  voter1.receipts_.clear();
-  EXPECT_EQ(0u, voter0.receipts_.size());
-  EXPECT_EQ(0u, voter1.receipts_.size());
-  EXPECT_EQ(0u, agg.GetSizeForTesting());
-  EXPECT_EQ(1u, consumer.votes_.size());
-  EXPECT_EQ(0u, consumer.valid_vote_count_);
+  const DummyVoteObserver& observer() const { return observer_; }
 
-  // Resubmitting the default vote should propagate to the consumer.
-  voter1.EmitVote(kDummyExecutionContext, kDefaultPriority);
-  EXPECT_EQ(0u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           DummyVoter::kReason);
+  OverrideVoteAggregator* aggregator() { return &aggregator_; }
 
-  // Submitting an override vote should override it and propagate to the
-  // consumer. This should update the existing vote in place.
-  voter0.EmitVote(kDummyExecutionContext, kOverridePriority);
-  EXPECT_EQ(1u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           DummyVoter::kReason);
+  void TestSingleVoter(VotingChannelWrapper* voter) {
+    EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
 
-  // Canceling the override vote should drop back to using the default vote.
-  // This will again reuse the existing upstream vote.
-  voter0.receipts_.clear();
-  EXPECT_EQ(0u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           DummyVoter::kReason);
+    voter->SubmitVote(kExecutionContext0, kLowPriorityVote0);
+    EXPECT_EQ(observer().GetVoteCount(), 1u);
+    EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                   kLowPriorityVote0));
 
-  // Changing the default vote should propagate, as there's no override vote.
-  voter1.receipts_[0].ChangeVote(kDefaultPriority, kReason);
-  EXPECT_EQ(0u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           kReason);
+    // Change only the reason.
+    voter->ChangeVote(kExecutionContext0, kLowPriorityVote1);
+    EXPECT_EQ(observer().GetVoteCount(), 1u);
+    EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                   kLowPriorityVote1));
 
-  // Changing back should also propagate.
-  voter1.receipts_[0].ChangeVote(kDefaultPriority, DummyVoter::kReason);
-  EXPECT_EQ(0u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           DummyVoter::kReason);
+    // Change the priority.
+    voter->ChangeVote(kExecutionContext0, kHighPriorityVote0);
+    EXPECT_EQ(observer().GetVoteCount(), 1u);
+    EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                   kHighPriorityVote0));
 
-  // Submitting an override vote should override it and propagate to the
-  // consumer.
-  voter0.EmitVote(kDummyExecutionContext, kOverridePriority);
-  EXPECT_EQ(1u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           DummyVoter::kReason);
+    // Add a vote for a different execution context.
+    voter->SubmitVote(kExecutionContext1, kMediumPriorityVote0);
+    EXPECT_EQ(observer().GetVoteCount(), 2u);
+    EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                   kHighPriorityVote0));
+    EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext1,
+                                   kMediumPriorityVote0));
 
-  // Canceling the default vote should do nothing.
-  voter1.receipts_.clear();
-  EXPECT_EQ(1u, voter0.receipts_.size());
-  EXPECT_EQ(0u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           DummyVoter::kReason);
+    voter->ChangeVote(kExecutionContext1, kHighPriorityVote1);
+    EXPECT_EQ(observer().GetVoteCount(), 2u);
+    EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                   kHighPriorityVote0));
+    EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext1,
+                                   kHighPriorityVote1));
 
-  // Submitting another default vote should do nothing.
-  voter1.EmitVote(kDummyExecutionContext, kDefaultPriority);
-  EXPECT_EQ(1u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           DummyVoter::kReason);
+    // Invalidate vote for the first execution context.
+    voter->InvalidateVote(kExecutionContext0);
+    EXPECT_EQ(observer().GetVoteCount(), 1u);
+    EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
+    EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext1,
+                                   kHighPriorityVote1));
 
-  // Changing the default vote should do nothing.
-  voter1.receipts_.back().ChangeVote(kDefaultPriority, kReason);
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           DummyVoter::kReason);
+    voter->InvalidateVote(kExecutionContext1);
+    EXPECT_EQ(observer().GetVoteCount(), 0u);
+    EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
+    EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
+  }
 
-  // Changing the override vote should change the upstream vote.
-  voter0.receipts_.back().ChangeVote(kOverridePriority, kReason);
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           kReason);
+ private:
+  DummyVoteObserver observer_;
+  OverrideVoteAggregator aggregator_;
+  VoterId aggregator_voter_id_;
+};
 
-  // Canceling the default vote should do nothing.
-  voter1.receipts_.clear();
-  EXPECT_EQ(1u, voter0.receipts_.size());
-  EXPECT_EQ(0u, voter1.receipts_.size());
-  EXPECT_EQ(1u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           kReason);
+// Tests that in the case of a single voter, the vote is simply propagated
+// upwards.
+TEST_F(OverrideVoteAggregatorTest, SingleVoter) {
+  VotingChannelWrapper default_voter;
+  default_voter.SetVotingChannel(aggregator()->GetDefaultVotingChannel());
+  VotingChannelWrapper override_voter;
+  override_voter.SetVotingChannel(aggregator()->GetOverrideVotingChannel());
 
-  // Finally, canceling the override vote should cancel the upstream vote.
-  voter0.receipts_.clear();
-  EXPECT_EQ(0u, voter0.receipts_.size());
-  EXPECT_EQ(0u, voter1.receipts_.size());
-  EXPECT_EQ(0u, agg.GetSizeForTesting());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(0u, consumer.valid_vote_count_);
+  TestSingleVoter(&default_voter);
+  TestSingleVoter(&override_voter);
+}
+
+TEST_F(OverrideVoteAggregatorTest, OneContext) {
+  VotingChannelWrapper default_voter;
+  default_voter.SetVotingChannel(aggregator()->GetDefaultVotingChannel());
+  VotingChannelWrapper override_voter;
+  override_voter.SetVotingChannel(aggregator()->GetOverrideVotingChannel());
+
+  EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
+
+  // Submit a default vote for the execution context.
+  default_voter.SubmitVote(kExecutionContext0, kMediumPriorityVote0);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                 kMediumPriorityVote0));
+
+  // Submit an override vote. The override vote will always be upstreamed,
+  // regardless of the priority.
+  override_voter.SubmitVote(kExecutionContext0, kLowPriorityVote1);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                 kLowPriorityVote1));
+
+  // Change the override vote. The upstream will also be changed.
+  override_voter.ChangeVote(kExecutionContext0, kHighPriorityVote1);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                 kHighPriorityVote1));
+
+  // Change the default vote. The upstream will not change, but the default vote
+  // will be remembered.
+  default_voter.ChangeVote(kExecutionContext0, kHighPriorityVote0);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                 kHighPriorityVote1));
+
+  // Invalidate the override vote. The upstream will change to the default vote.
+  override_voter.InvalidateVote(kExecutionContext0);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                 kHighPriorityVote0));
+
+  // Cleanup.
+  default_voter.InvalidateVote(kExecutionContext0);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+  EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
+}
+
+// A less extensive test than OneContext that sanity checks that votes for
+// different contexts are aggregated independently.
+TEST_F(OverrideVoteAggregatorTest, MultipleContexts) {
+  VotingChannelWrapper default_voter;
+  default_voter.SetVotingChannel(aggregator()->GetDefaultVotingChannel());
+  VotingChannelWrapper override_voter;
+  override_voter.SetVotingChannel(aggregator()->GetOverrideVotingChannel());
+
+  // Vote for execution context 1. The override vote lowers the priority of the
+  // upstreamed vote.
+  default_voter.SubmitVote(kExecutionContext0, kHighPriorityVote0);
+  override_voter.SubmitVote(kExecutionContext0, kMediumPriorityVote1);
+
+  // Vote for execution context 2. The override vote increases the priority of
+  // the upstreamed vote.
+  default_voter.SubmitVote(kExecutionContext1, kLowPriorityVote0);
+  override_voter.SubmitVote(kExecutionContext1, kHighPriorityVote1);
+
+  // There is an aggregated vote for each context, and their values are coming
+  // from the override voter.
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext0,
+                                 kMediumPriorityVote1));
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kExecutionContext1,
+                                 kHighPriorityVote1));
+
+  // Cleanup.
+  default_voter.InvalidateVote(kExecutionContext0);
+  default_voter.InvalidateVote(kExecutionContext1);
+  override_voter.InvalidateVote(kExecutionContext0);
+  override_voter.InvalidateVote(kExecutionContext1);
+
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
 }
 
 }  // namespace execution_context_priority

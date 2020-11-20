@@ -187,8 +187,7 @@ TEST(VotingTest, OverwriteVoteReceipt) {
 TEST(VotingTest, VoteObserver) {
   DummyVoteObserver observer;
 
-  TestVotingChannel voting_channel =
-      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
   {
@@ -203,8 +202,7 @@ TEST(VotingTest, VoteObserver) {
 TEST(VotingTest, VotingChannelWrapper) {
   DummyVoteObserver observer;
 
-  TestVotingChannel voting_channel =
-      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
   TestVotingChannelWrapper voting_channel_wrapper;
@@ -227,8 +225,7 @@ TEST(VotingTest, VotingChannelWrapper) {
 TEST(VotingTest, VotingChannelWrapper_SubmitDuplicateVote) {
   DummyVoteObserver observer;
 
-  TestVotingChannel voting_channel =
-      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
   TestVotingChannelWrapper voting_channel_wrapper;
@@ -248,8 +245,7 @@ TEST(VotingTest, VotingChannelWrapper_SubmitDuplicateVote) {
 TEST(VotingTest, VotingChannelWrapper_ChangeNonExisting) {
   DummyVoteObserver observer;
 
-  TestVotingChannel voting_channel =
-      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
   TestVotingChannelWrapper voting_channel_wrapper;
@@ -265,8 +261,7 @@ TEST(VotingTest, VotingChannelWrapper_ChangeNonExisting) {
 TEST(VotingTest, VotingChannelWrapper_InvalidateNonExisting) {
   DummyVoteObserver observer;
 
-  TestVotingChannel voting_channel =
-      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
   TestVotingChannelWrapper voting_channel_wrapper;

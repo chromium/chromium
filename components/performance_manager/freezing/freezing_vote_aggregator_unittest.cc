@@ -26,285 +26,238 @@ using VoteData = FreezingVoteAggregatorTestAccess::FreezingVoteData;
 
 namespace {
 
-using DummyFreezingVoter = voting::test::DummyVoter<FreezingVote>;
-using DummyFreezingVoteConsumer = voting::test::DummyVoteConsumer<FreezingVote>;
+using DummyFreezingVoteObserver = voting::test::DummyVoteObserver<FreezingVote>;
 
 // Some dummy page nodes.
 const PageNode* kPageNode0 = reinterpret_cast<const PageNode*>(0xDEADBEEF);
 const PageNode* kPageNode1 = reinterpret_cast<const PageNode*>(0xBAADF00D);
 
-static const char kReason0[] = "a reason";
-static const char kReason1[] = "another reason";
-static const char kReason2[] = "yet another reason";
+static const FreezingVote kCannotFreezeVote0(FreezingVoteValue::kCannotFreeze,
+                                             "cannot freeze 0");
+static const FreezingVote kCannotFreezeVote1(FreezingVoteValue::kCannotFreeze,
+                                             "cannot freeze 1");
+static const FreezingVote kCannotFreezeVote2(FreezingVoteValue::kCannotFreeze,
+                                             "cannot freeze 2");
+static const FreezingVote kCanFreezeVote0(FreezingVoteValue::kCanFreeze,
+                                          "can freeze 0");
+static const FreezingVote kCanFreezeVote1(FreezingVoteValue::kCanFreeze,
+                                          "can freeze 1");
+static const FreezingVote kCanFreezeVote2(FreezingVoteValue::kCanFreeze,
+                                          "can freeze 2");
+static const FreezingVote kCanFreezeVote3(FreezingVoteValue::kCanFreeze,
+                                          "can freeze 3");
 
 }  // namespace
 
-TEST(FreezingVoteAggregatorTest, EndToEnd) {
-  // Builds the small hierarchy of voters as follows:
-  //
-  //        consumer
-  //           |
-  //          agg
-  //         / |  \
-  //        /  |   \
-  //  voter0 voter1 voter2
-  DummyFreezingVoteConsumer consumer;
-  FreezingVoteAggregator agg;
-  DummyFreezingVoter voter0;
-  DummyFreezingVoter voter1;
-  DummyFreezingVoter voter2;
+class FreezingVoteAggregatorTest : public testing::Test {
+ public:
+  FreezingVoteAggregatorTest() = default;
+  ~FreezingVoteAggregatorTest() override = default;
 
-  FreezingVoterId agg_id = voting::kInvalidVoterId<FreezingVote>;
-  {
-    auto channel = consumer.voting_channel_factory_.BuildVotingChannel();
-    agg_id = channel.voter_id();
-    agg.SetUpstreamVotingChannel(std::move(channel));
+  void SetUp() override {
+    FreezingVotingChannel channel = observer_.BuildVotingChannel();
+    aggregator_voter_id_ = channel.voter_id();
+    aggregator_.SetUpstreamVotingChannel(std::move(channel));
   }
 
-  voter0.SetVotingChannel(agg.GetVotingChannel());
-  voter1.SetVotingChannel(agg.GetVotingChannel());
-  voter2.SetVotingChannel(agg.GetVotingChannel());
+  void TearDown() override {}
+
+  FreezingVoterId aggregator_voter_id() const { return aggregator_voter_id_; }
+
+  const DummyFreezingVoteObserver& observer() const { return observer_; }
+
+  FreezingVoteAggregator* aggregator() { return &aggregator_; }
+
+ private:
+  DummyFreezingVoteObserver observer_;
+  FreezingVoteAggregator aggregator_;
+  FreezingVoterId aggregator_voter_id_;
+};
+
+TEST_F(FreezingVoteAggregatorTest, EndToEnd) {
+  FreezingVotingChannelWrapper voter0;
+  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
+  FreezingVotingChannelWrapper voter1;
+  voter1.SetVotingChannel(aggregator()->GetVotingChannel());
+  FreezingVotingChannelWrapper voter2;
+  voter2.SetVotingChannel(aggregator()->GetVotingChannel());
 
   // Create some dummy votes for each PageNode and immediately expect
   // them to propagate upwards.
-  voter0.EmitVote(kPageNode0, FreezingVoteValue::kCannotFreeze, kReason0);
-  voter0.EmitVote(kPageNode1, FreezingVoteValue::kCanFreeze, kReason1);
+  voter0.SubmitVote(kPageNode0, kCannotFreezeVote0);
+  voter0.SubmitVote(kPageNode1, kCanFreezeVote0);
   // Current state and expectations:
   //    - kPageNode0: 1 x kCannotFreeze  =>  kCannotFreeze
   //    - kPageNode1: 1 x kCanFreeze     =>  kCanFreeze
-  EXPECT_EQ(2u, voter0.receipts_.size());
-  EXPECT_EQ(0u, voter1.receipts_.size());
-  EXPECT_EQ(0u, voter2.receipts_.size());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0,
-                           FreezingVoteValue::kCannotFreeze, kReason0);
-  consumer.ExpectValidVote(1, agg_id, kPageNode1, FreezingVoteValue::kCanFreeze,
-                           kReason1);
+  EXPECT_EQ(2u, observer().GetVoteCount());
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kPageNode0,
+                                 kCannotFreezeVote0));
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode1, kCanFreezeVote0));
 
   // Change an existing vote, and expect it to propagate upwards.
-  voter0.receipts_[0].ChangeVote(FreezingVoteValue::kCanFreeze, kReason2);
+  voter0.ChangeVote(kPageNode0, kCanFreezeVote1);
   // Current state and expectations:
   //    - kPageNode0: 1 x kCanFreeze     =>  kCanFreeze
   //    - kPageNode1: 1 x kCanFreeze     =>  kCanFreeze
-  EXPECT_EQ(2u, voter0.receipts_.size());
-  EXPECT_EQ(0u, voter1.receipts_.size());
-  EXPECT_EQ(0u, voter2.receipts_.size());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason2);
-  consumer.ExpectValidVote(1, agg_id, kPageNode1, FreezingVoteValue::kCanFreeze,
-                           kReason1);
+  EXPECT_EQ(2u, observer().GetVoteCount());
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote1));
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode1, kCanFreezeVote0));
 
-  // Submit a new kCanFreeze vote and expect no change.
-  voter1.EmitVote(kPageNode1, FreezingVoteValue::kCanFreeze, kReason0);
+  // Submit a new kCanFreeze vote for page 1 and expect no change.
+  voter1.SubmitVote(kPageNode1, kCanFreezeVote2);
   // Current state and expectations:
   //    - kPageNode0: 1 x kCanFreeze     =>  kCanFreeze
   //    - kPageNode1: 2 x kCanFreeze     =>  kCanFreeze
-  EXPECT_EQ(2u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(0u, voter2.receipts_.size());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason2);
-  consumer.ExpectValidVote(1, agg_id, kPageNode1, FreezingVoteValue::kCanFreeze,
-                           kReason1);
+  EXPECT_EQ(2u, observer().GetVoteCount());
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote1));
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode1, kCanFreezeVote0));
 
   // Submit a new vote with a different value and expect it to propagate
   // upwards.
-  voter2.EmitVote(kPageNode1, FreezingVoteValue::kCannotFreeze, kReason0);
+  voter2.SubmitVote(kPageNode1, kCannotFreezeVote0);
   // Current state and expectations:
   //    - kPageNode0: 1 x kCanFreeze     =>  kCanFreeze
   //    - kPageNode1: 2 x kCanFreeze + 1 x kCannotFreeze    =>  kCannotFreeze
-  EXPECT_EQ(2u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(1u, voter2.receipts_.size());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason2);
-  consumer.ExpectValidVote(1, agg_id, kPageNode1,
-                           FreezingVoteValue::kCannotFreeze, kReason0);
+  EXPECT_EQ(2u, observer().GetVoteCount());
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote1));
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kPageNode1,
+                                 kCannotFreezeVote0));
 
   // Invalidate the only kCannotFreeze vote for a given PageNode and expect it
   // to propagate upwards.
-  voter2.receipts_.clear();
+  voter2.InvalidateVote(kPageNode1);
   // Current state and expectations:
   //    - kPageNode0: 1 x kCanFreeze     =>  kCanFreeze
   //    - kPageNode1: 2 x kCanFreeze     =>  kCanFreeze
-  EXPECT_EQ(2u, voter0.receipts_.size());
-  EXPECT_EQ(1u, voter1.receipts_.size());
-  EXPECT_EQ(0u, voter2.receipts_.size());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason2);
-  consumer.ExpectValidVote(1, agg_id, kPageNode1, FreezingVoteValue::kCanFreeze,
-                           kReason1);
+  EXPECT_EQ(2u, observer().GetVoteCount());
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote1));
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode1, kCanFreezeVote0));
 
   // Invalidate the remaining vote for kPageNode1.
-  voter1.receipts_.clear();
-  voter0.receipts_.erase(voter0.receipts_.begin() + 1);
+  voter0.InvalidateVote(kPageNode1);
+  voter1.InvalidateVote(kPageNode1);
   // Current state and expectations:
   //    - kPageNode0: 1 x kCanFreeze     =>  kCanFreeze
   //    - kPageNode1: No vote            =>  Invalidated
-  EXPECT_EQ(1u, voter0.receipts_.size());
-  EXPECT_EQ(0u, voter1.receipts_.size());
-  EXPECT_EQ(0u, voter2.receipts_.size());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason2);
-  consumer.ExpectInvalidVote(1);
+  EXPECT_EQ(1u, observer().GetVoteCount());
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote1));
+  EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kPageNode1));
 
   // Emit a new vote for the PageNode that had no remaining vote
-  voter0.EmitVote(kPageNode1, FreezingVoteValue::kCannotFreeze, kReason2);
+  voter0.SubmitVote(kPageNode1, kCannotFreezeVote1);
   // Current state and expectations:
   //    - kPageNode0: 1 x kCanFreeze     =>  kCanFreeze
   //    - kPageNode1: 1 x kCanFreeze     =>  kCannotFreeze
-  EXPECT_EQ(2u, voter0.receipts_.size());
-  EXPECT_EQ(0u, voter1.receipts_.size());
-  EXPECT_EQ(0u, voter2.receipts_.size());
-  EXPECT_EQ(3u, consumer.votes_.size());
-  EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason2);
-  consumer.ExpectInvalidVote(1);
-  consumer.ExpectValidVote(2, agg_id, kPageNode1,
-                           FreezingVoteValue::kCannotFreeze, kReason2);
+  EXPECT_EQ(2u, observer().GetVoteCount());
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote1));
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kPageNode1,
+                                 kCannotFreezeVote1));
 }
 
-TEST(FreezingVoteAggregatorTest, VoteIntegrity) {
-  DummyFreezingVoteConsumer consumer;
-  FreezingVoteAggregator agg;
-  DummyFreezingVoter voter0;
-  DummyFreezingVoter voter1;
-
-  FreezingVoterId agg_id = voting::kInvalidVoterId<FreezingVote>;
-  {
-    auto channel = consumer.voting_channel_factory_.BuildVotingChannel();
-    agg_id = channel.voter_id();
-    agg.SetUpstreamVotingChannel(std::move(channel));
-  }
-
-  voter0.SetVotingChannel(agg.GetVotingChannel());
-  voter1.SetVotingChannel(agg.GetVotingChannel());
+TEST_F(FreezingVoteAggregatorTest, VoteIntegrity) {
+  FreezingVotingChannelWrapper voter0;
+  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
+  FreezingVotingChannelWrapper voter1;
+  voter1.SetVotingChannel(aggregator()->GetVotingChannel());
 
   // Submit a first vote, this should be the only vote tracked by the
   // aggregator.
-  voter0.EmitVote(kPageNode0, FreezingVoteValue::kCanFreeze, kReason0);
-  EXPECT_EQ(
-      1u,
-      FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0).size());
-  EXPECT_EQ(FreezingVoteValue::kCanFreeze,
-            FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0)
-                .front()
-                .second.value());
-  EXPECT_EQ(kReason0,
-            FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0)
-                .front()
-                .second.reason());
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason0);
+  voter0.SubmitVote(kPageNode0, kCanFreezeVote0);
+  EXPECT_EQ(1u, FreezingVoteAggregatorTestAccess::GetAllVotes(aggregator(),
+                                                              kPageNode0)
+                    .size());
+  EXPECT_EQ(kCanFreezeVote0, FreezingVoteAggregatorTestAccess::GetAllVotes(
+                                 aggregator(), kPageNode0)
+                                 .front()
+                                 .second);
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote0));
 
   // Emit a second vote that should be ordered before the previous one, ensure
   // that this is the case.
-  voter1.EmitVote(kPageNode0, FreezingVoteValue::kCannotFreeze, kReason1);
-  EXPECT_EQ(
-      2u,
-      FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0).size());
-  EXPECT_EQ(FreezingVoteValue::kCannotFreeze,
-            FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0)
-                .begin()
-                ->second.value());
-  EXPECT_EQ(kReason1,
-            FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0)
-                .begin()
-                ->second.reason());
-  EXPECT_EQ(FreezingVoteValue::kCanFreeze,
-            FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0)
-                .back()
-                .second.value());
-  EXPECT_EQ(kReason0,
-            FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0)
-                .back()
-                .second.reason());
-  consumer.ExpectValidVote(0, agg_id, kPageNode0,
-                           FreezingVoteValue::kCannotFreeze, kReason1);
+  voter1.SubmitVote(kPageNode0, kCannotFreezeVote0);
+  EXPECT_EQ(2u, FreezingVoteAggregatorTestAccess::GetAllVotes(aggregator(),
+                                                              kPageNode0)
+                    .size());
+  EXPECT_EQ(kCannotFreezeVote0, FreezingVoteAggregatorTestAccess::GetAllVotes(
+                                    aggregator(), kPageNode0)
+                                    .front()
+                                    .second);
+  EXPECT_EQ(kCanFreezeVote0, FreezingVoteAggregatorTestAccess::GetAllVotes(
+                                 aggregator(), kPageNode0)
+                                 .back()
+                                 .second);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kPageNode0,
+                                 kCannotFreezeVote0));
 
   // Removing the second vote should restore things back to the state they were
   // before casting it.
-  voter1.receipts_.clear();
-  EXPECT_EQ(
-      1u,
-      FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0).size());
-  EXPECT_EQ(FreezingVoteValue::kCanFreeze,
-            FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0)
-                .front()
-                .second.value());
-  EXPECT_EQ(kReason0,
-            FreezingVoteAggregatorTestAccess::GetAllVotes(&agg, kPageNode0)
-                .front()
-                .second.reason());
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason0);
+  voter1.InvalidateVote(kPageNode0);
+  EXPECT_EQ(1u, FreezingVoteAggregatorTestAccess::GetAllVotes(aggregator(),
+                                                              kPageNode0)
+                    .size());
+  EXPECT_EQ(kCanFreezeVote0, FreezingVoteAggregatorTestAccess::GetAllVotes(
+                                 aggregator(), kPageNode0)
+                                 .front()
+                                 .second);
+
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote0));
 
   // Removing the last vote should cause the upstreamed vote to be invalidated.
-  voter0.receipts_.clear();
-  consumer.ExpectInvalidVote(0);
+  voter0.InvalidateVote(kPageNode0);
+  EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kPageNode0));
 }
 
 // Tests that submitting a second vote with the same value as the first one does
 // not change the upstreamed vote.
-TEST(FreezingVoteAggregatorTest, VoteConsistency) {
-  DummyFreezingVoteConsumer consumer;
-  FreezingVoteAggregator agg;
-  DummyFreezingVoter voter0;
-  DummyFreezingVoter voter1;
-
-  FreezingVoterId agg_id = voting::kInvalidVoterId<FreezingVote>;
-  {
-    auto channel = consumer.voting_channel_factory_.BuildVotingChannel();
-    agg_id = channel.voter_id();
-    agg.SetUpstreamVotingChannel(std::move(channel));
-  }
-
-  voter0.SetVotingChannel(agg.GetVotingChannel());
-  voter1.SetVotingChannel(agg.GetVotingChannel());
+TEST_F(FreezingVoteAggregatorTest, VoteConsistency) {
+  FreezingVotingChannelWrapper voter0;
+  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
+  FreezingVotingChannelWrapper voter1;
+  voter1.SetVotingChannel(aggregator()->GetVotingChannel());
 
   // Submit a first vote.
-  voter0.EmitVote(kPageNode0, FreezingVoteValue::kCanFreeze, kReason0);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason0);
+  voter0.SubmitVote(kPageNode0, kCanFreezeVote0);
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote0));
 
   // Emit a second vote with the same value but a different reason so that they
   // can be differentiated. The upstreamed vote should be the same.
-  voter1.EmitVote(kPageNode0, FreezingVoteValue::kCanFreeze, kReason1);
-  consumer.ExpectValidVote(0, agg_id, kPageNode0, FreezingVoteValue::kCanFreeze,
-                           kReason0);
+  voter1.SubmitVote(kPageNode0, kCanFreezeVote1);
+  EXPECT_TRUE(
+      observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote0));
 
   // Clear the votes.
-  voter0.receipts_.clear();
-  voter1.receipts_.clear();
+  voter0.InvalidateVote(kPageNode0);
+  voter1.InvalidateVote(kPageNode0);
 
   // Do the same with kCannotFreeze votes.
 
   // Submit a first vote.
-  voter0.EmitVote(kPageNode0, FreezingVoteValue::kCannotFreeze, kReason0);
-  consumer.ExpectValidVote(1, agg_id, kPageNode0,
-                           FreezingVoteValue::kCannotFreeze, kReason0);
+  voter0.SubmitVote(kPageNode0, kCannotFreezeVote0);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kPageNode0,
+                                 kCannotFreezeVote0));
 
   // Emit a second vote with the same value but a different reason so that they
   // can be differentiated. The upstreamed vote should be the same.
-  voter1.EmitVote(kPageNode0, FreezingVoteValue::kCannotFreeze, kReason1);
-  consumer.ExpectValidVote(1, agg_id, kPageNode0,
-                           FreezingVoteValue::kCannotFreeze, kReason0);
+  voter1.SubmitVote(kPageNode0, kCannotFreezeVote1);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kPageNode0,
+                                 kCannotFreezeVote0));
 
   // Clear the votes.
-  voter0.receipts_.clear();
-  voter1.receipts_.clear();
+  voter0.InvalidateVote(kPageNode0);
+  voter1.InvalidateVote(kPageNode0);
 }
 
 }  // namespace freezing
