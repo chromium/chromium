@@ -426,14 +426,17 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
                                          /*REMOTE_INITIAL_UPDATE=*/5));
 }
 
-IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, ClearsPrefsIfClearData) {
+IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, ResetsPrefsIfClearData) {
   SetupTest(/*all_types_enabled=*/true);
 
   SyncPrefs prefs(GetProfile(0)->GetPrefs());
-  ASSERT_NE("", prefs.GetCacheGuid());
+  const std::string first_cache_guid = prefs.GetCacheGuid();
+  ASSERT_NE("", first_cache_guid);
 
   GetClient(0)->StopSyncServiceAndClearData();
-  EXPECT_EQ("", prefs.GetCacheGuid());
+  // Sync should have restarted in transport mode, creating a new cache GUID.
+  EXPECT_NE("", prefs.GetCacheGuid());
+  EXPECT_NE(first_cache_guid, prefs.GetCacheGuid());
 }
 
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,

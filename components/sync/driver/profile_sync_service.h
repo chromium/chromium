@@ -278,6 +278,11 @@ class ProfileSyncService : public SyncService,
   // Callbacks for SyncUserSettingsImpl.
   void SyncAllowedByPlatformChanged(bool allowed);
 
+  // A wrapper around SyncUserSettings::SetSyncRequested(), such that the
+  // notification which is synchronously triggered will be ignored in the
+  // implementation of OnSyncRequestedPrefChange().
+  void SetSyncRequestedAndIgnoreNotification(bool is_requested);
+
   bool IsEngineAllowedToRun() const;
 
   // Same as GetTransportState() returning PAUSED. In this state, the engine
@@ -488,9 +493,9 @@ class ProfileSyncService : public SyncService,
   // IsPassphrasePrompted sync preference.
   bool passphrase_prompt_triggered_by_version_;
 
-  // Used by StopAndClear() to remember that clearing of data is needed (as
-  // sync is stopped after a callback from |user_settings_|).
-  bool is_stopping_and_clearing_;
+  // Used in OnSyncRequestedPrefChange() to know whether the notification was
+  // caused by the service itself setting the pref.
+  bool is_setting_sync_requested_;
 
   // Used for UMA to determine whether TrustedVaultErrorShownOnStartup
   // histogram needs to recorded. Set to false iff histogram was already

@@ -236,7 +236,7 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
           base::BindRepeating(&CreateHttpBridgeFactory)),
       start_behavior_(init_params.start_behavior),
       passphrase_prompt_triggered_by_version_(false),
-      is_stopping_and_clearing_(false),
+      is_setting_sync_requested_(false),
       should_record_trusted_vault_error_shown_on_startup_(true),
 #if defined(OS_ANDROID)
       sessions_invalidations_enabled_(false) {
@@ -334,15 +334,20 @@ void ProfileSyncService::Initialize() {
   RecordSyncInitialState(GetDisableReasons(),
                          user_settings_->IsFirstSetupComplete());
 
+  if (!IsAuthenticatedAccountPrimary()) {
+    // Remove after 11/2021. Migration logic to set SyncRequested to false if
+    // the user is signed-out or signed-in but not syncing (crbug.com/1147026).
+    user_settings_->SetSyncRequested(false);
+
 #if defined(OS_ANDROID)
-  // If Sync was turned on after the feature toggle was enabled, it should be in
-  // the decoupled state.
-  if (!IsAuthenticatedAccountPrimary() &&
-      base::FeatureList::IsEnabled(
-          switches::kDecoupleSyncFromAndroidMasterSync)) {
-    sync_prefs_.SetDecoupledFromAndroidMasterSync();
-  }
+    // If Sync was turned on after the feature toggle was enabled, it should be
+    // in the decoupled state.
+    if (base::FeatureList::IsEnabled(
+            switches::kDecoupleSyncFromAndroidMasterSync)) {
+      sync_prefs_.SetDecoupledFromAndroidMasterSync();
+    }
 #endif  // defined(OS_ANDROID)
+  }
 
   // Auto-start means the first time the profile starts up, sync should start up
   // immediately. Since IsSyncRequested() is false by default and nobody else
@@ -716,8 +721,9 @@ void ProfileSyncService::StopImpl(SyncStopDataFate data_fate) {
       // directly user-controlled such as the set of selected types here, so
       // that if the user ever chooses to enable Sync again, they start off
       // with their previous settings by default. We do however require going
-      // through first-time setup again.
+      // through first-time setup again and set SyncRequested to false.
       sync_prefs_.ClearFirstSetupComplete();
+      SetSyncRequestedAndIgnoreNotification(false);
       // For explicit passphrase users, clear the encryption key, such that they
       // will need to reenter it if sync gets re-enabled.
       sync_prefs_.ClearEncryptionBootstrapToken();
@@ -1266,6 +1272,19 @@ void ProfileSyncService::SyncAllowedByPlatformChanged(bool allowed) {
   }
 }
 
+void ProfileSyncService::SetSyncRequestedAndIgnoreNotification(
+    bool is_requested) {
+  // For a no-op, OnSyncRequestedPrefChange() wouldn't be called and
+  // |is_setting_sync_requested_| wouldn't get reset, so check.
+  if (is_requested != user_settings_->IsSyncRequested()) {
+    DCHECK(!is_setting_sync_requested_);
+    is_setting_sync_requested_ = true;
+    user_settings_->SetSyncRequested(is_requested);
+    // OnSyncRequestedPrefChange() should have cleared the flag.
+    DCHECK(!is_setting_sync_requested_);
+  }
+}
+
 void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
   ConfigureContext configure_context;
   configure_context.authenticated_account_id =
@@ -1542,6 +1561,12 @@ void ProfileSyncService::OnFirstSetupCompletePrefChange(
 }
 
 void ProfileSyncService::OnSyncRequestedPrefChange(bool is_sync_requested) {
+  // Ignore the notification if the service itself set the pref.
+  if (is_setting_sync_requested_) {
+    is_setting_sync_requested_ = false;
+    return;
+  }
+
   if (is_sync_requested) {
     // If the Sync engine was already initialized (probably running in transport
     // mode), just reconfigure.
@@ -1556,14 +1581,9 @@ void ProfileSyncService::OnSyncRequestedPrefChange(bool is_sync_requested) {
     NotifyObservers();
   } else {
     // This will notify the observers.
-    if (is_stopping_and_clearing_) {
-      is_stopping_and_clearing_ = false;
-      StopImpl(CLEAR_DATA);
-    } else {
-      // TODO(crbug.com/856179): Evaluate whether we can get away without a
-      // full restart in this case (i.e. just reconfigure).
-      StopImpl(KEEP_DATA);
-    }
+    // TODO(crbug.com/856179): Evaluate whether we can get away without a
+    // full restart in this case (i.e. just reconfigure).
+    StopImpl(KEEP_DATA);
 
     // Try to start up again (in transport-only mode).
     // TODO(crbug.com/1035874): There's no real need to delay the startup here,
@@ -1789,26 +1809,10 @@ base::WeakPtr<JsController> ProfileSyncService::GetJsController() {
 void ProfileSyncService::StopAndClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // This can happen if the user had disabled sync before and is now setting up
-  // sync again but hits the "Cancel" button on the confirmation dialog.
-  // TODO(crbug.com/906034): Maybe we can streamline the defaults and the
-  // behavior on setting up sync so that either this whole early return goes
-  // away or it treats all "Cancel the confirmation" cases?
-  if (!user_settings_->IsSyncRequested()) {
-    StopImpl(CLEAR_DATA);
-    // Try to start up again (in transport-only mode).
-    startup_controller_->TryStart(/*force_immediate=*/true);
-    return;
-  }
-
-  // We need to remember that clearing of data is needed when sync will be
-  // stopped. This flag is cleared in OnSyncRequestedPrefChange() where sync
-  // gets stopped. This happens synchronously when |user_settings_| get changed
-  // below.
-  DCHECK(!is_stopping_and_clearing_);
-  is_stopping_and_clearing_ = true;
-  user_settings_->SetSyncRequested(false);
-  DCHECK(!is_stopping_and_clearing_);
+  SetSyncRequestedAndIgnoreNotification(false);
+  StopImpl(CLEAR_DATA);
+  // Try to start up again (in transport-only mode).
+  startup_controller_->TryStart(/*force_immediate=*/true);
 }
 
 void ProfileSyncService::ReconfigureDatatypeManager(

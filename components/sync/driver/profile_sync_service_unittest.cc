@@ -502,45 +502,50 @@ TEST_F(ProfileSyncServiceTest, DisabledByPolicyBeforeInit) {
   SignIn();
   CreateService(ProfileSyncService::MANUAL_START);
   InitializeForNthSync();
+  // Sync was disabled due to the policy, setting SyncRequested to false and
+  // causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_ENTERPRISE_POLICY),
+                SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
+                SyncService::DISABLE_REASON_USER_CHOICE),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 }
 
-// This test exercises sign-in after startup, which isn't supported on ChromeOS.
-#if !defined(OS_CHROMEOS)
 TEST_F(ProfileSyncServiceTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
   prefs()->SetManagedPref(prefs::kSyncManaged,
                           std::make_unique<base::Value>(true));
+  SignIn();
   CreateService(ProfileSyncService::MANUAL_START);
   InitializeForNthSync();
+  // Sync was disabled due to the policy, setting SyncRequested to false and
+  // causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(SyncService::DisableReasonSet(
                 SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                SyncService::DISABLE_REASON_NOT_SIGNED_IN),
+                SyncService::DISABLE_REASON_USER_CHOICE),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 
-  // Remove the policy. Now only missing sign-in is preventing startup.
+  // Remove the policy. Sync-the-feature is still disabled, sync-the-transport
+  // can run.
   prefs()->SetManagedPref(prefs::kSyncManaged,
                           std::make_unique<base::Value>(false));
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN),
+      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
-  EXPECT_EQ(SyncService::TransportState::DISABLED,
+  EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
   // Once we mark first setup complete again (it was cleared by the policy) and
-  // sign in, sync starts up.
+  // set SyncRequested to true, sync starts up.
+  service()->GetUserSettings()->SetSyncRequested(true);
   service()->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-  SignIn();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
 }
-#endif  // !defined(OS_CHROMEOS)
 
 // Verify that disable by enterprise policy works even after the backend has
 // been initialized.
@@ -556,8 +561,11 @@ TEST_F(ProfileSyncServiceTest, DisabledByPolicyAfterInit) {
   prefs()->SetManagedPref(prefs::kSyncManaged,
                           std::make_unique<base::Value>(true));
 
+  // Sync was disabled due to the policy, setting SyncRequested to false and
+  // causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_ENTERPRISE_POLICY),
+                SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
+                SyncService::DISABLE_REASON_USER_CHOICE),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -669,8 +677,10 @@ TEST_F(ProfileSyncServiceTest, SignOutDisablesSyncTransportAndSyncFeature) {
       signin_metrics::SignoutDelete::IGNORE_METRIC);
   // Wait for ProfileSyncService to be notified.
   base::RunLoop().RunUntilIdle();
+  // SyncRequested was set to false, causing DISABLE_REASON_USER_CHOICE.
   EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN),
+      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
+                                    SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -698,8 +708,19 @@ TEST_F(ProfileSyncServiceTest,
   base::RunLoop().RunUntilIdle();
   // These are specific to sync-the-feature and should be cleared.
   EXPECT_FALSE(service()->GetUserSettings()->IsFirstSetupComplete());
-  // TODO(crbug.com/1147026): Add expectation for IsSyncRequested when it's
-  // being cleared.
+  EXPECT_FALSE(service()->GetUserSettings()->IsSyncRequested());
+}
+
+TEST_F(ProfileSyncServiceTest, SyncRequestedSetToFalseIfStartsSignedOut) {
+  // Set up bad state.
+  SyncPrefs sync_prefs(prefs());
+  sync_prefs.SetSyncRequested(true);
+
+  CreateService(ProfileSyncService::MANUAL_START);
+  service()->Initialize();
+
+  // There's no signed-in user, so SyncRequested should have been set to false.
+  EXPECT_FALSE(service()->GetUserSettings()->IsSyncRequested());
 }
 
 TEST_F(ProfileSyncServiceTest, IdentityProvider_GetActiveAccountId) {
