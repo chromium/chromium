@@ -58,7 +58,7 @@ public class FakeProfileDataSource implements ProfileDataSource {
         if (profileData == null) {
             mProfileDataMap.remove(accountId);
         } else {
-            assert accountId.equals(profileData.getAccountName());
+            assert accountId.equals(profileData.getAccountEmail());
             mProfileDataMap.put(accountId, profileData);
         }
         fireOnProfileDataUpdatedNotification(accountId);

@@ -78,11 +78,11 @@ class ExistingAccountRowViewBinder {
         String fullName = profileData.getFullName();
         if (!TextUtils.isEmpty(fullName)) {
             accountTextPrimary.setText(fullName);
-            accountTextSecondary.setText(profileData.getAccountName());
+            accountTextSecondary.setText(profileData.getAccountEmail());
             accountTextSecondary.setVisibility(View.VISIBLE);
         } else {
             // Full name is not available, show the email in the primary TextView.
-            accountTextPrimary.setText(profileData.getAccountName());
+            accountTextPrimary.setText(profileData.getAccountEmail());
             accountTextSecondary.setVisibility(View.GONE);
         }
     }

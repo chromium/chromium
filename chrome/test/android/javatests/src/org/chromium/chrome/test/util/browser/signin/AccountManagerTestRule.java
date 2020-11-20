@@ -113,8 +113,8 @@ public class AccountManagerTestRule implements TestRule {
      * @return The account added.
      */
     public CoreAccountInfo addAccount(ProfileDataSource.ProfileData profileData) {
-        CoreAccountInfo coreAccountInfo = addAccount(profileData.getAccountName());
-        mFakeAccountManagerFacade.setProfileData(profileData.getAccountName(), profileData);
+        CoreAccountInfo coreAccountInfo = addAccount(profileData.getAccountEmail());
+        mFakeAccountManagerFacade.setProfileData(profileData.getAccountEmail(), profileData);
         return coreAccountInfo;
     }
 

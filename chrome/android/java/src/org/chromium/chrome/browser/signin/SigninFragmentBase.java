@@ -336,12 +336,12 @@ public abstract class SigninFragmentBase
         if (!TextUtils.isEmpty(fullName)) {
             mConsentTextTracker.setTextNonRecordable(mView.getAccountTextPrimary(), fullName);
             mConsentTextTracker.setTextNonRecordable(
-                    mView.getAccountTextSecondary(), profileData.getAccountName());
+                    mView.getAccountTextSecondary(), profileData.getAccountEmail());
             mView.getAccountTextSecondary().setVisibility(View.VISIBLE);
         } else {
             // Full name is not available, show the email in the primary TextView.
             mConsentTextTracker.setTextNonRecordable(
-                    mView.getAccountTextPrimary(), profileData.getAccountName());
+                    mView.getAccountTextPrimary(), profileData.getAccountEmail());
             mView.getAccountTextSecondary().setVisibility(View.GONE);
         }
     }

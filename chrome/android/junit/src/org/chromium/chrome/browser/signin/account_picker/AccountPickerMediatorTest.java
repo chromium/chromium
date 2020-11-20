@@ -146,7 +146,7 @@ public class AccountPickerMediatorTest {
         Assert.assertEquals(AccountPickerProperties.ItemType.EXISTING_ACCOUNT_ROW, item.type);
         PropertyModel model = item.model;
         DisplayableProfileData profileData = model.get(ExistingAccountRowProperties.PROFILE_DATA);
-        Assert.assertEquals(accountEmail, profileData.getAccountName());
+        Assert.assertEquals(accountEmail, profileData.getAccountEmail());
         Assert.assertEquals(fullName, profileData.getFullName());
         Assert.assertEquals(
                 isSelectedAccount, model.get(ExistingAccountRowProperties.IS_SELECTED_ACCOUNT));

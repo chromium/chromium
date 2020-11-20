@@ -317,14 +317,14 @@ public class SigninPromoController {
         recordSigninButtonUsed();
         RecordUserAction.record(mSigninWithDefaultUserActionName);
         SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                context, mAccessPoint, mProfileData.getAccountName());
+                context, mAccessPoint, mProfileData.getAccountEmail());
     }
 
     private void signinWithNotDefaultAccount(Context context) {
         recordSigninButtonUsed();
         RecordUserAction.record(mSigninNotDefaultUserActionName);
         SigninActivityLauncherImpl.get().launchActivityForPromoChooseAccountFlow(
-                context, mAccessPoint, mProfileData.getAccountName());
+                context, mAccessPoint, mProfileData.getAccountEmail());
     }
 
     private void recordSigninButtonUsed() {

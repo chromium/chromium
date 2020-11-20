@@ -186,10 +186,10 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
      *         given account or a {@link DisplayableProfileData} with a placeholder image and null
      *         full and given name.
      */
-    public DisplayableProfileData getProfileDataOrDefault(String accountName) {
-        DisplayableProfileData profileData = mCachedProfileData.get(accountName);
+    public DisplayableProfileData getProfileDataOrDefault(String accountEmail) {
+        DisplayableProfileData profileData = mCachedProfileData.get(accountEmail);
         if (profileData == null) {
-            return new DisplayableProfileData(accountName, mPlaceholderImage, null, null);
+            return new DisplayableProfileData(accountEmail, mPlaceholderImage, null, null);
         }
         return profileData;
     }
@@ -236,8 +236,8 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
 
     private DisplayableProfileData createDisplayableProfileData(
             ProfileDataSource.ProfileData profileData) {
-        return new DisplayableProfileData(profileData.getAccountName(),
-                prepareAvatar(profileData.getAvatar(), profileData.getAccountName()),
+        return new DisplayableProfileData(profileData.getAccountEmail(),
+                prepareAvatar(profileData.getAvatar(), profileData.getAccountEmail()),
                 profileData.getFullName(), profileData.getGivenName());
     }
 
@@ -337,8 +337,8 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     }
 
     private void updateCachedProfileDataAndNotifyObservers(DisplayableProfileData profileData) {
-        mCachedProfileData.put(profileData.getAccountName(), profileData);
-        notifyObservers(profileData.getAccountName());
+        mCachedProfileData.put(profileData.getAccountEmail(), profileData);
+        notifyObservers(profileData.getAccountEmail());
     }
 
     private void notifyObservers(String accountEmail) {

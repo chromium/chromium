@@ -12,26 +12,26 @@ import androidx.annotation.Nullable;
  * Immutable holder for displayable profile data.
  */
 public class DisplayableProfileData {
-    private final String mAccountName;
+    private final String mAccountEmail;
     private final Drawable mImage;
     private final @Nullable String mFullName;
     private final @Nullable String mGivenName;
 
-    public DisplayableProfileData(String accountName, Drawable image, @Nullable String fullName,
+    public DisplayableProfileData(String accountEmail, Drawable image, @Nullable String fullName,
             @Nullable String givenName) {
-        assert accountName != null;
+        assert accountEmail != null;
         assert image != null;
-        mAccountName = accountName;
+        mAccountEmail = accountEmail;
         mImage = image;
         mFullName = fullName;
         mGivenName = givenName;
     }
 
     /**
-     * @return The account name (i.e. the e-mail address).
+     * @return The account email.
      */
-    public String getAccountName() {
-        return mAccountName;
+    public String getAccountEmail() {
+        return mAccountEmail;
     }
 
     /**
@@ -60,7 +60,7 @@ public class DisplayableProfileData {
      */
     public String getFullNameOrEmail() {
         if (mFullName == null) {
-            return mAccountName;
+            return mAccountEmail;
         }
         return mFullName;
     }

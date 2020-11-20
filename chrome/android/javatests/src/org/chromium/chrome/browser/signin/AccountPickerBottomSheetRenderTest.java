@@ -186,7 +186,7 @@ public class AccountPickerBottomSheetRenderTest {
             throws IOException {
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
         // Throws a connection error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -208,7 +208,7 @@ public class AccountPickerBottomSheetRenderTest {
     public void testSigninGeneralErrorView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
         // Throws a connection error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -230,7 +230,7 @@ public class AccountPickerBottomSheetRenderTest {
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
         // Throws an authentication error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -254,7 +254,7 @@ public class AccountPickerBottomSheetRenderTest {
             throws IOException {
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
         // Throws an auth error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -273,7 +273,7 @@ public class AccountPickerBottomSheetRenderTest {
             return null;
         })
                 .when(mAccountPickerDelegateMock)
-                .updateCredentials(eq(PROFILE_DATA1.getAccountName()), any());
+                .updateCredentials(eq(PROFILE_DATA1.getAccountEmail()), any());
         onView(withText(R.string.auth_error_card_button)).perform(click());
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");

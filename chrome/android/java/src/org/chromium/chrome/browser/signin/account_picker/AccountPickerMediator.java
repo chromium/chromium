@@ -115,9 +115,9 @@ class AccountPickerMediator {
             DisplayableProfileData profileData, boolean isDefaultAccount) {
         Callback<DisplayableProfileData> profileDataCallback = profileData1
                 -> mAccountPickerListener.onAccountSelected(
-                        profileData1.getAccountName(), isDefaultAccount);
+                        profileData1.getAccountEmail(), isDefaultAccount);
         PropertyModel model = ExistingAccountRowProperties.createModel(profileData,
-                profileDataCallback, profileData.getAccountName().equals(mSelectedAccountName));
+                profileDataCallback, profileData.getAccountEmail().equals(mSelectedAccountName));
         return new MVCListAdapter.ListItem(ItemType.EXISTING_ACCOUNT_ROW, model);
     }
 
@@ -126,7 +126,7 @@ class AccountPickerMediator {
             if (item.type == AccountPickerProperties.ItemType.EXISTING_ACCOUNT_ROW) {
                 PropertyModel model = item.model;
                 boolean isSelectedAccount = TextUtils.equals(mSelectedAccountName,
-                        model.get(ExistingAccountRowProperties.PROFILE_DATA).getAccountName());
+                        model.get(ExistingAccountRowProperties.PROFILE_DATA).getAccountEmail());
                 model.set(ExistingAccountRowProperties.IS_SELECTED_ACCOUNT, isSelectedAccount);
             }
         }
@@ -140,7 +140,7 @@ class AccountPickerMediator {
             if (item.type == AccountPickerProperties.ItemType.EXISTING_ACCOUNT_ROW) {
                 PropertyModel model = item.model;
                 boolean isProfileDataUpdated = TextUtils.equals(accountName,
-                        model.get(ExistingAccountRowProperties.PROFILE_DATA).getAccountName());
+                        model.get(ExistingAccountRowProperties.PROFILE_DATA).getAccountEmail());
                 if (isProfileDataUpdated) {
                     model.set(ExistingAccountRowProperties.PROFILE_DATA,
                             mProfileDataCache.getProfileDataOrDefault(accountName));
