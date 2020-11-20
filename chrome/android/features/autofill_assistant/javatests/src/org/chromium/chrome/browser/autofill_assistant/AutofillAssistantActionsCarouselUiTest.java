@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.PositionAssertions.isRightOf;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -96,7 +97,7 @@ public class AutofillAssistantActionsCarouselUiTest {
                         -> model.set(AssistantCarouselModel.CHIPS,
                                 Collections.singletonList(new AssistantChip(
                                         AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                                        "Test", false, true, true))));
+                                        "Test", false, true, true, ""))));
 
         // Chip was created and is displayed on the screen.
         onView(is(coordinator.getView()))
@@ -117,10 +118,10 @@ public class AutofillAssistantActionsCarouselUiTest {
         List<AssistantChip> chips = new ArrayList<>();
         for (int i = 0; i < numChips; i++) {
             chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                    "T" + i, false, false, true));
+                    "T" + i, false, false, true, ""));
         }
         chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "X", false, true, true));
+                "X", false, true, true, ""));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> model.set(AssistantCarouselModel.CHIPS, chips));
 
@@ -145,10 +146,10 @@ public class AutofillAssistantActionsCarouselUiTest {
         List<AssistantChip> chips = new ArrayList<>();
         for (int i = 0; i < numChips; i++) {
             chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                    "Test" + i, false, false, true));
+                    "Test" + i, false, false, true, ""));
         }
         chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "Cancel", false, true, true));
+                "Cancel", false, true, true, ""));
         TestThreadUtils.runOnUiThreadBlocking(() -> model.set(AssistantCarouselModel.CHIPS, chips));
 
         // Cancel chip is initially displayed to the user.
@@ -174,9 +175,9 @@ public class AutofillAssistantActionsCarouselUiTest {
 
         List<AssistantChip> chips = new ArrayList<>();
         chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "Test 2", false, false, true));
+                "Test 2", false, false, true, ""));
         chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "Cancel", false, true, true));
+                "Cancel", false, true, true, ""));
         TestThreadUtils.runOnUiThreadBlocking(() -> model.set(AssistantCarouselModel.CHIPS, chips));
         onView(withText("Cancel")).check(matches(isDisplayed()));
         onView(withText("Test 2")).check(matches(isDisplayed()));
@@ -185,7 +186,7 @@ public class AutofillAssistantActionsCarouselUiTest {
         List<AssistantChip> newChips = new ArrayList<>();
         newChips.add(chips.get(0));
         newChips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "Test 1", false, false, true));
+                "Test 1", false, false, true, ""));
         newChips.add(chips.get(1));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantCarouselModel.CHIPS, newChips));
@@ -194,5 +195,99 @@ public class AutofillAssistantActionsCarouselUiTest {
         onView(withText("Test 2")).check(matches(isDisplayed()));
         onView(withText("Test 1")).check(isRightOf(withText("Cancel")));
         onView(withText("Test 2")).check(isRightOf(withText("Test 1")));
+    }
+
+    /**
+     * Adds a single chip with non empty content description, and tests that same is used as content
+     * description.
+     */
+    @Test
+    @MediumTest
+    public void testSuppliedNonEmptyContentDescriptionIsUsed() throws Exception {
+        String contentDescription = "Test content description";
+        AssistantCarouselModel model = new AssistantCarouselModel();
+        AssistantActionsCarouselCoordinator coordinator = createCoordinator(model);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantCarouselModel.CHIPS,
+                                Collections.singletonList(new AssistantChip(
+                                        AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
+                                        "Chip", false, true, true, contentDescription))));
+
+        onView(is(coordinator.getView()))
+                .check(matches(hasDescendant(
+                        allOf(withContentDescription(contentDescription), isDisplayed()))));
+    }
+
+    /**
+     * Adds a single chip with empty content description, and tests that same is used as content
+     * description.
+     */
+    @Test
+    @MediumTest
+    public void testSuppliedEmptyContentDescriptionIsUsed() throws Exception {
+        String contentDescription = "";
+        AssistantCarouselModel model = new AssistantCarouselModel();
+        AssistantActionsCarouselCoordinator coordinator = createCoordinator(model);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantCarouselModel.CHIPS,
+                                Collections.singletonList(new AssistantChip(
+                                        AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
+                                        "Chip", false, true, true, contentDescription))));
+
+        onView(is(coordinator.getView()))
+                .check(matches(hasDescendant(
+                        allOf(withContentDescription(contentDescription), isDisplayed()))));
+    }
+
+    /**
+     * Adds a single chip with null content description, and tests that chip text is used as content
+     * description if it's non-empty.
+     */
+    @Test
+    @MediumTest
+    public void testWhenNullContentDescriptionIsSuppliedChipTextIsUsed() throws Exception {
+        String chipText = "Chip Text";
+        AssistantCarouselModel model = new AssistantCarouselModel();
+        AssistantActionsCarouselCoordinator coordinatorNonEmptyChipText = createCoordinator(model);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantCarouselModel.CHIPS,
+                                Collections.singletonList(
+                                        new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE,
+                                                AssistantChip.Icon.DONE, chipText, false, true,
+                                                true, /* contentDescription */ null))));
+
+        onView(is(coordinatorNonEmptyChipText.getView()))
+                .check(matches(
+                        hasDescendant(allOf(withContentDescription(chipText), isDisplayed()))));
+    }
+
+    /**
+     * Adds a single chip with null content description and empty chip text, and tests that icon
+     * description is used as content description if available.
+     */
+    @Test
+    @MediumTest
+    public void testWhenNullContentDescriptionIsSuppliedChipTextOrIconDescriptionIsUsed()
+            throws Exception {
+        AssistantCarouselModel model = new AssistantCarouselModel();
+        AssistantActionsCarouselCoordinator coordinatorEmptyChipText = createCoordinator(model);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantCarouselModel.CHIPS,
+                                Collections.singletonList(new AssistantChip(
+                                        AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.DONE,
+                                        /* chipText */ "", false, true, true,
+                                        /* contentDescription */ null))));
+
+        onView(is(coordinatorEmptyChipText.getView()))
+                .check(matches(
+                        hasDescendant(allOf(withContentDescription("Done"), isDisplayed()))));
     }
 }

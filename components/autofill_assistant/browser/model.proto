@@ -224,6 +224,14 @@ message ChipProto {
   // sheet is minimized, the first sticky action will be displayed instead of
   // the profile icon.
   optional bool sticky = 4;
+
+  // The content description for this chip. There are three possible states:
+  // - unset: the content description will be inferred from the chip text and/or
+  // the chip icon.
+  // - set to empty string: this chip is not important for a11y.
+  // - set to non-empty string: the chip will have the specified content
+  // description.
+  optional string content_description = 5;
 }
 
 enum ChipType {

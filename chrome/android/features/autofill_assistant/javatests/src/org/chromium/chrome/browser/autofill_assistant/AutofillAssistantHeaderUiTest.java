@@ -11,6 +11,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -206,9 +207,11 @@ public class AutofillAssistantHeaderUiTest {
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
 
         String chipText = "Hello World";
+        String contentDescription = "Hello World description";
         AssistantChip chip =
                 new AssistantChip(AssistantChip.Type.BUTTON_FILLED_BLUE, Icon.DONE, chipText,
-                        /* disabled= */ false, /* sticky= */ false, /* visible= */ true);
+                        /* disabled= */ false, /* sticky= */ false, /* visible= */ true,
+                        contentDescription);
 
         // Set the header chip without displaying it.
         List<AssistantChip> chips = new ArrayList<>();
@@ -218,6 +221,7 @@ public class AutofillAssistantHeaderUiTest {
         Matcher<View> chipMatcher =
                 allOf(isDescendantOfA(is(coordinator.getView())), withText(chipText));
         onView(chipMatcher).check(doesNotExist());
+        onView(withContentDescription(contentDescription)).check(doesNotExist());
 
         // Show the chip
         TestThreadUtils.runOnUiThreadBlocking(
@@ -225,6 +229,7 @@ public class AutofillAssistantHeaderUiTest {
         onView(chipMatcher)
                 .check(matches(isDisplayed()))
                 .check(isRightOf(withId(R.id.status_message)));
+        onView(withContentDescription(contentDescription)).check(matches(isDisplayed()));
     }
 
     @Test

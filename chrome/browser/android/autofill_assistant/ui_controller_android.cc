@@ -61,6 +61,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 
@@ -734,15 +735,21 @@ void UiControllerAndroid::UpdateActions(
         jchip =
             Java_AutofillAssistantUiController_createHighlightedActionButton(
                 env, java_object_, chip.icon,
-                base::android::ConvertUTF8ToJavaString(env, chip.text), i,
-                !action.enabled(), chip.sticky, chip.visible);
+                ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
+                chip.sticky, chip.visible,
+                chip.is_content_description_set
+                    ? ConvertUTF8ToJavaString(env, chip.content_description)
+                    : nullptr);
         break;
 
       case NORMAL_ACTION:
         jchip = Java_AutofillAssistantUiController_createActionButton(
             env, java_object_, chip.icon,
-            base::android::ConvertUTF8ToJavaString(env, chip.text), i,
-            !action.enabled(), chip.sticky, chip.visible);
+            ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
+            chip.sticky, chip.visible,
+            chip.is_content_description_set
+                ? ConvertUTF8ToJavaString(env, chip.content_description)
+                : nullptr);
         break;
 
       case CANCEL_ACTION:
@@ -750,16 +757,22 @@ void UiControllerAndroid::UpdateActions(
         // action, while a close button behaves like a normal button.
         jchip = Java_AutofillAssistantUiController_createCancelButton(
             env, java_object_, chip.icon,
-            base::android::ConvertUTF8ToJavaString(env, chip.text), i,
-            !action.enabled(), chip.sticky, chip.visible);
+            ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
+            chip.sticky, chip.visible,
+            chip.is_content_description_set
+                ? ConvertUTF8ToJavaString(env, chip.content_description)
+                : nullptr);
         has_close_or_cancel = true;
         break;
 
       case CLOSE_ACTION:
         jchip = Java_AutofillAssistantUiController_createActionButton(
             env, java_object_, chip.icon,
-            base::android::ConvertUTF8ToJavaString(env, chip.text), i,
-            !action.enabled(), chip.sticky, chip.visible);
+            ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
+            chip.sticky, chip.visible,
+            chip.is_content_description_set
+                ? ConvertUTF8ToJavaString(env, chip.content_description)
+                : nullptr);
         has_close_or_cancel = true;
         break;
 
@@ -767,8 +780,11 @@ void UiControllerAndroid::UpdateActions(
         jchip =
             Java_AutofillAssistantUiController_createHighlightedActionButton(
                 env, java_object_, chip.icon,
-                base::android::ConvertUTF8ToJavaString(env, chip.text), i,
-                !action.enabled(), chip.sticky, chip.visible);
+                ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
+                chip.sticky, chip.visible,
+                chip.is_content_description_set
+                    ? ConvertUTF8ToJavaString(env, chip.content_description)
+                    : nullptr);
         has_close_or_cancel = true;
         break;
     }
@@ -785,14 +801,14 @@ void UiControllerAndroid::UpdateActions(
     base::android::ScopedJavaLocalRef<jobject> jcancel_chip;
     if (ui_delegate_->GetState() == AutofillAssistantState::STOPPED) {
       jcancel_chip = Java_AutofillAssistantUiController_createCloseButton(
-          env, java_object_, ICON_CLEAR,
-          base::android::ConvertUTF8ToJavaString(env, ""),
-          /* disabled= */ false, /* sticky= */ true, /* visible=*/true);
+          env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""),
+          /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
+          /* content_description= */ nullptr);
     } else if (ui_delegate_->GetState() != AutofillAssistantState::INACTIVE) {
       jcancel_chip = Java_AutofillAssistantUiController_createCancelButton(
-          env, java_object_, ICON_CLEAR,
-          base::android::ConvertUTF8ToJavaString(env, ""), -1,
-          /* disabled= */ false, /* sticky= */ true, /* visible=*/true);
+          env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""), -1,
+          /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
+          /* content_description= */ nullptr);
     }
     if (jcancel_chip) {
       Java_AutofillAssistantUiController_appendChipToList(env, jchips,

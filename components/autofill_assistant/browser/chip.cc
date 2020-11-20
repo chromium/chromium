@@ -9,11 +9,14 @@ namespace autofill_assistant {
 
 Chip::Chip() = default;
 Chip::~Chip() = default;
+Chip::Chip(const Chip& other) = default;
 Chip::Chip(const ChipProto& proto)
     : type(proto.type()),
       icon(proto.icon()),
       text(proto.text()),
-      sticky(proto.sticky()) {}
+      sticky(proto.sticky()),
+      content_description(proto.content_description()),
+      is_content_description_set(proto.has_content_description()) {}
 
 bool Chip::empty() const {
   return type == UNKNOWN_CHIP_TYPE && text.empty() && icon == NO_ICON;

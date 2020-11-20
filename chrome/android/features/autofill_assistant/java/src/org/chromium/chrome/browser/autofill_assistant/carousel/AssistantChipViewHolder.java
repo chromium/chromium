@@ -127,7 +127,10 @@ public class AssistantChipViewHolder extends ViewHolder {
 
         mView.setIcon(iconResource, /* tintWithTextColor= */ true);
 
-        if (iconDescriptionResource != 0 && text.isEmpty()) {
+        String contentDescription = chip.getContentDescription();
+        if (contentDescription != null) {
+            mView.setContentDescription(contentDescription);
+        } else if (iconDescriptionResource != 0 && text.isEmpty()) {
             mView.setContentDescription(mView.getContext().getString(iconDescriptionResource));
         } else {
             mView.setContentDescription(text);

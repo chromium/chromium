@@ -90,19 +90,24 @@ public class AssistantChip {
     /** The callback to invoke when the n'th item in {@code mPopupItems} is selected. */
     private @Nullable Callback<Integer> mOnPopupItemSelected;
 
+    /** The content description for the chip. */
+    private final @Nullable String mContentDescription;
+
     public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
-            boolean sticky, boolean visible) {
+            boolean sticky, boolean visible, @Nullable String contentDescription) {
         mType = type;
         mIcon = icon;
         mText = text;
         mDisabled = disabled;
         mSticky = sticky;
         mVisible = visible;
+        mContentDescription = contentDescription;
     }
 
     public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
-            boolean sticky, boolean visible, Runnable selectedListener) {
-        this(type, icon, text, disabled, sticky, visible);
+            boolean sticky, boolean visible, Runnable selectedListener,
+            @Nullable String contentDescription) {
+        this(type, icon, text, disabled, sticky, visible, contentDescription);
         assert selectedListener != null;
         mSelectedListener = selectedListener;
     }
@@ -147,6 +152,10 @@ public class AssistantChip {
         mSelectedListener = selectedListener;
     }
 
+    public @Nullable String getContentDescription() {
+        return mContentDescription;
+    }
+
     public void setPopupItems(List<String> popupItems, Callback<Integer> onSelectedCallback) {
         mPopupItems = popupItems;
         mOnPopupItemSelected = onSelectedCallback;
@@ -177,10 +186,10 @@ public class AssistantChip {
      * before the view is inflated.
      */
     @CalledByNative
-    public static AssistantChip createHairlineAssistantChip(
-            int icon, String text, boolean disabled, boolean sticky, boolean visible) {
-        return new AssistantChip(
-                AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky, visible);
+    public static AssistantChip createHairlineAssistantChip(int icon, String text, boolean disabled,
+            boolean sticky, boolean visible, @Nullable String contentDescription) {
+        return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
+                visible, contentDescription);
     }
 
     /**
@@ -188,9 +197,11 @@ public class AssistantChip {
      * before the view is inflated.
      */
     @CalledByNative
-    public static AssistantChip createHighlightedAssistantChip(
-            int icon, String text, boolean disabled, boolean sticky, boolean visible) {
-        return new AssistantChip(Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, visible);
+    public static AssistantChip createHighlightedAssistantChip(int icon, String text,
+            boolean disabled, boolean sticky, boolean visible,
+            @Nullable String contentDescription) {
+        return new AssistantChip(
+                Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, visible, contentDescription);
     }
 
     @CalledByNative
