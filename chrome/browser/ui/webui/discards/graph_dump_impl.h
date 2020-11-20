@@ -101,10 +101,13 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnFirstContentfulPaint(
       const performance_manager::FrameNode* frame_node,
       base::TimeDelta time_since_navigation_start) override {}
+  // Ignored.
   void OnViewportIntersectionChanged(
       const performance_manager::FrameNode* frame_node) override {}
+  // Ignored.
   void OnFrameVisibilityChanged(
-      const performance_manager::FrameNode* frame_node) override {}
+      const performance_manager::FrameNode* frame_node,
+      performance_manager::FrameNode::Visibility previous_value) override {}
 
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const performance_manager::PageNode* page_node) override;

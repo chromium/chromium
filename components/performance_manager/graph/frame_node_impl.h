@@ -359,7 +359,8 @@ class FrameNodeImpl
   // Indicates if the frame is visible. This is initialized in
   // FrameNodeImpl::OnJoiningGraph() and then maintained by
   // FrameVisibilityDecorator.
-  ObservedProperty::NotifiesOnlyOnChanges<
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      Visibility,
       Visibility,
       &FrameNodeObserver::OnFrameVisibilityChanged>
       visibility_{Visibility::kUnknown};

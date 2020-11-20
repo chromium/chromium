@@ -249,7 +249,9 @@ class FrameNodeObserver {
   virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) = 0;
 
   // Invoked when the visibility property changes.
-  virtual void OnFrameVisibilityChanged(const FrameNode* frame_node) = 0;
+  virtual void OnFrameVisibilityChanged(
+      const FrameNode* frame_node,
+      FrameNode::Visibility previous_value) = 0;
 
   // Events with no property changes.
 
@@ -296,7 +298,9 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override {}
-  void OnFrameVisibilityChanged(const FrameNode* frame_node) override {}
+  void OnFrameVisibilityChanged(const FrameNode* frame_node,
+                                FrameNode::Visibility previous_value) override {
+  }
   void OnNonPersistentNotificationCreated(
       const FrameNode* frame_node) override {}
   void OnFirstContentfulPaint(

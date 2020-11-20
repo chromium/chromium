@@ -149,7 +149,8 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const FrameNode*));
   MOCK_METHOD1(OnViewportIntersectionChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnFrameVisibilityChanged, void(const FrameNode*));
+  MOCK_METHOD2(OnFrameVisibilityChanged,
+               void(const FrameNode*, FrameNode::Visibility));
   MOCK_METHOD1(OnNonPersistentNotificationCreated, void(const FrameNode*));
   MOCK_METHOD2(OnFirstContentfulPaint, void(const FrameNode*, base::TimeDelta));
 
@@ -396,7 +397,8 @@ TEST_F(FrameNodeImplTest, Visibility) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
-  EXPECT_CALL(obs, OnFrameVisibilityChanged(frame_node.get()));
+  EXPECT_CALL(obs, OnFrameVisibilityChanged(
+                       frame_node.get(), FrameNode::Visibility::kNotVisible));
 
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
   EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kVisible);
