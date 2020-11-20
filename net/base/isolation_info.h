@@ -107,8 +107,6 @@ class NET_EXPORT IsolationInfo {
   // populated, will create an empty IsolationInfo. This is intended for use
   // while transitioning from NIKs being set on only some requests to
   // IsolationInfos being set on all requests.
-  //
-  // TODO(https://crbug.com/1060631): Remove this once no longer needed.
   static IsolationInfo CreatePartial(
       RequestType request_type,
       const net::NetworkIsolationKey& network_isolation_key);

@@ -17,48 +17,28 @@ namespace net {
 
 namespace {
 
-std::string GetOriginDebugString(const base::Optional<url::Origin>& origin) {
-  return origin ? origin->GetDebugString() : "null";
-}
-
-// If |origin| has a value and represents an HTTP or HTTPS scheme, return a new
-// origin with its registerable domain if possible, using the standard port for
-// its scheme. Otherwise, return the passed in origin. WS and WSS origins are
-// not modified, as they shouldn't be used meaningfully for NIKs, though trying
-// to navigate to a WS URL may generate such a NIK.
-base::Optional<url::Origin> SwitchToRegistrableDomainAndRemovePort(
-    const base::Optional<url::Origin>& origin) {
-  if (!origin.has_value())
-    return origin;
-
-  if (origin->scheme() != url::kHttpsScheme &&
-      origin->scheme() != url::kHttpScheme) {
-    return origin;
-  }
-
-  // scheme() returns the empty string for opaque origins.
-  DCHECK(!origin->opaque());
-
-  std::string registrable_domain = GetDomainAndRegistry(
-      origin.value(),
-      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  // GetDomainAndRegistry() returns an empty string for IP literals and
-  // effective TLDs.
-  if (registrable_domain.empty())
-    registrable_domain = origin->host();
-  return url::Origin::CreateFromNormalizedTuple(
-      origin->scheme(), registrable_domain,
-      url::DefaultPortForScheme(origin->scheme().c_str(),
-                                origin->scheme().length()));
+std::string GetSiteDebugString(const base::Optional<SchemefulSite>& site) {
+  return site ? site->GetDebugString() : "null";
 }
 
 }  // namespace
 
+NetworkIsolationKey::NetworkIsolationKey(const SchemefulSite& top_frame_site,
+                                         const SchemefulSite& frame_site)
+    : NetworkIsolationKey(SchemefulSite(top_frame_site),
+                          SchemefulSite(frame_site),
+                          false /* opaque_and_non_transient */) {}
+
+NetworkIsolationKey::NetworkIsolationKey(SchemefulSite&& top_frame_site,
+                                         SchemefulSite&& frame_site)
+    : NetworkIsolationKey(std::move(top_frame_site),
+                          std::move(frame_site),
+                          false /* opaque_and_non_transient */) {}
+
 NetworkIsolationKey::NetworkIsolationKey(const url::Origin& top_frame_origin,
                                          const url::Origin& frame_origin)
-    : NetworkIsolationKey(top_frame_origin,
-                          frame_origin,
-                          false /* opaque_and_non_transient */) {}
+    : NetworkIsolationKey(SchemefulSite(top_frame_origin),
+                          SchemefulSite(frame_origin)) {}
 
 NetworkIsolationKey::NetworkIsolationKey()
     : use_frame_site_(base::FeatureList::IsEnabled(
@@ -79,23 +59,29 @@ NetworkIsolationKey& NetworkIsolationKey::operator=(
     NetworkIsolationKey&& network_isolation_key) = default;
 
 NetworkIsolationKey NetworkIsolationKey::CreateTransient() {
-  url::Origin opaque_origin;
-  return NetworkIsolationKey(opaque_origin, opaque_origin);
+  SchemefulSite site_with_opaque_origin;
+  return NetworkIsolationKey(site_with_opaque_origin, site_with_opaque_origin);
 }
 
 NetworkIsolationKey NetworkIsolationKey::CreateOpaqueAndNonTransient() {
-  url::Origin opaque_origin;
-  return NetworkIsolationKey(opaque_origin, opaque_origin,
+  SchemefulSite site_with_opaque_origin;
+  return NetworkIsolationKey(SchemefulSite(site_with_opaque_origin),
+                             SchemefulSite(site_with_opaque_origin),
                              true /* opaque_and_non_transient */);
+}
+
+NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
+    const SchemefulSite& new_frame_site) const {
+  if (!top_frame_site_)
+    return NetworkIsolationKey();
+  NetworkIsolationKey key(top_frame_site_.value(), new_frame_site);
+  key.opaque_and_non_transient_ = opaque_and_non_transient_;
+  return key;
 }
 
 NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameOrigin(
     const url::Origin& new_frame_origin) const {
-  if (!top_frame_site_)
-    return NetworkIsolationKey();
-  NetworkIsolationKey key(top_frame_site_.value(), new_frame_origin);
-  key.opaque_and_non_transient_ = opaque_and_non_transient_;
-  return key;
+  return CreateWithNewFrameSite(SchemefulSite(new_frame_origin));
 }
 
 std::string NetworkIsolationKey::ToString() const {
@@ -104,9 +90,24 @@ std::string NetworkIsolationKey::ToString() const {
 
   if (IsOpaque()) {
     // This key is opaque but not transient.
-    DCHECK(opaque_and_non_transient_);
-    return "opaque non-transient " +
-           top_frame_site_->nonce_->token().ToString();
+
+    base::Optional<std::string> serialized_top_frame_site =
+        SerializeSiteWithNonce(top_frame_site_.value());
+    // SerializeSiteWithNonce() can't fail for valid origins, and only valid
+    // origins can be opaque.
+    DCHECK(serialized_top_frame_site);
+    std::string out = "opaque non-transient " + *serialized_top_frame_site;
+
+    if (use_frame_site_) {
+      base::Optional<std::string> serialized_frame_site =
+          SerializeSiteWithNonce(frame_site_.value());
+      // As above, this can't fail.
+      DCHECK(serialized_frame_site);
+
+      out += " " + *serialized_frame_site;
+    }
+
+    return out;
   }
 
   return top_frame_site_->Serialize() +
@@ -116,9 +117,9 @@ std::string NetworkIsolationKey::ToString() const {
 std::string NetworkIsolationKey::ToDebugString() const {
   // The space-separated serialization of |top_frame_site_| and
   // |frame_site_|.
-  std::string return_string = GetOriginDebugString(top_frame_site_);
+  std::string return_string = GetSiteDebugString(top_frame_site_);
   if (use_frame_site_) {
-    return_string += " " + GetOriginDebugString(frame_site_);
+    return_string += " " + GetSiteDebugString(frame_site_);
   }
   if (IsFullyPopulated() && IsOpaque() && opaque_and_non_transient_) {
     return_string += " non-transient";
@@ -151,14 +152,15 @@ bool NetworkIsolationKey::ToValue(base::Value* out_value) const {
     return false;
 
   base::Optional<std::string> top_frame_value =
-      top_frame_site_->SerializeWithNonce();
+      SerializeSiteWithNonce(*top_frame_site_);
   if (!top_frame_value)
     return false;
   *out_value = base::Value(base::Value::Type::LIST);
   out_value->Append(std::move(*top_frame_value));
 
   if (use_frame_site_) {
-    base::Optional<std::string> frame_value = frame_site_->SerializeWithNonce();
+    base::Optional<std::string> frame_value =
+        SerializeSiteWithNonce(*frame_site_);
     if (!frame_value)
       return false;
     out_value->Append(std::move(*frame_value));
@@ -188,35 +190,34 @@ bool NetworkIsolationKey::FromValue(
 
   if (!list[0].is_string())
     return false;
-  base::Optional<url::Origin> deserialized_top_frame =
-      url::Origin::Deserialize(list[0].GetString());
-  if (!deserialized_top_frame)
+  base::Optional<SchemefulSite> top_frame_site =
+      SchemefulSite::DeserializeWithNonce(list[0].GetString());
+  if (!top_frame_site)
     return false;
-  url::Origin top_frame_origin = *deserialized_top_frame;
 
   // An opaque origin key will only be serialized into a base::Value if
   // |opaque_and_non_transient_| is set. Therefore if either origin is opaque,
   // |opaque_and_non_transient_| must be true.
-  bool opaque_and_non_transient = top_frame_origin.opaque();
+  bool opaque_and_non_transient = top_frame_site->opaque();
 
   if (!use_frame_origin) {
     *network_isolation_key =
-        NetworkIsolationKey(top_frame_origin, top_frame_origin);
+        NetworkIsolationKey(*top_frame_site, *top_frame_site);
     network_isolation_key->opaque_and_non_transient_ = opaque_and_non_transient;
     return true;
   }
 
   if (!list[1].is_string())
     return false;
-  base::Optional<url::Origin> deserialized_frame =
-      url::Origin::Deserialize(list[1].GetString());
-  if (!deserialized_frame)
+  base::Optional<SchemefulSite> frame_site =
+      SchemefulSite::DeserializeWithNonce(list[1].GetString());
+  if (!frame_site)
     return false;
-  url::Origin frame_origin = *deserialized_frame;
 
-  opaque_and_non_transient |= frame_origin.opaque();
+  opaque_and_non_transient |= frame_site->opaque();
 
-  *network_isolation_key = NetworkIsolationKey(top_frame_origin, frame_origin);
+  *network_isolation_key =
+      NetworkIsolationKey(std::move(*top_frame_site), std::move(*frame_site));
   network_isolation_key->opaque_and_non_transient_ = opaque_and_non_transient;
   return true;
 }
@@ -225,24 +226,28 @@ bool NetworkIsolationKey::IsEmpty() const {
   return !top_frame_site_.has_value() && !frame_site_.has_value();
 }
 
-NetworkIsolationKey::NetworkIsolationKey(const url::Origin& top_frame_origin,
-                                         const url::Origin& frame_origin,
+NetworkIsolationKey::NetworkIsolationKey(SchemefulSite&& top_frame_site,
+                                         SchemefulSite&& frame_site,
                                          bool opaque_and_non_transient)
     : opaque_and_non_transient_(opaque_and_non_transient),
       use_frame_site_(base::FeatureList::IsEnabled(
           net::features::kAppendFrameOriginToNetworkIsolationKey)),
-      top_frame_site_(
-          SwitchToRegistrableDomainAndRemovePort(top_frame_origin)) {
-  DCHECK(!opaque_and_non_transient || top_frame_origin.opaque());
+      top_frame_site_(std::move(top_frame_site)) {
+  DCHECK(!opaque_and_non_transient || top_frame_site_->opaque());
   if (use_frame_site_) {
-    DCHECK(!opaque_and_non_transient || frame_origin.opaque());
-    frame_site_ = SwitchToRegistrableDomainAndRemovePort(frame_origin);
+    DCHECK(!opaque_and_non_transient || frame_site.opaque());
+    frame_site_ = std::move(frame_site);
   }
 }
 
 bool NetworkIsolationKey::IsOpaque() const {
   return top_frame_site_->opaque() ||
          (use_frame_site_ && frame_site_->opaque());
+}
+
+base::Optional<std::string> NetworkIsolationKey::SerializeSiteWithNonce(
+    const SchemefulSite& site) {
+  return *(const_cast<SchemefulSite&>(site).SerializeWithNonce());
 }
 
 }  // namespace net

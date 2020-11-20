@@ -130,10 +130,12 @@ IsolationInfo IsolationInfo::CreatePartial(
   if (!network_isolation_key.IsFullyPopulated())
     return IsolationInfo();
 
-  url::Origin top_frame_origin = *network_isolation_key.GetTopFrameSite();
+  // TODO(https://crbug.com/1148927): Use null origins in this case.
+  url::Origin top_frame_origin =
+      network_isolation_key.GetTopFrameSite()->site_as_origin_;
   url::Origin frame_origin;
   if (network_isolation_key.GetFrameSite().has_value()) {
-    frame_origin = *network_isolation_key.GetFrameSite();
+    frame_origin = network_isolation_key.GetFrameSite()->site_as_origin_;
   } else if (request_type == RequestType::kMainFrame) {
     frame_origin = top_frame_origin;
   } else {
@@ -197,10 +199,11 @@ IsolationInfo::IsolationInfo(
       top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
       network_isolation_key_(
-          !top_frame_origin ? NetworkIsolationKey()
-                            : NetworkIsolationKey(*top_frame_origin,
-                                                  *frame_origin,
-                                                  opaque_and_non_transient)),
+          !top_frame_origin
+              ? NetworkIsolationKey()
+              : NetworkIsolationKey(SchemefulSite(*top_frame_origin),
+                                    SchemefulSite(*frame_origin),
+                                    opaque_and_non_transient)),
       site_for_cookies_(site_for_cookies),
       opaque_and_non_transient_(opaque_and_non_transient) {
   DCHECK(IsConsistent(request_type_, top_frame_origin_, frame_origin_,

@@ -2258,13 +2258,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   ASSERT_EQ(1u, root->child_count());
   CheckURLOriginAndNetworkIsolationKey(root->child_at(0), GURL("about:blank"),
                                        origin, expected_network_isolation_key);
-  // Site-for-cookies should be consistent with the NetworkIsolationKey.
-  EXPECT_TRUE(
-      root->child_at(0)
-          ->current_frame_host()
-          ->ComputeSiteForCookies()
-          .IsFirstParty(
-              expected_network_isolation_key.GetTopFrameSite()->GetURL()));
+  // The iframe's SiteForCookies should first party with respect to
+  // |main_frame_url|.
+  EXPECT_TRUE(root->child_at(0)
+                  ->current_frame_host()
+                  ->ComputeSiteForCookies()
+                  .IsFirstParty(main_frame_url));
 }
 
 // An iframe that starts at about:blank and is itself nested in a cross-site

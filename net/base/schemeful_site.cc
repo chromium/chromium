@@ -22,11 +22,6 @@ namespace net {
 // https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site
 SchemefulSite::ObtainASiteResult SchemefulSite::ObtainASite(
     const url::Origin& origin) {
-  // There is currently no reason for getting the schemeful site of a web
-  // socket, so disallow passing in websocket origins.
-  DCHECK_NE(origin.scheme(), url::kWsScheme);
-  DCHECK_NE(origin.scheme(), url::kWssScheme);
-
   // 1. If origin is an opaque origin, then return origin.
   if (origin.opaque())
     return {origin, false /* used_registerable_domain */};

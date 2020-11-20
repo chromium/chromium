@@ -56,8 +56,6 @@ struct UrlOriginAdapter;
 }  // namespace mojo
 
 namespace net {
-class NetworkIsolationKey;
-class OpaqueNonTransientNetworkIsolationKeyTest;
 class SchemefulSite;
 }  // namespace net
 
@@ -299,11 +297,9 @@ class COMPONENT_EXPORT(URL) Origin {
 
  private:
   friend class blink::SecurityOrigin;
-  friend class net::NetworkIsolationKey;
   // SchemefulSite needs access to the serialization/deserialization logic which
   // includes the nonce.
   friend class net::SchemefulSite;
-  friend class net::OpaqueNonTransientNetworkIsolationKeyTest;
   friend class OriginTest;
   friend struct mojo::UrlOriginAdapter;
   friend struct ipc_fuzzer::FuzzTraits<Origin>;

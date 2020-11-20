@@ -910,7 +910,6 @@ TEST_F(SQLitePersistNelTest, RemoveAllBrowsingData) {
 
 TEST_F(SQLitePersistentReportingAndNelStoreTest, PersistReportingClients) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://www.foo.test"));
-  url::Origin foo;
 
   CreateStore();
   InitializeStore();
@@ -919,7 +918,6 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, PersistReportingClients) {
       kNik1_, kOrigin, kGroupName1, GURL("https://endpoint.test/1"));
   CachedReportingEndpointGroup group =
       MakeReportingEndpointGroup(kNik1_, kOrigin, kGroupName1, now);
-  foo = *(kNik1_.GetTopFrameSite());
 
   store_->AddReportingEndpoint(endpoint);
   store_->AddReportingEndpointGroup(group);

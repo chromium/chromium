@@ -7,6 +7,8 @@
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -273,8 +275,9 @@ TEST_F(IsolationInfoTest, CreatePartialTransient) {
   IsolationInfo isolation_info =
       IsolationInfo::CreatePartial(IsolationInfo::RequestType::kOther, kNIK);
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
-  EXPECT_EQ(*kNIK.GetTopFrameSite(), isolation_info.top_frame_origin());
-  EXPECT_EQ(*kNIK.GetFrameSite(), isolation_info.frame_origin());
+  EXPECT_EQ(kNIK.GetTopFrameSite(),
+            SchemefulSite(*isolation_info.top_frame_origin()));
+  EXPECT_EQ(kNIK.GetFrameSite(), SchemefulSite(*isolation_info.frame_origin()));
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.opaque_and_non_transient());
@@ -288,8 +291,9 @@ TEST_F(IsolationInfoTest, CreatePartialOpaqueAndNonTransient) {
   IsolationInfo isolation_info =
       IsolationInfo::CreatePartial(IsolationInfo::RequestType::kOther, kNIK);
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
-  EXPECT_EQ(*kNIK.GetTopFrameSite(), isolation_info.top_frame_origin());
-  EXPECT_EQ(*kNIK.GetFrameSite(), isolation_info.frame_origin());
+  EXPECT_EQ(kNIK.GetTopFrameSite(),
+            SchemefulSite(*isolation_info.top_frame_origin()));
+  EXPECT_EQ(kNIK.GetFrameSite(), SchemefulSite(*isolation_info.frame_origin()));
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_TRUE(isolation_info.opaque_and_non_transient());

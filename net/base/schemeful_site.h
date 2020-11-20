@@ -91,6 +91,15 @@ class NET_EXPORT SchemefulSite {
   friend struct mojo::StructTraits<network::mojom::SchemefulSiteDataView,
                                    SchemefulSite>;
 
+  // Needed to serialize opaque and non-transient NetworkIsolationKeys, which
+  // use opaque origins.
+  friend class NetworkIsolationKey;
+
+  // Needed to create a bogus origin from a site.
+  // TODO(https://crbug.com/1148927): Give IsolationInfos empty origins instead,
+  // in this case, and unfriend IsolationInfo.
+  friend class IsolationInfo;
+
   FRIEND_TEST_ALL_PREFIXES(SchemefulSiteTest, OpaqueSerialization);
 
   struct ObtainASiteResult {

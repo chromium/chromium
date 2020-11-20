@@ -26,6 +26,7 @@ class HttpAuthHandlerFactory;
 class HttpResponseHeaders;
 class HostResolver;
 class NetLogWithSource;
+class NetworkIsolationKey;
 class SSLInfo;
 
 // Utility class for http authentication.

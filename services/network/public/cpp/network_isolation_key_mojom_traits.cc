@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
+
 #include "net/base/features.h"
 
 namespace mojo {
@@ -11,7 +12,7 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
                   net::NetworkIsolationKey>::
     Read(network::mojom::NetworkIsolationKeyDataView data,
          net::NetworkIsolationKey* out) {
-  base::Optional<url::Origin> top_frame_site, frame_site;
+  base::Optional<net::SchemefulSite> top_frame_site, frame_site;
   if (!data.ReadTopFrameSite(&top_frame_site))
     return false;
   if (!data.ReadFrameSite(&frame_site))
@@ -25,9 +26,10 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
     if (!frame_site.has_value()) {
       DCHECK(!base::FeatureList::IsEnabled(
           net::features::kAppendFrameOriginToNetworkIsolationKey));
-      frame_site = url::Origin();
+      frame_site = net::SchemefulSite();
     }
-    *out = net::NetworkIsolationKey(top_frame_site.value(), frame_site.value());
+    *out = net::NetworkIsolationKey(std::move(top_frame_site.value()),
+                                    std::move(frame_site.value()));
   } else {
     *out = net::NetworkIsolationKey();
   }
