@@ -721,6 +721,21 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
   VISIT(display_name);
   VISIT(avatar_url);
   VISIT(federation_url);
+  VISIT(date_last_used);
+  VISIT(password_issues);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_PasswordIssues& proto) {
+  VISIT(leaked_password_issue);
+  VISIT(reused_password_issue);
+  VISIT(weak_password_issue);
+  VISIT(phished_password_issue);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::PasswordSpecificsData_PasswordIssues_PasswordIssue& proto) {
+  VISIT(date_first_detection_microseconds);
+  VISIT(is_muted);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsMetadata& proto) {
