@@ -1507,7 +1507,7 @@ void PaymentRequest::OnError(PaymentErrorReason error,
       break;
 
     case PaymentErrorReason::NOT_SUPPORTED:
-      exception_code = exception_code = DOMExceptionCode::kNotSupportedError;
+      exception_code = DOMExceptionCode::kNotSupportedError;
       break;
 
     case PaymentErrorReason::NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL:

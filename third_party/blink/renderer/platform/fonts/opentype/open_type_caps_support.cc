@@ -152,9 +152,8 @@ OpenTypeCapsSupport::FontFormat OpenTypeCapsSupport::GetFontFormat() const {
     bool has_morx_or_mort = hb_blob_get_length(morx_blob.get()) ||
                             hb_blob_get_length(mort_blob.get());
     bool has_gsub = hb_ot_layout_has_substitution(hb_face);
-    font_format_ = has_morx_or_mort&& !has_gsub
-                       ? font_format_ = FontFormat::kAat
-                       : font_format_ = FontFormat::kOpenType;
+    font_format_ = has_morx_or_mort && !has_gsub ? FontFormat::kAat
+                                                 : FontFormat::kOpenType;
   }
   return font_format_;
 }

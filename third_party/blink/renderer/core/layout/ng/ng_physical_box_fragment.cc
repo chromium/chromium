@@ -806,7 +806,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
     return layout_object_->CreatePositionWithAffinity(0);
 
   const auto& child = To<NGPhysicalBoxFragment>(*closest_child);
-  Node* child_node = child_node = child.NonPseudoNode();
+  Node* child_node = child.NonPseudoNode();
   PhysicalOffset point_in_child = point - closest_child.offset;
   if (!child.IsCSSBox() || !child_node)
     return child.PositionForPoint(point_in_child);
