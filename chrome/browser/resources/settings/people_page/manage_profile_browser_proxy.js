@@ -38,9 +38,9 @@ export class ManageProfileBrowserProxy {
 
   /**
    * Sets the profile's icon to one of the default avatars.
-   * @param {string} iconUrl The new profile URL.
+   * @param {number} index The new profile avatar index.
    */
-  setProfileIconToDefaultAvatar(iconUrl) {}
+  setProfileIconToDefaultAvatar(index) {}
 
   /**
    * Sets the profile's name.
@@ -80,8 +80,8 @@ export class ManageProfileBrowserProxyImpl {
   }
 
   /** @override */
-  setProfileIconToDefaultAvatar(iconUrl) {
-    chrome.send('setProfileIconToDefaultAvatar', [iconUrl]);
+  setProfileIconToDefaultAvatar(index) {
+    chrome.send('setProfileIconToDefaultAvatar', [index]);
   }
 
   /** @override */

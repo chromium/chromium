@@ -23,6 +23,8 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -94,14 +96,26 @@ void ManageProfileHandler::OnJavascriptDisallowed() {
 
 void ManageProfileHandler::OnProfileHighResAvatarLoaded(
     const base::FilePath& profile_path) {
+  if (profile_path != profile_->GetPath())
+    return;
+
   // GAIA image is loaded asynchronously.
   FireWebUIListener("available-icons-changed", *GetAvailableIcons());
 }
 
 void ManageProfileHandler::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
+  if (profile_path != profile_->GetPath())
+    return;
+
   // This is necessary to send the potentially updated GAIA photo.
   FireWebUIListener("available-icons-changed", *GetAvailableIcons());
+}
+
+void ManageProfileHandler::OnProfileThemeColorsChanged(
+    const base::FilePath& profile_path) {
+  // This is necessary to send the potentially updated Generic colored avatar.
+  OnProfileAvatarChanged(profile_path);
 }
 
 void ManageProfileHandler::HandleGetAvailableIcons(
@@ -117,34 +131,46 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 }
 
 std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
-  PrefService* pref_service = profile_->GetPrefs();
-  bool using_gaia = pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar);
-  size_t selected_avatar_idx =
-      using_gaia ? SIZE_MAX
-                 : pref_service->GetInteger(prefs::kProfileAvatarIndex);
+  ProfileAttributesEntry* entry = nullptr;
+  // TODO(msalama): Convert to a DCHECK.
+  if (!g_browser_process->profile_manager()
+           ->GetProfileAttributesStorage()
+           .GetProfileAttributesWithPath(profile_->GetPath(), &entry)) {
+    LOG(ERROR) << "No profile attributes entry found for profile with path: "
+               << profile_->GetPath();
+    return std::make_unique<base::ListValue>();
+  }
 
-  // Obtain a list of the default avatar icons.
+  bool using_gaia = entry->IsUsingGAIAPicture();
+  size_t selected_avatar_idx =
+      using_gaia ? SIZE_MAX : entry->GetAvatarIconIndex();
+
+  // Obtain a list of the modern avatar icons.
   std::unique_ptr<base::ListValue> avatars(
-      profiles::GetDefaultProfileAvatarIconsAndLabels(selected_avatar_idx));
+      profiles::GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
+
+  if (entry->GetSigninState() == SigninState::kNotSignedIn) {
+    if (base::FeatureList::IsEnabled(features::kNewProfilePicker) &&
+        base::FeatureList::IsEnabled(features::kProfilesUIRevamp)) {
+      ProfileThemeColors colors = entry->GetProfileThemeColors();
+      auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
+          colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
+          selected_avatar_idx == profiles::GetPlaceholderAvatarIndex());
+      avatars->Insert(0, std::move(generic_avatar_info));
+    }
+    return avatars;
+  }
 
   // Add the GAIA picture to the beginning of the list if it is available.
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile_->GetPath(), &entry)) {
-    const gfx::Image* icon = entry->GetGAIAPicture();
-    if (icon) {
-      auto gaia_picture_info = std::make_unique<base::DictionaryValue>();
-      gfx::Image avatar_icon = profiles::GetAvatarIconForWebUI(*icon, true);
-      gaia_picture_info->SetString(
-          "url", webui::GetBitmapDataUrl(avatar_icon.AsBitmap()));
-      gaia_picture_info->SetString(
-          "label",
-          l10n_util::GetStringUTF16(IDS_SETTINGS_CHANGE_PICTURE_PROFILE_PHOTO));
-      gaia_picture_info->SetBoolean("isGaiaAvatar", true);
-      if (using_gaia)
-        gaia_picture_info->SetBoolean("selected", true);
-      avatars->Insert(0, std::move(gaia_picture_info));
-    }
+  const gfx::Image* icon = entry->GetGAIAPicture();
+  if (icon) {
+    gfx::Image avatar_icon = profiles::GetAvatarIconForWebUI(*icon, true);
+    auto gaia_picture_info = profiles::GetAvatarIconAndLabelDict(
+        /*url=*/webui::GetBitmapDataUrl(avatar_icon.AsBitmap()),
+        /*label=*/
+        l10n_util::GetStringUTF16(IDS_SETTINGS_CHANGE_PICTURE_PROFILE_PHOTO),
+        /*index=*/0, using_gaia, /*is_gaia_avatar=*/true);
+    avatars->Insert(0, std::move(gaia_picture_info));
   }
 
   return avatars;
@@ -173,18 +199,18 @@ void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
 void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(args);
-  DCHECK_EQ(1u, args->GetSize());
+  CHECK(args);
+  CHECK_EQ(1u, args->GetSize());
+  CHECK(args->GetList()[0].is_int());
 
-  std::string icon_url;
-  CHECK(args->GetString(0, &icon_url));
-
-  size_t new_icon_index = 0;
-  CHECK(profiles::IsDefaultAvatarIconUrl(icon_url, &new_icon_index));
+  size_t new_icon_index = args->GetList()[0].GetInt();
+  CHECK(profiles::IsDefaultAvatarIconIndex(new_icon_index));
 
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetInteger(prefs::kProfileAvatarIndex, new_icon_index);
-  pref_service->SetBoolean(prefs::kProfileUsingDefaultAvatar, false);
+  pref_service->SetBoolean(
+      prefs::kProfileUsingDefaultAvatar,
+      new_icon_index == profiles::GetPlaceholderAvatarIndex());
   pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
 
   ProfileMetrics::LogProfileAvatarSelection(new_icon_index);
@@ -193,8 +219,8 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
 
 void ManageProfileHandler::HandleSetProfileName(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(args);
-  DCHECK_EQ(1u, args->GetSize());
+  CHECK(args);
+  CHECK_EQ(1u, args->GetSize());
 
   if (profile_->IsLegacySupervised())
     return;

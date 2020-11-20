@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -14,6 +17,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace settings {
 
@@ -33,12 +38,15 @@ class TestManageProfileHandler : public ManageProfileHandler {
 class ManageProfileHandlerTest : public testing::Test {
  public:
   ManageProfileHandlerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()),
-        profile_(nullptr) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("Profile 1");
+    ASSERT_TRUE(
+        profile_manager_.profile_attributes_storage()
+            ->GetProfileAttributesWithPath(profile_->GetPath(), &entry_));
+    entry_->SetAvatarIconIndex(profiles::GetPlaceholderAvatarIndex());
 
     handler_ = std::make_unique<TestManageProfileHandler>(profile_);
     handler_->set_web_ui(&web_ui_);
@@ -46,56 +54,108 @@ class ManageProfileHandlerTest : public testing::Test {
     web_ui()->ClearTrackedCalls();
   }
 
-  void VerifyIconListWithNoneSelected(const base::Value* value) {
-    VerifyIconList(value, 0 /* ignored */, true);
+  void SetSignedInProfile() {
+    gfx::Image gaia_image(gfx::test::CreateImage(256, 256));
+    entry()->SetAuthInfo("gaia_id", base::UTF8ToUTF16("user@gmail.com"), false);
+    entry()->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE", gaia_image);
+    EXPECT_TRUE(entry()->IsUsingDefaultAvatar());
+    EXPECT_TRUE(entry()->IsUsingGAIAPicture());
   }
 
-  void VerifyIconListWithSingleSelection(const base::Value* value,
-                                         size_t selected_index) {
-    VerifyIconList(value, selected_index, false);
+  void VerifyIconListWithOnlyCustomAvatars(const base::Value* value,
+                                           size_t selected_index) {
+    VerifyIconList(value, selected_index, false, false, false);
   }
-
-  content::TestWebUI* web_ui() { return &web_ui_; }
-  Profile* profile() const { return profile_; }
-  TestManageProfileHandler* handler() const { return handler_.get(); }
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_;
-  content::TestWebUI web_ui_;
-
-  Profile* profile_;
-  std::unique_ptr<TestManageProfileHandler> handler_;
 
   void VerifyIconList(const base::Value* value,
                       size_t selected_index,
-                      bool all_not_selected) {
+                      bool gaia_included,
+                      bool gaia_selected,
+                      bool default_avatar_included) {
     const base::ListValue* icons = nullptr;
     ASSERT_TRUE(value->GetAsList(&icons));
 
     // Expect a non-empty list of dictionaries containing non-empty strings for
     // profile avatar icon urls and labels.
     EXPECT_FALSE(icons->empty());
-    for (size_t i = 0; i < icons->GetSize(); ++i) {
+    size_t i = (gaia_included || default_avatar_included) ? 1 : 0;
+    if (gaia_included) {
+      ASSERT_FALSE(default_avatar_included);
+      VerifyGaiaAvatar(icons, gaia_selected);
+    } else if (default_avatar_included) {
+      VerifyDefaultGenericAvatar(icons, selected_index);
+    }
+    bool selected_found =
+        gaia_selected ||
+        (selected_index == profiles::GetPlaceholderAvatarIndex());
+
+    for (; i < icons->GetSize(); ++i) {
       const base::DictionaryValue* icon = nullptr;
       EXPECT_TRUE(icons->GetDictionary(i, &icon));
       std::string icon_url;
-      size_t icon_index;
       EXPECT_TRUE(icon->GetString("url", &icon_url));
       EXPECT_FALSE(icon_url.empty());
-      EXPECT_TRUE(profiles::IsDefaultAvatarIconUrl(icon_url, &icon_index));
-      std::string icon_label;
-      EXPECT_TRUE(icon->GetString("label", &icon_label));
-      EXPECT_FALSE(icon_label.empty());
-      bool icon_selected;
-      bool has_icon_selected = icon->GetBoolean("selected", &icon_selected);
-      if (all_not_selected) {
-        EXPECT_FALSE(has_icon_selected);
-      } else if (selected_index == icon_index) {
-        EXPECT_TRUE(has_icon_selected);
-        EXPECT_TRUE(icon_selected);
+      int icon_index_int = *icon->FindIntPath("index");
+      EXPECT_TRUE(profiles::IsDefaultAvatarIconIndex(icon_index_int));
+      size_t icon_index = static_cast<size_t>(icon_index_int);
+      EXPECT_NE(icon_index, profiles::GetPlaceholderAvatarIndex());
+      EXPECT_NE(icon_index_int, 0);
+      size_t url_icon_index;
+      EXPECT_TRUE(profiles::IsDefaultAvatarIconUrl(icon_url, &url_icon_index));
+      EXPECT_EQ(icon_index, url_icon_index);
+      EXPECT_TRUE(!icon->FindStringPath("label")->empty());
+      base::Optional<bool> current_selected = icon->FindBoolPath("selected");
+      if (selected_index == icon_index) {
+        EXPECT_FALSE(selected_found);
+        EXPECT_TRUE(current_selected.value_or(false));
+        selected_found = true;
+      } else {
+        EXPECT_FALSE(current_selected.value_or(false));
       }
     }
+
+    EXPECT_TRUE(selected_index == 0 || selected_found);
+  }
+
+  content::TestWebUI* web_ui() { return &web_ui_; }
+  Profile* profile() const { return profile_; }
+  ProfileAttributesEntry* entry() const { return entry_; }
+  TestManageProfileHandler* handler() const { return handler_.get(); }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
+  ProfileAttributesEntry* entry_ = nullptr;
+  content::TestWebUI web_ui_;
+
+  Profile* profile_ = nullptr;
+  std::unique_ptr<TestManageProfileHandler> handler_;
+
+  void VerifyGaiaAvatar(const base::ListValue* icons, bool gaia_selected) {
+    const base::DictionaryValue* icon = nullptr;
+    EXPECT_TRUE(icons->GetDictionary(0, &icon));
+    EXPECT_EQ(*icon->FindIntPath("index"), 0);
+
+    const gfx::Image* avatar_icon = entry()->GetGAIAPicture();
+    ASSERT_TRUE(avatar_icon);
+    EXPECT_EQ(
+        *icon->FindStringPath("url"),
+        webui::GetBitmapDataUrl(
+            profiles::GetAvatarIconForWebUI(*avatar_icon, true).AsBitmap()));
+    EXPECT_TRUE(!icon->FindStringPath("label")->empty());
+    EXPECT_EQ(*icon->FindBoolPath("selected"), gaia_selected);
+  }
+
+  void VerifyDefaultGenericAvatar(const base::ListValue* icons,
+                                  size_t selected_index) {
+    const base::DictionaryValue* icon = nullptr;
+    EXPECT_TRUE(icons->GetDictionary(0, &icon));
+    EXPECT_TRUE(!icon->FindStringPath("label")->empty());
+    int icon_index_int = icon->FindIntPath("index").value_or(0);
+    EXPECT_TRUE(icon_index_int != 0);
+    size_t icon_index = static_cast<size_t>(icon_index_int);
+    EXPECT_EQ(icon_index, profiles::GetPlaceholderAvatarIndex());
+    EXPECT_EQ(*icon->FindBoolPath("selected"), selected_index == icon_index);
   }
 };
 
@@ -107,14 +167,27 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToGaiaAvatar) {
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar));
 }
 
-TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultAvatar) {
+TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultCustomAvatar) {
   base::ListValue list_args;
-  list_args.AppendString("chrome://theme/IDR_PROFILE_AVATAR_15");
+  list_args.AppendInteger(15);
   handler()->HandleSetProfileIconToDefaultAvatar(&list_args);
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_EQ(15, pref_service->GetInteger(prefs::kProfileAvatarIndex));
   EXPECT_FALSE(pref_service->GetBoolean(prefs::kProfileUsingDefaultAvatar));
+  EXPECT_FALSE(pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar));
+}
+
+TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultGenericAvatar) {
+  int generic_avatar_index = profiles::GetPlaceholderAvatarIndex();
+  base::ListValue list_args;
+  list_args.AppendInteger(generic_avatar_index);
+  handler()->HandleSetProfileIconToDefaultAvatar(&list_args);
+
+  PrefService* pref_service = profile()->GetPrefs();
+  EXPECT_EQ(generic_avatar_index,
+            pref_service->GetInteger(prefs::kProfileAvatarIndex));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kProfileUsingDefaultAvatar));
   EXPECT_FALSE(pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar));
 }
 
@@ -128,8 +201,11 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileName) {
 }
 
 TEST_F(ManageProfileHandlerTest, HandleGetAvailableIcons) {
-  PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInteger(prefs::kProfileAvatarIndex, 27);
+  // Set avatar icon will trigger avatar icons updated event.
+  entry()->SetIsUsingDefaultAvatar(false);
+  entry()->SetAvatarIconIndex(27);
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+  web_ui()->ClearTrackedCalls();
 
   base::ListValue list_args_1;
   list_args_1.AppendString("get-icons-callback-id");
@@ -139,17 +215,16 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIcons) {
 
   const content::TestWebUI::CallData& data_1 = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data_1.function_name());
+  EXPECT_EQ("get-icons-callback-id", data_1.arg1()->GetString());
 
-  std::string callback_id_1;
-  ASSERT_TRUE(data_1.arg1()->GetAsString(&callback_id_1));
-  EXPECT_EQ("get-icons-callback-id", callback_id_1);
-
-  VerifyIconListWithSingleSelection(data_1.arg3(), 27);
+  VerifyIconListWithOnlyCustomAvatars(data_1.arg3(), 27);
 }
 
 TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsOldIconSelected) {
-  PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInteger(prefs::kProfileAvatarIndex, 7);
+  // Set avatar icon will trigger avatar icons updated event.
+  entry()->SetAvatarIconIndex(7);
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+  web_ui()->ClearTrackedCalls();
 
   base::ListValue list_args;
   list_args.AppendString("get-icons-callback-id");
@@ -159,18 +234,16 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsOldIconSelected) {
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data.function_name());
+  EXPECT_EQ("get-icons-callback-id", data.arg1()->GetString());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ("get-icons-callback-id", callback_id);
-
-  VerifyIconListWithNoneSelected(data.arg3());
+  VerifyIconListWithOnlyCustomAvatars(data.arg3(), 0);
 }
 
-TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsGaiaAvatarSelected) {
-  PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInteger(prefs::kProfileAvatarIndex, 27);
-  pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, true);
+TEST_F(ManageProfileHandlerTest, GetAvailableIconsSignedInProfile) {
+  SetSignedInProfile();
+  EXPECT_TRUE(entry()->IsUsingDefaultAvatar());
+  EXPECT_TRUE(entry()->IsUsingGAIAPicture());
+  web_ui()->ClearTrackedCalls();
 
   base::ListValue list_args;
   list_args.AppendString("get-icons-callback-id");
@@ -181,28 +254,128 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsGaiaAvatarSelected) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ("get-icons-callback-id", callback_id);
+  EXPECT_EQ("get-icons-callback-id", data.arg1()->GetString());
+  VerifyIconList(data.arg3(), /*selected_index=*/0,
+                 /*gaia_included=*/true,
+                 /*gaia_selected=*/true,
+                 /*default_avatar_included=*/false);
 
-  VerifyIconListWithNoneSelected(data.arg3());
+  web_ui()->ClearTrackedCalls();
+
+  // Set custom avatar
+  entry()->SetIsUsingDefaultAvatar(false);
+  entry()->SetAvatarIconIndex(30);
+
+  const content::TestWebUI::CallData& data_1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data_1.function_name());
+
+  EXPECT_EQ("available-icons-changed", data_1.arg1()->GetString());
+  VerifyIconList(data_1.arg2(), /*selected_index=*/30,
+                 /*gaia_included=*/true,
+                 /*gaia_selected=*/false,
+                 /*default_avatar_included=*/false);
+
+  // Sign out.
+  entry()->SetAuthInfo("", base::string16(), false);
+  entry()->SetGAIAPicture(std::string(), gfx::Image());
+
+  const content::TestWebUI::CallData& data_2 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data_2.function_name());
+
+  EXPECT_EQ("available-icons-changed", data_2.arg1()->GetString());
+  VerifyIconList(data_2.arg2(), /*selected_index=*/30,
+                 /*gaia_included=*/false,
+                 /*gaia_selected=*/false,
+                 /*default_avatar_included=*/false);
+}
+
+TEST_F(ManageProfileHandlerTest, GetAvailableIconsLocalProfile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kNewProfilePicker, features::kProfilesUIRevamp}, {});
+  EXPECT_FALSE(entry()->IsUsingGAIAPicture());
+  EXPECT_EQ(entry()->GetAvatarIconIndex(),
+            profiles::GetPlaceholderAvatarIndex());
+
+  base::ListValue list_args;
+  list_args.AppendString("get-icons-callback-id");
+  handler()->HandleGetAvailableIcons(&list_args);
+
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+
+  std::string callback_id = data.arg1()->GetString();
+  EXPECT_EQ("get-icons-callback-id", callback_id);
+  VerifyIconList(data.arg3(), /*selected_index=*/entry()->GetAvatarIconIndex(),
+                 /*gaia_included=*/false,
+                 /*gaia_selected=*/false,
+                 /*default_avatar_included=*/true);
+
+  // Sign in.
+  SetSignedInProfile();
+  EXPECT_TRUE(entry()->IsUsingGAIAPicture());
+  const content::TestWebUI::CallData& data_1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data_1.function_name());
+
+  EXPECT_EQ("available-icons-changed", data_1.arg1()->GetString());
+  VerifyIconList(data_1.arg2(), /*selected_index=*/0,
+                 /*gaia_included=*/true,
+                 /*gaia_selected=*/true,
+                 /*default_avatar_included=*/false);
 }
 
 TEST_F(ManageProfileHandlerTest, ProfileAvatarChangedWebUIEvent) {
-  PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInteger(prefs::kProfileAvatarIndex, 12);
-
-  handler()->OnProfileAvatarChanged(base::FilePath());
+  entry()->SetIsUsingDefaultAvatar(false);
+  entry()->SetAvatarIconIndex(27);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
-  std::string event_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&event_id));
-  EXPECT_EQ("available-icons-changed", event_id);
-  VerifyIconListWithSingleSelection(data.arg2(), 12);
+  EXPECT_EQ("available-icons-changed", data.arg1()->GetString());
+  VerifyIconListWithOnlyCustomAvatars(data.arg2(), 27);
+}
+
+TEST_F(ManageProfileHandlerTest, ProfileThemeColorsChangedWebUIEvent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kNewProfilePicker, features::kProfilesUIRevamp}, {});
+  ProfileThemeColors colors = {SK_ColorTRANSPARENT, SK_ColorBLACK,
+                               SK_ColorWHITE};
+  entry()->SetProfileThemeColors(colors);
+
+  // The expected number of calls are two, since the profile avatar has changed
+  // along with the color, as the current profile avatar is the generic colored
+  // avatar.
+  EXPECT_EQ(2U, web_ui()->call_data().size());
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+  EXPECT_EQ("available-icons-changed", data.arg1()->GetString());
+  VerifyIconList(data.arg2(), /*selected_index=*/entry()->GetAvatarIconIndex(),
+                 /*gaia_included=*/false,
+                 /*gaia_selected=*/false,
+                 /*default_avatar_included=*/true);
+
+  // Set custom avatar.
+  entry()->SetIsUsingDefaultAvatar(false);
+  entry()->SetAvatarIconIndex(37);
+  web_ui()->ClearTrackedCalls();
+
+  entry()->SetProfileThemeColors(base::nullopt);
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+
+  const content::TestWebUI::CallData& data_1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data_1.function_name());
+  EXPECT_EQ("available-icons-changed", data_1.arg1()->GetString());
+  VerifyIconList(data_1.arg2(),
+                 /*selected_index=*/entry()->GetAvatarIconIndex(),
+                 /*gaia_included=*/false,
+                 /*gaia_selected=*/false,
+                 /*default_avatar_included=*/true);
 }
 
 }  // namespace settings
