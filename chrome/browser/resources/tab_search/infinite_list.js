@@ -102,6 +102,13 @@ export class InfiniteList extends PolymerElement {
     return idx < this.domRepeat_.items.length;
   }
 
+  ensureAllDomItemsAvailable() {
+    const lastItemIndex = this.items.length - 1;
+    if (!this.isDomItemAtIndexAvailable_(lastItemIndex)) {
+      this.ensureDomItemsAvailableStartingAt_(lastItemIndex);
+    }
+  }
+
   /**
    * Ensure we have the required DOM items to fill the current view starting
    * at the specified index.

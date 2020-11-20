@@ -12,7 +12,7 @@ import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
-import {sampleData} from './tab_search_test_data.js';
+import {generateSampleDataFromSiteNames, sampleData} from './tab_search_test_data.js';
 import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
@@ -163,6 +163,27 @@ suite('TabSearchAppTest', () => {
     keyDownOn(searchField, 0, [], 'Home');
     assertEquals(0, tabSearchApp.getSelectedIndex());
   });
+
+  test(
+      'Verify all list items are present when Shift+Tab navigating from the search field to the last item',
+      async () => {
+        const siteNames = Array.from({length: 20}, (_, i) => 'site' + (i + 1));
+        const testData = generateSampleDataFromSiteNames(siteNames);
+        await setupTest(testData);
+
+        const numTabs =
+            testData.windows.reduce((total, w) => total + w.tabs.length, 0);
+        const searchField = /** @type {!TabSearchSearchField} */
+            (tabSearchApp.shadowRoot.querySelector('#searchField'));
+
+        keyDownOn(searchField, 0, ['shift'], 'Tab');
+        await waitAfterNextRender(tabSearchApp);
+
+        // Since default actions are not triggered via simulated events we rely
+        // on asserting the expected DOM item count necessary to focus the last
+        // item is present.
+        assertEquals(siteNames.length, queryRows().length);
+      });
 
   test('Key with modifiers should not affect selected item', async () => {
     await setupTest(sampleData());
