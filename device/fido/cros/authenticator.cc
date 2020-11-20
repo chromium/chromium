@@ -39,6 +39,7 @@ base::string16 ChromeOSAuthenticator::GetDisplayName() const {
 
 namespace {
 
+// DBus timeout for method calls that doesn't involve user interaction.
 constexpr int kShortTimeoutMs = 3000;
 
 AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions() {
@@ -371,6 +372,42 @@ void ChromeOSAuthenticator::OnCancelResp(dbus::Response* dbus_response) {
   }
 
   current_request_id_ = 0u;
+}
+
+// static
+bool ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable() {
+  dbus::Bus::Options dbus_options;
+  dbus_options.bus_type = dbus::Bus::SYSTEM;
+  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
+  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
+      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
+
+  if (!u2f_proxy) {
+    FIDO_LOG(ERROR) << "Couldn't get u2f proxy";
+    return false;
+  }
+
+  u2f::IsUvpaaRequest req;
+  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FIsUvpaa);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendProtoAsArrayOfBytes(req);
+
+  std::unique_ptr<dbus::Response> dbus_response =
+      u2f_proxy->CallMethodAndBlock(&method_call, kShortTimeoutMs);
+
+  if (!dbus_response) {
+    FIDO_LOG(ERROR) << "IsUvpaa dbus call had no response or timed out";
+    return false;
+  }
+
+  dbus::MessageReader reader(dbus_response.get());
+  u2f::IsUvpaaResponse resp;
+  if (!reader.PopArrayOfBytesAsProto(&resp)) {
+    FIDO_LOG(ERROR) << "Failed to parse reply for call to IsUvpaa";
+    return false;
+  }
+
+  return resp.available();
 }
 
 bool ChromeOSAuthenticator::IsInPairingMode() const {
