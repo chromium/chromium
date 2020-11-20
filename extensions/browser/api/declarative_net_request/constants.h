@@ -21,7 +21,6 @@ enum class ParseResult {
   SUCCESS,
   ERROR_RESOURCE_TYPE_DUPLICATED,
   ERROR_INVALID_RULE_ID,
-  ERROR_EMPTY_RULE_PRIORITY,
   ERROR_INVALID_RULE_PRIORITY,
   ERROR_NO_APPLICABLE_RESOURCE_TYPES,
   ERROR_EMPTY_DOMAINS_LIST,
@@ -129,7 +128,6 @@ extern const char* const kAllowedTransformSchemes[4];
 // Rule parsing errors.
 extern const char kErrorResourceTypeDuplicated[];
 extern const char kErrorInvalidRuleKey[];
-extern const char kErrorEmptyRulePriority[];
 extern const char kErrorNoApplicableResourceTypes[];
 extern const char kErrorEmptyList[];
 extern const char kErrorEmptyKey[];

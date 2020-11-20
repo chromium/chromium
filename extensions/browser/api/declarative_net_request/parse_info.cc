@@ -43,9 +43,6 @@ std::string GetError(ParseResult error_reason, const int* rule_id) {
       return ErrorUtils::FormatErrorMessage(
           kErrorInvalidRuleKey, base::NumberToString(*rule_id), kIDKey,
           base::NumberToString(kMinValidID));
-    case ParseResult::ERROR_EMPTY_RULE_PRIORITY:
-      return ErrorUtils::FormatErrorMessage(kErrorEmptyRulePriority,
-                                            base::NumberToString(*rule_id));
     case ParseResult::ERROR_INVALID_RULE_PRIORITY:
       return ErrorUtils::FormatErrorMessage(
           kErrorInvalidRuleKey, base::NumberToString(*rule_id), kPriorityKey,

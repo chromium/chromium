@@ -481,17 +481,6 @@ TEST_P(SingleRulesetTest, DuplicateResourceTypes) {
       GetParseError(ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED, *rule.id));
 }
 
-TEST_P(SingleRulesetTest, EmptyRedirectRulePriority) {
-  TestRule rule = CreateGenericRule();
-  rule.action->type = std::string("redirect");
-  rule.action->redirect.emplace();
-  rule.action->redirect->url = std::string("https://google.com");
-  rule.priority.reset();
-  AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_EMPTY_RULE_PRIORITY, *rule.id));
-}
-
 TEST_P(SingleRulesetTest, EmptyRedirectRuleUrl) {
   TestRule rule = CreateGenericRule();
   rule.id = kMinValidID;

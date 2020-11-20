@@ -19,8 +19,6 @@ const char kErrorResourceTypeDuplicated[] =
 const char kErrorInvalidRuleKey[] =
     "Rule with id * has an invalid value for * key. This should be greater "
     "than or equal to *.";
-const char kErrorEmptyRulePriority[] =
-    "Rule with id * does not specify the value for priority key.";
 const char kErrorNoApplicableResourceTypes[] =
     "Rule with id * is not applicable to any resource type.";
 const char kErrorEmptyList[] =

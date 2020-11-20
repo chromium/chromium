@@ -168,9 +168,6 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED:
       output << "ERROR_RESOURCE_TYPE_DUPLICATED";
       break;
-    case ParseResult::ERROR_EMPTY_RULE_PRIORITY:
-      output << "ERROR_EMPTY_RULE_PRIORITY";
-      break;
     case ParseResult::ERROR_INVALID_RULE_ID:
       output << "ERROR_INVALID_RULE_ID";
       break;

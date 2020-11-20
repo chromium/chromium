@@ -289,8 +289,7 @@ namespace declarativeNetRequest {
     // An id which uniquely identifies a rule. Mandatory and should be >= 1.
     long id;
 
-    // Rule priority. Mandatory and should be >= 1. This is used to break ties
-    // between multiple matching rules.
+    // Rule priority. Defaults to 1. When specified, should be >= 1.
     long? priority;
 
     // The condition under which this rule is triggered.

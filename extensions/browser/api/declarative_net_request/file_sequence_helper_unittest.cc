@@ -315,7 +315,7 @@ TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
                         true /* expected_did_load_successfully*/);
   }
 
-  // Test adding an invalid rule, e.g. a redirect rule without priority.
+  // Test adding an invalid rule, e.g. a rule with invalid priority.
   {
     SCOPED_TRACE("Test adding an invalid rule");
     TestRule rule = CreateGenericRule();
@@ -323,12 +323,12 @@ TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
     rule.action->type = std::string("redirect");
     rule.action->redirect.emplace();
     rule.action->redirect->url = std::string("http://google.com");
-    rule.priority.reset();
+    rule.priority = kMinValidPriority - 1;
     api_rules.clear();
     api_rules.push_back(GetAPIRule(rule));
 
     int rule_id = kMinValidID + 1;
-    ParseInfo info(ParseResult::ERROR_EMPTY_RULE_PRIORITY, &rule_id);
+    ParseInfo info(ParseResult::ERROR_INVALID_RULE_PRIORITY, &rule_id);
     TestAddDynamicRules(source.Clone(), std::move(api_rules),
                         ReadJSONRulesResult::Status::kSuccess,
                         UpdateDynamicRulesStatus::kErrorInvalidRules,
