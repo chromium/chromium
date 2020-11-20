@@ -133,7 +133,7 @@ extern "C" {
 //   - If the std::new_handler is NOT set just return nullptr.
 //   - If the std::new_handler is set:
 //     - Assume it will abort() if it fails (very likely the new_handler will
-//       just suicide priting a message).
+//       just suicide printing a message).
 //     - Assume it did succeed if it returns, in which case reattempt the alloc.
 
 ALWAYS_INLINE void* ShimCppNew(size_t size) {
