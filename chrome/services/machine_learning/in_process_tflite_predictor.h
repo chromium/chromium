@@ -13,8 +13,9 @@
 #include "chrome/services/machine_learning/machine_learning_tflite_buildflags.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-// TODO(mcrouse): add tensorflow to third_party, and add appropriate DEPS.
-// #include "third_party/tensorflow/lite/c/c_api.h"
+#include "third_party/tflite/src/tensorflow/lite/c/common.h"
+#include "third_party/tflite/src/tensorflow/lite/interpreter.h"
+#include "third_party/tflite/src/tensorflow/lite/model.h"
 #endif
 
 namespace machine_learning {
@@ -80,13 +81,9 @@ class InProcessTFLitePredictor {
   std::string model_file_name_;
 
   // Number of threads used by |interpreter_| for evaluating |model_|.
-  int32_t num_threads_;
-  std::unique_ptr<TfLiteModel, std::function<void(TfLiteModel*)>> model_;
-  std::unique_ptr<TfLiteInterpreterOptions,
-                  std::function<void(TfLiteInterpreterOptions*)>>
-      options_;
-  std::unique_ptr<TfLiteInterpreter, std::function<void(TfLiteInterpreter*)>>
-      interpreter_;
+  int32_t num_threads_ = 1;
+  std::unique_ptr<tflite::FlatBufferModel> model_;
+  std::unique_ptr<tflite::Interpreter> interpreter_;
 
   // True if TFLite interpreter is initialized.
   bool initialized_ = false;

@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "chrome/services/machine_learning/in_process_tflite_predictor.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -17,6 +16,10 @@ namespace content {
 class NavigationHandle;
 class WebContents;
 }  // namespace content
+
+namespace machine_learning {
+class InProcessTFLitePredictor;
+}  // namespace machine_learning
 
 // Web content observer that runs a TFLite predictor
 // at different stages of a navigation.

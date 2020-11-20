@@ -17,27 +17,26 @@ source_set("machine_learning") {
     "//mojo/public/cpp/bindings",
   ]
 
-  if (build_with_tflite_lib) {
-    sources += [
-      "in_process_tflite_predictor.cc",
-      "in_process_tflite_predictor.h",
-    ]
-
-    deps += [
-      ":tflite_lib",
-      ":tflite_simple_test",
-    ]
-
-    lib_dirs = [ "$root_out_dir" ]
-    libs = [ "tensorflowlite_c" ]
-  }
-
   public_deps = [
     ":machine_learning_tflite_buildflags",
     "//chrome/services/machine_learning/public/cpp:decision_tree",
     "//chrome/services/machine_learning/public/mojom",
     "//mojo/public/mojom/base",
   ]
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "in_process_tflite_predictor.cc",
+      "in_process_tflite_predictor.h",
+    ]
+
+    deps += [ ":tflite_simple_test" ]
+
+    public_deps += [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+    ]
+  }
 }
 
 source_set("metrics") {
@@ -80,18 +79,6 @@ if (build_with_tflite_lib) {
   copy("tflite_simple_test") {
     sources = [ "//chrome/test/data/simple_test.tflite" ]
     outputs = [ "$root_out_dir/test_data/simple_test.tflite" ]
-  }
-
-  if (is_android) {
-    copy("tflite_lib") {
-      sources = [ "//third_party/tensorflow/libtensorflowlite_c_arm64.so" ]
-      outputs = [ "$root_out_dir/libtensorflowlite_c.so" ]
-    }
-  } else {
-    copy("tflite_lib") {
-      sources = [ "//third_party/tensorflow/libtensorflowlite_c.so" ]
-      outputs = [ "$root_out_dir/libtensorflowlite_c.so" ]
-    }
   }
 }
 

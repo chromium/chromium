@@ -5,6 +5,9 @@
 #include "chrome/services/machine_learning/in_process_tflite_predictor.h"
 
 #include "base/check.h"
+#include "third_party/tflite/src/tensorflow/lite/interpreter.h"
+#include "third_party/tflite/src/tensorflow/lite/kernels/register.h"
+#include "third_party/tflite/src/tensorflow/lite/model.h"
 
 namespace machine_learning {
 
@@ -26,7 +29,7 @@ TfLiteStatus InProcessTFLitePredictor::Initialize() {
 }
 
 TfLiteStatus InProcessTFLitePredictor::Evaluate() {
-  return TfLiteInterpreterInvoke(interpreter_.get());
+  return interpreter_->Invoke();
 }
 
 bool InProcessTFLitePredictor::LoadModel() {
@@ -35,8 +38,7 @@ bool InProcessTFLitePredictor::LoadModel() {
 
   // We create the pointer using this approach since |TfLiteModel| is a
   // structure without the delete operator.
-  model_ = std::unique_ptr<TfLiteModel, std::function<void(TfLiteModel*)>>(
-      TfLiteModelCreateFromFile(model_file_name_.c_str()), &TfLiteModelDelete);
+  model_ = tflite::FlatBufferModel::BuildFromFile(model_file_name_.c_str());
   if (model_ == nullptr)
     return false;
 
@@ -44,30 +46,17 @@ bool InProcessTFLitePredictor::LoadModel() {
 }
 
 bool InProcessTFLitePredictor::BuildInterpreter() {
-  // We create the pointer using this approach since |TfLiteInterpreterOptions|
-  // is a structure without the delete operator.
-  options_ = std::unique_ptr<TfLiteInterpreterOptions,
-                             std::function<void(TfLiteInterpreterOptions*)>>(
-      TfLiteInterpreterOptionsCreate(), &TfLiteInterpreterOptionsDelete);
-  if (options_ == nullptr)
-    return false;
+  tflite::ops::builtin::BuiltinOpResolver resolver;
+  tflite::InterpreterBuilder builder(*model_, resolver);
 
-  TfLiteInterpreterOptionsSetNumThreads(options_.get(), num_threads_);
-
-  // We create the pointer using this approach since |TfLiteInterpreter| is a
-  // structure without the delete operator.
-  interpreter_ = std::unique_ptr<TfLiteInterpreter,
-                                 std::function<void(TfLiteInterpreter*)>>(
-      TfLiteInterpreterCreate(model_.get(), options_.get()),
-      &TfLiteInterpreterDelete);
-  if (interpreter_ == nullptr)
+  if (builder(&interpreter_, num_threads_) != kTfLiteOk || !interpreter_)
     return false;
 
   return true;
 }
 
 TfLiteStatus InProcessTFLitePredictor::AllocateTensors() {
-  TfLiteStatus status = TfLiteInterpreterAllocateTensors(interpreter_.get());
+  TfLiteStatus status = interpreter_->AllocateTensors();
   DCHECK(status == kTfLiteOk);
   return status;
 }
@@ -75,26 +64,26 @@ TfLiteStatus InProcessTFLitePredictor::AllocateTensors() {
 int32_t InProcessTFLitePredictor::GetInputTensorCount() const {
   if (interpreter_ == nullptr)
     return 0;
-  return TfLiteInterpreterGetInputTensorCount(interpreter_.get());
+  return static_cast<int32_t>(interpreter_->inputs().size());
 }
 
 int32_t InProcessTFLitePredictor::GetOutputTensorCount() const {
   if (interpreter_ == nullptr)
     return 0;
-  return TfLiteInterpreterGetOutputTensorCount(interpreter_.get());
+  return static_cast<int32_t>(interpreter_->outputs().size());
 }
 
 TfLiteTensor* InProcessTFLitePredictor::GetInputTensor(int32_t index) const {
   if (interpreter_ == nullptr)
     return nullptr;
-  return TfLiteInterpreterGetInputTensor(interpreter_.get(), index);
+  return interpreter_->input_tensor(index);
 }
 
 const TfLiteTensor* InProcessTFLitePredictor::GetOutputTensor(
     int32_t index) const {
   if (interpreter_ == nullptr)
     return nullptr;
-  return TfLiteInterpreterGetOutputTensor(interpreter_.get(), index);
+  return interpreter_->output_tensor(index);
 }
 
 bool InProcessTFLitePredictor::IsInitialized() const {
@@ -104,36 +93,48 @@ bool InProcessTFLitePredictor::IsInitialized() const {
 int32_t InProcessTFLitePredictor::GetInputTensorNumDims(
     int32_t tensor_index) const {
   TfLiteTensor* tensor = GetInputTensor(tensor_index);
-  return TfLiteTensorNumDims(tensor);
+  if (tensor)
+    return tensor->dims->size;
+  return 0;
 }
 
 int32_t InProcessTFLitePredictor::GetInputTensorDim(int32_t tensor_index,
                                                     int32_t dim_index) const {
   TfLiteTensor* tensor = GetInputTensor(tensor_index);
-  return TfLiteTensorDim(tensor, dim_index);
+  if (tensor)
+    return tensor->dims->data[dim_index];
+  return 0;
 }
 
 void* InProcessTFLitePredictor::GetInputTensorData(int32_t tensor_index) const {
   TfLiteTensor* tensor = GetInputTensor(tensor_index);
-  return TfLiteTensorData(tensor);
+  if (tensor)
+    return static_cast<void*>(tensor->data.raw);
+  return nullptr;
 }
 
 int32_t InProcessTFLitePredictor::GetOutputTensorNumDims(
     int32_t tensor_index) const {
   const TfLiteTensor* tensor = GetOutputTensor(tensor_index);
-  return TfLiteTensorNumDims(tensor);
+  if (tensor)
+    return tensor->dims->size;
+  return 0;
 }
 
 int32_t InProcessTFLitePredictor::GetOutputTensorDim(int32_t tensor_index,
                                                      int32_t dim_index) const {
   const TfLiteTensor* tensor = GetOutputTensor(tensor_index);
-  return TfLiteTensorDim(tensor, dim_index);
+  if (tensor)
+    return tensor->dims->data[dim_index];
+  return 0;
 }
 
 void* InProcessTFLitePredictor::GetOutputTensorData(
     int32_t tensor_index) const {
-  const TfLiteTensor* tensor = GetInputTensor(tensor_index);
-  return TfLiteTensorData(tensor);
+  const TfLiteTensor* tensor = GetOutputTensor(tensor_index);
+  if (tensor)
+    return static_cast<void*>(tensor->data.raw);
+  return nullptr;
 }
 
 int32_t InProcessTFLitePredictor::GetTFLiteNumThreads() const {
