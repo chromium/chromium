@@ -10,6 +10,7 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -23,11 +24,13 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/transform.h"
-#include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -96,7 +99,8 @@ class FadeoutLayerDelegate : public ui::LayerDelegate {
 
 // Typography.
 constexpr char kMiddleDotSeparator[] = " \u00B7 ";
-constexpr char kPreceedingEighthNoteSymbol[] = "\u266A ";
+
+constexpr int kMusicNoteIconSizeDip = 20;
 
 // Returns true if we should show media string for ambient mode on lock-screen
 // based on user pref. We should keep the same user policy here as the
@@ -198,14 +202,19 @@ void MediaStringView::InitLayout() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  constexpr int kChildSpacingDip = 8;
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout->set_between_child_spacing(kChildSpacingDip);
 
-  icon_ = AddChildView(std::make_unique<views::Label>(
-      base::UTF8ToUTF16(kPreceedingEighthNoteSymbol)));
+  icon_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_->SetPreferredSize(
+      gfx::Size(kMusicNoteIconSizeDip, kMusicNoteIconSizeDip));
+  icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
+                                        SK_ColorWHITE));
 
   media_text_container_ = AddChildView(std::make_unique<views::View>());
   media_text_container_->SetPaintToLayer();
@@ -227,16 +236,16 @@ void MediaStringView::InitLayout() {
   constexpr SkColor kTextColor = SK_ColorWHITE;
   constexpr int kDefaultFontSizeDip = 64;
   constexpr int kMediaStringFontSizeDip = 18;
-  for (auto* view : {icon_, media_text_}) {
-    view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-    view->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_BOTTOM);
-    view->SetAutoColorReadabilityEnabled(false);
-    view->SetEnabledColor(kTextColor);
-    view->SetFontList(ambient::util::GetDefaultFontlist().DeriveWithSizeDelta(
-        kMediaStringFontSizeDip - kDefaultFontSizeDip));
-    view->SetShadows(ambient::util::GetTextShadowValues());
-    view->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
-  }
+  media_text_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  media_text_->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
+  media_text_->SetAutoColorReadabilityEnabled(false);
+  media_text_->SetEnabledColor(kTextColor);
+  media_text_->SetFontList(
+      ambient::util::GetDefaultFontlist()
+          .DeriveWithSizeDelta(kMediaStringFontSizeDip - kDefaultFontSizeDip)
+          .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+  media_text_->SetShadows(ambient::util::GetTextShadowValues());
+  media_text_->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
 
   BindMediaControllerObserver();
 }
