@@ -884,21 +884,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
 
-  // Change the autocomplete to demote "porgs", but keep it as a match by using
-  // the default returned suggest list.
-  AutocompleteInput empty_input(
-      base::ASCIIToUTF16("empty"), metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  autocomplete_controller->Start(empty_input);
-  ui_test_utils::WaitForAutocompleteDone(browser());
-  EXPECT_TRUE(autocomplete_controller->done());
-
-  WaitForDuration(base::TimeDelta::FromMilliseconds(100));
-  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
-      base::ASCIIToUTF16(search_terms));
-  ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
-
   // Change the autocomplete to remove "porgs" entirely.
   AutocompleteInput other_input(
       base::ASCIIToUTF16(kOmniboxSuggestNonPrefetchQuery),
