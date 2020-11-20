@@ -21,7 +21,7 @@ METRICS_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__),
                                              'metrics'))
 POWER_PROFILE_SQL = 'power_profile.sql'
 
-MetricFiles = namedtuple('MetricFiles', ('sql', 'proto'))
+MetricFiles = namedtuple('MetricFiles', ('sql', 'proto', 'internal_metric'))
 
 
 class InvalidTraceProcessorOutput(Exception):
@@ -69,15 +69,18 @@ def _RunTraceProcessor(*args):
 
 
 def _CreateMetricFiles(metric_name):
-  # Currently assuming all metric files live in tbmv3/metrics directory. We will
-  # revise this decision later.
-  metric_files = MetricFiles(
-      sql=os.path.join(METRICS_PATH, metric_name + '.sql'),
-      proto=os.path.join(METRICS_PATH, metric_name + '.proto'))
-  for filetype, path in metric_files._asdict().iteritems():
-    if not os.path.isfile(path):
-      raise RuntimeError('metric %s file not found at %s' % (filetype, path))
-  return metric_files
+  # Currently assuming all metric files live in tbmv3/metrics directory unless
+  # the metrics are compiled into trace processor. We will revise this decision
+  # later.
+  sql_file = os.path.join(METRICS_PATH, metric_name + '.sql')
+  proto_file = os.path.join(METRICS_PATH, metric_name + '.proto')
+  internal_metric = False
+  if not (os.path.isfile(sql_file) and os.path.isfile(proto_file)):
+    # Metric files not found - metric may be compiled into trace processor.
+    internal_metric = True
+  return MetricFiles(sql=sql_file,
+                     proto=proto_file,
+                     internal_metric=internal_metric)
 
 
 def _ScopedHistogramName(metric_name, histogram_name):
@@ -200,9 +203,13 @@ def RunMetric(trace_processor_path, trace_file, metric_name,
   """
   trace_processor_path = _EnsureTraceProcessor(trace_processor_path)
   metric_files = _CreateMetricFiles(metric_name)
+  if metric_files.internal_metric:
+    metric_name_arg = metric_name
+  else:
+    metric_name_arg = metric_files.sql
   command_args = [
       trace_processor_path,
-      '--run-metrics', metric_files.sql,
+      '--run-metrics', metric_name_arg,
       '--metrics-output', 'json',
       trace_file,
   ]
