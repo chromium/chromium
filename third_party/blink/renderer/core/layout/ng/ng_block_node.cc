@@ -536,20 +536,6 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   UpdateShapeOutsideInfoIfNeeded(
       *layout_result, constraint_space.PercentageResolutionInlineSize());
 
-#if DCHECK_IS_ON()
-  // DCHECK can only be turned on for LayoutNGTable because it
-  // fails with Legacy table implementation.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled() &&
-      layout_result->Status() == NGLayoutResult::kSuccess) {
-    LogicalSize size =
-        layout_result->PhysicalFragment().Size().ConvertToLogical(
-            constraint_space.GetWritingMode());
-    if (constraint_space.IsFixedInlineSize())
-      DCHECK_EQ(size.inline_size, constraint_space.AvailableSize().inline_size);
-    if (constraint_space.IsFixedBlockSize())
-      DCHECK_EQ(size.block_size, constraint_space.AvailableSize().block_size);
-  }
-#endif
   return layout_result;
 }
 
