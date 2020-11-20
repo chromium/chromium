@@ -99,11 +99,15 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   content::WebContentsConsoleObserver observer(web_contents);
-  observer.SetPattern("Launched external handler for 'mailto:test@site.test'.");
+  // Wait for either "Launched external handler..." or "Failed to launch..."; the former will pass
+  // the test, while the latter will fail it more quickly than waiting for a timeout.
+  observer.SetPattern("*aunch*'mailto:test@site.test'*");
   ASSERT_TRUE(
       ExecJs(web_contents, "window.open('mailto:test@site.test', '_self');"));
   observer.Wait();
   ASSERT_EQ(1u, observer.messages().size());
+  EXPECT_EQ("Launched external handler for 'mailto:test@site.test'.",
+            observer.GetMessageAt(0u));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
