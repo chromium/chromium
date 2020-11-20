@@ -2024,10 +2024,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 }
 
-- (void)openURLInNewTabWithCommand:(OpenNewTabCommand*)command {
-  [self openURLInNewTab:command];
-}
-
 - (void)expectNewForegroundTabForMode:(ApplicationMode)targetMode {
   id<BrowserInterface> interface =
       targetMode == ApplicationMode::INCOGNITO

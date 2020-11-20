@@ -42,9 +42,6 @@
 
 #pragma mark - URLLoadingBrowserAgentDelegate
 
-- (void)openURLInNewTabWithCommand:(OpenNewTabCommand*)command {
-}
-
 - (void)animateOpenBackgroundTabFromParams:(const UrlLoadParams&)params
                                 completion:(void (^)())completion {
 }
