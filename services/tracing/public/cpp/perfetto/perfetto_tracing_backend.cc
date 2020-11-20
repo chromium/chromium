@@ -492,8 +492,10 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
 
   void ObserveEvents(uint32_t events_mask) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // Only some events are currently supported by this backend.
     DCHECK(!(events_mask &
-             ~perfetto::ObservableEvents::TYPE_DATA_SOURCES_INSTANCES));
+             ~(perfetto::ObservableEvents::TYPE_DATA_SOURCES_INSTANCES |
+               perfetto::ObservableEvents::TYPE_ALL_DATA_SOURCES_STARTED)));
     observed_events_mask_ = events_mask;
   }
 
@@ -515,10 +517,12 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     // TODO(skyostil): Wire up full data source state. For now Perfetto just
     // needs to know all data sources have started.
     if (observed_events_mask_ &
-        perfetto::ObservableEvents::TYPE_DATA_SOURCES_INSTANCES) {
+        (perfetto::ObservableEvents::TYPE_ALL_DATA_SOURCES_STARTED |
+         perfetto::ObservableEvents::TYPE_DATA_SOURCES_INSTANCES)) {
       perfetto::ObservableEvents events;
       events.add_instance_state_changes()->set_state(
           perfetto::ObservableEvents::DATA_SOURCE_INSTANCE_STATE_STARTED);
+      events.set_all_data_sources_started(true);
       consumer_->OnObservableEvents(events);
     }
   }
