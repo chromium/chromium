@@ -66,7 +66,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       base::OnceClosure callback,
       uint64_t pending_callback_id) const override;
   void Shutdown() override;
-  bool CheckRasterFinishedQueries() override;
 
   // Playback raster source and copy result into |resource|.
   gpu::SyncToken PlaybackAndCopyOnWorkerThread(

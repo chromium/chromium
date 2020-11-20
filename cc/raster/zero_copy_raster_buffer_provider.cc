@@ -236,8 +236,4 @@ uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
 
 void ZeroCopyRasterBufferProvider::Shutdown() {}
 
-bool ZeroCopyRasterBufferProvider::CheckRasterFinishedQueries() {
-  return false;
-}
-
 }  // namespace cc

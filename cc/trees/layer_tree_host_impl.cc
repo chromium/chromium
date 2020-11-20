@@ -3358,8 +3358,6 @@ void LayerTreeHostImpl::RecreateTileResources() {
 }
 
 void LayerTreeHostImpl::CreateTileManagerResources() {
-  raster_buffer_provider_ = CreateRasterBufferProvider();
-
   viz::ResourceFormat tile_format = TileRasterBufferFormat(
       settings_, layer_tree_frame_sink_->context_provider(),
       use_gpu_rasterization_);
@@ -3372,6 +3370,11 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
                                                 tile_format),
         settings_.decoded_image_working_set_budget_bytes, max_texture_size_,
         paint_image_generator_client_id_, dark_mode_filter_);
+
+    pending_raster_queries_ = std::make_unique<RasterQueryQueue>(
+        layer_tree_frame_sink_->worker_context_provider(),
+        can_use_oop_rasterization_);
+
   } else {
     bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
     image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
@@ -3379,6 +3382,8 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
         settings_.decoded_image_working_set_budget_bytes,
         paint_image_generator_client_id_);
   }
+
+  raster_buffer_provider_ = CreateRasterBufferProvider();
 
   // Pass the single-threaded synchronous task graph runner to the worker pool
   // if we're in synchronous single-threaded mode.
@@ -3392,7 +3397,8 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
 
   tile_manager_.SetResources(resource_pool_.get(), image_decode_cache_.get(),
                              task_graph_runner, raster_buffer_provider_.get(),
-                             use_gpu_rasterization_, use_oop_rasterization());
+                             use_gpu_rasterization_, use_oop_rasterization(),
+                             pending_raster_queries_.get());
   tile_manager_.SetCheckerImagingForceDisabled(
       settings_.only_checker_images_with_gpu_raster && !use_gpu_rasterization_);
   UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
@@ -3423,7 +3429,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
         settings_.resource_settings.use_gpu_memory_buffer_resources,
         tile_format, settings_.max_gpu_raster_tile_size,
         settings_.unpremultiply_and_dither_low_bit_depth_tiles,
-        can_use_oop_rasterization_);
+        can_use_oop_rasterization_, pending_raster_queries_.get());
   }
 
   bool use_zero_copy = settings_.use_zero_copy;
@@ -3520,6 +3526,7 @@ void LayerTreeHostImpl::CleanUpTileManagerResources() {
   single_thread_synchronous_task_graph_runner_ = nullptr;
   image_decode_cache_ = nullptr;
   raster_buffer_provider_ = nullptr;
+  pending_raster_queries_ = nullptr;
   // Any resources that were allocated previously should be considered not good
   // for reuse, as the RasterBufferProvider will be replaced and it may choose
   // to allocate future resources differently.

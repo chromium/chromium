@@ -41,6 +41,7 @@
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/paint_worklet_job.h"
+#include "cc/raster/raster_query_queue.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
@@ -818,6 +819,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return client_->IsInSynchronousComposite();
   }
 
+  RasterQueryQueue* GetRasterQueryQueueForTesting() const {
+    return pending_raster_queries_.get();
+  }
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -1012,6 +1017,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       GpuRasterizationStatus::OFF_DEVICE;
   std::unique_ptr<RasterBufferProvider> raster_buffer_provider_;
   std::unique_ptr<ResourcePool> resource_pool_;
+  std::unique_ptr<RasterQueryQueue> pending_raster_queries_;
   std::unique_ptr<ImageDecodeCache> image_decode_cache_;
 
   GlobalStateThatImpactsTilePriority global_tile_state_;

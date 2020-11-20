@@ -491,8 +491,4 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   return out_sync_token;
 }
 
-bool OneCopyRasterBufferProvider::CheckRasterFinishedQueries() {
-  return false;
-}
-
 }  // namespace cc

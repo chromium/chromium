@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "cc/base/unique_notifier.h"
 #include "cc/raster/raster_buffer_provider.h"
+#include "cc/raster/raster_query_queue.h"
 #include "cc/raster/raster_source.h"
 #include "cc/resources/memory_history.h"
 #include "cc/resources/resource_pool.h"
@@ -180,7 +181,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
                     TaskGraphRunner* task_graph_runner,
                     RasterBufferProvider* raster_buffer_provider,
                     bool use_gpu_rasterization,
-                    bool use_oop_rasterization);
+                    bool use_oop_rasterization,
+                    RasterQueryQueue* pending_raster_queries);
 
   // This causes any completed raster work to finalize, so that tiles get up to
   // date draw information.
@@ -258,6 +260,11 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void SetRasterBufferProviderForTesting(
       RasterBufferProvider* raster_buffer_provider) {
     raster_buffer_provider_ = raster_buffer_provider;
+  }
+
+  void SetPendingRasterQueriesForTesting(
+      RasterQueryQueue* pending_raster_queries) {
+    pending_raster_queries_ = pending_raster_queries;
   }
 
   std::vector<Tile*> AllTilesForTesting() const {
@@ -442,6 +449,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   const TileManagerSettings tile_manager_settings_;
   bool use_gpu_rasterization_;
   bool use_oop_rasterization_;
+  RasterQueryQueue* pending_raster_queries_ = nullptr;
 
   std::unordered_map<Tile::Id, Tile*> tiles_;
 
