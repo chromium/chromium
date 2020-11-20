@@ -41,6 +41,9 @@ GetAllKeysExecutionWaiter::~GetAllKeysExecutionWaiter() = default;
 IsKeyOnTokenExecutionWaiter::IsKeyOnTokenExecutionWaiter() = default;
 IsKeyOnTokenExecutionWaiter::~IsKeyOnTokenExecutionWaiter() = default;
 
+GetKeyLocationsExecutionWaiter::GetKeyLocationsExecutionWaiter() = default;
+GetKeyLocationsExecutionWaiter::~GetKeyLocationsExecutionWaiter() = default;
+
 }  // namespace test_util
 }  // namespace platform_keys
 }  // namespace chromeos

@@ -619,6 +619,22 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_FALSE(is_key_on_token_waiter.on_slot().value());
 }
 
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       GetKeyLocations) {
+  const TokenId token_id = GetParam().token_id;
+
+  const std::string public_key = GenerateKeyPair(token_id);
+
+  test_util::GetKeyLocationsExecutionWaiter get_key_locations_waiter;
+  platform_keys_service()->GetKeyLocations(
+      public_key, get_key_locations_waiter.GetCallback());
+  get_key_locations_waiter.Wait();
+
+  EXPECT_EQ(get_key_locations_waiter.status(), Status::kSuccess);
+  ASSERT_EQ(get_key_locations_waiter.key_locations().size(), 1U);
+  EXPECT_EQ(get_key_locations_waiter.key_locations()[0], token_id);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     AllSupportedProfilesAndTokensTypes,
     PlatformKeysServicePerTokenBrowserTest,
