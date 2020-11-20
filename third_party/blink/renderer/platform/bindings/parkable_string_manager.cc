@@ -127,16 +127,6 @@ ParkableStringManager& ParkableStringManager::Instance() {
 
 ParkableStringManager::~ParkableStringManager() = default;
 
-void ParkableStringManager::SetRendererBackgrounded(bool backgrounded) {
-  DCHECK(IsMainThread());
-  backgrounded_ = backgrounded;
-}
-
-bool ParkableStringManager::IsRendererBackgrounded() const {
-  DCHECK(IsMainThread());
-  return backgrounded_;
-}
-
 bool ParkableStringManager::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   DCHECK(IsMainThread());
@@ -486,7 +476,6 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
 }
 
 void ParkableStringManager::ResetForTesting() {
-  backgrounded_ = false;
   has_pending_aging_task_ = false;
   has_posted_unparking_time_accounting_task_ = false;
   did_register_memory_pressure_listener_ = false;
@@ -501,8 +490,7 @@ void ParkableStringManager::ResetForTesting() {
 }
 
 ParkableStringManager::ParkableStringManager()
-    : backgrounded_(false),
-      has_pending_aging_task_(false),
+    : has_pending_aging_task_(false),
       has_posted_unparking_time_accounting_task_(false),
       did_register_memory_pressure_listener_(false),
       allocator_for_testing_(nullptr) {}

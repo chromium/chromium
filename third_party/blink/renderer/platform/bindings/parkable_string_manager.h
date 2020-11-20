@@ -56,8 +56,6 @@ class PLATFORM_EXPORT ParkableStringManager {
   static ParkableStringManager& Instance();
   ~ParkableStringManager();
 
-  void SetRendererBackgrounded(bool backgrounded);
-  bool IsRendererBackgrounded() const;
   void PurgeMemory();
   // Number of parked and unparked strings. Public for testing.
   size_t Size() const;
@@ -125,7 +123,6 @@ class PLATFORM_EXPORT ParkableStringManager {
   void ResetForTesting();
   ParkableStringManager();
 
-  bool backgrounded_;
   bool has_pending_aging_task_;
   bool has_posted_unparking_time_accounting_task_;
   bool did_register_memory_pressure_listener_;

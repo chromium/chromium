@@ -699,24 +699,7 @@ TEST_F(ParkableStringTest, SynchronousToDisk) {
   EXPECT_TRUE(impl->is_on_disk());  // Synchronous writing.
 }
 
-TEST_F(ParkableStringTest, OnPurgeMemoryInBackground) {
-  ParkableString parkable = CreateAndParkAll();
-  ParkableStringManager::Instance().SetRendererBackgrounded(true);
-  EXPECT_TRUE(ParkableStringManager::Instance().IsRendererBackgrounded());
-
-  parkable.ToString();
-  EXPECT_FALSE(parkable.Impl()->is_parked());
-  EXPECT_TRUE(parkable.Impl()->has_compressed_data());
-
-  MemoryPressureListenerRegistry::Instance().OnPurgeMemory();
-  EXPECT_TRUE(parkable.Impl()->is_parked());
-
-  parkable.ToString();
-  EXPECT_TRUE(parkable.Impl()->has_compressed_data());
-}
-
-TEST_F(ParkableStringTest, OnPurgeMemoryInForeground) {
-  ParkableStringManager::Instance().SetRendererBackgrounded(false);
+TEST_F(ParkableStringTest, OnPurgeMemory) {
   ParkableString parkable1 = CreateAndParkAll();
   ParkableString parkable2(MakeLargeString('b').ReleaseImpl());
 

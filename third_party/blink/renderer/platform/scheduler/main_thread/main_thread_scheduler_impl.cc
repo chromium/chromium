@@ -33,7 +33,6 @@
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"
-#include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
@@ -1083,7 +1082,6 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
     main_thread_only().metrics_helper.OnRendererForegrounded(now);
   }
 
-  ParkableStringManager::Instance().SetRendererBackgrounded(backgrounded);
   memory_purge_manager_.SetRendererBackgrounded(backgrounded);
 }
 
