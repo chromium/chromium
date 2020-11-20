@@ -50,7 +50,6 @@
 
 namespace cc {
 class PaintCanvas;
-struct BrowserControlsParams;
 }
 
 namespace gfx {
@@ -261,27 +260,6 @@ class WebView {
   virtual void SetZoomFactorForDeviceScaleFactor(float) = 0;
 
   virtual float ZoomFactorForDeviceScaleFactor() = 0;
-
-  // This method is used for testing.
-  // Resize the view at the same time as changing the state of the top
-  // controls. If |browser_controls_shrink_layout| is true, the embedder shrunk
-  // the WebView size by the browser controls height.
-  virtual void ResizeWithBrowserControls(
-      const gfx::Size& main_frame_widget_size,
-      float top_controls_height,
-      float bottom_controls_height,
-      bool browser_controls_shrink_layout) = 0;
-
-  // Same as ResizeWithBrowserControls(const gfx::Size&,float,float,bool), but
-  // includes all browser controls params such as the min heights.
-  virtual void ResizeWithBrowserControls(
-      const gfx::Size& main_frame_widget_size,
-      const gfx::Size& visible_viewport_size,
-      cc::BrowserControlsParams browser_controls_params) = 0;
-
-  // Same as ResizeWithBrowserControls, but keeps the same BrowserControl
-  // settings.
-  virtual void Resize(const gfx::Size&) = 0;
 
   // Override the screen orientation override.
   virtual void SetScreenOrientationOverrideForTesting(

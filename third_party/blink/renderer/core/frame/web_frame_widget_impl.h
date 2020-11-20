@@ -83,18 +83,11 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   // WebWidget functions:
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
-  gfx::Size Size() override;
-  void Resize(const gfx::Size&) override;
 
   // WebFrameWidget implementation.
   bool ScrollFocusedEditableElementIntoView() override;
 
   PaintLayerCompositor* Compositor() const;
-
-  // WebFrameWidgetBase overrides:
-  void DidCreateLocalRootView() override;
-
-  void UpdateMainFrameLayoutSize();
 
  private:
   friend class WebFrameWidget;  // For WebFrameWidget::create.
@@ -110,8 +103,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
       const Element& element,
       PhysicalRect& rect_to_scroll,
       mojom::blink::ScrollIntoViewParamsPtr& params);
-
-  bool did_suspend_parsing_ = false;
 
   SelfKeepAlive<WebFrameWidgetImpl> self_keep_alive_;
 };

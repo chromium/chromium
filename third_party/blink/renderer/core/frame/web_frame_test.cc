@@ -8951,7 +8951,7 @@ TEST_F(WebFrameSwapTest, ValidateSizeOnRemoteToLocalMainFrameSwap) {
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   MainFrame()->Swap(remote_frame);
 
-  remote_frame->View()->Resize(size);
+  static_cast<WebViewImpl*>(remote_frame->View())->Resize(size);
 
   WebLocalFrame* local_frame =
       frame_test_helpers::CreateProvisional(*remote_frame);

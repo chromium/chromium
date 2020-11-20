@@ -144,13 +144,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetIsActive(bool value) override;
   void SetWindowFeatures(const WebWindowFeatures&) override;
   void SetOpenedByDOM() override;
-  void ResizeWithBrowserControls(const gfx::Size& main_frame_widget_size,
-                                 float top_controls_height,
-                                 float bottom_controls_height,
-                                 bool browser_controls_shrink_layout) override;
-  void ResizeWithBrowserControls(const gfx::Size& main_frame_widget_size,
-                                 const gfx::Size& visible_viewport_size,
-                                 cc::BrowserControlsParams) override;
   WebFrame* MainFrame() override;
   WebLocalFrame* FocusedFrame() override;
   void SetFocusedFrame(WebFrame*) override;
@@ -169,7 +162,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetVisualViewportOffset(const gfx::PointF&) override;
   gfx::PointF VisualViewportOffset() const override;
   gfx::SizeF VisualViewportSize() const override;
-  void Resize(const gfx::Size&) override;
   void SetScreenOrientationOverrideForTesting(
       base::Optional<blink::mojom::ScreenOrientation> orientation) override;
   void UseSynchronousResizeModeForTesting(bool enable) override;
@@ -220,6 +212,24 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void ClearBackgroundColorOverride();
   void SetBaseBackgroundColorOverride(SkColor);
   void ClearBaseBackgroundColorOverride();
+
+  // Resize the WebView. You likely should be using
+  // MainFrameWidget()->Resize instead.
+  void Resize(const gfx::Size&);
+
+  // This method is used for testing.
+  // Resize the view at the same time as changing the state of the top
+  // controls. If |browser_controls_shrink_layout| is true, the embedder shrunk
+  // the WebView size by the browser controls height.
+  void ResizeWithBrowserControls(const gfx::Size& main_frame_widget_size,
+                                 float top_controls_height,
+                                 float bottom_controls_height,
+                                 bool browser_controls_shrink_layout);
+  // Same as ResizeWithBrowserControls(const gfx::Size&,float,float,bool), but
+  // includes all browser controls params such as the min heights.
+  void ResizeWithBrowserControls(const gfx::Size& main_frame_widget_size,
+                                 const gfx::Size& visible_viewport_size,
+                                 cc::BrowserControlsParams);
 
   // Requests a page-scale animation based on the specified point/rect.
   void AnimateDoubleTapZoom(const gfx::Point&, const WebRect& block_bounds);

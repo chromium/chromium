@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/drag_actions.h"
@@ -1609,6 +1610,65 @@ cc::LayerTreeHost* WebFrameWidgetBase::InitializeCompositing(
 
 void WebFrameWidgetBase::SetCompositorVisible(bool visible) {
   widget_base_->SetCompositorVisible(visible);
+}
+
+gfx::Size WebFrameWidgetBase::Size() {
+  return size_.value_or(gfx::Size());
+}
+
+void WebFrameWidgetBase::Resize(const gfx::Size& new_size) {
+  if (size_ && *size_ == new_size)
+    return;
+
+  if (ForMainFrame()) {
+    size_ = new_size;
+    View()->Resize(new_size);
+    return;
+  }
+
+  if (child_data().did_suspend_parsing) {
+    child_data().did_suspend_parsing = false;
+    LocalRootImpl()->GetFrame()->Loader().GetDocumentLoader()->ResumeParser();
+  }
+
+  LocalFrameView* view = LocalRootImpl()->GetFrameView();
+  DCHECK(view);
+
+  size_ = new_size;
+
+  view->SetLayoutSize(IntSize(*size_));
+  view->Resize(IntSize(*size_));
+
+  // FIXME: In WebViewImpl this layout was a precursor to setting the minimum
+  // scale limit.  It is not clear if this is necessary for frame-level widget
+  // resize.
+  if (view->NeedsLayout())
+    view->UpdateLayout();
+
+  // FIXME: Investigate whether this is needed; comment from eseidel suggests
+  // that this function is flawed.
+  // TODO(kenrb): It would probably make more sense to check whether lifecycle
+  // updates are throttled in the root's LocalFrameView, but for OOPIFs that
+  // doesn't happen. Need to investigate if OOPIFs can be throttled during
+  // load.
+  if (LocalRootImpl()->GetFrame()->GetDocument()->IsLoadCompleted()) {
+    // FIXME: This is wrong. The LocalFrameView is responsible sending a
+    // resizeEvent as part of layout. Layout is also responsible for sending
+    // invalidations to the embedder. This method and all callers may be wrong.
+    // -- eseidel.
+    LocalRootImpl()->GetFrame()->GetDocument()->EnqueueResizeEvent();
+
+    // Pass the limits even though this is for subframes, as the limits will
+    // be needed in setting the raster scale. We set this value when setting
+    // up the compositor, but need to update it when the limits of the
+    // WebViewImpl have changed.
+    // TODO(wjmaclean): This is updating when the size of the *child frame*
+    // have changed which are completely independent of the WebView, and in an
+    // OOPIF where the main frame is remote, are these limits even useful?
+    SetPageScaleStateAndLimits(1.f, false /* is_pinch_gesture_active */,
+                               View()->MinimumPageScaleFactor(),
+                               View()->MaximumPageScaleFactor());
+  }
 }
 
 void WebFrameWidgetBase::BeginMainFrame(base::TimeTicks last_frame_time) {
@@ -3621,6 +3681,16 @@ void WebFrameWidgetBase::SetWindowRectSynchronously(
 
   Resize(new_window_rect.size());
   widget_base_->SetScreenRects(new_window_rect, new_window_rect);
+}
+
+void WebFrameWidgetBase::DidCreateLocalRootView() {
+  // If this WebWidget still hasn't received its size from the embedder, block
+  // the parser. This is necessary, because the parser can cause layout to
+  // happen, which needs to be done with the correct size.
+  if (ForSubframe() && !size_) {
+    child_data().did_suspend_parsing = true;
+    LocalRootImpl()->GetFrame()->Loader().GetDocumentLoader()->BlockParser();
+  }
 }
 
 }  // namespace blink

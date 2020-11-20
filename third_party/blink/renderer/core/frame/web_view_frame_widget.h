@@ -62,8 +62,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WebWidget overrides:
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
-  gfx::Size Size() override;
-  void Resize(const gfx::Size& size_with_dsf) override;
 
   // WebFrameWidget overrides:
   bool ScrollFocusedEditableElementIntoView() override;

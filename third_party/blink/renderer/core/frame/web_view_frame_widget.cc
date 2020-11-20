@@ -83,15 +83,6 @@ void WebViewFrameWidget::Close(
   self_keep_alive_.Clear();
 }
 
-gfx::Size WebViewFrameWidget::Size() {
-  return gfx::Size(web_view_->Size());
-}
-
-void WebViewFrameWidget::Resize(const gfx::Size& size) {
-  size_ = size;
-  web_view_->Resize(size);
-}
-
 bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
   return web_view_->ScrollFocusedEditableElementIntoView();
 }

@@ -339,6 +339,8 @@ class CORE_EXPORT WebFrameWidgetBase
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
   void SetCompositorVisible(bool visible) override;
+  gfx::Size Size() override;
+  void Resize(const gfx::Size& size_with_dsf) override;
   void SetCursor(const ui::Cursor& cursor) override;
   bool HandlingInputEvent() override;
   void SetHandlingInputEvent(bool handling) override;
@@ -499,7 +501,7 @@ class CORE_EXPORT WebFrameWidgetBase
                      FrameSinkIdAtCallback callback) override;
 
   // Called when the FrameView for this Widget's local root is created.
-  virtual void DidCreateLocalRootView() {}
+  void DidCreateLocalRootView();
 
   void SetZoomLevel(double zoom_level);
 
@@ -874,6 +876,7 @@ class CORE_EXPORT WebFrameWidgetBase
   // You should use `child_data()` to access it.
   struct ChildLocalRootData {
     gfx::Rect compositor_visible_rect;
+    bool did_suspend_parsing = false;
   } child_local_root_data_;
 
   ChildLocalRootData& child_data() {

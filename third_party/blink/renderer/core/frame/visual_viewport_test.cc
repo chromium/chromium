@@ -239,6 +239,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(VisualViewportTest);
 // WebView resizes the VisualViewport.
 TEST_P(VisualViewportTest, TestResize) {
   InitializeWithDesktopSettings();
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(320, 240));
   WebView()->ResizeWithBrowserControls(
       gfx::Size(320, 240), gfx::Size(320, 240),
       WebView()->GetBrowserControls().Params());
@@ -255,6 +256,7 @@ TEST_P(VisualViewportTest, TestResize) {
 
   // Resizing the WebView should change the VisualViewport.
   web_view_size = gfx::Size(640, 480);
+  WebView()->MainFrameViewWidget()->Resize(web_view_size);
   WebView()->ResizeWithBrowserControls(
       web_view_size, web_view_size, WebView()->GetBrowserControls().Params());
   EXPECT_EQ(web_view_size, WebView()->MainFrameViewWidget()->Size());
