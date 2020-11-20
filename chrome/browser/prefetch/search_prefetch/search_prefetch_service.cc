@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/full_body_search_prefetch_request.h"
@@ -15,8 +16,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#include "chrome/common/pref_names.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "url/origin.h"
 
@@ -55,6 +60,19 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
     return false;
 
   if (!chrome_browser_net::CanPreresolveAndPreconnectUI(profile_->GetPrefs())) {
+    return false;
+  }
+
+  if (!profile_->GetPrefs() ||
+      !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
+    return false;
+  }
+
+  auto* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  if (!content_settings ||
+      content_settings->GetContentSetting(
+          url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
     return false;
   }
 
@@ -136,6 +154,20 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   if (!template_url_service ||
       !template_url_service->GetDefaultSearchProvider())
     return nullptr;
+
+  // The user may have disabled JS since the prefetch occured.
+  if (!profile_->GetPrefs() ||
+      !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
+    return nullptr;
+  }
+
+  auto* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  if (!content_settings ||
+      content_settings->GetContentSetting(
+          url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
+    return nullptr;
+  }
 
   base::string16 search_terms;
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
