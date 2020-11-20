@@ -1263,11 +1263,10 @@ TEST_F(ServiceWorkerRegistryTest, RemoteStorageDisconnection) {
   // This will disconnect mojo connection of the remote storage.
   registry()->SimulateStorageRestartForTesting();
 
+  // The connection should be recovered and inflight calls should be retried
+  // automatically.
   result = GetStorageUsageForOrigin(kOrigin);
-  ASSERT_EQ(result.status,
-            blink::ServiceWorkerStatusCode::kErrorStorageDisconnected);
-
-  // The connection should be recovered automatically.
+  ASSERT_EQ(result.status, blink::ServiceWorkerStatusCode::kOk);
   result = GetStorageUsageForOrigin(kOrigin);
   ASSERT_EQ(result.status, blink::ServiceWorkerStatusCode::kOk);
 }

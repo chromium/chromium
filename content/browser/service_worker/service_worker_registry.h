@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
@@ -304,6 +305,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       RegistrationList registration_data_list);
   void DidGetStorageUsageForOrigin(
       GetStorageUsageForOriginCallback callback,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       int64_t usage);
 
@@ -371,6 +373,51 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   void DidRecover();
 
+  // Represents an inflight mojo remote call. Used to support retry.
+  class InflightCall {
+   public:
+    virtual ~InflightCall() = default;
+
+    virtual void Run(ServiceWorkerRegistry* registry) = 0;
+  };
+
+  // An InflightCall implementation which uses a base::RepeatingClosure. Used to
+  // represent a mojo remote call of which parameters are copyable.
+  class InflightCallWithInvoker;
+
+  uint64_t GetNextCallId();
+  void StartRemoteCall(uint64_t call_id, std::unique_ptr<InflightCall> call);
+  void FinishRemoteCall(uint64_t call_id);
+
+  // A helper function to call a mojo remote call of which arguments are
+  // copyable. Creates an InflightCallWithInvoker and starts the call.
+  // `callback` will receive the associated call id and it needs to call
+  // FinishRemoteCall() with the call id.
+  // Example:
+  //
+  //   (in mojom)
+  //   Foo(int64 arg1, int64 arg2) => (ServiceWorkerDatabaseStatus status);
+  //
+  //   CreateInvokerAndStartRemoteCall(
+  //       &storage::mojom::ServiceWorkerStorageControl::Foo,
+  //       base::BindRepeating(&ServiceWorkerRegistry::DidFoo,
+  //                            weak_factory_.GetWeakPtr(),
+  //                            base::Passed(&callback)),
+  //       arg1, arg2);
+  //
+  //   void ServiceWorkerRegistry::DidFoo(
+  //       FooCallback callback,
+  //       uint64_t call_id,
+  //       storage::mojom::ServiceWorkerDatabaseStatus status) {
+  //     FinishRemoteCall(call_id);
+  //     // ...
+  //   }
+  template <typename Functor, typename... Args, typename... CallbackArgs>
+  void CreateInvokerAndStartRemoteCall(
+      Functor f,
+      base::RepeatingCallback<void(CallbackArgs...)> callback,
+      Args&&... args);
+
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
 
@@ -415,6 +462,9 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   };
   ConnectionState connection_state_ = ConnectionState::kNormal;
   size_t recovery_retry_counts_ = 0;
+
+  uint64_t next_call_id_ = 0;
+  base::flat_map<uint64_t, std::unique_ptr<InflightCall>> inflight_calls_;
 
   base::WeakPtrFactory<ServiceWorkerRegistry> weak_factory_{this};
 };

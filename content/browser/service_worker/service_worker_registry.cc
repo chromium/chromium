@@ -22,7 +22,6 @@
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
@@ -92,6 +91,21 @@ void RecordRetryCount(size_t retries) {
 }
 
 }  // namespace
+
+using Invoker = base::RepeatingCallback<void(ServiceWorkerRegistry*)>;
+
+class ServiceWorkerRegistry::InflightCallWithInvoker
+    : public ServiceWorkerRegistry::InflightCall {
+ public:
+  explicit InflightCallWithInvoker(Invoker invoker)
+      : invoker_(std::move(invoker)) {}
+  ~InflightCallWithInvoker() override = default;
+
+  void Run(ServiceWorkerRegistry* registry) override { invoker_.Run(registry); }
+
+ private:
+  Invoker invoker_;
+};
 
 // A helper class that runs on the IO thread to observe storage policy updates.
 class ServiceWorkerRegistry::StoragePolicyObserver
@@ -256,17 +270,11 @@ void ServiceWorkerRegistry::GetStorageUsageForOrigin(
     const url::Origin& origin,
     GetStorageUsageForOriginCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  // TODO(crbug.com/1133143): Consider handling disconnection error without
-  // using WrapCallbackWithDefaultInvokeIfNotRun() as it can easily lead to
-  // surprising behavior in the destructor.
-  GetRemoteStorageControl()->GetUsageForOrigin(
-      origin,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&ServiceWorkerRegistry::DidGetStorageUsageForOrigin,
-                         weak_factory_.GetWeakPtr(), std::move(callback)),
-          storage::mojom::ServiceWorkerDatabaseStatus::
-              kErrorStorageDisconnected,
-          /*usage=*/0));
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::GetUsageForOrigin,
+      base::BindRepeating(&ServiceWorkerRegistry::DidGetStorageUsageForOrigin,
+                          weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+      origin);
 }
 
 void ServiceWorkerRegistry::GetAllRegistrationsInfos(
@@ -1061,8 +1069,11 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
 
 void ServiceWorkerRegistry::DidGetStorageUsageForOrigin(
     GetStorageUsageForOriginCallback callback,
+    uint64_t call_id,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     int64_t usage) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
   std::move(callback).Run(status, usage);
@@ -1369,8 +1380,58 @@ void ServiceWorkerRegistry::DidRecover() {
 
   recovery_retry_counts_ = 0;
   connection_state_ = ConnectionState::kNormal;
-  // TODO(crbug.com/1133143): Retry mojo method calls which are invoked during
-  // recovery steps.
+
+  // Retry inflight calls.
+  if (inflight_calls_.size() > 0)
+    inflight_calls_.begin()->second->Run(this);
+}
+
+uint64_t ServiceWorkerRegistry::GetNextCallId() {
+  return next_call_id_++;
+}
+
+void ServiceWorkerRegistry::StartRemoteCall(
+    uint64_t call_id,
+    std::unique_ptr<InflightCall> call) {
+  DCHECK(!base::Contains(inflight_calls_, call_id));
+  inflight_calls_[call_id] = std::move(call);
+  if (connection_state_ == ConnectionState::kNormal &&
+      inflight_calls_.size() == 1) {
+    // There are no inflight calls. Start the current one.
+    inflight_calls_.begin()->second->Run(this);
+  }
+}
+
+void ServiceWorkerRegistry::FinishRemoteCall(uint64_t call_id) {
+  DCHECK(base::Contains(inflight_calls_, call_id));
+  inflight_calls_.erase(call_id);
+  // Start the next call if any.
+  if (inflight_calls_.size() > 0)
+    inflight_calls_.begin()->second->Run(this);
+}
+
+template <typename T>
+using PassingType = std::conditional_t<std::is_scalar<T>::value, T, T&&>;
+
+template <typename Functor, typename... Args, typename... CallbackArgs>
+void ServiceWorkerRegistry::CreateInvokerAndStartRemoteCall(
+    Functor f,
+    base::RepeatingCallback<void(CallbackArgs...)> callback,
+    Args&&... args) {
+  uint64_t call_id = GetNextCallId();
+  auto callback_with_id = base::BindRepeating(std::move(callback), call_id);
+  auto invoker = base::BindRepeating(
+      [](Functor f, decltype(callback_with_id) callback_with_id,
+         PassingType<Args>... args, ServiceWorkerRegistry* registry) {
+        DCHECK(registry);
+        DCHECK(registry->GetRemoteStorageControl().is_connected());
+        auto* storage_control = registry->GetRemoteStorageControl().get();
+        ((*storage_control).*f)(std::forward<Args>(args)..., callback_with_id);
+      },
+      f, std::move(callback_with_id), std::forward<Args>(args)...);
+
+  StartRemoteCall(
+      call_id, std::make_unique<InflightCallWithInvoker>(std::move(invoker)));
 }
 
 }  // namespace content
