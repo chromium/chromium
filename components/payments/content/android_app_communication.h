@@ -21,6 +21,7 @@ class GURL;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 namespace payments {
@@ -81,6 +82,7 @@ class AndroidAppCommunication : public base::SupportsUserData::Data {
       const GURL& top_level_origin,
       const GURL& payment_request_origin,
       const std::string& payment_request_id,
+      content::WebContents* web_contents,
       InvokePaymentAppCallback callback) = 0;
 
   // Allows usage of a test browser context.

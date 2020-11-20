@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/public/cpp/external_arc/overlay",
   "+components/network_session_configurator/common",
   "+components/payments",
   "+third_party/blink/public/mojom/webauthn",

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
 #include "components/arc/mojom/payment_app.mojom.h"
 #include "components/arc/pay/arc_payment_app_bridge.h"
 #include "components/arc/test/arc_payment_app_bridge_test_support.h"
@@ -145,6 +146,7 @@ class AndroidAppCommunicationTestSupportChromeOS
 
   arc::ArcPaymentAppBridgeTestSupport support_;
   std::vector<std::unique_ptr<AndroidAppDescription>> apps_;
+  ash::TestArcOverlayManager overlay_manager_;
 };
 
 }  // namespace

@@ -75,6 +75,7 @@ static_library("content") {
     sources += [ "android_app_communication_chrome_os.cc" ]
 
     deps += [
+      "//ash/public/cpp/external_arc:external_arc",
       "//components/arc",
       "//components/arc/mojom",
     ]
@@ -220,6 +221,7 @@ source_set("unit_tests") {
     sources += [ "android_app_communication_test_support_chrome_os.cc" ]
 
     deps += [
+      "//ash/public/cpp/external_arc:external_arc",
       "//components/arc",
       "//components/arc:arc_test_support",
       "//components/arc/mojom",

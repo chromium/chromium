@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if defined(OS_CHROMEOS)
+#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
+#endif
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/features.h"
@@ -45,6 +48,10 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
 // goods purchase.
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        IgnoreOtherPaymentAppsInTwaWhenHaveAppStoreBilling) {
+#if defined(OS_CHROMEOS)
+  ash::ArcOverlayManager overlay_manager_;
+#endif
+
   std::string method_name = https_server()->GetURL("a.com", "/").spec();
   method_name = method_name.substr(0, method_name.length() - 1);
   ASSERT_NE('/', method_name[method_name.length() - 1]);

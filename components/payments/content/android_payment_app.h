@@ -14,6 +14,7 @@
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/core/android_app_description.h"
+#include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -40,7 +41,8 @@ class AndroidPaymentApp : public PaymentApp {
       const GURL& payment_request_origin,
       const std::string& payment_request_id,
       std::unique_ptr<AndroidAppDescription> description,
-      base::WeakPtr<AndroidAppCommunication> communication);
+      base::WeakPtr<AndroidAppCommunication> communication,
+      content::GlobalFrameRoutingId frame_routing_id);
   ~AndroidPaymentApp() override;
 
   AndroidPaymentApp(const AndroidPaymentApp& other) = delete;
@@ -88,6 +90,7 @@ class AndroidPaymentApp : public PaymentApp {
   const std::string payment_request_id_;
   const std::unique_ptr<AndroidAppDescription> description_;
   base::WeakPtr<AndroidAppCommunication> communication_;
+  content::GlobalFrameRoutingId frame_routing_id_;
 
   base::WeakPtrFactory<AndroidPaymentApp> weak_ptr_factory_{this};
 };

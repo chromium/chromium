@@ -179,7 +179,8 @@ class AppFinder : public base::SupportsUserData::Data {
     DCHECK_LT(0U, number_of_pending_is_ready_to_pay_queries_);
 
     // The browser could be shutting down.
-    if (!communication_ || !delegate_ || !delegate_->GetSpec()) {
+    if (!communication_ || !delegate_ || !delegate_->GetSpec() ||
+        !delegate_->GetInitiatorRenderFrameHost()) {
       OnDoneCreatingPaymentApps();
       return;
     }
@@ -191,7 +192,8 @@ class AppFinder : public base::SupportsUserData::Data {
           payment_method_names, std::move(stringified_method_data),
           delegate_->GetTopOrigin(), delegate_->GetFrameOrigin(),
           delegate_->GetSpec()->details().id.value(),
-          std::move(app_description), communication_));
+          std::move(app_description), communication_,
+          delegate_->GetInitiatorRenderFrameHost()->GetGlobalFrameRoutingId()));
     }
 
     if (--number_of_pending_is_ready_to_pay_queries_ == 0)
