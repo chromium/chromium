@@ -14,15 +14,6 @@
 
 namespace ash {
 
-ClipboardHistory::ScopedPause::ScopedPause(ClipboardHistory* clipboard_history)
-    : clipboard_history_(clipboard_history) {
-  clipboard_history_->Pause();
-}
-
-ClipboardHistory::ScopedPause::~ScopedPause() {
-  clipboard_history_->Resume();
-}
-
 ClipboardHistory::ClipboardHistory() {
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
 }
@@ -104,6 +95,10 @@ void ClipboardHistory::OnClipboardDataChanged() {
       FROM_HERE,
       base::BindOnce(&ClipboardHistory::MaybeCommitData,
                      commit_data_weak_factory_.GetWeakPtr(), *clipboard_data));
+}
+
+base::WeakPtr<ClipboardHistory> ClipboardHistory::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {

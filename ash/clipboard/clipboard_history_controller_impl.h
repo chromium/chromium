@@ -14,6 +14,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 
 namespace views {
 enum class MenuAnchorPosition;
@@ -28,6 +29,7 @@ namespace ash {
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
 class ClipboardNudgeController;
+class ScopedClipboardHistoryPause;
 
 // Shows a menu with the last few things saved in the clipboard when the
 // keyboard shortcut is pressed.
@@ -84,10 +86,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   class MenuDelegate;
 
   // ClipboardHistoryController:
+  bool CanShowMenu() const override;
   void ShowMenu(const gfx::Rect& anchor_rect,
                 views::MenuAnchorPosition menu_anchor_position,
                 ui::MenuSourceType source_type) override;
-  bool CanShowMenu() const override;
+  std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
 
   // ClipboardHistory::Observer:
   void OnClipboardHistoryCleared() override;
@@ -112,6 +115,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Advances the pseudo focus (backward if `reverse` is true).
   void AdvancePseudoFocus(bool reverse);
 
+  // Calculates the anchor rect for the ClipboardHistory menu.
   gfx::Rect CalculateAnchorRect() const;
 
   // Called when the contextual menu is closed.

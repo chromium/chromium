@@ -15,6 +15,14 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/image_model.h"
 
+namespace ash {
+class ScopedClipboardHistoryPause;
+}  // namespace ash
+
+namespace ui {
+class ClipboardData;
+}  // namespace ui
+
 namespace views {
 class WebView;
 class Widget;
@@ -49,6 +57,22 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
     ImageModelCallback callback;
   };
 
+  // Places `html_markup` on the clipboard and restores the original clipboard
+  // contents when destructed.
+  class ScopedClipboardModifier {
+   public:
+    explicit ScopedClipboardModifier(const std::string& html_markup);
+    ScopedClipboardModifier(const ScopedClipboardModifier&) = delete;
+    ScopedClipboardModifier& operator=(const ScopedClipboardModifier&) = delete;
+    ~ScopedClipboardModifier();
+
+   private:
+    // Pauses ash::ClipboardHistory for its lifetime.
+    std::unique_ptr<ash::ScopedClipboardHistoryPause>
+        scoped_clipboard_history_pause_;
+    std::unique_ptr<ui::ClipboardData> replaced_clipboard_data_;
+  };
+
   ClipboardImageModelRequest(
       Profile* profile,
       base::RepeatingClosure on_request_finished_callback);
@@ -65,6 +89,12 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // enable fast restarting of the request.
   void Stop();
 
+  // `Stop()`s the request and gets the params of the running request.
+  Params StopAndGetParams();
+
+  // Whether the clipboard is being modified by this request.
+  bool IsModifyingClipboard() const;
+
   // Returns whether a request with |request_id| is running, or if any request
   // is running if no |request_id| is supplied.
   bool IsRunningRequest(
@@ -80,6 +110,9 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
                              content::RenderViewHost* new_host) override;
 
  private:
+  // Called when the results of the paste are painted.
+  void OnVisualStateChangeFinished(bool done);
+
   // Posts `CopySurface()` to the task sequence.
   void PostCopySurfaceTask();
 
@@ -102,8 +135,15 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // requests.
   base::UnguessableToken request_id_;
 
-  // Whether `AutoResizeDueToAutoResize()` was called.
-  bool did_auto_resize_ = false;
+  // The HTML being rendered.
+  std::string html_markup_;
+
+  // Whether `DidStopLoading()` was called. Used to prevent the request from
+  // responding to load events that happen after the initial load.
+  bool did_stop_loading_ = false;
+
+  // Responsible for temporarily replacing contents of the clipboard.
+  base::Optional<ScopedClipboardModifier> scoped_clipboard_modifier_;
 
   // Callback used to deliver the rendered ImageModel.
   ImageModelCallback deliver_image_model_callback_;

@@ -50,9 +50,16 @@ void ClipboardImageModelFactoryImpl::Activate() {
 }
 
 void ClipboardImageModelFactoryImpl::Deactivate() {
-  // Prevent new requests from being ran, but do not stop |request_| if it is
-  // running. |request_| will be cleaned up OnRequestIdle().
   active_ = false;
+
+  if (!request_ || !request_->IsModifyingClipboard())
+    return;
+
+  // Stop the currently running request if it is modifying the clipboard.
+  // ClipboardImageModelFactory is `Deactivate()`-ed prior to the user pasting
+  // and a modified clipboard could interfere with pasting from
+  // ClipboardHistory.
+  pending_list_.emplace_front(request_->StopAndGetParams());
 }
 
 void ClipboardImageModelFactoryImpl::OnShutdown() {

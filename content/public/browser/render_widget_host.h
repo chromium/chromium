@@ -331,6 +331,15 @@ class CONTENT_EXPORT RenderWidgetHost {
   // Shows the context menu using the specified point as anchor point.
   virtual void ShowContextMenuAtPoint(const gfx::Point& point,
                                       const ui::MenuSourceType source_type) {}
+
+  // Roundtrips through the renderer and compositor pipeline to ensure that any
+  // changes to the contents resulting from operations executed prior to this
+  // call are visible on screen. The call completes asynchronously (if it
+  // succeeds) by running the supplied |callback| with a value of true upon
+  // successful completion and false otherwise when the widget is destroyed.
+  // This can run synchronously on failure.
+  using VisualStateCallback = base::OnceCallback<void(bool)>;
+  virtual void InsertVisualStateCallback(VisualStateCallback callback) {}
 };
 
 }  // namespace content

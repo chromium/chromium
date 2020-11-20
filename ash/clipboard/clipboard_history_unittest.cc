@@ -9,6 +9,8 @@
 
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_util.h"
+#include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -275,7 +277,7 @@ TEST_F(ClipboardHistoryTest, PauseHistory) {
   // Because history is paused, there should be nothing stored.
   std::vector<base::string16> expected_strings{};
 
-  ClipboardHistory::ScopedPause scoped_pause(clipboard_history());
+  ScopedClipboardHistoryPauseImpl scoped_pause(clipboard_history());
   WriteAndEnsureTextHistory(input_strings, expected_strings);
 }
 

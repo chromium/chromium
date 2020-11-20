@@ -11,6 +11,8 @@
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
+#include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
+#include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -261,6 +263,12 @@ bool ClipboardHistoryControllerImpl::CanShowMenu() const {
          ClipboardHistoryUtil::IsEnabledInCurrentMode();
 }
 
+std::unique_ptr<ScopedClipboardHistoryPause>
+ClipboardHistoryControllerImpl::CreateScopedPause() {
+  return std::make_unique<ScopedClipboardHistoryPauseImpl>(
+      clipboard_history_.get());
+}
+
 void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
   // Prevent clipboard contents getting restored if the Clipboard is cleared
   // soon after a `PasteMenuItemData()`.
@@ -273,6 +281,9 @@ void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
 
 void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {
   DCHECK(IsMenuShowing());
+  // Deactivate ClipboardImageModelFactory prior to pasting to ensure that any
+  // modifications to the clipboard for HTML rendering purposes are reversed.
+  ClipboardImageModelFactory::Get()->Deactivate();
 
   auto command = context_menu_->GetSelectedMenuItemCommand();
 
@@ -342,7 +353,7 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
     }
 
     // Pause clipboard history when manipulating the clipboard for a paste.
-    ClipboardHistory::ScopedPause scoped_pause(clipboard_history_.get());
+    ScopedClipboardHistoryPauseImpl scoped_pause(clipboard_history_.get());
     original_data = clipboard->WriteClipboardData(std::move(temp_data));
   }
 
@@ -367,9 +378,9 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
             // need to pause clipboard history. Failure to do so will result in
             // the original item being re-recorded when this restoration step
             // should actually be opaque to the user.
-            std::unique_ptr<ClipboardHistory::ScopedPause> scoped_pause;
+            std::unique_ptr<ScopedClipboardHistoryPauseImpl> scoped_pause;
             if (weak_ptr) {
-              scoped_pause = std::make_unique<ClipboardHistory::ScopedPause>(
+              scoped_pause = std::make_unique<ScopedClipboardHistoryPauseImpl>(
                   weak_ptr->clipboard_history_.get());
             }
             GetClipboard()->WriteClipboardData(std::move(original_data));

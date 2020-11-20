@@ -232,6 +232,7 @@ component("cpp") {
     "rounded_image_view.h",
     "scale_utility.cc",
     "scale_utility.h",
+    "scoped_clipboard_history_pause.h",
     "scoped_guest_button_blocker.h",
     "scoped_singleton_resetter_for_test.h",
     "screen_backlight.cc",
