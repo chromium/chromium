@@ -49,6 +49,7 @@ constexpr char kSearchDomain[] = "search.com";
 constexpr char kOmniboxSuggestPrefetchQuery[] = "porgs";
 constexpr char kOmniboxSuggestPrefetchSecondItemQuery[] = "porgsandwich";
 constexpr char kOmniboxSuggestNonPrefetchQuery[] = "puffins";
+constexpr char kLoadInSubframe[] = "/load_in_subframe";
 }  // namespace
 
 // A response that hangs after serving the start of the response.
@@ -125,6 +126,14 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
   GURL GetSearchServerQueryURLWithNoQuery(const std::string& path) const {
     return search_server_->GetURL(kSearchDomain, path);
+  }
+
+  // Get a URL for a page that embeds the search |path| as an iframe.
+  GURL GetSearchServerQueryURLWithSubframeLoad(const std::string& path) const {
+    return search_server_->GetURL(kSearchDomain,
+                                  std::string(kLoadInSubframe)
+                                      .append("/search_page.html?q=")
+                                      .append(path));
   }
 
   GURL GetSuggestServerURL(const std::string& path) const {
@@ -257,6 +266,23 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
         base::BindOnce(&SearchPrefetchBaseBrowserTest::
                            MonitorSearchResourceRequestOnUIThread,
                        base::Unretained(this), request, is_prefetch));
+
+    // If this is an embedded search for load in iframe, parse out the iframe
+    // URL and serve it as an iframe in the returned HTML.
+    if (request.relative_url.find(kLoadInSubframe) == 0) {
+      std::string subframe_path =
+          request.relative_url.substr(std::string(kLoadInSubframe).size());
+      std::string content = "<html><body><iframe src=\"";
+      content.append(subframe_path);
+      content.append("\"/></body></html>");
+
+      std::unique_ptr<net::test_server::BasicHttpResponse> resp =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      resp->set_code(is_prefetch ? net::HTTP_BAD_GATEWAY : net::HTTP_OK);
+      resp->set_content_type("text/html");
+      resp->set_content(content);
+      return resp;
+    }
 
     if (request.GetURL().spec().find("502_on_prefetch") != std::string::npos) {
       std::unique_ptr<net::test_server::BasicHttpResponse> resp =
@@ -1074,6 +1100,60 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   } else {
     EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       DontInterceptSubframes) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL navigation_url = GetSearchServerQueryURLWithSubframeLoad(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+
+  ui_test_utils::NavigateToURL(browser(), navigation_url);
+
+  const auto& requests = search_server_requests();
+  EXPECT_EQ(3u, requests.size());
+  // This flow should have resulted in a prefetch of the search terms, a main
+  // frame navigation to the special subframe loader page, and a navigation to
+  // the subframe that matches the prefetch URL.
+
+  // 2 requests should be to the search terms directly, one for the prefetch and
+  // one for the subframe (that can't be served from the prefetch cache).
+  EXPECT_EQ(2,
+            std::count_if(requests.begin(), requests.end(),
+                          [search_terms](const auto& request) {
+                            return request.relative_url.find(kLoadInSubframe) ==
+                                       std::string::npos &&
+                                   request.relative_url.find(search_terms) !=
+                                       std::string::npos;
+                          }));
+  // 1 request should specify to load content in a subframe but also contain the
+  // search terms.
+  EXPECT_EQ(1,
+            std::count_if(requests.begin(), requests.end(),
+                          [search_terms](const auto& request) {
+                            return request.relative_url.find(kLoadInSubframe) !=
+                                       std::string::npos &&
+                                   request.relative_url.find(search_terms) !=
+                                       std::string::npos;
+                          }));
 }
 
 // True means that responses are streamed, false means full responses must be

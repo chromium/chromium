@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
@@ -47,6 +48,21 @@ void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
 
   DCHECK(!loader_callback_);
   loader_callback_ = std::move(callback);
+
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  // Make sure this is for a navigation.
+  if (!web_contents) {
+    DoNotInterceptPrefetchedNavigation();
+    return;
+  }
+  // Only intercept main frame requests.
+  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  if (!main_frame || main_frame->GetFrameTreeNodeId() != frame_tree_node_id_) {
+    DoNotInterceptPrefetchedNavigation();
+    return;
+  }
+
   url_ = tentative_resource_request.url;
 
   std::unique_ptr<SearchPrefetchURLLoader> prefetch =
