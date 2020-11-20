@@ -399,7 +399,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public String continueShow(boolean isFinishedQueryingPaymentApps, boolean isUserGestureShow) {
+    public String continueShow(boolean isFinishedQueryingPaymentApps) {
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
 

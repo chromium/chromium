@@ -219,13 +219,12 @@ public interface BrowserPaymentRequest {
     /**
      * Continues the unfinished part of show() that was blocked for the payment details that was
      * pending to be updated.
-     * @return The error if it fails; null otherwise.
      * @param isFinishedQueryingPaymentApps Whether all payment app factories have been queried for
      *         their payment apps.
-     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
+     * @return The error if it fails; null otherwise.
      */
     @Nullable
-    default String continueShow(boolean isFinishedQueryingPaymentApps, boolean isUserGestureShow) {
+    default String continueShow(boolean isFinishedQueryingPaymentApps) {
         return null;
     }
 

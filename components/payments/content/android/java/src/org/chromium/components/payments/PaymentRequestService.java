@@ -679,7 +679,11 @@ public class PaymentRequestService
             }
         }
 
-        triggerPaymentAppUiSkipIfApplicable();
+        String error = triggerPaymentAppUiSkipIfApplicable();
+        if (error != null) {
+            onShowFailed(error);
+            return;
+        }
     }
 
     private void onShowFailed(String error) {
@@ -955,7 +959,11 @@ public class PaymentRequestService
             }
         }
 
-        triggerPaymentAppUiSkipIfApplicable();
+        String error = triggerPaymentAppUiSkipIfApplicable();
+        if (error != null) {
+            onShowFailed(error);
+            return;
+        }
     }
 
     // Return the error if failed, null if success.
@@ -965,13 +973,7 @@ public class PaymentRequestService
                 || mIsShowWaitingForUpdatedDetails) {
             return null;
         }
-        String error =
-                mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable(mIsUserGestureShow);
-        if (error != null) {
-            onShowFailed(error);
-            return error;
-        }
-        return null;
+        return mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable(mIsUserGestureShow);
     }
 
     // Implements PaymentDetailsConverter.MethodChecker:
@@ -998,8 +1000,7 @@ public class PaymentRequestService
         mSpec.updateWith(details);
 
         mIsShowWaitingForUpdatedDetails = false;
-        String error = mBrowserPaymentRequest.continueShow(
-                mIsFinishedQueryingPaymentApps, mIsUserGestureShow);
+        String error = mBrowserPaymentRequest.continueShow(mIsFinishedQueryingPaymentApps);
         if (error != null) return error;
         return triggerPaymentAppUiSkipIfApplicable();
     }
