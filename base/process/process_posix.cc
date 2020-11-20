@@ -261,12 +261,6 @@ Process Process::OpenWithExtraPrivileges(ProcessId pid) {
   return Open(pid);
 }
 
-// static
-Process Process::DeprecatedGetProcessFromHandle(ProcessHandle handle) {
-  DCHECK_NE(handle, GetCurrentProcessHandle());
-  return Process(handle);
-}
-
 #if !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_MAC) && \
     !defined(OS_AIX)
 // static

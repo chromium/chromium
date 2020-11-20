@@ -72,18 +72,6 @@ Process Process::OpenWithAccess(ProcessId pid, DWORD desired_access) {
 }
 
 // static
-Process Process::DeprecatedGetProcessFromHandle(ProcessHandle handle) {
-  DCHECK_NE(handle, ::GetCurrentProcess());
-  ProcessHandle out_handle;
-  if (!::DuplicateHandle(GetCurrentProcess(), handle,
-                         GetCurrentProcess(), &out_handle,
-                         0, FALSE, DUPLICATE_SAME_ACCESS)) {
-    return Process();
-  }
-  return Process(out_handle);
-}
-
-// static
 bool Process::CanBackgroundProcesses() {
   return true;
 }
