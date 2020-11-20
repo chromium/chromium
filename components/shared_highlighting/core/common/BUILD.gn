@@ -18,6 +18,7 @@ static_library("common") {
     "//base",
     "//components/search_engines:search_engine_utils",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 
@@ -31,6 +32,9 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//components/shared_highlighting/core/common",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
     "//url",
   ]

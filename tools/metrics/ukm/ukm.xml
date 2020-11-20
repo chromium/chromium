@@ -11909,6 +11909,51 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SharedHighlights.LinkGenerated">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Event representing the user action of selecting a piece of text on a page
+    and selection the option to create a link which would contain the necessary
+    text fragment information to link back to this specific part of the page.
+  </summary>
+  <metric name="Error" enum="LinkGenerationError">
+    <summary>
+      Record the type of error which prevented a successful link generation.
+      Only recorded if the link creation failed.
+    </summary>
+  </metric>
+  <metric name="Success" enum="Boolean">
+    <summary>
+      Whether the generation of a link with text fragments was successful or
+      not.
+    </summary>
+  </metric>
+</event>
+
+<event name="SharedHighlights.LinkOpened" singular="true">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Event representing the browser action of highlighting (incl. scroll-to) text
+    fragments that were part of the URL. This happens only once during page
+    load.
+  </summary>
+  <metric name="Source" enum="TextFragmentLinkOpenSource">
+    <summary>
+      Record the type of source for the current navigation, which has text
+      fragments. At the moment, this maps to identifying whether the source is a
+      known search engine or not.
+    </summary>
+  </metric>
+  <metric name="Success" enum="Boolean">
+    <summary>
+      Whether the highlighting of a set of text fragments was a complete success
+      or not.
+    </summary>
+  </metric>
+</event>
+
 <event name="Sharing.ClickToCall">
   <owner>knollr@chromium.org</owner>
   <summary>
