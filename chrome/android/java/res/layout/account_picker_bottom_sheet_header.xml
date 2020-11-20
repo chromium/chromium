@@ -8,7 +8,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
   <ImageView
-      android:id="@+id/account_picker_bottom_sheet_logo"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
@@ -16,7 +15,6 @@
       app:srcCompat="@drawable/chrome_sync_logo" />
 
   <TextView
-      android:id="@+id/account_picker_bottom_sheet_title"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="12dp"
@@ -26,7 +24,6 @@
       android:text="@string/signin_account_picker_dialog_title" />
 
   <org.chromium.ui.widget.TextViewWithLeading
-      android:id="@+id/account_picker_bottom_sheet_subtitle"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginStart="24dp"

@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.signin.account_picker;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.ViewFlipper;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -43,15 +45,9 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final Activity mActivity;
     private final BackPressListener mBackPressListener;
     private final View mContentView;
-    private final ImageView mLogoImage;
-    private final TextView mAccountPickerTitle;
-    private final TextView mAccountPickerSubtitle;
-    private final View mHorizontalDivider;
+    private final ViewFlipper mViewFlipper;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
-    private final View mIncognitoInterstitialView;
-    private final ProgressBar mSpinnerView;
-    private final ButtonCompat mContinueAsButton;
     private final ButtonCompat mDismissButton;
 
     private @StringRes int mTitleId;
@@ -64,23 +60,28 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     AccountPickerBottomSheetView(Activity activity, BackPressListener backPressListener) {
         mActivity = activity;
         mBackPressListener = backPressListener;
-
         mContentView = LayoutInflater.from(mActivity).inflate(
                 R.layout.account_picker_bottom_sheet_view, null);
-        mLogoImage = mContentView.findViewById(R.id.account_picker_bottom_sheet_logo);
-        mAccountPickerTitle = mContentView.findViewById(R.id.account_picker_bottom_sheet_title);
-        mAccountPickerSubtitle =
-                mContentView.findViewById(R.id.account_picker_bottom_sheet_subtitle);
-        mHorizontalDivider = mContentView.findViewById(R.id.account_picker_horizontal_divider);
-        mAccountListView = mContentView.findViewById(R.id.account_picker_account_list);
-        mIncognitoInterstitialView =
-                mContentView.findViewById(R.id.incognito_interstitial_bottom_sheet_view);
+
+        mViewFlipper = mContentView.findViewById(R.id.account_picker_state_view_flipper);
+        checkViewFlipperChildrenAndViewStateMatch(mViewFlipper);
+        mAccountListView = mViewFlipper.getChildAt(ViewState.EXPANDED_ACCOUNT_LIST)
+                                   .findViewById(R.id.account_picker_account_list);
         mAccountListView.setLayoutManager(new LinearLayoutManager(
                 mAccountListView.getContext(), LinearLayoutManager.VERTICAL, false));
-        mSelectedAccountView = mContentView.findViewById(R.id.account_picker_selected_account);
-        mSpinnerView = mContentView.findViewById(R.id.account_picker_signin_spinner_view);
-        mContinueAsButton = mContentView.findViewById(R.id.account_picker_continue_as_button);
-        mDismissButton = mContentView.findViewById(R.id.account_picker_dismiss_button);
+        mSelectedAccountView = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
+                                       .findViewById(R.id.account_picker_selected_account);
+        mDismissButton = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
+                                 .findViewById(R.id.account_picker_dismiss_button);
+
+        // TODO(https://crbug.com/1146990): Use different continue buttons for different view
+        // states.
+        setUpContinueButton(mViewFlipper.getChildAt(ViewState.NO_ACCOUNTS),
+                R.string.signin_add_account_to_device);
+        setUpContinueButton(mViewFlipper.getChildAt(ViewState.SIGNIN_GENERAL_ERROR),
+                R.string.signin_account_picker_general_error_button);
+        setUpContinueButton(mViewFlipper.getChildAt(ViewState.SIGNIN_AUTH_ERROR),
+                R.string.auth_error_card_button);
     }
 
     void setTitleAndContentDescriptionStrings(
@@ -100,7 +101,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * The incognito interstitial view when the user clicks on incognito mode option.
      */
     View getIncognitoInterstitialView() {
-        return mIncognitoInterstitialView;
+        return mViewFlipper.getChildAt(ViewState.INCOGNITO_INTERSTITIAL);
     }
 
     /**
@@ -111,10 +112,17 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     /**
-     * The |Continue As| button on the bottom sheet.
+     * Sets the listener of the continue button.
+     * TODO(https://crbug.com/1146990): Use different continue buttons for different view states.
      */
-    ButtonCompat getContinueAsButton() {
-        return mContinueAsButton;
+    void setOnClickListenerOfContinueButton(OnClickListener listener) {
+        for (int i = 0; i < mViewFlipper.getChildCount(); ++i) {
+            ButtonCompat continueButton =
+                    mViewFlipper.getChildAt(i).findViewById(R.id.account_picker_continue_as_button);
+            if (continueButton != null) {
+                continueButton.setOnClickListener(listener);
+            }
+        }
     }
 
     /**
@@ -125,127 +133,31 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     /**
+     * Sets the displayed view according to the given {@link ViewState}.
+     */
+    void setDisplayedView(@ViewState int state) {
+        mViewFlipper.setDisplayedChild(state);
+    }
+
+    /**
      * Updates the views related to the selected account.
      *
      * This method only updates the UI elements like text related to the selected account, it
      * does not change the visibility.
      */
     void updateSelectedAccount(DisplayableProfileData accountProfileData) {
+        View view = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST);
         ExistingAccountRowViewBinder.bindAccountView(accountProfileData, mSelectedAccountView);
 
         ImageView rowEndImage = mSelectedAccountView.findViewById(R.id.account_selection_mark);
         rowEndImage.setImageResource(R.drawable.ic_expand_more_in_circle_24dp);
 
+        ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
         String continueAsButtonText = mActivity.getString(R.string.signin_promo_continue_as,
                 accountProfileData.getGivenNameOrFullNameOrEmail());
-        mContinueAsButton.setText(continueAsButtonText);
+        continueButton.setText(continueAsButtonText);
     }
 
-    /**
-     * Expands the account list.
-     */
-    void expandAccountList() {
-        // When the user pressed back from incognito interstitial where logo and title and gone,
-        // we need to set them visible again here.
-        mLogoImage.setVisibility(View.VISIBLE);
-        mAccountPickerTitle.setVisibility(View.VISIBLE);
-        mAccountPickerSubtitle.setText(R.string.signin_account_picker_bottom_sheet_subtitle);
-        mAccountPickerSubtitle.setVisibility(View.VISIBLE);
-        mHorizontalDivider.setVisibility(View.VISIBLE);
-        mAccountListView.setVisibility(View.VISIBLE);
-
-        mSelectedAccountView.setVisibility(View.GONE);
-        mContinueAsButton.setVisibility(View.GONE);
-        mDismissButton.setVisibility(View.GONE);
-        mIncognitoInterstitialView.setVisibility(View.GONE);
-    }
-
-    /**
-     * Collapses the account list to the selected account.
-     */
-    void collapseAccountList() {
-        mLogoImage.setImageResource(R.drawable.chrome_sync_logo);
-        mAccountPickerTitle.setText(R.string.signin_account_picker_dialog_title);
-        mAccountPickerSubtitle.setText(R.string.signin_account_picker_bottom_sheet_subtitle);
-        mHorizontalDivider.setVisibility(View.VISIBLE);
-        mSelectedAccountView.setVisibility(View.VISIBLE);
-        mContinueAsButton.setVisibility(View.VISIBLE);
-        mDismissButton.setVisibility(View.VISIBLE);
-
-        mAccountListView.setVisibility(View.GONE);
-        mSpinnerView.setVisibility(View.GONE);
-    }
-
-    /**
-     * Collapses the account list to the no account view.
-     */
-    void collapseToNoAccountView() {
-        mContinueAsButton.setText(R.string.signin_add_account_to_device);
-        mContinueAsButton.setVisibility(View.VISIBLE);
-        mDismissButton.setVisibility(View.VISIBLE);
-
-        mAccountListView.setVisibility(View.GONE);
-        mSelectedAccountView.setVisibility(View.GONE);
-    }
-
-    /**
-     * Sets up the sign-in in progress view.
-     */
-    void setUpSignInInProgressView() {
-        mLogoImage.setImageResource(R.drawable.chrome_sync_logo);
-        mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_signin_title);
-        mSpinnerView.setVisibility(View.VISIBLE);
-
-        mAccountPickerSubtitle.setVisibility(View.GONE);
-        mHorizontalDivider.setVisibility(View.GONE);
-        mSelectedAccountView.setVisibility(View.GONE);
-        mContinueAsButton.setVisibility(View.GONE);
-        mDismissButton.setVisibility(View.GONE);
-    }
-
-    void setUpIncognitoInterstitialView() {
-        mIncognitoInterstitialView.setVisibility(View.VISIBLE);
-
-        mLogoImage.setVisibility(View.GONE);
-        mAccountPickerTitle.setVisibility(View.GONE);
-        mAccountPickerSubtitle.setVisibility(View.GONE);
-        mHorizontalDivider.setVisibility(View.GONE);
-        mAccountListView.setVisibility(View.GONE);
-    }
-
-    /**
-     * Sets up the view for sign-in general error.
-     */
-    void setUpSignInGeneralErrorView() {
-        mLogoImage.setImageResource(R.drawable.ic_warning_red_24dp);
-        mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_error_title);
-        mAccountPickerSubtitle.setText(R.string.signin_account_picker_general_error_subtitle);
-        mAccountPickerSubtitle.setVisibility(View.VISIBLE);
-        mContinueAsButton.setText(R.string.signin_account_picker_general_error_button);
-        mContinueAsButton.setVisibility(View.VISIBLE);
-
-        mHorizontalDivider.setVisibility(View.GONE);
-        mSelectedAccountView.setVisibility(View.GONE);
-        mSpinnerView.setVisibility(View.GONE);
-        mDismissButton.setVisibility(View.GONE);
-    }
-
-    /**
-     * Sets up the view for sign-in auth error.
-     */
-    void setUpSignInAuthErrorView() {
-        mLogoImage.setImageResource(R.drawable.ic_warning_red_24dp);
-        mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_error_title);
-        mAccountPickerSubtitle.setText(R.string.signin_account_picker_auth_error_subtitle);
-        mAccountPickerSubtitle.setVisibility(View.VISIBLE);
-        mContinueAsButton.setText(R.string.auth_error_card_button);
-        mContinueAsButton.setVisibility(View.VISIBLE);
-
-        mHorizontalDivider.setVisibility(View.GONE);
-        mSelectedAccountView.setVisibility(View.GONE);
-        mSpinnerView.setVisibility(View.GONE);
-        mDismissButton.setVisibility(View.GONE);
-    }
 
     @Override
     public View getContentView() {
@@ -311,5 +223,34 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         // TODO(https://crbug.com/1112696): Use more specific string to when the account
         // picker is closed.
         return R.string.close;
+    }
+
+    private static void setUpContinueButton(View view, @StringRes int buttonId) {
+        ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
+        continueButton.setText(buttonId);
+    }
+
+    private static void checkViewFlipperChildrenAndViewStateMatch(ViewFlipper viewFlipper) {
+        checkViewFlipperChildIdAndViewStateMatch(
+                viewFlipper, ViewState.NO_ACCOUNTS, R.id.account_picker_state_no_account);
+        checkViewFlipperChildIdAndViewStateMatch(
+                viewFlipper, ViewState.COLLAPSED_ACCOUNT_LIST, R.id.account_picker_state_collapsed);
+        checkViewFlipperChildIdAndViewStateMatch(
+                viewFlipper, ViewState.EXPANDED_ACCOUNT_LIST, R.id.account_picker_state_expanded);
+        checkViewFlipperChildIdAndViewStateMatch(viewFlipper, ViewState.SIGNIN_IN_PROGRESS,
+                R.id.account_picker_state_signin_in_progress);
+        checkViewFlipperChildIdAndViewStateMatch(viewFlipper, ViewState.INCOGNITO_INTERSTITIAL,
+                R.id.account_picker_state_incognito_interstitial);
+        checkViewFlipperChildIdAndViewStateMatch(viewFlipper, ViewState.SIGNIN_GENERAL_ERROR,
+                R.id.account_picker_state_general_error);
+        checkViewFlipperChildIdAndViewStateMatch(
+                viewFlipper, ViewState.SIGNIN_AUTH_ERROR, R.id.account_picker_state_auth_error);
+    }
+
+    private static void checkViewFlipperChildIdAndViewStateMatch(
+            ViewFlipper viewFlipper, @ViewState int viewState, @IdRes int expectedChildId) {
+        if (viewFlipper.getChildAt(viewState).getId() != expectedChildId) {
+            throw new IllegalArgumentException("Match failed with ViewState:" + viewState);
+        }
     }
 }

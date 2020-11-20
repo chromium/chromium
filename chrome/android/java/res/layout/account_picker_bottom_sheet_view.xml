@@ -5,7 +5,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -20,68 +19,34 @@
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/drag_handlebar" />
 
-    <include layout="@layout/account_picker_bottom_sheet_header" />
-
-    <View
-        android:id="@+id/account_picker_horizontal_divider"
-        style="@style/HorizontalDivider" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/account_picker_account_list"
+    <ViewFlipper
+        android:id="@+id/account_picker_state_view_flipper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:visibility="gone"
-        android:requiresFadingEdge="vertical"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="outsideOverlay"
-        tools:listitem="@layout/account_chooser_dialog_item" />
+        android:measureAllChildren="false" >
 
-    <include
-        android:id="@+id/account_picker_selected_account"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        layout="@layout/account_picker_row" />
+        <include
+            android:id="@+id/account_picker_state_no_account"
+            layout="@layout/account_picker_state_no_account" />
+        <include
+            android:id="@+id/account_picker_state_collapsed"
+            layout="@layout/account_picker_state_collapsed" />
+        <include
+            android:id="@+id/account_picker_state_expanded"
+            layout="@layout/account_picker_state_expanded" />
+        <include
+            android:id="@+id/account_picker_state_signin_in_progress"
+            layout="@layout/account_picker_state_signin_in_progress" />
+        <include
+            android:id="@+id/account_picker_state_incognito_interstitial"
+            layout="@layout/incognito_interstitial_bottom_sheet_view" />
+        <include
+            android:id="@+id/account_picker_state_general_error"
+            layout="@layout/account_picker_state_general_error" />
+        <include
+            android:id="@+id/account_picker_state_auth_error"
+            layout="@layout/account_picker_state_auth_error" />
 
-    <ProgressBar
-        android:id="@+id/account_picker_signin_spinner_view"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="64dp"
-        android:layout_marginBottom="128dp"
-        android:visibility="gone" />
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/account_picker_continue_as_button"
-        style="@style/FilledButton.Flat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:text="@string/signin_promo_continue_as" />
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/account_picker_dismiss_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/no_thanks"
-        style="@style/TextButton" />
-
-    <include
-        android:id="@+id/incognito_interstitial_bottom_sheet_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        layout="@layout/incognito_interstitial_bottom_sheet_view"/>
+    </ViewFlipper>
 
 </LinearLayout>
