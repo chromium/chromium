@@ -305,7 +305,12 @@ ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
   const ptrdiff_t ptr_offset = maybe_inner_ptr - slot_span_begin;
   PA_DCHECK(0 <= ptr_offset &&
             ptr_offset < static_cast<ptrdiff_t>(
-                             slot_span->bucket->get_bytes_per_span()));
+                             slot_span->bucket->get_pages_per_slot_span() *
+                             PartitionPageSize()));
+  // Slot span size in bytes is not necessarily multiple of partition page.
+  if (ptr_offset >=
+      static_cast<ptrdiff_t>(slot_span->bucket->get_bytes_per_span()))
+    return nullptr;
   const size_t slot_size = slot_span->bucket->slot_size;
   const size_t slot_number = slot_span->bucket->GetSlotNumber(ptr_offset);
   char* const result = slot_span_begin + (slot_number * slot_size);
