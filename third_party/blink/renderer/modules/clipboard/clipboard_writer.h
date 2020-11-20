@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
@@ -27,6 +28,11 @@ class RawSystemClipboard;
 //     take advantage of vulnerabilities in their decoders. In
 //     ClipboardRawDataWriter, this decoding is skipped.
 // (3) Writing the blob's decoded contents to the system clipboard.
+//
+// ClipboardWriter is owned only by itself and ClipboardPromise. It keeps
+// itself alive for the duration of FileReaderLoader's async operations using
+// SelfKeepAlive, and keeps itself alive afterwards during cross-thread
+// operations by using WrapCrossThreadPersistent.
 class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
                         public FileReaderLoaderClient {
  public:
@@ -86,6 +92,10 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   Member<SystemClipboard> system_clipboard_;
   // Access to the global unsanitized system clipboard.
   Member<RawSystemClipboard> raw_system_clipboard_;
+
+  // Oilpan: ClipboardWriter must remain alive until Member<T>::Clear() is
+  // called, to keep the FileReaderLoader alive and avoid unexpected UaPs.
+  SelfKeepAlive<ClipboardWriter> self_keep_alive_;
 };
 
 }  // namespace blink
