@@ -8,12 +8,16 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/store_update_data.h"
@@ -70,7 +74,9 @@ class OptimizationGuideStoreTest : public testing::Test {
   using StoreEntry = proto::StoreEntry;
   using StoreEntryMap = std::map<OptimizationGuideStore::EntryKey, StoreEntry>;
 
-  OptimizationGuideStoreTest() : db_(nullptr) {}
+  OptimizationGuideStoreTest() = default;
+
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void TearDown() override { last_loaded_hint_.reset(); }
 
@@ -166,11 +172,15 @@ class OptimizationGuideStoreTest : public testing::Test {
   // Moves a prediction model with |optimization_target| into the update data.
   void SeedPredictionModelUpdateData(
       StoreUpdateData* update_data,
-      optimization_guide::proto::OptimizationTarget optimization_target) {
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      base::Optional<base::FilePath> model_file_path = base::nullopt) {
     std::unique_ptr<optimization_guide::proto::PredictionModel>
         prediction_model = CreatePredictionModel();
     prediction_model->mutable_model_info()->set_optimization_target(
         optimization_target);
+    if (model_file_path) {
+      SetFilePathInPredictionModel(*model_file_path, prediction_model.get());
+    }
     update_data->CopyPredictionModelIntoUpdateData(*prediction_model);
   }
 
@@ -198,7 +208,8 @@ class OptimizationGuideStoreTest : public testing::Test {
     auto db = std::make_unique<FakeDB<StoreEntry>>(&db_store_);
     db_ = db.get();
 
-    guide_store_ = std::make_unique<OptimizationGuideStore>(std::move(db));
+    guide_store_ = std::make_unique<OptimizationGuideStore>(
+        std::move(db), task_environment_.GetMainThreadTaskRunner());
   }
 
   void InitializeDatabase(bool success, bool purge_existing_data = false) {
@@ -274,6 +285,8 @@ class OptimizationGuideStoreTest : public testing::Test {
         std::move(prediction_models_data),
         base::BindOnce(&OptimizationGuideStoreTest::OnUpdateStore,
                        base::Unretained(this)));
+    // OnLoadModelsToBeUpdated callback
+    db()->LoadCallback(true);
     // OnUpdateStore callback
     db()->UpdateCallback(update_success);
     if (update_success) {
@@ -419,6 +432,7 @@ class OptimizationGuideStoreTest : public testing::Test {
 
   OptimizationGuideStore* guide_store() { return guide_store_.get(); }
   FakeDB<proto::StoreEntry>* db() { return db_; }
+  base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
 
   const OptimizationGuideStore::EntryKey& last_loaded_entry_key() const {
     return last_loaded_entry_key_;
@@ -461,13 +475,17 @@ class OptimizationGuideStoreTest : public testing::Test {
     last_loaded_prediction_model_ = std::move(loaded_prediction_model);
   }
 
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
   MOCK_METHOD0(OnInitialized, void());
   MOCK_METHOD0(OnUpdateStore, void());
 
  private:
+  base::test::TaskEnvironment task_environment_;
   FakeDB<proto::StoreEntry>* db_;
   StoreEntryMap db_store_;
   std::unique_ptr<OptimizationGuideStore> guide_store_;
+  base::ScopedTempDir temp_dir_;
 
   OptimizationGuideStore::EntryKey last_loaded_entry_key_;
   std::unique_ptr<MemoryHint> last_loaded_hint_;
@@ -1858,7 +1876,12 @@ TEST_F(OptimizationGuideStoreTest, FindAndRemovePredictionModelEntryKey) {
   ASSERT_TRUE(success);
 
   EXPECT_TRUE(guide_store()->RemovePredictionModelFromEntryKey(entry_key));
+  // OnLoadModelsToBeUpdated
+  db()->LoadCallback(true);
+  // OnUpdateStore
   db()->UpdateCallback(true);
+  // OnLoadEntryKeys
+  db()->LoadCallback(true);
 
   EXPECT_FALSE(guide_store()->FindPredictionModelEntryKey(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
@@ -1926,10 +1949,7 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModelWithUpdateInFlight) {
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  guide_store()->UpdatePredictionModels(
-      std::move(update_data),
-      base::BindOnce(&OptimizationGuideStoreTest::OnUpdateStore,
-                     base::Unretained(this)));
+  UpdatePredictionModels(std::move(update_data));
 
   const OptimizationGuideStore::EntryKey kEntryKey = "4_1";
   guide_store()->LoadPredictionModel(
@@ -1942,6 +1962,159 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModelWithUpdateInFlight) {
   // Verify that the OnPredictionModelLoaded callback eventually runs with the
   // prediction model being correctly set.
   EXPECT_TRUE(last_loaded_prediction_model());
+}
+
+TEST_F(OptimizationGuideStoreTest,
+       LoadPredictionModelWithDownloadUrlDoesntExist) {
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels();
+  ASSERT_TRUE(update_data);
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                temp_dir().AppendASCII("doesntexist"));
+  UpdatePredictionModels(std::move(update_data));
+
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  EXPECT_TRUE(success);
+
+  guide_store()->LoadPredictionModel(
+      entry_key,
+      base::BindOnce(&OptimizationGuideStoreTest::OnPredictionModelLoaded,
+                     base::Unretained(this)));
+  // OnPredictionModelLoaded callback
+  db()->GetCallback(true);
+  // Wait for file to be verified.
+  RunUntilIdle();
+  // OnLoadModelsToBeUpdated callback
+  db()->LoadCallback(true);
+  // OnUpdateStore callback
+  db()->UpdateCallback(true);
+  // OnLoadEntryKeys callback
+  db()->LoadCallback(true);
+
+  EXPECT_FALSE(last_loaded_prediction_model());
+
+  // Make sure key is deleted.
+  success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  EXPECT_FALSE(success);
+}
+
+TEST_F(OptimizationGuideStoreTest,
+       LoadPredictionModelWithDownloadUrlThatExists) {
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels();
+  ASSERT_TRUE(update_data);
+  base::FilePath file_path = temp_dir().AppendASCII("file");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                file_path);
+  UpdatePredictionModels(std::move(update_data));
+
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  EXPECT_TRUE(success);
+
+  guide_store()->LoadPredictionModel(
+      entry_key,
+      base::BindOnce(&OptimizationGuideStoreTest::OnPredictionModelLoaded,
+                     base::Unretained(this)));
+  // OnPredictionModelLoaded callback
+  db()->GetCallback(true);
+  // Wait for file to be verified.
+  RunUntilIdle();
+
+  proto::PredictionModel* loaded_model = last_loaded_prediction_model();
+  EXPECT_TRUE(loaded_model);
+  EXPECT_EQ(GetFilePathFromPredictionModel(*loaded_model).value(), file_path);
+}
+
+TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels();
+  ASSERT_TRUE(update_data);
+  base::FilePath old_file_path = temp_dir().AppendASCII("oldfile");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                old_file_path);
+  UpdatePredictionModels(std::move(update_data));
+
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  EXPECT_TRUE(success);
+
+  std::unique_ptr<StoreUpdateData> update_data2 =
+      guide_store()->CreateUpdateDataForPredictionModels();
+  ASSERT_TRUE(update_data2);
+  base::FilePath new_file_path = temp_dir().AppendASCII("newfile");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
+  SeedPredictionModelUpdateData(update_data2.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                new_file_path);
+  UpdatePredictionModels(std::move(update_data2));
+  RunUntilIdle();
+
+  // Make sure old file is deleted when model updated for target.
+  EXPECT_FALSE(base::PathExists(old_file_path));
+}
+
+TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels();
+  ASSERT_TRUE(update_data);
+  base::FilePath file_path = temp_dir().AppendASCII("file");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                file_path);
+  UpdatePredictionModels(std::move(update_data));
+
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  ASSERT_TRUE(success);
+
+  EXPECT_TRUE(guide_store()->RemovePredictionModelFromEntryKey(entry_key));
+  // OnLoadModelsToBeUpdated
+  db()->LoadCallback(true);
+  RunUntilIdle();
+  // OnUpdateStore
+  db()->UpdateCallback(true);
+  // OnLoadEntryKeys
+  db()->LoadCallback(true);
+
+  EXPECT_FALSE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+
+  RunUntilIdle();
+  // Make sure file is deleted when model is removed.
+  EXPECT_FALSE(base::PathExists(file_path));
 }
 
 TEST_F(OptimizationGuideStoreTest, HostModelFeaturesMetadataStored) {

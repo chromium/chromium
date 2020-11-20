@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/optional.h"
 #include "components/optimization_guide/optimization_guide_decider.h"
 #include "components/optimization_guide/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -34,6 +36,15 @@ GetOptimizationGuideDecisionFromOptimizationTypeDecision(
 // remote Optimization Guide Service.
 google::protobuf::RepeatedPtrField<proto::FieldTrial>
 GetActiveFieldTrialsAllowedForFetch();
+
+// Returns the file path that holds the model file for |model|, if applicable.
+base::Optional<base::FilePath> GetFilePathFromPredictionModel(
+    const proto::PredictionModel& model);
+
+// Fills |model| with the path for which the corresponding model file can be
+// found.
+void SetFilePathInPredictionModel(const base::FilePath& file_path,
+                                  proto::PredictionModel* model);
 
 }  // namespace optimization_guide
 

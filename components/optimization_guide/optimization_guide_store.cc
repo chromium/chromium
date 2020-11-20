@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
@@ -17,6 +18,7 @@
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/optimization_guide/memory_hint.h"
 #include "components/optimization_guide/optimization_guide_prefs.h"
+#include "components/optimization_guide/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 
 namespace optimization_guide {
@@ -88,10 +90,10 @@ bool DatabasePrefixFilter(const std::string& key_prefix,
   return base::StartsWith(key, key_prefix, base::CompareCase::SENSITIVE);
 }
 
-// Returns true if |key| is in |keys_to_remove|.
-bool ExpiredKeyFilter(const base::flat_set<std::string>& keys_to_remove,
-                      const std::string& key) {
-  return keys_to_remove.find(key) != keys_to_remove.end();
+// Returns true if |key| is in |key_set|.
+bool KeySetFilter(const base::flat_set<std::string>& key_set,
+                  const std::string& key) {
+  return key_set.find(key) != key_set.end();
 }
 
 }  // namespace
@@ -99,17 +101,19 @@ bool ExpiredKeyFilter(const base::flat_set<std::string>& keys_to_remove,
 OptimizationGuideStore::OptimizationGuideStore(
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     const base::FilePath& database_dir,
-    scoped_refptr<base::SequencedTaskRunner> store_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> store_task_runner)
+    : store_task_runner_(store_task_runner) {
   database_ = database_provider->GetDB<proto::StoreEntry>(
       leveldb_proto::ProtoDbType::HINT_CACHE_STORE, database_dir,
-      store_task_runner);
+      store_task_runner_);
 
   RecordStatusChange(status_);
 }
 
 OptimizationGuideStore::OptimizationGuideStore(
-    std::unique_ptr<leveldb_proto::ProtoDatabase<proto::StoreEntry>> database)
-    : database_(std::move(database)) {
+    std::unique_ptr<leveldb_proto::ProtoDatabase<proto::StoreEntry>> database,
+    scoped_refptr<base::SequencedTaskRunner> store_task_runner)
+    : database_(std::move(database)), store_task_runner_(store_task_runner) {
   RecordStatusChange(status_);
 }
 
@@ -300,11 +304,9 @@ void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
 
   entry_keys_.reset();
 
-  auto empty_entries = std::make_unique<EntryVector>();
-
   database_->UpdateEntriesWithRemoveFilter(
-      std::move(empty_entries),
-      base::BindRepeating(&ExpiredKeyFilter, std::move(expired_keys_to_remove)),
+      std::make_unique<EntryVector>(),
+      base::BindRepeating(&KeySetFilter, std::move(expired_keys_to_remove)),
       base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
 }
@@ -822,11 +824,48 @@ void OptimizationGuideStore::UpdatePredictionModels(
     return;
   }
 
-  std::unique_ptr<EntryVector> entry_vectors =
+  std::unique_ptr<EntryVector> entry_vector =
       prediction_models_update_data->TakeUpdateEntries();
 
+  EntryKeySet keys_to_update;
+  for (const auto& entry : *entry_vector)
+    keys_to_update.insert(entry.first);
+
+  // Load the models that are to be updated and delete the old model file, if
+  // applicable.
+  database_->LoadKeysAndEntriesWithFilter(
+      base::BindRepeating(&KeySetFilter, std::move(keys_to_update)),
+      base::BindOnce(&OptimizationGuideStore::OnLoadModelsToBeUpdated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(entry_vector),
+                     std::make_unique<leveldb_proto::KeyVector>(),
+                     std::move(callback)));
+}
+
+void OptimizationGuideStore::OnLoadModelsToBeUpdated(
+    std::unique_ptr<EntryVector> update_vector,
+    std::unique_ptr<leveldb_proto::KeyVector> remove_vector,
+    base::OnceClosure callback,
+    bool success,
+    std::unique_ptr<EntryMap> entries) {
+  if (!success) {
+    std::move(callback).Run();
+    return;
+  }
+
+  for (const auto& entry : *entries) {
+    // Delete models that are provided via file.
+    if (entry.second.has_prediction_model() &&
+        entry.second.prediction_model().model().has_download_url()) {
+      store_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
+                                    GetFilePathFromPredictionModel(
+                                        entry.second.prediction_model())
+                                        .value()));
+    }
+  }
+
   database_->UpdateEntries(
-      std::move(entry_vectors), std::make_unique<leveldb_proto::KeyVector>(),
+      std::move(update_vector), std::move(remove_vector),
       base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -857,20 +896,18 @@ bool OptimizationGuideStore::RemovePredictionModelFromEntryKey(
 
   auto key_to_remove = std::make_unique<leveldb_proto::KeyVector>();
   key_to_remove->push_back(entry_key);
-  database_->UpdateEntries(
-      std::make_unique<EntryVector>(), std::move(key_to_remove),
-      base::BindOnce(
-          &OptimizationGuideStore::OnRemovePredictionModelFromEntryKey,
-          weak_ptr_factory_.GetWeakPtr(), entry_key));
-  return true;
-}
+  EntryKeySet key_set;
+  key_set.insert(entry_key);
+  // Load the model that is to be removed and delete the old model file, if
+  // applicable.
+  database_->LoadKeysAndEntriesWithFilter(
+      base::BindRepeating(&KeySetFilter, std::move(key_set)),
+      base::BindOnce(&OptimizationGuideStore::OnLoadModelsToBeUpdated,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::make_unique<EntryVector>(), std::move(key_to_remove),
+                     base::DoNothing::Once()));
 
-void OptimizationGuideStore::OnRemovePredictionModelFromEntryKey(
-    const EntryKey& entry_key,
-    bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (success)
-    entry_keys_->erase(entry_key);
+  return true;
 }
 
 void OptimizationGuideStore::LoadPredictionModel(
@@ -899,9 +936,8 @@ void OptimizationGuideStore::OnLoadPredictionModel(
   // request was started, then the loaded model should not be considered valid.
   // Reset the entry so that nothing is returned to
   // the requester.
-  if (!success || !IsAvailable()) {
+  if (!success || !IsAvailable())
     entry.reset();
-  }
 
   if (!entry || !entry->has_prediction_model()) {
     std::unique_ptr<proto::PredictionModel> loaded_prediction_model(nullptr);
@@ -911,7 +947,41 @@ void OptimizationGuideStore::OnLoadPredictionModel(
 
   std::unique_ptr<proto::PredictionModel> loaded_prediction_model(
       entry->release_prediction_model());
-  std::move(callback).Run(std::move(loaded_prediction_model));
+  if (!loaded_prediction_model->model().has_download_url()) {
+    std::move(callback).Run(std::move(loaded_prediction_model));
+    return;
+  }
+
+  // Make sure the path still exists before we send it back to the load
+  // initiator.
+  base::FilePath file_path =
+      GetFilePathFromPredictionModel(*loaded_prediction_model).value();
+  store_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, file_path),
+      base::BindOnce(&OptimizationGuideStore::OnModelFilePathVerified,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(loaded_prediction_model), std::move(callback)));
+}
+
+void OptimizationGuideStore::OnModelFilePathVerified(
+    std::unique_ptr<proto::PredictionModel> loaded_model,
+    PredictionModelLoadedCallback callback,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (success) {
+    std::move(callback).Run(std::move(loaded_model));
+    return;
+  }
+
+  // If the model no longer exists, remove the prediction model from the store.
+  DCHECK(loaded_model);
+  OptimizationGuideStore::EntryKey model_entry_key;
+  if (FindPredictionModelEntryKey(
+          loaded_model->model_info().optimization_target(), &model_entry_key)) {
+    RemovePredictionModelFromEntryKey(model_entry_key);
+  }
+  std::move(callback).Run(nullptr);
 }
 
 std::unique_ptr<StoreUpdateData>

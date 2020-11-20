@@ -6,6 +6,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/optimization_guide_features.h"
 #include "components/variations/active_field_trials.h"
 #include "net/base/url_util.h"
@@ -94,6 +96,29 @@ GetActiveFieldTrialsAllowedForFetch() {
     ft_proto->set_group_hash(active_field_trial.group);
   }
   return filtered_active_field_trials;
+}
+
+base::Optional<base::FilePath> GetFilePathFromPredictionModel(
+    const proto::PredictionModel& model) {
+  if (!model.model().has_download_url())
+    return base::nullopt;
+
+#if defined(OS_WIN)
+  return base::FilePath(base::UTF8ToWide(model.model().download_url()));
+#else
+  return base::FilePath(model.model().download_url());
+#endif
+}
+
+void SetFilePathInPredictionModel(const base::FilePath& file_path,
+                                  proto::PredictionModel* model) {
+  DCHECK(model);
+
+#if defined(OS_WIN)
+  model->mutable_model()->set_download_url(base::WideToUTF8(file_path.value()));
+#else
+  model->mutable_model()->set_download_url(file_path.value());
+#endif
 }
 
 }  // namespace optimization_guide

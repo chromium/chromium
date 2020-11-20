@@ -280,9 +280,10 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
 
 class TestOptimizationGuideStore : public OptimizationGuideStore {
  public:
-  explicit TestOptimizationGuideStore(
-      std::unique_ptr<StoreEntryProtoDatabase> database)
-      : OptimizationGuideStore(std::move(database)) {}
+  TestOptimizationGuideStore(
+      std::unique_ptr<StoreEntryProtoDatabase> database,
+      scoped_refptr<base::SequencedTaskRunner> store_task_runner)
+      : OptimizationGuideStore(std::move(database), store_task_runner) {}
 
   ~TestOptimizationGuideStore() override = default;
 
@@ -388,9 +389,10 @@ class TestPredictionManager : public PredictionManager {
       TopHostProvider* top_host_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
-      Profile* profile)
+      Profile* profile,
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
       : PredictionManager(optimization_targets_at_initialization,
-                          CreateModelAndHostModelFeaturesStore(),
+                          CreateModelAndHostModelFeaturesStore(task_runner),
                           top_host_provider,
                           url_loader_factory,
                           pref_service,
@@ -416,13 +418,14 @@ class TestPredictionManager : public PredictionManager {
   using PredictionManager::GetHostModelFeaturesForTesting;
   using PredictionManager::GetPredictionModelForTesting;
 
-  std::unique_ptr<OptimizationGuideStore>
-  CreateModelAndHostModelFeaturesStore() {
+  std::unique_ptr<OptimizationGuideStore> CreateModelAndHostModelFeaturesStore(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
     // Setup the fake db and the class under test.
     auto db = std::make_unique<FakeDB<StoreEntry>>(&db_store_);
 
     std::unique_ptr<OptimizationGuideStore> model_and_features_store =
-        std::make_unique<TestOptimizationGuideStore>(std::move(db));
+        std::make_unique<TestOptimizationGuideStore>(std::move(db),
+                                                     task_runner);
     return model_and_features_store;
   }
 
@@ -478,7 +481,7 @@ class PredictionManagerTest
     prediction_manager_ = std::make_unique<TestPredictionManager>(
         optimization_targets_at_initialization, temp_dir(), db_provider_.get(),
         top_host_provider_.get(), url_loader_factory_, pref_service_.get(),
-        &testing_profile_);
+        &testing_profile_, task_environment_.GetMainThreadTaskRunner());
     prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
   }
 
@@ -490,7 +493,8 @@ class PredictionManagerTest
 
     prediction_manager_ = std::make_unique<TestPredictionManager>(
         optimization_targets_at_initialization, temp_dir(), db_provider_.get(),
-        nullptr, url_loader_factory_, pref_service_.get(), &testing_profile_);
+        nullptr, url_loader_factory_, pref_service_.get(), &testing_profile_,
+        task_environment_.GetMainThreadTaskRunner());
     prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
   }
 
