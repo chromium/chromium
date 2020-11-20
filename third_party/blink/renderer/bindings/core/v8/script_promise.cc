@@ -266,6 +266,13 @@ ScriptPromise ScriptPromise::Then(v8::Local<v8::Function> on_fulfilled,
   return ScriptPromise(script_state_, result_promise);
 }
 
+ScriptPromise ScriptPromise::Then(NewScriptFunction* on_fulfilled,
+                                  NewScriptFunction* on_rejected) {
+  const v8::Local<v8::Function> empty;
+  return Then(on_fulfilled ? on_fulfilled->V8Function() : empty,
+              on_rejected ? on_rejected->V8Function() : empty);
+}
+
 ScriptPromise ScriptPromise::CastUndefined(ScriptState* script_state) {
   return ScriptPromise::Cast(script_state,
                              v8::Undefined(script_state->GetIsolate()));

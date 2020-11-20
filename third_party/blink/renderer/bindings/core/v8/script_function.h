@@ -34,22 +34,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/custom_wrappable_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-// A common way of using ScriptFunction is as follows:
-//
-// class DerivedFunction : public ScriptFunction {
-//   // This returns a V8 function which the DerivedFunction is bound to.
-//   // The DerivedFunction is destroyed when the V8 function is
-//   // garbage-collected.
-//   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-//     DerivedFunction* self = new DerivedFunction(script_state);
-//     return self->BindToV8Function();
-//   }
-// };
+// DEPRECATED: Use NewScriptFunction.
 class CORE_EXPORT ScriptFunction : public CustomWrappableAdapter {
  public:
   ~ScriptFunction() override = default;
@@ -84,6 +76,68 @@ class CORE_EXPORT ScriptFunction : public CustomWrappableAdapter {
   // BindToV8Function() must not be called twice.
   bool bind_to_v8_function_already_called_ = false;
 #endif
+};
+
+// A `NewScriptFunction` represents a function that can be called from scripts.
+// You can define a subclass of `Callable` and put arbitrary logic by
+// overriding `Call` or `CallRaw` methods.
+class CORE_EXPORT NewScriptFunction final
+    : public GarbageCollected<NewScriptFunction> {
+ public:
+  class CORE_EXPORT Callable : public GarbageCollected<Callable> {
+   public:
+    virtual ~Callable() = default;
+
+    // Subclasses should implement one of Call() or CallRaw(). Most will
+    // implement Call().
+    virtual ScriptValue Call(ScriptState*, ScriptValue);
+
+    // To support more than one argument, or for low-level access to the V8 API,
+    // implement CallRaw(). The default implementation delegates to Call().
+    virtual void CallRaw(ScriptState*,
+                         const v8::FunctionCallbackInfo<v8::Value>&);
+
+    // The length of the aosociated JavaScript function. Implement this only
+    // when the function is exposed to scripts.
+    virtual int Length() const { return 0; }
+
+    virtual void Trace(Visitor* visitor) const {}
+  };
+
+  // Represents a function that returns a value given to the constructor.
+  class Constant final : public Callable {
+   public:
+    explicit Constant(ScriptValue value) : value_(value) {}
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(value_);
+      Callable::Trace(visitor);
+    }
+    ScriptValue Call(ScriptState*, ScriptValue) override { return value_; }
+
+   private:
+    const ScriptValue value_;
+  };
+
+  NewScriptFunction(ScriptState* script_state, Callable* callable)
+      : script_state_(script_state),
+        function_(script_state->GetIsolate(),
+                  BindToV8Function(script_state, callable)) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(script_state_);
+    visitor->Trace(function_);
+  }
+
+  v8::Local<v8::Function> V8Function() {
+    return function_.NewLocal(script_state_->GetIsolate());
+  }
+
+ private:
+  static v8::Local<v8::Function> BindToV8Function(ScriptState*, Callable*);
+  static void CallCallback(const v8::FunctionCallbackInfo<v8::Value>&);
+
+  Member<ScriptState> script_state_;
+  TraceWrapperV8Reference<v8::Function> function_;
 };
 
 }  // namespace blink
