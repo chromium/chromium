@@ -84,8 +84,8 @@ luci.gitiles_poller(
         "chromium.updater",
     ],
 ) for name, title in (
-    ("main", settings.main_console_title),
-    ("mirrors", settings.cq_mirrors_console_title),
+    ("main", "{} Main Console".format(settings.project_title)),
+    ("mirrors", "{} CQ Mirrors Console".format(settings.project_title)),
 )]
 
 ci.console_view(

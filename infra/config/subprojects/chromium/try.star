@@ -53,7 +53,7 @@ luci.bucket(
                 "service-account-chromeperf",
                 "service-account-cq",
             ],
-            projects = settings.try_triggering_projects,
+            projects = branches.value(for_main = ["angle", "dawn", "skia", "v8"]),
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
@@ -65,10 +65,17 @@ luci.bucket(
 luci.cq_group(
     name = "cq",
     retry_config = cq.RETRY_ALL_FAILURES,
-    tree_status_host = settings.tree_status_host,
+    tree_status_host = branches.value(for_main = "chromium-status.appspot.com"),
     watch = cq.refset(
         repo = "https://chromium.googlesource.com/chromium/src",
-        refs = [settings.cq_ref_regexp],
+        refs = [branches.value(
+            # The chromium project's CQ covers all of the refs under refs/heads,
+            # which includes refs/heads/master
+            for_main = "refs/heads/.+",
+            # For projects running out of a branch, the CQ only runs for that
+            # ref
+            for_branches = settings.ref,
+        )],
     ),
     acls = [
         acl.entry(
@@ -87,7 +94,7 @@ luci.cq_group(
 try_.list_view(
     name = "try",
     branch_selector = branches.ALL_BRANCHES,
-    title = settings.main_list_view_title,
+    title = "{} CQ Console".format(settings.project_title),
 )
 
 try_.list_view(

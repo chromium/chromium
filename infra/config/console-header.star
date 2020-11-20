@@ -402,5 +402,5 @@ HEADER = _header(
             ]],
         ),
     ],
-    tree_status_host = settings.tree_status_host,
+    tree_status_host = branches.value(for_main = "chromium-status.appspot.com"),
 )
