@@ -5,6 +5,7 @@
 import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js'
@@ -31,6 +32,14 @@ Polymer({
     systemInfo_: {
       type: Object,
     },
+
+    /** @private {string} */
+    deviceInfo_: {
+      type: String,
+      value: '',
+      computed: 'getDeviceInfo_(systemInfo_.versionInfo.milestoneVersion,' +
+          'systemInfo_.boardName)'
+    },
   },
 
   /** @override */
@@ -52,5 +61,12 @@ Polymer({
    */
   onSystemInfoReceived_(systemInfo) {
     this.systemInfo_ = systemInfo;
+  },
+
+  /** @private */
+  getDeviceInfo_() {
+    return loadTimeData.getStringF(
+        'deviceInfo', this.systemInfo_.boardName,
+        this.systemInfo_.versionInfo.milestoneVersion);
   },
 });

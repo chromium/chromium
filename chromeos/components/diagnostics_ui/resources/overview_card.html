@@ -1,9 +1,15 @@
 <style include="diagnostics-shared diagnostics-fonts">
-  #overviewCardContainer {
-    display: flex;
+  #marketingName {
+    font-weight: var(--diagnostics-overview-font-weight);
+    margin-right: 5px;
   }
 
-  #overviewCardContainer > div {
+  #overviewCardContainer {
+    display: flex;
+    justify-content: center;
+  }
+
+  .overview-chip {
     @apply --diagnostics-overview-font;
     background-color: var(--google-grey-100);
     border-radius: 16px;
@@ -11,14 +17,10 @@
     margin-right: 15px;
     padding: 10px;
   }
-
-  #version {
-    margin-right: 0;
-  }
 </style>
 <div id="overviewCardContainer">
-  <div id="boardName">[[systemInfo_.boardName]]</div>
-  <div id="cpuModelName">[[systemInfo_.cpuModelName]]</div>
-  <div id="totalMemory">[[systemInfo_.totalMemoryKib]]</div>
-  <div id="version">[[systemInfo_.versionInfo.milestoneVersion]]</div>
+  <div class="overview-chip">
+    <span id="marketingName">[[systemInfo_.marketingName]]</span>
+    <span id="deviceInfo">[[deviceInfo_]]</span>
+  </div>
 </div>

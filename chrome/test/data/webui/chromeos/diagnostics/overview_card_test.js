@@ -12,6 +12,8 @@ import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://d
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
+import * as dx_utils from './diagnostics_test_utils.js';
+
 export function overviewCardTestSuite() {
   /** @type {?OverviewCardElement} */
   let overviewElement = null;
@@ -52,18 +54,13 @@ export function overviewCardTestSuite() {
 
   test('OverviewCardPopulated', () => {
     return initializeOverviewCard(fakeSystemInfo).then(() => {
-      assertEquals(
-          fakeSystemInfo.boardName,
-          overviewElement.$$('#boardName').textContent);
-      assertEquals(
-          fakeSystemInfo.cpuModelName,
-          overviewElement.$$('#cpuModelName').textContent);
-      assertEquals(
-          fakeSystemInfo.totalMemoryKib.toString(),
-          overviewElement.$$('#totalMemory').textContent);
-      assertEquals(
-          fakeSystemInfo.versionInfo.milestoneVersion,
-          overviewElement.$$('#version').textContent);
+      dx_utils.assertElementContainsText(
+          overviewElement.$$('#marketingName'), fakeSystemInfo.marketingName);
+      dx_utils.assertElementContainsText(
+          overviewElement.$$('#deviceInfo'), fakeSystemInfo.boardName);
+      dx_utils.assertElementContainsText(
+          overviewElement.$$('#deviceInfo'),
+          fakeSystemInfo.versionInfo.milestoneVersion);
     });
   });
 }
