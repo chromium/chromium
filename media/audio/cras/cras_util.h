@@ -43,6 +43,9 @@ int CrasGetAecSupported();
 // returned.
 int CrasGetAecGroupId();
 
+// Returns the default output buffer size.
+int CrasGetDefaultOutputBufferSize();
+
 }  // namespace media
 
 #endif  // MEDIA_AUDIO_CRAS_CRAS_UTIL_H_

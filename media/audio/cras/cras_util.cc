@@ -192,4 +192,15 @@ int CrasGetAecGroupId() {
   return rc;
 }
 
+int CrasGetDefaultOutputBufferSize() {
+  cras_client* client = CrasConnect();
+  if (!client)
+    return -1;
+
+  int rc = cras_client_get_default_output_buffer_size(client);
+  CrasDisconnect(&client);
+
+  return rc;
+}
+
 }  // namespace media

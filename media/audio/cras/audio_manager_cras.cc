@@ -188,6 +188,9 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
   }
 
   if (!buffer_size)  // Not user-provided.
+    buffer_size = CrasGetDefaultOutputBufferSize();
+
+  if (buffer_size <= 0)
     buffer_size = kDefaultOutputBufferSize;
 
   return AudioParameters(
