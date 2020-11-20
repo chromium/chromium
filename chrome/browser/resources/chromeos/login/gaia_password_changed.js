@@ -57,6 +57,8 @@ Polymer({
     this.initializeLoginScreen('GaiaPasswordChangedScreen', {
       resetAllowed: false,
     });
+
+    this.addSubmitListener(this.$.oldPasswordInput, 'password');
   },
 
   /** Initial UI State for screen */
@@ -87,6 +89,10 @@ Polymer({
     this.disabled = true;
 
     chrome.send('migrateUserData', [this.$.oldPasswordInput.value]);
+  },
+
+  onFieldSubmit(id) {
+    this.submit_();
   },
 
   /** @private */

@@ -34,6 +34,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/login/auth/stub_authenticator.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
@@ -142,6 +143,31 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, MigrateOldCryptohome) {
   // Fill out and submit the old password passed to the stub authenticator.
   test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
   test::OobeJS().ClickOnPath(kSendPasswordButton);
+
+  // User session should start, and whole OOBE screen is expected to be hidden,
+  OobeWindowVisibilityWaiter(false).Wait();
+  EXPECT_EQ(StubAuthenticator::DataRecoveryStatus::kRecovered,
+            data_recovery_status_);
+
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SubmitOnEnterKeyPressed) {
+  OpenGaiaDialog(test_account_id_);
+
+  base::HistogramTester histogram_tester;
+  SetUpStubAuthenticatorAndAttemptLogin("old user password");
+  WaitForPasswordChangeScreen();
+  histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
+                                     ReauthReason::OTHER, 1);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
+
+  // Fill out and submit the old password passed to the stub authenticator.
+  test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, ui::VKEY_RETURN, false /* control */, false /* shift */,
+      false /* alt */, false /* command */));
 
   // User session should start, and whole OOBE screen is expected to be hidden,
   OobeWindowVisibilityWaiter(false).Wait();
