@@ -94,8 +94,7 @@ void OriginRobotsRules::OnURLLoadComplete(
       fetcher_info_->url_loader->ResponseInfo()
           ? fetcher_info_->url_loader->ResponseInfo()->headers
           : nullptr;
-  int response_code =
-      response_headers ? response_code = response_headers->response_code() : -1;
+  int response_code = response_headers ? response_headers->response_code() : -1;
 
   int net_error = fetcher_info_->url_loader->NetError();
 
