@@ -1347,9 +1347,10 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   if (video_frame && video_frame->HasTextures()) {
     if (!raster_context_provider_)
       return;  // Unable to get/create a shared main thread context.
-    DCHECK(
-        raster_context_provider_->ContextCapabilities().supports_oop_raster ||
-        raster_context_provider_->GrContext());
+    if (!raster_context_provider_->GrContext() &&
+        !raster_context_provider_->ContextCapabilities().supports_oop_raster) {
+      return;  // The context has been lost.
+    }
   }
   if (out_metadata && video_frame) {
     // WebGL last-uploaded-frame-metadata API enabled. https://crbug.com/639174
