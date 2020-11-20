@@ -225,7 +225,8 @@ class MemberBase {
   }
 
   void WriteBarrier() const {
-    MarkingVisitor::WriteBarrier(const_cast<std::remove_const_t<T>**>(&raw_));
+    MarkingVisitor::WriteBarrier(
+        reinterpret_cast<void**>(const_cast<std::remove_const_t<T>**>(&raw_)));
   }
 
   void CheckPointer() {

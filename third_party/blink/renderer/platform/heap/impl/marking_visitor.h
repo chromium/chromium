@@ -8,20 +8,20 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
 #include "third_party/blink/renderer/platform/heap/impl/heap_page.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
-namespace {
+namespace internal {
 
 ALWAYS_INLINE bool IsHashTableDeleteValue(const void* value) {
   return value == reinterpret_cast<void*>(-1);
 }
 
-}  // namespace
+}  // namespace internal
 
 class BasePage;
-class HeapAllocator;
 enum class TracenessMemberConfiguration;
 template <typename T, TracenessMemberConfiguration tracenessConfiguration>
 class MemberBase;
@@ -142,14 +142,29 @@ ALWAYS_INLINE void MarkingVisitorBase::MarkHeader(HeapObjectHeader* header,
 // thread.
 class PLATFORM_EXPORT MarkingVisitor : public MarkingVisitorBase {
  public:
-  static void GenerationalBarrier(Address slot, ThreadState* state);
+  // Write barrier that adds a value the |slot| refers to to the set of marked
+  // objects. The barrier bails out if marking is off or the object is not yet
+  // marked. Returns true if the value has been marked on this call.
+  ALWAYS_INLINE static bool WriteBarrier(void** slot);
 
-  // Eagerly traces an already marked backing store ensuring that all its
-  // children are discovered by the marker. The barrier bails out if marking
-  // is off and on individual objects reachable if they are already marked. The
-  // barrier uses the callback function through GcInfo, so it will not inline
-  // any templated type-specific code.
-  static void TraceMarkedBackingStore(const void* value);
+  using ThreadStateCallback = ThreadState*();
+  // Write barrier where for a range of |number_of_elements| elements of size
+  // |element_size| starting at |first_element|. The |callback| will be invoked
+  // for each element if necessary.
+  ALWAYS_INLINE static void WriteBarrier(
+      ThreadStateCallback thread_state_callback,
+      void* first_element,
+      size_t element_size,
+      size_t number_of_elements,
+      TraceCallback callback);
+
+  // Eagerly traces an already marked |object| ensuring that all its children
+  // are discovered by the marker. The barrier bails out if marking is off and
+  // on individual objects reachable if they are already marked. The barrier
+  // uses the callback function through GcInfo.
+  //
+  // Note: |object| must point to the beginning of the heap object.
+  ALWAYS_INLINE static void RetraceObject(const void* object);
 
   MarkingVisitor(ThreadState*, MarkingMode);
   ~MarkingVisitor() override = default;
@@ -162,17 +177,14 @@ class PLATFORM_EXPORT MarkingVisitor : public MarkingVisitorBase {
   void FlushMarkingWorklists();
 
  private:
-  // Write barrier that adds a value the |slot| refers to to the set of marked
-  // objects. The barrier bails out if marking is off or the object is not yet
-  // marked. Returns true if the value has been marked on this call.
-  template <typename T>
-  static bool WriteBarrier(T** slot);
+  ALWAYS_INLINE static void GenerationalBarrier(Address slot,
+                                                ThreadState* state);
 
   // Exact version of the marking and generational write barriers.
   static bool WriteBarrierSlow(void*);
   static void GenerationalBarrierSlow(Address, ThreadState*);
   static bool MarkValue(void*, BasePage*, ThreadState*);
-  static void TraceMarkedBackingStoreSlow(const void*);
+  static void RetraceObjectSlow(const void*);
 
   // Weak containers are strongly retraced during conservative stack scanning.
   // Stack scanning happens once per GC at the start of the atomic pause.
@@ -190,17 +202,15 @@ class PLATFORM_EXPORT MarkingVisitor : public MarkingVisitorBase {
     size_t last_used_index_ = -1;
   } recently_retraced_weak_containers_;
 
-  friend class HeapAllocator;
   template <typename T, TracenessMemberConfiguration tracenessConfiguration>
   friend class MemberBase;
 };
 
 // static
-template <typename T>
-ALWAYS_INLINE bool MarkingVisitor::WriteBarrier(T** slot) {
+bool MarkingVisitor::WriteBarrier(void** slot) {
 #if BUILDFLAG(BLINK_HEAP_YOUNG_GENERATION)
   void* value = *slot;
-  if (!value || IsHashTableDeleteValue(value))
+  if (!value || internal::IsHashTableDeleteValue(value))
     return false;
 
   // Dijkstra barrier if concurrent marking is in progress.
@@ -223,8 +233,41 @@ ALWAYS_INLINE bool MarkingVisitor::WriteBarrier(T** slot) {
 }
 
 // static
-ALWAYS_INLINE void MarkingVisitor::GenerationalBarrier(Address slot,
-                                                       ThreadState* state) {
+void MarkingVisitor::WriteBarrier(ThreadStateCallback thread_state_callback,
+                                  void* first_element,
+                                  size_t element_size,
+                                  size_t number_of_elements,
+                                  TraceCallback callback) {
+#if BUILDFLAG(BLINK_HEAP_YOUNG_GENERATION)
+  ThreadState* const thread_state = thread_state_callback();
+  if (!thread_state->IsIncrementalMarking()) {
+    MarkingVisitor::GenerationalBarrier(
+        reinterpret_cast<Address>(first_element), thread_state);
+    return;
+  }
+#else   // !BLINK_HEAP_YOUNG_GENERATION
+  if (!ThreadState::IsAnyIncrementalMarking())
+    return;
+  // The object may have been in-place constructed as part of a large object.
+  // It is not safe to retrieve the page from the object here.
+  ThreadState* const thread_state = thread_state_callback();
+  if (!thread_state->IsIncrementalMarking()) {
+    return;
+  }
+#endif  // !BLINK_HEAP_YOUNG_GENERATION
+  ThreadState::NoAllocationScope no_allocation_scope(thread_state);
+  DCHECK(thread_state->CurrentVisitor());
+  // No weak handling for write barriers. Modifying weakly reachable objects
+  // strongifies them for the current cycle.
+  char* array = static_cast<char*>(first_element);
+  while (number_of_elements-- > 0) {
+    callback(thread_state->CurrentVisitor(), array);
+    array += element_size;
+  }
+}
+
+// static
+void MarkingVisitor::GenerationalBarrier(Address slot, ThreadState* state) {
   // First, check if the source object is in the last allocated region of heap.
   if (LIKELY(state->Heap().IsInLastAllocatedRegion(slot)))
     return;
@@ -234,13 +277,11 @@ ALWAYS_INLINE void MarkingVisitor::GenerationalBarrier(Address slot,
 }
 
 // static
-ALWAYS_INLINE void MarkingVisitor::TraceMarkedBackingStore(const void* value) {
+void MarkingVisitor::RetraceObject(const void* object) {
   if (!ThreadState::IsAnyIncrementalMarking())
     return;
 
-  // Avoid any further checks and dispatch to a call at this point. Aggressive
-  // inlining otherwise pollutes the regular execution paths.
-  TraceMarkedBackingStoreSlow(value);
+  RetraceObjectSlow(object);
 }
 
 // Visitor used to mark Oilpan objects on concurrent threads.

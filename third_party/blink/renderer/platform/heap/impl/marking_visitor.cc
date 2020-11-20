@@ -171,7 +171,7 @@ bool MarkingVisitor::MarkValue(void* value,
 
 // static
 bool MarkingVisitor::WriteBarrierSlow(void* value) {
-  if (!value || IsHashTableDeleteValue(value))
+  if (!value || internal::IsHashTableDeleteValue(value))
     return false;
 
   // It is guaranteed that managed references point to either GarbageCollected
@@ -209,23 +209,31 @@ void MarkingVisitor::GenerationalBarrierSlow(Address slot,
   }
 }
 
-void MarkingVisitor::TraceMarkedBackingStoreSlow(const void* value) {
-  if (!value)
+void MarkingVisitor::RetraceObjectSlow(const void* object) {
+  if (!object)
     return;
+
+  // Trace object only if it is marked and thus has been traced before. The
+  // marker may be active on the backing store which requires atomic mark bit
+  // access.
+  if (!HeapObjectHeader::FromPayload(object)
+           ->IsMarked<HeapObjectHeader::AccessMode::kAtomic>()) {
+    return;
+  }
 
   ThreadState* const thread_state = ThreadState::Current();
   if (!thread_state->IsIncrementalMarking())
     return;
 
   // |value| is pointing to the start of a backing store.
-  HeapObjectHeader* header = HeapObjectHeader::FromPayload(value);
+  HeapObjectHeader* header = HeapObjectHeader::FromPayload(object);
   CHECK(header->IsMarked());
   DCHECK(thread_state->CurrentVisitor());
   // No weak handling for write barriers. Modifying weakly reachable objects
   // strongifies them for the current cycle.
 
   GCInfo::From(header->GcInfoIndex())
-      .trace(thread_state->CurrentVisitor(), value);
+      .trace(thread_state->CurrentVisitor(), object);
 }
 
 constexpr size_t MarkingVisitor::RecentlyRetracedWeakContainers::kMaxCacheSize;

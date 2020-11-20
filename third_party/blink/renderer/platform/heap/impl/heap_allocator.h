@@ -103,22 +103,6 @@ class PLATFORM_EXPORT HeapAllocator {
   static void FreeHashTableBacking(void* address);
   static bool ExpandHashTableBacking(void*, size_t);
 
-  static void TraceBackingStoreIfMarked(const void* address) {
-    // Trace backing store elements only if backing store was marked. The
-    // sweeper may be active on the backing store which requires atomic mark bit
-    // access. A precise filter is performed in
-    // MarkingVisitor::TraceMarkedBackingStore.
-    if (HeapObjectHeader::FromPayload(address)
-            ->IsMarked<HeapObjectHeader::AccessMode::kAtomic>()) {
-      MarkingVisitor::TraceMarkedBackingStore(address);
-    }
-  }
-
-  template <typename T>
-  static void BackingWriteBarrier(T** slot) {
-    MarkingVisitor::WriteBarrier(slot);
-  }
-
   static bool IsAllocationAllowed() {
     return ThreadState::Current()->IsAllocationAllowed();
   }
@@ -126,12 +110,6 @@ class PLATFORM_EXPORT HeapAllocator {
   static bool IsIncrementalMarking() {
     return ThreadState::IsAnyIncrementalMarking() &&
            ThreadState::Current()->IsIncrementalMarking();
-  }
-
-  template <typename T, typename Traits>
-  static void Trace(Visitor* visitor, const T& t) {
-    TraceCollectionIfEnabled<WTF::WeakHandlingTrait<T>::value, T,
-                             Traits>::Trace(visitor, &t);
   }
 
   static void EnterGCForbiddenScope() {
@@ -143,65 +121,9 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T, typename Traits>
-  static void NotifyNewObject(T* object) {
-#if BUILDFLAG(BLINK_HEAP_YOUNG_GENERATION)
-    ThreadState* const thread_state = ThreadState::Current();
-    if (!thread_state->IsIncrementalMarking()) {
-      MarkingVisitor::GenerationalBarrier(reinterpret_cast<Address>(object),
-                                          thread_state);
-      return;
-    }
-#else
-    if (!ThreadState::IsAnyIncrementalMarking())
-      return;
-    // The object may have been in-place constructed as part of a large object.
-    // It is not safe to retrieve the page from the object here.
-    ThreadState* const thread_state = ThreadState::Current();
-    if (!thread_state->IsIncrementalMarking()) {
-      return;
-    }
-#endif  // BLINK_HEAP_YOUNG_GENERATION
-    // Eagerly trace the object ensuring that the object and all its children
-    // are discovered by the marker.
-    ThreadState::NoAllocationScope no_allocation_scope(thread_state);
-    DCHECK(thread_state->CurrentVisitor());
-    // No weak handling for write barriers. Modifying weakly reachable objects
-    // strongifies them for the current cycle.
-    DCHECK(!Traits::kCanHaveDeletedValue || !Traits::IsDeletedValue(*object));
-    TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace(
-        thread_state->CurrentVisitor(), object);
-  }
-
-  template <typename T, typename Traits>
-  static void NotifyNewObjects(T* array, size_t len) {
-#if BUILDFLAG(BLINK_HEAP_YOUNG_GENERATION)
-    ThreadState* const thread_state = ThreadState::Current();
-    if (!thread_state->IsIncrementalMarking()) {
-      MarkingVisitor::GenerationalBarrier(reinterpret_cast<Address>(array),
-                                          thread_state);
-      return;
-    }
-#else
-    if (!ThreadState::IsAnyIncrementalMarking())
-      return;
-    // The object may have been in-place constructed as part of a large object.
-    // It is not safe to retrieve the page from the object here.
-    ThreadState* const thread_state = ThreadState::Current();
-    if (!thread_state->IsIncrementalMarking()) {
-      return;
-    }
-#endif  // BLINK_HEAP_YOUNG_GENERATION
-    // See |NotifyNewObject| for details.
-    ThreadState::NoAllocationScope no_allocation_scope(thread_state);
-    DCHECK(thread_state->CurrentVisitor());
-    // No weak handling for write barriers. Modifying weakly reachable objects
-    // strongifies them for the current cycle.
-    while (len-- > 0) {
-      DCHECK(!Traits::kCanHaveDeletedValue || !Traits::IsDeletedValue(*array));
-      TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace(
-          thread_state->CurrentVisitor(), array);
-      array++;
-    }
+  static void Trace(Visitor* visitor, const T& t) {
+    TraceCollectionIfEnabled<WTF::WeakHandlingTrait<T>::value, T,
+                             Traits>::Trace(visitor, &t);
   }
 
   template <typename T>
@@ -237,6 +159,29 @@ class PLATFORM_EXPORT HeapAllocator {
         TraceTrait<HeapHashTableBacking<HashTable>>::GetWeakTraceDescriptor(
             backing),
         callback, parameter);
+  }
+
+  template <typename T>
+  static void BackingWriteBarrier(T** slot) {
+    MarkingVisitor::WriteBarrier(reinterpret_cast<void**>(slot));
+  }
+
+  static void TraceBackingStoreIfMarked(const void* object) {
+    MarkingVisitor::RetraceObject(object);
+  }
+
+  template <typename T, typename Traits>
+  static void NotifyNewObject(T* object) {
+    MarkingVisitor::WriteBarrier(
+        []() { return ThreadState::Current(); }, object, sizeof(T), 1,
+        TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
+  }
+
+  template <typename T, typename Traits>
+  static void NotifyNewObjects(T* array, size_t len) {
+    MarkingVisitor::WriteBarrier(
+        []() { return ThreadState::Current(); }, array, sizeof(T), len,
+        TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
   }
 
  private:
