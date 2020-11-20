@@ -827,6 +827,19 @@ void ParseReportDirective(const GURL& request_url,
   }
 }
 
+void WarnIfDirectiveValueNotEmpty(
+    const std::pair<base::StringPiece, base::StringPiece>& directive,
+    std::vector<std::string>& parsing_errors) {
+  if (!directive.second.empty()) {
+    parsing_errors.emplace_back(base::StringPrintf(
+        "The Content Security Policy directive '%s' should be empty, but was "
+        "delivered with a value of '%s'. The directive has been applied, and "
+        "the value ignored.",
+        directive.first.as_string().c_str(),
+        directive.second.as_string().c_str()));
+  }
+}
+
 void AddContentSecurityPolicyFromHeader(base::StringPiece header,
                                         mojom::ContentSecurityPolicyType type,
                                         const GURL& base_url,
@@ -914,24 +927,11 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
         break;
       case CSPDirectiveName::UpgradeInsecureRequests:
         out->upgrade_insecure_requests = true;
-        if (!directive.second.empty()) {
-          out->parsing_errors.emplace_back(base::StringPrintf(
-              "The Content Security Policy directive "
-              "'upgrade-insecure-requests' should be empty, but was delivered "
-              "with a value of '%s'. The directive has been applied, and the "
-              "value ignored.",
-              directive.second.as_string().c_str()));
-        }
+        WarnIfDirectiveValueNotEmpty(directive, out->parsing_errors);
         break;
       case CSPDirectiveName::TreatAsPublicAddress:
         out->treat_as_public_address = true;
-        if (!directive.second.empty()) {
-          out->parsing_errors.emplace_back(base::StringPrintf(
-              "The Content Security Policy directive 'treat-as-public-address' "
-              "should be empty, but was delivered with a value of '%s'. The "
-              "directive has been applied, and the value ignored.",
-              directive.second.as_string().c_str()));
-        }
+        WarnIfDirectiveValueNotEmpty(directive, out->parsing_errors);
         break;
       case CSPDirectiveName::PluginTypes:
         // If the plugin-types directive is present, then always initialize
@@ -951,11 +951,9 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
             ParseTrustedTypes(directive.second, out->parsing_errors);
         break;
 
-        // We check the following directive so that we do not trigger a warning
-        // because of an unrecognized directive. However, we skip parsing it for
-        // now since we do not need it here (it is parsed and enforced in the
-        // blink CSP parser).
       case CSPDirectiveName::BlockAllMixedContent:
+        out->block_all_mixed_content = true;
+        WarnIfDirectiveValueNotEmpty(directive, out->parsing_errors);
         break;
 
       case CSPDirectiveName::ReportTo:

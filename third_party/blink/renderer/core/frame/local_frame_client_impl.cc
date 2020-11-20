@@ -281,6 +281,7 @@ WebContentSecurityPolicy ConvertToPublic(
           policy->header->source,
           std::move(directives),
           policy->upgrade_insecure_requests,
+          policy->block_all_mixed_content,
           std::move(policy->report_endpoints),
           policy->header->header_value,
           policy->use_reporting_api,

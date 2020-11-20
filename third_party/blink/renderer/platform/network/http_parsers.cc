@@ -134,7 +134,8 @@ blink::ContentSecurityPolicyPtr ConvertToBlink(
   return blink::ContentSecurityPolicy::New(
       ConvertToBlink(std::move(policy_in->directives)),
       policy_in->upgrade_insecure_requests, policy_in->treat_as_public_address,
-      policy_in->sandbox, ConvertToBlink(std::move(policy_in->header)),
+      policy_in->block_all_mixed_content, policy_in->sandbox,
+      ConvertToBlink(std::move(policy_in->header)),
       policy_in->use_reporting_api,
       ConvertToBlink(std::move(policy_in->report_endpoints)),
       policy_in->plugin_types.has_value()

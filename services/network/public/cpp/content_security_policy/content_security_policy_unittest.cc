@@ -715,6 +715,36 @@ TEST(ContentSecurityPolicy, ParseTrustedTypes) {
   }
 }
 
+TEST(ContentSecurityPolicy, ParseBlockAllMixedContent) {
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("script-src 'none'");
+    EXPECT_EQ(policies[0]->directives.size(), 1u);
+    EXPECT_FALSE(policies[0]->block_all_mixed_content);
+  }
+
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("block-all-mixed-content");
+    EXPECT_EQ(policies[0]->directives.size(), 0u);
+    EXPECT_TRUE(policies[0]->block_all_mixed_content);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
+  }
+
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("block-all-mixed-content true");
+    EXPECT_EQ(policies[0]->directives.size(), 0u);
+    EXPECT_TRUE(policies[0]->block_all_mixed_content);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 1u);
+    EXPECT_EQ(policies[0]->parsing_errors[0],
+              "The Content Security Policy directive "
+              "'block-all-mixed-content' should be empty, but was delivered "
+              "with a value of 'true'. The directive has been applied, and the "
+              "value ignored.");
+  }
+}
+
 TEST(ContentSecurityPolicy, ParseReportEndpoint) {
   // report-uri directive.
   {

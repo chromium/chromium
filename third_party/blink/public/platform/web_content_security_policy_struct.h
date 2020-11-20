@@ -86,6 +86,7 @@ struct WebContentSecurityPolicy {
   network::mojom::ContentSecurityPolicySource source;
   WebVector<WebContentSecurityPolicyDirective> directives;
   bool upgrade_insecure_requests;
+  bool block_all_mixed_content;
   WebVector<WebString> report_endpoints;
   WebString header;
   bool use_reporting_api;

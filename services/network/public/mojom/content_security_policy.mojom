@@ -161,6 +161,9 @@ struct ContentSecurityPolicy {
   // https://wicg.github.io/cors-rfc1918/#csp
   bool treat_as_public_address = false;
 
+  // https://www.w3.org/TR/mixed-content/#strict-opt-in
+  bool block_all_mixed_content = false;
+
   // https://www.w3.org/TR/CSP3/#directive-sandbox
   // This uses the convention: kNone means "nothing is disallowed".
   WebSandboxFlags sandbox = WebSandboxFlags.kNone;
