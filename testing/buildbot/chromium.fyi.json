@@ -7248,17 +7248,6 @@
         "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
       },
       {
-        "args": [
-          "--shards=6"
-        ],
-        "experiment_percentage": 10,
-        "isolate_profile_data": true,
-        "name": "chrome_junit_tests_with_shards",
-        "swarming": {},
-        "test": "chrome_junit_tests",
-        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
-      },
-      {
         "isolate_profile_data": true,
         "name": "components_junit_tests",
         "swarming": {},
