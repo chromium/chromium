@@ -4,6 +4,7 @@
 //build/android/pylib/__init__.py
 //build/android/pylib/constants/__init__.py
 //build/android/pylib/constants/host_paths.py
+//build/gn_helpers.py
 //testing/scripts/common.py
 //testing/scripts/run_android_wpt.py
 //testing/scripts/wpt_common.py

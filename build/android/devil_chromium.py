@@ -7,13 +7,20 @@
 import os
 import sys
 
+from pylib import constants
 from pylib.constants import host_paths
 
 if host_paths.DEVIL_PATH not in sys.path:
-  sys.path.append(host_paths.DEVIL_PATH)
+  sys.path.insert(1, host_paths.DEVIL_PATH)
 
 from devil import devil_env
 from devil.android.ndk import abis
+
+_BUILD_DIR = os.path.join(constants.DIR_SOURCE_ROOT, 'build')
+if _BUILD_DIR not in sys.path:
+  sys.path.insert(1, _BUILD_DIR)
+
+import gn_helpers
 
 _DEVIL_CONFIG = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'devil_chromium.json'))
@@ -107,6 +114,35 @@ _DEVIL_BUILD_PRODUCT_DEPS = {
 }
 
 
+def _UseLocalBuildProducts(output_directory, devil_dynamic_config):
+  output_directory = os.path.abspath(output_directory)
+  devil_dynamic_config['dependencies'] = {
+      dep_name: {
+          'file_info': {
+              '%s_%s' % (dep_config['platform'], dep_config['arch']): {
+                  'local_paths': [
+                      os.path.join(output_directory,
+                                   *dep_config['path_components']),
+                  ],
+              }
+              for dep_config in dep_configs
+          }
+      }
+      for dep_name, dep_configs in _DEVIL_BUILD_PRODUCT_DEPS.iteritems()
+  }
+
+
+def _BuildWithChromium():
+  """Returns value of gclient's |build_with_chromium|."""
+  gni_path = os.path.join(_BUILD_DIR, 'config', 'gclient_args.gni')
+  if not os.path.exists(gni_path):
+    return False
+  with open(gni_path) as f:
+    data = f.read()
+  args = gn_helpers.FromGNArgs(data)
+  return args.get('build_with_chromium', False)
+
+
 def Initialize(output_directory=None, custom_deps=None, adb_path=None):
   """Initializes devil with chromium's binaries and third-party libraries.
 
@@ -134,26 +170,18 @@ def Initialize(output_directory=None, custom_deps=None, adb_path=None):
     adb_path: An optional path to use for the adb binary. If not set, this uses
       the adb binary provided by the Android SDK.
   """
+  build_with_chromium = _BuildWithChromium()
 
   devil_dynamic_config = {
     'config_type': 'BaseConfig',
     'dependencies': {},
   }
-  if output_directory:
-    output_directory = os.path.abspath(output_directory)
-    devil_dynamic_config['dependencies'] = {
-      dep_name: {
-        'file_info': {
-          '%s_%s' % (dep_config['platform'], dep_config['arch']): {
-            'local_paths': [
-              os.path.join(output_directory, *dep_config['path_components']),
-            ],
-          }
-          for dep_config in dep_configs
-        }
-      }
-      for dep_name, dep_configs in _DEVIL_BUILD_PRODUCT_DEPS.iteritems()
-    }
+  if build_with_chromium and output_directory:
+    # Non-chromium users of chromium's //build directory fetch build products
+    # from google storage rather than use locally built copies. Chromium uses
+    # locally-built copies so that changes to the tools can be easily tested.
+    _UseLocalBuildProducts(output_directory, devil_dynamic_config)
+
   if custom_deps:
     devil_dynamic_config['dependencies'].update(custom_deps)
   if adb_path:
@@ -167,5 +195,6 @@ def Initialize(output_directory=None, custom_deps=None, adb_path=None):
       }
     })
 
-  devil_env.config.Initialize(
-      configs=[devil_dynamic_config], config_files=[_DEVIL_CONFIG])
+  config_files = [_DEVIL_CONFIG] if build_with_chromium else None
+  devil_env.config.Initialize(configs=[devil_dynamic_config],
+                              config_files=config_files)

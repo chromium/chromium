@@ -10,11 +10,6 @@ import os
 import string
 import sys
 
-# Import apk_operations even though this script doesn't use it so that
-# targets that depend on the wrapper scripts will rebuild when apk_operations
-# or its deps change.
-sys.path.insert(1, os.path.join(os.path.dirname(__file__), os.pardir))
-import apk_operations  # pylint: disable=unused-import
 from util import build_utils
 
 SCRIPT_TEMPLATE = string.Template("""\

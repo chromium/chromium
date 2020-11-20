@@ -4,6 +4,7 @@
 //build/android/pylib/__init__.py
 //build/android/pylib/constants/__init__.py
 //build/android/pylib/constants/host_paths.py
+//build/gn_helpers.py
 //chrome/android/monochrome/scripts/monochrome_android_manifest_test.py
 //chrome/android/monochrome/scripts/monochrome_apk_checker_test.py
 //chrome/android/monochrome/scripts/monochrome_dexdump_test.py
