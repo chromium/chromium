@@ -156,6 +156,7 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::~InProgressRequest() {
       ukm::builders::Extensions_WebRequest_KeepaliveRequestFinished(
           ukm_source_id_)
           .SetState(state_)
+          .SetNumRedirects(num_redirects_)
           .Record(ukm::UkmRecorder::Get());
     }
   }
@@ -306,6 +307,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
     }
   }
 
+  ++num_redirects_;
   RestartInternal();
 }
 
