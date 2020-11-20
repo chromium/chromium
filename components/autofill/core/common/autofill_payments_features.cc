@@ -57,7 +57,7 @@ const base::Feature kAutofillCreditCardUploadFeedback{
 // When enabled, the credit card nicknames will be manageable. They can be
 // modified locally.
 const base::Feature kAutofillEnableCardNicknameManagement{
-    "AutofillEnableCardNicknameManagement", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillEnableCardNicknameManagement", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, shows the Google Pay logo on CVC prompt on Android.
 const base::Feature kAutofillDownstreamCvcPromptUseGooglePayLogo{
@@ -67,7 +67,7 @@ const base::Feature kAutofillDownstreamCvcPromptUseGooglePayLogo{
 // When enabled, the credit card nicknames will be manageable. They can be
 // uploaded to Payments.
 const base::Feature kAutofillEnableCardNicknameUpstream{
-    "AutofillEnableCardNicknameUpstream", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillEnableCardNicknameUpstream", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, autofill payments bubbles' result will be recorded as either
 // 'accepted', 'cancelled', 'closed', 'not interacted' or 'lost focus'.
