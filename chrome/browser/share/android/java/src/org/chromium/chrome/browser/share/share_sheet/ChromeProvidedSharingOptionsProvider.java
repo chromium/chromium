@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
+import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
@@ -216,6 +217,9 @@ class ChromeProvidedSharingOptionsProvider {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)) {
             mOrderedFirstPartyOptions.add(createScreenshotFirstPartyOption());
         }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)) {
+            mOrderedFirstPartyOptions.add(createLongScreenshotsFirstPartyOption());
+        }
         mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
             mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
@@ -259,6 +263,27 @@ class ChromeProvidedSharingOptionsProvider {
                     RecordUserAction.record("SharingHubAndroid.ScreenshotSelected");
                     recordTimeToShare(mShareStartTime);
                     mScreenshotCoordinator = new ScreenshotCoordinator(mActivity,
+                            mTabProvider.get(), mChromeOptionShareCallback, mBottomSheetController,
+                            mImageEditorModuleProvider);
+                    // Capture a screenshot once the bottom sheet is fully hidden. The
+                    // observer will then remove itself.
+                    mBottomSheetController.addObserver(mSheetObserver);
+                    mBottomSheetController.hideContent(mBottomSheetContent, true);
+                });
+        return new FirstPartyOption(propertyModel,
+                Arrays.asList(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
+                        ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE),
+                /*contentTypesToDisableFor=*/Collections.emptySet(),
+                /*disableForMultiWindow=*/true);
+    }
+
+    private FirstPartyOption createLongScreenshotsFirstPartyOption() {
+        PropertyModel propertyModel = ShareSheetPropertyModelBuilder.createPropertyModel(
+                AppCompatResources.getDrawable(mActivity, R.drawable.long_screenshot),
+                mActivity.getResources().getString(R.string.sharing_long_screenshot), (view) -> {
+                    RecordUserAction.record("SharingHubAndroid.LongScreenshotSelected");
+                    recordTimeToShare(mShareStartTime);
+                    mScreenshotCoordinator = new LongScreenshotsCoordinator(mActivity,
                             mTabProvider.get(), mChromeOptionShareCallback, mBottomSheetController,
                             mImageEditorModuleProvider);
                     // Capture a screenshot once the bottom sheet is fully hidden. The

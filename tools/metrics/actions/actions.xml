@@ -21307,6 +21307,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingHubAndroid.LongScreenshotSelected">
+  <owner>kmilka@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The &quot;Long Screenshot&quot; option was selected in the sharing hub.
+  </description>
+</action>
+
 <action name="SharingHubAndroid.MoreSelected">
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>

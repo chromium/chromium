@@ -707,6 +707,7 @@ chrome_java_resources = [
   "java/res/drawable/logo_avatar_anonymous.xml",
   "java/res/drawable/logo_partly_cloudy.xml",
   "java/res/drawable/logo_translate_round.xml",
+  "java/res/drawable/long_screenshot.xml",
   "java/res/drawable/material_tooltip_background.xml",
   "java/res/drawable/mir_card.xml",
   "java/res/drawable/modern_toolbar_text_box_background_with_primary_color.xml",
