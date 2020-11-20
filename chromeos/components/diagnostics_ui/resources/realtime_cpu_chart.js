@@ -40,10 +40,16 @@ Polymer({
   data_: [],
 
   /**
-   * Unix timestamp in milliseconds of last data update.
+   * DOMHighResTimeStamp of last graph render.
    * @private {number}
    */
-  dataLastUpdated_: 0,
+  lastRender_: 0,
+
+  /**
+   * Current render frame out of this.framesPerSecond_.
+   * @private {number}
+   */
+  currentFrame_: 0,
 
   properties: {
     /** @type {number} */
@@ -64,10 +70,33 @@ Polymer({
       value: 50,
     },
 
-    /** @private {number} */
-    refreshInterval_: {
+    /**
+     * @private {number}
+     */
+    dataRefreshPerSecond_: {
       type: Number,
-      value: 200,  // in milliseconds.
+      value: 2,
+    },
+
+    /**
+     * Chart rendering frames per second.
+     * Strongly preferred to be multiples of dataRefreshPerSecond_. If not,
+     * there will be a small (hard to notice) jittering at every data refresh.
+     * @private {number}
+     */
+    framesPerSecond_: {
+      type: Number,
+      value: 30,
+    },
+
+    /**
+     * Duration of each frame in milliseconds
+     * @private {number}
+     */
+    frameDuration_: {
+      readOnly: true,
+      type: Number,
+      computed: 'getFrameDuration_(dataRefreshPerSecond_, framesPerSecond_)',
     },
 
     /** @private {number} */
@@ -118,6 +147,18 @@ Polymer({
   },
 
   /**
+   * Calculate the duration of each frame in milliseconds.
+   * @return {number}
+   * @protected
+   */
+  getFrameDuration_() {
+    assert(this.dataRefreshPerSecond_ > 0);
+    assert(this.framesPerSecond_ > 0);
+    assert(this.framesPerSecond_ % this.dataRefreshPerSecond_ === 0);
+    return 1000 / (this.framesPerSecond_ / this.dataRefreshPerSecond_);
+  },
+
+  /**
    * Get actual graph dimensions after accounting for margins.
    * @param {number} base value of dimension.
    * @param {...number} margins related to base dimension.
@@ -139,11 +180,11 @@ Polymer({
         d3.scaleLinear().domain([0, 100]).range([this.graphHeight_, 0]);
 
     // Map x-values [0, numDataPoints - 3] to [0, graphWidth] linearly.
-    // Data value of 0 maps to 0, and (numDataPoints - 3) maps to graphWidth.
+    // Data value of 0 maps to 0, and (numDataPoints - 2) maps to graphWidth.
     // numDataPoints is subtracted since 1) data array is zero based, and
     // 2) to smooth out the curve function.
     this.xAxisScaleFn_ =
-        d3.scaleLinear().domain([0, this.numDataPoints_ - 3]).range([
+        d3.scaleLinear().domain([0, this.numDataPoints_ - 2]).range([
           0, this.graphWidth_
         ]);
   },
@@ -177,14 +218,16 @@ Polymer({
     // d3.easing API @ https://github.com/d3/d3-ease#api-reference.
     plotGroup.select('.user-area')
         .transition()
-        .duration(this.refreshInterval_)
-        .ease(d3.easeLinear)  // Linear transition
-        .on('start', this.drawChartArea_.bind(this, 'user-area'));
+        .duration(this.frameDuration_)
+        .ease(d3.easeLinear);  // Linear transition
     plotGroup.select('.system-area')
         .transition()
-        .duration(this.refreshInterval_)
-        .ease(d3.easeLinear)  // Linear transition
-        .on('start', this.drawChartArea_.bind(this, 'system-area'));
+        .duration(this.frameDuration_)
+        .ease(d3.easeLinear);  // Linear transition
+
+    // Draw initial data and kick off the rendering process.
+    this.getDataSnapshotAndRedraw_();
+    this.render_(0);
   },
 
   /**
@@ -195,8 +238,6 @@ Polymer({
   getAreaDefinition_(areaClass) {
     return d3
         .area()
-        // Curved area outline
-        .curve(d3.curveBasis)
         // Take the index of each data as x values.
         .x((data, i) => this.xAxisScaleFn_(i))
         // Bottom coordinates of each area.
@@ -209,45 +250,54 @@ Polymer({
   },
 
   /**
-   * Takes a snapshot of current CPU readings and appends to the data array.
-   * This method is called by each area after each transition.
+   * Takes a snapshot of current CPU readings and appends to the data array for
+   * redrawing. This method is called after each transition cycle.
    * @private
    */
-  appendDataSnapshot_() {
-    const now = new Date().getTime();
+  getDataSnapshotAndRedraw_() {
+    this.data_.push({user: this.user, system: this.system});
+    this.data_.shift();
 
-    // We only want to append the data once per refreshInterval cycle even with
-    // multiple areas. Roughly limit the call so that at least half of the
-    // refreshInterval has elapsed since the last update.
-    if (now - this.dataLastUpdated_ > this.refreshInterval_ / 2) {
-      this.dataLastUpdated_ = now;
-      this.data_.push({user: this.user, system: this.system});
-      this.data_.shift();
-    }
+    const userArea = assert(this.$$(`path.user-area`));
+    const systemArea = assert(this.$$(`path.system-area`));
+    d3.select(userArea).attr('d', this.getAreaDefinition_('user-area'));
+    d3.select(systemArea).attr('d', this.getAreaDefinition_('system-area'));
   },
 
   /**
-   * @param {string} areaClass class string for <path> element.
+   * @param {number} timeStamp Current time based on DOMHighResTimeStamp.
    * @private
    */
-  drawChartArea_(areaClass) {
-    this.appendDataSnapshot_();
+  render_(timeStamp) {
+    // Re-render only when this.frameDuration_ has passed since last render.
+    // If we acquire the animation frame before this, do nothing.
+    if (timeStamp - this.lastRender_ > this.frameDuration_) {
+      this.lastRender_ = performance.now();
 
-    const areaElement = assert(this.$$(`path.${areaClass}`));
+      // Get new data and redraw on each cycle.
+      const framesPerCycle = this.framesPerSecond_ / this.dataRefreshPerSecond_;
+      if (this.currentFrame_ === framesPerCycle) {
+        this.currentFrame_ = 0;
+        this.getDataSnapshotAndRedraw_();
+      }
 
-    // Reset the animation (transform) and redraw the area with new data.
-    // this.data_ is already associated with the plotGroup, so no need to
-    // specify it directly here.
-    d3.select(areaElement)
-        .attr('d', this.getAreaDefinition_(areaClass))
-        .attr('transform', null);
+      const userArea = assert(this.$$(`path.user-area`));
+      const systemArea = assert(this.$$(`path.system-area`));
 
-    // Start animation of the area towards left by one tick outside the chart
-    // boundary, then repeat the process.
-    d3.active(areaElement)
-        .attr('transform', 'translate(' + this.xAxisScaleFn_(-1) + ', 0)')
-        .transition()
-        .on('start', this.drawChartArea_.bind(this, areaClass));
+      // Calculate the new position. Use this.currentFrame_ + 1 since on frame
+      // 0, it is already at position 0.
+      const pos = -1 * ((this.currentFrame_ + 1) / framesPerCycle);
+
+      // Slide it to the left
+      d3.select(userArea).attr(
+          'transform', 'translate(' + this.xAxisScaleFn_(pos) + ',0)');
+      d3.select(systemArea)
+          .attr('transform', 'translate(' + this.xAxisScaleFn_(pos) + ',0)');
+      this.currentFrame_++;
+    }
+
+    // Request another frame.
+    requestAnimationFrame((timeStamp) => this.render_(timeStamp));
   },
 
   /**
