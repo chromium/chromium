@@ -26,6 +26,8 @@
 #include "components/version_info/version_info.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/common/chrome_features.h"
@@ -133,6 +135,22 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
   static constexpr char kEarlyLibraryLoadTrial[] = "EarlyLibraryLoadSynthetic";
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       kEarlyLibraryLoadTrial, group_name);
+
+  // If isolated splits are enabled at build time, Monochrome and Trichrome will
+  // have a different bundle layout, so measure N+ even though isolated splits
+  // are only supported by Android in O+.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_NOUGAT) {
+    static constexpr char kIsolatedSplitsTrial[] = "IsolatedSplitsSynthetic";
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kIsolatedSplitsTrial,
+#if BUILDFLAG(ENABLE_ISOLATED_SPLITS)
+        "Enabled"
+#else
+        "Disabled"
+#endif
+    );
+  }
 #endif  // defined(OS_ANDROID)
 }
 
