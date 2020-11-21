@@ -295,6 +295,8 @@ void LacrosChromeServiceImpl::BindReceiver(
                                     BindLacrosChromeServiceReceiver,
                                 weak_sequenced_state_, std::move(receiver)));
   sequenced_state_->WaitForInit();
+  DCHECK(init_params_);
+  delegate_->OnInitialized(*init_params_);
   did_bind_receiver_ = true;
 
   // Bind the remote for MessageCenter on the current thread, and then pass the

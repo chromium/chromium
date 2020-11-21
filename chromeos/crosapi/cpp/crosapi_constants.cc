@@ -15,13 +15,6 @@ const char kLacrosAppIdPrefix[] = "org.chromium.lacros.";
 // a directory in the encrypted user data partition.
 const char kHomeChronosUserPath[] = "/home/chronos/user";
 
-// The "MyFiles" directory for the ash-side primary user.
-const char kMyFilesPath[] = "/home/chronos/user/MyFiles";
-
-// The "Downloads" directory for the ash-side primary user. Note that the user
-// can choose to download files to a different directory, see DownloadPrefs.
-const char kDefaultDownloadsPath[] = "/home/chronos/user/MyFiles/Downloads";
-
 // The default user-data-directory for Lacros.
 // NOTE: This is security sensitive. The directory must be inside the encrypted
 // user data partition.

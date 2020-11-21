@@ -989,7 +989,6 @@ if (!is_android) {
       "../browser/chrome_cross_origin_opener_policy_browsertest.cc",
       "../browser/chrome_do_not_track_browsertest.cc",
       "../browser/chrome_find_request_manager_browsertest.cc",
-      "../browser/chrome_main_browsertest.cc",
       "../browser/chrome_navigation_browsertest.cc",
       "../browser/chrome_origin_trials_browsertest.cc",
       "../browser/chrome_security_exploit_browsertest.cc",
@@ -1271,7 +1270,6 @@ if (!is_android) {
       "../browser/previews/previews_test_util.cc",
       "../browser/previews/previews_test_util.h",
       "../browser/previews/resource_loading_hints/resource_loading_hints_browsertest.cc",
-      "../browser/process_singleton_browsertest.cc",
       "../browser/profile_resetter/profile_resetter_browsertest.cc",
       "../browser/profiles/host_zoom_map_browsertest.cc",
       "../browser/profiles/profile_activity_metrics_recorder_browsertest.cc",
@@ -1611,12 +1609,21 @@ if (!is_android) {
       ]
     }
 
+    if (is_linux && !is_chromeos_lacros) {
+      sources += [
+        "../browser/chrome_main_browsertest.cc",
+        "../browser/process_singleton_browsertest.cc",
+      ]
+    }
+
     if (is_chromeos) {
       sources += [
+        "../browser/chrome_main_browsertest.cc",
         "../browser/chromeos/login/saml/test_client_cert_saml_idp_mixin.cc",
         "../browser/chromeos/login/saml/test_client_cert_saml_idp_mixin.h",
         "../browser/chromeos/scoped_test_system_nss_key_slot_mixin.cc",
         "../browser/chromeos/scoped_test_system_nss_key_slot_mixin.h",
+        "../browser/process_singleton_browsertest.cc",
         "../browser/sessions/session_restore_browsertest_chromeos.cc",
         "../browser/ui/browser_navigator_browsertest_chromeos.cc",
         "../browser/ui/settings_window_manager_browsertest_chromeos.cc",
@@ -1628,8 +1635,10 @@ if (!is_android) {
 
     if (is_win) {
       sources += [
+        "../browser/chrome_main_browsertest.cc",
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
+        "../browser/process_singleton_browsertest.cc",
         "../browser/safe_browsing/chrome_cleaner/reporter_runner_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_corrupt_profiles_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_triggered_reset_browsertest_win.cc",
@@ -2952,9 +2961,6 @@ if (!is_android) {
         # Mac, which does not use hunspell by default.
         "../browser/spellchecker/spellcheck_service_browsertest.cc",
 
-        # ProcessSingletonMac doesn"t do anything.
-        "../browser/process_singleton_browsertest.cc",
-
         # TaskManagerView is not used or built on Mac.
         "../browser/ui/views/task_manager_view_browsertest.cc",
       ]
@@ -3087,7 +3093,7 @@ if (!is_android) {
       if (enable_extensions && !is_chromeos) {
         sources += [ "../browser/extensions/api/cloud_print_private/cloud_print_private_apitest.cc" ]
       }
-      if (!is_mac && !is_chromeos) {
+      if (!is_mac && !is_chromeos_ash && !is_chromeos_lacros) {
         sources += [
           # This test depends on GetCommandLineForRelaunch, which is not
           # available on Mac. It is also not intended to run on ChromeOS.
@@ -4868,10 +4874,10 @@ test("unit_tests") {
     }
   }
 
-  # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
-  if (chromeos_is_browser_only) {
+  if (is_chromeos_lacros) {
     assert(enable_native_notifications)
     sources += [
+      "../browser/lacros/lacros_chrome_service_delegate_impl_unittest.cc",
       "../browser/notifications/notification_platform_bridge_lacros_unittest.cc",
       "../common/chrome_paths_lacros_unittest.cc",
     ]

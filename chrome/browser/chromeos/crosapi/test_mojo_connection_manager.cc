@@ -9,11 +9,13 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/crosapi/ash_chrome_service_impl.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -30,6 +32,12 @@ class FakeEnvironmentProvider : public EnvironmentProvider {
   }
   mojom::DeviceMode GetDeviceMode() override {
     return crosapi::mojom::DeviceMode::kConsumer;
+  }
+  mojom::DefaultPathsPtr GetDefaultPaths() override {
+    mojom::DefaultPathsPtr paths = mojom::DefaultPaths::New();
+    base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &paths->documents);
+    base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &paths->downloads);
+    return paths;
   }
 };
 

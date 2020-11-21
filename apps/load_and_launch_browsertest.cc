@@ -38,6 +38,12 @@ namespace apps {
 
 namespace {
 
+constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
+
+// Lacros doesn't support launching with chrome already running. See the header
+// comment for InProcessBrowserTest::GetCommandLineForRelaunch().
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 const char* kSwitchesToCopy[] = {
     sandbox::policy::switches::kNoSandbox,
     switches::kUserDataDir,
@@ -55,10 +61,6 @@ const char* kSwitchesToCopy[] = {
     switches::kEnableFeatures,
     switches::kDisableFeatures,
 };
-
-constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
-
-}  // namespace
 
 // TODO(jackhou): Enable this test once it works on OSX. It currently does not
 // work for the same reason --app-id doesn't. See http://crbug.com/148465
@@ -99,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 }
 
 // TODO(jackhou): Enable this test once it works on OSX. It currently does not
-// work for the same reason --app-id doesn't. See http://crbug.com/148465
+// work for the same reason --app-id doesn't. See http://crbug.com/148465.
 #if defined(OS_MAC)
 #define MAYBE_LoadAndLaunchAppWithFile DISABLED_LoadAndLaunchAppWithFile
 #else
@@ -140,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   ASSERT_EQ(0, exit_code);
 }
 
-namespace {
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TestFixture that appends --load-and-launch-app with an app before calling
 // BrowserMain.
@@ -200,8 +202,6 @@ class LoadAndLaunchExtensionBrowserTest : public PlatformAppBrowserTest {
   }
 };
 
-}  // namespace
-
 // Case where Chrome is not running.
 IN_PROC_BROWSER_TEST_F(LoadAndLaunchPlatformAppBrowserTest,
                        LoadAndLaunchAppChromeNotRunning) {
@@ -237,4 +237,5 @@ IN_PROC_BROWSER_TEST_F(LoadAndLaunchExtensionBrowserTest,
                 kTestExtensionId, extensions::ExtensionRegistry::EVERYTHING));
 }
 
+}  // namespace
 }  // namespace apps

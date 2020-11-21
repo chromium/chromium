@@ -9,7 +9,12 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/test/content_test_suite_base.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/files/scoped_temp_dir.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Test suite for unit and browser tests. Creates services needed by both.
 // See also ChromeUnitTestSuite for additional services created for unit tests.
@@ -31,6 +36,11 @@ class ChromeTestSuite : public content::ContentTestSuiteBase {
 
   // Alternative path to browser binaries.
   base::FilePath browser_dir_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Used for download and documents path overrides.
+  base::ScopedTempDir scoped_temp_dir_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 #endif  // CHROME_TEST_BASE_CHROME_TEST_SUITE_H_

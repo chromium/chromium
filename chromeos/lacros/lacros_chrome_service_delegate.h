@@ -12,6 +12,12 @@
 
 class GURL;
 
+namespace crosapi {
+namespace mojom {
+class LacrosInitParams;
+}  // namespace mojom
+}  // namespace crosapi
+
 namespace chromeos {
 
 // Interface to inject Chrome dependent behavior into LacrosChromeServiceImpl
@@ -19,6 +25,10 @@ namespace chromeos {
 class LacrosChromeServiceDelegate {
  public:
   virtual ~LacrosChromeServiceDelegate() = default;
+
+  // Called during startup when |init_params| become available.
+  virtual void OnInitialized(
+      const crosapi::mojom::LacrosInitParams& init_params) = 0;
 
   // Opens a new browser window.
   virtual void NewWindow() = 0;

@@ -7,6 +7,7 @@
 #include "base/process/launch.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
@@ -16,10 +17,10 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 
-// These tests don't apply to the Mac version; see GetCommandLineForRelaunch
+// These tests don't apply to Mac or Lacros; see GetCommandLineForRelaunch
 // for details.
-#if defined(OS_MAC)
-#error This test file should not be part of the Mac build.
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#error Not supported on this platform.
 #endif
 
 namespace {

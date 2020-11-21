@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 
@@ -29,23 +30,17 @@ void GetUserCacheDirectory(const base::FilePath& profile_dir,
 }
 
 bool GetUserDocumentsDirectory(base::FilePath* result) {
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    *result = base::FilePath(crosapi::kMyFilesPath);
-  } else {
-    // For developers on Linux desktop, just pick a reasonable default.
-    *result = base::GetHomeDir().Append("Documents");
-  }
-  return true;
+  // NOTE: Lacros overrides the path with a value from ash early in startup. See
+  // crosapi::mojom::LacrosInitParams.
+  LOG(FATAL) << "Path not initialized";
+  return false;
 }
 
 bool GetUserDownloadsDirectorySafe(base::FilePath* result) {
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    *result = base::FilePath(crosapi::kDefaultDownloadsPath);
-  } else {
-    // For developers on Linux desktop, just pick a reasonable default.
-    *result = base::GetHomeDir().Append("Downloads");
-  }
-  return true;
+  // NOTE: Lacros overrides the path with a value from ash early in startup. See
+  // crosapi::mojom::LacrosInitParams.
+  LOG(FATAL) << "Path not initialized";
+  return false;
 }
 
 bool GetUserDownloadsDirectory(base::FilePath* result) {

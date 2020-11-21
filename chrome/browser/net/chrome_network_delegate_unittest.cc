@@ -86,6 +86,15 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_FALSE(IsAccessAllowed("/profile/GCache/v2", "/profile"));
   EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/GCache/v2/id/Logs", ""));
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/1150575): The block below seems wrong. We should
+  // probably explicitly allow GetHomeDir().Append("Downloads") in
+  // ChromeNetworkDelegate::IsAccessAllowed on linux-chromeos. The default
+  // download directory should always be accessible, whether on linux-chromeos
+  // or device. The EXPECT_FALSE currently fails because ChromeTestSuite
+  // overrides DIR_USER_DOWNLOADS with a temp dir, which is under /tmp, which is
+  // always allowed.
+
   // $HOME/Downloads is allowed for linux-chromeos, but not on devices.
   const std::string& home_downloads =
       DownloadPrefs::GetDefaultDownloadDirectory().value();
@@ -94,6 +103,7 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
     base::test::ScopedRunningOnChromeOS running_on_chromeos;
     EXPECT_FALSE(IsAccessAllowed(home_downloads, ""));
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #elif defined(OS_ANDROID)
   // Android allows the following directories.

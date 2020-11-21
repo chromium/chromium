@@ -540,7 +540,7 @@ void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
   browser->window()->Show();
 }
 
-#if !defined(OS_MAC)
+#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 base::CommandLine InProcessBrowserTest::GetCommandLineForRelaunch() {
   base::CommandLine new_command_line(
       base::CommandLine::ForCurrentProcess()->GetProgram());
@@ -561,7 +561,7 @@ base::CommandLine InProcessBrowserTest::GetCommandLineForRelaunch() {
   }
   return new_command_line;
 }
-#endif
+#endif  // !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 base::FilePath InProcessBrowserTest::GetChromeTestDataDir() const {
   return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));

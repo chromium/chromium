@@ -12,6 +12,7 @@ import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/device/public/mojom/hid.mojom";
@@ -129,6 +130,22 @@ enum DeviceMode {
   kDemo,
 };
 
+// Default directories on the system.
+[Stable]
+struct DefaultPaths {
+  // The default (non-configurable) directory for documents. For example,
+  // /home/chronos/u-<hash>/MyFiles. We send the full path for future
+  // compatibility, to avoid assumptions about where on disk the directory is
+  // located.
+  mojo_base.mojom.FilePath documents@0;
+
+  // The default (non-configurable) directory for downloads. For example,
+  // /home/chronos/u-<hash>/MyFiles/Downloads.  We send the full path for future
+  // compatibility, to avoid assumptions about where on disk the directory is
+  // located.
+  mojo_base.mojom.FilePath downloads@1;
+};
+
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,
 // which is passed from ash-chrome to lacros-chrome. Since ash-chrome and
 // lacros-chrome may have different versions, lacros-chrome must handle this
@@ -181,6 +198,11 @@ struct LacrosInitParams {
   // Added in M88.
   [MinVersion=5]
   map<mojo_base.mojom.Token, uint32>? interface_versions@5;
+
+  // Default directories on the system.
+  // Added in M89.
+  [MinVersion=6]
+  DefaultPaths? default_paths@6;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and

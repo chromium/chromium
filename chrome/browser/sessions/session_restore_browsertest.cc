@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -1479,10 +1480,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ActiveIndexUpdatedAtInsert) {
   ASSERT_EQ(new_browser->tab_strip_model()->active_index(), 1);
 }
 
-#if !defined(OS_CHROMEOS) && !defined(OS_MAC)
-// This test doesn't apply to the Mac version; see GetCommandLineForRelaunch
+#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
+    !BUILDFLAG(IS_CHROMEOS_ASH)
+// This test doesn't apply to Mac or Lacros; see GetCommandLineForRelaunch
 // for details. It was disabled for a long time so might never have worked on
-// ChromeOS.
+// Chrome OS Ash.
 
 // Launches an app window, closes tabbed browser, launches and makes sure
 // we restore the tabbed browser url.
@@ -1511,7 +1513,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
             new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-#endif  // !defined(OS_CHROMEOS) && !defined(OS_MAC)
+#endif  // !!defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Creates two windows, closes one, restores, make sure only one window open.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TwoWindowsCloseOneRestoreOnlyOne) {

@@ -13,10 +13,6 @@ COMPONENT_EXPORT(CROSAPI) extern const char kLacrosAppIdPrefix[];
 
 COMPONENT_EXPORT(CROSAPI) extern const char kHomeChronosUserPath[];
 
-COMPONENT_EXPORT(CROSAPI) extern const char kMyFilesPath[];
-
-COMPONENT_EXPORT(CROSAPI) extern const char kDefaultDownloadsPath[];
-
 COMPONENT_EXPORT(CROSAPI) extern const char kLacrosUserDataPath[];
 
 COMPONENT_EXPORT(CROSAPI) extern const char kChromeOSReleaseTrack[];

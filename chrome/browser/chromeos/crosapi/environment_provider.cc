@@ -4,9 +4,13 @@
 
 #include "chrome/browser/chromeos/crosapi/environment_provider.h"
 
+#include "base/files/file_util.h"
+#include "base/system/sys_info.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user.h"
@@ -53,6 +57,31 @@ mojom::DeviceMode EnvironmentProvider::GetDeviceMode() {
     case policy::DEVICE_MODE_DEMO:
       return mojom::DeviceMode::kDemo;
   }
+}
+
+mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
+  mojom::DefaultPathsPtr default_paths = mojom::DefaultPaths::New();
+  // The default paths belong to ash's primary user profile. Lacros does not
+  // support multi-signin.
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    // Typically /home/chronos/u-<hash>/MyFiles.
+    default_paths->documents =
+        file_manager::util::GetMyFilesFolderForProfile(profile);
+    // Typically /home/chronos/u-<hash>/MyFiles/Downloads.
+    default_paths->downloads =
+        file_manager::util::GetDownloadsFolderForProfile(profile);
+  } else {
+    // On developer linux workstations the above functions do path mangling to
+    // support multi-signin which gets undone later in ash-specific code. This
+    // is awkward for Lacros development, so just provide some defaults.
+    base::FilePath home = base::GetHomeDir();
+    default_paths->documents = home.Append("Documents");
+    default_paths->downloads = home.Append("Downloads");
+  }
+  return default_paths;
 }
 
 }  // namespace crosapi

@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -19,9 +20,11 @@
 #include "content/public/test/browser_test.h"
 #include "net/base/filename_util.h"
 
-// These tests don't apply to the Mac version; see GetCommandLineForRelaunch
+// These tests don't apply to Mac or Lacros; see GetCommandLineForRelaunch
 // for details.
-#if !defined(OS_MAC)
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#error Not supported on this platform.
+#endif
 
 class ChromeMainTest : public InProcessBrowserTest {
  public:
@@ -112,5 +115,3 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(profile));
 }
-
-#endif  // !OS_MAC

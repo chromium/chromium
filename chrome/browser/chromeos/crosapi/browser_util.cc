@@ -83,6 +83,7 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
   params->session_type = environment_provider->GetSessionType();
   params->device_mode = environment_provider->GetDeviceMode();
   params->interface_versions = GetInterfaceVersions();
+  params->default_paths = environment_provider->GetDefaultPaths();
 
   return params;
 }

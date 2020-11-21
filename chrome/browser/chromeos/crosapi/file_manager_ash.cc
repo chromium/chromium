@@ -20,6 +20,8 @@ namespace {
 // Lacros does not support multi-signin. Lacros uses /home/chronos/user as the
 // base for all system-level directories but the file manager expects the raw
 // profile path with the /home/chronos/u-{hash} prefix. Clean up the path.
+// TODO(https://crbug.com/1150702): Delete this function after all Lacros
+// clients are on M89. Lacros is switching to use the raw profile path.
 base::FilePath ExpandPath(Profile* primary_profile,
                           const base::FilePath& path) {
   return file_manager::util::ReplacePathPrefix(
