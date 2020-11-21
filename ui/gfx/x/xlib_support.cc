@@ -50,6 +50,11 @@ void SetXlibErrorHandler() {
 }
 
 DISABLE_CFI_ICALL
+void XlibFree(void* data) {
+  GetXlibLoader()->XFree(data);
+}
+
+DISABLE_CFI_ICALL
 XlibDisplay::XlibDisplay(const std::string& address) {
   InitXlib();
 

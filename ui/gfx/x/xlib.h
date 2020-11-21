@@ -12,6 +12,7 @@ int XCloseDisplay(struct _XDisplay*);
 int XFlush(struct _XDisplay*);
 int XSynchronize(struct _XDisplay*, int);
 int XSetErrorHandler(int (*)(void*, void*));
+void XFree(void*);
 }
 
 #endif  // UI_GFX_X_XLIB_H_

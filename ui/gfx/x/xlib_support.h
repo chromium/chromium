@@ -32,6 +32,9 @@ COMPONENT_EXPORT(X11) void InitXlib();
 // Sets an async error handler which only logs an error message.
 COMPONENT_EXPORT(X11) void SetXlibErrorHandler();
 
+// Wraps XFree().
+COMPONENT_EXPORT(X11) void XlibFree(void* data);
+
 // A scoped Xlib display.
 class COMPONENT_EXPORT(X11) XlibDisplay {
  public:
