@@ -638,25 +638,25 @@ void BrowserAccessibilityManager::ActivateFindInPageResult(int request_id) {
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(
-    BrowserAccessibility* focus) const {
-  if (!focus)
+    BrowserAccessibility* node) const {
+  if (!node)
     return nullptr;
 
-  int32_t active_descendant_id;
+  ui::AXNode::AXID active_descendant_id;
   BrowserAccessibility* active_descendant = nullptr;
-  if (focus->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                             &active_descendant_id)) {
-    active_descendant = focus->manager()->GetFromID(active_descendant_id);
+  if (node->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                            &active_descendant_id)) {
+    active_descendant = node->manager()->GetFromID(active_descendant_id);
   }
 
-  // When getting the active descendant, we avoid calling IsInvisibleOrIgnored
-  // on the node because IsInvisibleOrIgnored takes the focused object into
-  // account by retrieving it. We already have the focused object, thus there is
-  // no need to re-retrieve it. Furthermore, doing so can lead to an infinite
-  // loop. Therefore just check the AXNodeData.
-
-  if (focus->GetRole() == ax::mojom::Role::kPopUpButton) {
-    BrowserAccessibility* child = focus->InternalGetFirstChild();
+  // When getting the active descendant, we avoid calling
+  // BrowserAccessibility::IsInvisibleOrIgnored on the node because
+  // IsInvisibleOrIgnored takes the focused object into account by retrieving
+  // it. We already have the focused object, thus there is no need to
+  // re-retrieve it. Furthermore, doing so can lead to an infinite loop.
+  // Therefore just check the AXNodeData.
+  if (node->GetRole() == ax::mojom::Role::kPopUpButton) {
+    BrowserAccessibility* child = node->InternalGetFirstChild();
     if (child && child->GetRole() == ax::mojom::Role::kMenuListPopup &&
         !child->GetData().IsInvisibleOrIgnored()) {
       // The active descendant is found on the menu list popup, i.e. on the
@@ -677,7 +677,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(
   if (active_descendant && !active_descendant->GetData().IsInvisibleOrIgnored())
     return active_descendant;
 
-  return focus;
+  return node;
 }
 
 bool BrowserAccessibilityManager::NativeViewHasFocus() {
@@ -714,7 +714,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFocus() const {
 
 BrowserAccessibility*
 BrowserAccessibilityManager::GetFocusFromThisOrDescendantFrame() const {
-  int32_t focus_id = GetTreeData().focus_id;
+  ui::AXNode::AXID focus_id = GetTreeData().focus_id;
   BrowserAccessibility* obj = GetFromID(focus_id);
   // If nothing is focused, then the top document has the focus.
   if (!obj)

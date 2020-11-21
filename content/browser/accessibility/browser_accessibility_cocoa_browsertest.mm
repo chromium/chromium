@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                <div tabindex="2" role="treeitem">2</div>
              </div>)HTML");
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
   waiter.WaitForNotification();
 
   BrowserAccessibility* tree = FindNode(ax::mojom::Role::kTree);
@@ -601,8 +601,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
       [ToBrowserAccessibilityCocoa(tree) retain]);
 
   NSArray* tree_children = [cocoa_tree children];
-  EXPECT_NSEQ(@"AXRow", [tree_children[0] role]);
-  EXPECT_NSEQ(@"AXRow", [tree_children[1] role]);
+  ASSERT_NSEQ(@"AXRow", [tree_children[0] role]);
+  ASSERT_NSEQ(@"AXRow", [tree_children[1] role]);
 
   content::RenderProcessHost* render_process_host =
       shell()->web_contents()->GetMainFrame()->GetProcess();
@@ -614,12 +614,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
       TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_filter.get());
 
   menu_filter->Reset();
-  gfx::Point item_1_point =
+  gfx::Point item_2_point =
       TriggerContextMenuAndGetMenuLocation(tree_children[1], menu_filter.get());
-  ASSERT_NE(tree_point, item_1_point);
+  EXPECT_NE(tree_point, item_2_point);
 
   // Now focus the second child and trigger a context menu on the tree.
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       content::ExecuteScript(shell()->web_contents(),
                              "document.body.children[0].children[1].focus();"));
   WaitForAccessibilityFocusChange();
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   menu_filter->Reset();
   gfx::Point new_point =
       TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_filter.get());
-  ASSERT_EQ(new_point, item_1_point);
+  EXPECT_EQ(new_point, item_2_point);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
@@ -734,8 +734,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
     EXPECT_EQ([second_child owner], [second_child actionTarget]);
     EXPECT_EQ(test.second, [second_child owner] == [parent actionTarget]);
 
-    // aria-activedescendant should take priority of focus for determining
-    // if an object is the action target.
+    // aria-activedescendant should take priority over focus for determining if
+    // an object is the action target.
     FocusAccessibilityElementAndWaitForFocusChange(first_child);
     EXPECT_EQ(test.second, [second_child owner] == [parent actionTarget]);
   }

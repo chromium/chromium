@@ -72,10 +72,6 @@ ui::AXTreeUpdate BrowserAccessibilityManagerMac::GetEmptyDocument() {
 
 BrowserAccessibility* BrowserAccessibilityManagerMac::GetFocus() const {
   BrowserAccessibility* focus = BrowserAccessibilityManager::GetFocus();
-  if (!focus)
-    return nullptr;
-
-  // Otherwise, follow the active descendant.
   return GetActiveDescendant(focus);
 }
 

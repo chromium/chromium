@@ -122,10 +122,6 @@ id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
 // on the characteristics of this accessibility node.
 - (content::BrowserAccessibility*)actionTarget;
 
-// Return the active descendant for this accessibility object or null if there
-// is no active descendant defined or in the case of an error.
-- (content::BrowserAccessibility*)activeDescendant;
-
 // Internally-used property.
 @property(nonatomic, readonly) NSPoint origin;
 
