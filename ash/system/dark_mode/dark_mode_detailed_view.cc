@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/dark_mode/dark_mode_detailed_view.h"
+#include <cstddef>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -120,8 +121,10 @@ const char* DarkModeDetailedView::GetClassName() const {
 
 void DarkModeDetailedView::OnThemeChanged() {
   TrayDetailedView::OnThemeChanged();
-  themed_label_->SetEnabledColor(GetLabelColor());
-  neutral_label_->SetEnabledColor(GetLabelColor());
+  TrayPopupUtils::SetLabelFontList(themed_label_,
+                                   TrayPopupUtils::FontStyle::kSystemInfo);
+  TrayPopupUtils::SetLabelFontList(neutral_label_,
+                                   TrayPopupUtils::FontStyle::kSystemInfo);
   TrayPopupUtils::UpdateToggleButtonColors(toggle_);
 }
 

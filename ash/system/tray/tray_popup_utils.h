@@ -38,7 +38,9 @@ class TrayPopupUtils {
   enum class FontStyle {
     // Topmost header rows for default view and detailed view.
     kTitle,
-    // Topmost header rows for secondary tray bubbles.
+    // Topmost header for secondary tray bubbles
+    kPodMenuHeader,
+    // Small title used for selections in tray bubbles.
     kSmallTitle,
     // Text in sub-section header rows in detailed views.
     kSubHeader,

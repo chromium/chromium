@@ -369,21 +369,30 @@ void TrayPopupUtils::UpdateToggleButtonColors(views::ToggleButton* toggle) {
 
 void TrayPopupUtils::SetLabelFontList(views::Label* label, FontStyle style) {
   label->SetAutoColorReadabilityEnabled(false);
-  const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
+  const gfx::FontList google_sans_font_list({"Google Sans"}, gfx::Font::NORMAL,
+                                            16, gfx::Font::Weight::MEDIUM);
+  const gfx::FontList roboto_font_list({"Roboto"}, gfx::Font::NORMAL, 16,
+                                       gfx::Font::Weight::MEDIUM);
+
   switch (style) {
     case FontStyle::kTitle:
-      label->SetFontList(base_font_list.Derive(8, gfx::Font::NORMAL,
-                                               gfx::Font::Weight::MEDIUM));
+      label->SetFontList(google_sans_font_list);
+      break;
+    case FontStyle::kPodMenuHeader:
+      label->SetFontList(roboto_font_list);
       break;
     case FontStyle::kSubHeader:
-      label->SetFontList(base_font_list.Derive(4, gfx::Font::NORMAL,
-                                               gfx::Font::Weight::MEDIUM));
+      label->SetFontList(roboto_font_list.Derive(-1, gfx::Font::NORMAL,
+                                                 gfx::Font::Weight::MEDIUM));
       break;
     case FontStyle::kSmallTitle:
+      label->SetFontList(roboto_font_list.Derive(-3, gfx::Font::NORMAL,
+                                                 gfx::Font::Weight::MEDIUM));
+      break;
     case FontStyle::kDetailedViewLabel:
     case FontStyle::kSystemInfo:
-      label->SetFontList(base_font_list.Derive(1, gfx::Font::NORMAL,
-                                               gfx::Font::Weight::NORMAL));
+      label->SetFontList(roboto_font_list.Derive(-4, gfx::Font::NORMAL,
+                                                 gfx::Font::Weight::NORMAL));
       break;
   }
 }

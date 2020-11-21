@@ -105,7 +105,7 @@ class TitleView : public views::View {
     title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     TrayPopupUtils::SetLabelFontList(title_label,
-                                     TrayPopupUtils::FontStyle::kSmallTitle);
+                                     TrayPopupUtils::FontStyle::kPodMenuHeader);
     layout_ptr->SetFlexForView(title_label, 1);
     help_button_ = AddChildView(std::make_unique<TopShortcutButton>(
         base::BindRepeating(

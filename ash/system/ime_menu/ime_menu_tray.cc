@@ -135,7 +135,7 @@ class ImeTitleView : public views::View {
     title_label->SetEnabledColor(color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     TrayPopupUtils::SetLabelFontList(title_label,
-                                     TrayPopupUtils::FontStyle::kSubHeader);
+                                     TrayPopupUtils::FontStyle::kPodMenuHeader);
     layout_ptr->SetFlexForView(title_label, 1);
 
     settings_button_ = AddChildView(std::make_unique<TopShortcutButton>(
