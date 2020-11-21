@@ -8,12 +8,12 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display_host.h"
-#include "chrome/browser/chromeos/scoped_set_running_on_chromeos_for_testing.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -207,7 +207,7 @@ TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchWhenTestimageInLsbRelease) {
   EXPECT_TRUE(
       base::Time::FromString("Wed, 24 Oct 2018 12:00:00 PDT", &release_time));
 
-  ScopedSetRunningOnChromeOSForTesting version_info(lsb_release, release_time);
+  base::test::ScopedChromeOSVersionInfo version_info(lsb_release, release_time);
 
   ExpectDemoModeWillNotLaunch();
 

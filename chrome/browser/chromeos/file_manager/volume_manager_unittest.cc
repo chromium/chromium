@@ -17,13 +17,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
 #include "chrome/browser/chromeos/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/chromeos/file_system_provider/service.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/scoped_set_running_on_chromeos_for_testing.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -44,9 +44,6 @@ using chromeos::disks::DiskMountManager;
 
 namespace file_manager {
 namespace {
-const char kLsbRelease[] =
-    "CHROMEOS_RELEASE_NAME=Chrome OS\n"
-    "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
 
 class LoggingObserver : public VolumeManagerObserver {
  public:
@@ -1007,8 +1004,7 @@ TEST_F(VolumeManagerTest, GetVolumeList) {
 
 TEST_F(VolumeManagerTest, VolumeManagerInitializeMyFilesVolume) {
   // Emulate running inside ChromeOS.
-  chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
-                                                              base::Time());
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
   volume_manager()->Initialize();  // Adds "Downloads"
   std::vector<base::WeakPtr<Volume>> volume_list =
       volume_manager()->GetVolumeList();

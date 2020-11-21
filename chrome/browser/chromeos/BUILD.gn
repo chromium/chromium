@@ -3198,8 +3198,6 @@ static_library("test_support") {
     "policy/minimum_version_policy_test_helpers.h",
     "printing/printing_stubs.cc",
     "printing/printing_stubs.h",
-    "scoped_set_running_on_chromeos_for_testing.cc",
-    "scoped_set_running_on_chromeos_for_testing.h",
     "secure_channel/fake_nearby_connection_broker.cc",
     "secure_channel/fake_nearby_connection_broker.h",
     "secure_channel/fake_nearby_endpoint_finder.cc",

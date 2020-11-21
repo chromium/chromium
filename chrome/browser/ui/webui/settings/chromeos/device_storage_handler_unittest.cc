@@ -12,11 +12,11 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/chromeos/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/scoped_set_running_on_chromeos_for_testing.h"
 #include "chrome/browser/ui/webui/settings/chromeos/calculator/size_calculator_test_api.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_storage_handler.h"
 #include "chrome/common/chrome_paths.h"
@@ -37,10 +37,6 @@ namespace chromeos {
 namespace settings {
 
 namespace {
-
-const char kLsbRelease[] =
-    "CHROMEOS_RELEASE_NAME=Chrome OS\n"
-    "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
 
 class TestStorageHandler : public StorageHandler {
  public:
@@ -104,8 +100,7 @@ class StorageHandlerTest : public testing::Test {
     // Create and register My files directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
     // profile's temporary location instead of $HOME/Downloads.
-    chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
-                                                                base::Time());
+    base::test::ScopedRunningOnChromeOS running_on_chromeos;
     const base::FilePath my_files_path =
         file_manager::util::GetMyFilesFolderForProfile(profile_);
     CHECK(base::CreateDirectory(my_files_path));

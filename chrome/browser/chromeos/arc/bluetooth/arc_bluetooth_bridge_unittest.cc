@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
 #include "components/arc/bluetooth/bluetooth_type_converters.h"
 #include "components/arc/mojom/bluetooth.mojom.h"
@@ -120,8 +121,6 @@ class ArcBluetoothBridgeTest : public testing::Test {
     fake_bluetooth_instance_ = std::make_unique<FakeBluetoothInstance>();
     arc_bridge_service_->bluetooth()->SetInstance(
         fake_bluetooth_instance_.get(), 17);
-    base::SysInfo::SetChromeOSVersionInfoForTest(
-        "CHROMEOS_ARC_ANDROID_SDK_VERSION=28", base::Time::Now());
     WaitForInstanceReady(arc_bridge_service_->bluetooth());
 
     device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
@@ -279,6 +278,9 @@ TEST_F(ArcBluetoothBridgeTest, DeviceFound) {
 // Invoke OnDiscoveryStarted to send cached device to BT instance,
 // and check correctness of the Advertising data sent via arc bridge.
 TEST_F(ArcBluetoothBridgeTest, LEDeviceFound) {
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_ARC_ANDROID_SDK_VERSION=28", base::Time::Now());
+
   EXPECT_EQ(0u, fake_bluetooth_instance_->le_device_found_data().size());
   AddTestDevice();
   EXPECT_EQ(3u, fake_bluetooth_instance_->le_device_found_data().size());
@@ -300,8 +302,9 @@ TEST_F(ArcBluetoothBridgeTest, LEDeviceFound) {
 }
 
 TEST_F(ArcBluetoothBridgeTest, LEDeviceFoundForN) {
-  base::SysInfo::SetChromeOSVersionInfoForTest(
+  base::test::ScopedChromeOSVersionInfo version(
       "CHROMEOS_ARC_ANDROID_SDK_VERSION=27", base::Time::Now());
+
   EXPECT_EQ(0u, fake_bluetooth_instance_->le_device_found_data().size());
   AddTestDevice();
   EXPECT_EQ(3u, fake_bluetooth_instance_->le_device_found_data().size());

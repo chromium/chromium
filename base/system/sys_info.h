@@ -161,9 +161,13 @@ class BASE_EXPORT SysInfo {
   // Returns true when actually running in a Chrome OS environment.
   static bool IsRunningOnChromeOS();
 
-  // Test method to force re-parsing of lsb-release.
+  // Overrides |lsb_release| and |lsb_release_time|. Overrides cannot be nested.
+  // Call ResetChromeOSVersionInfoForTest() to restore the previous values.
   static void SetChromeOSVersionInfoForTest(const std::string& lsb_release,
                                             const Time& lsb_release_time);
+
+  // Undoes the function above.
+  static void ResetChromeOSVersionInfoForTest();
 
   // Returns the kernel version of the host operating system.
   static std::string KernelVersion();

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
+#include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/scoped_set_running_on_chromeos_for_testing.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -48,10 +48,6 @@ using storage::FileSystemURL;
 namespace file_manager {
 namespace util {
 namespace {
-
-const char kLsbRelease[] =
-    "CHROMEOS_RELEASE_NAME=Chrome OS\n"
-    "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
 
 class FileManagerPathUtilTest : public testing::Test {
  public:
@@ -93,8 +89,7 @@ TEST_F(FileManagerPathUtilTest, GetMyFilesFolderForProfile) {
             GetDownloadsFolderForProfile(profile_.get()));
 
   // When running inside ChromeOS, it should return /home/u-{hash}/MyFiles.
-  chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
-                                                              base::Time());
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
   EXPECT_EQ("/home/chronos/u-0123456789abcdef/MyFiles",
             GetMyFilesFolderForProfile(profile_.get()).value());
   EXPECT_EQ("/home/chronos/u-0123456789abcdef/MyFiles/Downloads",
@@ -208,8 +203,7 @@ TEST_F(FileManagerPathUtilTest, MigrateFromDownlaodsToMyFiles) {
   base::FilePath myfilesDownloadsFile =
       home.Append("MyFiles/Downloads/file.txt");
   base::FilePath other("/some/other/path");
-  chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
-                                                              base::Time());
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
   // MyFilesVolume enabled, migrate paths under Downloads.
   EXPECT_TRUE(
       MigrateFromDownloadsToMyFiles(profile_.get(), downloads, &result));
@@ -230,8 +224,7 @@ TEST_F(FileManagerPathUtilTest, MigrateFromDownlaodsToMyFiles) {
 TEST_F(FileManagerPathUtilTest, MultiProfileDownloadsFolderMigration) {
   // MigratePathFromOldFormat is explicitly disabled on Linux build.
   // So we need to fake that this is real ChromeOS system.
-  chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
-                                                              base::Time());
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
 
   // /home/chronos/u-${HASH}/MyFiles/Downloads
   const FilePath kDownloadsFolder =
@@ -688,8 +681,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Removable) {
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyFiles) {
-  chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
-                                                              base::Time());
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
   GURL url;
   const base::FilePath myfiles = GetMyFilesFolderForProfile(
       chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
@@ -789,8 +781,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Removable) {
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MyFiles) {
-  chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
-                                                              base::Time());
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
   const base::FilePath myfiles = GetMyFilesFolderForProfile(
       chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));

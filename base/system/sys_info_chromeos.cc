@@ -12,7 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -156,11 +156,18 @@ class ChromeOSVersionInfo {
   bool is_running_on_chromeos_;
 };
 
-static LazyInstance<ChromeOSVersionInfo>::Leaky g_chrome_os_version_info =
-    LAZY_INSTANCE_INITIALIZER;
+bool g_use_chromeos_version_info_for_test = false;
 
 ChromeOSVersionInfo& GetChromeOSVersionInfo() {
-  return g_chrome_os_version_info.Get();
+  // ChromeOSVersionInfo only stores the parsed lsb-release values. We use a
+  // second instance for overrides in tests so we can cleanly restore the
+  // original lsb-release.
+  if (g_use_chromeos_version_info_for_test) {
+    static base::NoDestructor<ChromeOSVersionInfo> version_info_for_test;
+    return *version_info_for_test;
+  }
+  static base::NoDestructor<ChromeOSVersionInfo> version_info;
+  return *version_info;
 }
 
 }  // namespace
@@ -229,10 +236,18 @@ bool SysInfo::IsRunningOnChromeOS() {
 // static
 void SysInfo::SetChromeOSVersionInfoForTest(const std::string& lsb_release,
                                             const Time& lsb_release_time) {
+  DCHECK(!g_use_chromeos_version_info_for_test) << "Nesting is not allowed";
+  g_use_chromeos_version_info_for_test = true;
   std::unique_ptr<Environment> env(Environment::Create());
   env->SetVar(kLsbReleaseKey, lsb_release);
   env->SetVar(kLsbReleaseTimeKey, NumberToString(lsb_release_time.ToDoubleT()));
-  g_chrome_os_version_info.Get().Parse();
+  GetChromeOSVersionInfo().Parse();
+}
+
+// static
+void SysInfo::ResetChromeOSVersionInfoForTest() {
+  DCHECK(g_use_chromeos_version_info_for_test);
+  g_use_chromeos_version_info_for_test = false;
 }
 
 // static

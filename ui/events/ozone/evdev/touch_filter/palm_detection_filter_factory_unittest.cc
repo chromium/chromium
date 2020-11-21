@@ -6,7 +6,7 @@
 
 #include <linux/input.h>
 
-#include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -53,20 +53,26 @@ class PalmDetectionFilterFactoryDeathTest
 
 #if defined(OS_CHROMEOS)
 TEST_F(PalmDetectionFilterFactoryTest, RadiusesFromLSBRelease) {
-  std::string lsb_release = "CHROMEOS_RELEASE_BOARD=hatch\n";
-  base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time());
-  EXPECT_EQ("0.1010944, 3.51837568", internal::FetchNeuralPalmRadiusPolynomial(
-                                         kohaku_touchscreen_info_, ""));
-
-  lsb_release = "CHROMEOS_RELEASE_BOARD=reef\n";
-  base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time());
-  EXPECT_EQ("0.17889799, 4.22584412", internal::FetchNeuralPalmRadiusPolynomial(
-                                          kohaku_touchscreen_info_, ""));
-
-  lsb_release = "CHROMEOS_RELEASE_BOARD=octopus\n";
-  base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time());
-  EXPECT_EQ("", internal::FetchNeuralPalmRadiusPolynomial(
-                    kohaku_touchscreen_info_, ""));
+  {
+    base::test::ScopedChromeOSVersionInfo version(
+        "CHROMEOS_RELEASE_BOARD=hatch\n", base::Time());
+    EXPECT_EQ("0.1010944, 3.51837568",
+              internal::FetchNeuralPalmRadiusPolynomial(
+                  kohaku_touchscreen_info_, ""));
+  }
+  {
+    base::test::ScopedChromeOSVersionInfo version(
+        "CHROMEOS_RELEASE_BOARD=reef\n", base::Time());
+    EXPECT_EQ("0.17889799, 4.22584412",
+              internal::FetchNeuralPalmRadiusPolynomial(
+                  kohaku_touchscreen_info_, ""));
+  }
+  {
+    base::test::ScopedChromeOSVersionInfo version(
+        "CHROMEOS_RELEASE_BOARD=octopus\n", base::Time());
+    EXPECT_EQ("", internal::FetchNeuralPalmRadiusPolynomial(
+                      kohaku_touchscreen_info_, ""));
+  }
 }
 #endif
 
