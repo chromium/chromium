@@ -129,11 +129,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     // Reset the input view URL to the default url of the current input method.
     void ResetInputViewUrl();
 
-    // Connect to an InputEngineManager instance in an IME Mojo service.
-    void ConnectMojoManager(
-        mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager>
-            receiver);
-
     // ------------------------- Data members.
     Profile* const profile;
 
@@ -187,8 +182,6 @@ class InputMethodManagerImpl : public InputMethodManager,
 
     InputMethodManager::UIStyle ui_style_ =
         InputMethodManager::UIStyle::kNormal;
-
-    std::unique_ptr<ImeServiceConnector> ime_service_connector_;
 
     // Do not forget to update StateImpl::InitFrom(const StateImpl& other) and
     // StateImpl::Dump() when adding new data members!!!
@@ -354,6 +347,12 @@ class InputMethodManagerImpl : public InputMethodManager,
   using EngineMap = std::map<std::string, ui::IMEEngineHandlerInterface*>;
   using ProfileEngineMap = std::map<Profile*, EngineMap, ProfileCompare>;
   ProfileEngineMap engine_map_;
+
+  // Map a profile to the IME service connector.
+  typedef std::
+      map<Profile*, std::unique_ptr<ImeServiceConnector>, ProfileCompare>
+          ImeServiceConnectorMap;
+  ImeServiceConnectorMap ime_service_connectors_;
 
   content::NotificationRegistrar notification_registrar_;
 

@@ -901,14 +901,6 @@ void InputMethodManagerImpl::StateImpl::ResetInputViewUrl() {
   input_view_url_overridden = false;
 }
 
-void InputMethodManagerImpl::StateImpl::ConnectMojoManager(
-    mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
-  if (!ime_service_connector_) {
-    ime_service_connector_ = std::make_unique<ImeServiceConnector>(profile);
-  }
-  ime_service_connector_->SetupImeService(std::move(receiver));
-}
-
 // ------------------------ InputMethodManagerImpl
 bool InputMethodManagerImpl::IsLoginKeyboard(
     const std::string& layout) const {
@@ -1197,7 +1189,15 @@ void InputMethodManagerImpl::ActivateInputMethodMenuItem(
 void InputMethodManagerImpl::ConnectInputEngineManager(
     mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
   DCHECK(state_);
-  state_->ConnectMojoManager(std::move(receiver));
+  ImeServiceConnectorMap::iterator iter =
+      ime_service_connectors_.find(state_->profile);
+  if (iter == ime_service_connectors_.end()) {
+    auto connector_ = std::make_unique<ImeServiceConnector>(state_->profile);
+    iter = ime_service_connectors_
+               .insert(std::make_pair(state_->profile, std::move(connector_)))
+               .first;
+  }
+  iter->second->SetupImeService(std::move(receiver));
 }
 
 bool InputMethodManagerImpl::IsISOLevel5ShiftUsedByCurrentInputMethod() const {
