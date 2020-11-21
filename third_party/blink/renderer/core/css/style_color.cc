@@ -22,8 +22,9 @@ Color StyleColor::Resolve(Color current_color,
 
 Color StyleColor::ResolveWithAlpha(Color current_color,
                                    mojom::blink::ColorScheme color_scheme,
-                                   int alpha) const {
-  Color color = Resolve(current_color, color_scheme);
+                                   int alpha,
+                                   bool is_forced_color) const {
+  Color color = Resolve(current_color, color_scheme, is_forced_color);
   return Color(color.Red(), color.Green(), color.Blue(), alpha);
 }
 

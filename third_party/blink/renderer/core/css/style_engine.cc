@@ -929,6 +929,7 @@ void StyleEngine::FontsNeedUpdate(FontSelector*, FontInvalidationReason) {
 
 void StyleEngine::PlatformColorsChanged() {
   UpdateForcedBackgroundColor();
+  UpdateColorSchemeBackground(/* color_scheme_changed */ true);
   if (resolver_)
     resolver_->InvalidateMatchedPropertiesCache();
   MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
@@ -2220,13 +2221,10 @@ void StyleEngine::UpdateColorScheme() {
   if (GetDocument().Printing())
     preferred_color_scheme_ = mojom::blink::PreferredColorScheme::kLight;
 
-  bool color_scheme_changed = false;
   if (forced_colors_ != old_forced_colors ||
       preferred_color_scheme_ != old_preferred_color_scheme) {
     PlatformColorsChanged();
-    color_scheme_changed = true;
   }
-  UpdateColorSchemeBackground(color_scheme_changed);
 
   UpdateColorSchemeMetrics();
 }

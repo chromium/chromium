@@ -79,9 +79,12 @@ class CORE_EXPORT StyleColor {
 
   // Resolve and override the resolved color's alpha channel as specified by
   // |alpha|.
+  // TODO(1081945):  Once CSSSystemColorComputeToSelf is enabled, we can remove
+  // |is_forced_color|.
   Color ResolveWithAlpha(Color current_color,
                          mojom::blink::ColorScheme color_scheme,
-                         int alpha) const;
+                         int alpha,
+                         bool is_forced_color = false) const;
 
   bool IsNumeric() const {
     return EffectiveColorKeyword() == CSSValueID::kInvalid;

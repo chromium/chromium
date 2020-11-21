@@ -3916,7 +3916,8 @@ const blink::Color InternalForcedBackgroundColor::ColorIncludingFallback(
   }
 
   return style.InternalForcedBackgroundColor().ResolveWithAlpha(
-      forced_current_color, style.UsedColorScheme(), alpha);
+      forced_current_color, style.UsedColorScheme(), alpha,
+      /* is_forced_color */ true);
 }
 
 const CSSValue*

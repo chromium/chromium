@@ -6072,7 +6072,7 @@
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/layout/layout_theme.h"],
-      default_value: "StyleColor(LayoutTheme::GetTheme().SystemColor(CSSValueID::kCanvas, mojom::blink::ColorScheme::kLight))",
+      default_value: "StyleColor(CSSValueID::kCanvas)",
       type_name: "StyleColor",
       computed_style_custom_functions: ["getter"],
       converter: "ConvertStyleColor",

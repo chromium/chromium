@@ -376,8 +376,11 @@ void Page::PlatformColorsChanged() {
   for (const Page* page : AllPages())
     for (Frame* frame = page->MainFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
-      if (auto* local_frame = DynamicTo<LocalFrame>(frame))
+      if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
         local_frame->GetDocument()->PlatformColorsChanged();
+        if (LayoutView* view = local_frame->ContentLayoutObject())
+          view->InvalidatePaintForViewAndDescendants();
+      }
     }
 }
 
