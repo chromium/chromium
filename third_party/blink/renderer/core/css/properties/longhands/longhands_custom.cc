@@ -3747,8 +3747,13 @@ const blink::Color InternalVisitedOutlineColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(visited_link);
-  return style.InternalVisitedOutlineColor().Resolve(
-      style.GetInternalVisitedCurrentColor(), style.UsedColorScheme());
+  StyleColor visited_outline_color = style.InternalVisitedOutlineColor();
+  if (style.ShouldForceColor(visited_outline_color)) {
+    return To<Longhand>(GetCSSPropertyInternalForcedOutlineColor())
+        .ColorIncludingFallback(true, style);
+  }
+  return visited_outline_color.Resolve(style.GetInternalVisitedCurrentColor(),
+                                       style.UsedColorScheme());
 }
 
 const CSSValue* InternalVisitedOutlineColor::ParseSingleValue(
@@ -3909,6 +3914,36 @@ const CSSValue* InternalForcedBorderColor::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* InternalForcedBorderColor::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ConsumeColor(range, context,
+                                         IsQuirksModeBehavior(context.Mode()));
+}
+
+const blink::Color InternalForcedOutlineColor::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style) const {
+  blink::Color current_color = visited_link
+                                   ? style.GetInternalVisitedCurrentColor()
+                                   : style.GetCurrentColor();
+
+  return style.InternalForcedOutlineColor().Resolve(current_color,
+                                                    style.UsedColorScheme());
+}
+
+const CSSValue* InternalForcedOutlineColor::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  bool visited_link = allow_visited_style &&
+                      style.InsideLink() == EInsideLink::kInsideVisitedLink;
+  return cssvalue::CSSColorValue::Create(
+      ColorIncludingFallback(visited_link, style).Rgb());
+}
+
+const CSSValue* InternalForcedOutlineColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
@@ -4820,8 +4855,13 @@ const blink::Color OutlineColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(!visited_link);
-  return style.OutlineColor().Resolve(style.GetCurrentColor(),
-                                      style.UsedColorScheme());
+  StyleColor outline_color = style.OutlineColor();
+  if (style.ShouldForceColor(outline_color)) {
+    return To<Longhand>(GetCSSPropertyInternalForcedOutlineColor())
+        .ColorIncludingFallback(false, style);
+  }
+  return outline_color.Resolve(style.GetCurrentColor(),
+                               style.UsedColorScheme());
 }
 
 const CSSValue* OutlineColor::CSSValueFromComputedStyleInternal(
@@ -4829,13 +4869,18 @@ const CSSValue* OutlineColor::CSSValueFromComputedStyleInternal(
     const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
+  StyleColor outline_color = style.OutlineColor();
+  if (style.ShouldForceColor(outline_color)) {
+    return GetCSSPropertyInternalForcedOutlineColor().CSSValueFromComputedStyle(
+        style, nullptr, allow_visited_style);
+  }
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
   return allow_visited_style
              ? cssvalue::CSSColorValue::Create(
                    style.VisitedDependentColor(*this).Rgb())
              : ComputedStyleUtils::CurrentColorOrValidColor(
-                   style, style.OutlineColor(), CSSValuePhase::kUsedValue);
+                   style, outline_color, CSSValuePhase::kUsedValue);
 }
 
 const CSSValue* OutlineOffset::ParseSingleValue(

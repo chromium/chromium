@@ -575,7 +575,6 @@ void StyleCascade::ForceColors() {
     return;
 
   MaybeForceColor(GetCSSPropertyColor(), style->GetColor());
-  MaybeForceColor(GetCSSPropertyOutlineColor(), style->OutlineColor());
   MaybeForceColor(GetCSSPropertyTextDecorationColor(),
                   style->TextDecorationColor());
   MaybeForceColor(GetCSSPropertyColumnRuleColor(), style->ColumnRuleColor());
@@ -585,8 +584,6 @@ void StyleCascade::ForceColors() {
                   style->TextEmphasisColor());
   MaybeForceColor(GetCSSPropertyInternalVisitedColor(),
                   style->InternalVisitedColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedOutlineColor(),
-                  style->InternalVisitedOutlineColor());
   MaybeForceColor(GetCSSPropertyInternalVisitedTextDecorationColor(),
                   style->InternalVisitedTextDecorationColor());
   MaybeForceColor(GetCSSPropertyInternalVisitedColumnRuleColor(),

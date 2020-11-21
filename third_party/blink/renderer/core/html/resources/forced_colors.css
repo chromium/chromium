@@ -20,7 +20,7 @@
   }
 
   :focus {
-    outline-color: Highlight;
+    -internal-forced-outline-color: Highlight;
   }
 
   a:link,

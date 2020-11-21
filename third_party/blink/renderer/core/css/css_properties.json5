@@ -6095,6 +6095,19 @@
       style_builder_template: "color",
       valid_for_first_letter: true,
     },
+    {
+      name: "-internal-forced-outline-color",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
+      default_value: "StyleColor::CurrentColor()",
+      type_name: "StyleColor",
+      computed_style_custom_functions: ["getter"],
+      converter: "ConvertStyleColor",
+      style_builder_template: "color",
+      valid_for_cue: true,
+    },
 
     // Name: -internal-empty-line-height:
     // Value: none | fabricated
