@@ -4490,6 +4490,7 @@ void RenderFrameImpl::AbortClientNavigation() {
     mhtml_body_loader_client_.reset();
   }
   NotifyObserversOfFailedProvisionalLoad();
+  // See comment in header for more information of how navigation cleanup works.
   navigation_client_impl_.reset();
 }
 
@@ -6490,8 +6491,7 @@ void RenderFrameImpl::AbortCommitNavigation() {
   // This is only called by CommitFailedNavigation(), which should have already
   // reset any extant MHTMLBodyLoaderClient.
   DCHECK(!mhtml_body_loader_client_);
-  // Interface disconnection will trigger
-  // RenderFrameHostImpl::OnCrossDocumentCommitProcessed().
+  // See comment in header for more information of how navigation cleanup works.
   navigation_client_impl_.reset();
 }
 

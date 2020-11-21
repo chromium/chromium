@@ -1337,7 +1337,69 @@ class CONTENT_EXPORT RenderFrameImpl
   mojo::AssociatedReceiver<mojom::MhtmlFileWriter> mhtml_file_writer_receiver_{
       this};
 
-  // Only used when PerNavigationMojoInterface is enabled.
+  // There are two different kinds of NavigationClients, the request
+  // NavigationClient and the commit NavigationClient.
+  //
+  // ## Request NavigationClient ##
+  // Set if and only if the frame that initiated the navigation and the frame
+  // being navigated are both RenderFrameImpls in the same frame tree (i.e. the
+  // navigation does not ever go through a RenderFrameProxy). This has
+  // interesting implications for behavior differences between the two example
+  // frame trees below:
+  //
+  //   a.com           a.com
+  //     ↓               ↓
+  //   b.com       example.a.com
+  //
+  // Assuming the standard site-per-process allocation policy, though (a.com) is
+  // cross-origin to both (b.com) and (example.a.com):
+  //
+  // - (a.com) performing a navigation in (b.com) *will not* create a request
+  //   NavigationClient but
+  // - (a.com) performing a navigation in (example.a.com) *will* create a
+  // request
+  //
+  // Finally, note that the initiating RenderFrameImpl does *not* own the
+  // request NavigationClient. Rather, the RanderFrameImpl that the navigation
+  // *targets* is the RenderFrameImpl that owns the request NavigationClient.
+  //
+  // ## Commit NavigationClient ##
+  // Always set in the RenderFrameImpl that has been selected to commit a
+  // navigation. This selection happens when the NavigationRequest in the
+  // browser process reaches READY_TO_COMMIT.
+  //
+  // If a navigation will commit in the same RenderFrameImpl that owns the
+  // request NavigationClient, the request NavigationClient will be reused as
+  // the commit NavigationClient.
+  //
+  // ## Navigation Cancellation ##
+  // Cancellation is signalled by resetting the NavigationClient.  This will
+  // eventually trigger a connection error in the browser process, which
+  // normally invokes NavigationRequest::OnRendererAbortedNavigation().
+  //
+  // However, once the NavigationRequest reaches READY_TO_COMMIT in the browser
+  // process, *only* the commit NavigationClient may cancel the navigation. This
+  // has several implications:
+  //
+  // - Web APIs like window.stop() and document() use AbortClientNavigation().
+  //   However, once the NavigationRequest reaches READY_TO_COMMIT, cancellation
+  //   is only respected if the navigation reuses the same RenderFrameImpl;
+  //   otherwise, it is ignored.
+  //
+  //   Note that using RenderDocument means that all cross-document navigations
+  //   will use a provisional RenderFrameImpl: as such, all cross-document
+  //   navigations with RenderDocument will ignore cancellation after
+  //   READY_TO_COMMIT. This will be a compatibility issue for shipping
+  //   RenderDocument: see https://crbug.com/763106 for historical context.
+  //
+  // - If the frame is owned by an <object> element, CommitFailedNavigation()
+  //   will first trigger the fallback path (for remote frames, this
+  //   unconditionally sends the RenderFallbackContentInParentProcess() IPC; for
+  //   local frames, things are a bit more complicated...) before then
+  //   unconditionally calling AbortCommitNavigation() to ignore the commit.
+  //
+  //   TODO(dcheng): The browser side knows the owner type of the navigating
+  //   frame. Don't bother sending a commit at all in that case.
   std::unique_ptr<NavigationClient> navigation_client_impl_;
 
   // Creates various media clients.

@@ -596,7 +596,7 @@ bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
                                const GURL& expected_commit_url) {
   RenderFrameHost* rfh = adapter.render_frame_host();
   TestFrameNavigationObserver nav_observer(rfh);
-  if (!ExecJs(rfh, JsReplace("location = $1", url)))
+  if (!BeginNavigateToURLFromRenderer(adapter, url))
     return false;
   nav_observer.Wait();
   return nav_observer.last_committed_url() == expected_commit_url &&
@@ -614,6 +614,11 @@ bool NavigateToURLFromRendererWithoutUserGesture(
   }
   nav_observer.Wait();
   return nav_observer.last_committed_url() == url;
+}
+
+bool BeginNavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
+                                    const GURL& url) {
+  return ExecJs(adapter, JsReplace("location = $1", url));
 }
 
 bool NavigateIframeToURL(WebContents* web_contents,

@@ -157,6 +157,14 @@ WARN_UNUSED_RESULT bool NavigateToURLFromRendererWithoutUserGesture(
     const ToRenderFrameHost& adapter,
     const GURL& url);
 
+// Perform a renderer-initiated navigation of |window| to |url|. Unlike the
+// previous set of helpers, does not block. The navigation is done by assigning
+// location.href in the frame |adapter|. Returns the result of executing the IPC
+// to evaluate the JS that assigns location.href.
+WARN_UNUSED_RESULT bool BeginNavigateToURLFromRenderer(
+    const ToRenderFrameHost& adapter,
+    const GURL& url);
+
 // Navigate a frame with ID |iframe_id| to |url|, blocking until the navigation
 // finishes.  Uses a renderer-initiated navigation from script code in the
 // main frame.

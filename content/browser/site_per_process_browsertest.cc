@@ -10632,6 +10632,147 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Passes if there is no crash.
 }
 
+// Tests what happens if the renderer attempts to cancel a navigation after the
+// NavigationRequest has already reached READY_TO_COMMIT.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       CancelNavigationAfterReadyToCommit) {
+  class NavigationCanceller : public WebContentsObserver {
+   public:
+    NavigationCanceller(WebContents* web_contents,
+                        RenderFrameHost& requesting_rfh)
+        : WebContentsObserver(web_contents), requesting_rfh_(requesting_rfh) {}
+
+    // WebContentsObserver overrides:
+    void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+      // Cancel the navigation in the renderer, but don't wait for the
+      // reply. This is to ensure the browser process does not process any
+      // incoming messages and learn about the renderer's cancellation
+      // before the browser process dispatches a CommitNavigation() to the
+      // renderer.
+      ExecuteScriptAsync(&requesting_rfh_, "window.stop()");
+    }
+
+   private:
+    RenderFrameHost& requesting_rfh_;
+  };
+
+  // Set up a test page with a same-site child frame.
+  // TODO(dcheng): In the future, it might be useful to also have a test where
+  // the child frame is same-site but cross-origin, and have the parent
+  // initiate the navigation in the child frame.
+  GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // Now navigate the first child to another same-site page. Note that with
+  // subframe RenderDocument, this will create a speculative RFH.
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  GURL url2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  TestNavigationManager nav_manager(web_contents(), url2);
+  FrameTreeNode* first_child = root->child_at(0);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(
+      first_child->render_manager()->current_frame_host(), url2));
+
+  EXPECT_TRUE(nav_manager.WaitForResponse());
+
+  bool using_speculative_rfh =
+      !!first_child->render_manager()->speculative_frame_host();
+
+  NavigationCanceller canceller(
+      web_contents(), *first_child->render_manager()->current_frame_host());
+
+  nav_manager.WaitForNavigationFinished();
+  // The navigation should be committed if and only if it committed in a new
+  // RFH (i.e. if the navigation used a speculative RFH).
+  EXPECT_EQ(using_speculative_rfh, nav_manager.was_committed());
+}
+
+// Test that triggering fallback handling for <object> with an HTTP error does
+// not result in the renderer ignoring a `CommitNavigation()` IPC.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       CommitNavigationWithHTTPErrorInObjectTag) {
+  // TODO(https://crbug.com/1151424): This triggers a DCHECK() since the
+  // fallback path expects the frame (which is still provisional) to already be
+  // swapped in.
+  if (GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe)
+    return;
+
+  // Set up a test page with a same-site child frame hosted in an <object> tag.
+  // TODO(dcheng): In the future, it might be useful to also have a test where
+  // the child frame is same-site but cross-origin, and have the parent
+  // initiate the navigation in the child frame.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // There should be one nested browsing context.
+  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  // And there should be no fallback content displayed.
+  EXPECT_EQ("", EvalJs(web_contents(), "document.body.innerText"));
+
+  // Now navigate the first child to another same-site page that will result in
+  // a 404. Note that with subframe RenderDocument, this will create a
+  // speculative RFH.
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  GURL url2(embedded_test_server()->GetURL("a.com", "/page404.html"));
+  TestNavigationManager nav_manager(web_contents(), url2);
+  FrameTreeNode* first_child = root->child_at(0);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(
+      first_child->render_manager()->current_frame_host(), url2));
+
+  nav_manager.WaitForNavigationFinished();
+  // Though this test triggers fallback handling, the navigation itself should
+  // still be committed.
+  EXPECT_TRUE(nav_manager.was_committed());
+  // Despite the fact that this is an HTTP error, it still commits as a regular
+  // navigation and will be considered successful.
+  EXPECT_TRUE(nav_manager.was_successful());
+
+  // Note: Chrome is not compliant with the spec. An HTTP error triggers
+  // fallback content, which is supposed to discard the nested browsing
+  // context...
+  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
+}
+
+// Test that triggering fallback handling for <object> with a network error that
+// is routed via a `CommitFailedNavigation()` IPC ends up being ignored.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       CommitFailedNavigationInObjectTag) {
+  // Set up a test page with a same-site child frame hosted in an <object> tag.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // Now navigate the first child to another same-site page that will result in
+  // a network error. Note that with subframe RenderDocument, this will create a
+  // speculative RFH.
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  GURL error_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  std::unique_ptr<URLLoaderInterceptor> interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(error_url,
+                                                   net::ERR_CONNECTION_REFUSED);
+  TestNavigationManager nav_manager(web_contents(), error_url);
+  FrameTreeNode* first_child = root->child_at(0);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(
+      first_child->render_manager()->current_frame_host(), error_url));
+
+  // Note: this needs to be checked before `WaitForResponse()`, as the
+  // `CommitFailedNavigation()` IPC is sent somewhere inside
+  // `WaitForResponse()`.
+  bool using_speculative_rfh =
+      !!first_child->render_manager()->speculative_frame_host();
+  EXPECT_EQ(using_speculative_rfh,
+            GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
+
+  // Returns false the test server has already been shutdown.
+  EXPECT_FALSE(nav_manager.WaitForResponse());
+
+  nav_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  // Make sure that the speculative RFH has been cleaned up, if needed.
+  EXPECT_EQ(nullptr, first_child->render_manager()->speculative_frame_host());
+}
+
 #if defined(OS_ANDROID)
 
 namespace {
