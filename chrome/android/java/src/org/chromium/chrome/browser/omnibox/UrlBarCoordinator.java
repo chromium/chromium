@@ -37,8 +37,8 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
         int SELECT_END = 1;
     }
 
-    private final UrlBar mUrlBar;
-    private final UrlBarMediator mMediator;
+    private UrlBar mUrlBar;
+    private UrlBarMediator mMediator;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -65,6 +65,13 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
         mMediator = new UrlBarMediator(model, focusChangeCallback);
+    }
+
+    public void destroy() {
+        mMediator.destroy();
+        mMediator = null;
+        mUrlBar.destroy();
+        mUrlBar = null;
     }
 
     /** @see UrlBarMediator#addUrlTextChangeListener(UrlTextChangeListener) */

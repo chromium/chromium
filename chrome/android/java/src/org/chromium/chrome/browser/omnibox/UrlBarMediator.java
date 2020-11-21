@@ -79,6 +79,12 @@ class UrlBarMediator
         setUseDarkTextColors(true);
     }
 
+    public void destroy() {
+        mUrlTextChangeListeners.clear();
+        mTextChangedListeners.clear();
+        mOnFocusChangeCallback = (unused) -> {};
+    }
+
     /** Adds a listener for url text changes. */
     public void addUrlTextChangeListener(UrlTextChangeListener listener) {
         mUrlTextChangeListeners.add(listener);

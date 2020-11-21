@@ -669,7 +669,8 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      * need to be updated.
      */
     /* package */ void updateMicButtonState() {
-        mVoiceSearchEnabled = mVoiceRecognitionHandler.isVoiceSearchEnabled();
+        mVoiceSearchEnabled =
+                mVoiceRecognitionHandler != null && mVoiceRecognitionHandler.isVoiceSearchEnabled();
         updateButtonVisibility();
     }
 

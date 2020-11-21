@@ -198,7 +198,7 @@ public class AutocompleteController {
      * {@link #start(Profile,String, String, boolean)}.
      *
      * <p>
-     * Calling this method with {@code false}, will result in
+     * Calling this method with {@code true}, will result in
      * {@link #onSuggestionsReceived(AutocompleteResult, String, long)} being called with an empty
      * result set.
      *

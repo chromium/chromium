@@ -155,6 +155,7 @@ public final class LocationBarCoordinator
             mSubCoordinator.destroy();
             mSubCoordinator = null;
         }
+        mUrlCoordinator.destroy();
         mUrlCoordinator = null;
         mLocationBarLayout.removeUrlFocusChangeListener(mAutocompleteCoordinator);
         mAutocompleteCoordinator.destroy();

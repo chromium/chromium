@@ -223,7 +223,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     }
 
     public void destroy() {
-        stopAutocomplete(true);
+        stopAutocomplete(false);
         mDropdownViewInfoListBuilder.destroy();
         if (mTabObserver != null) {
             mTabObserver.destroy();

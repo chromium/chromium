@@ -222,12 +222,14 @@ public abstract class UrlBar extends AutocompleteEditText {
                 new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public void onLongPress(MotionEvent e) {
+                        if (mUrlBarDelegate == null) return;
                         mUrlBarDelegate.gestureDetected(true);
                         performLongClick();
                     }
 
                     @Override
                     public boolean onSingleTapUp(MotionEvent e) {
+                        if (mUrlBarDelegate == null) return true;
                         requestFocus();
                         mUrlBarDelegate.gestureDetected(false);
                         return true;
@@ -242,6 +244,15 @@ public abstract class UrlBar extends AutocompleteEditText {
         });
 
         ApiCompatibilityUtils.disableSmartSelectionTextClassifier(this);
+    }
+
+    public void destroy() {
+        setAllowFocus(false);
+        mUrlBarDelegate = null;
+        setOnFocusChangeListener(null);
+        mTextContextMenuDelegate = null;
+        mUrlTextChangeListener = null;
+        mTextChangedListener = null;
     }
 
     /**
@@ -340,7 +351,8 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @Override
     public View focusSearch(int direction) {
-        if (direction == View.FOCUS_BACKWARD && mUrlBarDelegate.getViewForUrlBackFocus() != null) {
+        if (mUrlBarDelegate != null && direction == View.FOCUS_BACKWARD
+                && mUrlBarDelegate.getViewForUrlBackFocus() != null) {
             return mUrlBarDelegate.getViewForUrlBackFocus();
         } else {
             return super.focusSearch(direction);
