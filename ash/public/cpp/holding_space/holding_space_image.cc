@@ -37,7 +37,7 @@ class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
 
     // When missing the cache, asynchronously resolve the bitmap for `scale`.
     async_bitmap_resolver_.Run(
-        gfx::ScaleToCeiledSize(placeholder_.size(), scale),
+        gfx::ScaleToCeiledSize(placeholder_.size(), scale), scale,
         base::BindOnce(&ImageSkiaSource::CacheImageForScale,
                        weak_factory_.GetWeakPtr(), scale));
 

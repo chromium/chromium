@@ -43,14 +43,7 @@ gfx::ImageSkia GetPlaceholderImage(HoldingSpaceItem::Type type,
   }
 
   const SkColor color = HoldingSpaceColorProvider::Get()->GetFileIconColor();
-
-  // NOTE: We superimpose the file type icon for `file_path` over a transparent
-  // bitmap in order to center it within the placeholder image at a fixed size.
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(size.width(), size.height());
-  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      gfx::ImageSkia::CreateFrom1xBitmap(bitmap),
-      GetIconForPath(file_path, color));
+  return CreatePlaceholderImage(GetIconForPath(file_path, color), size);
 }
 
 }  // namespace
@@ -190,11 +183,22 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
       base::BindRepeating(
           [](const base::WeakPtr<HoldingSpaceThumbnailLoader>& thumbnail_loader,
              const base::FilePath& file_path, const gfx::Size& size,
-             HoldingSpaceImage::BitmapCallback callback) {
+             float scale_factor, HoldingSpaceImage::BitmapCallback callback) {
             if (thumbnail_loader)
-              thumbnail_loader->Load({file_path, size}, std::move(callback));
+              thumbnail_loader->Load({file_path, size, scale_factor},
+                                     std::move(callback));
           },
           thumbnail_loader->GetWeakPtr(), file_path));
+}
+
+gfx::ImageSkia CreatePlaceholderImage(const gfx::ImageSkia& file_type_image,
+                                      const gfx::Size& size) {
+  // NOTE: We superimpose the file type icon for `file_path` over a transparent
+  // bitmap in order to center it within the placeholder image at a fixed size.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size.width(), size.height());
+  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      gfx::ImageSkia::CreateFrom1xBitmap(bitmap), file_type_image);
 }
 
 void SetNowForTesting(base::Optional<base::Time> now) {

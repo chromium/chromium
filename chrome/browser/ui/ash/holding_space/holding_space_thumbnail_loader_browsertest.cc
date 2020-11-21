@@ -166,7 +166,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadNonExistentItem) {
 
   base::RunLoop run_loop;
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kNonExistent), gfx::Size(48, 48));
+      GetTestPath(TestPath::kNonExistent), gfx::Size(48, 48),
+      /*scale_factor=*/1.0f);
   loader->Load(request,
                base::BindLambdaForTesting([&run_loop](const SkBitmap* bitmap) {
                  EXPECT_FALSE(bitmap);
@@ -180,14 +181,33 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadFolder) {
   ASSERT_TRUE(loader);
 
   base::RunLoop run_loop;
+  SkBitmap bitmap;
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kEmptyDir), gfx::Size(48, 48));
-  loader->Load(request,
-               base::BindLambdaForTesting([&run_loop](const SkBitmap* bitmap) {
-                 EXPECT_FALSE(bitmap);
-                 run_loop.Quit();
-               }));
+      GetTestPath(TestPath::kEmptyDir), gfx::Size(48, 48),
+      /*scale_factor=*/1.0f);
+  loader->Load(request, base::BindOnce(&CopyBitmapAndRunClosure,
+                                       run_loop.QuitClosure(), &bitmap));
   run_loop.Run();
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_EQ(48, bitmap.width());
+  EXPECT_EQ(48, bitmap.height());
+}
+
+IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadFolderScale2) {
+  ash::HoldingSpaceThumbnailLoader* loader = GetThumbnailLoader();
+  ASSERT_TRUE(loader);
+
+  base::RunLoop run_loop;
+  SkBitmap bitmap;
+  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
+      GetTestPath(TestPath::kEmptyDir), gfx::Size(48, 48),
+      /*scale_factor=*/2.0f);
+  loader->Load(request, base::BindOnce(&CopyBitmapAndRunClosure,
+                                       run_loop.QuitClosure(), &bitmap));
+  run_loop.Run();
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_EQ(48, bitmap.width());
+  EXPECT_EQ(48, bitmap.height());
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadJpg) {
@@ -197,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadJpg) {
   SkBitmap bitmap;
   base::RunLoop run_loop;
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kJpg), gfx::Size(48, 48));
+      GetTestPath(TestPath::kJpg), gfx::Size(48, 48), /*scale_factor=*/1.0f);
   loader->Load(request, base::BindOnce(&CopyBitmapAndRunClosure,
                                        run_loop.QuitClosure(), &bitmap));
   run_loop.Run();
@@ -213,7 +233,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadBrokenJpg) {
 
   base::RunLoop run_loop;
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kBrokenJpg), gfx::Size(48, 48));
+      GetTestPath(TestPath::kBrokenJpg), gfx::Size(48, 48),
+      /*scale_factor=*/1.0f);
   loader->Load(request,
                base::BindLambdaForTesting([&run_loop](const SkBitmap* bitmap) {
                  EXPECT_FALSE(bitmap);
@@ -229,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadPng) {
   SkBitmap bitmap;
   base::RunLoop run_loop;
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kPng), gfx::Size(48, 48));
+      GetTestPath(TestPath::kPng), gfx::Size(48, 48), /*scale_factor=*/1.0f);
   loader->Load(request, base::BindOnce(&CopyBitmapAndRunClosure,
                                        run_loop.QuitClosure(), &bitmap));
   run_loop.Run();
@@ -243,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, RepeatedLoads) {
   ASSERT_TRUE(loader);
 
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kPng), gfx::Size(48, 48));
+      GetTestPath(TestPath::kPng), gfx::Size(48, 48), /*scale_factor=*/1.0f);
 
   SkBitmap bitmap1;
   base::RunLoop run_loop1;
@@ -284,14 +305,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, ConcurentLoads) {
 
   SkBitmap bitmap1;
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request1(
-      GetTestPath(TestPath::kPng), gfx::Size(48, 48));
+      GetTestPath(TestPath::kPng), gfx::Size(48, 48), /*scale_factor=*/1.0f);
   base::RunLoop run_loop1;
   loader->Load(request1, base::BindOnce(&CopyBitmapAndRunClosure,
                                         run_loop1.QuitClosure(), &bitmap1));
 
   SkBitmap bitmap2;
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request2(
-      GetTestPath(TestPath::kPng), gfx::Size(96, 96));
+      GetTestPath(TestPath::kPng), gfx::Size(96, 96), /*scale_factor=*/2.0f);
   base::RunLoop run_loop2;
   loader->Load(request2, base::BindOnce(&CopyBitmapAndRunClosure,
                                         run_loop2.QuitClosure(), &bitmap2));
@@ -299,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, ConcurentLoads) {
   SkBitmap bitmap3;
   base::RunLoop run_loop3;
   ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request3(
-      GetTestPath(TestPath::kJpg), gfx::Size(48, 48));
+      GetTestPath(TestPath::kJpg), gfx::Size(48, 48), /*scale_factor=*/1.0f);
   loader->Load(request3, base::BindOnce(&CopyBitmapAndRunClosure,
                                         run_loop3.QuitClosure(), &bitmap3));
 

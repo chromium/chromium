@@ -24,8 +24,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   using BitmapCallback = base::OnceCallback<void(const SkBitmap*)>;
 
   // Returns a bitmap asynchronously for a given size.
-  using AsyncBitmapResolver =
-      base::RepeatingCallback<void(const gfx::Size&, BitmapCallback)>;
+  using AsyncBitmapResolver = base::RepeatingCallback<
+      void(const gfx::Size&, float scale_factor, BitmapCallback)>;
 
   HoldingSpaceImage(const gfx::ImageSkia& placeholder,
                     AsyncBitmapResolver async_bitmap_resolver);

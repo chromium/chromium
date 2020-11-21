@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
 
+#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
@@ -32,6 +35,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
@@ -43,6 +47,9 @@ namespace {
 // the image loader extension.
 constexpr char kNativeMessageHostName[] =
     "com.google.holding_space_thumbnail_loader";
+
+// The DIP size for the folder icon.
+const size_t kFolderIconDipSize = 20;
 
 using ThumbnailDataCallback = base::OnceCallback<void(const std::string& data)>;
 
@@ -189,8 +196,9 @@ HoldingSpaceThumbnailLoader::~HoldingSpaceThumbnailLoader() = default;
 
 HoldingSpaceThumbnailLoader::ThumbnailRequest::ThumbnailRequest(
     const base::FilePath& item_path,
-    const gfx::Size& size)
-    : item_path(item_path), size(size) {}
+    const gfx::Size& size,
+    float scale_factor)
+    : item_path(item_path), size(size), scale_factor(scale_factor) {}
 
 HoldingSpaceThumbnailLoader::ThumbnailRequest::~ThumbnailRequest() = default;
 
@@ -223,8 +231,16 @@ void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
     return;
   }
 
+  // Short-circuit icons for folders.
   if (file_info.is_directory) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        holding_space_util::CreatePlaceholderImage(
+            gfx::CreateVectorIcon(
+                chromeos::kFiletypeFolderIcon,
+                request.scale_factor * kFolderIconDipSize,
+                HoldingSpaceColorProvider::Get()->GetFileIconColor()),
+            request.size)
+            .bitmap());
     return;
   }
 

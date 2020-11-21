@@ -38,7 +38,9 @@ class HoldingSpaceThumbnailLoader {
 
   // Thumbnail request data that will be forwarded to the image loader.
   struct ThumbnailRequest {
-    ThumbnailRequest(const base::FilePath& item_path, const gfx::Size& size);
+    ThumbnailRequest(const base::FilePath& item_path,
+                     const gfx::Size& size,
+                     float scale_factor);
     ~ThumbnailRequest();
 
     // The absolute item file path.
@@ -46,6 +48,9 @@ class HoldingSpaceThumbnailLoader {
 
     // The desired bitmap size.
     const gfx::Size size;
+
+    // The scale factor for which the bitmap is being generated.
+    float scale_factor;
   };
 
   // Returns a weak pointer to this instance.

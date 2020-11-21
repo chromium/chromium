@@ -19,6 +19,11 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace gfx {
+class ImageSkia;
+class Size;
+}  // namespace gfx
+
 namespace ash {
 
 class HoldingSpaceImage;
@@ -73,6 +78,11 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
     HoldingSpaceThumbnailLoader* thumbnail_loader,
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path);
+
+// Given a base image for a file type, returns a placeholder image to be used in
+// the holding space UI.
+gfx::ImageSkia CreatePlaceholderImage(const gfx::ImageSkia& file_type_image,
+                                      const gfx::Size& size);
 
 void SetNowForTesting(base::Optional<base::Time> now);
 
