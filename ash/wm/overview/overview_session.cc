@@ -1215,6 +1215,7 @@ void OverviewSession::UpdateNoWindowsWidget() {
     params.name = "OverviewNoWindowsLabel";
     params.horizontal_padding = kNoItemsIndicatorHorizontalPaddingDp;
     params.vertical_padding = kNoItemsIndicatorVerticalPaddingDp;
+    params.rounding_dp = kNoItemsIndicatorRoundingDp;
     auto* color_provider = AshColorProvider::Get();
     params.background_color = color_provider->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent80);
@@ -1227,10 +1228,6 @@ void OverviewSession::UpdateNoWindowsWidget() {
     params.hide_in_mini_view = true;
     no_windows_widget_ = std::make_unique<RoundedLabelWidget>();
     no_windows_widget_->Init(std::move(params));
-    no_windows_widget_->GetLayer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kNoItemsIndicatorRoundingDp));
-    no_windows_widget_->GetLayer()->SetBackgroundBlur(
-        static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
 
     aura::Window* widget_window = no_windows_widget_->GetNativeWindow();
     widget_window->parent()->StackChildAtBottom(widget_window);
