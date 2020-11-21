@@ -1766,8 +1766,11 @@ const blink::Color ColumnRuleColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(!visited_link);
-  return style.ColumnRuleColor().Resolve(style.GetCurrentColor(),
-                                         style.UsedColorScheme());
+  StyleColor column_rule_color = style.ColumnRuleColor();
+  if (style.ShouldForceColor(column_rule_color))
+    return style.GetCurrentColor();
+  return column_rule_color.Resolve(style.GetCurrentColor(),
+                                   style.UsedColorScheme());
 }
 
 const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
@@ -3732,7 +3735,10 @@ const blink::Color InternalVisitedColumnRuleColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(visited_link);
-  return style.InternalVisitedColumnRuleColor().Resolve(
+  StyleColor visited_column_rule_color = style.InternalVisitedColumnRuleColor();
+  if (style.ShouldForceColor(visited_column_rule_color))
+    return style.GetInternalVisitedCurrentColor();
+  return visited_column_rule_color.Resolve(
       style.GetInternalVisitedCurrentColor(), style.UsedColorScheme());
 }
 
@@ -3794,8 +3800,12 @@ const blink::Color InternalVisitedTextDecorationColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(visited_link);
-  return style.DecorationColorIncludingFallback(visited_link)
-      .Resolve(style.GetInternalVisitedCurrentColor(), style.UsedColorScheme());
+  StyleColor visited_decoration_color =
+      style.DecorationColorIncludingFallback(visited_link);
+  if (style.ShouldForceColor(visited_decoration_color))
+    return style.GetInternalVisitedCurrentColor();
+  return visited_decoration_color.Resolve(
+      style.GetInternalVisitedCurrentColor(), style.UsedColorScheme());
 }
 
 const CSSValue* InternalVisitedTextDecorationColor::ParseSingleValue(
@@ -3809,7 +3819,11 @@ const blink::Color InternalVisitedTextEmphasisColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(visited_link);
-  return style.InternalVisitedTextEmphasisColor().Resolve(
+  StyleColor visited_text_emphasis_color =
+      style.InternalVisitedTextEmphasisColor();
+  if (style.ShouldForceColor(visited_text_emphasis_color))
+    return style.GetInternalVisitedCurrentColor();
+  return visited_text_emphasis_color.Resolve(
       style.GetInternalVisitedCurrentColor(), style.UsedColorScheme());
 }
 
@@ -6579,8 +6593,12 @@ const blink::Color TextDecorationColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(!visited_link);
-  return style.DecorationColorIncludingFallback(visited_link)
-      .Resolve(style.GetCurrentColor(), style.UsedColorScheme());
+  StyleColor decoration_color =
+      style.DecorationColorIncludingFallback(visited_link);
+  if (style.ShouldForceColor(decoration_color))
+    return style.GetCurrentColor();
+  return decoration_color.Resolve(style.GetCurrentColor(),
+                                  style.UsedColorScheme());
 }
 
 const CSSValue* TextDecorationColor::CSSValueFromComputedStyleInternal(
@@ -8022,6 +8040,11 @@ const CSSValue* WebkitTapHighlightColor::ParseSingleValue(
 const blink::Color WebkitTapHighlightColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
+  StyleColor highlight_color = style.TapHighlightColor();
+  if (style.ShouldForceColor(highlight_color)) {
+    return visited_link ? style.GetInternalVisitedCurrentColor()
+                        : style.GetCurrentColor();
+  }
   return style.ResolvedColor(style.TapHighlightColor());
 }
 
@@ -8072,8 +8095,11 @@ const blink::Color WebkitTextEmphasisColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(!visited_link);
-  return style.TextEmphasisColor().Resolve(style.GetCurrentColor(),
-                                           style.UsedColorScheme());
+  StyleColor text_emphasis_color = style.TextEmphasisColor();
+  if (style.ShouldForceColor(text_emphasis_color))
+    return style.GetCurrentColor();
+  return text_emphasis_color.Resolve(style.GetCurrentColor(),
+                                     style.UsedColorScheme());
 }
 
 const CSSValue* WebkitTextEmphasisColor::CSSValueFromComputedStyleInternal(

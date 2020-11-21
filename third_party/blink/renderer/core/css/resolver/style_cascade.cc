@@ -575,21 +575,8 @@ void StyleCascade::ForceColors() {
     return;
 
   MaybeForceColor(GetCSSPropertyColor(), style->GetColor());
-  MaybeForceColor(GetCSSPropertyTextDecorationColor(),
-                  style->TextDecorationColor());
-  MaybeForceColor(GetCSSPropertyColumnRuleColor(), style->ColumnRuleColor());
-  MaybeForceColor(GetCSSPropertyWebkitTapHighlightColor(),
-                  style->TapHighlightColor());
-  MaybeForceColor(GetCSSPropertyWebkitTextEmphasisColor(),
-                  style->TextEmphasisColor());
   MaybeForceColor(GetCSSPropertyInternalVisitedColor(),
                   style->InternalVisitedColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedTextDecorationColor(),
-                  style->InternalVisitedTextDecorationColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedColumnRuleColor(),
-                  style->InternalVisitedColumnRuleColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedTextEmphasisColor(),
-                  style->InternalVisitedTextEmphasisColor());
 
   ScopedCSSValue scoped_none(*CSSIdentifierValue::Create(CSSValueID::kNone),
                              nullptr);
