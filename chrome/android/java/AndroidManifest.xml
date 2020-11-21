@@ -853,12 +853,11 @@ by a child template that "extends" this file.
         <activity android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:label="@string/cablev2_activity_title"
-            android:exported="false">
-            <!-- This has an intent filter but is not exported. This works
-            because the intent is sent by the Android system, not another
-            application. We want to limit this activity to only be invoked by
-            Chromium or the OS because otherwise applications could fool
-            Chromium into communicating with a fake USB device. -->
+            android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
+            android:exported="true">
+            <!-- This activity can be started by GMSCore, and is thus exported
+            with a permission set, or can be started by the Android system in
+            the case that a USB device is attached. -->
             <intent-filter>
                  <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
             </intent-filter>

@@ -572,9 +572,10 @@
       </intent-filter>  # DIFF-ANCHOR: 9c5197e9
     </activity>  # DIFF-ANCHOR: aea75380
     <activity  # DIFF-ANCHOR: a1fac31f
-        android:exported="false"
+        android:exported="true"
         android:label="@string/cablev2_activity_title"
         android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity"
+        android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen">
       <intent-filter>  # DIFF-ANCHOR: 5873407a
         <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"/>
