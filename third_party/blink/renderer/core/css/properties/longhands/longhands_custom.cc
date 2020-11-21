@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_cursor_image_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
+#include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
@@ -2785,9 +2786,23 @@ const CSSValue* FontFamily::CSSValueFromComputedStyleInternal(
 
 void FontFamily::ApplyValue(StyleResolverState& state,
                             const ScopedCSSValue& scoped_value) const {
-  // TODO(futhark): Set TreeScope on the FontBuilder so that it can create a
-  // Font with a FontSelector for that TreeScope.
+  state.GetFontBuilder().SetFamilyTreeScope(scoped_value.GetTreeScope());
   ApplyValue(state, scoped_value.GetCSSValue());
+}
+
+void FontFamily::ApplyInitial(StyleResolverState& state) const {
+  state.GetFontBuilder().SetFamilyDescription(
+      FontBuilder::InitialFamilyDescription());
+  state.GetFontBuilder().SetFamilyTreeScope(nullptr);
+}
+
+void FontFamily::ApplyInherit(StyleResolverState& state) const {
+  state.GetFontBuilder().SetFamilyDescription(
+      state.ParentFontDescription().GetFamilyDescription());
+  CSSFontSelector* selector = static_cast<CSSFontSelector*>(
+      state.ParentStyle()->GetFont().GetFontSelector());
+  const TreeScope* tree_scope = selector ? selector->GetTreeScope() : nullptr;
+  state.GetFontBuilder().SetFamilyTreeScope(tree_scope);
 }
 
 const CSSValue* FontFeatureSettings::ParseSingleValue(

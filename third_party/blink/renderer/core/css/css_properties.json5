@@ -738,6 +738,7 @@
       font: true,
       name_for_methods: "FamilyDescription",
       type_name: "FontDescription::FamilyDescription",
+      style_builder_custom_functions: ["initial", "inherit"],
       converter: "ConvertFontFamily",
       priority: "High",
       valid_for_first_letter: true,

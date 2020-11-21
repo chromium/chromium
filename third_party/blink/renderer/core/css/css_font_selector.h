@@ -109,6 +109,8 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   }
   void UpdateGenericFontFamilySettings(Document&);
 
+  const TreeScope* GetTreeScope() const { return document_; }
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -119,7 +121,8 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   // currently leak because ComputedStyle and its data are not on the heap.
   // See crbug.com/383860 for details.
   WeakMember<Document> document_;
-  // FIXME: Move to Document or StyleEngine.
+  // TODO(futhark): Make this a Member which can be shared between scopes
+  // sharing the same set of @font-faces.
   FontFaceCache font_face_cache_;
   HeapHashSet<WeakMember<FontSelectorClient>> clients_;
   GenericFontFamilySettings generic_font_family_settings_;

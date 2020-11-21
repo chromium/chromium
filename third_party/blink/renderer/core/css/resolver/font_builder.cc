@@ -37,7 +37,7 @@
 
 namespace blink {
 
-FontBuilder::FontBuilder(Document* document) : document_(document), flags_(0) {
+FontBuilder::FontBuilder(Document* document) : document_(document) {
   DCHECK(!document || document->GetFrame());
 }
 
@@ -48,6 +48,7 @@ void FontBuilder::SetInitial(float effective_zoom) {
 
   SetFamilyDescription(font_description_,
                        FontBuilder::InitialFamilyDescription());
+  SetFamilyTreeScope(nullptr);
   SetSize(font_description_, FontBuilder::InitialSize());
 }
 
@@ -108,6 +109,10 @@ float FontBuilder::FontSizeForKeyword(unsigned keyword,
 void FontBuilder::SetFamilyDescription(
     const FontDescription::FamilyDescription& family_description) {
   SetFamilyDescription(font_description_, family_description);
+}
+
+void FontBuilder::SetFamilyTreeScope(const TreeScope* tree_scope) {
+  family_tree_scope_ = tree_scope;
 }
 
 void FontBuilder::SetWeight(FontSelectionValue weight) {
@@ -410,6 +415,19 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
     description.SetAdjustedSize(size);
 }
 
+FontSelector* FontBuilder::FontSelectorFromTreeScope(
+    const TreeScope* tree_scope) {
+  DCHECK(!tree_scope || tree_scope->GetDocument() == document_);
+  return document_->GetStyleEngine().GetFontSelector();
+}
+
+FontSelector* FontBuilder::ComputeFontSelector(const ComputedStyle& style) {
+  if (IsSet(PropertySetFlag::kFamily))
+    return FontSelectorFromTreeScope(family_tree_scope_);
+  else
+    return style.GetFont().GetFontSelector();
+}
+
 void FontBuilder::CreateFont(ComputedStyle& style,
                              const ComputedStyle* parent_style) {
   DCHECK(document_);
@@ -423,7 +441,7 @@ void FontBuilder::CreateFont(ComputedStyle& style,
   UpdateSpecifiedSize(description, style, parent_style);
   UpdateComputedSize(description, style);
 
-  FontSelector* font_selector = document_->GetStyleEngine().GetFontSelector();
+  FontSelector* font_selector = ComputeFontSelector(style);
   UpdateAdjustedSize(description, style, font_selector);
 
   style.SetFontInternal(Font(description, font_selector));
