@@ -146,7 +146,6 @@ PASS childWindow.onwebkittransitionend is null
 PASS childWindow.onwheel is null
 PASS childWindow.opener is null
 PASS childWindow.origin is 'file://'
-PASS childWindow.originIsolated is false
 PASS childWindow.outerHeight is 0
 PASS childWindow.outerWidth is 0
 PASS childWindow.pageXOffset is 0
