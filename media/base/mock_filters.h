@@ -286,6 +286,7 @@ class MockVideoEncoder : public VideoEncoder {
   MOCK_METHOD(void,
               ChangeOptions,
               (const VideoEncoder::Options& options,
+               VideoEncoder::OutputCB output_cb,
                VideoEncoder::StatusCB done_cb),
               (override));
 

@@ -347,7 +347,47 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
 }
 
 void VideoEncodeAcceleratorAdapter::ChangeOptions(const Options& options,
-                                                  StatusCB done_cb) {}
+                                                  OutputCB output_cb,
+                                                  StatusCB done_cb) {
+  DCHECK(!accelerator_task_runner_->RunsTasksInCurrentSequence());
+  accelerator_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread,
+          base::Unretained(this), options, WrapCallback(std::move(output_cb)),
+          WrapCallback(std::move(done_cb))));
+}
+
+void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
+    const Options options,
+    OutputCB output_cb,
+    StatusCB done_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
+  DCHECK(active_encodes_.empty());
+  DCHECK(pending_encodes_.empty());
+  DCHECK_EQ(state_, State::kReadyToEncode);
+
+  if (options.width != options_.width || options.height != options_.height) {
+    auto status = Status(StatusCode::kEncoderInitializationError,
+                         "Resolution change is not supported.");
+    std::move(done_cb).Run(status);
+    return;
+  }
+
+  uint32_t bitrate =
+      std::min(options.bitrate.value_or(options.width * options.height *
+                                        kVEADefaultBitratePerPixel),
+               uint64_t{std::numeric_limits<uint32_t>::max()});
+
+  uint32_t framerate = uint32_t{std::round(
+      options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate))};
+
+  accelerator_->RequestEncodingParametersChange(bitrate, framerate);
+  options_ = options;
+  if (!output_cb.is_null())
+    output_cb_ = BindToCurrentLoop(std::move(output_cb));
+  std::move(done_cb).Run(Status());
+}
 
 void VideoEncodeAcceleratorAdapter::Flush(StatusCB done_cb) {
   DCHECK(!accelerator_task_runner_->RunsTasksInCurrentSequence());
@@ -587,6 +627,8 @@ void VideoEncodeAcceleratorAdapter::FlushCompleted(bool success) {
 template <class T>
 T VideoEncodeAcceleratorAdapter::WrapCallback(T cb) {
   DCHECK(callback_task_runner_);
+  if (cb.is_null())
+    return cb;
   return BindToLoop(callback_task_runner_.get(), std::move(cb));
 }
 

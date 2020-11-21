@@ -57,12 +57,14 @@ void OffloadingVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 }
 
 void OffloadingVideoEncoder::ChangeOptions(const Options& options,
+                                           OutputCB output_cb,
                                            StatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoEncoder::ChangeOptions,
                                 base::Unretained(wrapped_encoder_.get()),
-                                options, WrapCallback(std::move(done_cb))));
+                                options, WrapCallback(std::move(output_cb)),
+                                WrapCallback(std::move(done_cb))));
 }
 
 void OffloadingVideoEncoder::Flush(StatusCB done_cb) {

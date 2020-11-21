@@ -78,7 +78,7 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
                                       const Options& options,
                                       OutputCB output_cb,
                                       StatusCB done_cb) {
-  done_cb = media::BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindToCurrentLoop(std::move(done_cb));
   if (codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeTwice);
     return;
@@ -132,7 +132,7 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
   }
 
   options_ = options;
-  output_cb_ = media::BindToCurrentLoop(std::move(output_cb));
+  output_cb_ = BindToCurrentLoop(std::move(output_cb));
   codec_ = std::move(codec);
   std::move(done_cb).Run(Status());
 }
@@ -141,7 +141,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   bool key_frame,
                                   StatusCB done_cb) {
   Status status;
-  done_cb = media::BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
     return;
@@ -152,7 +152,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   "No frame provided for encoding."));
     return;
   }
-  if (!frame->IsMappable() || frame->format() != media::PIXEL_FORMAT_I420) {
+  if (!frame->IsMappable() || frame->format() != PIXEL_FORMAT_I420) {
     status =
         Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
             .WithData("IsMappable", frame->IsMappable())
@@ -246,20 +246,46 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 }
 
 void OpenH264VideoEncoder::ChangeOptions(const Options& options,
+                                         OutputCB output_cb,
                                          StatusCB done_cb) {
-  done_cb = media::BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
     return;
   }
 
-  // TODO(eugene): Not implemented yet.
+  Status status;
+  SEncParamExt params = {};
+  if (int err = codec_->GetDefaultParams(&params)) {
+    status = Status(StatusCode::kEncoderInitializationError,
+                    "Failed to get default params.")
+                 .WithData("error", err);
+    std::move(done_cb).Run(status);
+    return;
+  }
 
+  status = SetUpOpenH264Params(options, &params);
+  if (!status.is_ok()) {
+    std::move(done_cb).Run(status);
+    return;
+  }
+
+  if (int err =
+          codec_->SetOption(ENCODER_OPTION_SVC_ENCODE_PARAM_EXT, &params)) {
+    status = Status(StatusCode::kEncoderInitializationError,
+                    "OpenH264 encoder failed to set new SEncParamExt.")
+                 .WithData("error", err);
+    std::move(done_cb).Run(status);
+    return;
+  }
+
+  if (!output_cb.is_null())
+    output_cb_ = BindToCurrentLoop(std::move(output_cb));
   std::move(done_cb).Run(Status());
 }
 
 void OpenH264VideoEncoder::Flush(StatusCB done_cb) {
-  done_cb = media::BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
     return;
