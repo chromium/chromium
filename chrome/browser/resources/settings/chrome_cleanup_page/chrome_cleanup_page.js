@@ -265,6 +265,20 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Virtual pref that's attached to the notification checkbox.
+     * @private {!chrome.settingsPrivate.PrefObject}
+     */
+    notificationEnabledPref_: {
+      type: Object,
+      value() {
+        return /** @type {chrome.settingsPrivate.PrefObject} */ ({
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        });
+      },
+    },
   },
 
   /** @private {!ChromeCleanerScannerResults} */
