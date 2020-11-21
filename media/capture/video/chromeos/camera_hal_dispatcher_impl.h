@@ -8,9 +8,14 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/singleton.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
 #include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
@@ -55,6 +60,12 @@ class CAPTURE_EXPORT CameraClientObserver {
   base::UnguessableToken auth_token_;
 };
 
+class CAPTURE_EXPORT CameraActiveClientObserver : public base::CheckedObserver {
+ public:
+  virtual void OnActiveClientChange(cros::mojom::CameraClientType type,
+                                    bool is_active) = 0;
+};
+
 // The CameraHalDispatcherImpl hosts and waits on the unix domain socket
 // /var/run/camera3.sock.  CameraHalServer and CameraHalClients connect to the
 // unix domain socket to create the initial Mojo connections with the
@@ -79,6 +90,14 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
                          base::OnceCallback<void(int32_t)> result_callback);
 
   bool IsStarted();
+
+  // Adds an observer that watches for active camera client changes. Observer
+  // would be immediately notified of the current list of active clients.
+  void AddActiveClientObserver(CameraActiveClientObserver* observer);
+
+  // Removes the observer. A previously-added observer must be removed before
+  // being destroyed.
+  void RemoveActiveClientObserver(CameraActiveClientObserver* observer);
 
   // CameraHalDispatcher implementations.
   void RegisterServer(
@@ -136,9 +155,18 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       cros::mojom::CameraClientType type,
       base::UnguessableToken token,
       RegisterClientWithTokenCallback callback);
+
   void AddClientObserverOnProxyThread(
       std::unique_ptr<CameraClientObserver> observer,
       base::OnceCallback<void(int32_t)> result_callback);
+
+  void AddActiveClientObserverOnProxyThread(
+      CameraActiveClientObserver* observer,
+      base::WaitableEvent* observer_added_event);
+
+  void RemoveActiveClientObserverOnProxyThread(
+      CameraActiveClientObserver* observer,
+      base::WaitableEvent* observer_removed_event);
 
   void EstablishMojoChannel(CameraClientObserver* client_observer);
 
@@ -177,6 +205,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   MojoJpegEncodeAcceleratorFactoryCB jea_factory_;
 
   TokenManager token_manager_;
+
+  base::flat_map<cros::mojom::CameraClientType, base::flat_set<int32_t>>
+      opened_camera_id_map_;
+  base::ObserverList<CameraActiveClientObserver> active_client_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImpl);
 };
