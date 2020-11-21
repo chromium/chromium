@@ -36,8 +36,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
-#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -51,7 +49,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -91,15 +88,9 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptAndReturnValue(
     const KURL& base_url,
     SanitizeScriptErrors sanitize_script_errors,
     const ScriptFetchOptions& fetch_options) {
-    mojom::blink::V8CacheOptions v8_cache_options =
-        mojom::blink::V8CacheOptions::kDefault;
-    if (const Settings* settings = window_->GetFrame()->GetSettings())
-      v8_cache_options = settings->GetV8CacheOptions();
-
     ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
         GetIsolate(), ScriptState::From(context), window_.Get(), source,
         base_url, sanitize_script_errors, fetch_options,
-        std::move(v8_cache_options),
         V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 
     if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)

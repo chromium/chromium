@@ -377,7 +377,6 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     const KURL& base_url,
     SanitizeScriptErrors sanitize_script_errors,
     const ScriptFetchOptions& fetch_options,
-    mojom::blink::V8CacheOptions v8_cache_options,
     RethrowErrorsOption rethrow_errors) {
   DCHECK_EQ(isolate, script_state->GetIsolate());
 
@@ -432,7 +431,8 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
     std::tie(compile_options, produce_cache_options, no_cache_reason) =
-        V8CodeCache::GetCompileOptions(v8_cache_options, source);
+        V8CodeCache::GetCompileOptions(execution_context->GetV8CacheOptions(),
+                                       source);
 
     v8::MaybeLocal<v8::Value> maybe_result;
     if (V8ScriptRunner::CompileScript(script_state, source,

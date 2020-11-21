@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WORKER_OR_WORKLET_SCRIPT_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
@@ -62,7 +61,6 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   ScriptEvaluationResult EvaluateAndReturnValue(
       const ScriptSourceCode&,
       SanitizeScriptErrors sanitize_script_errors,
-      mojom::blink::V8CacheOptions = mojom::blink::V8CacheOptions::kDefault,
       V8ScriptRunner::RethrowErrorsOption =
           V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 

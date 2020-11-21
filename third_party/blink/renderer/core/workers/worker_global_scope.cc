@@ -339,7 +339,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
                          handler,
                          ScriptSourceCode::UsePostRedirectURL() ? response_url
                                                                 : complete_url),
-        sanitize_script_errors, GetV8CacheOptions(),
+        sanitize_script_errors,
         V8ScriptRunner::RethrowErrorsOption::Rethrow(error_message));
 
     // Step 5.2: "If an exception was thrown or if the script was prematurely

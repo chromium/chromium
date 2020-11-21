@@ -42,6 +42,7 @@
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -211,6 +212,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   virtual bool CanExecuteScripts(ReasonForCallingCanExecuteScripts) {
     return false;
+  }
+  virtual mojom::blink::V8CacheOptions GetV8CacheOptions() const {
+    return mojom::blink::V8CacheOptions::kDefault;
   }
 
   void DispatchErrorEvent(ErrorEvent*, SanitizeScriptErrors);

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_SCRIPT_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_SCRIPT_RUNNER_H_
 
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -129,7 +128,6 @@ class CORE_EXPORT V8ScriptRunner final {
       const KURL&,
       SanitizeScriptErrors,
       const ScriptFetchOptions&,
-      mojom::blink::V8CacheOptions,
       RethrowErrorsOption);
   static v8::MaybeLocal<v8::Value> CompileAndRunInternalScript(
       v8::Isolate*,

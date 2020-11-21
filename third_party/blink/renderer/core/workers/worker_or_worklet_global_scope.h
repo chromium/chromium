@@ -140,7 +140,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   WorkerOrWorkletScriptController* ScriptController() {
     return script_controller_.Get();
   }
-  mojom::blink::V8CacheOptions GetV8CacheOptions() const {
+  mojom::blink::V8CacheOptions GetV8CacheOptions() const override {
     return v8_cache_options_;
   }
 

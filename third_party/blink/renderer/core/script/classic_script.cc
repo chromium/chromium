@@ -58,8 +58,7 @@ bool ClassicScript::RunScriptOnWorkerOrWorklet(
   ScriptState::Scope scope(global_scope.ScriptController()->GetScriptState());
   ScriptEvaluationResult result =
       global_scope.ScriptController()->EvaluateAndReturnValue(
-          GetScriptSourceCode(), sanitize_script_errors_,
-          global_scope.GetV8CacheOptions());
+          GetScriptSourceCode(), sanitize_script_errors_);
   return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
 }
 

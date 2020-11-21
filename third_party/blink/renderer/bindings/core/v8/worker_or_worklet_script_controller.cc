@@ -316,7 +316,6 @@ void WorkerOrWorkletScriptController::DisableEvalInternal(
 ScriptEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
     const ScriptSourceCode& source_code,
     SanitizeScriptErrors sanitize_script_errors,
-    mojom::blink::V8CacheOptions v8_cache_options,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
   if (IsExecutionForbidden())
     return ScriptEvaluationResult::FromClassicNotRun();
@@ -333,8 +332,7 @@ ScriptEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
   // TODO(crbug/1114989): Plumb ScriptFetchOptions from ClassicScript.
   ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
       isolate_, script_state_, global_scope_, source_code, base_url,
-      sanitize_script_errors, ScriptFetchOptions(), v8_cache_options,
-      std::move(rethrow_errors));
+      sanitize_script_errors, ScriptFetchOptions(), std::move(rethrow_errors));
 
   if (result.GetResultType() == ScriptEvaluationResult::ResultType::kAborted)
     ForbidExecution();

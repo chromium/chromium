@@ -239,6 +239,15 @@ LocalDOMWindow* LocalDOMWindow::From(const ScriptState* script_state) {
   return blink::ToLocalDOMWindow(script_state->GetContext());
 }
 
+mojom::blink::V8CacheOptions LocalDOMWindow::GetV8CacheOptions() const {
+  if (LocalFrame* frame = GetFrame()) {
+    if (const Settings* settings = frame->GetSettings())
+      return settings->GetV8CacheOptions();
+  }
+
+  return mojom::blink::V8CacheOptions::kDefault;
+}
+
 bool LocalDOMWindow::IsContextThread() const {
   return IsMainThread();
 }

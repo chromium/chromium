@@ -128,6 +128,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void ResetWindowAgent(WindowAgent*);
 
+  mojom::blink::V8CacheOptions GetV8CacheOptions() const override;
+
   // Bind Content Security Policy to this window. This will cause the
   // CSP to resolve the 'self' attribute and all policies will then be
   // applied to this document.
