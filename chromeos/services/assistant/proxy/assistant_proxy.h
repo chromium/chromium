@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/threading/thread.h"
-
 namespace chromeos {
 namespace assistant {
 
@@ -27,13 +25,7 @@ class AssistantProxy {
   // service.
   ServiceController& service_controller();
 
-  // The background thread is temporary exposed until the entire Libassistant
-  // API is hidden behind this proxy API.
-  base::Thread& background_thread() { return background_thread_; }
-
  private:
-  base::Thread background_thread_{"Assistant background thread"};
-
   std::unique_ptr<ServiceController> service_controller_;
 };
 

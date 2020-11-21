@@ -172,11 +172,14 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       assistant_proxy_(std::make_unique<AssistantProxy>()),
       context_(context),
       delegate_(std::move(delegate)),
+      background_thread_("background thread"),
       libassistant_config_(
           CreateLibAssistantConfig(s3_server_uri_override, device_id_override)),
       weak_factory_(this) {
+  background_thread_.Start();
+
   platform_api_ = delegate_->CreatePlatformApi(
-      media_session_.get(), background_thread().task_runner());
+      media_session_.get(), background_thread_.task_runner());
 
   settings_delegate_ =
       std::make_unique<AssistantDeviceSettingsDelegate>(context);
@@ -190,11 +193,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
 }
 
 AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
-  // Destroy the Assistant Proxy first so the background thread is flushed
-  // before any of the other objects are destroyed. If we don't do this
-  // the background thread could for example access |platform_api_| after it
-  // is destroyed.
-  assistant_proxy_ = nullptr;
+  background_thread_.Stop();
 }
 
 void AssistantManagerServiceImpl::Start(const base::Optional<UserInfo>& user,
@@ -277,7 +276,7 @@ void AssistantManagerServiceImpl::RegisterFallbackMediaHandler() {
 void AssistantManagerServiceImpl::WaitUntilStartIsFinishedForTesting() {
   // First we wait until the |AssistantManager| is created on the background
   // thread.
-  background_thread().FlushForTesting();
+  background_thread_.FlushForTesting();
   // Then we wait until |PostInitAssistant| finishes.
   // (which runs on the main thread).
   base::RunLoop().RunUntilIdle();
@@ -987,8 +986,8 @@ void AssistantManagerServiceImpl::InitAssistant(
   DCHECK(!IsServiceStarted());
 
   service_controller().Start(
-      delegate_.get(), platform_api(), action_module_.get(),
-      &chromium_api_delegate_,
+      background_thread_.task_runner(), delegate_.get(), platform_api(),
+      action_module_.get(), &chromium_api_delegate_,
       /*assistant_manager_delegate=*/this,
       /*conversation_state_listener=*/this,
       /*device_state_listener=*/this,
@@ -1399,10 +1398,6 @@ ServiceController& AssistantManagerServiceImpl::service_controller() {
 const ServiceController& AssistantManagerServiceImpl::service_controller()
     const {
   return assistant_proxy_->service_controller();
-}
-
-base::Thread& AssistantManagerServiceImpl::background_thread() {
-  return assistant_proxy_->background_thread();
 }
 
 void AssistantManagerServiceImpl::SetStateAndInformObservers(State new_state) {

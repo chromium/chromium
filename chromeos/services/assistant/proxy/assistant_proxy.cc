@@ -10,11 +10,8 @@
 namespace chromeos {
 namespace assistant {
 
-AssistantProxy::AssistantProxy() {
-  background_thread_.Start();
-  service_controller_ =
-      std::make_unique<ServiceController>(background_thread_.task_runner());
-}
+AssistantProxy::AssistantProxy()
+    : service_controller_(std::make_unique<ServiceController>()) {}
 
 AssistantProxy::~AssistantProxy() = default;
 
