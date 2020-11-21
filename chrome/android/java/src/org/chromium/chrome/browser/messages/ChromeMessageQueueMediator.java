@@ -16,10 +16,12 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageQueueDelegate;
+import org.chromium.content_public.common.BrowserControlsState;
 import org.chromium.ui.util.TokenHolder;
 
 /**
@@ -129,7 +131,9 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         mBrowserControlsToken =
                 mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
         mContainerCoordinator.showMessageContainer();
-        if (BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager)) {
+        final Tab tab = mTabModelSelector != null ? mTabModelSelector.getCurrentTab() : null;
+        if (TabBrowserControlsConstraintsHelper.getConstraints(tab) == BrowserControlsState.HIDDEN
+                || BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager)) {
             runnable.run();
         } else {
             mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(runnable);

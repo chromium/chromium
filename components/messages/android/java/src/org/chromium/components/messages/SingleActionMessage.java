@@ -57,11 +57,16 @@ public class SingleActionMessage implements MessageStateHandler {
                     mContainer.getResources(), mDismissHandler.bind(mModel));
         }
         mContainer.addMessage(mView);
-        final Runnable onShown = () -> {
+
+        final Runnable showRunnable = () -> mMessageBanner.show(() -> {
             mMessageBanner.setOnTouchRunnable(mAutoDismissTimer::resetTimer);
             mAutoDismissTimer.startTimer(() -> { mDismissHandler.onResult(mModel); });
-        };
-        mMessageBanner.show(onShown);
+        });
+
+        // Wait until the message and the container are measured before showing the message. This
+        // is required in case the animation set-up requires the height of the container, e.g.
+        // showing messages without the top controls visible.
+        mContainer.runAfterInitialLayout(showRunnable);
     }
 
     /**

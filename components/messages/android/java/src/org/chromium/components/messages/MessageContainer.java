@@ -48,4 +48,27 @@ public class MessageContainer extends FrameLayout {
         ViewUtils.setAncestorsShouldClipChildren(this, true);
         removeAllViews();
     }
+
+    /**
+     * Runs a {@link Runnable} after the initial layout. If the view is already laid out, the
+     * {@link Runnable} will be called immediately.
+     * @param runnable The {@link Runnable}.
+     */
+    void runAfterInitialLayout(Runnable runnable) {
+        if (getHeight() > 0) {
+            runnable.run();
+            return;
+        }
+
+        addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (v.getHeight() == 0) return;
+
+                runnable.run();
+                v.removeOnLayoutChangeListener(this);
+            }
+        });
+    }
 }
