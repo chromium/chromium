@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_CONTROL_SERVICE_IMPL_H_
-#define CHROME_UPDATER_CONTROL_SERVICE_IMPL_H_
+#ifndef CHROME_UPDATER_UPDATE_SERVICE_INTERNAL_IMPL_H_
+#define CHROME_UPDATER_UPDATE_SERVICE_INTERNAL_IMPL_H_
 
 #include <string>
 #include <vector>
@@ -14,7 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
-#include "chrome/updater/control_service.h"
+#include "chrome/updater/update_service_internal.h"
 
 namespace update_client {
 enum class Error;
@@ -104,4 +104,4 @@ class UpdateServiceInternalImpl : public UpdateServiceInternal {
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_CONTROL_SERVICE_IMPL_H_
+#endif  // CHROME_UPDATER_UPDATE_SERVICE_INTERNAL_IMPL_H_

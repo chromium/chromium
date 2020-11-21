@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/control_service_proxy.h"
+#include "chrome/updater/win/update_service_internal_proxy.h"
 
 #include <windows.h>
 #include <wrl/client.h>

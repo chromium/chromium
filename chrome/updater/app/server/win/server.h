@@ -14,8 +14,8 @@
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
-#include "chrome/updater/control_service.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/update_service_internal.h"
 
 namespace updater {
 

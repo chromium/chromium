@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_CONTROL_SERVICE_PROXY_H_
-#define CHROME_UPDATER_WIN_CONTROL_SERVICE_PROXY_H_
+#ifndef CHROME_UPDATER_MAC_UPDATE_SERVICE_INTERNAL_PROXY_H_
+#define CHROME_UPDATER_MAC_UPDATE_SERVICE_INTERNAL_PROXY_H_
+
+#import <Foundation/Foundation.h>
 
 #include "base/callback_forward.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/updater/control_service.h"
 #include "chrome/updater/service_scope.h"
+#include "chrome/updater/update_service_internal.h"
+
+@class CRUUpdateServiceInternalProxyImpl;
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace updater {
@@ -30,18 +35,12 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
  private:
   ~UpdateServiceInternalProxy() override;
 
-  // These function are invoked on the |com_task_runner_|.
-  void RunOnSTA(base::OnceClosure callback);
-  void InitializeUpdateServiceOnSTA(base::OnceClosure callback);
-
-  // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Runs the tasks which involve outbound COM calls and inbound COM callbacks.
-  // This task runner is thread-affine with the COM STA.
-  scoped_refptr<base::SingleThreadTaskRunner> STA_task_runner_;
+  base::scoped_nsobject<CRUUpdateServiceInternalProxyImpl> client_;
+  scoped_refptr<base::SequencedTaskRunner> callback_runner_;
 };
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_CONTROL_SERVICE_PROXY_H_
+#endif  // CHROME_UPDATER_MAC_UPDATE_SERVICE_INTERNAL_PROXY_H_

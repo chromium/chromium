@@ -76,8 +76,6 @@ source_set("constants") {
 source_set("lib") {
   sources = [
     "action_handler.cc",
-    "control_service_proxy.cc",
-    "control_service_proxy.h",
     "group_policy_manager.cc",
     "group_policy_manager.h",
     "net/net_util.cc",
@@ -104,6 +102,8 @@ source_set("lib") {
     "setup/uninstall.h",
     "task_scheduler.cc",
     "task_scheduler.h",
+    "update_service_internal_proxy.cc",
+    "update_service_internal_proxy.h",
     "update_service_proxy.cc",
     "update_service_proxy.h",
     "user_info.cc",

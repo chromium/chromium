@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/control_service_impl_inactive.h"
+#include "chrome/updater/update_service_internal_impl_inactive.h"
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/updater/control_service.h"
+#include "chrome/updater/update_service_internal.h"
 
 namespace updater {
 

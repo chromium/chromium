@@ -21,11 +21,11 @@
 #include "chrome/updater/app/server/mac/service_delegate.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/control_service.h"
 #include "chrome/updater/mac/setup/setup.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/update_service_internal.h"
 
 namespace updater {
 

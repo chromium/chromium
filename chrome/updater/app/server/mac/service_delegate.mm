@@ -21,10 +21,10 @@
 #import "chrome/updater/app/server/mac/server.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
-#include "chrome/updater/control_service.h"
 #include "chrome/updater/mac/setup/setup.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_version.h"
 
 @interface CRUUpdateCheckServiceXPCImpl : NSObject <CRUUpdateChecking>
