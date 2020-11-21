@@ -67,8 +67,10 @@ const AccountId GetCurrentAccountId() {
 
 // Move the window to the current user's desktop.
 void MoveWindowToCurrentDesktop(aura::Window* window) {
-  if (!MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window, GetCurrentAccountId())) {
+  MultiUserWindowManagerHelper* helper =
+      MultiUserWindowManagerHelper::GetInstance();
+  if (helper &&
+      !helper->IsWindowOnDesktopOfUser(window, GetCurrentAccountId())) {
     MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
         window, GetCurrentAccountId());
   }
