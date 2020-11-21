@@ -14,6 +14,33 @@ namespace chromeos {
 
 namespace secure_channel {
 
+// Message sent over the wire via SecureChannel. Each message sent using the
+// SecureChannel protocol has a feature name (a unique identifier for the client
+// sending/receiving a message) and a payload.
+//
+// A wire message in SecureChannel is serialized to a byte array (in the format
+// of a std::string). The first byte is always the protocol version expressed as
+// an unsigned 8-bit int. This class supports protocol versions 3 and 4.
+//
+// v3: One byte version (0x03), followed by 2 bytes of the message size as an
+//     unsigned 16-bit int, followed by a stringified JSON object containing a
+//     "feature" key whose value is the feature and a "payload" key whose value
+//     is the payload.
+//
+//     [ message version ] [ body length ] [ JSON body ]
+//           1 byte            2 bytes      body length
+//
+// v4: One byte version (0x04), followed by 4 bytes of the message size as an
+//     unsigned 32-bit int, followed by a stringified JSON object containing a
+//     "feature" key whose value is the feature and a "payload" key whose value
+//     is the payload.
+//
+//     [ message version ] [ body length ] [ JSON body ]
+//           1 byte            4 bytes      body length
+//
+// v3 is deprecated and all new features use v4, but we special-case features
+// which were released before v4 and send them via v3 for backward
+// compatibility.
 class WireMessage {
  public:
   // Creates a WireMessage containing |payload| for feature |feature| and

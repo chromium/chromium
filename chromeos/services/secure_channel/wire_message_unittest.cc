@@ -30,10 +30,18 @@ TEST(SecureChannelWireMessageTest, Deserialize_EmptyMessage) {
   EXPECT_FALSE(message);
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_IncompleteHeader) {
+TEST(SecureChannelWireMessageTest, Deserialize_IncompleteHeader_V3) {
   bool is_incomplete;
   std::unique_ptr<WireMessage> message =
       WireMessage::Deserialize("\3", &is_incomplete);
+  EXPECT_TRUE(is_incomplete);
+  EXPECT_FALSE(message);
+}
+
+TEST(SecureChannelWireMessageTest, Deserialize_IncompleteHeader_V4) {
+  bool is_incomplete;
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize("\4", &is_incomplete);
   EXPECT_TRUE(is_incomplete);
   EXPECT_FALSE(message);
 }
@@ -47,7 +55,7 @@ TEST(SecureChannelWireMessageTest, Deserialize_UnexpectedMessageFormatVersion) {
   EXPECT_FALSE(message);
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_BodyOfSizeZero) {
+TEST(SecureChannelWireMessageTest, Deserialize_BodyOfSizeZero_V3) {
   bool is_incomplete;
   std::unique_ptr<WireMessage> message =
       WireMessage::Deserialize(std::string("\3\0\0", 3), &is_incomplete);
@@ -55,7 +63,15 @@ TEST(SecureChannelWireMessageTest, Deserialize_BodyOfSizeZero) {
   EXPECT_FALSE(message);
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_IncompleteBody) {
+TEST(SecureChannelWireMessageTest, Deserialize_BodyOfSizeZero_V4) {
+  bool is_incomplete;
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(std::string("\4\0\0\0\0", 5), &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  EXPECT_FALSE(message);
+}
+
+TEST(SecureChannelWireMessageTest, Deserialize_IncompleteBody_V3) {
   bool is_incomplete;
   std::unique_ptr<WireMessage> message =
       WireMessage::Deserialize(std::string("\3\0\5", 3), &is_incomplete);
@@ -63,8 +79,16 @@ TEST(SecureChannelWireMessageTest, Deserialize_IncompleteBody) {
   EXPECT_FALSE(message);
 }
 
+TEST(SecureChannelWireMessageTest, Deserialize_IncompleteBody_V4) {
+  bool is_incomplete;
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(std::string("\4\0\0\0\5", 5), &is_incomplete);
+  EXPECT_TRUE(is_incomplete);
+  EXPECT_FALSE(message);
+}
+
 TEST(SecureChannelWireMessageTest,
-     Deserialize_BodyLongerThanSpecifiedInHeader) {
+     Deserialize_BodyLongerThanSpecifiedInHeader_V3) {
   bool is_incomplete;
   std::unique_ptr<WireMessage> message = WireMessage::Deserialize(
       std::string("\3\0\5", 3) + "123456", &is_incomplete);
@@ -72,7 +96,16 @@ TEST(SecureChannelWireMessageTest,
   EXPECT_FALSE(message);
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_BodyIsNotValidJSON) {
+TEST(SecureChannelWireMessageTest,
+     Deserialize_BodyLongerThanSpecifiedInHeader_V4) {
+  bool is_incomplete;
+  std::unique_ptr<WireMessage> message = WireMessage::Deserialize(
+      std::string("\4\0\0\0\5", 5) + "123456", &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  EXPECT_FALSE(message);
+}
+
+TEST(SecureChannelWireMessageTest, Deserialize_BodyIsNotValidJSON_V3) {
   bool is_incomplete;
   std::unique_ptr<WireMessage> message = WireMessage::Deserialize(
       std::string("\3\0\5", 3) + "12345", &is_incomplete);
@@ -80,7 +113,15 @@ TEST(SecureChannelWireMessageTest, Deserialize_BodyIsNotValidJSON) {
   EXPECT_FALSE(message);
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_BodyIsNotADictionary) {
+TEST(SecureChannelWireMessageTest, Deserialize_BodyIsNotValidJSON_V4) {
+  bool is_incomplete;
+  std::unique_ptr<WireMessage> message = WireMessage::Deserialize(
+      std::string("\4\0\0\0\5", 5) + "12345", &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  EXPECT_FALSE(message);
+}
+
+TEST(SecureChannelWireMessageTest, Deserialize_BodyIsNotADictionary_V3) {
   bool is_incomplete;
   std::string header("\3\0\x15", 3);
   std::string bytes = header + "[{\"payload\": \"YQ==\"}]";
@@ -90,7 +131,17 @@ TEST(SecureChannelWireMessageTest, Deserialize_BodyIsNotADictionary) {
   EXPECT_FALSE(message);
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_NonEncryptedMessage) {
+TEST(SecureChannelWireMessageTest, Deserialize_BodyIsNotADictionary_V4) {
+  bool is_incomplete;
+  std::string header("\4\0\0\0\x15", 5);
+  std::string bytes = header + "[{\"payload\": \"YQ==\"}]";
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(bytes, &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  EXPECT_FALSE(message);
+}
+
+TEST(SecureChannelWireMessageTest, Deserialize_NonEncryptedMessage_V3) {
   bool is_incomplete;
   std::string header("\3\0\x02", 3);
   std::string bytes = header + "{}";
@@ -101,7 +152,18 @@ TEST(SecureChannelWireMessageTest, Deserialize_NonEncryptedMessage) {
   EXPECT_EQ("{}", message->body());
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_BodyHasEmptyPayload) {
+TEST(SecureChannelWireMessageTest, Deserialize_NonEncryptedMessage_V4) {
+  bool is_incomplete;
+  std::string header("\4\0\0\0\x02", 5);
+  std::string bytes = header + "{}";
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(bytes, &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  ASSERT_TRUE(message);
+  EXPECT_EQ("{}", message->body());
+}
+
+TEST(SecureChannelWireMessageTest, Deserialize_BodyHasEmptyPayload_V3) {
   bool is_incomplete;
   std::string header("\3\0\x29", 3);
   std::string bytes =
@@ -112,7 +174,18 @@ TEST(SecureChannelWireMessageTest, Deserialize_BodyHasEmptyPayload) {
   EXPECT_FALSE(message);
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_PayloadIsNotBase64Encoded) {
+TEST(SecureChannelWireMessageTest, Deserialize_BodyHasEmptyPayload_V4) {
+  bool is_incomplete;
+  std::string header("\4\0\0\0\x29", 5);
+  std::string bytes =
+      header + "{\"payload\": \"\", \"feature\": \"testFeature\"}";
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(bytes, &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  EXPECT_FALSE(message);
+}
+
+TEST(SecureChannelWireMessageTest, Deserialize_PayloadIsNotBase64Encoded_V3) {
   bool is_incomplete;
   std::string header("\3\0\x30", 3);
   std::string bytes =
@@ -123,7 +196,18 @@ TEST(SecureChannelWireMessageTest, Deserialize_PayloadIsNotBase64Encoded) {
   EXPECT_FALSE(message);
 }
 
-TEST(SecureChannelWireMessageTest, Deserialize_ValidMessage) {
+TEST(SecureChannelWireMessageTest, Deserialize_PayloadIsNotBase64Encoded_V4) {
+  bool is_incomplete;
+  std::string header("\4\0\0\0\x30", 5);
+  std::string bytes =
+      header + "{\"payload\": \"garbage\", \"feature\": \"testFeature\"}";
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(bytes, &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  EXPECT_FALSE(message);
+}
+
+TEST(SecureChannelWireMessageTest, Deserialize_ValidMessage_V3) {
   bool is_incomplete;
   std::string header("\3\0\x2d", 3);
   std::string bytes =
@@ -136,8 +220,21 @@ TEST(SecureChannelWireMessageTest, Deserialize_ValidMessage) {
   EXPECT_EQ("testFeature", message->feature());
 }
 
+TEST(SecureChannelWireMessageTest, Deserialize_ValidMessage_V4) {
+  bool is_incomplete;
+  std::string header("\4\0\0\0\x2d", 5);
+  std::string bytes =
+      header + "{\"payload\": \"YQ==\", \"feature\": \"testFeature\"}";
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(bytes, &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  ASSERT_TRUE(message);
+  EXPECT_EQ("a", message->payload());
+  EXPECT_EQ("testFeature", message->feature());
+}
+
 TEST(SecureChannelWireMessageTest,
-     Deserialize_ValidMessageWithBase64UrlEncoding) {
+     Deserialize_ValidMessageWithBase64UrlEncoding_V3) {
   bool is_incomplete;
   std::string header("\3\0\x2d", 3);
   std::string bytes =
@@ -151,9 +248,41 @@ TEST(SecureChannelWireMessageTest,
 }
 
 TEST(SecureChannelWireMessageTest,
-     Deserialize_ValidMessageWithExtraUnknownFields) {
+     Deserialize_ValidMessageWithBase64UrlEncoding_V4) {
+  bool is_incomplete;
+  std::string header("\4\0\0\0\x2d", 5);
+  std::string bytes =
+      header + "{\"payload\": \"_-Y=\", \"feature\": \"testFeature\"}";
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(bytes, &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  ASSERT_TRUE(message);
+  EXPECT_EQ("\xFF\xE6", message->payload());
+  EXPECT_EQ("testFeature", message->feature());
+}
+
+TEST(SecureChannelWireMessageTest,
+     Deserialize_ValidMessageWithExtraUnknownFields_V3) {
   bool is_incomplete;
   std::string header("\3\0\x4c", 3);
+  std::string bytes = header +
+                      "{"
+                      "  \"payload\": \"YQ==\","
+                      "  \"feature\": \"testFeature\","
+                      "  \"unexpected\": \"surprise!\""
+                      "}";
+  std::unique_ptr<WireMessage> message =
+      WireMessage::Deserialize(bytes, &is_incomplete);
+  EXPECT_FALSE(is_incomplete);
+  ASSERT_TRUE(message);
+  EXPECT_EQ("a", message->payload());
+  EXPECT_EQ("testFeature", message->feature());
+}
+
+TEST(SecureChannelWireMessageTest,
+     Deserialize_ValidMessageWithExtraUnknownFields_V4) {
+  bool is_incomplete;
+  std::string header("\4\0\0\0\x4c", 5);
   std::string bytes = header +
                       "{"
                       "  \"payload\": \"YQ==\","
