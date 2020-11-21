@@ -51,6 +51,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
   enum class Version {
     INVALID,
     V1,
+    V2,
   };
 
   CableDiscoveryData(Version version,
@@ -79,6 +80,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
     CableSessionPreKeyArray session_pre_key;
   };
   base::Optional<V1Data> v1;
+
+  // For caBLEv2, the payload is the server-link data provided in the extension
+  // as the "sessionPreKey".
+  base::Optional<std::vector<uint8_t>> v2;
 };
 
 namespace cablev2 {

@@ -585,14 +585,31 @@ TypeConverter<CableAuthenticationPtr, blink::CableAuthenticationData>::Convert(
     const blink::CableAuthenticationData& data) {
   auto entity = CableAuthentication::New();
   entity->version = data.version();
-  entity->client_eid = ConvertFixedSizeArray(data.clientEid(), 16);
-  entity->authenticator_eid =
-      ConvertFixedSizeArray(data.authenticatorEid(), 16);
-  entity->session_pre_key = ConvertFixedSizeArray(data.sessionPreKey(), 32);
-  if (entity->client_eid.IsEmpty() || entity->authenticator_eid.IsEmpty() ||
-      entity->session_pre_key.IsEmpty()) {
-    return nullptr;
+  switch (entity->version) {
+    case 1:
+      entity->client_eid = ConvertFixedSizeArray(data.clientEid(), 16);
+      entity->authenticator_eid =
+          ConvertFixedSizeArray(data.authenticatorEid(), 16);
+      entity->session_pre_key = ConvertFixedSizeArray(data.sessionPreKey(), 32);
+      if (entity->client_eid->IsEmpty() ||
+          entity->authenticator_eid->IsEmpty() ||
+          entity->session_pre_key->IsEmpty()) {
+        return nullptr;
+      }
+      break;
+
+    case 2:
+      entity->server_link_data =
+          ConvertTo<Vector<uint8_t>>(data.sessionPreKey());
+      if (entity->server_link_data->IsEmpty()) {
+        return nullptr;
+      }
+      break;
+
+    default:
+      return nullptr;
   }
+
   return entity;
 }
 
@@ -651,7 +668,7 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
     if (extensions->hasCableAuthentication()) {
       Vector<CableAuthenticationPtr> mojo_data;
       for (auto& data : extensions->cableAuthentication()) {
-        if (data->version() != 1) {
+        if (data->version() < 1 || data->version() > 2) {
           continue;
         }
         CableAuthenticationPtr mojo_cable = CableAuthentication::From(*data);

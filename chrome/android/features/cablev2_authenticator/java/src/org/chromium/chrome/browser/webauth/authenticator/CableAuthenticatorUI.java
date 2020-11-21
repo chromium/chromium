@@ -23,11 +23,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.Log;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
@@ -39,14 +41,27 @@ import java.lang.ref.WeakReference;
  */
 public class CableAuthenticatorUI
         extends Fragment implements OnClickListener, QRScanDialog.Callback {
+    private static final String TAG = "CableAuthenticatorUI";
+
     // ENABLE_BLUETOOTH_REQUEST_CODE is a random int used to identify responses
     // to a request to enable Bluetooth. (Request codes can only be 16-bit.)
     private static final int ENABLE_BLUETOOTH_REQUEST_CODE = 64907;
+
+    private static final String ACTIVITY_CLASS_NAME_EXTRA =
+            "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName";
+    private static final String FCM_EXTRA = "org.chromium.chrome.modules.cablev2_authenticator.FCM";
+    private static final String NETWORK_CONTEXT_EXTRA =
+            "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
+    private static final String REGISTRATION_EXTRA =
+            "org.chromium.chrome.modules.cablev2_authenticator.Registration";
+    private static final String SERVER_LINK_EXTRA =
+            "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
 
     private enum Mode {
         QR, // Triggered from Settings; can scan QR code to start handshake.
         FCM, // Triggered by user selecting notification; handshake already running.
         USB, // Triggered by connecting via USB.
+        SERVER_LINK, // Triggered by GMSCore forwarding from GAIA.
     }
     private Mode mMode;
     private AndroidPermissionDelegate mPermissionDelegate;
@@ -54,6 +69,7 @@ public class CableAuthenticatorUI
     private LinearLayout mQRButton;
     private LinearLayout mUnlinkButton;
     private ImageView mHeader;
+    private TextView mStatusText;
 
     // The following two members store a pending QR-scan result while Bluetooth
     // is enabled.
@@ -68,25 +84,27 @@ public class CableAuthenticatorUI
         Bundle arguments = getArguments();
         final UsbAccessory accessory =
                 (UsbAccessory) arguments.getParcelable(UsbManager.EXTRA_ACCESSORY);
+        final byte[] serverLink = arguments.getByteArray(SERVER_LINK_EXTRA);
         if (accessory != null) {
             mMode = Mode.USB;
-        } else if (arguments.getBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM")) {
+        } else if (arguments.getBoolean(FCM_EXTRA)) {
             mMode = Mode.FCM;
+        } else if (serverLink != null) {
+            mMode = Mode.SERVER_LINK;
         } else {
             mMode = Mode.QR;
         }
 
-        final long networkContext = arguments.getLong(
-                "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext");
-        final long registration =
-                arguments.getLong("org.chromium.chrome.modules.cablev2_authenticator.Registration");
-        final String activityClassName = arguments.getString(
-                "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName");
+        Log.i(TAG, "Starting in mode " + mMode.toString());
+
+        final long networkContext = arguments.getLong(NETWORK_CONTEXT_EXTRA);
+        final long registration = arguments.getLong(REGISTRATION_EXTRA);
+        final String activityClassName = arguments.getString(ACTIVITY_CLASS_NAME_EXTRA);
 
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
         mAuthenticator = new CableAuthenticator(getContext(), this, networkContext, registration,
-                activityClassName, mMode == Mode.FCM, accessory);
+                activityClassName, mMode == Mode.FCM, accessory, serverLink);
     }
 
     @Override
@@ -102,13 +120,18 @@ public class CableAuthenticatorUI
             case FCM:
                 return inflater.inflate(R.layout.cablev2_fcm, container, false);
 
+            case SERVER_LINK:
+                View v = inflater.inflate(R.layout.cablev2_serverlink, container, false);
+                mStatusText = v.findViewById(R.id.status_text);
+                return v;
+
             case QR:
                 // TODO: should check FEATURE_BLUETOOTH with
                 // https://developer.android.com/reference/android/content/pm/PackageManager.html#hasSystemFeature(java.lang.String)
                 // TODO: strings should be translated but this will be replaced during
                 // the UI process.
 
-                View v = inflater.inflate(R.layout.cablev2_qr_scan, container, false);
+                v = inflater.inflate(R.layout.cablev2_qr_scan, container, false);
                 mQRButton = v.findViewById(R.id.qr_scan);
                 mQRButton.setOnClickListener(this);
 
@@ -208,19 +231,26 @@ public class CableAuthenticatorUI
     }
 
     void onStatus(int code) {
-        if (mMode != Mode.QR) {
-            // In FCM mode, the handshake is done before the UI appears. For
-            // USB everything should happen immediately.
-            return;
-        }
+        switch (mMode) {
+            case QR:
+                // These values must match up with the Status enum in v2_authenticator.h
+                if (code == 1) {
+                    setHeader(R.style.step2);
+                } else if (code == 2) {
+                    setHeader(R.style.step3);
+                } else if (code == 3) {
+                    setHeader(R.style.step4);
+                }
+                break;
 
-        // These values must match up with the Status enum in v2_authenticator.h
-        if (code == 1) {
-            setHeader(R.style.step2);
-        } else if (code == 2) {
-            setHeader(R.style.step3);
-        } else if (code == 3) {
-            setHeader(R.style.step4);
+            case SERVER_LINK:
+                mStatusText.setText(String.valueOf(code));
+                break;
+
+            case FCM:
+            case USB:
+                // In FCM mode, the handshake is done before the UI appears. For
+                // USB everything should happen immediately.
         }
     }
 

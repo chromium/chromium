@@ -52,6 +52,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
         if (qr_generator_key_.has_value()) {
           v2_discovery = std::make_unique<cablev2::Discovery>(
               network_context_, *qr_generator_key_, std::move(v2_pairings_),
+              cable_data_.value_or(std::vector<CableDiscoveryData>()),
               std::move(cable_pairing_callback_));
         }
         std::unique_ptr<FidoDiscoveryBase> v1_discovery =

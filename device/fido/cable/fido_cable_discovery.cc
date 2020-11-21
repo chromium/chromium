@@ -201,6 +201,7 @@ FidoCableDiscovery::CreateV1HandshakeHandler(
           device, nonce, discovery_data.v1->session_pre_key);
     }
 
+    case CableDiscoveryData::Version::V2:
     case CableDiscoveryData::Version::INVALID:
       CHECK(false);
       return nullptr;

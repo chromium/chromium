@@ -12,10 +12,12 @@ import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.util.Base64;
 
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -35,10 +37,13 @@ import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
  * pulls in the dynamic feature module containing the needed code.
  */
 public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
+    private static final String TAG = "CableAuthenticatorActivity";
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
     // See https://developer.android.com/guide/topics/connectivity/usb/accessory#java
     static final String USB_ACCESSORY_ATTACHED =
             "android.hardware.usb.action.USB_ACCESSORY_ATTACHED";
+    static final String SERVER_LINK_EXTRA =
+            "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
 
     @Override
     @SuppressLint("SetTextI18n") // TODO(BUG=1002262): translate
@@ -71,10 +76,19 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
             // is untrusted.
             arguments = new Bundle();
             arguments.putParcelable(UsbManager.EXTRA_ACCESSORY, accessory);
+        } else if (intent.hasExtra(SERVER_LINK_EXTRA)) {
+            // This Intent comes from GMSCore when it's triggering a server-linked connection.
+            final String serverLinkBase64 = intent.getStringExtra(SERVER_LINK_EXTRA);
+            arguments = new Bundle();
+            try {
+                final byte[] serverLink = Base64.decode(serverLinkBase64, Base64.DEFAULT);
+                arguments.putByteArray(SERVER_LINK_EXTRA, serverLink);
+            } catch (IllegalArgumentException e) {
+                Log.i(TAG, "Invalid base64 in ServerLink argument");
+            }
         } else {
-            // Since this Activity is not exported, this only happens when a
-            // notification is tapped and |EXTRA_SHOW_FRAGMENT_ARGUMENTS| thus
-            // comes from our own PendingIntent.
+            // Since this Activity is not otherwise exported, this only happens when a notification
+            // is tapped and |EXTRA_SHOW_FRAGMENT_ARGUMENTS| thus comes from our own PendingIntent.
             arguments = intent.getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
         }
 

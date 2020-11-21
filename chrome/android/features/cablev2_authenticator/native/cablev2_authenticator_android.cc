@@ -87,6 +87,29 @@ base::span<const uint8_t> JavaByteArrayToSpan(
   return base::as_bytes(base::make_span(data_bytes, data_len));
 }
 
+// JavaByteArrayToFixedSpan returns a span that aliases |data|, or |nullopt| if
+// the span is not of the correct length. Be aware that the reference for |data|
+// must outlive the span.
+template <size_t N>
+base::Optional<base::span<const uint8_t, N>> JavaByteArrayToFixedSpan(
+    JNIEnv* env,
+    const JavaParamRef<jbyteArray>& data) {
+  static_assert(N != 0,
+                "Zero case is different from JavaByteArrayToSpan as null "
+                "inputs will always be rejected here.");
+
+  if (data.is_null()) {
+    return base::nullopt;
+  }
+
+  const size_t data_len = env->GetArrayLength(data);
+  if (data_len != N) {
+    return base::nullopt;
+  }
+  const jbyte* data_bytes = env->GetByteArrayElements(data, /*iscopy=*/nullptr);
+  return base::as_bytes(base::make_span<N>(data_bytes, data_len));
+}
+
 // GlobalData holds all the state for ongoing security key operations. Since
 // there are ultimately only one human user, concurrent requests are not
 // supported.
@@ -508,6 +531,36 @@ static jboolean JNI_CableAuthenticator_StartQR(
           ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
           decoded_qr->peer_identity,
           link ? global_data.registration->contact_id() : base::nullopt);
+
+  return true;
+}
+
+static jboolean JNI_CableAuthenticator_StartServerLink(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& cable_authenticator,
+    const JavaParamRef<jbyteArray>& server_link_data_java) {
+  constexpr size_t kDataSize =
+      device::kP256X962Length + device::cablev2::kQRSecretSize;
+  const base::Optional<base::span<const uint8_t, kDataSize>> server_link_data =
+      JavaByteArrayToFixedSpan<kDataSize>(env, server_link_data_java);
+
+  if (!server_link_data) {
+    FIDO_LOG(ERROR) << "Bad length server-link data length";
+    return false;
+  }
+
+  // Sending pairing information is disabled when doing a server-linked
+  // connection, thus the root secret and authenticator name will not be used.
+  std::array<uint8_t, device::cablev2::kRootSecretSize> dummy_root_secret = {0};
+  std::string dummy_authenticator_name = "";
+  GlobalData& global_data = GetGlobalData();
+  global_data
+      .current_transaction = device::cablev2::authenticator::TransactFromQRCode(
+      std::make_unique<AndroidPlatform>(env, cable_authenticator),
+      global_data.network_context, dummy_root_secret, dummy_authenticator_name,
+      server_link_data
+          ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>(),
+      server_link_data->subspan<0, device::kP256X962Length>(), base::nullopt);
 
   return true;
 }

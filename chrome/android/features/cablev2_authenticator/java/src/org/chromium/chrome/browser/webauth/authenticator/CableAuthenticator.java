@@ -96,7 +96,7 @@ class CableAuthenticator {
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
             long registration, String activityClassName, boolean isFcmNotification,
-            UsbAccessory accessory) {
+            UsbAccessory accessory, byte[] serverLink) {
         mContext = context;
         mUi = ui;
 
@@ -116,6 +116,10 @@ class CableAuthenticator {
         if (isFcmNotification) {
             // The user tapped a notification that resulted from an FCM message.
             CableAuthenticatorJni.get().onInteractionReady(this);
+        }
+
+        if (serverLink != null) {
+            CableAuthenticatorJni.get().startServerLink(this, serverLink);
         }
 
         // Otherwise wait for a QR scan.
@@ -567,6 +571,12 @@ class CableAuthenticator {
          */
         boolean startQR(CableAuthenticator cableAuthenticator, String authenticatorName,
                 String qrUrl, boolean link);
+
+        /**
+         * Called to instruct the C++ code to start a new transaction based on the given link
+         * information which has been provided by the server.
+         */
+        boolean startServerLink(CableAuthenticator cableAuthenticator, byte[] serverLinkData);
 
         /**
          * unlink causes the root secret to be rotated and the FCM token to be rotated. This

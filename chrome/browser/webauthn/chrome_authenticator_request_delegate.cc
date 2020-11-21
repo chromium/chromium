@@ -385,7 +385,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     qr_generator_key.emplace();
     crypto::RandBytes(*qr_generator_key);
     qr_string = device::cablev2::qr::Encode(*qr_generator_key);
-    paired_phones = GetCablePairings();
+
+    if (!cable_extension_provided) {
+      paired_phones = GetCablePairings();
+    }
     have_paired_phones = !paired_phones.empty();
 
     mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
@@ -396,7 +399,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
         SystemNetworkContextManager::GetInstance()->GetContext());
   }
 
-  if (pairings.empty() && !qr_generator_key) {
+  if (!cable_extension_provided && !qr_generator_key) {
     return;
   }
 
@@ -655,6 +658,10 @@ ChromeAuthenticatorRequestDelegate::GetLastTransportUsed() const {
 
 bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
     const url::Origin& origin) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) {
+    return true;
+  }
+
   // Because the future of the caBLE extension might be that we transition
   // everything to QR-code or sync-based pairing, we don't want use of the
   // extension to spread without consideration. Therefore it's limited to

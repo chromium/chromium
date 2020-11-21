@@ -32,6 +32,10 @@ extern const base::Feature kWebAuthBiometricEnrollment;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthPhoneSupport;
 
+// Support the caBLE extension in assertion requests from any origin.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthCableExtensionAnywhere;
+
 // Enable WebAuthn GetAssertion calls in cross-origin iframes if allowed by
 // Feature Policy.
 COMPONENT_EXPORT(DEVICE_FIDO)

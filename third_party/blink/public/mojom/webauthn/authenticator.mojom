@@ -236,15 +236,23 @@ struct CableAuthentication {
   uint8 version;
 
   // A 16-byte ephemeral identifier that the browser will advertise.
-  array<uint8, 16> client_eid;
+  // (Present iff version == 1.)
+  array<uint8, 16>? client_eid;
 
   // A 16-byte ephemeral identifier that the browser expects to receive from a
   // responding authenticator.
-  array<uint8, 16> authenticator_eid;
+  // (Present iff version == 1.)
+  array<uint8, 16>? authenticator_eid;
 
   // A 32-byte pre-key used to compute a session key to encrypt messages between
   // a paired client and authenticator following a successful discovery.
-  array<uint8, 32> session_pre_key;
+  // (Present iff version == 1.)
+  array<uint8, 32>? session_pre_key;
+
+  // caBLEv2 server-link data, used to find and communicate with a caBLEv2
+  // device.
+  // (Present iff version == 2.)
+  array<uint8>? server_link_data;
 };
 
 // Cloud-assisted BLE extension data for makeCredential.
