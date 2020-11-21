@@ -259,6 +259,7 @@ class TtsApiTest : public ExtensionApiTest {
     content::TtsController* tts_controller =
         content::TtsController::GetInstance();
     tts_controller->SetTtsPlatform(&mock_platform_impl_);
+    TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
     tts_controller->SetTtsEngineDelegate(TtsExtensionEngine::GetInstance());
   }
 

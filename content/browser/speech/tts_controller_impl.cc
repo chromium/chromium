@@ -129,11 +129,15 @@ void TtsControllerImpl::SpeakOrEnqueue(
     return;
   }
 
-  // If the TTS platform is still loading, queue or flush the utterance. The
-  // utterances can be sent to platform specific implementation or to the
-  // engine implementation. Every utterances are postponed until the platform
-  // specific implementation is loaded to avoid racy behaviors.
-  if (TtsPlatformLoading()) {
+  // If the TTS platform or tts engine delegate is still loading or
+  // initializing, queue or flush the utterance. The utterances can be sent to
+  // platform specific implementation or to the engine implementation. Every
+  // utterances are postponed until the platform specific implementation and
+  // built in tts engine are loaded to avoid races where the utterance gets
+  // dropped unexpectedly.
+  if (TtsPlatformLoading() ||
+      (engine_delegate_ && !engine_delegate_->IsBuiltInTtsEngineInitialized(
+                               utterance->GetBrowserContext()))) {
     if (utterance->GetShouldClearQueue())
       ClearUtteranceQueue(true);
 

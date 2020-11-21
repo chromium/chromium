@@ -36,6 +36,8 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
   void Pause(content::TtsUtterance* utterance) override;
   void Resume(content::TtsUtterance* utterance) override;
   bool LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override;
+  bool IsBuiltInTtsEngineInitialized(
+      content::BrowserContext* browser_context) override;
 
   void DisableBuiltInTTSEngineForTesting() {
     disable_built_in_tts_engine_for_testing_ = true;

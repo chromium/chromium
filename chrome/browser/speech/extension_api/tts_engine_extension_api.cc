@@ -34,6 +34,10 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/common/extensions/extension_constants.h"
+#endif
+
 using extensions::EventRouter;
 using extensions::Extension;
 using extensions::ExtensionSystem;
@@ -342,6 +346,29 @@ bool TtsExtensionEngine::LoadBuiltInTtsEngine(
   return true;
 #else
   return false;
+#endif
+}
+
+bool TtsExtensionEngine::IsBuiltInTtsEngineInitialized(
+    content::BrowserContext* browser_context) {
+  if (!browser_context || disable_built_in_tts_engine_for_testing_)
+    return true;
+
+#if defined(OS_CHROMEOS)
+  std::vector<content::VoiceData> voices;
+  GetVoices(browser_context, &voices);
+  bool saw_google_tts = false;
+  bool saw_espeak = false;
+  for (const auto& voice : voices) {
+    saw_google_tts |=
+        voice.engine_id == extension_misc::kGoogleSpeechSynthesisExtensionId;
+    saw_espeak |=
+        voice.engine_id == extension_misc::kEspeakSpeechSynthesisExtensionId;
+  }
+  return saw_google_tts && saw_espeak;
+#else
+  // Vacuously; no built in engines on other platforms yet. TODO: network tts?
+  return true;
 #endif
 }
 

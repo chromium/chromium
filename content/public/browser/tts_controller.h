@@ -67,6 +67,10 @@ class CONTENT_EXPORT TtsEngineDelegate {
 
   // Load the built-in TTS engine.
   virtual bool LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
+
+  // Returns whether the built in engine is initialized.
+  virtual bool IsBuiltInTtsEngineInitialized(
+      BrowserContext* browser_context) = 0;
 };
 
 // Class that wants to be notified when the set of

@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/speech/tts_utterance_impl.h"
 #include "content/public/browser/tts_platform.h"
@@ -107,6 +108,45 @@ class MockTtsPlatformImpl : public TtsPlatform {
   base::OnceCallback<void(bool)> did_start_speaking_callback_;
 };
 
+class MockTtsEngineDelegate : public TtsEngineDelegate {
+ public:
+  int utterance_id() { return utterance_id_; }
+
+  void set_is_built_in_tts_engine_initialized(bool value) {
+    is_built_in_tts_engine_initialized_ = value;
+  }
+
+  void set_voices(const std::vector<VoiceData>& voices) { voices_ = voices; }
+
+  // TtsEngineDelegate:
+  void Speak(TtsUtterance* utterance, const VoiceData& voice) override {
+    utterance_id_ = utterance->GetId();
+  }
+
+  bool LoadBuiltInTtsEngine(BrowserContext* browser_context) override {
+    return true;
+  }
+
+  bool IsBuiltInTtsEngineInitialized(BrowserContext* browser_context) override {
+    return is_built_in_tts_engine_initialized_;
+  }
+
+  void GetVoices(BrowserContext* browser_context,
+                 std::vector<VoiceData>* out_voices) override {
+    *out_voices = voices_;
+  }
+
+  // Unused (TtsEngineDelegate:)
+  void Stop(TtsUtterance* utterance) override {}
+  void Pause(TtsUtterance* utterance) override {}
+  void Resume(TtsUtterance* utterance) override {}
+
+ private:
+  bool is_built_in_tts_engine_initialized_ = true;
+  int utterance_id_ = -1;
+  std::vector<VoiceData> voices_;
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class MockTtsControllerDelegate : public TtsControllerDelegate {
  public:
@@ -173,6 +213,11 @@ class TtsControllerTest : public testing::Test {
     platform_impl_ = std::make_unique<MockTtsPlatformImpl>(controller_.get());
     browser_context_ = std::make_unique<TestBrowserContext>();
     controller()->SetTtsPlatform(platform_impl_.get());
+#if !defined(OS_ANDROID)
+    // TtsEngineDelegate isn't set for Android in ChromeContentBrowserClient
+    // since it has no extensions.
+    controller()->SetTtsEngineDelegate(&engine_delegate_);
+#endif  // !defined(OS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     controller()->SetTtsControllerDelegateForTesting(&delegate_);
 #endif
@@ -187,6 +232,7 @@ class TtsControllerTest : public testing::Test {
   MockTtsPlatformImpl* platform_impl() { return platform_impl_.get(); }
   TestTtsControllerImpl* controller() { return controller_.get(); }
   TestBrowserContext* browser_context() { return browser_context_.get(); }
+  MockTtsEngineDelegate* engine_delegate() { return &engine_delegate_; }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MockTtsControllerDelegate* delegate() { return &delegate_; }
@@ -225,6 +271,7 @@ class TtsControllerTest : public testing::Test {
   std::unique_ptr<TestTtsControllerImpl> controller_;
   std::unique_ptr<MockTtsPlatformImpl> platform_impl_;
   std::unique_ptr<TestBrowserContext> browser_context_;
+  MockTtsEngineDelegate engine_delegate_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MockTtsControllerDelegate delegate_;
 #endif
@@ -791,7 +838,7 @@ TEST_F(TtsControllerTest, PlatformNotSupported) {
   EXPECT_EQ(0, platform_impl()->stop_speaking_called());
 }
 
-TEST_F(TtsControllerTest, SpeakWhenLoading) {
+TEST_F(TtsControllerTest, SpeakWhenLoadingPlatformImpl) {
   platform_impl()->SetPlatformImplInitialized(false);
 
   std::unique_ptr<WebContents> web_contents = CreateWebContents();
@@ -820,5 +867,48 @@ TEST_F(TtsControllerTest, SpeakWhenLoading) {
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_FALSE(controller()->IsSpeaking());
 }
+
+#if !defined(OS_ANDROID)
+TEST_F(TtsControllerTest, SpeakWhenLoadingBuiltInEngine) {
+  engine_delegate()->set_is_built_in_tts_engine_initialized(false);
+
+  std::vector<VoiceData> voices;
+  VoiceData voice_data;
+  voice_data.engine_id = "x";
+  voice_data.events.insert(TTS_EVENT_START);
+  voice_data.events.insert(TTS_EVENT_END);
+  voices.push_back(voice_data);
+  engine_delegate()->set_voices(voices);
+
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+  utterance->SetShouldClearQueue(false);
+
+  // Speak an utterance while the built in engine is initializing, the utterance
+  // should be queued.
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  EXPECT_FALSE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+
+  // Simulate the completion of the initialisation.
+  engine_delegate()->set_is_built_in_tts_engine_initialized(true);
+  controller()->VoicesChanged();
+
+  int utterance_id = engine_delegate()->utterance_id();
+  controller()->OnTtsEvent(utterance_id, content::TTS_EVENT_START, 0, 0,
+                           std::string());
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_TRUE(TtsControllerCurrentUtterance());
+  EXPECT_TRUE(controller()->IsSpeaking());
+
+  // Complete the playing utterance.
+  controller()->OnTtsEvent(utterance_id, content::TTS_EVENT_END, 0, 0,
+                           std::string());
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+  EXPECT_FALSE(controller()->IsSpeaking());
+}
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace content
