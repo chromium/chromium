@@ -224,6 +224,7 @@ TEST_F(SchemeHostPortTest, Serialization) {
       {"https://example.com:123/", "https://example.com:123"},
       {"file:///etc/passwd", "file://"},
       {"file://example.com/etc/passwd", "file://example.com"},
+      {"https://example.com:0/", "https://example.com:0"},
   };
 
   for (const auto& test : cases) {

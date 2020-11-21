@@ -515,9 +515,8 @@ void SecurityOrigin::BuildRawString(StringBuilder& builder) const {
   builder.Append("://");
   builder.Append(host_);
 
-  // TODO(crbug.com/1136966): Fix this, and url::Origin's serialization logic,
-  // to make origins with port 0 serialize their ports.
-  if (port_ && port_ != DefaultPortForProtocol(protocol_)) {
+  if (DefaultPortForProtocol(protocol_) &&
+      port_ != DefaultPortForProtocol(protocol_)) {
     builder.Append(':');
     builder.AppendNumber(port_);
   }

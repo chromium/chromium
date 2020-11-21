@@ -571,7 +571,7 @@ TEST_F(SecurityOriginTest, CreateFromTuple) {
     const char* origin;
   } cases[] = {
       {"http", "example.com", 80, "http://example.com"},
-      {"http", "example.com", 0, "http://example.com"},
+      {"http", "example.com", 0, "http://example.com:0"},
       {"http", "example.com", 81, "http://example.com:81"},
       {"https", "example.com", 443, "https://example.com"},
       {"https", "example.com", 444, "https://example.com:444"},
