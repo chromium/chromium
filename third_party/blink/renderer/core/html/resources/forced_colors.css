@@ -15,21 +15,17 @@
 */
 
 @media ua-forced-colors {
-  html {
-    color: CanvasText;
-  }
-
   :focus {
     -internal-forced-outline-color: Highlight;
   }
 
   a:link,
   a:-webkit-any-link:active {
-    color: LinkText;
+    -internal-forced-color: LinkText;
   }
 
   a:visited {
-    color: VisitedText;
+    -internal-forced-color: VisitedText;
   }
 
   fieldset {
@@ -38,18 +34,19 @@
 
   mark {
     -internal-forced-background-color: yellow;
+    -internal-forced-color: black;
   }
 
   ::placeholder {
-    color: GrayText;
+    -internal-forced-color: GrayText;
   }
 
   input,
   textarea {
     background-color: Canvas;
-    color: CanvasText;
     -internal-forced-background-color: Canvas;
     -internal-forced-border-color: ButtonText;
+    -internal-forced-color: CanvasText;
   }
 
   input:hover,
@@ -74,15 +71,15 @@
   input[type="datetime-local"]:disabled,
   textarea:disabled {
     background-color: ButtonFace;
-    color: GrayText;
     -internal-forced-background-color: ButtonFace;
     -internal-forced-border-color: GrayText;
+    -internal-forced-color: GrayText;
   }
 
   input::-webkit-calendar-picker-indicator {
     background-color: ButtonFace;
-    color: ButtonText;
     -internal-forced-background-color: ButtonFace;
+    -internal-forced-color: ButtonText;
   }
 
   input::-webkit-datetime-edit-ampm-field:focus,
@@ -95,9 +92,9 @@
   input::-webkit-datetime-edit-week-field:focus,
   input::-webkit-datetime-edit-year-field:focus {
       background-color: Highlight;
-      color: HighlightText;
       outline: none;
       -internal-forced-background-color: Highlight;
+      -internal-forced-color: HighlightText;
   }
 
   input[type="color"]:disabled {
@@ -118,9 +115,9 @@
   input[type="reset"],
   input[type="file"]::-webkit-file-upload-button {
     background-color: ButtonFace;
-    color: ButtonText;
     -internal-forced-background-color: ButtonFace;
     -internal-forced-border-color: ButtonText;
+    -internal-forced-color: ButtonText;
   }
 
   button:hover,
@@ -138,13 +135,13 @@
   input[type="button"]:disabled,
   input[type="submit"]:disabled,
   input[type="reset"]:disabled {
-    color: GrayText;
     -internal-forced-border-color: GrayText;
+    -internal-forced-color: GrayText;
   }
 
   /* same color as hyperlinks */
   details summary {
-    color: LinkText;
+    -internal-forced-color: LinkText;
   }
 
   select:-internal-list-box {
@@ -159,8 +156,8 @@
   select:-internal-list-box:disabled option,
   select:-internal-list-box:disabled option:hover {
     background-color: Canvas !important;
-    color: GrayText !important;
     -internal-forced-background-color: Canvas !important;
+    -internal-forced-color: GrayText !important;
   }
 
   /* option selected */
@@ -195,9 +192,9 @@
 
   select {
     background-color: Canvas;
-    color: CanvasText;
     -internal-forced-background-color: Canvas;
     -internal-forced-border-color: CanvasText;
+    -internal-forced-color: CanvasText;
   }
 
   select:not(:-internal-list-box) {
@@ -214,9 +211,9 @@
   }
 
   select:disabled {
-    color: GrayText;
     opacity: 1;
     -internal-forced-border-color: GrayText;
+    -internal-forced-color: GrayText;
   }
 
   meter::-webkit-meter-bar {
@@ -235,17 +232,17 @@
   input:-internal-autofill-previewed,
   textarea:-internal-autofill-previewed,
   select:-internal-autofill-previewed {
-    color: CanvasText !important;
     background-color: Canvas !important;
     -internal-forced-background-color: Canvas !important;
+    -internal-forced-color: CanvasText !important;
   }
 
   input:-internal-autofill-selected,
   textarea:-internal-autofill-selected,
   select:-internal-autofill-selected {
-    color: CanvasText !important;
     background-color: Canvas !important;
     -internal-forced-background-color: Canvas !important;
+    -internal-forced-color: CanvasText !important;
   }
 
 }

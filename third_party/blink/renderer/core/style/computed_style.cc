@@ -2366,6 +2366,22 @@ Color ComputedStyle::GetInternalVisitedCurrentColor() const {
   return InternalVisitedColor().Resolve(Color(), UsedColorScheme());
 }
 
+Color ComputedStyle::GetInternalForcedCurrentColor() const {
+  DCHECK(!InternalForcedColor().IsCurrentColor());
+  if (GetColor().IsSystemColor())
+    return GetCurrentColor();
+  return InternalForcedColor().Resolve(Color(), UsedColorScheme(),
+                                       /* is_forced_color */ true);
+}
+
+Color ComputedStyle::GetInternalForcedVisitedCurrentColor() const {
+  DCHECK(!InternalForcedVisitedColor().IsCurrentColor());
+  if (InternalVisitedColor().IsSystemColor())
+    return GetInternalVisitedCurrentColor();
+  return InternalForcedVisitedColor().Resolve(Color(), UsedColorScheme(),
+                                              /* is_forced_color */ true);
+}
+
 bool ComputedStyle::ShadowListHasCurrentColor(const ShadowList* shadow_list) {
   if (!shadow_list)
     return false;

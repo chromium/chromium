@@ -10,10 +10,12 @@
 namespace blink {
 
 Color StyleColor::Resolve(Color current_color,
-                          mojom::blink::ColorScheme color_scheme) const {
+                          mojom::blink::ColorScheme color_scheme,
+                          bool is_forced_color) const {
   if (IsCurrentColor())
     return current_color;
-  if (EffectiveColorKeyword() != CSSValueID::kInvalid)
+  if (EffectiveColorKeyword() != CSSValueID::kInvalid ||
+      (is_forced_color && IsSystemColor()))
     return ColorFromKeyword(color_keyword_, color_scheme);
   return color_;
 }

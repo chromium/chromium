@@ -112,7 +112,9 @@ class Float;
 class FloodColor;
 class InternalForcedBackgroundColor;
 class InternalForcedBorderColor;
+class InternalForcedColor;
 class InternalForcedOutlineColor;
+class InternalForcedVisitedColor;
 class InternalVisitedBackgroundColor;
 class InternalVisitedBorderBottomColor;
 class InternalVisitedBorderLeftColor;
@@ -221,7 +223,9 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::FloodColor;
   friend class css_longhand::InternalForcedBackgroundColor;
   friend class css_longhand::InternalForcedBorderColor;
+  friend class css_longhand::InternalForcedColor;
   friend class css_longhand::InternalForcedOutlineColor;
+  friend class css_longhand::InternalForcedVisitedColor;
   friend class css_longhand::InternalVisitedBackgroundColor;
   friend class css_longhand::InternalVisitedBorderBottomColor;
   friend class css_longhand::InternalVisitedBorderLeftColor;
@@ -2691,6 +2695,10 @@ class ComputedStyle : public ComputedStyleBase,
     SetInternalVisitedTextStrokeColorInternal(color);
   }
 
+  void SetInternalForcedVisitedColor(const StyleColor& v) {
+    SetInternalForcedVisitedColorInternal(v);
+  }
+
   static bool IsDisplayBlockContainer(EDisplay display) {
     return display == EDisplay::kBlock || display == EDisplay::kListItem ||
            display == EDisplay::kInlineBlock ||
@@ -2852,8 +2860,14 @@ class ComputedStyle : public ComputedStyleBase,
   const StyleColor& InternalForcedBorderColor() const {
     return InternalForcedBorderColorInternal();
   }
+  const StyleColor& InternalForcedColor() const {
+    return InternalForcedColorInternal();
+  }
   const StyleColor& InternalForcedOutlineColor() const {
     return InternalForcedOutlineColorInternal();
+  }
+  const StyleColor& InternalForcedVisitedColor() const {
+    return InternalForcedVisitedColorInternal();
   }
 
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;
@@ -2901,6 +2915,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   Color GetCurrentColor() const;
   Color GetInternalVisitedCurrentColor() const;
+  Color GetInternalForcedCurrentColor() const;
+  Color GetInternalForcedVisitedCurrentColor() const;
 
   // Helper for resolving a StyleColor which may contain currentColor or a
   // system color keyword. This is intended for cases where a given property
