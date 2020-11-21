@@ -212,7 +212,6 @@ void CastAudioOutputStream::MixerServiceWrapper::Close(
 }
 
 int64_t CastAudioOutputStream::MixerServiceWrapper::GetMaxBufferedFrames() {
-  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   int fill_size_frames = audio_params_.frames_per_buffer();
   base::TimeDelta target_max_buffered_ms = kMediaMaxBufferedFrames;
   if (GetContentType(device_id_) == AudioContentType::kCommunication) {
