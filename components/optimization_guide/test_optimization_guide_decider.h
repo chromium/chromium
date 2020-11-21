@@ -29,6 +29,12 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
       const base::flat_map<proto::ClientModelFeature, float>&
           client_model_feature_values,
       OptimizationGuideTargetDecisionCallback callback) override;
+  void AddObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      OptimizationTargetModelObserver* observer) override;
+  void RemoveObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      OptimizationTargetModelObserver* observer) override;
   void RegisterOptimizationTypes(
       const std::vector<proto::OptimizationType>& optimization_types) override;
   void CanApplyOptimizationAsync(

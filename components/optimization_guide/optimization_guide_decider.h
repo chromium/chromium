@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "components/optimization_guide/optimization_metadata.h"
+#include "components/optimization_guide/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -67,6 +68,27 @@ class OptimizationGuideDecider {
       const base::flat_map<proto::ClientModelFeature, float>&
           client_model_feature_values,
       OptimizationGuideTargetDecisionCallback callback) = 0;
+
+  // Adds an observer for updates to the model for |optimization_target|.
+  //
+  // It is assumed that any model retrieved this way will be passed to the
+  // Machine Learning Service for inference.
+  //
+  // Still being implemented - DO NOT USE YET.
+  virtual void AddObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      OptimizationTargetModelObserver* observer) = 0;
+
+  // Removes an observer for updates to the model for |optimization_target|.
+  //
+  // If |observer| is registered for multiple targets, |observer| must be
+  // removed for all targets that it is added for in order for it to be fully
+  // removed from receiving any calls.
+  //
+  // Still being implemented - DO NOT USE YET.
+  virtual void RemoveObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      OptimizationTargetModelObserver* observer) = 0;
 
   // Registers the optimization types that intend to be queried during the
   // session. It is expected for this to be called after the browser has been

@@ -210,6 +210,20 @@ void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
       optimization_target, std::move(callback), target_decision);
 }
 
+void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    optimization_guide::OptimizationTargetModelObserver* observer) {
+  // TODO(crbug/1146151): Passthrough to prediction manager.
+  NOTREACHED();
+}
+
+void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    optimization_guide::OptimizationTargetModelObserver* observer) {
+  // TODO(crbug/1146151): Passthrough to prediction manager.
+  NOTREACHED();
+}
+
 void OptimizationGuideKeyedService::RegisterOptimizationTypes(
     const std::vector<optimization_guide::proto::OptimizationType>&
         optimization_types) {

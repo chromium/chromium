@@ -52,6 +52,7 @@ static_library("optimization_guide") {
     "optimization_guide_util.h",
     "optimization_metadata.cc",
     "optimization_metadata.h",
+    "optimization_target_model_observer.h",
     "prediction_model.cc",
     "prediction_model.h",
     "store_update_data.cc",

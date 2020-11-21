@@ -62,6 +62,12 @@ class OptimizationGuideKeyedService
                            float>& client_model_feature_values,
       optimization_guide::OptimizationGuideTargetDecisionCallback callback)
       override;
+  void AddObserverForOptimizationTargetModel(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      optimization_guide::OptimizationTargetModelObserver* observer) override;
+  void RemoveObserverForOptimizationTargetModel(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      optimization_guide::OptimizationTargetModelObserver* observer) override;
   void RegisterOptimizationTypes(
       const std::vector<optimization_guide::proto::OptimizationType>&
           optimization_types) override;
