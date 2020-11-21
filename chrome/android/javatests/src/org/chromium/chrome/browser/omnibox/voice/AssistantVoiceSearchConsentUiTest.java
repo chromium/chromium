@@ -154,6 +154,6 @@ public class AssistantVoiceSearchConsentUiTest {
                                        ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ true),
                     is(false));
         });
-        Mockito.verify(mCallback).onResult(false);
+        Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
     }
 }
