@@ -312,8 +312,10 @@ void ChromeWebClient::AllowCertificateError(
 
 bool ChromeWebClient::IsLegacyTLSAllowedForHost(web::WebState* web_state,
                                                 const std::string& hostname) {
-  return LegacyTLSTabAllowList::FromWebState(web_state)->IsDomainAllowed(
-      hostname);
+  auto* allowlist = LegacyTLSTabAllowList::FromWebState(web_state);
+  if (!allowlist)
+    return false;
+  return allowlist->IsDomainAllowed(hostname);
 }
 
 void ChromeWebClient::PrepareErrorPage(
