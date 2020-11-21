@@ -9444,6 +9444,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Medium.ChangedToMedium"
+    enum="NearbyConnectionsMedium" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the data-transfer medium that the Nearby Connections library
+    successfully switches to during a Nearby Share transfer. Emitted when the
+    Nearby Connections library notifies the client of a bandwidth upgrade.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Medium.InitiateBandwidthUpgradeResult"
+    enum="BooleanSuccess" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of Nearby Share starting a bandwidth upgrade via the
+    Nearby Connections library. This metric only records the result of
+    initiating the change not the result of fully finishing an upgrade. Also,
+    this metric does not capture automatic bandwidth upgrades initiated
+    internally by the Nearby Connections library. Emitted when the Nearby
+    Connections client explicitly requests a bandwidth upgrade.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.StartAdvertising.Result.FailureReason{Mode}"
     enum="NearbyShareStartAdvertisingFailureReason" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
