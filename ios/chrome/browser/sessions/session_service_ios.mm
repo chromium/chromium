@@ -171,11 +171,29 @@ NSString* const kSessionFileName =
   return base::mac::ObjCCastStrict<SessionIOS>(rootObject);
 }
 
-- (void)deleteLastSessionFileInDirectory:(NSString*)directory
-                              completion:(base::OnceClosure)callback {
-  NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
-  [self deletePaths:[NSArray arrayWithObject:sessionPath]
-         completion:std::move(callback)];
+- (void)deleteAllSessionFilesInBrowserStateDirectory:(NSString*)directory
+                                          completion:
+                                              (base::OnceClosure)callback {
+  NSMutableArray<NSString*>* sessionFilesPaths = [[NSMutableArray alloc] init];
+  NSString* sessionsDirectoryPath =
+      [directory stringByAppendingPathComponent:kSessionDirectory];
+  NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
+      contentsOfDirectoryAtPath:sessionsDirectoryPath
+                          error:nil];
+  for (NSString* sessionID in allSessionIDs) {
+    NSString* sessionPath =
+        [SessionServiceIOS sessionPathForSessionID:sessionID
+                                         directory:directory];
+    [sessionFilesPaths addObject:sessionPath];
+  }
+
+  // If there were no session ids, then scenes are not supported fall back to
+  // the original location
+  if (sessionFilesPaths.count == 0)
+    [sessionFilesPaths
+        addObject:[[self class] sessionPathForDirectory:directory]];
+
+  [self deletePaths:sessionFilesPaths completion:std::move(callback)];
 }
 
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs

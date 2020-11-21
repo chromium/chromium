@@ -47,9 +47,11 @@ NSString* const kSessionsDirectory = @"Sessions";
 // of errors.
 - (SessionIOS*)loadSessionFromPath:(NSString*)sessionPath;
 
-// Schedules deletion of the file containing the last session in |directory|.
-- (void)deleteLastSessionFileInDirectory:(NSString*)directory
-                              completion:(base::OnceClosure)callback;
+// Schedules deletion of the all session files from a specific browser state
+// |directory|.
+- (void)deleteAllSessionFilesInBrowserStateDirectory:(NSString*)directory
+                                          completion:
+                                              (base::OnceClosure)callback;
 
 // Schedule deletion of session directories with |sessionIDs| which resides in
 // a specific browser state |directory|.
