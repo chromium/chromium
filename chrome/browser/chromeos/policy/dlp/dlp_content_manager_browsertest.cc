@@ -4,11 +4,14 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
+#include "ash/public/cpp/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -45,7 +48,17 @@ constexpr char kScreenCaptureResumedNotificationId[] =
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
  public:
-  DlpContentManagerBrowserTest() {}
+  DlpContentManagerBrowserTest() = default;
+  ~DlpContentManagerBrowserTest() override = default;
+
+  // InProcessBrowserTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kCaptureMode);
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
@@ -104,8 +117,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   DlpContentManager* manager = DlpContentManager::Get();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
-  ScreenshotArea fullscreen = ScreenshotArea::CreateForPartialWindow(
-      root_window, root_window->bounds());
 
   // Open first browser window.
   Browser* browser1 = browser();
@@ -130,7 +141,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
-  manager->OnVideoCaptureStarted(fullscreen, run_loop.QuitClosure());
+  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
+  capture_mode_delegate->StartObservingRestrictedContent(
+      root_window, root_window->bounds(), run_loop.QuitClosure());
 
   // Move first window with confidential content to make it visible.
   browser1->window()->SetBounds(gfx::Rect(100, 100, 700, 700));
@@ -138,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Check that capture was requested to be stopped via callback.
   run_loop.Run();
 
-  manager->OnVideoCaptureStopped();
+  capture_mode_delegate->StopObservingRestrictedContent();
   browser2->window()->Close();
 }
 
@@ -147,8 +160,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   DlpContentManager* manager = DlpContentManager::Get();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
-  ScreenshotArea fullscreen = ScreenshotArea::CreateForPartialWindow(
-      root_window, root_window->bounds());
 
   // Open first browser window.
   Browser* browser1 = browser();
@@ -173,7 +184,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
-  manager->OnVideoCaptureStarted(fullscreen, run_loop.QuitClosure());
+  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
+  capture_mode_delegate->StartObservingRestrictedContent(
+      root_window, root_window->bounds(), run_loop.QuitClosure());
 
   // Move second window to make first window with confidential content visible.
   browser2->window()->SetBounds(gfx::Rect(150, 150, 700, 700));
@@ -181,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Check that capture was requested to be stopped via callback.
   run_loop.Run();
 
-  manager->OnVideoCaptureStopped();
+  capture_mode_delegate->StopObservingRestrictedContent();
   browser2->window()->Close();
 }
 
@@ -190,8 +203,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   DlpContentManager* manager = DlpContentManager::Get();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
-  ScreenshotArea fullscreen = ScreenshotArea::CreateForPartialWindow(
-      root_window, root_window->bounds());
 
   // Open first browser window.
   Browser* browser1 = browser();
@@ -216,8 +227,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
-  manager->OnVideoCaptureStarted(
-      fullscreen, base::BindOnce([] {
+  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
+  capture_mode_delegate->StartObservingRestrictedContent(
+      root_window, root_window->bounds(), base::BindOnce([] {
         FAIL() << "Video capture stop callback shouldn't be called";
       }));
 
@@ -225,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   browser1->window()->SetBounds(gfx::Rect(150, 150, 500, 500));
 
   // Check that capture was not requested to be stopped via callback.
-  manager->OnVideoCaptureStopped();
   run_loop.RunUntilIdle();
+  capture_mode_delegate->StopObservingRestrictedContent();
 
   browser2->window()->Close();
 }
