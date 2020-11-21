@@ -1483,15 +1483,13 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     uint32_t framerate) {
   if (current_bitrate_ == bitrate && current_framerate_ == framerate)
     return;
+  if (bitrate == 0 || framerate == 0)
+    return;
 
   VLOGF(2) << "bitrate=" << bitrate << ", framerate=" << framerate;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   TRACE_EVENT2("media,gpu", "V4L2VEA::RequestEncodingParametersChangeTask",
                "bitrate", bitrate, "framerate", framerate);
-
-  DCHECK_GT(bitrate, 0u);
-  DCHECK_GT(framerate, 0u);
-
   if (current_bitrate_ != bitrate &&
       !device_->SetExtCtrls(
           V4L2_CTRL_CLASS_MPEG,
