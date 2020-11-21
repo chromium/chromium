@@ -468,6 +468,10 @@ class CableAuthenticator {
     }
 
     static String getName() {
+        final String name = BluetoothAdapter.getDefaultAdapter().getName();
+        if (name != null && name.length() > 0) {
+            return name;
+        }
         return Build.MANUFACTURER + " " + Build.MODEL;
     }
 
