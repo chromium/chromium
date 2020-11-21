@@ -72,6 +72,18 @@ GEOMETRY_SKIA_EXPORT Transform TransformAboutPivot(const Point& pivot,
 GEOMETRY_SKIA_EXPORT Transform TransformBetweenRects(const RectF& src,
                                                      const RectF& dst);
 
+// Generates projection matrix and returns it as a Transform.
+GEOMETRY_SKIA_EXPORT Transform OrthoProjectionMatrix(float left,
+                                                     float right,
+                                                     float bottom,
+                                                     float top);
+
+// Generates window matrix and returns it as a Transform.
+GEOMETRY_SKIA_EXPORT Transform WindowMatrix(int x,
+                                            int y,
+                                            int width,
+                                            int height);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_TRANSFORM_UTIL_H_

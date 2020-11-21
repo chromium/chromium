@@ -407,11 +407,10 @@ void OutputPresenterGL::ScheduleOverlays(
         gfx::ToEnclosingRect(overlay.shared_state->clip_rect),
         overlay.shared_state->rounded_corner_bounds,
         overlay.shared_state->sorting_context_id,
-        gfx::Transform(overlay.transform ? *overlay.transform
-                                         : overlay.shared_state->transform),
-        gl_image, overlay.contents_rect,
-        gfx::ToEnclosingRect(overlay.bounds_rect), overlay.background_color,
-        overlay.edge_aa_mask, overlay.shared_state->opacity, overlay.filter));
+        gfx::Transform(overlay.shared_state->transform), gl_image,
+        overlay.contents_rect, gfx::ToEnclosingRect(overlay.bounds_rect),
+        overlay.background_color, overlay.edge_aa_mask,
+        overlay.shared_state->opacity, overlay.filter));
 #endif
   }
 #endif  //  defined(OS_ANDROID) || defined(OS_APPLE) || defined(USE_OZONE)

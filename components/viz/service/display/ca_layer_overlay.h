@@ -83,8 +83,6 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   const AggregatedRenderPassDrawQuad* rpdq = nullptr;
   // The DDL for generating render pass overlay buffer with SkiaRenderer.
   sk_sp<SkDeferredDisplayList> ddl;
-  // The transform for render pass overlay.
-  base::Optional<SkMatrix44> transform;
 };
 
 typedef std::vector<CALayerOverlay> CALayerOverlayList;
