@@ -198,6 +198,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   PhysicalRect ScrollableOverflow(TextHeightType height_type) const;
   PhysicalRect ScrollableOverflowFromChildren(TextHeightType height_type) const;
 
+  OverflowClipAxes GetOverflowClipAxes() const {
+    if (const auto* layout_object = GetLayoutObject())
+      return layout_object->GetOverflowClipAxes();
+    return kNoOverflowClip;
+  }
+
   // TODO(layout-dev): These three methods delegate to legacy layout for now,
   // update them to use LayoutNG based overflow information from the fragment
   // and change them to use NG geometry types once LayoutNG supports overflow.

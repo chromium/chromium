@@ -546,8 +546,6 @@ void LayoutBlock::ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
       }
     }
   }
-
-  ApplyOverflowClipToLayoutOverflowRect();
 }
 
 void LayoutBlock::AddVisualOverflowFromBlockChildren() {

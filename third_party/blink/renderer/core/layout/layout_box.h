@@ -2062,11 +2062,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  protected:
   ~LayoutBox() override;
 
-  // Applies 'overflow:clip' as necessary to the accumulated layout overflow.
-  // During layout overflow is accumulated, once all the overflow has been
-  // accumulated 'overflow:clip' is then applied.
-  void ApplyOverflowClipToLayoutOverflowRect();
-
   virtual OverflowClipAxes ComputeOverflowClipAxes() const;
 
   void WillBeDestroyed() override;

@@ -91,29 +91,6 @@ NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
 
 const PhysicalRect NGLayoutOverflowCalculator::Result(
     const base::Optional<PhysicalRect> inflow_bounds) {
-  // Adjust the layout-overflow if we have "overflow: clip" present.
-  if (!is_scroll_container_ && has_non_visible_overflow_) {
-    const OverflowClipAxes overflow_clip_axes = node_.GetOverflowClipAxes();
-    const LayoutUnit overflow_clip_margin = node_.Style().OverflowClipMargin();
-    if (overflow_clip_margin != LayoutUnit()) {
-      // overflow_clip_margin should only be set if 'overflow' is 'clip' along
-      // both axis.
-      DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
-      PhysicalRect expanded_padding_rect = padding_rect_;
-      expanded_padding_rect.Inflate(overflow_clip_margin);
-      layout_overflow_.Intersect(expanded_padding_rect);
-    } else {
-      if (overflow_clip_axes & kOverflowClipX) {
-        layout_overflow_.offset.left = padding_rect_.offset.left;
-        layout_overflow_.size.width = padding_rect_.size.width;
-      }
-      if (overflow_clip_axes & kOverflowClipY) {
-        layout_overflow_.offset.top = padding_rect_.offset.top;
-        layout_overflow_.size.height = padding_rect_.size.height;
-      }
-    }
-  }
-
   if (!inflow_bounds || !is_scroll_container_)
     return layout_overflow_;
 
@@ -281,14 +258,38 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
   if (!child_fragment.IsCSSBox())
     return child_fragment.LayoutOverflow();
 
-  // Children with overflow clip (e.g. a scrollable child) don't propagate any
-  // layout overflow.
   PhysicalRect overflow = {{}, child_fragment.Size()};
+  const auto& child_style = child_fragment.Style();
   if (!child_fragment.ShouldApplyLayoutContainment() &&
       (!child_fragment.ShouldClipOverflowAlongBothAxis() ||
-       child_fragment.Style().OverflowClipMargin() != LayoutUnit()) &&
-      !child_fragment.IsInlineBox())
-    overflow.UniteEvenIfEmpty(child_fragment.LayoutOverflow());
+       child_style.OverflowClipMargin() != LayoutUnit()) &&
+      !child_fragment.IsInlineBox()) {
+    PhysicalRect child_overflow = child_fragment.LayoutOverflow();
+    if (child_fragment.HasNonVisibleOverflow()) {
+      const OverflowClipAxes overflow_clip_axes =
+          child_fragment.GetOverflowClipAxes();
+      const LayoutUnit overflow_clip_margin = child_style.OverflowClipMargin();
+      if (overflow_clip_margin != LayoutUnit()) {
+        // overflow_clip_margin should only be set if 'overflow' is 'clip' along
+        // both axis.
+        DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
+        PhysicalRect child_padding_rect({}, child_fragment.Size());
+        child_padding_rect.Contract(child_fragment.Borders());
+        child_padding_rect.Inflate(overflow_clip_margin);
+        child_overflow.Intersect(child_padding_rect);
+      } else {
+        if (overflow_clip_axes & kOverflowClipX) {
+          child_overflow.offset.left = LayoutUnit();
+          child_overflow.size.width = child_fragment.Size().width;
+        }
+        if (overflow_clip_axes & kOverflowClipY) {
+          child_overflow.offset.top = LayoutUnit();
+          child_overflow.size.height = child_fragment.Size().height;
+        }
+      }
+    }
+    overflow.UniteEvenIfEmpty(child_overflow);
+  }
 
   // Apply any transforms to the overflow.
   if (base::Optional<TransformationMatrix> transform =

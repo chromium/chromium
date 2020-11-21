@@ -7271,7 +7271,23 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
   if (!ShouldApplyLayoutContainment() &&
       (!ShouldClipOverflowAlongBothAxis() ||
        StyleRef().OverflowClipMargin() != LayoutUnit())) {
-    rect.Unite(LayoutOverflowRect());
+    LayoutRect overflow = LayoutOverflowRect();
+    if (HasNonVisibleOverflow()) {
+      const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
+      const LayoutUnit overflow_clip_margin = StyleRef().OverflowClipMargin();
+      LayoutRect clip_rect = rect;
+      if (overflow_clip_margin != LayoutUnit()) {
+        // overflow_clip_margin should only be set if 'overflow' is 'clip' along
+        // both axis.
+        DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
+        clip_rect.Contract(BorderBoxOutsets());
+        clip_rect.Inflate(overflow_clip_margin);
+        overflow.Intersect(clip_rect);
+      } else {
+        ApplyOverflowClip(overflow_clip_axes, clip_rect, overflow);
+      }
+    }
+    rect.Unite(overflow);
   }
 
   bool has_transform = HasLayer() && Layer()->Transform();
@@ -7782,32 +7798,6 @@ void LayoutBox::ClearCustomLayoutChild() {
 PhysicalRect LayoutBox::DebugRect() const {
   NOT_DESTROYED();
   return PhysicalRect(PhysicalLocation(), Size());
-}
-
-void LayoutBox::ApplyOverflowClipToLayoutOverflowRect() {
-  NOT_DESTROYED();
-  if (!HasNonVisibleOverflow() || IsScrollContainer() ||
-      !LayoutOverflowIsSet()) {
-    return;
-  }
-
-  const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
-  if (overflow_clip_axes == kNoOverflowClip)
-    return;
-
-  LayoutRect no_overflow_rect = NoOverflowRect();
-  LayoutRect overflow_rect = overflow_->layout_overflow->LayoutOverflowRect();
-  const LayoutUnit overflow_clip_margin = StyleRef().OverflowClipMargin();
-  if (overflow_clip_margin != LayoutUnit()) {
-    // overflow_clip_margin should only be set if 'overflow' is 'clip' along
-    // both axis.
-    DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
-    no_overflow_rect.Inflate(overflow_clip_margin);
-    overflow_rect.Intersect(no_overflow_rect);
-  } else {
-    ApplyOverflowClip(overflow_clip_axes, no_overflow_rect, overflow_rect);
-  }
-  overflow_->layout_overflow->SetLayoutOverflow(overflow_rect);
 }
 
 OverflowClipAxes LayoutBox::ComputeOverflowClipAxes() const {

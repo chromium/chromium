@@ -563,12 +563,14 @@ TEST_P(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
   LayoutBox* clip1 = GetLayoutBoxByElementId("clip1");
   EXPECT_FALSE(clip1->IsScrollContainer());
   EXPECT_TRUE(clip1->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(-4, -4, 108, 58), clip1->LayoutOverflowRect());
+  EXPECT_EQ(LayoutRect(-4, -4, 108, 58),
+            clip1->LayoutOverflowRectForPropagation(clip1->Parent()));
 
   LayoutBox* clip2 = GetLayoutBoxByElementId("clip2");
   EXPECT_FALSE(clip2->IsScrollContainer());
   EXPECT_TRUE(clip2->ShouldClipOverflowAlongBothAxis());
-  EXPECT_EQ(LayoutRect(-6, -5, 110, 65), clip2->LayoutOverflowRect());
+  EXPECT_EQ(LayoutRect(-6, -5, 110, 65),
+            clip2->LayoutOverflowRectForPropagation(clip2->Parent()));
 }
 
 TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {
