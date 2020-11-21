@@ -84,10 +84,14 @@
         display: inline-flex;
       }
 
+      .content {
+        height: 200px;
+        overflow: scroll;
+      }
+
       #zeroStateContainer {
         display: flex;
         justify-content: center;
-        margin: 8px;
       }
 
       #zeroStateImageContainer {
@@ -147,6 +151,10 @@
         margin-block-end: 8px;
       }
 
+      #explanationContainer {
+        border-bottom: var(--cr-separator-line);
+      }
+
       .explanation-section {
         display: flex;
       }
@@ -159,21 +167,17 @@
       }
 
       #contactList {
-        border-bottom: var(--cr-separator-line);
         border-top: var(--cr-separator-line);
+        padding-block-start: 8px;
       }
 
       #contactsHeading {
         font-size: 1.2rem;
       }
 
-      .contacts-section {
-        height: 72px;
-      }
-
       .contact-item {
         display: flex;
-        height: 50px;
+        height: 40px;
         padding-block-end: 8px;
         padding-block-start: 8px;
       }
@@ -194,8 +198,6 @@
 
       #noContactsContainer {
         align-items: center;
-        border-bottom: var(--cr-separator-line);
-        border-top: var(--cr-separator-line);
         display: flex;
         flex-direction: column;
         padding-block-end: 16px;
@@ -250,7 +252,7 @@
       <!-- Zero state is shown only when no selection has been made yet. -->
       <template is="dom-if"
           if="[[showZeroState_(selectedVisibility, contactsState)]]">
-        <div id="zeroStateContainer">
+        <div id="zeroStateContainer" class="content">
           <div id="zeroStateImageContainer">
             <iron-icon id="zeroStateImage"
                 icon="nearby-images:nearby-device-visibility">
@@ -273,7 +275,7 @@
       <!-- Shown when contacts are currently being downloaded. -->
       <template is="dom-if"
           if="[[inContactsState_(contactsState, ContactsState.PENDING)]]">
-        <div id="contactsPending" class="contacts-section">
+        <div id="contactsPending" class="content">
           <div>$i18n{nearbyShareContactVisibilityDownloading}</div>
         </div>
       </template>
@@ -282,7 +284,7 @@
       <template is="dom-if"
           if="[[inContactsState_(contactsState, ContactsState.FAILED)]]"
           on-dom-change="domChangeDownloadFailed_">
-        <div id="contactsFailed" class="contacts-section">
+        <div id="contactsFailed" class="content">
           <iron-icon id="contactsFailedImage"
               icon="nearby-images:contacts-download-failed">
           </iron-icon>
@@ -292,100 +294,107 @@
         </div>
       </template>
 
+      <!-- Show when the user has downloaded contacts but there are none.-->
       <template is="dom-if"
-          if="[[showExplanationState_(selectedVisibility,
-              contactsState)]]">
-        <div id="explanation">
-
-          <div class="explanation-section">
-            <iron-icon icon="nearby20:radar" class="padded-icon grey-icon">
-            </iron-icon>
-            <div class="viz-description-section">
-              <div class="cr-title-text">
-                $i18n{nearbyShareContactVisibilityOthersTitle}
-              </div>
-              <div class="cr-secondary-text">
-                $i18n{nearbyShareContactVisibilityOthers}
-              </div>
-            </div>
+          if="[[showEmptyState_(selectedVisibility, contactsState)]]">
+        <div id="noContactsContainer" class="content">
+          <iron-icon id="noContactsImage"
+              icon="nearby-images:contacts-empty">
+          </iron-icon>
+          <div class="cr-title-text">
+            $i18n{nearbyShareContactVisibilityNoContactsTitle}
           </div>
+          <div class="cr-secondary-text">
+            $i18n{nearbyShareContactVisibilityNoContactsSubtitle}
+          </div>
+        </div>
+      </template>
 
-          <div class="explanation-section">
-            <iron-icon icon="nearby20:visibility" class="padded-icon grey-icon">
-            </iron-icon>
-            <div class="viz-description-section">
-              <div class="cr-title-text">
-                $i18n{nearbyShareContactVisibilityOwnTitle}
+      <!-- Show when contacts have downloaded and a state is selected. -->
+      <template is="dom-if"
+          if="[[showContactsContainer_(selectedVisibility, contactsState)]]">
+        <div id="explanationContainer" class="content">
+
+          <template is="dom-if"
+              if="[[showExplanationState_(selectedVisibility,
+                  contactsState)]]">
+            <div id="explanation">
+
+              <div class="explanation-section">
+                <iron-icon icon="nearby20:radar" class="padded-icon grey-icon">
+                </iron-icon>
+                <div class="viz-description-section">
+                  <div class="cr-title-text">
+                    $i18n{nearbyShareContactVisibilityOthersTitle}
+                  </div>
+                  <div class="cr-secondary-text">
+                    $i18n{nearbyShareContactVisibilityOthers}
+                  </div>
+                </div>
               </div>
-              <template is="dom-if"
-                  if="[[isVisibility_(selectedVisibility,'all')]]">
-                <div class="cr-secondary-text">
-                  $i18n{nearbyShareContactVisibilityOwnAll}
+
+              <div class="explanation-section">
+                <iron-icon icon="nearby20:visibility"
+                    class="padded-icon grey-icon">
+                </iron-icon>
+                <div class="viz-description-section">
+                  <div class="cr-title-text">
+                    $i18n{nearbyShareContactVisibilityOwnTitle}
+                  </div>
+                  <template is="dom-if"
+                      if="[[isVisibility_(selectedVisibility,'all')]]">
+                    <div class="cr-secondary-text">
+                      $i18n{nearbyShareContactVisibilityOwnAll}
+                    </div>
+                  </template>
+                  <template is="dom-if"
+                      if="[[isVisibility_(selectedVisibility,'some')]]">
+                    <div class="cr-secondary-text">
+                      $i18n{nearbyShareContactVisibilityOwnSome}
+                    </div>
+                  </template>
+                  <template is="dom-if"
+                      if="[[isVisibility_(selectedVisibility,'none')]]">
+                    <div class="cr-secondary-text">
+                      $i18n{nearbyShareContactVisibilityOwnNone}
+                    </div>
+                  </template>
                 </div>
-              </template>
-              <template is="dom-if"
-                  if="[[isVisibility_(selectedVisibility,'some')]]">
-                <div class="cr-secondary-text">
-                  $i18n{nearbyShareContactVisibilityOwnSome}
-                </div>
-              </template>
-              <template is="dom-if"
-                  if="[[isVisibility_(selectedVisibility,'none')]]">
-                <div class="cr-secondary-text">
-                  $i18n{nearbyShareContactVisibilityOwnNone}
+              </div>
+
+            </div>
+          </template>
+
+          <!-- Show when the user has one or more contacts downloaded. -->
+          <template is="dom-if"
+              if="[[showContactList_(selectedVisibility,
+                  contactsState)]]">
+            <div id="contactList">
+              <template is="dom-repeat" items="[[contacts]]">
+                <div class="contact-item"
+                    disabled$="[[isVisibility_(selectedVisibility,'none')]]">
+                  <iron-icon icon="cr:person"
+                      class="padded-icon grey-icon contact-icon">
+                  </iron-icon>
+                  <div>
+                    <div class="cr-title-text">[[item.name]]</div>
+                    <div class="cr-secondary-text">[[item.description]]</div>
+                  </div>
+                  <template is="dom-if"
+                      if="[[showContactCheckBoxes_(selectedVisibility)]]">
+                    <cr-toggle class="contact-toggle" checked="{{item.checked}}"
+                        disabled="[[!isVisibility_(selectedVisibility,'some')]]"
+                        on-click="syncContactToggleState_">
+                    </cr-toggle>
+                  </template>
                 </div>
               </template>
             </div>
-          </div>
+          </template>
 
         </div>
-
-        <!-- Show when the user has downloaded contacts but there are none.-->
-        <template is="dom-if"
-            if="[[showEmptyState_(selectedVisibility, contactsState)]]">
-          <div id="noContactsContainer">
-            <iron-icon id="noContactsImage"
-                icon="nearby-images:contacts-empty">
-            </iron-icon>
-            <div class="cr-title-text">
-              $i18n{nearbyShareContactVisibilityNoContactsTitle}
-            </div>
-            <div class="cr-secondary-text">
-              $i18n{nearbyShareContactVisibilityNoContactsSubtitle}
-            </div>
-          </div>
-        </template>
-
-        <!-- Show when the user has one or more contacts downloaded. -->
-        <template is="dom-if"
-            if="[[showContactList_(selectedVisibility,
-                contactsState)]]">
-          <iron-list id="contactList" items="[[contacts]]"
-              class="contacts-section">
-            <template>
-              <div class="contact-item"
-                  disabled$="[[isVisibility_(selectedVisibility,'none')]]">
-                <iron-icon icon="cr:person"
-                    class="padded-icon grey-icon contact-icon">
-                </iron-icon>
-                <div>
-                  <div class="cr-title-text">[[item.name]]</div>
-                  <div class="cr-secondary-text">[[item.description]]</div>
-                </div>
-                <template is="dom-if"
-                    if="[[showContactCheckBoxes_(selectedVisibility)]]">
-                  <cr-toggle class="contact-toggle" checked="{{item.checked}}"
-                      disabled="[[!isVisibility_(selectedVisibility,'some')]]"
-                      on-click="syncContactToggleState_">
-                  </cr-toggle>
-                </template>
-              </div>
-            </template>
-          </iron-list>
-        </template>
-
-      </div>
-    </template>
+      </template>
+    </div>
   </template>
   <script src="nearby_contact_visibility.js"></script>
 </dom-module>

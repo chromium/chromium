@@ -132,8 +132,9 @@ suite('nearby-contact-visibility', () => {
     assertFalse(isDownloadContactsFailedVisible());
     assertFalse(isDownloadContactsPendingVisible());
     assertTrue(areContactCheckBoxesVisible());
-    const list = visibilityElement.$$('#contactList');
-    assertEquals(fakeContactManager.contactRecords.length, list.items.length);
+    const items =
+        visibilityElement.$$('#contactList').querySelectorAll('.contact-item');
+    assertEquals(fakeContactManager.contactRecords.length, items.length);
   });
 
   test('Radio group disabled until successful download', async function() {

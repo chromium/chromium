@@ -377,13 +377,28 @@ Polymer({
   /**
    * @param {string} selectedVisibility
    * @param {string} contactsState
+   * @return {boolean} true when explanation container should be shown
+   * @private
+   */
+  showContactsContainer_(selectedVisibility, contactsState) {
+    return this.showExplanationState_(selectedVisibility, contactsState) ||
+        this.showContactList_(selectedVisibility, contactsState);
+  },
+
+  /**
+   * @param {string} selectedVisibility
+   * @param {string} contactsState
    * @return {boolean} true when explanation state should be shown
    * @private
    */
   showExplanationState_(selectedVisibility, contactsState) {
-    return !this.showZeroState_(selectedVisibility, contactsState) &&
-        !this.inContactsState_(contactsState, ContactsState.PENDING) &&
-        !this.inContactsState_(contactsState, ContactsState.FAILED);
+    if (!selectedVisibility || contactsState === ContactsState.PENDING ||
+        contactsState === ContactsState.FAILED) {
+      return false;
+    }
+
+    return selectedVisibility === 'none' ||
+        contactsState === ContactsState.HAS_CONTACTS;
   },
 
   /**
