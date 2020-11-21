@@ -34,6 +34,16 @@
     overflow-y: scroll;
   }
 
+  .preview::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 4px;
+  }
+
+  .preview::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+  }
+
   .preview-item {
     border: 1px solid var(--google-grey-200);
     border-radius: 4px;
