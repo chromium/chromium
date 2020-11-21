@@ -19,6 +19,8 @@ enum FontEnumerationStatus {
   kNotVisible,
   // The site doesn't have permission for the requested operation.
   kPermissionDenied,
+  // The user canceled the operation.
+  kCanceled,
 };
 
 // Bag of data representing a font, used to pass structured data from
@@ -36,4 +38,7 @@ interface FontAccessManager {
   // Enumerate locally installed fonts. Results will be gated by a permission
   // check.
   EnumerateLocalFonts() => (FontEnumerationStatus enumeration_status, mojo_base.mojom.ReadOnlySharedMemoryRegion? enumeration_table);
+  // Begins a UX that gives affordances for a user to choose fonts to be shared
+  // with the page.
+  ChooseLocalFonts() => (FontEnumerationStatus status, array<FontMetadata> selection);
 };

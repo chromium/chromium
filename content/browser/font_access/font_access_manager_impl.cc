@@ -106,6 +106,12 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
 #endif
 }
 
+void FontAccessManagerImpl::ChooseLocalFonts(
+    ChooseLocalFontsCallback callback) {
+  std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
+                          {});
+}
+
 void FontAccessManagerImpl::FindAllFonts(FindAllFontsCallback callback) {
 #if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,

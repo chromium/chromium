@@ -9,5 +9,5 @@
     RuntimeEnabled=FontAccess
 ] interface FontManager {
     [CallWith=ScriptState, RaisesException, Measure] object query();
-    [CallWith=ScriptState, RuntimeEnabled=FontAccessChooser] Promise<FontIterator> showFontChooser(optional QueryOptions options = {});
+    [CallWith=ScriptState, RuntimeEnabled=FontAccessChooser] Promise<sequence<FontMetadata>> showFontChooser(optional QueryOptions options = {});
 };

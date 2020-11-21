@@ -40,6 +40,7 @@ class CONTENT_EXPORT FontAccessManagerImpl
 
   // blink.mojom.FontAccessManager:
   void EnumerateLocalFonts(EnumerateLocalFontsCallback callback) override;
+  void ChooseLocalFonts(ChooseLocalFontsCallback callback) override;
 
   // content::FontAccessContext:
   void FindAllFonts(FindAllFontsCallback callback) override;
