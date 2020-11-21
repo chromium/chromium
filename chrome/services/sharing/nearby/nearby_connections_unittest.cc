@@ -1304,20 +1304,42 @@ TEST_F(NearbyConnectionsTest, ReceiveStreamPayload) {
       AcceptConnection(fake_payload_listener, endpoint_data.remote_endpoint_id);
   accepted_run_loop.Run();
 
+  base::RunLoop payload_run_loop;
   fake_payload_listener.payload_cb = base::BindLambdaForTesting(
-      [](const std::string& endpoint_id, mojom::PayloadPtr payload) {
-        NOTREACHED();
+      [&](const std::string& endpoint_id, mojom::PayloadPtr payload) {
+        EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_id);
+        EXPECT_EQ(kPayloadId, payload->id);
+        ASSERT_TRUE(payload->content->is_bytes());
+        EXPECT_EQ(expected_payload, payload->content->get_bytes()->bytes);
+        payload_run_loop.Quit();
       });
 
-  EXPECT_CALL(*service_controller_ptr_,
-              CancelPayload(testing::_, testing::Eq(kPayloadId)))
-      .WillOnce(testing::Return(Status{Status::kSuccess}));
-
+  std::string expected_payload_str(expected_payload.begin(),
+                                   expected_payload.end());
   testing::NiceMock<MockInputStream> input_stream;
+  EXPECT_CALL(input_stream, Read(_))
+      .WillOnce(
+          Return(ExceptionOr<ByteArray>(ByteArray(expected_payload_str))));
+  EXPECT_CALL(input_stream, Close());
+
   client_proxy->OnPayload(
       endpoint_data.remote_endpoint_id,
       Payload(kPayloadId,
               [&input_stream]() -> InputStream& { return input_stream; }));
+  client_proxy->OnPayloadProgress(
+      endpoint_data.remote_endpoint_id,
+      {.payload_id = kPayloadId,
+       .status = PayloadProgressInfo::Status::kInProgress,
+       .total_bytes = expected_payload.size(),
+       .bytes_transferred = expected_payload.size()});
+  client_proxy->OnPayloadProgress(
+      endpoint_data.remote_endpoint_id,
+      {.payload_id = kPayloadId,
+       .status = PayloadProgressInfo::Status::kSuccess,
+       .total_bytes = expected_payload.size(),
+       .bytes_transferred = expected_payload.size()});
+
+  payload_run_loop.Run();
 }
 
 }  // namespace connections
