@@ -10,6 +10,8 @@
 #include "chrome/browser/platform_util_internal.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace platform_util {
 namespace {
@@ -24,11 +26,9 @@ void OnOpenResult(const base::FilePath& path,
   LOG(ERROR) << "Unable to open " << path.AsUTF8Unsafe() << " " << result;
 }
 
-}  // namespace
-
-namespace internal {
-
-void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
+// File manager remote can only be accessed on UI thread.
+void OpenItemOnUiThread(const base::FilePath& path, OpenItemType type) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* service = chromeos::LacrosChromeServiceImpl::Get();
   if (service->GetInterfaceVersion(crosapi::mojom::FileManager::Uuid_) < 1) {
     LOG(ERROR) << "Unsupported ash version.";
@@ -46,9 +46,20 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
   }
 }
 
+}  // namespace
+
+namespace internal {
+
+void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
+  // This function is called on a blocking thread, so open on the UI thread.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OpenItemOnUiThread, path, type));
+}
+
 }  // namespace internal
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* service = chromeos::LacrosChromeServiceImpl::Get();
   int interface_version =
       service->GetInterfaceVersion(crosapi::mojom::FileManager::Uuid_);
