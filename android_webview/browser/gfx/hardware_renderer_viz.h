@@ -35,13 +35,18 @@ class HardwareRendererViz : public HardwareRenderer {
   void DestroyOnViz();
   bool IsUsingVulkan() const;
 
-  // Information about last delegated frame.
-  float device_scale_factor_ = 0;
-
+  const bool viz_frame_submission_;
   viz::SurfaceId surface_id_;
 
   // Used to create viz::OutputSurface and gl::GLSurface
   OutputSurfaceProviderWebview output_surface_provider_;
+
+  std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
+      renderer_root_local_surface_id_allocator_;
+  uint32_t layer_tree_frame_sink_id_ = 0u;
+  viz::LocalSurfaceId renderer_root_local_surface_id_;
+  float device_scale_factor_ = 1.0f;
+  gfx::Size frame_size_;
 
   // These are accessed on the viz thread.
   std::unique_ptr<OnViz> on_viz_;

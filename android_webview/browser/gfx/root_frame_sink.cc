@@ -195,7 +195,9 @@ void RootFrameSink::DettachClient() {
   client_ = nullptr;
 }
 
-void RootFrameSink::SubmitChildCompositorFrame(ChildFrame* child_frame) {
+void RootFrameSink::SubmitChildCompositorFrame(
+    const viz::LocalSurfaceId& local_surface_id,
+    ChildFrame* child_frame) {
   DCHECK(child_frame->frame);
   if (!child_sink_support_ ||
       child_sink_support_->frame_sink_id() != child_frame->frame_sink_id ||
@@ -209,7 +211,7 @@ void RootFrameSink::SubmitChildCompositorFrame(ChildFrame* child_frame) {
   }
 
   child_sink_support_->SubmitCompositorFrame(
-      child_frame->local_surface_id, std::move(*child_frame->frame),
+      local_surface_id, std::move(*child_frame->frame),
       std::move(child_frame->hit_test_region_list));
   child_frame->frame.reset();
 }
