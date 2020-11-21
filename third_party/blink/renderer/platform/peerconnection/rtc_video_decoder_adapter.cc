@@ -71,20 +71,6 @@ const int32_t kMaxDecodeHistory = 32;
 // requesting fallback to software decode.
 const int32_t kMaxConsecutiveErrors = 5;
 
-// Map webrtc::VideoCodecType to media::VideoCodec.
-media::VideoCodec ToVideoCodec(webrtc::VideoCodecType video_codec_type) {
-  switch (video_codec_type) {
-    case webrtc::kVideoCodecVP8:
-      return media::kCodecVP8;
-    case webrtc::kVideoCodecVP9:
-      return media::kCodecVP9;
-    case webrtc::kVideoCodecH264:
-      return media::kCodecH264;
-    default:
-      return media::kUnknownVideoCodec;
-  }
-}
-
 // Map webrtc::SdpVideoFormat to a guess for media::VideoCodecProfile.
 media::VideoCodecProfile GuessVideoCodecProfile(
     const webrtc::SdpVideoFormat& format) {
@@ -166,13 +152,13 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
     return nullptr;
 
   // Bail early for unknown codecs.
-  if (ToVideoCodec(video_codec_type) == media::kUnknownVideoCodec)
+  if (WebRtcToMediaVideoCodec(video_codec_type) == media::kUnknownVideoCodec)
     return nullptr;
 
   // Avoid the thread hop if the decoder is known not to support the config.
   // TODO(sandersd): Predict size from level.
   media::VideoDecoderConfig config(
-      ToVideoCodec(webrtc::PayloadStringToCodecType(format.name)),
+      WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name)),
       GuessVideoCodecProfile(format),
       media::VideoDecoderConfig::AlphaMode::kIsOpaque, media::VideoColorSpace(),
       media::kNoTransformation, kDefaultSize, gfx::Rect(kDefaultSize),

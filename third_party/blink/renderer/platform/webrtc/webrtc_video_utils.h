@@ -5,10 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_UTILS_H_
 
+#include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_transformation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video/color_space.h"
+#include "third_party/webrtc/api/video/video_codec_type.h"
 #include "third_party/webrtc/api/video/video_rotation.h"
 
 namespace blink {
@@ -18,6 +20,9 @@ namespace blink {
 
 media::VideoRotation PLATFORM_EXPORT
 WebRtcToMediaVideoRotation(webrtc::VideoRotation rotation);
+
+media::VideoCodec PLATFORM_EXPORT
+WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec);
 
 media::VideoColorSpace PLATFORM_EXPORT
 WebRtcToMediaVideoColorSpace(const webrtc::ColorSpace& color_space);

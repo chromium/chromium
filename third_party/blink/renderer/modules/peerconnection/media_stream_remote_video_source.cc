@@ -51,7 +51,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
  public:
   explicit WebRtcEncodedVideoFrame(const webrtc::RecordableEncodedFrame& frame)
       : buffer_(frame.encoded_buffer()),
-        codec_(FromWebRtcVideoCodec(frame.codec())),
+        codec_(WebRtcToMediaVideoCodec(frame.codec())),
         is_key_frame_(frame.is_key_frame()),
         resolution_(frame.resolution().width, frame.resolution().height) {
     if (frame.color_space()) {
@@ -74,19 +74,6 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
   gfx::Size Resolution() const override { return resolution_; }
 
  private:
-  static media::VideoCodec FromWebRtcVideoCodec(webrtc::VideoCodecType codec) {
-    switch (codec) {
-      case webrtc::kVideoCodecVP8:
-        return media::kCodecVP8;
-      case webrtc::kVideoCodecVP9:
-        return media::kCodecVP9;
-      case webrtc::kVideoCodecH264:
-        return media::kCodecH264;
-      default:
-        return media::kUnknownVideoCodec;
-    }
-  }
-
   rtc::scoped_refptr<const webrtc::EncodedImageBufferInterface> buffer_;
   media::VideoCodec codec_;
   bool is_key_frame_;

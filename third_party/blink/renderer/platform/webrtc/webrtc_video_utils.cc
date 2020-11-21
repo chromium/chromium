@@ -21,6 +21,19 @@ media::VideoRotation WebRtcToMediaVideoRotation(
   return media::VIDEO_ROTATION_0;
 }
 
+media::VideoCodec WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec) {
+  switch (codec) {
+    case webrtc::kVideoCodecVP8:
+      return media::kCodecVP8;
+    case webrtc::kVideoCodecVP9:
+      return media::kCodecVP9;
+    case webrtc::kVideoCodecH264:
+      return media::kCodecH264;
+    default:
+      return media::kUnknownVideoCodec;
+  }
+}
+
 media::VideoColorSpace WebRtcToMediaVideoColorSpace(
     const webrtc::ColorSpace& color_space) {
   media::VideoColorSpace::PrimaryID primaries =
