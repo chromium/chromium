@@ -92,6 +92,10 @@ void ObserverOnLogoAvailable(LogoObserver* observer,
       break;
 
     case LogoCallbackReason::REVALIDATED:
+      // TODO(sfiera): double-check whether we should inform the observer of the
+      // fresh metadata.
+      break;
+
     case LogoCallbackReason::DETERMINED:
       observer->OnLogoAvailable(logo ? &logo.value() : nullptr, from_cache);
       break;
