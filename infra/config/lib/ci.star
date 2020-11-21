@@ -521,7 +521,7 @@ def clang_builder(*, name, builderless = True, cores = 32, properties = None, **
         # Because these run ToT Clang, goma is not used.
         # Naturally the runtime will be ~4-8h on average, depending on config.
         # CFI builds will take even longer - around 11h.
-        execution_timeout = 12 * time.hour,
+        execution_timeout = 14 * time.hour,
         properties = properties,
         **kwargs
     )
