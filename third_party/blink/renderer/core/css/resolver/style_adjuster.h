@@ -44,6 +44,7 @@ class StyleAdjuster {
 
  private:
   static void AdjustOverflow(ComputedStyle& style);
+  static void AdjustForForcedColorsMode(ComputedStyle& style);
 };
 
 }  // namespace blink

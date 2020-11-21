@@ -2975,6 +2975,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool ShouldForceColor(const StyleColor& unforced_color) const;
 
+  void ClearBackgroundImage();
+
   FRIEND_TEST_ALL_PREFIXES(
       ComputedStyleTest,
       UpdatePropertySpecificDifferencesRespectsTransformAnimation);

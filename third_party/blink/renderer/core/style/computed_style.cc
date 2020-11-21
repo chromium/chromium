@@ -2392,6 +2392,15 @@ bool ComputedStyle::ShadowListHasCurrentColor(const ShadowList* shadow_list) {
                      });
 }
 
+void ComputedStyle::ClearBackgroundImage() {
+  FillLayer* curr_child = &AccessBackgroundLayers();
+  curr_child->SetImage(
+      FillLayer::InitialFillImage(EFillLayerType::kBackground));
+  for (curr_child = curr_child->Next(); curr_child;
+       curr_child = curr_child->Next())
+    curr_child->ClearImage();
+}
+
 ListStyleTypeData* ComputedStyle::GetListStyleType() const {
   return ListStyleTypeInternal();
 }

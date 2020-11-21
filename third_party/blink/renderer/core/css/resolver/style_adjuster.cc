@@ -636,6 +636,17 @@ static void AdjustStateForContentVisibility(ComputedStyle& style,
   context->AdjustElementStyle(&style);
 }
 
+void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style) {
+  if (!style.InForcedColorsMode() ||
+      style.ForcedColorAdjust() == EForcedColorAdjust::kNone)
+    return;
+
+  style.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());
+  style.SetBoxShadow(ComputedStyleInitialValues::InitialBoxShadow());
+  if (!style.HasUrlBackgroundImage())
+    style.ClearBackgroundImage();
+}
+
 void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
                                         Element* element) {
   DCHECK(state.LayoutParentStyle());
@@ -755,6 +766,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // layers.
   style.AdjustBackgroundLayers();
   style.AdjustMaskLayers();
+
+  // A subset of CSS properties should be forced at computed value time:
+  // https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties.
+  AdjustForForcedColorsMode(style);
 
   // Let the theme also have a crack at adjusting the style.
   LayoutTheme::GetTheme().AdjustStyle(element, style);
