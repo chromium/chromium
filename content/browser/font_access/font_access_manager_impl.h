@@ -7,6 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/font_access_chooser.h"
 #include "content/public/browser/font_access_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -15,6 +16,28 @@
 
 namespace content {
 
+// The ownership hierarchy for this class is:
+//
+// StoragePartitionImpl (1) <- (1) FontAccessManagerImpl
+//
+// FontAccessManagerImpl (1) <- (*) BindingContext
+// FontAccessManagerImpl (1) <- (*) FontAccessChooser
+//
+// BindingContext (1) <- (1) GlobalFrameRoutingId
+// GlobalFrameRoutingId (1) <-- (1) FontAccessChooser
+//
+// Legend:
+//
+// <- : owns
+// <-- : corresponds to
+// (N) : N is a number or *, which denotes zero or more
+//
+// In English:
+// * There's one FontAccessManagerImpl per StoragePartitionImpl
+// * Frames are bound to FontAccessManangerImpl via a BindingContext
+// * The FontAccessManagerImpl owns the lifetimes of FontAccessChoosers
+// * There is one FontAccessChooser for each Frame via its GlobalFrameRoutingId,
+//   obtained from a corresponding BindingContext
 class CONTENT_EXPORT FontAccessManagerImpl
     : public blink::mojom::FontAccessManager,
       public FontAccessContext {
@@ -55,6 +78,9 @@ class CONTENT_EXPORT FontAccessManagerImpl
   void DidFindAllFonts(FindAllFontsCallback callback,
                        blink::mojom::FontEnumerationStatus,
                        base::ReadOnlySharedMemoryRegion);
+  void DidChooseLocalFonts(ChooseLocalFontsCallback callback,
+                           blink::mojom::FontEnumerationStatus status,
+                           std::vector<blink::mojom::FontMetadataPtr> fonts);
 
   // Registered clients.
   mojo::ReceiverSet<blink::mojom::FontAccessManager, BindingContext> receivers_;
@@ -63,6 +89,9 @@ class CONTENT_EXPORT FontAccessManagerImpl
   scoped_refptr<base::TaskRunner> results_task_runner_;
 
   bool skip_privacy_checks_for_testing_ = false;
+
+  // Here to keep the choosers alive for the user to interact with.
+  std::map<GlobalFrameRoutingId, std::unique_ptr<FontAccessChooser>> choosers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

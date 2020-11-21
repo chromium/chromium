@@ -63,6 +63,7 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "chrome/browser/federated_learning/floc_id_provider_factory.h"
+#include "chrome/browser/font_access/chrome_font_access_delegate.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -291,6 +292,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/file_url_loader.h"
+#include "content/public/browser/font_access_delegate.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -4964,6 +4966,13 @@ content::HidDelegate* ChromeContentBrowserClient::GetHidDelegate() {
   if (!hid_delegate_)
     hid_delegate_ = std::make_unique<ChromeHidDelegate>();
   return hid_delegate_.get();
+}
+
+content::FontAccessDelegate*
+ChromeContentBrowserClient::GetFontAccessDelegate() {
+  if (!font_access_delegate_)
+    font_access_delegate_ = std::make_unique<ChromeFontAccessDelegate>();
+  return static_cast<content::FontAccessDelegate*>(font_access_delegate_.get());
 }
 
 std::unique_ptr<content::AuthenticatorRequestClientDelegate>

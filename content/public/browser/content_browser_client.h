@@ -196,6 +196,7 @@ class ClientCertificateDelegate;
 class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
 class FeatureObserverClient;
+class FontAccessDelegate;
 class HidDelegate;
 class LoginDelegate;
 class MediaObserver;
@@ -1577,6 +1578,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to provide an implementation of the Web Bluetooth API.
   virtual BluetoothDelegate* GetBluetoothDelegate();
+
+  // Allows the embedder to provide an implementation of the Local Font Access
+  // API.
+  virtual FontAccessDelegate* GetFontAccessDelegate();
 
   // Attempt to open the Payment Handler window inside its corresponding
   // PaymentRequest UI surface. Returns true if the ContentBrowserClient

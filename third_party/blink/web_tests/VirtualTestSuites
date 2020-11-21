@@ -213,11 +213,6 @@
     "args": ["--enable-features=FontAccess"]
   },
   {
-    "prefix": "font-access-chooser",
-    "bases": ["external/wpt/font-access"],
-    "args": ["--enable-features=FontAccess,FontAccessChooser"]
-  },
-  {
     "prefix": "highdpi-threaded",
     "bases": ["external/wpt/css/css-paint-api/hidpi"],
     "args": ["--force-device-scale-factor=2",

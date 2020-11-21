@@ -10231,6 +10231,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- Font Access chooser -->
+    <if expr="not is_android">
+      <message name="IDS_FONT_ACCESS_CHOOSER_PROMPT_ORIGIN" desc="The label that is used to introduce Local Font Access chooser details to the user in a popup when it is from a website.">
+        <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to use local fonts
+      </message>
+      <message name="IDS_FONT_ACCESS_CHOOSER_NO_FONTS_FOUND_PROMPT" desc="The label shown to the user to inform them that no fonts were found matching the requirements that the application provided.">
+        No matching font found.
+      </message>
+      <message name="IDS_FONT_ACCESS_CHOOSER_IMPORT_BUTTON_TEXT" desc="Label on the button that closes the Local Font Access chooser popup and returns the selected fonts.">
+        Import
+      </message>
+      <message name="IDS_FONT_ACCESS_CHOOSER_CANCEL_BUTTON_TEXT" desc="Label on the button that closes the chooser popup without selecting an option.">
+        Cancel
+      </message>
+    </if>
+
     <!-- Chrome IME API activated bubble. -->
     <message name="IDS_IME_API_ACTIVATED_WARNING" desc="The Warning info when an IME extension is trying to activate.">
       <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph> extension may collect all the text you type, including personal data like passwords and credit card numbers. Do you want to use this extension?

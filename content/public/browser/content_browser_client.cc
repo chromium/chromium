@@ -891,6 +891,10 @@ BluetoothDelegate* ContentBrowserClient::GetBluetoothDelegate() {
   return nullptr;
 }
 
+FontAccessDelegate* ContentBrowserClient::GetFontAccessDelegate() {
+  return nullptr;
+}
+
 bool ContentBrowserClient::ShowPaymentHandlerWindow(
     content::BrowserContext* browser_context,
     const GURL& url,
