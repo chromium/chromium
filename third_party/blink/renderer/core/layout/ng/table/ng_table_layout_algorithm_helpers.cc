@@ -855,8 +855,8 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       } else {
         minmax.min_size += *column.min_inline_size;
       }
-      if (column.percent) {
-        if (*column.max_inline_size > LayoutUnit() && *column.percent > 0) {
+      if (column.percent && *column.percent > 0) {
+        if (*column.max_inline_size > LayoutUnit()) {
           LayoutUnit estimate = LayoutUnit(
               100 / *column.percent *
               (*column.max_inline_size - column.percent_border_padding));

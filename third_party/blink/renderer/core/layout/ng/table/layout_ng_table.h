@@ -108,6 +108,10 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
   LayoutRectOutsets BorderBoxOutsets() const override;
 
+  // TODO(1151101)
+  // ClientLeft/Top are incorrect for tables, but cannot be fixed
+  // by subclassing ClientLeft/Top.
+
   PhysicalRect OverflowClipRect(const PhysicalOffset&,
                                 OverlayScrollbarClipBehavior) const override;
 
@@ -177,8 +181,8 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
     return absolute_column_index;
   }
 
-  // Legacy caches sections. Might not be needed by NG.
-  void RecalcSectionsIfNeeded() const final { NOTIMPLEMENTED(); }
+  // NG does not need this method. Sections are not cached.
+  void RecalcSectionsIfNeeded() const final {}
 
   // Legacy caches sections. Might not be needed by NG.
   void ForceSectionsRecalc() final { NOTIMPLEMENTED(); }

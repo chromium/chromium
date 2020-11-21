@@ -37,8 +37,13 @@ void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
 
 LayoutRectOutsets LayoutNGTableCell::BorderBoxOutsets() const {
   NOT_DESTROYED();
-  DCHECK_GE(PhysicalFragmentCount(), 0u);
-  return GetPhysicalFragment(0)->Borders().ToLayoutRectOutsets();
+  // TODO(1061423) This function should not be called before layout.
+  // ScrollAnchor::Examine does. Example trigger:
+  // ScrollTimelineTest.TimelineInvalidationWhenScrollerDisplayPropertyChanges
+  // DCHECK_GE(PhysicalFragmentCount(), 0u);
+  if (PhysicalFragmentCount() > 0)
+    return GetPhysicalFragment(0)->Borders().ToLayoutRectOutsets();
+  return LayoutNGBlockFlowMixin<LayoutBlockFlow>::BorderBoxOutsets();
 }
 
 LayoutUnit LayoutNGTableCell::BorderTop() const {
