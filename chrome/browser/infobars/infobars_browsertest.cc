@@ -390,7 +390,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::ROSETTA_REQUIRED_INFOBAR_DELEGATE:
 #if defined(OS_MAC)
-      RosettaRequiredInfoBarDelegate::Create(GetInfoBarService());
+      RosettaRequiredInfoBarDelegate::Create(GetWebContents());
 #else
       ADD_FAILURE() << "This infobar is not supported on this OS.";
 #endif

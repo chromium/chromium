@@ -9,7 +9,9 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
-class InfoBarService;
+namespace content {
+class WebContents;
+}
 
 // This infobar displays a message that Rosetta is required to play protected
 // media, and initiates an installation of Rosetta if the user wants.
@@ -26,9 +28,9 @@ class RosettaRequiredInfoBarDelegate : public ConfirmInfoBarDelegate {
   static bool ShouldShow();
 
   // Creates an instance of this infobar and adds it to the provided
-  // InfoBarService. It is an error to call this method if !ShouldShow() outside
+  // WebContents. It is an error to call this method if !ShouldShow() outside
   // tests - the correct strings are not guaranteed to be produced.
-  static void Create(InfoBarService* infobar_service);
+  static void Create(content::WebContents* web_contents);
 
  private:
   // ConfirmInfoBarDelegate:
