@@ -57,7 +57,7 @@ Printer Printer1() {
 Printer Printer2() {
   Printer printer("server-5da95e01216b1fe0ee1de25dc8d0a6e8");
   printer.set_display_name("Color Laser - Name");
-  std::string server("ipps://print-server.intranet.example.com");
+  std::string server("ipps://print-server.intranet.example.com:443");
   printer.set_print_server_uri(server);
   Uri url(
       "ipps://print-server.intranet.example.com/printers/Color Laser - Name");
@@ -150,12 +150,6 @@ TEST_F(ServerPrintersProviderTest, GetPrinters) {
   print_servers.push_back(PrintServer2());
   OnServersChanged(true, print_servers);
   task_environment_.RunUntilIdle();
-
-  auto first = server_printers_provider_->GetPrinters().front();
-
-  LOG(INFO) << first.printer.uri().GetNormalized()
-            << " server:" << first.printer.print_server_uri()
-            << " name:" << first.printer.display_name();
 
   EXPECT_THAT(server_printers_provider_->GetPrinters(),
               UnorderedElementsAre(PrinterMatcher(Printer1()),

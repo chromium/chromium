@@ -19,7 +19,7 @@ constexpr char kDescription[] = "The green one";
 constexpr char kManufacturer[] = "Manufacturer";
 constexpr char kModel[] = "MODEL";
 constexpr char kMakeAndModel[] = "Manufacturer MODEL";
-constexpr char kUri[] = "ipps://notaprinter.chromium.org/ipp/print";
+constexpr char kUri[] = "ipps://notaprinter.chromium.org:123/ipp/print";
 constexpr char kUuid[] = "UUIDUUIDUUID";
 const base::Time kUpdateTime = base::Time::FromInternalValue(22114455660000);
 
@@ -49,7 +49,7 @@ TEST(SpecificsTranslationTest, SpecificsToPrinter) {
   EXPECT_EQ(kDisplayName, result->display_name());
   EXPECT_EQ(kDescription, result->description());
   EXPECT_EQ(kMakeAndModel, result->make_and_model());
-  EXPECT_EQ(kUri, result->uri().GetNormalized());
+  EXPECT_EQ(kUri, result->uri().GetNormalized(false));
   EXPECT_EQ(kUuid, result->uuid());
 
   EXPECT_EQ(kEffectiveMakeAndModel,
@@ -125,7 +125,7 @@ TEST(SpecificsTranslationTest, SpecificsToPrinterRoundTrip) {
   EXPECT_EQ(kManufacturer, result->manufacturer());
   EXPECT_EQ(kModel, result->model());
   EXPECT_EQ(kMakeAndModel, result->make_and_model());
-  EXPECT_EQ(kUri, result->uri().GetNormalized());
+  EXPECT_EQ(kUri, result->uri().GetNormalized(false));
   EXPECT_EQ(kUuid, result->uuid());
 
   EXPECT_TRUE(result->ppd_reference().effective_make_and_model.empty());

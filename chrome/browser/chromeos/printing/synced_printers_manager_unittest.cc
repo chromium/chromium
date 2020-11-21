@@ -124,7 +124,7 @@ TEST_F(SyncedPrintersManagerTest, UpdatePrinter) {
 
   auto printers = manager_->GetSavedPrinters();
   ASSERT_EQ(1U, printers.size());
-  EXPECT_EQ(kTestUri, printers[0].uri().GetNormalized());
+  EXPECT_EQ(kTestUri, printers[0].uri().GetNormalized(false));
 
   ExpectObservedPrinterIdsAre(observer.saved_printers(), {kTestPrinterId});
 }

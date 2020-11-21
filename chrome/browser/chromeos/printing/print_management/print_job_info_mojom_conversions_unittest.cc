@@ -24,7 +24,7 @@ namespace mojom = printing::printing_manager::mojom;
 namespace {
 
 constexpr char kName[] = "name";
-constexpr char kUri[] = "ipp://192.168.1.5";
+constexpr char kUri[] = "ipp://192.168.1.5:631";
 constexpr char kTitle[] = "title";
 constexpr char kId[] = "id";
 constexpr char kPrinterId[] = "printerId";

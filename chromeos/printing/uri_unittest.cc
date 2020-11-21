@@ -55,7 +55,7 @@ void TestBuilder(const UriComponents& components,
   uri.SetUserinfo(components.userinfo);
   ASSERT_EQ(uri.GetLastParsingError().status, Uri::ParserStatus::kNoErrors);
   // Check URI.
-  EXPECT_EQ(uri.GetNormalized(), normalized_uri);
+  EXPECT_EQ(uri.GetNormalized(false), normalized_uri);
 }
 
 // Verifies that |input_uri| set as parameter in Uri constructor is parsed
@@ -79,7 +79,7 @@ void TestNormalization(const std::string& input_uri,
                        const std::string& normalized_uri) {
   Uri uri(input_uri);
   ASSERT_EQ(uri.GetLastParsingError().status, Uri::ParserStatus::kNoErrors);
-  EXPECT_EQ(uri.GetNormalized(), normalized_uri);
+  EXPECT_EQ(uri.GetNormalized(false), normalized_uri);
 }
 
 TEST(UriTest, DefaultConstructor) {

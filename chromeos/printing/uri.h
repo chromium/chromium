@@ -284,7 +284,7 @@ class CHROMEOS_EXPORT Uri {
   // If the Port is specified (GetPort() != -1) and |always_print_port| is set
   // to true, a Port number is always included in the returned URI (even when
   // it equals to a Scheme's default port number).
-  std::string GetNormalized(bool always_print_port = false) const;
+  std::string GetNormalized(bool always_print_port = true) const;
 
   // Returns true <=> whole URL has no UTF-8 characters.
   bool IsASCII() const;
