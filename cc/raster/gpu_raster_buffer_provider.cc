@@ -45,78 +45,6 @@
 namespace cc {
 namespace {
 
-class ScopedSkSurfaceForUnpremultiplyAndDither {
- public:
-  ScopedSkSurfaceForUnpremultiplyAndDither(
-      viz::RasterContextProvider* context_provider,
-      sk_sp<SkColorSpace> color_space,
-      const gfx::Rect& playback_rect,
-      const gfx::Rect& raster_full_rect,
-      const gfx::Size& max_tile_size,
-      GLuint texture_id,
-      const gfx::Size& texture_size,
-      bool can_use_lcd_text,
-      int msaa_sample_count)
-      : context_provider_(context_provider),
-        texture_id_(texture_id),
-        offset_(playback_rect.OffsetFromOrigin() -
-                raster_full_rect.OffsetFromOrigin()),
-        size_(playback_rect.size()) {
-    // Determine the |intermediate_size| to use for our 32-bit texture. If we
-    // know the max tile size, use that. This prevents GPU cache explosion due
-    // to using lots of different 32-bit texture sizes. Otherwise just use the
-    // exact size of the target texture.
-    gfx::Size intermediate_size;
-    if (!max_tile_size.IsEmpty()) {
-      DCHECK_GE(max_tile_size.width(), texture_size.width());
-      DCHECK_GE(max_tile_size.height(), texture_size.height());
-      intermediate_size = max_tile_size;
-    } else {
-      intermediate_size = texture_size;
-    }
-
-    // Allocate a 32-bit surface for raster. We will copy from that into our
-    // actual surface in destruction.
-    SkImageInfo n32Info = SkImageInfo::MakeN32Premul(intermediate_size.width(),
-                                                     intermediate_size.height(),
-                                                     std::move(color_space));
-    SkSurfaceProps surface_props =
-        skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-    surface_ = SkSurface::MakeRenderTarget(
-        context_provider->GrContext(), SkBudgeted::kNo, n32Info,
-        msaa_sample_count, kTopLeft_GrSurfaceOrigin, &surface_props);
-  }
-
-  ~ScopedSkSurfaceForUnpremultiplyAndDither() {
-    // In lost-context cases, |surface_| may be null and there's nothing
-    // meaningful to do here.
-    if (!surface_)
-      return;
-
-    GrBackendTexture backend_texture =
-        surface_->getBackendTexture(SkSurface::kFlushRead_BackendHandleAccess);
-    if (!backend_texture.isValid()) {
-      return;
-    }
-    GrGLTextureInfo info;
-    if (!backend_texture.getGLTextureInfo(&info)) {
-      return;
-    }
-    context_provider_->ContextGL()->UnpremultiplyAndDitherCopyCHROMIUM(
-        info.fID, texture_id_, offset_.x(), offset_.y(), size_.width(),
-        size_.height());
-  }
-
-  SkSurface* surface() { return surface_.get(); }
-
- private:
-  viz::RasterContextProvider* context_provider_;
-  GLuint texture_id_;
-  gfx::Vector2d offset_;
-  gfx::Size size_;
-  sk_sp<SkSurface> surface_;
-};
-
 static void RasterizeSourceOOP(
     const RasterSource* raster_source,
     bool resource_has_previous_content,
@@ -186,7 +114,6 @@ static void RasterizeSource(
     const gfx::AxisTransform2d& transform,
     const RasterSource::PlaybackSettings& playback_settings,
     viz::RasterContextProvider* context_provider,
-    bool unpremultiply_and_dither,
     const gfx::Size& max_tile_size) {
   gpu::raster::RasterInterface* ri = context_provider->RasterInterface();
   if (mailbox->IsZero()) {
@@ -211,26 +138,15 @@ static void RasterizeSource(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
   {
     ScopedGrContextAccess gr_context_access(context_provider);
-    base::Optional<viz::ClientResourceProvider::ScopedSkSurface> scoped_surface;
-    base::Optional<ScopedSkSurfaceForUnpremultiplyAndDither>
-        scoped_dither_surface;
     SkSurface* surface;
     sk_sp<SkColorSpace> sk_color_space = color_space.ToSkColorSpace();
-    if (!unpremultiply_and_dither) {
-      scoped_surface.emplace(context_provider->GrContext(), sk_color_space,
-                             texture_id, texture_target, resource_size,
-                             resource_format,
-                             skia::LegacyDisplayGlobals::ComputeSurfaceProps(
-                                 playback_settings.use_lcd_text),
-                             playback_settings.msaa_sample_count);
-      surface = scoped_surface->surface();
-    } else {
-      scoped_dither_surface.emplace(
-          context_provider, sk_color_space, playback_rect, raster_full_rect,
-          max_tile_size, texture_id, resource_size,
-          playback_settings.use_lcd_text, playback_settings.msaa_sample_count);
-      surface = scoped_dither_surface->surface();
-    }
+    viz::ClientResourceProvider::ScopedSkSurface scoped_surface(
+        context_provider->GrContext(), sk_color_space, texture_id,
+        texture_target, resource_size, resource_format,
+        skia::LegacyDisplayGlobals::ComputeSurfaceProps(
+            playback_settings.use_lcd_text),
+        playback_settings.msaa_sample_count);
+    surface = scoped_surface.surface();
 
     // Allocating an SkSurface will fail after a lost context.  Pretend we
     // rasterized, as the contents of the resource don't matter anymore.
@@ -379,8 +295,6 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
       use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
       tile_format_(tile_format),
       max_tile_size_(max_tile_size),
-      unpremultiply_and_dither_low_bit_depth_tiles_(
-          unpremultiply_and_dither_low_bit_depth_tiles),
       enable_oop_rasterization_(enable_oop_rasterization),
       pending_raster_queries_(pending_raster_queries),
       random_generator_(static_cast<uint32_t>(base::RandUint64())),
@@ -599,7 +513,6 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
                       resource_size, resource_format, color_space,
                       raster_full_rect, playback_rect, transform,
                       playback_settings, worker_context_provider_,
-                      ShouldUnpremultiplyAndDitherResource(resource_format),
                       max_tile_size_);
     }
     if (measure_raster_metric) {
@@ -614,12 +527,8 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
 
 bool GpuRasterBufferProvider::ShouldUnpremultiplyAndDitherResource(
     viz::ResourceFormat format) const {
-  switch (format) {
-    case viz::RGBA_4444:
-      return unpremultiply_and_dither_low_bit_depth_tiles_;
-    default:
-      return false;
-  }
+  // TODO(crbug.com/1151490): Re-enable for OOPR.
+  return false;
 }
 
 }  // namespace cc

@@ -353,7 +353,8 @@ TEST_P(LayerTreeHostTilesTestRasterColorSpace, CustomColorSpace) {
 
 // This test doesn't work on Vulkan because on our hardware we can't render to
 // RGBA4444 format using either SwiftShader or native Vulkan. See
-// crbug.com/987278 for details
+// crbug.com/987278 for details.
+// TODO(crbug.com/1151490) : Re-enable after this is supported for OOPR.
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 class LayerTreeHostTilesTestPartialInvalidationLowBitDepth
     : public LayerTreeHostTilesTestPartialInvalidation {
@@ -373,14 +374,16 @@ INSTANTIATE_TEST_SUITE_P(
         RasterTestConfig{viz::RendererType::kGL, TestRasterType::kGpu}),
     ::testing::PrintToStringParamName());
 
-TEST_P(LayerTreeHostTilesTestPartialInvalidationLowBitDepth, PartialRaster) {
+TEST_P(LayerTreeHostTilesTestPartialInvalidationLowBitDepth,
+       DISABLED_PartialRaster) {
   use_partial_raster_ = true;
   RunSingleThreadedPixelTest(picture_layer_,
                              base::FilePath(FILE_PATH_LITERAL(
                                  "blue_yellow_partial_flipped_dither.png")));
 }
 
-TEST_P(LayerTreeHostTilesTestPartialInvalidationLowBitDepth, FullRaster) {
+TEST_P(LayerTreeHostTilesTestPartialInvalidationLowBitDepth,
+       DISABLED_FullRaster) {
   RunSingleThreadedPixelTest(
       picture_layer_,
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped_dither.png")));

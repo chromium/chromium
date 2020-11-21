@@ -164,7 +164,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   const bool use_gpu_memory_buffer_resources_;
   const viz::ResourceFormat tile_format_;
   const gfx::Size max_tile_size_;
-  const bool unpremultiply_and_dither_low_bit_depth_tiles_;
   const bool enable_oop_rasterization_;
 
   RasterQueryQueue* const pending_raster_queries_;
