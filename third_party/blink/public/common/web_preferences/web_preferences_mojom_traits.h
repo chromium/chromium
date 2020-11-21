@@ -11,16 +11,8 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
-#include "ui/base/pointer/pointer_device.h"
 
 namespace mojo {
-
-template <>
-struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::HoverType, ui::HoverType> {
-  static blink::mojom::HoverType ToMojom(ui::HoverType type);
-
-  static bool FromMojom(blink::mojom::HoverType input, ui::HoverType* out);
-};
 
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
@@ -348,7 +340,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.available_hover_types;
   }
 
-  static ui::HoverType primary_hover_type(
+  static blink::mojom::HoverType primary_hover_type(
       const blink::web_pref::WebPreferences& r) {
     return r.primary_hover_type;
   }

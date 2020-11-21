@@ -642,9 +642,9 @@
     },
     {
       name: "primaryHoverType",
-      initial: "ui::HOVER_TYPE_NONE",
+      initial: "mojom::blink::HoverType::kHoverNone",
       invalidate: "MediaQuery",
-      type: "ui::HoverType",
+      type: "mojom::blink::HoverType",
     },
 
     // If true, the value in password fields is exposed to assistive technologies.

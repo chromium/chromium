@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "ui/base/pointer/pointer_device.h"
 
 namespace gfx {
 class PointF;
@@ -44,7 +43,7 @@ class CORE_EXPORT DevToolsEmulator final
   void SetAvailablePointerTypes(int);
   void SetPrimaryPointerType(mojom::blink::PointerType);
   void SetAvailableHoverTypes(int);
-  void SetPrimaryHoverType(ui::HoverType);
+  void SetPrimaryHoverType(mojom::blink::HoverType);
   void SetMainFrameResizesAreOrientationChanges(bool);
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
@@ -127,7 +126,7 @@ class CORE_EXPORT DevToolsEmulator final
   int embedder_available_pointer_types_;
   mojom::blink::PointerType embedder_primary_pointer_type_;
   int embedder_available_hover_types_;
-  ui::HoverType embedder_primary_hover_type_;
+  mojom::blink::HoverType embedder_primary_hover_type_;
   bool embedder_main_frame_resizes_are_orientation_changes_;
 
   bool touch_event_emulation_enabled_;

@@ -72,7 +72,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual int MonochromeBitsPerComponent() const = 0;
   virtual mojom::blink::PointerType PrimaryPointerType() const = 0;
   virtual int AvailablePointerTypes() const = 0;
-  virtual ui::HoverType PrimaryHoverType() const = 0;
+  virtual mojom::blink::HoverType PrimaryHoverType() const = 0;
   virtual int AvailableHoverTypes() const = 0;
   virtual bool ThreeDEnabled() const = 0;
   virtual bool InImmersiveMode() const = 0;
@@ -109,7 +109,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   static bool CalculateInImmersiveMode(LocalFrame*);
   static mojom::blink::PointerType CalculatePrimaryPointerType(LocalFrame*);
   static int CalculateAvailablePointerTypes(LocalFrame*);
-  static ui::HoverType CalculatePrimaryHoverType(LocalFrame*);
+  static mojom::blink::HoverType CalculatePrimaryHoverType(LocalFrame*);
   static int CalculateAvailableHoverTypes(LocalFrame*);
   static ColorSpaceGamut CalculateColorGamut(LocalFrame*);
   static mojom::blink::PreferredColorScheme CalculatePreferredColorScheme(

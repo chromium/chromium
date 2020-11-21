@@ -13,35 +13,6 @@
 namespace mojo {
 
 // static
-blink::mojom::HoverType EnumTraits<blink::mojom::HoverType,
-                                   ui::HoverType>::ToMojom(ui::HoverType type) {
-  switch (type) {
-    case ui::HoverType::HOVER_TYPE_FIRST:
-      return blink::mojom::HoverType::kHoverFirstType;
-    case ui::HoverType::HOVER_TYPE_HOVER:
-      return blink::mojom::HoverType::kHoverHoverType;
-  }
-  NOTREACHED();
-  return blink::mojom::HoverType::kMinValue;
-}
-
-// static
-bool EnumTraits<blink::mojom::HoverType, ui::HoverType>::FromMojom(
-    blink::mojom::HoverType input,
-    ui::HoverType* out) {
-  switch (input) {
-    case blink::mojom::HoverType::kHoverFirstType:
-      *out = ui::HoverType::HOVER_TYPE_FIRST;
-      return true;
-    case blink::mojom::HoverType::kHoverHoverType:
-      *out = ui::HoverType::HOVER_TYPE_HOVER;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 bool StructTraits<blink::mojom::WebPreferencesDataView,
                   blink::web_pref::WebPreferences>::
     Read(blink::mojom::WebPreferencesDataView data,

@@ -57,6 +57,7 @@
 
 namespace blink {
 
+using mojom::blink::HoverType;
 using mojom::blink::PointerType;
 
 InternalSettings::Backup::Backup(Settings* settings)
@@ -450,9 +451,9 @@ void InternalSettings::setAvailableHoverTypes(const String& types,
   for (const String& split_token : tokens) {
     String token = split_token.StripWhiteSpace();
     if (token == "none") {
-      hover_types |= ui::HOVER_TYPE_NONE;
+      hover_types |= static_cast<int>(HoverType::kHoverNone);
     } else if (token == "hover") {
-      hover_types |= ui::HOVER_TYPE_HOVER;
+      hover_types |= static_cast<int>(HoverType::kHoverHoverType);
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
@@ -469,11 +470,11 @@ void InternalSettings::setPrimaryHoverType(const String& type,
   InternalSettingsGuardForSettings();
   String token = type.StripWhiteSpace();
 
-  ui::HoverType hover_type = ui::HOVER_TYPE_NONE;
+  HoverType hover_type = HoverType::kHoverNone;
   if (token == "none") {
-    hover_type = ui::HOVER_TYPE_NONE;
+    hover_type = HoverType::kHoverNone;
   } else if (token == "hover") {
-    hover_type = ui::HOVER_TYPE_HOVER;
+    hover_type = HoverType::kHoverHoverType;
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

@@ -183,7 +183,7 @@ class WebSettings {
   virtual void SetAvailablePointerTypes(int) = 0;
   virtual void SetPrimaryPointerType(blink::mojom::PointerType) = 0;
   virtual void SetAvailableHoverTypes(int) = 0;
-  virtual void SetPrimaryHoverType(ui::HoverType) = 0;
+  virtual void SetPrimaryHoverType(blink::mojom::HoverType) = 0;
   virtual void SetPreferHiddenVolumeControls(bool) = 0;
   virtual void SetShouldProtectAgainstIpcFlooding(bool) = 0;
   virtual void SetRenderVSyncNotificationEnabled(bool) = 0;

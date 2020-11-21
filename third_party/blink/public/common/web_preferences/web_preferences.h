@@ -18,7 +18,6 @@
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-shared.h"
-#include "ui/base/pointer/pointer_device.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -132,7 +131,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   int available_pointer_types;
   blink::mojom::PointerType primary_pointer_type;
   int available_hover_types;
-  ui::HoverType primary_hover_type;
+  blink::mojom::HoverType primary_hover_type;
   bool dont_send_key_events_to_javascript;
   bool barrel_button_for_drag_enabled = false;
   bool sync_xhr_in_documents_enabled;

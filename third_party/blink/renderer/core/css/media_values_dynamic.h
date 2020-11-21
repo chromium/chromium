@@ -39,7 +39,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   int MonochromeBitsPerComponent() const override;
   mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
-  ui::HoverType PrimaryHoverType() const override;
+  mojom::blink::HoverType PrimaryHoverType() const override;
   int AvailableHoverTypes() const override;
   bool ThreeDEnabled() const override;
   bool InImmersiveMode() const override;

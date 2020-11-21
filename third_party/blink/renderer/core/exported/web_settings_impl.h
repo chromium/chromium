@@ -132,7 +132,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAvailablePointerTypes(int) override;
   void SetPrimaryPointerType(mojom::blink::PointerType) override;
   void SetAvailableHoverTypes(int) override;
-  void SetPrimaryHoverType(ui::HoverType) override;
+  void SetPrimaryHoverType(mojom::blink::HoverType) override;
   void SetPreferHiddenVolumeControls(bool) override;
   void SetShouldProtectAgainstIpcFlooding(bool) override;
   void SetRenderVSyncNotificationEnabled(bool) override;

@@ -26,7 +26,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     int monochrome_bits_per_component;
     mojom::blink::PointerType primary_pointer_type;
     int available_pointer_types;
-    ui::HoverType primary_hover_type;
+    mojom::blink::HoverType primary_hover_type;
     int available_hover_types;
     int default_font_size;
     bool three_d_enabled;
@@ -98,7 +98,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   int MonochromeBitsPerComponent() const override;
   mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
-  ui::HoverType PrimaryHoverType() const override;
+  mojom::blink::HoverType PrimaryHoverType() const override;
   int AvailableHoverTypes() const override;
   bool ThreeDEnabled() const override;
   bool InImmersiveMode() const override;

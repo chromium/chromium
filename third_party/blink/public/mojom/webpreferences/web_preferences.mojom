@@ -18,8 +18,9 @@ enum PointerType {
 };
 
 enum HoverType {
-  kHoverFirstType                            = 1,  // 1 << 0
-  kHoverHoverType                            = 2   // 1 << 1
+  kHoverNone                                 = 1,            // 1 << 0
+  kHoverFirstType                            = kHoverNone,
+  kHoverHoverType                            = 2             // 1 << 1
 };
 
 // There are multiple editing details that are different on Windows than

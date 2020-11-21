@@ -163,7 +163,8 @@ int MediaValues::CalculateAvailablePointerTypes(LocalFrame* frame) {
   return frame->GetSettings()->GetAvailablePointerTypes();
 }
 
-ui::HoverType MediaValues::CalculatePrimaryHoverType(LocalFrame* frame) {
+mojom::blink::HoverType MediaValues::CalculatePrimaryHoverType(
+    LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
   return frame->GetSettings()->GetPrimaryHoverType();

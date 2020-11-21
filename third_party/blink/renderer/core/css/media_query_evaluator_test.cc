@@ -312,7 +312,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   data.color_bits_per_component = 24;
   data.monochrome_bits_per_component = 0;
   data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
-  data.primary_hover_type = ui::HOVER_TYPE_HOVER;
+  data.primary_hover_type = mojom::blink::HoverType::kHoverHoverType;
   data.default_font_size = 16;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;

@@ -177,6 +177,7 @@
 #include "ui/aura/window.h"
 #endif
 #include "ui/base/layout.h"
+#include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
@@ -2574,8 +2575,8 @@ void WebContentsImpl::SetSlowWebPreferences(
         ui::GetAvailablePointerAndHoverTypes();
     prefs->primary_pointer_type = static_cast<blink::mojom::PointerType>(
         ui::GetPrimaryPointerType(prefs->available_pointer_types));
-    prefs->primary_hover_type =
-        ui::GetPrimaryHoverType(prefs->available_hover_types);
+    prefs->primary_hover_type = static_cast<blink::mojom::HoverType>(
+        ui::GetPrimaryHoverType(prefs->available_hover_types));
 
     prefs->pointer_events_max_touch_points = ui::MaxTouchPoints();
 

@@ -100,7 +100,7 @@ WebPreferences::WebPreferences()
       available_pointer_types(0),
       primary_pointer_type(blink::mojom::PointerType::kPointerNone),
       available_hover_types(0),
-      primary_hover_type(ui::HOVER_TYPE_NONE),
+      primary_hover_type(blink::mojom::HoverType::kHoverNone),
       dont_send_key_events_to_javascript(false),
       sync_xhr_in_documents_enabled(true),
       number_of_cpu_cores(1),

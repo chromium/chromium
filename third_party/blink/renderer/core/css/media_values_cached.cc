@@ -27,7 +27,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData()
       monochrome_bits_per_component(0),
       primary_pointer_type(mojom::blink::PointerType::kPointerNone),
       available_pointer_types(ui::POINTER_TYPE_NONE),
-      primary_hover_type(ui::HOVER_TYPE_NONE),
+      primary_hover_type(mojom::blink::HoverType::kHoverNone),
       available_hover_types(ui::HOVER_TYPE_NONE),
       default_font_size(16),
       three_d_enabled(false),
@@ -149,7 +149,7 @@ int MediaValuesCached::AvailablePointerTypes() const {
   return data_.available_pointer_types;
 }
 
-ui::HoverType MediaValuesCached::PrimaryHoverType() const {
+mojom::blink::HoverType MediaValuesCached::PrimaryHoverType() const {
   return data_.primary_hover_type;
 }
 

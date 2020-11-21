@@ -64,6 +64,7 @@
 
 namespace blink {
 
+using mojom::blink::HoverType;
 using mojom::blink::PointerType;
 
 namespace {
@@ -698,16 +699,17 @@ static bool ImmersiveMediaFeatureEval(const MediaQueryExpValue& value,
 static bool HoverMediaFeatureEval(const MediaQueryExpValue& value,
                                   MediaFeaturePrefix,
                                   const MediaValues& media_values) {
-  ui::HoverType hover = media_values.PrimaryHoverType();
+  HoverType hover = media_values.PrimaryHoverType();
 
   if (!value.IsValid())
-    return hover != ui::HOVER_TYPE_NONE;
+    return hover != HoverType::kHoverNone;
 
   if (!value.is_id)
     return false;
 
-  return (hover == ui::HOVER_TYPE_NONE && value.id == CSSValueID::kNone) ||
-         (hover == ui::HOVER_TYPE_HOVER && value.id == CSSValueID::kHover);
+  return (hover == HoverType::kHoverNone && value.id == CSSValueID::kNone) ||
+         (hover == HoverType::kHoverHoverType &&
+          value.id == CSSValueID::kHover);
 }
 
 static bool AnyHoverMediaFeatureEval(const MediaQueryExpValue& value,
@@ -716,16 +718,17 @@ static bool AnyHoverMediaFeatureEval(const MediaQueryExpValue& value,
   int available_hover_types = media_values.AvailableHoverTypes();
 
   if (!value.IsValid())
-    return available_hover_types & ~ui::HOVER_TYPE_NONE;
+    return available_hover_types & ~static_cast<int>(HoverType::kHoverNone);
 
   if (!value.is_id)
     return false;
 
   switch (value.id) {
     case CSSValueID::kNone:
-      return available_hover_types & ui::HOVER_TYPE_NONE;
+      return available_hover_types & static_cast<int>(HoverType::kHoverNone);
     case CSSValueID::kHover:
-      return available_hover_types & ui::HOVER_TYPE_HOVER;
+      return available_hover_types &
+             static_cast<int>(HoverType::kHoverHoverType);
     default:
       NOTREACHED();
       return false;
