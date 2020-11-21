@@ -20,6 +20,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_network_session.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,10 +90,10 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
     // Set |test_clock_| to some random time.
     test_clock_.Advance(base::TimeDelta::FromSeconds(12345));
 
-    url::Origin origin1 = url::Origin::Create(GURL("https://foo.test/"));
-    network_isolation_key1_ = NetworkIsolationKey(origin1, origin1);
-    url::Origin origin2 = url::Origin::Create(GURL("https://bar.test/"));
-    network_isolation_key2_ = NetworkIsolationKey(origin2, origin2);
+    SchemefulSite site1(GURL("https://foo.test/"));
+    network_isolation_key1_ = NetworkIsolationKey(site1, site1);
+    SchemefulSite site2(GURL("https://bar.test/"));
+    network_isolation_key2_ = NetworkIsolationKey(site2, site2);
   }
 
   bool HasAlternativeService(const url::SchemeHostPort& origin,

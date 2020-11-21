@@ -10,9 +10,9 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace net {
 
@@ -30,10 +30,10 @@ class BrokenAlternativeServicesTest
         test_task_runner_context_(test_task_runner_),
         broken_services_clock_(test_task_runner_->GetMockTickClock()),
         broken_services_(50, this, broken_services_clock_) {
-    auto origin1 = url::Origin::Create(GURL("http://foo.test"));
-    auto origin2 = url::Origin::Create(GURL("http://bar.test"));
-    network_isolation_key1_ = NetworkIsolationKey(origin1, origin1);
-    network_isolation_key2_ = NetworkIsolationKey(origin2, origin2);
+    SchemefulSite site1(GURL("http://foo.test"));
+    SchemefulSite site2(GURL("http://bar.test"));
+    network_isolation_key1_ = NetworkIsolationKey(site1, site1);
+    network_isolation_key2_ = NetworkIsolationKey(site2, site2);
   }
 
   // BrokenAlternativeServices::Delegate implementation

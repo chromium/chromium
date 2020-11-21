@@ -17,10 +17,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -124,12 +124,10 @@ TEST(HostCacheTest, NetworkIsolationKey) {
   const char kHostname[] = "hostname.test";
   const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
 
-  const url::Origin kOrigin1(
-      url::Origin::Create(GURL("https://origin1.test/")));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2(
-      url::Origin::Create(GURL("https://origin2.test/")));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://site1.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://site2.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   HostCache::Key key1(kHostname, DnsQueryType::UNSPECIFIED, 0,
                       HostResolverSource::ANY, kNetworkIsolationKey1);
@@ -988,11 +986,11 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
 TEST(HostCacheTest, SerializeAndDeserializeWithNetworkIsolationKey) {
   const char kHostname[] = "hostname.test";
   const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
-  const url::Origin kOrigin(url::Origin::Create(GURL("https://origin.test/")));
-  const NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
-  const url::Origin kOpaqueOrigin;
-  const NetworkIsolationKey kOpaqueNetworkIsolationKey(kOpaqueOrigin,
-                                                       kOpaqueOrigin);
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
+  const SchemefulSite kOpaqueSite;
+  const NetworkIsolationKey kOpaqueNetworkIsolationKey(kOpaqueSite,
+                                                       kOpaqueSite);
 
   HostCache::Key key1(kHostname, DnsQueryType::UNSPECIFIED, 0,
                       HostResolverSource::ANY, kNetworkIsolationKey);

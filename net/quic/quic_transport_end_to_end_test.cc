@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/schemeful_site.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/test_net_log.h"
@@ -22,6 +23,8 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 namespace test {
@@ -84,7 +87,8 @@ class QuicTransportEndToEndTest : public TestWithTaskEnvironment {
       quic::QuicEnableVersion(version);
     }
     origin_ = url::Origin::Create(GURL{"https://example.org"});
-    isolation_key_ = NetworkIsolationKey(origin_, origin_);
+    isolation_key_ =
+        NetworkIsolationKey(SchemefulSite(origin_), SchemefulSite(origin_));
 
     URLRequestContextBuilder builder;
     builder.set_proxy_resolution_service(

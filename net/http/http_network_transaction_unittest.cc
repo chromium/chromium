@@ -52,6 +52,7 @@
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -580,8 +581,8 @@ class HttpNetworkTransactionTest : public PlatformTest,
   const CommonConnectJobParams dummy_connect_job_params_;
 
   const net::NetworkIsolationKey kNetworkIsolationKey =
-      NetworkIsolationKey(url::Origin::Create(GURL("https://foo.test/")),
-                          url::Origin::Create(GURL("https://bar.test/")));
+      NetworkIsolationKey(SchemefulSite(GURL("https://foo.test/")),
+                          SchemefulSite(GURL("https://bar.test/")));
 
   // These clocks are defined here, even though they're only used in the
   // Reporting tests below, since they need to be destroyed after
@@ -4405,10 +4406,10 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyMatchesServerAuthNoTunnel) {
 // affects server credentials, not proxy credentials.
 TEST_F(HttpNetworkTransactionTest,
        BasicAuthProxyMatchesServerAuthWithNetworkIsolationKeyNoTunnel) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
@@ -4656,10 +4657,10 @@ TEST_F(HttpNetworkTransactionTest,
 // Much like the test above, but uses tunnelled connections.
 TEST_F(HttpNetworkTransactionTest,
        BasicAuthProxyMatchesServerAuthWithNetworkIsolationKeyWithTunnel) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
@@ -6285,7 +6286,7 @@ TEST_F(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
 
 // Make sure that NetworkIsolationKeys are passed down to the proxy layer.
 TEST_F(HttpNetworkTransactionTest, ProxyResolvedWithNetworkIsolationKey) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
+  const SchemefulSite kSite(GURL("https://foo.test/"));
 
   ProxyConfig proxy_config;
   proxy_config.set_auto_detect(true);
@@ -13343,10 +13344,10 @@ TEST_F(HttpNetworkTransactionTest,
   session_deps_.http_server_properties =
       std::make_unique<HttpServerProperties>();
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -22158,10 +22159,10 @@ TEST_F(HttpNetworkTransactionTest, ClientCertSocketReuse) {
 // same key, the second a different one. Checks that the requests are
 // partitioned across sockets as expected.
 TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
-  const auto kOrigin1 = url::Origin::Create(GURL("http://origin1/"));
-  const auto kOrigin2 = url::Origin::Create(GURL("http://origin2/"));
-  NetworkIsolationKey network_isolation_key1(kOrigin1, kOrigin1);
-  NetworkIsolationKey network_isolation_key2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("http://origin1/"));
+  const SchemefulSite kSite2(GURL("http://origin2/"));
+  NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
+  NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
 
   for (bool partition_connections : {false, true}) {
     SCOPED_TRACE(partition_connections);
@@ -22306,10 +22307,10 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
 }
 
 TEST_F(HttpNetworkTransactionTest, NetworkIsolationH2) {
-  const auto kOrigin1 = url::Origin::Create(GURL("http://origin1/"));
-  const auto kOrigin2 = url::Origin::Create(GURL("http://origin2/"));
-  NetworkIsolationKey network_isolation_key1(kOrigin1, kOrigin1);
-  NetworkIsolationKey network_isolation_key2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("http://origin1/"));
+  const SchemefulSite kSite2(GURL("http://origin2/"));
+  NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
+  NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
 
   // Whether to use an H2 proxy. When false, uses HTTPS H2 requests without a
   // proxy, when true, uses HTTP requests over an H2 proxy. It's unnecessary to
@@ -22536,12 +22537,12 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
     kDontUsePreconnect,
   };
 
-  const auto kOrigin1 = url::Origin::Create(GURL("http://origin1/"));
-  const auto kOrigin2 = url::Origin::Create(GURL("http://origin2/"));
-  const auto kOrigin3 = url::Origin::Create(GURL("http://origin3/"));
-  NetworkIsolationKey preconnect1_isolation_key(kOrigin1, kOrigin1);
-  NetworkIsolationKey preconnect2_isolation_key(kOrigin2, kOrigin2);
-  NetworkIsolationKey not_preconnected_isolation_key(kOrigin3, kOrigin3);
+  const SchemefulSite kSite1(GURL("http://origin1/"));
+  const SchemefulSite kSite2(GURL("http://origin2/"));
+  const SchemefulSite kSite3(GURL("http://origin3/"));
+  NetworkIsolationKey preconnect1_isolation_key(kSite1, kSite1);
+  NetworkIsolationKey preconnect2_isolation_key(kSite2, kSite2);
+  NetworkIsolationKey not_preconnected_isolation_key(kSite3, kSite3);
 
   // Test that only preconnects with
   for (TestCase test_case :
@@ -22656,10 +22657,10 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
        features::kPartitionSSLSessionsByNetworkIsolationKey},
       {});
 
-  const auto kOrigin1 = url::Origin::Create(GURL("http://origin1/"));
-  const auto kOrigin2 = url::Origin::Create(GURL("http://origin2/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("http://origin1/"));
+  const SchemefulSite kSite2(GURL("http://origin2/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // The server always sends Connection: close, so each request goes over a
@@ -22778,10 +22779,10 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
       ConfiguredProxyResolutionService::CreateFixed(
           "https://myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const auto kOrigin1 = url::Origin::Create(GURL("http://origin1/"));
-  const auto kOrigin2 = url::Origin::Create(GURL("http://origin2/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("http://origin1/"));
+  const SchemefulSite kSite2(GURL("http://origin2/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Make both a tunneled and non-tunneled request.

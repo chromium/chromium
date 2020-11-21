@@ -16,6 +16,7 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_test_util.h"
@@ -85,9 +86,11 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const url::Origin kOrigin_ = url::Origin::Create(GURL("https://origin/"));
   const url::Origin kOtherOrigin_ =
       url::Origin::Create(GURL("https://other-origin/"));
-  const NetworkIsolationKey kNik_ = NetworkIsolationKey(kOrigin_, kOrigin_);
+  const NetworkIsolationKey kNik_ =
+      NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
   const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(kOtherOrigin_, kOtherOrigin_);
+      NetworkIsolationKey(SchemefulSite(kOtherOrigin_),
+                          SchemefulSite(kOtherOrigin_));
   const GURL kEndpoint_ = GURL("https://endpoint/");
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";

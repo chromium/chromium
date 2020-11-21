@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/test_net_log.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -42,7 +43,6 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace net {
 
@@ -181,8 +181,8 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
 // Make sure that the NetworkIsolationKey is respected when resolving a host
 // from the cache.
 TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequestsWithNetworkIsolationKey) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  const SchemefulSite kSite(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const GURL kUrl = GURL("http://foo.test/test.html");
 
   base::test::ScopedFeatureList feature_list;

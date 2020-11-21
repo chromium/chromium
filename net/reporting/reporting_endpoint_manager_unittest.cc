@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_policy.h"
@@ -218,6 +219,7 @@ class ReportingEndpointManagerTest : public testing::Test {
 
   const NetworkIsolationKey kNik;
   const url::Origin kOrigin = url::Origin::Create(GURL("https://origin/"));
+  const SchemefulSite kSite = SchemefulSite(kOrigin);
   const std::string kGroup = "group";
   const ReportingEndpointGroupKey kGroupKey =
       ReportingEndpointGroupKey(kNik, kOrigin, kGroup);
@@ -446,10 +448,10 @@ TEST_F(ReportingEndpointManagerTest, ZeroWeights) {
 
 // Check that ReportingEndpointManager distinguishes NetworkIsolationKeys.
 TEST_F(ReportingEndpointManagerTest, NetworkIsolationKey) {
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://origin2/"));
+  const SchemefulSite kSite2(GURL("https://origin2/"));
 
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin, kOrigin);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite, kSite);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const ReportingEndpointGroupKey kGroupKey1(kNetworkIsolationKey1, kOrigin,
                                              kGroup);
   const ReportingEndpointGroupKey kGroupKey2(kNetworkIsolationKey2, kOrigin,
@@ -491,10 +493,10 @@ TEST_F(ReportingEndpointManagerTest, NetworkIsolationKey) {
 }
 
 TEST_F(ReportingEndpointManagerTest, NetworkIsolationKeyWithMultipleEndpoints) {
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://origin2/"));
+  const SchemefulSite kSite2(GURL("https://origin2/"));
 
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin, kOrigin);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite, kSite);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const ReportingEndpointGroupKey kGroupKey1(kNetworkIsolationKey1, kOrigin,
                                              kGroup);
   const ReportingEndpointGroupKey kGroupKey2(kNetworkIsolationKey2, kOrigin,
@@ -570,7 +572,7 @@ TEST_F(ReportingEndpointManagerTest, CacheEviction) {
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey));
 
   // Add another endpoint with a different NetworkIsolationKey;
-  const NetworkIsolationKey kDifferentNetworkIsolationKey(kOrigin, kOrigin);
+  const NetworkIsolationKey kDifferentNetworkIsolationKey(kSite, kSite);
   const ReportingEndpointGroupKey kDifferentGroupKey(
       kDifferentNetworkIsolationKey, kOrigin, kGroup);
   SetEndpoint(kEndpoint, ReportingEndpoint::EndpointInfo::kDefaultPriority,

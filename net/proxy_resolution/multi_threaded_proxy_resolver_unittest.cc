@@ -19,6 +19,7 @@
 #include "base/threading/thread_checker_impl.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -32,7 +33,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -489,8 +489,8 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_CancelRequest) {
 
 // Make sure the NetworkIsolationKey makes it to the resolver.
 TEST_F(MultiThreadedProxyResolverTest, SingleThread_WithNetworkIsolationKey) {
-  const url::Origin kOrigin(url::Origin::Create(GURL("https://origin.test/")));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  const SchemefulSite kSite(GURL("https://origin.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const GURL kUrl("https://url.test/");
 
   const size_t kNumThreads = 1u;

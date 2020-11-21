@@ -18,6 +18,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/network_error_logging/mock_persistent_nel_store.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/reporting/reporting_test_util.h"
@@ -124,9 +125,9 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
     return url::Origin::Create(url);
   }
   NetworkIsolationKey MakeNetworkIsolationKey(size_t index) {
-    url::Origin origin = url::Origin::Create(
+    SchemefulSite site(
         GURL(base::StringPrintf("https://example%zd.com/", (index + 1) / 2)));
-    return NetworkIsolationKey(origin, origin);
+    return NetworkIsolationKey(site, site);
   }
 
   NetworkErrorLoggingService::NelPolicy MakePolicy(
@@ -181,9 +182,11 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
   const url::Origin kOriginDifferentHost_ =
       url::Origin::Create(kUrlDifferentHost_);
   const url::Origin kOriginEtld_ = url::Origin::Create(kUrlEtld_);
-  const NetworkIsolationKey kNik_ = NetworkIsolationKey(kOrigin_, kOrigin_);
+  const NetworkIsolationKey kNik_ =
+      NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
   const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(kOriginDifferentHost_, kOriginDifferentHost_);
+      NetworkIsolationKey(SchemefulSite(kOriginDifferentHost_),
+                          SchemefulSite(kOriginDifferentHost_));
 
   const std::string kHeader_ = "{\"report_to\":\"group\",\"max_age\":86400}";
   const std::string kHeaderSuccessFraction0_ =

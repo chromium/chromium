@@ -18,6 +18,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_test_util.h"
@@ -36,7 +37,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace net {
 
@@ -661,8 +661,8 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCache) {
 // Do a lookup with a NetworkIsolationKey, and then make sure the entry added to
 // the cache is in fact using that NetworkIsolationKey.
 TEST_F(ContextHostResolverTest, ResultsAddedToCacheWithNetworkIsolationKey) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://origin.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  const SchemefulSite kSite(GURL("https://origin.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

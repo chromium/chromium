@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_endpoint.h"
@@ -152,9 +153,10 @@ class ReportingHeaderParserTest : public ReportingTestBase,
   const url::Origin kOrigin1_ = url::Origin::Create(kUrl1_);
   const GURL kUrl2_ = GURL("https://origin2.test/path");
   const url::Origin kOrigin2_ = url::Origin::Create(kUrl2_);
-  const NetworkIsolationKey kNik_ = NetworkIsolationKey(kOrigin1_, kOrigin1_);
+  const NetworkIsolationKey kNik_ =
+      NetworkIsolationKey(SchemefulSite(kOrigin1_), SchemefulSite(kOrigin1_));
   const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(kOrigin2_, kOrigin2_);
+      NetworkIsolationKey(SchemefulSite(kOrigin2_), SchemefulSite(kOrigin2_));
   const GURL kUrlEtld_ = GURL("https://co.uk/foo.html/");
   const url::Origin kOriginEtld_ = url::Origin::Create(kUrlEtld_);
   const GURL kEndpoint1_ = GURL("https://endpoint1.test/");

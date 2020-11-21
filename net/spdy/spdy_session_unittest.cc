@@ -27,6 +27,7 @@
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_data_stream.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/http/http_request_info.h"
@@ -55,6 +56,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
+#include "url/gurl.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -6622,10 +6624,10 @@ TEST_F(AltSvcFrameTest,
   session_deps_.http_server_properties =
       std::make_unique<HttpServerProperties>();
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), ProxyServer::Direct(),
                         PRIVACY_MODE_DISABLED,
                         SpdySessionKey::IsProxySession::kFalse, SocketTag(),

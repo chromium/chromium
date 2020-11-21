@@ -13,6 +13,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/traced_value.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -415,8 +416,8 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
   SSLClientSessionCache::Config config;
   SSLClientSessionCache cache(config);
 
-  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
-  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
+  const SchemefulSite kSiteA(GURL("https://a.test"));
+  const SchemefulSite kSiteB(GURL("https://b.test"));
 
   // Insert a number of cache entries.
   SSLClientSessionCache::Key key1;
@@ -427,7 +428,7 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
   SSLClientSessionCache::Key key2;
   key2.server = HostPortPair("a.test", 443);
   key2.dest_ip_addr = IPAddress::IPv4Localhost();
-  key2.network_isolation_key = NetworkIsolationKey(kOriginB, kOriginB);
+  key2.network_isolation_key = NetworkIsolationKey(kSiteB, kSiteB);
   key2.privacy_mode = PRIVACY_MODE_ENABLED;
   auto session2 = NewSSLSession();
   cache.Insert(key2, bssl::UpRef(session2));
@@ -444,7 +445,7 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
 
   SSLClientSessionCache::Key key5;
   key5.server = HostPortPair("b.test", 443);
-  key5.network_isolation_key = NetworkIsolationKey(kOriginA, kOriginA);
+  key5.network_isolation_key = NetworkIsolationKey(kSiteA, kSiteA);
   auto session5 = NewSSLSession();
   cache.Insert(key5, bssl::UpRef(session5));
 

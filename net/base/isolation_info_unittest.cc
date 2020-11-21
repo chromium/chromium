@@ -227,7 +227,8 @@ TEST_F(IsolationInfoTest, CreateForInternalRequest) {
 }
 
 TEST_F(IsolationInfoTest, CreatePartialUpdateTopFrame) {
-  const NetworkIsolationKey kNIK(kOrigin1, kOrigin1);
+  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
+                                 SchemefulSite(kOrigin1)};
   IsolationInfo isolation_info = IsolationInfo::CreatePartial(
       IsolationInfo::RequestType::kMainFrame, kNIK);
   EXPECT_EQ(IsolationInfo::RequestType::kMainFrame,
@@ -242,7 +243,8 @@ TEST_F(IsolationInfoTest, CreatePartialUpdateTopFrame) {
 }
 
 TEST_F(IsolationInfoTest, CreatePartialUpdateFrameOnly) {
-  const NetworkIsolationKey kNIK(kOrigin1, kOrigin2);
+  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
+                                 SchemefulSite(kOrigin2)};
   IsolationInfo isolation_info =
       IsolationInfo::CreatePartial(IsolationInfo::RequestType::kSubFrame, kNIK);
   EXPECT_EQ(IsolationInfo::RequestType::kSubFrame,
@@ -257,7 +259,8 @@ TEST_F(IsolationInfoTest, CreatePartialUpdateFrameOnly) {
 }
 
 TEST_F(IsolationInfoTest, CreatePartialUpdateNothing) {
-  const NetworkIsolationKey kNIK(kOrigin1, kOrigin2);
+  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
+                                 SchemefulSite(kOrigin2)};
   IsolationInfo isolation_info =
       IsolationInfo::CreatePartial(IsolationInfo::RequestType::kOther, kNIK);
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
@@ -319,7 +322,8 @@ TEST_F(IsolationInfoTest, CreatePartialEmptyNoFrameOriginRequestTypeMainFrame) {
   feature_list.InitAndDisableFeature(
       features::kAppendFrameOriginToNetworkIsolationKey);
 
-  const NetworkIsolationKey kNIK(kOrigin1, kOrigin1);
+  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
+                                 SchemefulSite(kOrigin1)};
   EXPECT_FALSE(kNIK.GetFrameSite());
   IsolationInfo isolation_info = IsolationInfo::CreatePartial(
       IsolationInfo::RequestType::kMainFrame, kNIK);
@@ -339,7 +343,8 @@ TEST_F(IsolationInfoTest, CreatePartialEmptyNoFrameOriginRequestTypeSubFrame) {
   feature_list.InitAndDisableFeature(
       features::kAppendFrameOriginToNetworkIsolationKey);
 
-  const NetworkIsolationKey kNIK(kOrigin1, kOrigin2);
+  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
+                                 SchemefulSite(kOrigin2)};
   EXPECT_FALSE(kNIK.GetFrameSite());
   IsolationInfo isolation_info =
       IsolationInfo::CreatePartial(IsolationInfo::RequestType::kSubFrame, kNIK);
@@ -360,7 +365,8 @@ TEST_F(IsolationInfoTest, CreatePartialEmptyNoFrameOriginRequestTypeOther) {
   feature_list.InitAndDisableFeature(
       features::kAppendFrameOriginToNetworkIsolationKey);
 
-  const NetworkIsolationKey kNIK(kOrigin1, kOrigin2);
+  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
+                                 SchemefulSite(kOrigin2)};
   EXPECT_FALSE(kNIK.GetFrameSite());
   IsolationInfo isolation_info =
       IsolationInfo::CreatePartial(IsolationInfo::RequestType::kOther, kNIK);

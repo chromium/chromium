@@ -23,6 +23,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -33,6 +34,7 @@
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -192,8 +194,8 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
   method = t.method;
   extra_headers.AddHeadersFromString(t.request_headers);
   load_flags = t.load_flags;
-  url::Origin origin = url::Origin::Create(url);
-  network_isolation_key = NetworkIsolationKey(origin, origin);
+  SchemefulSite site(url);
+  network_isolation_key = NetworkIsolationKey(site, site);
 }
 
 std::string MockHttpRequest::CacheKey() {

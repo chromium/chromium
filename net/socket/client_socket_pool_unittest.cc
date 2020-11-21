@@ -12,9 +12,9 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace net {
 
@@ -43,11 +43,11 @@ TEST(ClientSocketPool, GroupIdOperators) {
       PrivacyMode::PRIVACY_MODE_ENABLED,
   };
 
-  const auto kOriginA = url::Origin::Create(GURL("http://a.test/"));
-  const auto kOriginB = url::Origin::Create(GURL("http://b.test/"));
+  const SchemefulSite kSiteA(GURL("http://a.test/"));
+  const SchemefulSite kSiteB(GURL("http://b.test/"));
   const NetworkIsolationKey kNetworkIsolationKeys[] = {
-      NetworkIsolationKey(kOriginA, kOriginA),
-      NetworkIsolationKey(kOriginB, kOriginB),
+      NetworkIsolationKey(kSiteA, kSiteA),
+      NetworkIsolationKey(kSiteB, kSiteB),
   };
 
   const bool kDisableSecureDnsValues[] = {false, true};
@@ -134,15 +134,14 @@ TEST(ClientSocketPool, GroupIdToString) {
                 false /* disable_secure_dns */)
                 .ToString());
 
-  EXPECT_EQ(
-      "ssl/foo:443 <https://foo.com>",
-      ClientSocketPool::GroupId(
-          HostPortPair("foo", 443), ClientSocketPool::SocketType::kSsl,
-          PrivacyMode::PRIVACY_MODE_DISABLED,
-          NetworkIsolationKey(url::Origin::Create(GURL("https://foo.com")),
-                              url::Origin::Create(GURL("https://foo.com"))),
-          false /* disable_secure_dns */)
-          .ToString());
+  EXPECT_EQ("ssl/foo:443 <https://foo.com>",
+            ClientSocketPool::GroupId(
+                HostPortPair("foo", 443), ClientSocketPool::SocketType::kSsl,
+                PrivacyMode::PRIVACY_MODE_DISABLED,
+                NetworkIsolationKey(SchemefulSite(GURL("https://foo.com")),
+                                    SchemefulSite(GURL("https://foo.com"))),
+                false /* disable_secure_dns */)
+                .ToString());
 
   EXPECT_EQ("dsd/pm/ssl/bar:80 <null>",
             ClientSocketPool::GroupId(
@@ -155,8 +154,8 @@ TEST(ClientSocketPool, GroupIdToString) {
 TEST(ClientSocketPool, PartitionConnectionsByNetworkIsolationKeyDisabled) {
   // Partitioning connections by NetworkIsolationKey is disabled by default, so
   // test both the explicitly and implicitly disabled cases.
-  const auto kOriginFoo = url::Origin::Create(GURL("https://foo.com"));
-  const auto kOriginBar = url::Origin::Create(GURL("https://bar.com"));
+  const SchemefulSite kSiteFoo(GURL("https://foo.com"));
+  const SchemefulSite kSiteBar(GURL("https://bar.com"));
   for (bool explicitly_disabled : {false, true}) {
     base::test::ScopedFeatureList feature_list;
     if (explicitly_disabled) {
@@ -164,17 +163,17 @@ TEST(ClientSocketPool, PartitionConnectionsByNetworkIsolationKeyDisabled) {
           features::kPartitionConnectionsByNetworkIsolationKey);
     }
 
-    ClientSocketPool::GroupId group_id1(
-        HostPortPair("foo", 443), ClientSocketPool::SocketType::kSsl,
-        PrivacyMode::PRIVACY_MODE_DISABLED,
-        NetworkIsolationKey(kOriginFoo, kOriginFoo),
-        false /* disable_secure_dns */);
+    ClientSocketPool::GroupId group_id1(HostPortPair("foo", 443),
+                                        ClientSocketPool::SocketType::kSsl,
+                                        PrivacyMode::PRIVACY_MODE_DISABLED,
+                                        NetworkIsolationKey(kSiteFoo, kSiteFoo),
+                                        false /* disable_secure_dns */);
 
-    ClientSocketPool::GroupId group_id2(
-        HostPortPair("foo", 443), ClientSocketPool::SocketType::kSsl,
-        PrivacyMode::PRIVACY_MODE_DISABLED,
-        NetworkIsolationKey(kOriginBar, kOriginBar),
-        false /* disable_secure_dns */);
+    ClientSocketPool::GroupId group_id2(HostPortPair("foo", 443),
+                                        ClientSocketPool::SocketType::kSsl,
+                                        PrivacyMode::PRIVACY_MODE_DISABLED,
+                                        NetworkIsolationKey(kSiteBar, kSiteBar),
+                                        false /* disable_secure_dns */);
 
     EXPECT_FALSE(group_id1.network_isolation_key().IsFullyPopulated());
     EXPECT_FALSE(group_id2.network_isolation_key().IsFullyPopulated());

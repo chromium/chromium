@@ -24,6 +24,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -564,10 +565,10 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   // NetworkIsolationKeys, but the same server. If false, stores data for two
   // different servers, using the same NetworkIsolationKey.
   void VerifyInitialization(bool vary_network_isolation_key) {
-    const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-    const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
+    const SchemefulSite kSite1(GURL("https://foo.test/"));
+    const SchemefulSite kSite2(GURL("https://bar.test/"));
 
-    NetworkIsolationKey network_isolation_key1(kOrigin1, kOrigin1);
+    NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
     quic::QuicServerId quic_server_id1(
         kDefaultServerHostName, kDefaultServerPort, PRIVACY_MODE_DISABLED);
 
@@ -575,7 +576,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     quic::QuicServerId quic_server_id2;
 
     if (vary_network_isolation_key) {
-      network_isolation_key2 = NetworkIsolationKey(kOrigin2, kOrigin2);
+      network_isolation_key2 = NetworkIsolationKey(kSite2, kSite2);
       quic_server_id2 = quic_server_id1;
     } else {
       network_isolation_key2 = network_isolation_key1;
@@ -1265,10 +1266,10 @@ TEST_P(QuicStreamFactoryTest, CachedInitialRtt) {
 // Test that QUIC sessions use the cached RTT from HttpServerProperties for the
 // correct NetworkIsolationKey.
 TEST_P(QuicStreamFactoryTest, CachedInitialRttWithNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1497,10 +1498,10 @@ TEST_P(QuicStreamFactoryTest, GoAwayForConnectionMigrationWithPortOnly) {
 // Makes sure that setting and clearing ServerNetworkStats respects the
 // NetworkIsolationKey.
 TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   const NetworkIsolationKey kNetworkIsolationKeys[] = {
       kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};
@@ -10873,14 +10874,14 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCache) {
   feature_list.InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
 
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
-  const url::Origin kOrigin3 = url::Origin::Create(GURL("https://baz.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey3(kOrigin3, kOrigin3);
+  const SchemefulSite kSite3(GURL("https://baz.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey3(kSite3, kSite3);
 
   Initialize();
 
@@ -10928,14 +10929,14 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheWithNetworkIsolationKey) {
       // disabled_features
       {});
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
 
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
-  const url::Origin kOrigin3 = url::Origin::Create(GURL("https://baz.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey3(kOrigin3, kOrigin3);
+  const SchemefulSite kSite3(GURL("https://baz.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey3(kSite3, kSite3);
 
   Initialize();
 
@@ -11022,9 +11023,8 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkIsolationKey) {
       crypto_config_handles;
   std::vector<NetworkIsolationKey> network_isolation_keys;
   for (int i = 0; i < kNumSessionsToMake; ++i) {
-    url::Origin origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://foo%i.test/", i)));
-    network_isolation_keys.push_back(NetworkIsolationKey(origin, origin));
+    SchemefulSite site(GURL(base::StringPrintf("https://foo%i.test/", i)));
+    network_isolation_keys.push_back(NetworkIsolationKey(site, site));
 
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
         QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
@@ -11092,9 +11092,8 @@ TEST_P(QuicStreamFactoryTest,
 
   std::vector<NetworkIsolationKey> network_isolation_keys;
   for (int i = 0; i < kNumSessionsToMake; ++i) {
-    url::Origin origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://foo%i.test/", i)));
-    network_isolation_keys.push_back(NetworkIsolationKey(origin, origin));
+    SchemefulSite site(GURL(base::StringPrintf("https://foo%i.test/", i)));
+    network_isolation_keys.push_back(NetworkIsolationKey(site, site));
   }
 
   const quic::QuicServerId kQuicServerId(
@@ -12145,9 +12144,9 @@ TEST_P(QuicStreamFactoryTest, HostResolverRequestReprioritizedOnSetPriority) {
 // Verifies that the host resolver uses the disable secure DNS setting and
 // NetworkIsolationKey passed to QuicStreamRequest::Request().
 TEST_P(QuicStreamFactoryTest, HostResolverUsesParams) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kOrigin1, kOrigin1);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey(kSite1, kSite1);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features

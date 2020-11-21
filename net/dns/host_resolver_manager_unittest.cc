@@ -50,6 +50,7 @@
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_test_util.h"
@@ -74,7 +75,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_MDNS)
 #include "net/dns/mdns_client_impl.h"
@@ -3521,12 +3521,10 @@ DnsConfig CreateUpgradableDnsConfig() {
 
 // Check that entries are written to the cache with the right NIK.
 TEST_F(HostResolverManagerTest, NetworkIsolationKeyWriteToHostCache) {
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("https://origin1.test/"));
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("https://origin2.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://origin1.test/"));
+  const SchemefulSite kSite2(GURL("https://origin2.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   const char kFirstDnsResult[] = "192.168.1.42";
   const char kSecondDnsResult[] = "192.168.1.43";
@@ -3623,12 +3621,10 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyWriteToHostCache) {
 
 // Check that entries are read to the cache with the right NIK.
 TEST_F(HostResolverManagerTest, NetworkIsolationKeyReadFromHostCache) {
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("https://origin1.test/"));
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("https://origin2.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://origin1.test/"));
+  const SchemefulSite kSite2(GURL("https://origin2.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   struct CacheEntry {
     NetworkIsolationKey network_isolation_key;
@@ -3700,12 +3696,10 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyReadFromHostCache) {
 // Test that two requests made with different NetworkIsolationKeys are not
 // merged if |features::kSplitHostCacheByNetworkIsolationKey| is enabled.
 TEST_F(HostResolverManagerTest, NetworkIsolationKeyTwoRequestsAtOnce) {
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("https://origin1.test/"));
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("https://origin2.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://origin1.test/"));
+  const SchemefulSite kSite2(GURL("https://origin2.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   const char kDnsResult[] = "192.168.1.42";
 

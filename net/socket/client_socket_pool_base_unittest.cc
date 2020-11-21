@@ -34,6 +34,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_response_headers.h"
@@ -861,11 +862,11 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
   const PrivacyMode kPrivacyModes[] = {PrivacyMode::PRIVACY_MODE_DISABLED,
                                        PrivacyMode::PRIVACY_MODE_ENABLED};
 
-  const auto kOriginA = url::Origin::Create(GURL("http://a.test/"));
-  const auto kOriginB = url::Origin::Create(GURL("http://b.test/"));
+  const SchemefulSite kSiteA(GURL("http://a.test/"));
+  const SchemefulSite kSiteB(GURL("http://b.test/"));
   const NetworkIsolationKey kNetworkIsolationKeys[] = {
-      NetworkIsolationKey(kOriginA, kOriginA),
-      NetworkIsolationKey(kOriginB, kOriginB),
+      NetworkIsolationKey(kSiteA, kSiteA),
+      NetworkIsolationKey(kSiteB, kSiteB),
   };
 
   const bool kDisableSecureDnsValues[] = {false, true};
@@ -5653,8 +5654,8 @@ class ClientSocketPoolBaseRefreshTest
   static ClientSocketPool::GroupId GetGroupIdInPartition() {
     // Note this GroupId will match GetGroupId() unless
     // kPartitionConnectionsByNetworkIsolationKey is enabled.
-    const auto kOrigin = url::Origin::Create(GURL("https://b/"));
-    const NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+    const SchemefulSite kSite(GURL("https://b/"));
+    const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
     return TestGroupId("a", 443, ClientSocketPool::SocketType::kSsl,
                        PrivacyMode::PRIVACY_MODE_DISABLED,
                        kNetworkIsolationKey);

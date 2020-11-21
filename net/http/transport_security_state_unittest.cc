@@ -29,6 +29,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_verifier.h"
@@ -49,6 +50,7 @@
 #include "net/tools/huffman_trie/trie/trie_bit_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -340,10 +342,9 @@ std::string CreateUniqueHostName() {
 NetworkIsolationKey CreateUniqueNetworkIsolationKey(bool is_transient) {
   if (is_transient)
     return NetworkIsolationKey::CreateTransient();
-  url::Origin origin = url::Origin::CreateFromNormalizedTuple(
-      "https", CreateUniqueHostName(), 443);
-  return NetworkIsolationKey(origin /* top_frame_origin */,
-                             origin /* frame_origin */);
+  SchemefulSite site = SchemefulSite(url::Origin::CreateFromNormalizedTuple(
+      "https", CreateUniqueHostName(), 443));
+  return NetworkIsolationKey(site /* top_frame_site */, site /* frame_site */);
 }
 
 }  // namespace

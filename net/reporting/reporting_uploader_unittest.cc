@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
@@ -25,6 +26,8 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 namespace {
@@ -546,10 +549,11 @@ TEST_F(ReportingUploaderTest, RespectsNetworkIsolationKey) {
   feature_list.InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://origin2/"));
-  ASSERT_NE(kOrigin, kOrigin2);
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin, kOrigin);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1 = SchemefulSite(kOrigin);
+  const SchemefulSite kSite2(GURL("https://origin2/"));
+  ASSERT_NE(kSite1, kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   MockClientSocketFactory socket_factory;
   TestURLRequestContext context(true /* delay_initialization */);

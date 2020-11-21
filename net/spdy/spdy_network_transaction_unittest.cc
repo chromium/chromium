@@ -29,6 +29,7 @@
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_file_element_reader.h"
@@ -68,6 +69,7 @@
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
+#include "url/gurl.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -5302,10 +5304,10 @@ TEST_F(SpdyNetworkTransactionTest, HTTP11RequiredRetry) {
 
 // Same as above test, but checks that NetworkIsolationKeys are respected.
 TEST_F(SpdyNetworkTransactionTest, HTTP11RequiredRetryWithNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   const NetworkIsolationKey kNetworkIsolationKeys[] = {
       kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};
@@ -5507,10 +5509,10 @@ TEST_F(SpdyNetworkTransactionTest, HTTP11RequiredProxyRetry) {
 // Same as above, but also test that NetworkIsolationKeys are respected.
 TEST_F(SpdyNetworkTransactionTest,
        HTTP11RequiredProxyRetryWithNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   const NetworkIsolationKey kNetworkIsolationKeys[] = {
       kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};

@@ -25,6 +25,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -92,7 +93,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using ::testing::ElementsAre;
 using ::testing::Key;
@@ -2032,10 +2032,10 @@ TEST_P(QuicNetworkTransactionTest,
   // one.
   http_server_properties_ = std::make_unique<HttpServerProperties>();
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   MockRead http_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
@@ -2855,10 +2855,10 @@ TEST_P(
     return;
   }
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -3601,10 +3601,10 @@ TEST_P(QuicNetworkTransactionTest,
 // Much like above test, but verifies that NetworkIsolationKey is respected.
 TEST_P(QuicNetworkTransactionTest,
        ProtocolErrorAfterHandshakeConfirmedThenBrokenWithNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -4597,10 +4597,10 @@ TEST_P(QuicNetworkTransactionTest, ConfirmAlternativeService) {
 
 TEST_P(QuicNetworkTransactionTest,
        ConfirmAlternativeServiceWithNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -5448,10 +5448,10 @@ TEST_P(QuicNetworkTransactionTest, BrokenAlternateProtocol) {
 
 TEST_P(QuicNetworkTransactionTest,
        BrokenAlternateProtocolWithNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -5776,10 +5776,10 @@ TEST_P(QuicNetworkTransactionTest,
   // one.
   http_server_properties_ = std::make_unique<HttpServerProperties>();
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   // Alternate-protocol job
   MockRead quic_reads[] = {
@@ -8984,10 +8984,10 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushUpdatesPriority) {
 // Test that NetworkIsolationKey is respected by QUIC connections, when
 // kPartitionConnectionsByNetworkIsolationKey is enabled.
 TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
-  const auto kOrigin1 = url::Origin::Create(GURL("http://origin1/"));
-  const auto kOrigin2 = url::Origin::Create(GURL("http://origin2/"));
-  NetworkIsolationKey network_isolation_key1(kOrigin1, kOrigin1);
-  NetworkIsolationKey network_isolation_key2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("http://origin1/"));
+  const SchemefulSite kSite2(GURL("http://origin2/"));
+  NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
+  NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
 
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
@@ -9375,8 +9375,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
   CheckResponseData(&trans, "0123456789");
 
   HttpRequestInfo request2;
-  const auto kOrigin1 = url::Origin::Create(GURL("http://origin1/"));
-  request_.network_isolation_key = NetworkIsolationKey(kOrigin1, kOrigin1);
+  const SchemefulSite kSite1(GURL("http://origin1/"));
+  request_.network_isolation_key = NetworkIsolationKey(kSite1, kSite1);
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session_.get());
   RunTransaction(&trans2);
   CheckResponseData(&trans2, "0123456789");

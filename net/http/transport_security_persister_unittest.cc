@@ -18,11 +18,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/transport_security_state.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace net {
 
@@ -462,11 +462,10 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
 
   const GURL report_uri(kReportUri);
   static const char kTestDomain[] = "example.test";
-  const url::Origin kOrigin =
-      url::Origin::Create(GURL("https://somewhere.else.test"));
+  const SchemefulSite kSite(GURL("https://somewhere.else.test"));
   const NetworkIsolationKey empty_network_isolation_key;
-  const NetworkIsolationKey network_isolation_key(kOrigin /* top_frame_origin*/,
-                                                  kOrigin /* frame_origin*/);
+  const NetworkIsolationKey network_isolation_key(kSite /* top_frame_site */,
+                                                  kSite /* frame_site */);
   const NetworkIsolationKey transient_network_isolation_key =
       NetworkIsolationKey::CreateTransient();
 
@@ -552,11 +551,10 @@ TEST_P(TransportSecurityPersisterTest,
 
   const GURL report_uri(kReportUri);
   static const char kTestDomain[] = "example.test";
-  const url::Origin kOrigin =
-      url::Origin::Create(GURL("https://somewhere.else.test"));
+  const SchemefulSite kSite(GURL("https://somewhere.else.test"));
   const NetworkIsolationKey empty_network_isolation_key;
-  const NetworkIsolationKey network_isolation_key(kOrigin /* top_frame_origin*/,
-                                                  kOrigin /* frame_origin*/);
+  const NetworkIsolationKey network_isolation_key(kSite /* top_frame_site */,
+                                                  kSite /* frame_site */);
   const base::Time current_time(base::Time::Now());
   const base::Time expiry1 = current_time + base::TimeDelta::FromSeconds(1000);
   const base::Time expiry2 = current_time + base::TimeDelta::FromSeconds(2000);

@@ -24,6 +24,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_basic_stream.h"
@@ -54,7 +55,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 using ::testing::_;
 using ::testing::Contains;
@@ -2135,10 +2136,10 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   session_deps_.http_server_properties =
       std::make_unique<HttpServerProperties>();
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
@@ -2350,10 +2351,10 @@ TEST_F(JobControllerLimitMultipleH2Requests,
   session_deps_.http_server_properties =
       std::make_unique<HttpServerProperties>();
 
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   tcp_data_ = std::make_unique<SequencedSocketData>(
       MockConnect(SYNCHRONOUS, ERR_IO_PENDING), base::span<MockRead>(),
@@ -2955,8 +2956,8 @@ void HttpStreamFactoryJobControllerTest::TestAltSvcVersionSelection(
   Initialize(request_info);
   url::SchemeHostPort origin(request_info.url);
   NetworkIsolationKey network_isolation_key(
-      url::Origin::Create(GURL("https://example.com")),
-      url::Origin::Create(GURL("https://example.com")));
+      SchemefulSite(GURL("https://example.com")),
+      SchemefulSite(GURL("https://example.com")));
   scoped_refptr<HttpResponseHeaders> headers(
       base::MakeRefCounted<HttpResponseHeaders>(""));
   headers->AddHeader("alt-svc", alt_svc_header);

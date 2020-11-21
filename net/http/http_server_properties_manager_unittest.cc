@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/test/test_with_task_environment.h"
@@ -2080,10 +2081,9 @@ TEST_F(HttpServerPropertiesManagerTest, ForceHTTP11) {
 }
 
 TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const url::Origin kOpaqueOrigin =
-      url::Origin::Create(GURL("data:text/plain,Hello World"));
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
   const url::SchemeHostPort kServer("https", "baz.test", 443);
   const url::SchemeHostPort kServer2("https", "zab.test", 443);
 
@@ -2114,7 +2114,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
       // to make sure to call the constructor after setting up the feature
       // above.
       HttpServerProperties::ServerInfoMapKey server_info_key(
-          kServer, NetworkIsolationKey(kOrigin1, kOrigin2),
+          kServer, NetworkIsolationKey(kSite1, kSite2),
           use_network_isolation_key);
       server_info_map.Put(server_info_key, server_info);
 
@@ -2123,7 +2123,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
       // are only meaningful within a browsing session.
       if (use_network_isolation_key) {
         HttpServerProperties::ServerInfoMapKey server_info_key2(
-            kServer2, NetworkIsolationKey(kOpaqueOrigin, kOpaqueOrigin),
+            kServer2, NetworkIsolationKey(kOpaqueSite, kOpaqueSite),
             use_network_isolation_key);
         server_info_map.Put(server_info_key2, server_info);
       }
@@ -2164,7 +2164,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
         const HttpServerProperties::ServerInfo& server_info2 =
             server_info_map2->begin()->second;
         EXPECT_EQ(kServer, server_info_key2.server);
-        EXPECT_EQ(NetworkIsolationKey(kOrigin1, kOrigin2),
+        EXPECT_EQ(NetworkIsolationKey(kSite1, kSite2),
                   server_info_key2.network_isolation_key);
         EXPECT_EQ(server_info, server_info2);
       } else {
@@ -2179,14 +2179,13 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
 // Tests a full round trip with a NetworkIsolationKey, using the
 // HttpServerProperties interface.
 TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  const SchemefulSite kSite(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const url::SchemeHostPort kServer("https", "baz.test", 443);
 
-  const url::Origin kOpaqueOrigin =
-      url::Origin::Create(GURL("data:text/plain,Hello World"));
-  const NetworkIsolationKey kOpaqueOriginNetworkIsolationKey(kOpaqueOrigin,
-                                                             kOpaqueOrigin);
+  const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
+  const NetworkIsolationKey kOpaqueSiteNetworkIsolationKey(kOpaqueSite,
+                                                           kOpaqueSite);
   const url::SchemeHostPort kServer2("https", "zab.test", 443);
 
   base::test::ScopedFeatureList feature_list;
@@ -2208,15 +2207,15 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
   properties->SetSupportsSpdy(kServer, kNetworkIsolationKey, true);
   EXPECT_TRUE(properties->GetSupportsSpdy(kServer, kNetworkIsolationKey));
   EXPECT_FALSE(
-      properties->GetSupportsSpdy(kServer, kOpaqueOriginNetworkIsolationKey));
+      properties->GetSupportsSpdy(kServer, kOpaqueSiteNetworkIsolationKey));
   EXPECT_FALSE(properties->GetSupportsSpdy(kServer, NetworkIsolationKey()));
 
   // Opaque origins should works with HttpServerProperties, but not be persisted
   // to disk.
-  properties->SetSupportsSpdy(kServer2, kOpaqueOriginNetworkIsolationKey, true);
+  properties->SetSupportsSpdy(kServer2, kOpaqueSiteNetworkIsolationKey, true);
   EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, kNetworkIsolationKey));
   EXPECT_TRUE(
-      properties->GetSupportsSpdy(kServer2, kOpaqueOriginNetworkIsolationKey));
+      properties->GetSupportsSpdy(kServer2, kOpaqueSiteNetworkIsolationKey));
   EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, NetworkIsolationKey()));
 
   // Wait until the data's been written to prefs, and then tear down the
@@ -2238,14 +2237,14 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
   // HttpServerProperties.
   EXPECT_TRUE(properties->GetSupportsSpdy(kServer, kNetworkIsolationKey));
   EXPECT_FALSE(
-      properties->GetSupportsSpdy(kServer, kOpaqueOriginNetworkIsolationKey));
+      properties->GetSupportsSpdy(kServer, kOpaqueSiteNetworkIsolationKey));
   EXPECT_FALSE(properties->GetSupportsSpdy(kServer, NetworkIsolationKey()));
 
-  // The information set using kOpaqueOriginNetworkIsolationKey should not have
+  // The information set using kOpaqueSiteNetworkIsolationKey should not have
   // been restored.
   EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, kNetworkIsolationKey));
   EXPECT_FALSE(
-      properties->GetSupportsSpdy(kServer2, kOpaqueOriginNetworkIsolationKey));
+      properties->GetSupportsSpdy(kServer2, kOpaqueSiteNetworkIsolationKey));
   EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, NetworkIsolationKey()));
 }
 
@@ -2254,10 +2253,10 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
 // canonical suffix logic.
 TEST_F(HttpServerPropertiesManagerTest,
        CanonicalSuffixRoundTripWithNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   // Three servers with the same canonical suffix (".c.youtube.com").
   const url::SchemeHostPort kServer1("https", "foo.c.youtube.com", 443);
   const url::SchemeHostPort kServer2("https", "bar.c.youtube.com", 443);
@@ -2421,8 +2420,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 // HttpServerProperties interface and setting alternative services as broken.
 TEST_F(HttpServerPropertiesManagerTest,
        NetworkIsolationKeyBrokenAltServiceRoundTrip) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo1.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://foo2.test/"));
+  const SchemefulSite kSite1(GURL("https://foo1.test/"));
+  const SchemefulSite kSite2(GURL("https://foo2.test/"));
 
   const AlternativeService kAlternativeService1(kProtoHTTP2,
                                                 "alt.service1.test", 443);
@@ -2441,8 +2440,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 
       // The NetworkIsolationKey constructor checks the field trial state, so
       // need to create the keys only after setting up the field trials.
-      const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-      const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+      const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+      const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
       // Create and initialize an HttpServerProperties, must be done after
       // setting the feature.
@@ -2520,8 +2519,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 
       // The NetworkIsolationKey constructor checks the field trial state, so
       // need to create the keys only after setting up the field trials.
-      const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-      const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+      const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+      const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
       // Create a new HttpServerProperties, loading the data from before.
       std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2631,9 +2630,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 // Make sure broken alt services with opaque origins aren't saved.
 TEST_F(HttpServerPropertiesManagerTest,
        NetworkIsolationKeyBrokenAltServiceOpaqueOrigin) {
-  const url::Origin kOpaqueOrigin =
-      url::Origin::Create(GURL("data:text/plain,Hello World"));
-  const NetworkIsolationKey kNetworkIsolationKey(kOpaqueOrigin, kOpaqueOrigin);
+  const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
+  const NetworkIsolationKey kNetworkIsolationKey(kOpaqueSite, kOpaqueSite);
   const AlternativeService kAlternativeService(kProtoHTTP2, "alt.service1.test",
                                                443);
 
@@ -2677,8 +2675,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 // HttpServerProperties interface and setting QuicServerInfo.
 TEST_F(HttpServerPropertiesManagerTest,
        NetworkIsolationKeyQuicServerInfoRoundTrip) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo1.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://foo2.test/"));
+  const SchemefulSite kSite1(GURL("https://foo1.test/"));
+  const SchemefulSite kSite2(GURL("https://foo2.test/"));
 
   const quic::QuicServerId kServer1("foo", 443,
                                     false /* privacy_mode_enabled */);
@@ -2701,8 +2699,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 
       // The NetworkIsolationKey constructor checks the field trial state, so
       // need to create the keys only after setting up the field trials.
-      const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-      const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+      const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+      const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
       // Create and initialize an HttpServerProperties, must be done after
       // setting the feature.
@@ -2766,8 +2764,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 
       // The NetworkIsolationKey constructor checks the field trial state, so
       // need to create the keys only after setting up the field trials.
-      const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-      const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+      const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+      const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
       // Create a new HttpServerProperties, loading the data from before.
       std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2850,10 +2848,10 @@ TEST_F(HttpServerPropertiesManagerTest,
 // interactions with the canonical suffix logic.
 TEST_F(HttpServerPropertiesManagerTest,
        NetworkIsolationKeyQuicServerInfoCanonicalSuffixRoundTrip) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   // Three servers with the same canonical suffix (".c.youtube.com").
   const quic::QuicServerId kServer1("foo.c.youtube.com", 443,
@@ -2963,9 +2961,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 // origins aren't saved.
 TEST_F(HttpServerPropertiesManagerTest,
        NetworkIsolationKeyQuicServerInfoOpaqueOrigin) {
-  const url::Origin kOpaqueOrigin =
-      url::Origin::Create(GURL("data:text/plain,Hello World"));
-  const NetworkIsolationKey kNetworkIsolationKey(kOpaqueOrigin, kOpaqueOrigin);
+  const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
+  const NetworkIsolationKey kNetworkIsolationKey(kOpaqueSite, kOpaqueSite);
   const quic::QuicServerId kServer("foo", 443,
                                    false /* privacy_mode_enabled */);
 

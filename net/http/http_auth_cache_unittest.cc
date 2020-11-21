@@ -12,9 +12,9 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_auth_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
 
 using base::ASCIIToUTF16;
 
@@ -328,10 +328,10 @@ TEST(HttpAuthCacheTest, SeparateByTarget) {
 // Make sure server credentials with different NetworkIsolationKeys are treated
 // separately if |key_entries_by_network_isolation_key| is set to true.
 TEST(HttpAuthCacheTest, SeparateServersByNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   GURL kPseudoOrigin("http://www.google.com");
   const char kPath[] = "/";
@@ -427,10 +427,10 @@ TEST(HttpAuthCacheTest, SeparateServersByNetworkIsolationKey) {
 // Make sure added proxy credentials ignore NetworkIsolationKey, even if if
 // |key_entries_by_network_isolation_key| is set to true.
 TEST(HttpAuthCacheTest, NeverSeparateProxiesByNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   GURL kPseudoOrigin("http://www.google.com");
   const char kPath[] = "/";

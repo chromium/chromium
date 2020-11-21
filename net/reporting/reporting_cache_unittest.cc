@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_cache_impl.h"
 #include "net/reporting/reporting_cache_observer.h"
@@ -186,7 +187,7 @@ class ReportingCacheTest : public ReportingTestBase,
   const url::Origin kOrigin2_ = url::Origin::Create(GURL("https://origin2/"));
   const NetworkIsolationKey kNik_;
   const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(kOrigin1_, kOrigin2_);
+      NetworkIsolationKey(SchemefulSite(kOrigin1_), SchemefulSite(kOrigin2_));
   const GURL kEndpoint1_ = GURL("https://endpoint1/");
   const GURL kEndpoint2_ = GURL("https://endpoint2/");
   const GURL kEndpoint3_ = GURL("https://endpoint3/");

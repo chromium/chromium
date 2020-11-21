@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/network_error_logging/mock_persistent_nel_store.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,8 +58,8 @@ class MockPersistentNelStoreTest : public testing::Test {
   const url::Origin origin_ =
       url::Origin::Create(GURL("https://example.test/"));
   const NetworkIsolationKey network_isolation_key_ =
-      NetworkIsolationKey(url::Origin::Create(GURL("https://foo.test/")),
-                          url::Origin::Create(GURL("https://bar.test/")));
+      NetworkIsolationKey(SchemefulSite(GURL("https://foo.test/")),
+                          SchemefulSite(GURL("https://bar.test/")));
   const NetworkErrorLoggingService::NelPolicy nel_policy_ =
       MakePolicy(origin_, network_isolation_key_);
 };

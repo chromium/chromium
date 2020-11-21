@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
 #include "net/reporting/reporting_cache.h"
@@ -26,6 +27,8 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 namespace {
@@ -45,8 +48,10 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";
   const std::string kType_ = "type";
-  const NetworkIsolationKey kNik_ = NetworkIsolationKey(kOrigin_, kOrigin_);
-  const NetworkIsolationKey kNik2_ = NetworkIsolationKey(kOrigin2_, kOrigin2_);
+  const NetworkIsolationKey kNik_ =
+      NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
+  const NetworkIsolationKey kNik2_ =
+      NetworkIsolationKey(SchemefulSite(kOrigin2_), SchemefulSite(kOrigin2_));
   const ReportingEndpointGroupKey kGroupKey_ =
       ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_);
   const ReportingEndpointGroupKey kGroupKey2_ =

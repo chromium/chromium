@@ -37,6 +37,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -94,7 +95,6 @@
 #include "third_party/boringssl/src/include/openssl/pem.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -3262,8 +3262,8 @@ TEST_P(SSLClientSocketVersionTest,
 
   // Using a different NetworkIsolationKey shares session cache key because
   // sharding is disabled.
-  const auto kOriginA = url::Origin::Create(GURL("https://a.test"));
-  ssl_config.network_isolation_key = NetworkIsolationKey(kOriginA, kOriginA);
+  const SchemefulSite kSiteA(GURL("https://a.test"));
+  ssl_config.network_isolation_key = NetworkIsolationKey(kSiteA, kSiteA);
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -3271,8 +3271,8 @@ TEST_P(SSLClientSocketVersionTest,
   EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
   sock_.reset();
 
-  const auto kOriginB = url::Origin::Create(GURL("https://a.test"));
-  ssl_config.network_isolation_key = NetworkIsolationKey(kOriginB, kOriginB);
+  const SchemefulSite kSiteB(GURL("https://a.test"));
+  ssl_config.network_isolation_key = NetworkIsolationKey(kSiteB, kSiteB);
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -3289,10 +3289,10 @@ TEST_P(SSLClientSocketVersionTest,
   feature_list.InitAndEnableFeature(
       features::kPartitionSSLSessionsByNetworkIsolationKey);
 
-  const auto kOriginA = url::Origin::Create(GURL("https://a.test"));
-  const auto kOriginB = url::Origin::Create(GURL("https://b.test"));
-  const NetworkIsolationKey kNetworkIsolationKeyA(kOriginA, kOriginA);
-  const NetworkIsolationKey kNetworkIsolationKeyB(kOriginB, kOriginB);
+  const SchemefulSite kSiteA(GURL("https://a.test"));
+  const SchemefulSite kSiteB(GURL("https://b.test"));
+  const NetworkIsolationKey kNetworkIsolationKeyA(kSiteA, kSiteA);
+  const NetworkIsolationKey kNetworkIsolationKeyB(kSiteB, kSiteB);
 
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
