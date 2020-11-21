@@ -1372,10 +1372,6 @@ ONC configuration of of **Cellular** networks is not yet supported.
     * (optional) - **boolean**
     * Whether cellular data connections are allowed when the device is roaming.
 
-* **Carrier**
-    * (optional, read-only) - **string**
-    * The name of the carrier for which the device is configured.
-
 * **ESN**
     * (optional, read-only) - **string**
     * The Electronic Serial Number of the cellular modem.
