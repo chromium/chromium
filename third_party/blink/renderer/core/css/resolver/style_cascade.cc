@@ -577,11 +577,6 @@ void StyleCascade::ForceColors() {
   const SVGComputedStyle& svg_style = style->SvgStyle();
 
   MaybeForceColor(GetCSSPropertyColor(), style->GetColor());
-  MaybeForceColor(GetCSSPropertyBorderBottomColor(),
-                  style->BorderBottomColor());
-  MaybeForceColor(GetCSSPropertyBorderLeftColor(), style->BorderLeftColor());
-  MaybeForceColor(GetCSSPropertyBorderRightColor(), style->BorderRightColor());
-  MaybeForceColor(GetCSSPropertyBorderTopColor(), style->BorderTopColor());
   MaybeForceColor(GetCSSPropertyFill(), svg_style.FillPaint().GetColor());
   MaybeForceColor(GetCSSPropertyOutlineColor(), style->OutlineColor());
   MaybeForceColor(GetCSSPropertyStroke(), svg_style.StrokePaint().GetColor());
@@ -594,14 +589,6 @@ void StyleCascade::ForceColors() {
                   style->TextEmphasisColor());
   MaybeForceColor(GetCSSPropertyInternalVisitedColor(),
                   style->InternalVisitedColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBorderBottomColor(),
-                  style->InternalVisitedBorderBottomColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBorderLeftColor(),
-                  style->InternalVisitedBorderLeftColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBorderRightColor(),
-                  style->InternalVisitedBorderRightColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBorderTopColor(),
-                  style->InternalVisitedBorderTopColor());
   MaybeForceColor(GetCSSPropertyInternalVisitedFill(),
                   svg_style.InternalVisitedFillPaint().GetColor());
   MaybeForceColor(GetCSSPropertyInternalVisitedOutlineColor(),

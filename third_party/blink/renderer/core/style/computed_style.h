@@ -111,6 +111,7 @@ class Fill;
 class Float;
 class FloodColor;
 class InternalForcedBackgroundColor;
+class InternalForcedBorderColor;
 class InternalVisitedBackgroundColor;
 class InternalVisitedBorderBottomColor;
 class InternalVisitedBorderLeftColor;
@@ -218,6 +219,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::Float;
   friend class css_longhand::FloodColor;
   friend class css_longhand::InternalForcedBackgroundColor;
+  friend class css_longhand::InternalForcedBorderColor;
   friend class css_longhand::InternalVisitedBackgroundColor;
   friend class css_longhand::InternalVisitedBorderBottomColor;
   friend class css_longhand::InternalVisitedBorderLeftColor;
@@ -2844,6 +2846,9 @@ class ComputedStyle : public ComputedStyleBase,
 
   const StyleColor& InternalForcedBackgroundColor() const {
     return InternalForcedBackgroundColorInternal();
+  }
+  const StyleColor& InternalForcedBorderColor() const {
+    return InternalForcedBorderColorInternal();
   }
 
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;

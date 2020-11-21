@@ -141,8 +141,9 @@ Color CSSColorInterpolationType::ResolveInterpolableColor(
                                *state.Style())
               .Access();
     }
-    AddPremultipliedColor(red, green, blue, alpha, currentcolor_fraction,
-                          current_style_color.GetColor());
+    AddPremultipliedColor(
+        red, green, blue, alpha, currentcolor_fraction,
+        current_style_color.Resolve(Color(), state.Style()->UsedColorScheme()));
   }
   const TextLinkColors& colors = state.GetDocument().GetTextLinkColors();
   if (double webkit_activelink_fraction =

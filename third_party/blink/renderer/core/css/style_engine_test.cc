@@ -3483,7 +3483,8 @@ TEST_F(StyleEngineTest, DisabledAdvanceOverrideDescriptor) {
 
 // Properties stored for forced colors mode should only be usable by the UA.
 TEST_F(StyleEngineTest, InternalForcedProperties) {
-  String properties_to_test[] = {"-internal-forced-background-color"};
+  String properties_to_test[] = {"-internal-forced-background-color",
+                                 "-internal-forced-border-color"};
   for (auto property : properties_to_test) {
     String declaration = property + ":red";
     ASSERT_TRUE(

@@ -34,7 +34,7 @@
   }
 
   fieldset {
-    border-color: CanvasText;
+    -internal-forced-border-color: CanvasText;
   }
 
   mark {
@@ -48,9 +48,9 @@
   input,
   textarea {
     background-color: Canvas;
-    border-color: ButtonText;
     color: CanvasText;
     -internal-forced-background-color: Canvas;
+    -internal-forced-border-color: ButtonText;
   }
 
   input:hover,
@@ -58,7 +58,7 @@
   input[type="file"]:hover::-webkit-file-upload-button,
   input:focus,
   textarea:focus {
-    border-color: Highlight;
+    -internal-forced-border-color: Highlight;
   }
 
   input[type="text"]:disabled,
@@ -75,9 +75,9 @@
   input[type="datetime-local"]:disabled,
   textarea:disabled {
     background-color: ButtonFace;
-    border-color: GrayText;
     color: GrayText;
     -internal-forced-background-color: ButtonFace;
+    -internal-forced-border-color: GrayText;
   }
 
   input::-webkit-calendar-picker-indicator {
@@ -118,10 +118,10 @@
   input[type="submit"],
   input[type="reset"],
   input[type="file"]::-webkit-file-upload-button {
-    border-color: ButtonText;
     background-color: ButtonFace;
     color: ButtonText;
     -internal-forced-background-color: ButtonFace;
+    -internal-forced-border-color: ButtonText;
   }
 
   button:hover,
@@ -132,15 +132,15 @@
   input[type="button"]:focus,
   input[type="submit"]:focus,
   input[type="reset"]:focus {
-    border-color: Highlight;
+    -internal-forced-border-color: Highlight;
   }
 
   button:disabled,
   input[type="button"]:disabled,
   input[type="submit"]:disabled,
   input[type="reset"]:disabled {
-    border-color: GrayText;
     color: GrayText;
+    -internal-forced-border-color: GrayText;
   }
 
   /* same color as hyperlinks */
@@ -150,8 +150,8 @@
 
   select:-internal-list-box {
     background-color: Canvas !important;
-    border-color: ButtonText;
     -internal-forced-background-color: Canvas !important;
+    -internal-forced-border-color: ButtonText;
   }
 
   /* option disabled */
@@ -196,9 +196,9 @@
 
   select {
     background-color: Canvas;
-    border-color: CanvasText;
     color: CanvasText;
     -internal-forced-background-color: Canvas;
+    -internal-forced-border-color: CanvasText;
   }
 
   select:not(:-internal-list-box) {
@@ -207,23 +207,23 @@
   }
 
   select:hover {
-    border-color: Highlight;
+    -internal-forced-border-color: Highlight;
   }
 
   select:focus {
-    border-color: Highlight;
+    -internal-forced-border-color: Highlight;
   }
 
   select:disabled {
-    border-color: GrayText;
     color: GrayText;
     opacity: 1;
+    -internal-forced-border-color: GrayText;
   }
 
   meter::-webkit-meter-bar {
     background-color: ButtonFace;
-    border-color: CanvasText;
     -internal-forced-background-color: ButtonFace;
+    -internal-forced-border-color: CanvasText;
   }
 
   meter::-webkit-meter-even-less-good-value,
