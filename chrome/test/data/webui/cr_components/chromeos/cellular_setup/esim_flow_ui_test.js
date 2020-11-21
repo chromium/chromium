@@ -19,6 +19,12 @@ suite('CrComponentsEsimFlowUiTest', function() {
   let eSimPage;
   let eSimManagerRemote;
 
+  async function flushAsync() {
+    Polymer.dom.flush();
+    // Use setTimeout to wait for the next macrotask.
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
   setup(function() {
     eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
     cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
@@ -30,41 +36,164 @@ suite('CrComponentsEsimFlowUiTest', function() {
     Polymer.dom.flush();
   });
 
-  test('Forward navigation goes to final page', function() {
-    const profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
+  test('No eSIM profile flow', async function() {
+    eSimManagerRemote.addEuiccForTest(0);
+
+    const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
+    const activationCodePage = eSimPage.$$('#activationCodePage');
     const finalPage = eSimPage.$$('#finalPage');
 
-    assertTrue(!!profileDiscoveryPage);
+    assertTrue(!!profileLoadingPage);
+    assertTrue(!!activationCodePage);
     assertTrue(!!finalPage);
 
+    // Loading page should be showing.
     assertTrue(
         eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_DISCOVERY &&
-        eSimPage.selectedESimPageName_ === profileDiscoveryPage.id);
+            cellular_setup.ESimPageName.PROFILE_LOADING &&
+        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+
+    await flushAsync();
+
+    // Should now be at the activation code page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.ACTIVATION_CODE &&
+        eSimPage.selectedESimPageName_ === activationCodePage.id);
+    // Insert an activation code.
+    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
+
+    // Next button should now be enabled.
+    assertTrue(
+        eSimPage.buttonState.next ===
+        cellularSetup.ButtonState.SHOWN_AND_ENABLED);
 
     eSimPage.navigateForward();
     Polymer.dom.flush();
 
-    // TODO(crbug.com/1093185) Update this test when the navigation between
-    // profile discovery and activation code pages is wired up.
+    // Should now be at the final page.
     assertTrue(
         eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
         eSimPage.selectedESimPageName_ === finalPage.id);
   });
 
+  test('Single eSIM profile flow', async function() {
+    eSimManagerRemote.addEuiccForTest(1);
 
-  // TODO(crbug.com/1093185) Update this test when the navigation between
-  // profile discovery and activation code pages is wired up.
-  test('Enable done button', function() {
-    assertTrue(eSimPage.buttonState.done === cellularSetup.ButtonState.HIDDEN);
+    const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
+    const finalPage = eSimPage.$$('#finalPage');
 
+    assertTrue(!!profileLoadingPage);
+    assertTrue(!!finalPage);
+
+    // Loading page should be showing.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.PROFILE_LOADING &&
+        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+
+    await flushAsync();
+
+    // Should go directly to final page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
+        eSimPage.selectedESimPageName_ === finalPage.id);
+  });
+
+  test('Multiple eSIM profiles skip discovery flow', async function() {
+    eSimManagerRemote.addEuiccForTest(2);
+
+    const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
     const profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
+    const activationCodePage = eSimPage.$$('#activationCodePage');
+    const finalPage = eSimPage.$$('#finalPage');
+
+    assertTrue(!!profileLoadingPage);
+    assertTrue(!!profileDiscoveryPage);
+    assertTrue(!!activationCodePage);
+    assertTrue(!!finalPage);
+
+    // Loading page should be showing.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.PROFILE_LOADING &&
+        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+
+    await flushAsync();
+
+    // Should go to profile discovery page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.PROFILE_DISCOVERY &&
+        eSimPage.selectedESimPageName_ === profileDiscoveryPage.id);
+
+    // Simulate pressing 'Skip'.
+    assertTrue(
+        eSimPage.buttonState.skipDiscovery ===
+        cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+    eSimPage.navigateForward();
+    Polymer.dom.flush();
+
+    // Should now be at the activation code page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.ACTIVATION_CODE &&
+        eSimPage.selectedESimPageName_ === activationCodePage.id);
+
+    // Insert an activation code.
+    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
+
+    // Simulate pressing 'Next'.
+    assertTrue(
+        eSimPage.buttonState.next ===
+        cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+    eSimPage.navigateForward();
+    Polymer.dom.flush();
+
+    // Should now be at the final page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
+        eSimPage.selectedESimPageName_ === finalPage.id);
+  });
+
+  test('Multiple eSIM profiles select flow', async function() {
+    eSimManagerRemote.addEuiccForTest(2);
+
+    const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
+    const profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
+    const activationCodePage = eSimPage.$$('#activationCodePage');
+    const finalPage = eSimPage.$$('#finalPage');
+
+    assertTrue(!!profileLoadingPage);
+    assertTrue(!!profileDiscoveryPage);
+    assertTrue(!!activationCodePage);
+    assertTrue(!!finalPage);
+
+    // Loading page should be showing.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.PROFILE_LOADING &&
+        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+
+    await flushAsync();
+
+    // Should go to profile discovery page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.PROFILE_DISCOVERY &&
+        eSimPage.selectedESimPageName_ === profileDiscoveryPage.id);
+
+    // Select the first profile on the list.
     const profileList = profileDiscoveryPage.$$('#profileList');
     profileList.selectItem(profileList.items[0]);
     Polymer.dom.flush();
 
+    // The 'Done' button should now be enabled.
     assertTrue(
         eSimPage.buttonState.done ===
         cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+    assertTrue(
+        eSimPage.buttonState.skipDiscovery ===
+        cellularSetup.ButtonState.HIDDEN);
   });
 });

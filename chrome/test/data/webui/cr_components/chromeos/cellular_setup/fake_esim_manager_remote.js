@@ -4,42 +4,97 @@
 
 
 cr.define('cellular_setup', function() {
-  /** @implements {chromeos.cellularSetup.mojom.ESimManagerInterface} */
-  /* #export */ class FakeESimManagerRemote {
+  /** @implements {chromeos.cellularSetup.mojom.ESimProfile} */
+  class FakeProfile {
+    constructor(id) {
+      this.properties_ = {
+        activationCode: 'activation-code-' + id,
+        eid: '1',
+        iccid: id,
+        name: 'profile' + id,
+        nickname: 'profile' + id,
+        serviceProvider: 'provider' + id,
+        state: chromeos.cellularSetup.mojom.ProfileState.kPending,
+      };
+    }
+
     /**
      * @override
-     * @return {!Promise<{euiccs: !Array<!Euicc>,}>}
+     * @return {!Promise<{properties:
+     *     chromeos.cellularSetup.mojom.ESimProfileProperties},}>}
      */
-    getAvailableEuiccs() {
+    getProperties() {
       return new Promise((res) => {
         res({
-          euiccs: [{
-            eid: '1',
-            isActive: true,
-          }]
+          properties: this.properties_,
+        });
+      });
+    }
+  }
+
+  /** @implements {chromeos.cellularSetup.mojom.Euicc} */
+  class FakeEuicc {
+    constructor(numProfiles) {
+      this.profiles_ = [];
+      for (let i = 0; i < numProfiles; i++) {
+        this.addProfileForTest_();
+      }
+    }
+
+    /**
+     * @override
+     * @return {!Promise<{result:
+     *     chromeos.cellularSetup.mojom.ESimOperationResult},}>}
+     */
+    requestPendingProfiles() {
+      return new Promise((res) => {
+        res({
+          result: chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
         });
       });
     }
 
     /**
      * @override
-     * @param { !string } eid
      * @return {!Promise<{profiles: Array<!ESimProfile>,}>}
      */
-    getProfiles(eid) {
+    getProfileList() {
       return new Promise((res) => {
         res({
-          profiles: [{
-            activationCode: 'activation-code-1',
-            eid: '1',
-            iccid: '1',
-            name: 'profile1',
-            nickname: 'profile1',
-            serviceProvider: 'provider1',
-            state: chromeos.cellularSetup.mojom.ProfileState.kPending,
-          }]
+          profiles: this.profiles_,
         });
       });
+    }
+
+    /** @private */
+    addProfileForTest_() {
+      const id = this.profiles_.length + 1;
+      this.profiles_.push(new FakeProfile(id));
+    }
+  }
+
+  /** @implements {chromeos.cellularSetup.mojom.ESimManagerInterface} */
+  /* #export */ class FakeESimManagerRemote {
+    constructor() {
+      this.euiccs_ = [];
+    }
+
+    /**
+     * @override
+     * @return {!Promise<{euiccs: !Array<!Euicc>,}>}
+     */
+    getAvailableEuiccs() {
+      return new Promise((res) => {
+        res({euiccs: this.euiccs_});
+      });
+    }
+
+    /**
+     * @param {number} numProfiles The number of profiles the EUICC has.
+     */
+    addEuiccForTest(numProfiles) {
+      const euicc = new FakeEuicc(numProfiles);
+      this.euiccs_.push(euicc);
     }
   }
 
