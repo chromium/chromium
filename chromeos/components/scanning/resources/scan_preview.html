@@ -12,6 +12,12 @@
     width: 60%;
   }
 
+  #helpOrProgress {
+    display: flex;
+    /* Calculate a height that results in a Letter aspect ratio (1:1.2941). */
+    height: calc(1.2941 * var(--left-panel-width));
+  }
+
   #progressText {
     @apply --scanning-progress-text-font;
     color: var(--scanning-progress-text-color);
@@ -24,19 +30,15 @@
   }
 
   .preview {
-    border: 1px solid var(--google-grey-200);
-    border-radius: 4px;
-    display: flex;
-    /* TODO(michaelcheco): Replace with correct height for
-     * preview container. */
-    height: 420px;
+    max-height: calc(100vh - var(--panel-container-margin-top));
     overflow-y: scroll;
   }
 
-  /* TODO(jschettler): Check with UX about adding a border around each image. */
-  .scanned-image {
+  .preview-item {
+    border: 1px solid var(--google-grey-200);
     border-radius: 4px;
-    width: 100%;
+    /* Subtract 2px for the border. */
+    width: calc(100% - 2px);
   }
 
   /* Add top margin to all but the first scanned image. */
@@ -54,16 +56,19 @@
   }
 </style>
 <div class="preview">
-  <div id="helperText" hidden$="[[shouldHideHelperText_(appState)]]">
-    <span inner-h-t-m-l="[[getHelperTextHtml_()]]"></span>
-  </div>
-  <div id="scanProgress" hidden$="[[shouldHideProgress_(appState)]]">
-    <span id="progressText">[[getProgressTextString_(pageNumber)]]</span>
-    <paper-progress value="[[progressPercent]]"></paper-progress>
+  <div id="helpOrProgress" class="preview-item"
+      hidden$="[[shouldShowScannedImages_(appState)]]">
+    <div id="helperText" hidden$="[[shouldHideHelperText_(appState)]]">
+      <span inner-h-t-m-l="[[getHelperTextHtml_()]]"></span>
+    </div>
+    <div id="scanProgress" hidden$="[[shouldHideProgress_(appState)]]">
+      <span id="progressText">[[getProgressTextString_(pageNumber)]]</span>
+      <paper-progress value="[[progressPercent]]"></paper-progress>
+    </div>
   </div>
   <div id="scannedImages" hidden$="[[!shouldShowScannedImages_(appState)]]">
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
-      <img class="scanned-image" src="[[url]]">
+      <img class="preview-item scanned-image" src="[[url]]">
     </template>
   </div>
 </div>
