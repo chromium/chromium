@@ -6849,7 +6849,6 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
                                                     std::move(recording));
     layer->SetBounds(gfx::Size(500, 500));
     layer->SetContentsOpaque(true);
-    layer->SetSafeOpaqueBackgroundColor(SK_ColorWHITE);
     // Avoid LCD text on the layer so we don't cause extra commits when we
     // pinch.
     CopyProperties(layer_tree_host()->InnerViewportScrollLayerForTesting(),
@@ -7155,7 +7154,6 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
                                                     std::move(recording));
     layer->SetBounds(gfx::Size(500, 500));
     layer->SetContentsOpaque(true);
-    layer->SetSafeOpaqueBackgroundColor(SK_ColorWHITE);
     CopyProperties(layer_tree_host()->InnerViewportScrollLayerForTesting(),
                    layer.get());
     root->AddChild(layer);
