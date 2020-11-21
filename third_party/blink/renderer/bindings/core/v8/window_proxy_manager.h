@@ -39,11 +39,6 @@ class WindowProxyManager : public GarbageCollected<WindowProxyManager> {
   void CORE_EXPORT ReleaseGlobalProxies(GlobalProxyVector&);
   void CORE_EXPORT SetGlobalProxies(const GlobalProxyVector&);
 
-  WindowProxy* MainWorldProxy() {
-    window_proxy_->InitializeIfNeeded();
-    return window_proxy_;
-  }
-
   WindowProxy* GetWindowProxy(DOMWrapperWorld& world) {
     WindowProxy* window_proxy = WindowProxyMaybeUninitialized(world);
     window_proxy->InitializeIfNeeded();
@@ -76,9 +71,6 @@ class WindowProxyManagerImplHelper : public WindowProxyManager {
   using Base = WindowProxyManager;
 
  public:
-  ProxyType* MainWorldProxy() {
-    return static_cast<ProxyType*>(Base::MainWorldProxy());
-  }
   ProxyType* WindowProxy(DOMWrapperWorld& world) {
     return static_cast<ProxyType*>(Base::GetWindowProxy(world));
   }

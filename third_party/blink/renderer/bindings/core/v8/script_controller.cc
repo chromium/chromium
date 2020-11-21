@@ -278,15 +278,20 @@ v8::Local<v8::Value> ScriptController::EvaluateScriptInMainWorld(
     return v8::Local<v8::Value>();
   }
 
-  // |context| should be initialized already due to the
-  // MainWorldProxy() call.
-  v8::Local<v8::Context> context =
-      window_proxy_manager_->MainWorldProxy()->ContextIfInitialized();
-  v8::Context::Scope scope(context);
+  // |script_state->GetContext()| should be initialized already due to the
+  // WindowProxy() call inside ToScriptStateForMainWorld().
+  ScriptState* script_state = ToScriptStateForMainWorld(window_->GetFrame());
+  if (!script_state) {
+    return v8::Local<v8::Value>();
+  }
+  DCHECK_EQ(script_state->GetIsolate(), GetIsolate());
+
+  v8::Context::Scope scope(script_state->GetContext());
   v8::EscapableHandleScope handle_scope(GetIsolate());
 
   v8::Local<v8::Value> object = ExecuteScriptAndReturnValue(
-      context, source_code, base_url, sanitize_script_errors, fetch_options);
+      script_state->GetContext(), source_code, base_url, sanitize_script_errors,
+      fetch_options);
 
   if (object.IsEmpty())
     return v8::Local<v8::Value>();
@@ -304,18 +309,21 @@ v8::Local<v8::Value> ScriptController::EvaluateMethodInMainWorld(
     return v8::Local<v8::Value>();
   }
 
-  // |context| should be initialized already due to the
-  // MainWorldProxy() call.
-  v8::Local<v8::Context> context =
-      window_proxy_manager_->MainWorldProxy()->ContextIfInitialized();
-  v8::Context::Scope scope(context);
+  // |script_state->GetContext()| should be initialized already due to the
+  // WindowProxy() call inside ToScriptStateForMainWorld().
+  ScriptState* script_state = ToScriptStateForMainWorld(window_->GetFrame());
+  if (!script_state) {
+    return v8::Local<v8::Value>();
+  }
+  DCHECK_EQ(script_state->GetIsolate(), GetIsolate());
+
+  v8::Context::Scope scope(script_state->GetContext());
   v8::EscapableHandleScope handle_scope(GetIsolate());
 
   v8::TryCatch try_catch(GetIsolate());
   try_catch.SetVerbose(true);
 
-  ExecutionContext* executionContext =
-      ExecutionContext::From(ScriptState::From(context));
+  ExecutionContext* executionContext = ExecutionContext::From(script_state);
 
   v8::MaybeLocal<v8::Value> resultObj = V8ScriptRunner::CallFunction(
       function, executionContext, receiver, argc,
@@ -345,17 +353,20 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptInIsolatedWorld(
     SanitizeScriptErrors sanitize_script_errors) {
   DCHECK_GT(world_id, 0);
 
-  scoped_refptr<DOMWrapperWorld> world =
-      DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id);
-  LocalWindowProxy* isolated_world_window_proxy = WindowProxy(*world);
+  ScriptState* script_state = ToScriptState(
+      window_, *DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id));
+  if (!script_state) {
+    return v8::Local<v8::Value>();
+  }
+
   // TODO(dcheng): Context must always be initialized here, due to the call to
-  // windowProxy() on the previous line. Add a helper which makes that obvious?
-  v8::Local<v8::Context> context =
-      isolated_world_window_proxy->ContextIfInitialized();
-  v8::Context::Scope scope(context);
+  // WindowProxy() inside ToScriptState() above. Add a helper which makes that
+  // obvious?
+
+  v8::Context::Scope scope(script_state->GetContext());
 
   v8::Local<v8::Value> evaluation_result = ExecuteScriptAndReturnValue(
-      context, source, base_url, sanitize_script_errors);
+      script_state->GetContext(), source, base_url, sanitize_script_errors);
   if (!evaluation_result.IsEmpty())
     return evaluation_result;
   return v8::Local<v8::Value>::New(GetIsolate(), v8::Undefined(GetIsolate()));
