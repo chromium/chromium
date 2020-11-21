@@ -32,6 +32,8 @@ const char kFocusModeConditionsMet[] = "focus_mode_conditions_met";
 
 const char kWebUITabStripClosed[] = "webui_tab_strip_closed";
 const char kWebUITabStripOpened[] = "webui_tab_strip_opened";
+
+const char kDesktopPwaInstalled[] = "desktop_pwa_installed";
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

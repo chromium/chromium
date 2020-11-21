@@ -18,6 +18,10 @@ namespace views {
 class Checkbox;
 }
 
+namespace feature_engagement {
+class Tracker;
+}
+
 // PWAConfirmationBubbleView provides a bubble dialog for accepting or rejecting
 // the installation of a PWA (Progressive Web App) anchored off the PWA install
 // icon in the omnibox.
@@ -31,7 +35,8 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
                             std::unique_ptr<WebApplicationInfo> web_app_info,
                             chrome::AppInstallationAcceptanceCallback callback,
                             chrome::PwaInProductHelpState iph_state,
-                            PrefService* prefs);
+                            PrefService* prefs,
+                            feature_engagement::Tracker* tracker);
   ~PWAConfirmationBubbleView() override;
 
   // LocationBarBubbleDelegateView:
@@ -51,6 +56,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
 
   chrome::PwaInProductHelpState iph_state_;
   PrefService* prefs_;
+  feature_engagement::Tracker* tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(PWAConfirmationBubbleView);
 };
