@@ -323,6 +323,8 @@ component("ash") {
     "clipboard/scoped_clipboard_history_pause_impl.h",
     "clipboard/views/clipboard_history_bitmap_item_view.cc",
     "clipboard/views/clipboard_history_bitmap_item_view.h",
+    "clipboard/views/clipboard_history_file_item_view.cc",
+    "clipboard/views/clipboard_history_file_item_view.h",
     "clipboard/views/clipboard_history_item_view.cc",
     "clipboard/views/clipboard_history_item_view.h",
     "clipboard/views/clipboard_history_label.cc",

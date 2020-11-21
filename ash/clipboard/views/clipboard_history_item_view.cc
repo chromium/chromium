@@ -8,6 +8,7 @@
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
+#include "ash/clipboard/views/clipboard_history_file_item_view.h"
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
@@ -188,7 +189,7 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
       return std::make_unique<ClipboardHistoryBitmapItemView>(
           &item, resource_manager, container);
     case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kFile:
-      return std::make_unique<ClipboardHistoryTextItemView>(&item, container);
+      return std::make_unique<ClipboardHistoryFileItemView>(&item, container);
   }
 }
 

@@ -25,11 +25,16 @@ class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
       delete;
   ~ClipboardHistoryTextItemView() override;
 
+ protected:
+  const base::string16& text() const { return text_; }
+
+  // ClipboardHistoryItemView:
+  std::unique_ptr<ContentsView> CreateContentsView() override;
+
  private:
   class TextContentsView;
 
   // ClipboardHistoryItemView:
-  std::unique_ptr<ContentsView> CreateContentsView() override;
   base::string16 GetAccessibleName() const override;
   const char* GetClassName() const override;
 
