@@ -51,7 +51,7 @@ Widget* GetWidgetOfParentWindowIncludingTransient(Widget* widget) {
 // Return the toplevel widget ancestor of |widget|, including widgets of
 // parents of transient windows.
 Widget* GetToplevelWidgetIncludingTransientWindows(Widget* widget) {
-  widget = widget = widget->GetTopLevelWidget();
+  widget = widget->GetTopLevelWidget();
   if (Widget* parent_widget = GetWidgetOfParentWindowIncludingTransient(widget))
     return GetToplevelWidgetIncludingTransientWindows(parent_widget);
   return widget;
