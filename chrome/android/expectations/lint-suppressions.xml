@@ -54,10 +54,6 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
   <issue id="InvalidVectorPath" severity="ignore"/>
   <issue id="LogConditional" severity="ignore"/>
   <issue id="LongLogTag" severity="ignore"/>
-  <issue id="MergeRootFrame">
-    <!-- TODO(crbug.com/1039415): Remove suppression after fixing bug. -->
-    <ignore regexp="chrome/android/feed/core/java/resv1/layout/feed_more_button.xml"/>
-  </issue>
   <issue id="MissingClass" severity="ignore"/>
   <issue id="MissingDefaultResource">
     <!-- Only used by ToolbarControlContainer guarded by tablet form-factor. -->
@@ -68,10 +64,6 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
   <issue id="MissingPermission" severity="ignore"/>
   <issue id="MissingQuantity" severity="ignore"/>
   <issue id="MissingRegistered" severity="ignore"/>
-  <issue id="MissingSuperCall">
-    <!-- TODO(wnwen): File bug to fix -->
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/widget/selection/SelectionToolbar.java"/>
-  </issue>
   <issue id="MissingTranslation">
     <ignore regexp="restriction_values.xml.*"/>
   </issue>
@@ -82,8 +74,6 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="Static interface  method requires API level 24"/>
     <!-- 1: TaskInfo is refactored at API 29. -->
     <ignore regexp="Field requires API level .*`android.app.TaskInfo"/>
-    <!-- 1: TODO(crbug.com/1085410): Fix -->
-    <ignore regexp="components/content_capture/android/java/src/org/chromium/components/content_capture"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <!-- This warning just adds a lot of false positives. -->
@@ -255,25 +245,17 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="components/page_info/android/java/res/drawable-hdpi/pageinfo_*"/>
     <!--TODO(crbug.com/1052375): Remove this suppression once PermissionParamsListBuilder moves to components.-->
     <ignore regexp="The resource `R.string.page_info_permission_ads_subtitle` appears to be unused"/>
-    <!--TODO(crbug.com/1069186): The following 14 are found when we switched to linting the entire app. -->
+    <!--TODO(crbug.com/1069186): The following 10 are found when we switched to linting the entire app. -->
     <ignore regexp="The resource `R.string.download_manager_ui_documents` appears to be unused"/>
     <ignore regexp="The resource `R.string.download_manager_offline_home` appears to be unused"/>
     <ignore regexp="The resource `R.string.ntp_learn_more_about_suggested_content` appears to be unused"/>
-    <ignore regexp="The resource `R.string.ntp_feed_menu_iph` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_switcher_button_label` appears to be unused"/>
-    <ignore regexp="The resource `R.string.prefs_autofill_assistant_switch` appears to be unused"/>
     <ignore regexp="The resource `R.string.storage_clear_dialog_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.website_settings_category_notifications_block` appears to be unused"/>
     <ignore regexp="The resource `R.string.autofill_cc_google_issued` appears to be unused"/>
     <ignore regexp="The resource `R.string.notification_manage_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.app_banner_add` appears to be unused"/>
     <ignore regexp="The resource `R.string.notification_category_permission_requests` appears to be unused"/>
-    <ignore regexp="The resource `R.drawable.ic_launcher_background` appears to be unused"/>
-    <ignore regexp="The resource `R.string.combined_notification_text` appears to be unused"/>
-    <ignore regexp="The resource `R.plurals.public_notification_text` appears to be unused"/>
-    <ignore regexp="The resource `R.mipmap.app_shortcut_icon` appears to be unused"/>
-    <ignore regexp="The resource `R.string.app_banner_install` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_download_indicator_text` appears to be unused"/>
     <!--TODO(crbug.com/1106109): Remove this suppression once Most Visited Tiles header is implemented.-->
     <ignore regexp="The resource `R.string.most_visited_tiles_header` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_omnibox_showing_suggestions_for_website` appears to be unused"/>
@@ -295,13 +277,6 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.price_drop_spotted_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_spotted_show_me` appears to be unused"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
-  </issue>
-  <issue id="UsableSpace">
-    <!-- TODO(crbug.com/1077861): Old code, good to fix. -->
-    <ignore regexp="chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java"/>
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"/>
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"/>
-    <ignore regexp="chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/storage/StorageSummaryProvider.java"/>
   </issue>
   <issue id="VectorPath" severity="ignore"/>
   <!-- These constructors are useful for layout editors which we currently do not support. -->
