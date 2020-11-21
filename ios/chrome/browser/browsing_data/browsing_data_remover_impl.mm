@@ -280,10 +280,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     if (session_service_) {
       NSString* state_path = base::SysUTF8ToNSString(
           browser_state_->GetStatePath().AsUTF8Unsafe());
-      [session_service_
-          deleteLastSessionFileInDirectory:state_path
-                                completion:
-                                    CreatePendingTaskCompletionClosure()];
+      [session_service_ deleteAllSessionFilesInBrowserStateDirectory:state_path
+          completion:CreatePendingTaskCompletionClosure()];
     }
 
     // Remove the screenshots taken by the system when backgrounding the
