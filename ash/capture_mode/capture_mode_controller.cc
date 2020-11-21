@@ -512,9 +512,15 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
       ->context_factory()
       ->GetHostFrameSinkManager()
       ->CreateVideoCapturer(video_capturer.InitWithNewPipeAndPassReceiver());
+
+  // We bind the audio stream factory only if audio recording is enabled. This
+  // is ok since the |audio_stream_factory| parameter in the recording service
+  // APIs is optional, and can be not bound.
   mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory;
-  delegate_->BindAudioStreamFactory(
-      audio_stream_factory.InitWithNewPipeAndPassReceiver());
+  if (enable_audio_recording_) {
+    delegate_->BindAudioStreamFactory(
+        audio_stream_factory.InitWithNewPipeAndPassReceiver());
+  }
 
   auto frame_sink_id = capture_params.window->GetFrameSinkId();
   if (!frame_sink_id.is_valid()) {

@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_codecs.h"
-#include "media/base/audio_parameters.h"
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -63,7 +62,8 @@ media::AudioParameters GetAudioParameters() {
 
 RecordingService::RecordingService(
     mojo::PendingReceiver<mojom::RecordingService> receiver)
-    : receiver_(this, std::move(receiver)),
+    : audio_parameters_(GetAudioParameters()),
+      receiver_(this, std::move(receiver)),
       consumer_receiver_(this),
       main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       encoding_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -126,7 +126,8 @@ void RecordingService::RecordRegion(
 void RecordingService::StopRecording() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   video_capturer_remote_->Stop();
-  audio_capturer_->Stop();
+  if (audio_capturer_)
+    audio_capturer_->Stop();
   audio_capturer_.reset();
 }
 
@@ -260,9 +261,11 @@ void RecordingService::StartNewRecording(
   // a keyframe if one has not been coded in the last keyframe_interval frames.
   video_encoder_options.keyframe_interval = 100;
 
-  const auto audio_params = GetAudioParameters();
+  const bool should_record_audio = audio_stream_factory.is_valid();
+
   encoder_muxer_ = RecordingEncoderMuxer::Create(
-      encoding_task_runner_, video_encoder_options, audio_params,
+      encoding_task_runner_, video_encoder_options,
+      should_record_audio ? &audio_parameters_ : nullptr,
       base::BindRepeating(&RecordingService::OnMuxerWrite,
                           base::Unretained(this)),
       base::BindOnce(&RecordingService::OnEncodingFailure,
@@ -270,12 +273,15 @@ void RecordingService::StartNewRecording(
 
   ConnectAndStartVideoCapturer(std::move(video_capturer));
 
+  if (!should_record_audio)
+    return;
+
   audio_capturer_ = audio::CreateInputDevice(
       std::move(audio_stream_factory),
       std::string(media::AudioDeviceDescription::kDefaultDeviceId),
       audio::DeadStreamDetection::kEnabled);
   DCHECK(audio_capturer_);
-  audio_capturer_->Initialize(audio_params, this);
+  audio_capturer_->Initialize(audio_parameters_, this);
   audio_capturer_->Start();
 }
 
@@ -316,7 +322,8 @@ void RecordingService::OnVideoCapturerDisconnected() {
   // capturer. We will stop the recording and flush whatever video chunks we
   // currently have.
   did_failure_occur_ = true;
-  audio_capturer_->Stop();
+  if (audio_capturer_)
+    audio_capturer_->Stop();
   audio_capturer_.reset();
   TerminateRecording(/*success=*/false);
 }
@@ -326,6 +333,7 @@ void RecordingService::OnAudioCaptured(
     base::TimeTicks audio_capture_time) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(encoder_muxer_);
+  DCHECK(audio_capturer_);
 
   // We ignore any subsequent frames after a failure.
   if (did_failure_occur_)

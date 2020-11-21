@@ -18,7 +18,9 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -144,6 +146,9 @@ class RecordingService : public mojom::RecordingService,
   // reset the |number_of_buffered_chunks_| back to 0.
   void FlushBufferedChunks();
 
+  // The audio parameters that will be used when recording audio.
+  const media::AudioParameters audio_parameters_;
+
   // The mojo receiving end of the service.
   mojo::Receiver<mojom::RecordingService> receiver_;
 
@@ -179,7 +184,8 @@ class RecordingService : public mojom::RecordingService,
   mojo::Remote<viz::mojom::FrameSinkVideoCapturer> video_capturer_remote_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
-  // The audio capturer instance.
+  // The audio capturer instance. It is created only if the service is requested
+  // to record audio along side the video.
   scoped_refptr<media::AudioCapturerSource> audio_capturer_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 

@@ -54,6 +54,10 @@ class ASH_EXPORT CaptureModeTestApi {
   using OnFileSavedCallback = base::OnceCallback<void(const base::FilePath&)>;
   void SetOnCaptureFileSavedCallback(OnFileSavedCallback callback);
 
+  // Sets whether or not audio will be recorded when capturing a video. Should
+  // only be called before recording starts, otherwise it has no effect.
+  void SetAudioRecordingEnabled(bool enabled);
+
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or
   // image capture otherwise.

@@ -36,7 +36,7 @@ constexpr size_t kMaxDroppedFrames = 4 * kMaxFrameRate;
 base::SequenceBound<RecordingEncoderMuxer> RecordingEncoderMuxer::Create(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     const media::VideoEncoder::Options& video_encoder_options,
-    const media::AudioParameters& audio_input_params,
+    const media::AudioParameters* audio_input_params,
     media::WebmMuxer::WriteDataCB muxer_output_callback,
     FailureCallback on_failure_callback) {
   return base::SequenceBound<RecordingEncoderMuxer>(
@@ -70,9 +70,10 @@ void RecordingEncoderMuxer::EncodeAudio(
     std::unique_ptr<media::AudioBus> audio_bus,
     base::TimeTicks capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(audio_encoder_);
 
   if (!did_failure_occur())
-    audio_encoder_.EncodeAudio(*audio_bus, capture_time);
+    audio_encoder_->EncodeAudio(*audio_bus, capture_time);
 }
 
 void RecordingEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
@@ -82,7 +83,8 @@ void RecordingEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
   // it will result in OnAudioEncoded() being called directly (if any audio
   // frames were still buffered and not processed). The video encoder responds
   // asynchronously.
-  audio_encoder_.Flush();
+  if (audio_encoder_)
+    audio_encoder_->Flush();
   video_encoder_.Flush(
       base::BindOnce(&RecordingEncoderMuxer::OnVideoEncoderFlushed,
                      base::Unretained(this), std::move(on_done)));
@@ -90,21 +92,24 @@ void RecordingEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
 
 RecordingEncoderMuxer::RecordingEncoderMuxer(
     const media::VideoEncoder::Options& video_encoder_options,
-    const media::AudioParameters& audio_input_params,
+    const media::AudioParameters* audio_input_params,
     media::WebmMuxer::WriteDataCB muxer_output_callback,
     FailureCallback on_failure_callback)
     : audio_encoder_(
-          audio_input_params,
-          base::BindRepeating(&RecordingEncoderMuxer::OnAudioEncoded,
-                              base::Unretained(this)),
-          base::BindRepeating(&RecordingEncoderMuxer::OnEncoderStatus,
-                              base::Unretained(this),
-                              /*for_video=*/false),
-          // 0 means the encoder picks bitrate automatically.
-          /*bits_per_second=*/0),
+          !audio_input_params
+              ? nullptr
+              : std::make_unique<media::AudioOpusEncoder>(
+                    *audio_input_params,
+                    base::BindRepeating(&RecordingEncoderMuxer::OnAudioEncoded,
+                                        base::Unretained(this)),
+                    base::BindRepeating(&RecordingEncoderMuxer::OnEncoderStatus,
+                                        base::Unretained(this),
+                                        /*for_video=*/false),
+                    // 0 means the encoder picks bitrate automatically.
+                    /*bits_per_second=*/0)),
       webm_muxer_(media::kCodecOpus,
                   /*has_video_=*/true,
-                  /*has_audio_=*/true,
+                  /*has_audio_=*/!!audio_input_params,
                   muxer_output_callback),
       on_failure_callback_(std::move(on_failure_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -175,6 +180,7 @@ void RecordingEncoderMuxer::OnVideoEncoderOutput(
 void RecordingEncoderMuxer::OnAudioEncoded(
     media::EncodedAudioBuffer encoded_audio) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(audio_encoder_);
 
   // TODO(crbug.com/1143798): Explore changing the WebmMuxer so it doesn't work
   // with strings, to avoid copying the encoded data.

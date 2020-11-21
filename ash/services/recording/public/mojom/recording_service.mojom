@@ -37,9 +37,10 @@ interface RecordingServiceClient {
 // Note that a maximum of one screen recording can be done at any time.
 interface RecordingService {
   // All the below Record*() interfaces, take a pending remote to a client (e.g.
-  // Ash) to which it will send the muxed video chunks, and two other pending
-  // remotes bound to the video capturer on Viz on the GPU process, and to the
-  // audio stream factory on the Audio Service respectively.
+  // Ash) to which it will send the muxed video chunks, a pending remote bound
+  // to the video capturer on Viz on the GPU process, and another *optional*
+  // pending remote to the audio stream factory on the Audio Service, which if
+  // not provided, the service will not record audio.
 
   // Starts a fullscreen recording of a root window which has the given
   // |frame_sink_id|. The resulting video will have a resolution equal to the
@@ -50,7 +51,7 @@ interface RecordingService {
   RecordFullscreen(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory> audio_stream_factory,
+      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size video_size);
 
@@ -65,7 +66,7 @@ interface RecordingService {
   RecordWindow(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory> audio_stream_factory,
+      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size initial_video_size,
       gfx.mojom.Size max_video_size);
@@ -78,7 +79,7 @@ interface RecordingService {
   RecordRegion(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory> audio_stream_factory,
+      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size full_capture_size,
       gfx.mojom.Rect crop_region);
