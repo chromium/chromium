@@ -147,8 +147,16 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   // not know about bool.
   using SetControllerPowerStateFunction = base::RepeatingCallback<void(int)>;
 
+  // Performs initialization steps which touch the Bluetooth API and might
+  // trigger a Bluetooth permission prompt.
+  void LazyInitialize();
+
   // Queries the state of the IOBluetoothHostController.
   HostControllerState GetHostControllerState();
+
+  // Allows configuring whether the adapter is present when running in a test
+  // configuration.
+  void SetPresentForTesting(bool present);
 
   // Resets |low_energy_central_manager_| to |central_manager| and sets
   // |low_energy_central_manager_delegate_| as the manager's delegate. Should
@@ -245,8 +253,16 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   bool DoesCollideWithKnownDevice(CBPeripheral* peripheral,
                                   BluetoothLowEnergyDeviceMac* device_mac);
 
+  // The Initialize() method intentionally does not initialize
+  // |low_energy_central_manager_| or |low_energy_peripheral_manager_| because
+  // Chromium might not have permission to access the Bluetooth adapter.
+  // Methods which require these to be initialized must call LazyInitialize()
+  // first.
+  bool lazy_initialized_ = false;
+
   std::string address_;
-  bool classic_powered_;
+  bool classic_powered_ = false;
+  base::Optional<bool> is_present_for_testing_;
 
   // Function returning the state of the HostController. Can be overridden for
   // tests.
@@ -267,7 +283,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   mutable std::string name_;
   // True if the name hasn't been acquired yet, the last acquired name is empty
   // or the address has changed indicating the name might have changed.
-  mutable bool should_update_name_;
+  mutable bool should_update_name_ = true;
 
   // Discovery manager for Bluetooth Classic.
   std::unique_ptr<BluetoothDiscoveryManagerMac> classic_discovery_manager_;
@@ -301,7 +317,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   // corresponding device address.
   std::map<std::string, std::string> low_energy_devices_info_;
 
-  base::WeakPtrFactory<BluetoothAdapterMac> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothAdapterMac> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterMac);
 };
