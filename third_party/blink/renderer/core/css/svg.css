@@ -90,10 +90,6 @@ tspan, textPath {
    https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties
 */
 @media ua-forced-colors {
-  svg:root {
-    color: CanvasText;
-  }
-
   svg {
       forced-color-adjust: none;
   }

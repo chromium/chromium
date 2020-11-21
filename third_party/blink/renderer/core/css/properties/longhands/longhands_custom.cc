@@ -2605,6 +2605,8 @@ const blink::Color Fill::ColorIncludingFallback(
   DCHECK(!visited_link);
   DCHECK(style.SvgStyle().FillPaint().HasColor());
   StyleColor fill_color = style.SvgStyle().FillPaint().GetColor();
+  if (style.ShouldForceColor(fill_color))
+    return style.GetCurrentColor();
   return fill_color.Resolve(style.GetCurrentColor(), style.UsedColorScheme());
 }
 
@@ -3720,6 +3722,8 @@ const blink::Color InternalVisitedFill::ColorIncludingFallback(
         .ColorIncludingFallback(false, style);
   }
   StyleColor visited_fill_color = paint.GetColor();
+  if (style.ShouldForceColor(visited_fill_color))
+    return style.GetInternalVisitedCurrentColor();
   return visited_fill_color.Resolve(style.GetInternalVisitedCurrentColor(),
                                     style.UsedColorScheme());
 }
@@ -3775,6 +3779,8 @@ const blink::Color InternalVisitedStroke::ColorIncludingFallback(
         .ColorIncludingFallback(false, style);
   }
   StyleColor visited_stroke_color = paint.GetColor();
+  if (style.ShouldForceColor(visited_stroke_color))
+    return style.GetInternalVisitedCurrentColor();
   return visited_stroke_color.Resolve(style.GetInternalVisitedCurrentColor(),
                                       style.UsedColorScheme());
 }
@@ -6283,6 +6289,8 @@ const blink::Color Stroke::ColorIncludingFallback(
   DCHECK(!visited_link);
   DCHECK(style.SvgStyle().StrokePaint().HasColor());
   StyleColor stroke_color = style.SvgStyle().StrokePaint().GetColor();
+  if (style.ShouldForceColor(stroke_color))
+    return style.GetCurrentColor();
   return stroke_color.Resolve(style.GetCurrentColor(), style.UsedColorScheme());
 }
 

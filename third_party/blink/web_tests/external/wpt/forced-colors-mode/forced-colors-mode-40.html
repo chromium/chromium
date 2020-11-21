@@ -10,6 +10,8 @@
   div {
     background-color: green;
     border-color: green;
+    fill: green;
+    stroke: green;
   }
 </style>
 <div id="div">
@@ -23,6 +25,8 @@
     "border-left-color",
     "border-right-color",
     "border-top-color",
+    "fill",
+    "stroke"
   ];
   for (let property of properties_to_test) {
     test(function() {

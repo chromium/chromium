@@ -17,7 +17,6 @@
 @media ua-forced-colors {
   html {
     color: CanvasText;
-    fill: currentColor;
   }
 
   :focus {
