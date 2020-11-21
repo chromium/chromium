@@ -83,9 +83,12 @@ namespace {
 // Do not install allocator shim on iOS 13.4 due to high crash volume on this
 // particular version of OS. TODO(crbug.com/1108219): Remove this workaround
 // when/if the bug gets fixed.
+//
+// Do not install allocator shim for now, until it's clear why Chrome crashes
+// on iOS 14.3+ on startup.
+// TODO(crbug.com/1150599): Remove this workaround when/if the bug gets fixed.
 bool ShouldInstallAllocatorShim() {
-  return !base::ios::IsRunningOnOrLater(13, 4, 0) ||
-         base::ios::IsRunningOnOrLater(13, 5, 0);
+  return false;
 }
 #endif
 
