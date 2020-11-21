@@ -784,32 +784,25 @@ ImageBitmap::ImageBitmap(ImageData* data,
   }
 
   // Copy / color convert the pixels
-  size_t image_pixels_size;
-  if (!base::CheckMul(parsed_options.color_params.BytesPerPixel(),
-                      static_cast<unsigned>(src_rect.Width()),
-                      static_cast<unsigned>(src_rect.Height()))
-           .AssignIfValid(&image_pixels_size)) {
-    return;
-  }
-  sk_sp<SkData> image_pixels = TryAllocateSkData(image_pixels_size);
-  if (!image_pixels)
-    return;
-  if (!data->ImageDataInCanvasColorSettings(
-          parsed_options.color_params.ColorSpace(),
-          parsed_options.color_params.PixelFormat(),
-          static_cast<unsigned char*>(image_pixels->writable_data()),
-          kN32ColorType, &src_rect,
-          parsed_options.premultiply_alpha ? kPremultiplyAlpha
-                                           : kUnpremultiplyAlpha))
-    return;
-
-  // Create Image object
   SkImageInfo info = SkImageInfo::Make(
       src_rect.Width(), src_rect.Height(),
       parsed_options.color_params.GetSkColorType(),
       parsed_options.premultiply_alpha ? kPremul_SkAlphaType
                                        : kUnpremul_SkAlphaType,
       parsed_options.color_params.GetSkColorSpace());
+  size_t image_pixels_size = info.computeMinByteSize();
+  if (SkImageInfo::ByteSizeOverflowed(image_pixels_size))
+    return;
+  sk_sp<SkData> image_pixels = TryAllocateSkData(image_pixels_size);
+  if (!image_pixels)
+    return;
+  if (!data->GetSkPixmap().readPixels(info, image_pixels->writable_data(),
+                                      info.minRowBytes(), src_rect.X(),
+                                      src_rect.Y())) {
+    return;
+  }
+
+  // Create Image object
   image_ = StaticBitmapImage::Create(std::move(image_pixels), info);
   if (!image_)
     return;
