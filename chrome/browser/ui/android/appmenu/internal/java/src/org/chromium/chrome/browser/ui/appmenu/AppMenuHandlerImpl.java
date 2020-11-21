@@ -10,7 +10,6 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.Menu;
@@ -184,8 +183,6 @@ class AppMenuHandlerImpl
             TypedArray a = wrapper.obtainStyledAttributes(
                     new int[] {android.R.attr.listPreferredItemHeightSmall});
             int itemRowHeight = a.getDimensionPixelSize(0, 0);
-            Drawable itemDivider = a.getDrawable(1);
-            int itemDividerHeight = itemDivider != null ? itemDivider.getIntrinsicHeight() : 0;
             a.recycle();
             mAppMenu = new AppMenu(mMenu, itemRowHeight, this, context.getResources(),
                     mDelegate.shouldShowIconBeforeItem());
