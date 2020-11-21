@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <random>
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
@@ -28,7 +27,6 @@ namespace ui {
 class X11HotplugEventHandler;
 class XScopedEventSelector;
 class PlatformEventDispatcher;
-class ScopedXEventDispatcher;
 
 // The XEventDispatcher interface is used in two different ways: the first is
 // when classes want to receive x11::Event directly and second is to say if
@@ -65,10 +63,10 @@ class EVENTS_EXPORT XEventDispatcher {
 class EVENTS_EXPORT XEventObserver {
  public:
   // Called before the dispatchers receive the event.
-  virtual void WillProcessXEvent(x11::Event* event) = 0;
+  virtual void WillProcessXEvent(x11::Event* event) {}
 
   // Called after the event has been dispatched.
-  virtual void DidProcessXEvent(x11::Event* event) = 0;
+  virtual void DidProcessXEvent(x11::Event* event) {}
 
  protected:
   virtual ~XEventObserver() = default;
@@ -90,26 +88,6 @@ class X11EventWatcher {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(X11EventWatcher);
-};
-
-// A temporary XEventDispatcher can be installed on a X11EventSource that
-// overrides all installed event dispatchers, and always gets a chance to
-// dispatch the event first, similar to what PlatformEventSource does with
-// ScopedEventDispatcher. When this object is destroyed, it removes the
-// override-dispatcher, and restores the previous override-dispatcher.
-class EVENTS_EXPORT ScopedXEventDispatcher {
- public:
-  ScopedXEventDispatcher(XEventDispatcher** scoped_dispatcher,
-                         XEventDispatcher* new_dispatcher);
-  ~ScopedXEventDispatcher();
-
-  operator XEventDispatcher*() const { return original_; }
-
- private:
-  XEventDispatcher* original_;
-  base::AutoReset<XEventDispatcher*> restore_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedXEventDispatcher);
 };
 
 // PlatformEventSource implementation for X11, both Ozone and non-Ozone.
@@ -163,15 +141,6 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   void AddXEventObserver(XEventObserver* observer);
   void RemoveXEventObserver(XEventObserver* observer);
 
-  // Installs a XEventDispatcher that receives all the events. The dispatcher
-  // can process the event, or request that the default dispatchers be invoked
-  // by returning false from its DispatchXEvent() override. The returned
-  // ScopedXEventDispatcher object is a handler for the overridden dispatcher.
-  // When this handler is destroyed, it removes the overridden dispatcher, and
-  // restores the previous override-dispatcher (or null if there wasn't any).
-  std::unique_ptr<ScopedXEventDispatcher> OverrideXEventDispatcher(
-      XEventDispatcher* dispatcher);
-
   void ProcessXEvent(x11::Event* xevent);
 
   // x11::Connection::Delegate:
@@ -183,8 +152,6 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   void PostDispatchEvent(x11::Event* xevent);
 
  private:
-  friend class ScopedXEventDispatcher;
-
   // Tells XEventDispatchers, which can also have PlatformEventDispatchers, that
   // a translated event is going to be sent next, then dispatches the event and
   // notifies XEventDispatchers the event has been sent out and, most probably,
@@ -197,8 +164,6 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   // PlatformEventSource:
   void StopCurrentEventStream() override;
   void OnDispatcherListChanged() override;
-
-  void RestoreOverridenXEventDispatcher();
 
   std::unique_ptr<X11EventWatcher> watcher_;
 
@@ -220,17 +185,10 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
 
   std::unique_ptr<X11HotplugEventHandler> hotplug_event_handler_;
 
-  // Used to sample RTT measurements, with frequency 1/1000.
-  std::default_random_engine generator_;
-  std::uniform_int_distribution<int> distribution_;
-
   // Keep track of all XEventDispatcher to send XEvents directly to.
   base::ObserverList<XEventDispatcher>::Unchecked dispatchers_xevent_;
 
   base::ObserverList<XEventObserver>::Unchecked observers_;
-
-  XEventDispatcher* overridden_dispatcher_ = nullptr;
-  bool overridden_dispatcher_restored_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(X11EventSource);
 };

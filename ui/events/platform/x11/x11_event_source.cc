@@ -123,8 +123,7 @@ X11EventSource::X11EventSource(x11::Connection* connection)
     : watcher_(std::make_unique<X11EventWatcherImpl>(this)),
       connection_(connection),
       dispatching_event_(nullptr),
-      dummy_initialized_(false),
-      distribution_(0, 999) {
+      dummy_initialized_(false) {
   DCHECK(connection_);
   DeviceDataManagerX11::CreateInstance();
   InitializeXkb(connection_);
@@ -174,14 +173,6 @@ x11::Time X11EventSource::GetCurrentServerTime() {
     dummy_initialized_ = true;
   }
 
-  // No need to measure Linux.X11.ServerRTT on every call.
-  // base::TimeTicks::Now() itself has non-trivial overhead.
-  bool measure_rtt = distribution_(generator_) == 0;
-
-  base::TimeTicks start;
-  if (measure_rtt)
-    start = base::TimeTicks::Now();
-
   // Make a no-op property change on |dummy_window_|.
   std::vector<uint8_t> data{0};
   connection_->ChangeProperty(x11::ChangePropertyRequest{
@@ -195,12 +186,6 @@ x11::Time X11EventSource::GetCurrentServerTime() {
 
   // Observe the resulting PropertyNotify event to obtain the timestamp.
   connection_->Sync();
-  if (measure_rtt) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Linux.X11.ServerRTT",
-        (base::TimeTicks::Now() - start).InMicroseconds(), 1,
-        base::TimeDelta::FromMilliseconds(50).InMicroseconds(), 50);
-  }
   connection_->ReadResponses();
 
   auto time = x11::Time::CurrentTime;
@@ -287,19 +272,6 @@ void X11EventSource::RemoveXEventObserver(XEventObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::unique_ptr<ScopedXEventDispatcher>
-X11EventSource::OverrideXEventDispatcher(XEventDispatcher* dispatcher) {
-  CHECK(dispatcher);
-  overridden_dispatcher_restored_ = false;
-  return std::make_unique<ScopedXEventDispatcher>(&overridden_dispatcher_,
-                                                  dispatcher);
-}
-
-void X11EventSource::RestoreOverridenXEventDispatcher() {
-  CHECK(overridden_dispatcher_);
-  overridden_dispatcher_restored_ = true;
-}
-
 void X11EventSource::DispatchPlatformEvent(const PlatformEvent& event,
                                            x11::Event* xevent) {
   DCHECK(event);
@@ -321,34 +293,16 @@ void X11EventSource::DispatchPlatformEvent(const PlatformEvent& event,
 }
 
 void X11EventSource::DispatchXEventToXEventDispatchers(x11::Event* xevent) {
-  bool stop_dispatching = false;
-
   for (auto& observer : observers_)
     observer.WillProcessXEvent(xevent);
 
-  if (overridden_dispatcher_) {
-    stop_dispatching = overridden_dispatcher_->DispatchXEvent(xevent);
-  }
-
-  if (!stop_dispatching) {
-    for (XEventDispatcher& dispatcher : dispatchers_xevent_) {
-      if (dispatcher.DispatchXEvent(xevent))
-        break;
-    }
+  for (XEventDispatcher& dispatcher : dispatchers_xevent_) {
+    if (dispatcher.DispatchXEvent(xevent))
+      break;
   }
 
   for (auto& observer : observers_)
     observer.DidProcessXEvent(xevent);
-
-  // If an overridden dispatcher has been destroyed, then the event source
-  // should halt dispatching the current stream of events, and wait until the
-  // next message-loop iteration for dispatching events. This lets any nested
-  // message-loop to unwind correctly and any new dispatchers to receive the
-  // correct sequence of events.
-  if (overridden_dispatcher_restored_)
-    StopCurrentEventStream();
-
-  overridden_dispatcher_restored_ = false;
 }
 
 void XEventDispatcher::CheckCanDispatchNextPlatformEvent(x11::Event* xev) {}
@@ -447,18 +401,6 @@ void X11EventSource::DispatchXEvent(x11::Event* event) {
   PostDispatchEvent(event);
 
   dispatching_event_ = nullptr;
-}
-
-// ScopedXEventDispatcher implementation
-ScopedXEventDispatcher::ScopedXEventDispatcher(
-    XEventDispatcher** scoped_dispatcher,
-    XEventDispatcher* new_dispatcher)
-    : original_(*scoped_dispatcher),
-      restore_(scoped_dispatcher, new_dispatcher) {}
-
-ScopedXEventDispatcher::~ScopedXEventDispatcher() {
-  DCHECK(X11EventSource::HasInstance());
-  X11EventSource::GetInstance()->RestoreOverridenXEventDispatcher();
 }
 
 // static

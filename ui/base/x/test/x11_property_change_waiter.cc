@@ -24,12 +24,14 @@ X11PropertyChangeWaiter::X11PropertyChangeWaiter(x11::Window window,
   x_window_events_ = std::make_unique<XScopedEventSelector>(
       x_window_, x11::EventMask::PropertyChange);
 
-  // Override the dispatcher so that we get events before X11Window does. We
-  // must do this because X11Window stops propagation.
-  dispatcher_ = X11EventSource::GetInstance()->OverrideXEventDispatcher(this);
+  // Add ourselves as an event observer so that we get events before X11Window
+  // does. We must do this because X11Window stops propagation.
+  X11EventSource::GetInstance()->AddXEventObserver(this);
 }
 
-X11PropertyChangeWaiter::~X11PropertyChangeWaiter() = default;
+X11PropertyChangeWaiter::~X11PropertyChangeWaiter() {
+  X11EventSource::GetInstance()->RemoveXEventObserver(this);
+}
 
 void X11PropertyChangeWaiter::Wait() {
   if (!wait_)
@@ -38,8 +40,6 @@ void X11PropertyChangeWaiter::Wait() {
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
-
-  dispatcher_.reset();
 }
 
 bool X11PropertyChangeWaiter::ShouldKeepOnWaiting(x11::Event* event) {
@@ -47,17 +47,16 @@ bool X11PropertyChangeWaiter::ShouldKeepOnWaiting(x11::Event* event) {
   return true;
 }
 
-bool X11PropertyChangeWaiter::DispatchXEvent(x11::Event* x11_event) {
+void X11PropertyChangeWaiter::WillProcessXEvent(x11::Event* x11_event) {
   auto* prop = x11_event->As<x11::PropertyNotifyEvent>();
   if (!wait_ || !prop || prop->window != x_window_ ||
       prop->atom != gfx::GetAtom(property_) || ShouldKeepOnWaiting(x11_event)) {
-    return false;
+    return;
   }
 
   wait_ = false;
   if (!quit_closure_.is_null())
     std::move(quit_closure_).Run();
-  return false;
 }
 
 }  // namespace ui

@@ -18,7 +18,7 @@
 namespace ui {
 
 // Blocks till the value of |property| on |window| changes.
-class X11PropertyChangeWaiter : public XEventDispatcher {
+class X11PropertyChangeWaiter : public XEventObserver {
  public:
   X11PropertyChangeWaiter(x11::Window window, const char* property);
   ~X11PropertyChangeWaiter() override;
@@ -33,8 +33,8 @@ class X11PropertyChangeWaiter : public XEventDispatcher {
   x11::Window xwindow() const { return x_window_; }
 
  private:
-  // XEventDispatcher:
-  bool DispatchXEvent(x11::Event* event) override;
+  // XEventObserver:
+  void WillProcessXEvent(x11::Event* event) override;
 
   x11::Window x_window_;
   const char* property_;
@@ -46,8 +46,6 @@ class X11PropertyChangeWaiter : public XEventDispatcher {
 
   // Ends the run loop.
   base::OnceClosure quit_closure_;
-
-  std::unique_ptr<ScopedXEventDispatcher> dispatcher_;
 
   DISALLOW_COPY_AND_ASSIGN(X11PropertyChangeWaiter);
 };

@@ -29317,6 +29317,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The Linux distro used. Logged on each start up.</summary>
 </histogram>
 
+<histogram name="Linux.X11.ServerRTT" units="microseconds" expires_after="M77">
+  <obsolete>
+    Removed 11/20 due to lack of usage.
+  </obsolete>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    RTT between Chrome and the X11 server. Tracked in X11EventSource by
+    measuring the latency to receive a property event after changing a property.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="LoadingPredictor.SubresourceConnectDuration" units="ms"
     expires_after="2018-02-28">
   <obsolete>

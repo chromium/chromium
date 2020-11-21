@@ -13,8 +13,6 @@
 
 namespace ui {
 
-class ScopedXEventDispatcher;
-
 // X11 Event Waiter class
 class XEventWaiter : public ui::XEventObserver {
  public:
@@ -32,7 +30,6 @@ class XEventWaiter : public ui::XEventObserver {
   static x11::Atom MarkerEventAtom();
 
   base::OnceClosure success_callback_;
-  std::unique_ptr<ui::ScopedXEventDispatcher> dispatcher_;
 };
 
 }  // namespace ui
