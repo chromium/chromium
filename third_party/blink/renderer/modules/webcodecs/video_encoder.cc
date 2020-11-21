@@ -53,11 +53,6 @@ namespace {
 std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options) {
-#if defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-  // TODO(https://crbug.com/1110279) Flush() is not implemented on MacOS'
-  // accelerated video encoder, so we can't use it yet.
-  return nullptr;
-#else
   auto* gpu_factories = Platform::Current()->GetGpuFactories();
   if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled())
     return nullptr;
@@ -97,7 +92,6 @@ std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
       media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
       std::make_unique<media::VideoEncodeAcceleratorAdapter>(
           gpu_factories, std::move(task_runner)));
-#endif  // defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 }
 
 std::unique_ptr<media::VideoEncoder> CreateVpxVideoEncoder() {
