@@ -9094,6 +9094,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // See RemoveSubframeInUnload_SameSite
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        RemoveSubframeInUnload_CrossSite) {
+  // TODO(https://crbug.com/1148793): Remove this early return.
+  if (ShouldCreateNewHostForSameSiteSubframe() &&
+      !AreAllSitesIsolatedForTesting())
+    return;
   AssertCanRemoveSubframeInUnload(/*same_site=*/false);
 }
 
@@ -9108,7 +9112,7 @@ void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
   ASSERT_TRUE(NavigateToURL(shell(), frame_url));
 
   // Set up the subframe's unload handler to remove the subframe.
-  ASSERT_TRUE(ExecuteScript(shell(), R"(
+  ASSERT_TRUE(ExecJs(shell(), R"(
     const subframe = document.getElementById("child-0");
     subframe.contentWindow.onunload = () => {
       subframe.remove();
@@ -9135,6 +9139,9 @@ void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
 
   // The subframe has been removed.
   EXPECT_EQ(0UL, web_contents->GetMainFrame()->child_count());
+  // TODO(https://crbug.com/1111191): Remove this. Without this, the crash in
+  // the renderer in https://crbug.com/1148793 is usually not caught.
+  ASSERT_TRUE(ExecJs(shell(), ""));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
