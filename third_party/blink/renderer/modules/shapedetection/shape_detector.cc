@@ -119,18 +119,21 @@ ScriptPromise ShapeDetector::DetectShapesOnImageData(
     return promise;
   }
 
+  SkPixmap image_data_pixmap = image_data->GetSkPixmap();
   SkBitmap sk_bitmap;
-  SkImageInfo sk_image_info = image_data->GetSkImageInfo();
-  if (!sk_bitmap.tryAllocPixels(sk_image_info, sk_image_info.minRowBytes())) {
+  if (!sk_bitmap.tryAllocPixels(image_data_pixmap.info(),
+                                image_data_pixmap.rowBytes())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Failed to allocate pixels for current frame."));
     return promise;
   }
-
-  size_t byte_size = sk_bitmap.computeByteSize();
-  CHECK_EQ(byte_size, image_data->BufferBase()->ByteLength());
-  memcpy(sk_bitmap.getPixels(), image_data->BufferBase()->Data(), byte_size);
+  if (!sk_bitmap.writePixels(image_data_pixmap, 0, 0)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Failed to copy pixels for current frame."));
+    return promise;
+  }
 
   return DoDetect(resolver, std::move(sk_bitmap));
 }

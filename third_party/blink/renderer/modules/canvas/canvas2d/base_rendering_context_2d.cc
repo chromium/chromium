@@ -1905,7 +1905,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   // in sRGB color space and use uint8 pixel storage format. We use RGBA pixel
   // order for both ImageData and CanvasResourceProvider, therefore no
   // additional swizzling is needed.
-  SkImageInfo data_info = data->GetSkImageInfo();
+  SkPixmap data_pixmap = data->GetSkPixmap();
   CanvasColorParams data_color_params = data->GetCanvasColorParams();
   CanvasColorParams context_color_params = CanvasColorParams(
       GetCanvas2DColorParams().ColorSpace(), PixelFormat(), kNonOpaque);
@@ -1913,30 +1913,28 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   if (data_color_params.ColorSpace() != context_color_params.ColorSpace() ||
       data_color_params.PixelFormat() != context_color_params.PixelFormat() ||
       PixelFormat() == CanvasPixelFormat::kF16) {
-    size_t data_length;
-    if (!base::CheckMul(data->Size().Area(),
-                        context_color_params.BytesPerPixel())
-             .AssignIfValid(&data_length)) {
-      return;
-    }
-    std::unique_ptr<uint8_t[]> converted_pixels(new uint8_t[data_length]);
+    SkImageInfo converted_info = data_pixmap.info();
+    converted_info =
+        converted_info.makeColorType(GetCanvas2DColorParams().GetSkColorType());
+    converted_info = converted_info.makeColorSpace(
+        GetCanvas2DColorParams().GetSkColorSpace());
+    if (converted_info.colorType() == kN32_SkColorType)
+      converted_info = converted_info.makeColorType(kRGBA_8888_SkColorType);
 
-    if (data->ImageDataInCanvasColorSettings(
-            GetCanvas2DColorParams().ColorSpace(), PixelFormat(),
-            converted_pixels.get(), kRGBAColorType)) {
-      SkImageInfo converted_info = data_info;
-      converted_info = converted_info.makeColorType(
-          GetCanvas2DColorParams().GetSkColorType());
-      converted_info = converted_info.makeColorSpace(
-          GetCanvas2DColorParams().GetSkColorSpace());
-      PutByteArray(SkPixmap(converted_info, converted_pixels.get(),
-                            converted_info.minRowBytes()),
-                   source_rect, IntPoint(dest_offset));
+    const size_t converted_data_bytes = converted_info.computeMinByteSize();
+    const size_t converted_row_bytes = converted_info.minRowBytes();
+    if (SkImageInfo::ByteSizeOverflowed(converted_data_bytes))
+      return;
+    std::unique_ptr<uint8_t[]> converted_pixels(
+        new uint8_t[converted_data_bytes]);
+    if (data_pixmap.readPixels(converted_info, converted_pixels.get(),
+                               converted_row_bytes)) {
+      PutByteArray(
+          SkPixmap(converted_info, converted_pixels.get(), converted_row_bytes),
+          source_rect, IntPoint(dest_offset));
     }
   } else {
-    PutByteArray(SkPixmap(data_info, data->BufferBase()->Data(),
-                          data_info.minRowBytes()),
-                 source_rect, IntPoint(dest_offset));
+    PutByteArray(data_pixmap, source_rect, IntPoint(dest_offset));
   }
 
   if (!IsPaint2D()) {

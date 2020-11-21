@@ -272,13 +272,6 @@ ImageDataColorSettings* CanvasColorParamsToImageDataColorSettings(
 }
 
 ImageData* ImageData::Create(const IntSize& size,
-                             const CanvasColorParams& color_params) {
-  ImageDataColorSettings* color_settings =
-      CanvasColorParamsToImageDataColorSettings(color_params);
-  return ImageData::Create(size, color_settings);
-}
-
-ImageData* ImageData::Create(const IntSize& size,
                              CanvasColorSpace color_space,
                              ImageDataStorageFormat storage_format) {
   ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
@@ -332,7 +325,8 @@ ImageData* ImageData::Create(scoped_refptr<StaticBitmapImage> image,
     }
   }
 
-  ImageData* image_data = Create(image->Size(), color_params);
+  ImageData* image_data = Create(
+      image->Size(), CanvasColorParamsToImageDataColorSettings(color_params));
   if (!image_data)
     return nullptr;
 
@@ -667,7 +661,13 @@ ImageDataStorageFormat ImageData::GetImageDataStorageFormat(
   return kUint8ClampedArrayStorageFormat;
 }
 
-ImageDataStorageFormat ImageData::GetImageDataStorageFormat() {
+CanvasColorSpace ImageData::GetCanvasColorSpace() const {
+  if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled())
+    return CanvasColorSpace::kSRGB;
+  return CanvasColorSpaceFromName(color_settings_->colorSpace());
+}
+
+ImageDataStorageFormat ImageData::GetImageDataStorageFormat() const {
   if (data_u16_)
     return kUint16ArrayStorageFormat;
   if (data_f32_)
@@ -782,15 +782,17 @@ CanvasColorParams ImageData::GetCanvasColorParams() {
       kNonOpaque);
 }
 
-SkImageInfo ImageData::GetSkImageInfo() {
-  SkColorType color_type = kN32_SkColorType;
+SkPixmap ImageData::GetSkPixmap() const {
+  SkColorType color_type = kRGBA_8888_SkColorType;
   if (data_u16_) {
     color_type = kR16G16B16A16_unorm_SkColorType;
   } else if (data_f32_) {
     color_type = kRGBA_F32_SkColorType;
   }
-  return SkImageInfo::Make(width(), height(), color_type,
-                           kUnpremul_SkAlphaType);
+  SkImageInfo info =
+      SkImageInfo::Make(width(), height(), color_type, kUnpremul_SkAlphaType,
+                        CanvasColorSpaceToSkColorSpace(GetCanvasColorSpace()));
+  return SkPixmap(info, BufferBase()->Data(), info.minRowBytes());
 }
 
 bool ImageData::ImageDataInCanvasColorSettings(
@@ -836,7 +838,8 @@ bool ImageData::ImageDataInCanvasColorSettings(
   skcms_ICCProfile* src_profile_ptr = nullptr;
   skcms_ICCProfile* dst_profile_ptr = nullptr;
   skcms_ICCProfile src_profile, dst_profile;
-  GetCanvasColorParams().GetSkColorSpace()->toProfile(&src_profile);
+  CanvasColorSpaceToSkColorSpace(GetCanvasColorSpace())
+      ->toProfile(&src_profile);
   canvas_color_params.GetSkColorSpace()->toProfile(&dst_profile);
   // If the profiles are similar, we better leave them as nullptr, since
   // skcms_Transform() only checks for profile pointer equality for the fast

@@ -71,7 +71,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
  public:
   static ImageData* Create(const IntSize&,
                            const ImageDataColorSettings* = nullptr);
-  static ImageData* Create(const IntSize&, const CanvasColorParams&);
   static ImageData* Create(const IntSize&,
                            CanvasColorSpace,
                            ImageDataStorageFormat);
@@ -127,7 +126,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
 
   ImageData* CropRect(const IntRect&, bool flip_y = false);
 
-  ImageDataStorageFormat GetImageDataStorageFormat();
   static String CanvasColorSpaceName(CanvasColorSpace);
   static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
   static unsigned StorageFormatBytesPerPixel(const String&);
@@ -148,7 +146,11 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
 
   DOMArrayBufferBase* BufferBase() const;
   CanvasColorParams GetCanvasColorParams();
-  SkImageInfo GetSkImageInfo();
+  CanvasColorSpace GetCanvasColorSpace() const;
+  ImageDataStorageFormat GetImageDataStorageFormat() const;
+
+  // Return an SkPixmap that references this data directly.
+  SkPixmap GetSkPixmap() const;
 
   // DataU8ColorType param specifies if the converted pixels in uint8 pixel
   // format should respect the "native" 32bit ARGB format of Skia's blitters.
