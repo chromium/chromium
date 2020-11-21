@@ -112,6 +112,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_account_manager_browser_proxy.html|NearbyAccountManagerBrowserProxy,NearbyAccountManagerBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_receive_manager.html|setReceiveManagerForTesting,getReceiveManager,observeReceiveManager",
                              "chrome/browser/resources/settings/chromeos/nearby_share_page/types.html|NearbyShareDataUsage,dataUsageStringToEnum",
+                             "chrome/browser/resources/settings/chromeos/os_a11y_page/tts_subpage_browser_proxy.html|TtsSubpageBrowserProxy,TtsSubpageBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.html|generateOptions,getFirstPartyInputMethodEngineId,getOptionLabelName,getOptionMenuItems,getOptionUiType,getOptionUrl,hasOptionsPageInSettings,InputToolCode,isNumberValue,OPTION_DEFAULT,OptionType,UiType",
                              "chrome/browser/resources/settings/chromeos/os_languages_page/languages_metrics_proxy.html|LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction",
                              "chrome/browser/resources/settings/chromeos/os_people_page/fingerprint_browser_proxy.html|FingerprintInfo,FingerprintBrowserProxy,FingerprintResultType,FingerprintBrowserProxyImpl,FingerprintAttempt,FingerprintScan",
@@ -151,6 +152,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/about_page/about_page_browser_proxy.html|AboutPageBrowserProxyImpl,AboutPageUpdateInfo,AboutPageBrowserProxy,browserChannelToI18nId,VersionInfo,ChannelInfo,BrowserChannel,isTargetChannelMoreStable,UpdateStatus,UpdateStatusChangedEvent,RegulatoryInfo,TPMFirmwareUpdateStatusChangedEvent",
                              "chrome/browser/resources/settings/chromeos/os_about_page/device_name_browser_proxy.html|DeviceNameBrowserProxy,DeviceNameBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/os_settings_page/main_page_behavior.html|MainPageBehavior",
+                             "ui/webui/resources/cr_elements/cr_slider/cr_slider.html|SliderTick",
                              "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",
                            ]
 

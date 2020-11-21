@@ -24,6 +24,7 @@ import './multidevice_page/multidevice_page.m.js';
 import '../prefs/prefs.m.js';
 import './personalization_page/personalization_page.m.js';
 import './personalization_page/change_picture.m.js';
+import './os_a11y_page/tts_subpage.m.js';
 import './os_people_page/account_manager.m.js';
 import './os_people_page/kerberos_accounts.m.js';
 import './parental_controls_page/parental_controls_page.m.js';
@@ -58,6 +59,7 @@ export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData,
 export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl} from './nearby_share_page/nearby_account_manager_browser_proxy.m.js';
 export {getReceiveManager, observeReceiveManager, setReceiveManagerForTesting} from './nearby_share_page/nearby_share_receive_manager.m.js';
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.m.js';
+export {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './os_a11y_page/tts_subpage_browser_proxy.m.js';
 export {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.m.js';
 export {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from './os_people_page/kerberos_accounts_browser_proxy.m.js';
 export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.m.js';

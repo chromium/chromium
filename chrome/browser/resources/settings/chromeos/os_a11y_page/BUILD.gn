@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
@@ -108,7 +109,7 @@ js_library("externs") {
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
-    #    ":externs.m",
+    ":externs.m",
     #    ":manage_a11y_page.m",
     ":manage_a11y_page_browser_proxy.m",
 
@@ -118,7 +119,7 @@ js_type_check("closure_compile_module") {
     #    ":switch_access_subpage.m",
     ":switch_access_subpage_browser_proxy.m",
 
-    #    ":tts_subpage.m"
+    ":tts_subpage.m",
     ":tts_subpage_browser_proxy.m",
   ]
 }
@@ -179,7 +180,19 @@ js_library("switch_access_subpage_browser_proxy.m") {
 js_library("tts_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/tts_subpage.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":tts_subpage_browser_proxy.m",
+    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/controls:settings_slider.m",
+    "//chrome/browser/resources/settings/languages_page:languages_browser_proxy.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":tts_subpage_module" ]
 }
@@ -225,6 +238,8 @@ polymer_modulizer("tts_subpage") {
   js_file = "tts_subpage.js"
   html_file = "tts_subpage.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 import("//ui/webui/resources/tools/js_modulizer.gni")

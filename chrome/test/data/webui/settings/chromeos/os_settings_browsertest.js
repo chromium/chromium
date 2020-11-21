@@ -2208,4 +2208,27 @@ TEST_F('OSSettingsTimezoneSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// Test fixture for the TTS Subpage.
+// eslint-disable-next-line no-var
+var OSSettingsTtsSubpageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/os_a11y_page/tts_subpage.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'tts_subpage_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsTtsSubpageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 GEN('#endif  // defined(NDEBUG)');

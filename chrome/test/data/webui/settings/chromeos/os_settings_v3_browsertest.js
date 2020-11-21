@@ -96,11 +96,16 @@ var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
 
 TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 
-[['AmbientModePage', 'ambient_mode_page_test.m.js'],
+[['AboutPage', 'os_about_page_tests.m.js'],
+ ['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.m.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
+ ['CupsPrinterEntry', 'cups_printer_entry_tests.m.js'],
+ ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.m.js'],
+ ['CupsPrinterPage', 'cups_printer_page_tests.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
+ ['FilesPage', 'os_files_page_test.m.js'],
  ['GoogleAssistantPage', 'google_assistant_page_test.m.js'],
  ['InputMethodOptionPage', 'input_method_options_page_test.m.js'],
  ['InputPage', 'input_page_test.m.js'],
@@ -135,17 +140,13 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
  ['PersonalizationPage', 'personalization_page_test.m.js'],
  ['PrintingPage', 'os_printing_page_tests.m.js'],
  ['PrivacyPage', 'os_privacy_page_test.m.js'],
- ['SmbPage', 'smb_shares_page_tests.m.js'],
- ['FilesPage', 'os_files_page_test.m.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.m.js'],
+ ['SmbPage', 'smb_shares_page_tests.m.js'],
  ['TetherConnectionDialog', 'tether_connection_dialog_test.m.js'],
  ['TimezoneSelector', 'timezone_selector_test.m.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.m.js'],
- ['CupsPrinterPage', 'cups_printer_page_tests.m.js'],
- ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.m.js'],
- ['CupsPrinterEntry', 'cups_printer_entry_tests.m.js'],
- ['AboutPage', 'os_about_page_tests.m.js'],
+ ['TtsSubpage', 'tts_subpage_test.m.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, caseName) {
