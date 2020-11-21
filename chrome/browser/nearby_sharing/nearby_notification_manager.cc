@@ -170,6 +170,20 @@ base::string16 GetFailureNotificationTitle(const ShareTarget& share_target) {
                         : IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE);
 }
 
+base::Optional<base::string16> GetFailureNotificationMessage(
+    TransferMetadata::Status status) {
+  switch (status) {
+    case TransferMetadata::Status::kTimedOut:
+      return l10n_util::GetStringUTF16(IDS_NEARBY_ERROR_TIME_OUT);
+    case TransferMetadata::Status::kNotEnoughSpace:
+      return l10n_util::GetStringUTF16(IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE);
+    case TransferMetadata::Status::kUnsupportedAttachmentType:
+      return l10n_util::GetStringUTF16(IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE);
+    default:
+      return base::nullopt;
+  }
+}
+
 base::string16 GetConnectionRequestNotificationMessage(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
@@ -545,11 +559,11 @@ void NearbyNotificationManager::OnTransferUpdate(
     case TransferMetadata::Status::kFailed:
     case TransferMetadata::Status::kNotEnoughSpace:
     case TransferMetadata::Status::kUnsupportedAttachmentType:
-      ShowFailure(share_target);
+      ShowFailure(share_target, transfer_metadata);
       break;
     default:
       if (transfer_metadata.is_final_status())
-        ShowFailure(share_target);
+        ShowFailure(share_target, transfer_metadata);
       break;
   }
 
@@ -742,12 +756,20 @@ void NearbyNotificationManager::ShowIncomingSuccess(
   }
 }
 
-void NearbyNotificationManager::ShowFailure(const ShareTarget& share_target) {
+void NearbyNotificationManager::ShowFailure(
+    const ShareTarget& share_target,
+    const TransferMetadata& transfer_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyNotificationId);
   notification.set_title(GetFailureNotificationTitle(share_target));
+
+  base::Optional<base::string16> message =
+      GetFailureNotificationMessage(transfer_metadata.status());
+  if (message) {
+    notification.set_message(*message);
+  }
 
   delegate_map_.erase(kNearbyNotificationId);
 

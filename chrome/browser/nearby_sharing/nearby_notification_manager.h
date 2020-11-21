@@ -79,7 +79,8 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   void ShowSuccess(const ShareTarget& share_target);
 
   // Shows a notification for send or receive failure.
-  void ShowFailure(const ShareTarget& share_target);
+  void ShowFailure(const ShareTarget& share_target,
+                   const TransferMetadata& transfer_metadata);
 
   // Closes any currently shown transfer notification (e.g. progress or
   // connection).

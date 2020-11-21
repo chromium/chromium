@@ -122,6 +122,9 @@
   <message name="IDS_NEARBY_ERROR_NO_RESPONSE" desc="Notify user that the file share failed because the receiver neither accepted nor declined the share.">
     The device you're sharing with didn't respond
   </message>
+  <message name="IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE" desc="Notify user that the file can't be shared because there isn't enough disk space to store it. Displayed as a subtitle under a more generic file-couldn't-be-shared message.">
+    Not enough disk space
+  </message>
   <message name="IDS_NEARBY_ERROR_REJECTED" desc="Notify sender that receiver declined the file share.">
     The device you’re trying to share with did not accept
   </message>

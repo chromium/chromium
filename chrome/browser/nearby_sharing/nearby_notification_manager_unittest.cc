@@ -463,19 +463,39 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
   for (FileAttachment::Type type : param.file_attachments)
     share_target.file_attachments.push_back(CreateFileAttachment(type));
 
-  manager()->ShowFailure(share_target);
+  for (std::pair<TransferMetadata::Status, int> error :
+       std::vector<std::pair<TransferMetadata::Status, int>>{
+           {TransferMetadata::Status::kNotEnoughSpace,
+            IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE},
+           {TransferMetadata::Status::kTimedOut, IDS_NEARBY_ERROR_TIME_OUT},
+           {TransferMetadata::Status::kUnsupportedAttachmentType,
+            IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE},
+           {TransferMetadata::Status::kFailed, 0},
+       }) {
+    manager()->ShowFailure(
+        share_target,
+        TransferMetadataBuilder().set_status(error.first).build());
 
-  base::string16 expected = FormatNotificationTitle(
-      is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE
-                  : IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE,
-      param, device_name);
+    base::string16 expected_title = FormatNotificationTitle(
+        is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE
+                    : IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE,
+        param, device_name);
+    base::string16 expected_message =
+        error.second ? l10n_util::GetStringUTF16(error.second)
+                     : base::string16();
 
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications();
+    ASSERT_EQ(1u, notifications.size());
 
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(expected, notification.title());
+    const message_center::Notification& notification = notifications[0];
+    EXPECT_EQ(expected_title, notification.title());
+    EXPECT_EQ(expected_message, notification.message());
+
+    notification_tester_->RemoveNotification(
+        NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(),
+        /*by_user=*/true);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -610,7 +630,7 @@ TEST_F(NearbyNotificationManagerTest, ShowSuccess_ShowsNotification) {
 }
 
 TEST_F(NearbyNotificationManagerTest, ShowFailure_ShowsNotification) {
-  manager()->ShowFailure(ShareTarget());
+  manager()->ShowFailure(ShareTarget(), TransferMetadataBuilder().build());
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
