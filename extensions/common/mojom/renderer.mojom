@@ -4,6 +4,9 @@
 
 module extensions.mojom;
 
+import "extensions/common/mojom/channel.mojom";
+import "extensions/common/mojom/feature_session_type.mojom";
+
 // This should be used for implementing browser-to-renderer control messages
 // which need to retain FIFO with respect to other mojo interfaces like
 // content.mojom.Renderer.
@@ -20,4 +23,11 @@ interface Renderer {
 
   // Notifies the renderer that an extension was unloaded in the browser.
   UnloadExtension(string extension_id);
+
+  // Informs the renderer what channel (dev, beta, stable, etc) and user session
+  // type is running. |is_lock_screen_context| represents whether the browser
+  // context is associated with Chrome OS lock screen.
+  SetSessionInfo(Channel channel,
+                 FeatureSessionType session,
+                 bool is_lock_screen_context);
 };

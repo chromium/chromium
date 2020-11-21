@@ -40,6 +40,7 @@ if (enable_extensions) {
 
     sources = [
       "mojom/app_window.mojom",
+      "mojom/channel.mojom",
       "mojom/feature_session_type.mojom",
       "mojom/guest_view.mojom",
       "mojom/keep_alive.mojom",
@@ -58,6 +59,18 @@ if (enable_extensions) {
       "//url/mojom:url_mojom_gurl",
     ]
 
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.Channel"
+            cpp = "version_info::Channel"
+          },
+        ]
+        traits_headers = [ "//extensions/common/mojom/channel_mojom_traits.h" ]
+        traits_public_deps = [ "//components/version_info:channel" ]
+      },
+    ]
     overridden_deps = [ "//content/public/common:interfaces" ]
 
     component_deps = [ "//content/public/common" ]

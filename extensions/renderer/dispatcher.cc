@@ -872,7 +872,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_Loaded, OnLoaded)
   IPC_MESSAGE_HANDLER(ExtensionMsg_MessageInvoke, OnMessageInvoke)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_SetSessionInfo, OnSetSessionInfo)
   IPC_MESSAGE_HANDLER(ExtensionMsg_SetScriptingAllowlist,
                       OnSetScriptingAllowlist)
   IPC_MESSAGE_HANDLER(ExtensionMsg_SetSystemFont, OnSetSystemFont)
@@ -1158,9 +1157,9 @@ void Dispatcher::OnDispatchEvent(
   }
 }
 
-void Dispatcher::OnSetSessionInfo(version_info::Channel channel,
-                                  mojom::FeatureSessionType session_type,
-                                  bool is_lock_screen_context) {
+void Dispatcher::SetSessionInfo(version_info::Channel channel,
+                                mojom::FeatureSessionType session_type,
+                                bool is_lock_screen_context) {
   SetCurrentChannel(channel);
   SetCurrentFeatureSessionType(session_type);
   script_context_set_->set_is_lock_screen_context(is_lock_screen_context);

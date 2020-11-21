@@ -217,6 +217,9 @@ class Dispatcher : public content::RenderThreadObserver,
   void ActivateExtension(const std::string& extension_id) override;
   void SetActivityLoggingEnabled(bool enabled) override;
   void UnloadExtension(const std::string& extension_id) override;
+  void SetSessionInfo(version_info::Channel channel,
+                      mojom::FeatureSessionType session_type,
+                      bool lock_screen_context) override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
@@ -240,9 +243,6 @@ class Dispatcher : public content::RenderThreadObserver,
                        const base::ListValue& args);
   void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
                        const base::ListValue& event_args);
-  void OnSetSessionInfo(version_info::Channel channel,
-                        mojom::FeatureSessionType session_type,
-                        bool lock_screen_context);
   void OnSetScriptingAllowlist(
       const ExtensionsClient::ScriptingAllowlist& extension_ids);
   void OnSetSystemFont(const std::string& font_family,

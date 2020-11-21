@@ -703,13 +703,6 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
                     extensions::PortId /* port_id */,
                     std::string /* error_message */)
 
-// Informs the renderer what channel (dev, beta, stable, etc) and user session
-// type is running.
-IPC_MESSAGE_CONTROL3(ExtensionMsg_SetSessionInfo,
-                     version_info::Channel /* channel */,
-                     extensions::mojom::FeatureSessionType /* session_type */,
-                     bool /* is_lock_screen_context */)
-
 // Notify the renderer that its window has closed.
 IPC_MESSAGE_ROUTED1(ExtensionMsg_AppWindowClosed, bool /* send_onclosed */)
 

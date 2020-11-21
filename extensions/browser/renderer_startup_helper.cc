@@ -122,9 +122,8 @@ void RendererStartupHelper::InitializeProcess(
   // renderers may have content scripts.
   bool is_lock_screen_context =
       client->IsLockScreenContext(process->GetBrowserContext());
-  process->Send(new ExtensionMsg_SetSessionInfo(GetCurrentChannel(),
-                                                GetCurrentFeatureSessionType(),
-                                                is_lock_screen_context));
+  renderer->SetSessionInfo(GetCurrentChannel(), GetCurrentFeatureSessionType(),
+                           is_lock_screen_context);
 
   // Platform apps need to know the system font.
   // TODO(dbeam): this is not the system font in all cases.

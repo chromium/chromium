@@ -51,6 +51,10 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
     unloaded_extensions_.push_back(extension_id);
   }
 
+  void SetSessionInfo(version_info::Channel channel,
+                      mojom::FeatureSessionType session,
+                      bool is_lock_screen_context) override {}
+
   std::vector<std::string> activated_extensions_;
   std::vector<std::string> unloaded_extensions_;
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
