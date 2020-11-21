@@ -10,6 +10,8 @@ source_set("nearby") {
     "nearby_connections.h",
     "nearby_connections_conversions.cc",
     "nearby_connections_conversions.h",
+    "nearby_connections_stream_buffer_manager.cc",
+    "nearby_connections_stream_buffer_manager.h",
     "platform.cc",
   ]
 
@@ -29,7 +31,10 @@ source_set("nearby") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "nearby_connections_unittest.cc" ]
+  sources = [
+    "nearby_connections_stream_buffer_manager_unittest.cc",
+    "nearby_connections_unittest.cc",
+  ]
 
   deps = [
     ":nearby",

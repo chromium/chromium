@@ -407,8 +407,8 @@ void NearbyConnections::AcceptConnection(
   // Capturing Core* is safe as Core owns PayloadListener.
   PayloadListener payload_listener = {
       .payload_cb =
-          [remote, core = GetCore(service_id)](const std::string& endpoint_id,
-                                               Payload payload) {
+          [&, remote, core = GetCore(service_id)](
+              const std::string& endpoint_id, Payload payload) {
             if (!remote)
               return;
 
@@ -444,15 +444,16 @@ void NearbyConnections::AcceptConnection(
                 break;
               }
               case Payload::Type::kStream:
-                // Stream payload is not supported.
+                buffer_manager_.StartTrackingPayload(std::move(payload));
+                break;
               case Payload::Type::kUnknown:
                 core->CancelPayload(payload.GetId(), /*callback=*/{});
                 return;
             }
           },
       .payload_progress_cb =
-          [remote](const std::string& endpoint_id,
-                   const PayloadProgressInfo& info) {
+          [&, remote](const std::string& endpoint_id,
+                      const PayloadProgressInfo& info) {
             if (!remote)
               return;
 
@@ -463,6 +464,41 @@ void NearbyConnections::AcceptConnection(
                 mojom::PayloadTransferUpdate::New(
                     info.payload_id, PayloadStatusToMojom(info.status),
                     info.total_bytes, info.bytes_transferred));
+
+            if (!buffer_manager_.IsTrackingPayload(info.payload_id))
+              return;
+
+            switch (info.status) {
+              case PayloadProgressInfo::Status::kFailure:
+                FALLTHROUGH;
+              case PayloadProgressInfo::Status::kCanceled:
+                buffer_manager_.StopTrackingFailedPayload(info.payload_id);
+                break;
+
+              case PayloadProgressInfo::Status::kInProgress:
+                // Note that |info.bytes_transferred| is a cumulative measure of
+                // bytes that have been sent so far in the payload.
+                buffer_manager_.HandleBytesTransferred(info.payload_id,
+                                                       info.bytes_transferred);
+                break;
+
+              case PayloadProgressInfo::Status::kSuccess:
+                // When kSuccess is passed, we are guaranteed to have received a
+                // previous kInProgress update with the same |bytes_transferred|
+                // value.
+                // Since we have completed fetching the full payload, return the
+                // completed payload as a "bytes" payload.
+                remote->OnPayloadReceived(
+                    endpoint_id,
+                    mojom::Payload::New(
+                        info.payload_id,
+                        mojom::PayloadContent::NewBytes(
+                            mojom::BytesPayload::New(ByteArrayToMojom(
+                                buffer_manager_
+                                    .GetCompletePayloadAndStopTracking(
+                                        info.payload_id))))));
+                break;
+            }
           }};
 
   GetCore(service_id)

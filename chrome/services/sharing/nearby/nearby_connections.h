@@ -19,6 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/thread_annotations.h"
+#include "chrome/services/sharing/nearby/nearby_connections_stream_buffer_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
@@ -175,6 +176,10 @@ class NearbyConnections : public mojom::NearbyConnections {
   // service uses its own Core object, but all Core objects share the underlying
   // ServiceController instance.
   base::flat_map<std::string, std::unique_ptr<Core>> service_id_to_core_map_;
+
+  // Handles incoming stream payloads. This object buffers partial streams as
+  // they arrive and provides a getter for the final buffer when it is complete.
+  NearbyConnectionsStreamBufferManager buffer_manager_;
 
   // input_file_map_ is accessed from background threads.
   base::Lock input_file_lock_;
