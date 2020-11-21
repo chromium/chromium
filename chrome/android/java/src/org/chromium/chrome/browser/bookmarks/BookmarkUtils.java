@@ -365,6 +365,8 @@ public class BookmarkUtils {
             // Adds reading list as the first top level folder.
             if (bookmarkId.getType() == BookmarkType.READING_LIST) {
                 topLevelFolders.add(bookmarkId);
+                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                        .notifyEvent(EventConstants.READ_LATER_BOTTOM_SHEET_FOLDER_SEEN);
                 continue;
             }
             BookmarkId parent = bookmarkModel.getBookmarkById(bookmarkId).getParentId();

@@ -27,7 +27,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class ReadingListSectionHeaderTest {
     @Test
-    public void testAddReadingListSectionHeaders() {
+    public void testListWithReadUnreadItems() {
         Context context = ContextUtils.getApplicationContext();
         String titleRead = context.getString(org.chromium.chrome.R.string.reading_list_read);
         String titleUnread = context.getString(org.chromium.chrome.R.string.reading_list_unread);
@@ -51,6 +51,80 @@ public class ReadingListSectionHeaderTest {
                 "Expected a different item", 1, listItems.get(3).getBookmarkItem().getId().getId());
         assertEquals(
                 "Expected a different item", 2, listItems.get(4).getBookmarkItem().getId().getId());
+    }
+
+    @Test
+    public void testListWithReadUnreadAndPromoItems() {
+        Context context = ContextUtils.getApplicationContext();
+        String titleRead = context.getString(org.chromium.chrome.R.string.reading_list_read);
+
+        List<BookmarkListEntry> listItems = new ArrayList<>();
+        listItems.add(BookmarkListEntry.createSyncPromoHeader(ViewType.PERSONALIZED_SIGNIN_PROMO));
+        listItems.add(createReadingListEntry(1, true));
+        listItems.add(createReadingListEntry(2, true));
+        ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
+
+        assertEquals("Incorrect number of items in the adapter", 4, listItems.size());
+        assertEquals("Expected promo section header", ViewType.PERSONALIZED_SIGNIN_PROMO,
+                listItems.get(0).getViewType());
+        assertEquals("Expected read section header", ViewType.SECTION_HEADER,
+                listItems.get(1).getViewType());
+        assertEquals("Expected read title text", titleRead, listItems.get(1).getHeaderTitle());
+        assertEquals(
+                "Expected a different item", 1, listItems.get(2).getBookmarkItem().getId().getId());
+        assertEquals(
+                "Expected a different item", 2, listItems.get(3).getBookmarkItem().getId().getId());
+    }
+
+    @Test
+    public void testEmptyList() {
+        Context context = ContextUtils.getApplicationContext();
+        List<BookmarkListEntry> listItems = new ArrayList<>();
+        ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
+        assertEquals("Incorrect number of items in the adapter", 0, listItems.size());
+    }
+
+    @Test
+    public void testNoReadUnreadItems() {
+        Context context = ContextUtils.getApplicationContext();
+        List<BookmarkListEntry> listItems = new ArrayList<>();
+        listItems.add(BookmarkListEntry.createSyncPromoHeader(ViewType.PERSONALIZED_SIGNIN_PROMO));
+        ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
+
+        assertEquals("Incorrect number of items in the adapter", 1, listItems.size());
+        assertEquals("Expected promo section header", ViewType.PERSONALIZED_SIGNIN_PROMO,
+                listItems.get(0).getViewType());
+    }
+
+    @Test
+    public void testUnreadItemsOnly() {
+        Context context = ContextUtils.getApplicationContext();
+        String titleUnread = context.getString(org.chromium.chrome.R.string.reading_list_unread);
+
+        List<BookmarkListEntry> listItems = new ArrayList<>();
+        listItems.add(createReadingListEntry(1, false));
+        listItems.add(createReadingListEntry(2, false));
+        ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
+
+        assertEquals("Incorrect number of items in the adapter", 3, listItems.size());
+        assertEquals(
+                "Expected section header", ViewType.SECTION_HEADER, listItems.get(0).getViewType());
+        assertEquals("Expected unread title text", titleUnread, listItems.get(0).getHeaderTitle());
+    }
+
+    @Test
+    public void testReadItemsOnly() {
+        Context context = ContextUtils.getApplicationContext();
+        String titleRead = context.getString(org.chromium.chrome.R.string.reading_list_read);
+
+        List<BookmarkListEntry> listItems = new ArrayList<>();
+        listItems.add(createReadingListEntry(1, true));
+        ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
+
+        assertEquals("Incorrect number of items in the adapter", 2, listItems.size());
+        assertEquals(
+                "Expected section header", ViewType.SECTION_HEADER, listItems.get(0).getViewType());
+        assertEquals("Expected read title text", titleRead, listItems.get(0).getHeaderTitle());
     }
 
     private BookmarkListEntry createReadingListEntry(long id, boolean read) {
