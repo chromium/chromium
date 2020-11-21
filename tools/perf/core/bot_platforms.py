@@ -331,10 +331,16 @@ _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
     _load_library_perf_tests(),
     _performance_browser_tests(210),
 ])
-_MAC_ARM_DTK_BENCHMARK_CONFIGS = PerfSuite([
-    'loading.desktop',
-]).Abridge([
-    'loading.desktop',
+_MAC_ARM_DTK_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
+    'blink_perf.display_locking',
+    'v8.runtime_stats.top_25',
+])
+_MAC_ARM_DTK_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(300),
+    _dawn_perf_tests(330),
+    _media_perftests(),
+    _performance_browser_tests(190),
+    _views_perftests(),
 ])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -464,18 +470,12 @@ MAC_LOW_END = PerfPlatform(
     26,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
-MAC_ARM_DTK_X86 = PerfPlatform(
-    'mac-arm_dtk_x86-perf',
-    'Mac ARM DTK (X86 Chrome)',
-    _MAC_ARM_DTK_BENCHMARK_CONFIGS,
-    1,
-    'mac')
-MAC_ARM_DTK_ARM = PerfPlatform(
-    'mac-arm_dtk_arm-perf',
-    'Mac ARM DTK (ARM Chrome)',
-    _MAC_ARM_DTK_BENCHMARK_CONFIGS,
-    1,
-    'mac')
+MAC_ARM_DTK_ARM = PerfPlatform('mac-arm_dtk_arm-perf',
+                               'Mac ARM DTK (ARM Chrome)',
+                               _MAC_ARM_DTK_BENCHMARK_CONFIGS,
+                               8,
+                               'mac',
+                               executables=_MAC_ARM_DTK_EXECUTABLE_CONFIGS)
 
 # Win
 WIN_10_LOW_END = PerfPlatform(
