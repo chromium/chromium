@@ -3195,6 +3195,12 @@ Here are some things you can try to get started.
         Search
       </message>
 
+      <message name="IDS_SHELF_ITEM_HAS_BLOCK_BADGE" desc="Accessibility announcement notifying users that the currently focused shelf app is blocked.">
+        Blocked
+      </message>
+      <message name="IDS_SHELF_ITEM_HAS_PAUSE_BADGE" desc="Accessibility announcement notifying users that the currently focused shelf app is paused.">
+        Paused
+      </message>
       <message name="IDS_APP_ACCESSIBILITY_BLOCKED_INSTALLED_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is a blocked installed app.">
         <ph name="APP_NAME">$1<ex>Files</ex></ph>, Installed App, Blocked
       </message>

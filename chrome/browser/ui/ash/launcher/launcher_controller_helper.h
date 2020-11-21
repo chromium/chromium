@@ -32,6 +32,12 @@ class LauncherControllerHelper : public ExtensionEnableFlowDelegate {
   static base::string16 GetAppTitle(Profile* profile,
                                     const std::string& app_id);
 
+  // Helper function to return the app status associated with |app_id|. if the
+  // app is blocked, return AppStatus::kBlocked. Otherwise, if the app is
+  // paused, return AppStatus::kPaused. Otherwise, return AppStatus::kReady.
+  static ash::AppStatus GetAppStatus(Profile* profile,
+                                     const std::string& app_id);
+
   // Returns the app id of the specified tab, or an empty string if there is
   // no app. All known profiles will be queried for this.
   virtual std::string GetAppID(content::WebContents* tab);

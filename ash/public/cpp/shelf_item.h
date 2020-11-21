@@ -33,6 +33,9 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // The title to display for tooltips, etc.
   base::string16 title;
 
+  // App status.
+  AppStatus app_status = AppStatus::kReady;
+
   // Whether the item is associated with a window in the currently active desk.
   // This value is valid only when |features::kPerDeskShelf| is enabled.
   // Otherwise it won't be updated and will always be true.

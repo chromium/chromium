@@ -280,6 +280,32 @@ bool IsWindowOnDesktopOfUser(aura::Window* window,
       window, account_id);
 }
 
+void UpdateAppRegistryCache(Profile* profile,
+                            const std::string& app_id,
+                            bool block,
+                            bool pause) {
+  std::vector<apps::mojom::AppPtr> apps;
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = apps::mojom::AppType::kExtension;
+  app->app_id = app_id;
+
+  if (block)
+    app->readiness = apps::mojom::Readiness::kDisabledByPolicy;
+  else
+    app->readiness = apps::mojom::Readiness::kReady;
+
+  if (pause)
+    app->paused = apps::mojom::OptionalBool::kTrue;
+  else
+    app->paused = apps::mojom::OptionalBool::kFalse;
+
+  apps.push_back(std::move(app));
+
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .OnApps(std::move(apps));
+}
+
 }  // namespace
 
 class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
@@ -5053,6 +5079,67 @@ TEST_F(ChromeLauncherControllerWebAppTest, WebAppPinRunUnpinClose) {
   EXPECT_EQ(1, model_->item_count());
   EXPECT_FALSE(launcher_controller_->IsAppPinned(app_id));
   EXPECT_EQ(nullptr, launcher_controller_->GetItem(ash::ShelfID(app_id)));
+}
+
+// Test the app status when the paused app is blocked, un-blocked, and un-paused
+TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForPausedApp) {
+  AddExtension(extension1_.get());
+
+  // Set the app as paused
+  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
+                         true /* pause */);
+
+  InitLauncherController();
+
+  launcher_controller_->PinAppWithID(extension1_->id());
+  EXPECT_EQ(2, model_->item_count());
+  EXPECT_EQ(ash::AppStatus::kPaused, model_->items()[1].app_status);
+
+  // Set the app as blocked
+  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
+                         true /* pause */);
+  EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
+
+  // Set the app as ready, but still paused;
+  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
+                         true /* pause */);
+  EXPECT_EQ(ash::AppStatus::kPaused, model_->items()[1].app_status);
+
+  // Set the app as ready, and not paused;
+  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
+                         false /* pause */);
+  EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
+}
+
+// Test the app status when the blocked app is paused, un-blocked, and
+// un-blocked
+TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForBlockedApp) {
+  AddExtension(extension1_.get());
+
+  // Set the app as blocked
+  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
+                         false /* pause */);
+
+  InitLauncherController();
+
+  launcher_controller_->PinAppWithID(extension1_->id());
+  EXPECT_EQ(2, model_->item_count());
+  EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
+
+  // Set the app as paused
+  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
+                         true /* pause */);
+  EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
+
+  // Set the app as blocked, but un-paused;
+  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
+                         false /* pause */);
+  EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
+
+  // Set the app as ready, and not paused;
+  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
+                         false /* pause */);
+  EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

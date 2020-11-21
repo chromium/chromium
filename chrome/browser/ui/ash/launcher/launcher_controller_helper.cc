@@ -189,6 +189,27 @@ base::string16 LauncherControllerHelper::GetAppTitle(
   return base::string16();
 }
 
+// static
+ash::AppStatus LauncherControllerHelper::GetAppStatus(
+    Profile* profile,
+    const std::string& app_id) {
+  ash::AppStatus status = ash::AppStatus::kReady;
+
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return status;
+
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&status](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy)
+          status = ash::AppStatus::kBlocked;
+        else if (update.Paused() == apps::mojom::OptionalBool::kTrue)
+          status = ash::AppStatus::kPaused;
+      });
+
+  return status;
+}
+
 std::string LauncherControllerHelper::GetAppID(content::WebContents* tab) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager) {

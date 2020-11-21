@@ -22,6 +22,8 @@
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chromeos/login/test/device_state_mixin.h"
@@ -509,6 +511,103 @@ IN_PROC_BROWSER_TEST_P(ShelfNotificationBadgeSpokenFeedbackTest,
   // Check that when a shelf app button with a notification badge is focused,
   // the correct announcement occurs.
   sm_.ExpectSpeech("TestAppTitle requests your attention.");
+
+  sm_.Replay();
+}
+
+// Verifies that an announcement is triggered when focusing a paused app
+// ShelfItem.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       ShelfPausedAppIconBadgeAnnouncement) {
+  EnableChromeVox();
+
+  std::string app_id = "TestApp";
+
+  // Set the app status as paused;
+  std::vector<apps::mojom::AppPtr> apps;
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = apps::mojom::AppType::kBuiltIn;
+  app->app_id = app_id;
+  app->readiness = apps::mojom::Readiness::kReady;
+  app->paused = apps::mojom::OptionalBool::kTrue;
+  apps.push_back(std::move(app));
+  apps::AppServiceProxyFactory::GetForProfile(
+      chromeos::AccessibilityManager::Get()->profile())
+      ->AppRegistryCache()
+      .OnApps(std::move(apps));
+
+  // Create and add a test app to the shelf model.
+  ash::ShelfItem item;
+  item.id = ash::ShelfID(app_id);
+  item.title = base::ASCIIToUTF16("TestAppTitle");
+  item.type = ash::ShelfItemType::TYPE_APP;
+  item.app_status = ash::AppStatus::kPaused;
+  ash::ShelfModel::Get()->Add(item);
+
+  // Focus on the shelf.
+  sm_.Call([this]() { PerformAcceleratorAction(ash::FOCUS_SHELF); });
+  sm_.ExpectSpeech("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Press right key twice to focus the test app.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("TestAppTitle");
+  sm_.ExpectSpeech("Button");
+
+  // Check that when a paused app shelf item is focused, the correct
+  // announcement occurs.
+  sm_.ExpectSpeech("Paused");
+
+  sm_.Replay();
+}
+
+// Verifies that an announcement is triggered when focusing a blocked app
+// ShelfItem.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       ShelfBlockedAppIconBadgeAnnouncement) {
+  EnableChromeVox();
+
+  std::string app_id = "TestApp";
+
+  // Set the app status as paused;
+  std::vector<apps::mojom::AppPtr> apps;
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = apps::mojom::AppType::kBuiltIn;
+  app->app_id = app_id;
+  app->readiness = apps::mojom::Readiness::kDisabledByPolicy;
+  apps.push_back(std::move(app));
+  apps::AppServiceProxyFactory::GetForProfile(
+      chromeos::AccessibilityManager::Get()->profile())
+      ->AppRegistryCache()
+      .OnApps(std::move(apps));
+
+  // Create and add a test app to the shelf model.
+  ash::ShelfItem item;
+  item.id = ash::ShelfID(app_id);
+  item.title = base::ASCIIToUTF16("TestAppTitle");
+  item.type = ash::ShelfItemType::TYPE_APP;
+  item.app_status = ash::AppStatus::kBlocked;
+  ash::ShelfModel::Get()->Add(item);
+
+  // Focus on the shelf.
+  sm_.Call([this]() { PerformAcceleratorAction(ash::FOCUS_SHELF); });
+  sm_.ExpectSpeech("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Press right key twice to focus the test app.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("TestAppTitle");
+  sm_.ExpectSpeech("Button");
+
+  // Check that when a blocked shelf app shelf item is focused, the correct
+  // announcement occurs.
+  sm_.ExpectSpeech("Blocked");
 
   sm_.Replay();
 }

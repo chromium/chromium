@@ -6,6 +6,7 @@
 #define ASH_SHELF_SHELF_APP_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_button.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "base/macros.h"
@@ -203,6 +204,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // The scaling factor for displaying the app icon.
   float icon_scale_ = 1.0f;
+
+  // App status.
+  AppStatus app_status_ = AppStatus::kReady;
 
   // Indicates whether the ink drop animation starts.
   bool ink_drop_animation_started_ = false;

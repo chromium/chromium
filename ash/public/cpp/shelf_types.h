@@ -187,6 +187,16 @@ enum ShelfItemStatus {
   STATUS_ATTENTION,
 };
 
+// Represents the app status in the shelf or app_list.
+enum AppStatus {
+  // The app is ready.
+  kReady,
+  // The app is blocked.
+  kBlocked,
+  // The app is paused.
+  kPaused,
+};
+
 // A unique shelf item id composed of an |app_id| and a |launch_id|.
 // |app_id| is the non-empty application id associated with a set of windows.
 // |launch_id| is passed on app launch, to support multiple shelf items per app.

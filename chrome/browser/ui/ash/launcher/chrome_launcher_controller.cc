@@ -854,11 +854,23 @@ void ChromeLauncherController::OnAppInstalled(
         app_icon_loader->ClearImage(app_id);
         app_icon_loader->FetchImage(app_id);
       }
+
+      bool needs_update = false;
       if (item.title.empty()) {
+        needs_update = true;
         item.title = LauncherControllerHelper::GetAppTitle(
             latest_active_profile_, app_id);
-        model_->Set(index, item);
       }
+
+      ash::AppStatus app_status = LauncherControllerHelper::GetAppStatus(
+          latest_active_profile_, app_id);
+      if (app_status != item.app_status) {
+        needs_update = true;
+        item.app_status = app_status;
+      }
+
+      if (needs_update)
+        model_->Set(index, item);
     }
   }
 
@@ -879,6 +891,17 @@ void ChromeLauncherController::OnAppUpdated(
       AppIconLoader* app_icon_loader = GetAppIconLoaderForApp(app_id);
       if (app_icon_loader)
         app_icon_loader->FetchImage(app_id);
+
+      bool needs_update = false;
+      ash::AppStatus app_status = LauncherControllerHelper::GetAppStatus(
+          latest_active_profile_, app_id);
+      if (app_status != item.app_status) {
+        needs_update = true;
+        item.app_status = app_status;
+      }
+
+      if (needs_update)
+        model_->Set(index, item);
     }
   }
 }
@@ -1165,6 +1188,8 @@ ash::ShelfID ChromeLauncherController::InsertAppLauncherItem(
   item.type = shelf_item_type;
   item.id = item_delegate->shelf_id();
   item.title = title;
+  item.app_status = LauncherControllerHelper::GetAppStatus(
+      latest_active_profile_, item_delegate->shelf_id().app_id);
   // Set the delegate first to avoid constructing one in ShelfItemAdded.
   model_->SetShelfItemDelegate(item.id, std::move(item_delegate));
   model_->AddAt(index, item);
@@ -1344,6 +1369,14 @@ void ChromeLauncherController::ShelfItemAdded(int index) {
       needs_update = true;
       item.status = status;
     }
+
+    ash::AppStatus app_status = LauncherControllerHelper::GetAppStatus(
+        latest_active_profile_, id.app_id);
+    if (app_status != item.app_status) {
+      needs_update = true;
+      item.app_status = app_status;
+    }
+
     if (needs_update)
       model_->Set(index, item);
   }
