@@ -210,6 +210,7 @@ public class MostVisitedTilesTest {
             throws InterruptedException {
         // Skip past the 'what-you-typed' suggestion.
         sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
+        sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         checkUrlBarTextIs(mTile1.url.getSpec());
 
         sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
@@ -230,6 +231,7 @@ public class MostVisitedTilesTest {
             throws InterruptedException {
         // Skip past the 'what-you-typed' suggestion.
         sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
+        sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         checkUrlBarTextIs(mTile1.url.getSpec());
 
         sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
@@ -249,6 +251,7 @@ public class MostVisitedTilesTest {
     public void keyboardNavigation_highlightAlwaysStartsWithFirstElement()
             throws InterruptedException {
         // Skip past the 'what-you-typed' suggestion.
+        sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         checkUrlBarTextIs(mTile1.url.getSpec());
 
