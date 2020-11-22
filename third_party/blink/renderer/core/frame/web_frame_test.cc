@@ -4225,9 +4225,7 @@ class ClearScrollStateOnCommitWebFrameClient
   ~ClearScrollStateOnCommitWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidCommitNavigation(const WebHistoryItem&,
-                           WebHistoryCommitType,
-                           bool) override {
+  void DidCommitNavigation(WebHistoryCommitType, bool) override {
     Frame()->View()->ResetScrollAndScaleState();
   }
 };
@@ -6392,9 +6390,7 @@ class TestWillInsertBodyWebFrameClient
   ~TestWillInsertBodyWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidCommitNavigation(const WebHistoryItem&,
-                           WebHistoryCommitType,
-                           bool) override {
+  void DidCommitNavigation(WebHistoryCommitType, bool) override {
     did_load_ = true;
   }
 
@@ -7575,8 +7571,7 @@ class TestDidNavigateCommitTypeWebFrameClient
   ~TestDidNavigateCommitTypeWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidFinishSameDocumentNavigation(const WebHistoryItem&,
-                                       WebHistoryCommitType type,
+  void DidFinishSameDocumentNavigation(WebHistoryCommitType type,
                                        bool content_initiated) override {
     last_commit_type_ = type;
   }
@@ -9484,8 +9479,7 @@ class RemoteToLocalSwapWebFrameClient
   ~RemoteToLocalSwapWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidCommitNavigation(const WebHistoryItem&,
-                           WebHistoryCommitType history_commit_type,
+  void DidCommitNavigation(WebHistoryCommitType history_commit_type,
                            bool) override {
     history_commit_type_ = history_commit_type;
     remote_frame_->Swap(Frame());
@@ -9742,8 +9736,7 @@ class CommitTypeWebFrameClient : public frame_test_helpers::TestWebFrameClient {
   ~CommitTypeWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidCommitNavigation(const WebHistoryItem&,
-                           WebHistoryCommitType history_commit_type,
+  void DidCommitNavigation(WebHistoryCommitType history_commit_type,
                            bool) override {
     history_commit_type_ = history_commit_type;
   }

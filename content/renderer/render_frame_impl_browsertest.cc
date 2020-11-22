@@ -722,7 +722,7 @@ class ScopedNewFrameInterfaceProviderExerciser {
     ASSERT_NE(nullptr, frame_);
     frame_commit_waiter_->Wait();
 
-    ASSERT_FALSE(frame_->current_history_item().IsNull());
+    ASSERT_FALSE(frame_->GetWebFrame()->GetCurrentHistoryItem().IsNull());
     ASSERT_FALSE(frame_->GetWebFrame()->GetDocument().IsNull());
     EXPECT_EQ(expected_loaded_url,
               GURL(frame_->GetWebFrame()->GetDocument().Url()));
@@ -777,7 +777,7 @@ class ScopedNewFrameInterfaceProviderExerciser {
         frame->TakeLastInterfaceProviderReceiver();
     browser_interface_broker_receiver_for_initial_empty_document_ =
         frame_->TakeLastBrowserInterfaceBrokerReceiver();
-    EXPECT_TRUE(frame->current_history_item().IsNull());
+    EXPECT_TRUE(frame->GetWebFrame()->GetCurrentHistoryItem().IsNull());
   }
 
   FrameCreationObservingRendererClient* frame_creation_observer_;

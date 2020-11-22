@@ -39,6 +39,7 @@
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
+#include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_optimization_guide_hints.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -62,6 +63,7 @@ class WebAgentGroupScheduler;
 
 class FrameScheduler;
 class InterfaceRegistry;
+class PageState;
 class WebAssociatedURLLoader;
 class WebAutofillClient;
 class WebContentCaptureClient;
@@ -69,6 +71,7 @@ class WebContentSettingsClient;
 class WebDocument;
 class WebLocalFrameClient;
 class WebFrameWidget;
+class WebHistoryItem;
 class WebInputMethodController;
 class WebPerformance;
 class WebPlugin;
@@ -785,6 +788,11 @@ class WebLocalFrame : public WebFrame {
   // agent cluster will be enabled for windows that do not have this permission.
   // This should only be used for extensions and the webview tag.
   virtual void SetAllowsCrossBrowsingInstanceFrameLookup() = 0;
+
+  virtual void SetTargetToCurrentHistoryItem(const WebString& target) = 0;
+  virtual void UpdateCurrentHistoryItem() = 0;
+  virtual PageState CurrentHistoryItemToPageState() = 0;
+  virtual const WebHistoryItem& GetCurrentHistoryItem() const = 0;
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,

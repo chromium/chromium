@@ -97,6 +97,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
@@ -120,6 +121,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
+#include "third_party/blink/public/web/web_history_entry.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -2663,6 +2665,23 @@ void WebLocalFrameImpl::SetAllowsCrossBrowsingInstanceFrameLookup() {
   // instance, for example extensions and webview tag.
   auto* window = GetFrame()->DomWindow();
   window->GetMutableSecurityOrigin()->GrantCrossAgentClusterAccess();
+}
+
+const WebHistoryItem& WebLocalFrameImpl::GetCurrentHistoryItem() const {
+  return current_history_item_;
+}
+
+void WebLocalFrameImpl::SetTargetToCurrentHistoryItem(const WebString& target) {
+  current_history_item_.SetTarget(target);
+}
+
+void WebLocalFrameImpl::UpdateCurrentHistoryItem() {
+  current_history_item_ = WebHistoryItem(
+      GetFrame()->Loader().GetDocumentLoader()->GetHistoryItem());
+}
+
+PageState WebLocalFrameImpl::CurrentHistoryItemToPageState() {
+  return SingleHistoryItemToPageState(current_history_item_);
 }
 
 }  // namespace blink

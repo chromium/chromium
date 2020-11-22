@@ -341,8 +341,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   // The one exception is if the Window object is reused; in that case, blink
   // passes |should_reset_browser_interface_broker| = false, and the old
   // BrowserInterfaceBroker connection will be reused.
-  virtual void DidCommitNavigation(const WebHistoryItem&,
-                                   WebHistoryCommitType,
+  virtual void DidCommitNavigation(WebHistoryCommitType,
                                    bool should_reset_browser_interface_broker) {
   }
 
@@ -394,8 +393,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   // The navigation resulted in no change to the documents within the page.
   // For example, the navigation may have just resulted in scrolling to a
   // named anchor or a PopState event may have been dispatched.
-  virtual void DidFinishSameDocumentNavigation(const WebHistoryItem&,
-                                               WebHistoryCommitType,
+  virtual void DidFinishSameDocumentNavigation(WebHistoryCommitType,
                                                bool content_initiated) {}
 
   // Called upon update to scroll position, document state, and other

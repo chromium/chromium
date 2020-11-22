@@ -521,8 +521,8 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
   // TODO(dglazkov): Does this need to be called for subframes?
   web_frame_->ViewImpl()->DidCommitLoad(should_create_history_entry, true);
   if (web_frame_->Client()) {
-    web_frame_->Client()->DidFinishSameDocumentNavigation(
-        WebHistoryItem(item), commit_type, content_initiated);
+    web_frame_->Client()->DidFinishSameDocumentNavigation(commit_type,
+                                                          content_initiated);
   }
 }
 
@@ -543,8 +543,8 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
 
   if (web_frame_->Client()) {
     web_frame_->Client()->DidCommitNavigation(
-        WebHistoryItem(item), commit_type,
-        should_reset_browser_interface_broker);
+        commit_type, should_reset_browser_interface_broker);
+
     if (web_frame_->GetFrame()->IsLocalRoot()) {
       // This update should be sent as soon as loading the new document begins
       // so that the browser and compositor could reset their states. However,

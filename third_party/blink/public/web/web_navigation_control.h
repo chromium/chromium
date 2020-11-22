@@ -17,7 +17,6 @@ namespace blink {
 
 class WebURL;
 struct WebURLError;
-class WebHistoryItem;
 struct WebNavigationInfo;
 struct WebNavigationParams;
 

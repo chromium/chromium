@@ -101,6 +101,7 @@
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -288,10 +289,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // TODO(jam): this is a temporary getter until all the code is transitioned
   // to using RenderFrame instead of RenderView.
   RenderViewImpl* render_view() { return render_view_; }
-
-  const blink::WebHistoryItem& current_history_item() {
-    return current_history_item_;
-  }
 
   // Returns the RenderWidget associated with this frame.
   RenderWidget* GetLocalRootRenderWidget();
@@ -619,8 +616,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void WillSendSubmitEvent(const blink::WebFormElement& form) override;
   void DidCreateDocumentLoader(
       blink::WebDocumentLoader* document_loader) override;
-  void DidCommitNavigation(const blink::WebHistoryItem& item,
-                           blink::WebHistoryCommitType commit_type,
+  void DidCommitNavigation(blink::WebHistoryCommitType commit_type,
                            bool should_reset_browser_interface_broker) override;
   void DidCreateInitialEmptyDocument() override;
   void DidCommitDocumentReplacementNavigation(
@@ -634,8 +630,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void RunScriptsAtDocumentIdle() override;
   void DidHandleOnloadEvents() override;
   void DidFinishLoad() override;
-  void DidFinishSameDocumentNavigation(const blink::WebHistoryItem& item,
-                                       blink::WebHistoryCommitType commit_type,
+  void DidFinishSameDocumentNavigation(blink::WebHistoryCommitType commit_type,
                                        bool content_initiated) override;
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
@@ -1072,23 +1067,20 @@ class CONTENT_EXPORT RenderFrameImpl
   // This could result either in the creation of a new entry or a modification
   // of the current entry or nothing. If a new entry was created,
   // returns true, false otherwise.
-  void UpdateNavigationHistory(const blink::WebHistoryItem& item,
-                               blink::WebHistoryCommitType commit_type);
+  void UpdateNavigationHistory(blink::WebHistoryCommitType commit_type);
 
   // Notify render_view_ observers that a commit happened.
   void NotifyObserversOfNavigationCommit(ui::PageTransition transition);
 
   // Updates the internal state following a navigation commit. This should be
   // called before notifying the FrameHost of the commit.
-  void UpdateStateForCommit(const blink::WebHistoryItem& item,
-                            blink::WebHistoryCommitType commit_type,
+  void UpdateStateForCommit(blink::WebHistoryCommitType commit_type,
                             ui::PageTransition transition);
 
   // Internal function used by same document navigation as well as cross
   // document navigation that updates the state of the RenderFrameImpl and sends
   // a commit message to the browser process.
   void DidCommitNavigationInternal(
-      const blink::WebHistoryItem& item,
       blink::WebHistoryCommitType commit_type,
       bool was_within_same_document,
       ui::PageTransition transition,
@@ -1256,10 +1248,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // TODO(creis): Expand this to include any corresponding same-process
   // PageStates for the whole subtree in https://crbug.com/639842.
   base::flat_map<std::string, bool> history_subframe_unique_names_;
-
-  // Stores the current history item for this frame, so that updates to it can
-  // be reported to the browser process via SendUpdateState.
-  blink::WebHistoryItem current_history_item_;
 
   // All the registered observers.
   base::ObserverList<RenderFrameObserver>::Unchecked observers_;

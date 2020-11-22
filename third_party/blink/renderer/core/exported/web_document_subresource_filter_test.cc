@@ -70,9 +70,7 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
 class SubresourceFilteringWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
-  void DidCommitNavigation(const WebHistoryItem&,
-                           WebHistoryCommitType,
-                           bool) override {
+  void DidCommitNavigation(WebHistoryCommitType, bool) override {
     subresource_filter_ =
         new TestDocumentSubresourceFilter(load_policy_for_next_load_);
     subresource_filter_->AddToBlocklist("1x1.png");

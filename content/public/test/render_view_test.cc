@@ -389,8 +389,8 @@ blink::PageState RenderViewTest::GetCurrentPageState() {
   // This returns a PageState object for the main frame, excluding subframes.
   // This could be extended to all local frames if needed by tests, but it
   // cannot include out-of-process frames.
-  auto* frame = static_cast<TestRenderFrame*>(view->GetMainRenderFrame());
-  return SingleHistoryItemToPageState(frame->current_history_item());
+  auto* frame = view->GetMainRenderFrame();
+  return frame->GetWebFrame()->CurrentHistoryItemToPageState();
 }
 
 void RenderViewTest::GoBack(const GURL& url, const blink::PageState& state) {
@@ -832,17 +832,7 @@ void RenderViewTest::SimulateUserInputChangeForElement(
 void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
                                               bool is_new_navigation) {
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  blink::WebHistoryItem item;
-  item.Initialize();
-
-  // Set the document sequence number to be the same as the current page.
-  const blink::WebHistoryItem& current_item =
-      view->GetMainRenderFrame()->current_history_item();
-  DCHECK(!current_item.IsNull());
-  item.SetDocumentSequenceNumber(current_item.DocumentSequenceNumber());
-
   view->GetMainRenderFrame()->DidFinishSameDocumentNavigation(
-      item,
       is_new_navigation ? blink::kWebStandardCommit
                         : blink::kWebHistoryInertCommit,
       false /* content_initiated */);

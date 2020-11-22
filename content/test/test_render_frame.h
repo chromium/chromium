@@ -22,10 +22,6 @@ namespace base {
 class UnguessableToken;
 }
 
-namespace blink {
-class WebHistoryItem;
-}
-
 namespace content {
 
 class MockFrameHost;
@@ -36,10 +32,6 @@ class TestRenderFrame : public RenderFrameImpl {
   static RenderFrameImpl* CreateTestRenderFrame(
       RenderFrameImpl::CreateParams params);
   ~TestRenderFrame() override;
-
-  const blink::WebHistoryItem& current_history_item() {
-    return current_history_item_;
-  }
 
   // Overrides the content in the next navigation originating from the frame.
   // This will also short-circuit browser-side navigation,

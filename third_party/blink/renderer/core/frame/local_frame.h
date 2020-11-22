@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_rect.h"
+#include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/renderer/core/clipboard/raw_system_clipboard.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/core_export.h"

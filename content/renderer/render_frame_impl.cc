@@ -4092,7 +4092,7 @@ void RenderFrameImpl::FrameDetached() {
 }
 
 void RenderFrameImpl::DidChangeName(const blink::WebString& name) {
-  if (current_history_item_.IsNull()) {
+  if (GetWebFrame()->GetCurrentHistoryItem().IsNull()) {
     // Once a navigation has committed, the unique name must no longer change to
     // avoid breaking back/forward navigations: https://crbug.com/607205
     unique_name_helper_.UpdateName(name.Utf8());
@@ -4161,7 +4161,6 @@ void RenderFrameImpl::DidCreateDocumentLoader(
 }
 
 void RenderFrameImpl::DidCommitNavigation(
-    const blink::WebHistoryItem& item,
     blink::WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker) {
   CHECK_EQ(NavigationCommitState::kWillCommit, navigation_commit_state_);
@@ -4303,7 +4302,7 @@ void RenderFrameImpl::DidCommitNavigation(
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
 
   DidCommitNavigationInternal(
-      item, commit_type, false /* was_within_same_document */, transition,
+      commit_type, false /* was_within_same_document */, transition,
       should_reset_browser_interface_broker
           ? mojom::DidCommitProvisionalLoadInterfaceParams::New(
                 std::move(remote_interface_provider_receiver),
@@ -4444,7 +4443,6 @@ void RenderFrameImpl::DidFinishLoad() {
 }
 
 void RenderFrameImpl::DidFinishSameDocumentNavigation(
-    const blink::WebHistoryItem& item,
     blink::WebHistoryCommitType commit_type,
     bool content_initiated) {
   TRACE_EVENT1("navigation,rail",
@@ -4459,7 +4457,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
 
   ui::PageTransition transition =
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
-  DidCommitNavigationInternal(item, commit_type,
+  DidCommitNavigationInternal(commit_type,
                               // was_within_same_document
                               true, transition,
                               // interface_params
@@ -5046,15 +5044,15 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // that committed entry has it at all times.  Send a single HistoryItem for
   // this frame, rather than the whole tree.  It will be stored in the
   // corresponding FrameNavigationEntry.
-  params->page_state = SingleHistoryItemToPageState(current_history_item_);
+  const WebHistoryItem& item = GetWebFrame()->GetCurrentHistoryItem();
+  params->page_state = GetWebFrame()->CurrentHistoryItemToPageState();
 
   params->method = document_loader->HttpMethod().Latin1();
   if (params->method == "POST")
-    params->post_id = ExtractPostId(current_history_item_);
+    params->post_id = ExtractPostId(item);
 
-  params->item_sequence_number = current_history_item_.ItemSequenceNumber();
-  params->document_sequence_number =
-      current_history_item_.DocumentSequenceNumber();
+  params->item_sequence_number = item.ItemSequenceNumber();
+  params->document_sequence_number = item.DocumentSequenceNumber();
 
   // If the page contained a client redirect (meta refresh, document.loc...),
   // set the referrer appropriately.
@@ -5138,19 +5136,16 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
 }
 
 void RenderFrameImpl::UpdateNavigationHistory(
-    const blink::WebHistoryItem& item,
     blink::WebHistoryCommitType commit_type) {
   NavigationState* navigation_state =
       NavigationState::FromDocumentLoader(frame_->GetDocumentLoader());
   const mojom::CommitNavigationParams& commit_params =
       navigation_state->commit_params();
 
-  // Update the current history item for this frame.
-  current_history_item_ = item;
-  // Note: don't reference |item| after this point, as its value may not match
-  // |current_history_item_|.
-  current_history_item_.SetTarget(
+  GetWebFrame()->UpdateCurrentHistoryItem();
+  GetWebFrame()->SetTargetToCurrentHistoryItem(
       blink::WebString::FromUTF8(unique_name_helper_.value()));
+
   bool is_new_navigation = commit_type == blink::kWebStandardCommit;
   if (commit_params.should_clear_history_list) {
     render_view_->history_list_offset_ = 0;
@@ -5181,7 +5176,6 @@ void RenderFrameImpl::NotifyObserversOfNavigationCommit(
 }
 
 void RenderFrameImpl::UpdateStateForCommit(
-    const blink::WebHistoryItem& item,
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition) {
   InternalDocumentStateData* internal_data =
@@ -5193,7 +5187,7 @@ void RenderFrameImpl::UpdateStateForCommit(
   // the previous page. Do this before updating the current history item.
   SendUpdateState();
 
-  UpdateNavigationHistory(item, commit_type);
+  UpdateNavigationHistory(commit_type);
 
   if (internal_data->must_reset_scroll_and_scale_state()) {
     render_view_->GetWebView()->ResetScrollAndScaleState();
@@ -5243,14 +5237,13 @@ void RenderFrameImpl::UpdateStateForCommit(
 }
 
 void RenderFrameImpl::DidCommitNavigationInternal(
-    const blink::WebHistoryItem& item,
     blink::WebHistoryCommitType commit_type,
     bool was_within_same_document,
     ui::PageTransition transition,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
     const base::Optional<base::UnguessableToken>& embedding_token) {
   DCHECK(!(was_within_same_document && interface_params));
-  UpdateStateForCommit(item, commit_type, transition);
+  UpdateStateForCommit(commit_type, transition);
 
   if (render_view_->renderer_wide_named_frame_lookup())
     GetWebFrame()->SetAllowsCrossBrowsingInstanceFrameLookup();
@@ -5323,16 +5316,16 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
     // If this is marked as a same document load but we haven't committed
     // anything, we can't proceed with the load. The browser shouldn't let this
     // happen.
-    if (current_history_item_.IsNull()) {
+    if (GetWebFrame()->GetCurrentHistoryItem().IsNull()) {
       NOTREACHED();
       return blink::mojom::CommitResult::RestartCrossDocument;
     }
 
-    // Additionally, if the |current_history_item_|'s document sequence number
+    // Additionally, if the current history item's document sequence number
     // doesn't match the one sent from the browser, it is possible that this
     // renderer has committed a different document. In such case, the navigation
     // cannot be loaded as a same-document navigation.
-    if (current_history_item_.DocumentSequenceNumber() !=
+    if (GetWebFrame()->GetCurrentHistoryItem().DocumentSequenceNumber() !=
         item_for_history_navigation->DocumentSequenceNumber()) {
       return blink::mojom::CommitResult::RestartCrossDocument;
     }
@@ -6208,11 +6201,10 @@ void RenderFrameImpl::DecodeDataURL(
 }
 
 void RenderFrameImpl::SendUpdateState() {
-  if (current_history_item_.IsNull())
+  if (GetWebFrame()->GetCurrentHistoryItem().IsNull())
     return;
 
-  GetFrameHost()->UpdateState(
-      SingleHistoryItemToPageState(current_history_item_));
+  GetFrameHost()->UpdateState(GetWebFrame()->CurrentHistoryItemToPageState());
 }
 
 blink::WebURL RenderFrameImpl::LastCommittedUrlForUKM() {

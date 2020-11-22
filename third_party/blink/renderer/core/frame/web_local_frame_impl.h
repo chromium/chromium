@@ -311,6 +311,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool HasTransientUserActivation() override;
   bool ConsumeTransientUserActivation(UserActivationUpdateSource) override;
   void SetOptimizationGuideHints(const WebOptimizationGuideHints&) override;
+  void SetTargetToCurrentHistoryItem(const WebString& target) override;
+  void UpdateCurrentHistoryItem() override;
+  PageState CurrentHistoryItemToPageState() override;
+  const WebHistoryItem& GetCurrentHistoryItem() const override;
 
   // WebNavigationControl overrides:
   bool DispatchBeforeUnloadEvent(bool) override;
@@ -573,6 +577,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   // TODO(crbug.com/1121077) After fixing the bug, make this member variable
   // only available when DCHECK_IS_ON().
   bool is_in_printing_ = false;
+
+  WebHistoryItem current_history_item_;
 };
 
 template <>

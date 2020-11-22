@@ -32,12 +32,11 @@ class CallTrackingTestWebLocalFrameClient
   }
 
   void DidCommitNavigation(
-      const WebHistoryItem& item,
       WebHistoryCommitType type,
       bool should_reset_browser_interface_broker) override {
     calls_.push_back("DidCommitNavigation");
     TestWebFrameClient::DidCommitNavigation(
-        item, type, should_reset_browser_interface_broker);
+        type, should_reset_browser_interface_broker);
   }
 
   void DidCreateInitialEmptyDocument() override {
