@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -14,10 +16,12 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
  * TabUiFeatureUtilities#ENABLE_PRICE_TRACKING}.
  */
 public class PriceTrackingUtilities {
-    private static final String TRACK_PRICES_ON_TABS =
+    @VisibleForTesting
+    public static final String TRACK_PRICES_ON_TABS =
             ChromePreferenceKeys.PRICE_TRACKING_TRACK_PRICES_ON_TABS;
 
-    private static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
+    @VisibleForTesting
+    public static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
             SharedPreferencesManager.getInstance();
 
     /**

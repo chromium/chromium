@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -1066,9 +1067,12 @@ class TabListMediator {
         }
 
         if (TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.getValue() && mMode == TabListMode.GRID
-                && pseudoTab.hasRealTab()) {
+                && pseudoTab.hasRealTab() && !pseudoTab.isIncognito() && isSignedIn()
+                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
             mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                     new ShoppingPersistedTabDataFetcher(pseudoTab.getTab()));
+        } else {
+            mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
         }
 
         updateFaviconForTab(pseudoTab, null);
@@ -1081,6 +1085,15 @@ class TabListMediator {
                             forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
             mModel.get(index).model.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
+    }
+
+    // TODO(crbug.com/1150712) move to ShoppingPersistedTabData. Only possible when
+    // IdentityServicesProvider is modularized.
+    @VisibleForTesting
+    protected boolean isSignedIn() {
+        return IdentityServicesProvider.get()
+                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                .hasPrimaryAccount();
     }
 
     /**
