@@ -449,26 +449,6 @@ test.util.sync.replyExecutedTask = (contentWindow, taskId, responseArgs) => {
 };
 
 /**
- * Runs the 'Move to profileId' menu.
- *
- * @param {Window} contentWindow Window to be tested.
- * @param {string} profileId Destination profile's ID.
- * @return {boolean} True if the menu is found and run.
- */
-test.util.sync.runVisitDesktopMenu = (contentWindow, profileId) => {
-  const list = contentWindow.document.querySelectorAll('.visit-desktop');
-  for (let i = 0; i < list.length; ++i) {
-    if (list[i].label.indexOf(profileId) != -1) {
-      const activateEvent = contentWindow.document.createEvent('Event');
-      activateEvent.initEvent('activate', false, false);
-      list[i].dispatchEvent(activateEvent);
-      return true;
-    }
-  }
-  return false;
-};
-
-/**
  * Calls the unload handler for the window.
  * @param {Window} contentWindow Window to be tested.
  */
