@@ -11299,6 +11299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="__Test__" label=""/>
   <suffix name="ChromeUpdate" label=""/>
   <suffix name="Prefetch" label=""/>
+  <suffix name="ReadingList" label=""/>
   <suffix name="Unknown" label=""/>
   <suffix name="WebUI" label=""/>
   <affected-histogram name="Notifications.Scheduler.IhnrActionButtonEvent"/>

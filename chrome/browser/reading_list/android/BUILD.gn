@@ -17,12 +17,17 @@ source_set("reading_list") {
     "reading_list_manager.h",
     "reading_list_manager_impl.cc",
     "reading_list_manager_impl.h",
+    "reading_list_notification_client.cc",
+    "reading_list_notification_client.h",
+    "reading_list_notification_service.cc",
+    "reading_list_notification_service.h",
   ]
 
-  # This target should not depend on anything in //chrome/* except the proto library.
+  # This target should not depend on the whole //chrome/browser target.
   deps = [
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/notifications/scheduler/public",
     "//components/bookmarks/browser",
     "//components/keyed_service/core",
     "//components/reading_list/core",

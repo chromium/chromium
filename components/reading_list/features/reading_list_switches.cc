@@ -10,6 +10,7 @@
 
 namespace reading_list {
 namespace switches {
+
 // Allow users to save tabs for later. Enables a new button and menu for
 // accessing tabs saved for later. https://crbug.com/1109316
 const base::Feature kReadLater{"ReadLater", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -21,5 +22,12 @@ bool IsReadingListEnabled() {
   return base::FeatureList::IsEnabled(kReadLater);
 #endif
 }
+
+#ifdef OS_ANDROID
+// Feature flag used for enabling read later reminder notification.
+const base::Feature kReadLaterReminderNotification{
+    "ReadLaterReminderNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace switches
 }  // namespace reading_list
