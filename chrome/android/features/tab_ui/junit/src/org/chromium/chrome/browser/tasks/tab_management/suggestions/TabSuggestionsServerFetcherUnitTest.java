@@ -114,21 +114,21 @@ public class TabSuggestionsServerFetcherUnitTest {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[6];
+                Callback callback = (Callback) invocation.getArguments()[7];
                 callback.onResult(new EndpointResponse(response));
                 return null;
             }
         })
                 .when(mEndpointFetcherJniMock)
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), anyLong(), any(Callback.class));
+                        anyString(), anyLong(), any(String[].class), any(Callback.class));
     }
 
     private void verifyEndpointArguments() {
         verify(mEndpointFetcherJniMock)
                 .nativeFetchChromeAPIKey(eq(mProfile), eq(EXPECTED_ENDPOINT_URL),
                         eq(EXPECTED_METHOD), eq(EXPECTED_CONTENT_TYPE), any(String.class),
-                        eq(EXPECTED_TIMEOUT), any(Callback.class));
+                        eq(EXPECTED_TIMEOUT), any(String[].class), any(Callback.class));
     }
 
     @Test

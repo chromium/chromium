@@ -56,14 +56,16 @@ public final class EndpointFetcher {
      * @param postData data for a "POST" request
      * @param timeout time after which the request will terminate in the event a response hasn't
      *         been received
+     * @param headers headers for the request. Key/value pairs are stored sequentially in the array.
      */
     @MainThread
     public static void fetchUsingChromeAPIKey(Callback<EndpointResponse> callback, Profile profile,
-            String url, String httpsMethod, String contentType, String postData, long timeout) {
+            String url, String httpsMethod, String contentType, String postData, long timeout,
+            String[] headers) {
         // EndpointFetcher currently does not support incognito mode
         // assert !profile.isOffTheRecord();
         EndpointFetcherJni.get().nativeFetchChromeAPIKey(
-                profile, url, httpsMethod, contentType, postData, timeout, callback);
+                profile, url, httpsMethod, contentType, postData, timeout, headers, callback);
     }
 
     @NativeMethods
@@ -72,7 +74,7 @@ public final class EndpointFetcher {
                 String httpsMethod, String contentType, String[] scopes, String postData,
                 long timeout, Callback<EndpointResponse> callback);
         void nativeFetchChromeAPIKey(Profile profile, String url, String httpsMethod,
-                String contentType, String postData, long timeout,
+                String contentType, String postData, long timeout, String[] headers,
                 Callback<EndpointResponse> callback);
         void nativeFetchWithNoAuth(
                 Profile profile, String url, Callback<EndpointResponse> callback);

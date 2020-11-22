@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -70,13 +69,18 @@ public class ShoppingPersistedTabDataTest {
 
     private static final String EMPTY_PRICE = "";
     private static final String ENDPOINT_RESPONSE_INITIAL =
-            "{\"representations\" : [{\"type\" : \"SHOPPING\", \"productTitle\" : \"Book of Pie\","
-            + String.format(Locale.US, "\"price\" : %d, \"currency\" : \"USD\"}]}", PRICE_MICROS);
+            "{\"annotations\":[{\"type\":\"DOCUMENT_INTENT\",\"documentIntent\":"
+            + "{\"intent\":\"UNKNOWN\"}},{\"type\":\"BUYABLE_PRODUCT\",\"buyableProduct\":"
+            + "{\"title\":\"foo title\",\"imageUrl\":\"https://images.com?q=1234\","
+            + "\"currentPrice\":{\"currencyCode\":\"USD\",\"amountMicros\":\"123456789012345\"},"
+            + "\"referenceType\":\"MAIN_PRODUCT\"}}]}";
 
     private static final String ENDPOINT_RESPONSE_UPDATE =
-            "{\"representations\" : [{\"type\" : \"SHOPPING\", \"productTitle\" : \"Book of Pie\","
-            + String.format(
-                    Locale.US, "\"price\" : %d, \"currency\" : \"USD\"}]}", UPDATED_PRICE_MICROS);
+            "{\"annotations\":[{\"type\":\"DOCUMENT_INTENT\",\"documentIntent\":"
+            + "{\"intent\":\"UNKNOWN\"}},{\"type\":\"BUYABLE_PRODUCT\",\"buyableProduct\":"
+            + "{\"title\":\"foo title\",\"imageUrl\":\"https://images.com?q=1234\","
+            + "\"currentPrice\":{\"currencyCode\":\"USD\",\"amountMicros\":\"287000000\"},"
+            + "\"referenceType\":\"MAIN_PRODUCT\"}}]}";
 
     @Before
     public void setUp() {
@@ -454,9 +458,8 @@ public class ShoppingPersistedTabDataTest {
 
     private void verifyEndpointFetcherCalled(int numTimes) {
         verify(mEndpointFetcherJniMock, times(numTimes))
-                .nativeFetchOAuth(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), any(String[].class), anyString(), anyLong(),
-                        any(Callback.class));
+                .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
+                        anyString(), anyLong(), any(String[].class), any(Callback.class));
     }
 
     private static Tab createTabOnUiThread(int tabId, boolean isIncognito) {
@@ -479,7 +482,7 @@ public class ShoppingPersistedTabDataTest {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[8];
+                Callback callback = (Callback) invocation.getArguments()[7];
                 String res = mCalledOnce ? ENDPOINT_RESPONSE_UPDATE : ENDPOINT_RESPONSE_INITIAL;
                 mCalledOnce = true;
                 callback.onResult(new EndpointResponse(res));
@@ -487,9 +490,8 @@ public class ShoppingPersistedTabDataTest {
             }
         })
                 .when(mEndpointFetcherJniMock)
-                .nativeFetchOAuth(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), any(String[].class), anyString(), anyLong(),
-                        any(Callback.class));
+                .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
+                        anyString(), anyLong(), any(String[].class), any(Callback.class));
     }
 
     private static void acquireSemaphore(Semaphore semaphore) {
