@@ -43,7 +43,6 @@ import("//ui/base/ui_features.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//chrome/android/features/dev_ui/dev_ui_module.gni")
-  import("//chrome/android/modules/buildflags.gni")
 }
 
 if (is_win) {
@@ -90,10 +89,6 @@ buildflag_header("buildflags") {
     flags += [ "USE_PARTITION_ALLOC_EVERYWHERE=1" ]
   } else {
     flags += [ "USE_PARTITION_ALLOC_EVERYWHERE=0" ]
-  }
-
-  if (is_android) {
-    flags += [ "ENABLE_ISOLATED_SPLITS=$enable_chrome_module" ]
   }
 }
 
