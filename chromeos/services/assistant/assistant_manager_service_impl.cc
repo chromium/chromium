@@ -32,10 +32,10 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/assistant_device_settings_delegate.h"
+#include "chromeos/services/assistant/assistant_manager_controller.h"
 #include "chromeos/services/assistant/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/platform_api_impl.h"
-#include "chromeos/services/assistant/proxy/service_controller.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -112,7 +112,7 @@ CommunicationErrorType CommunicationErrorTypeFromLibassistantErrorCode(
   return CommunicationErrorType::Other;
 }
 
-ServiceController::AuthTokens ToAuthTokensOrEmpty(
+AssistantManagerController::AuthTokens ToAuthTokensOrEmpty(
     const base::Optional<AssistantManagerService::UserInfo>& user) {
   if (!user.has_value())
     return {};
@@ -169,7 +169,6 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       chromium_api_delegate_(std::move(pending_url_loader_factory)),
       assistant_settings_(
           std::make_unique<AssistantSettingsImpl>(context, this)),
-      assistant_proxy_(std::make_unique<AssistantProxy>()),
       context_(context),
       delegate_(std::move(delegate)),
       background_thread_("background thread"),
@@ -198,7 +197,7 @@ AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
 
 void AssistantManagerServiceImpl::Start(const base::Optional<UserInfo>& user,
                                         bool enable_hotword) {
-  DCHECK(!IsServiceStarted());
+  DCHECK(!assistant_manager_controller());
   DCHECK_EQ(GetState(), State::STOPPED);
 
   // Set the flag to avoid starting the service multiple times.
@@ -233,7 +232,7 @@ void AssistantManagerServiceImpl::Stop() {
 
   media_controller_observer_receiver_.reset();
 
-  service_controller().Stop();
+  assistant_manager_controller_.reset(nullptr);
 }
 
 AssistantManagerService::State AssistantManagerServiceImpl::GetState() const {
@@ -242,11 +241,11 @@ AssistantManagerService::State AssistantManagerServiceImpl::GetState() const {
 
 void AssistantManagerServiceImpl::SetUser(
     const base::Optional<UserInfo>& user) {
-  if (!IsServiceStarted())
+  if (!IsInitialized())
     return;
 
   VLOG(1) << "Set user information (Gaia ID and access token).";
-  service_controller().SetAuthTokens(ToAuthTokensOrEmpty(user));
+  assistant_manager_controller()->SetAuthTokens(ToAuthTokensOrEmpty(user));
 }
 
 void AssistantManagerServiceImpl::EnableAmbientMode(bool enabled) {
@@ -983,16 +982,15 @@ void AssistantManagerServiceImpl::OnCommunicationError(int error_code) {
 void AssistantManagerServiceImpl::InitAssistant(
     const base::Optional<UserInfo>& user,
     const std::string& locale) {
-  DCHECK(!IsServiceStarted());
+  DCHECK(!IsInitialized());
 
-  service_controller().Start(
-      background_thread_.task_runner(), delegate_.get(), platform_api(),
-      action_module_.get(), &chromium_api_delegate_,
-      /*assistant_manager_delegate=*/this,
-      /*conversation_state_listener=*/this,
-      /*device_state_listener=*/this,
-      /*event_observer=*/this, libassistant_config_, locale,
-      GetLocaleOrDefault(assistant_state()->locale().value()),
+  assistant_manager_controller_ =
+      std::make_unique<AssistantManagerController>();
+
+  assistant_manager_controller_->Initialize(
+      this, background_thread_.task_runner(), delegate_.get(), platform_api(),
+      action_module_.get(), &chromium_api_delegate_, libassistant_config_,
+      locale, GetLocaleOrDefault(assistant_state()->locale().value()),
       spoken_feedback_enabled_, ToAuthTokensOrEmpty(user),
       base::BindOnce(&AssistantManagerServiceImpl::PostInitAssistant,
                      weak_factory_.GetWeakPtr()));
@@ -1002,7 +1000,7 @@ void AssistantManagerServiceImpl::PostInitAssistant() {
   DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   DCHECK_EQ(GetState(), State::STARTING);
 
-  DCHECK(IsServiceStarted());
+  DCHECK(IsInitialized());
 
   const base::TimeDelta time_since_started =
       base::TimeTicks::Now() - started_time_;
@@ -1018,8 +1016,9 @@ void AssistantManagerServiceImpl::PostInitAssistant() {
   }
 }
 
-bool AssistantManagerServiceImpl::IsServiceStarted() const {
-  return service_controller().IsStarted();
+bool AssistantManagerServiceImpl::IsInitialized() const {
+  return assistant_manager_controller_ &&
+         assistant_manager_controller_->IsInitialized();
 }
 
 void AssistantManagerServiceImpl::HandleLaunchMediaIntentResponse(
@@ -1165,8 +1164,8 @@ void AssistantManagerServiceImpl::OnAccessibilityStatusChanged(
 
   // When |spoken_feedback_enabled_| changes we need to update our internal
   // options to turn on/off A11Y features in LibAssistant.
-  if (IsServiceStarted()) {
-    service_controller().UpdateInternalOptions(
+  if (assistant_manager_controller()) {
+    assistant_manager_controller()->UpdateInternalOptions(
         assistant_state()->locale().value(), spoken_feedback_enabled_);
   }
 }
@@ -1374,30 +1373,27 @@ AssistantManagerServiceImpl::main_task_runner() {
 }
 
 CrosDisplayConnection* AssistantManagerServiceImpl::display_connection() {
-  return service_controller().display_connection();
+  DCHECK(assistant_manager_controller());
+  return assistant_manager_controller()->display_connection();
 }
 
 assistant_client::AssistantManager*
 AssistantManagerServiceImpl::assistant_manager() {
-  if (!IsServiceStarted())
+  if (!assistant_manager_controller_)
     return nullptr;
-  return service_controller().assistant_manager();
+  return assistant_manager_controller_->assistant_manager();
 }
 
 assistant_client::AssistantManagerInternal*
 AssistantManagerServiceImpl::assistant_manager_internal() {
-  if (!IsServiceStarted())
+  if (!assistant_manager_controller_)
     return nullptr;
-  return service_controller().assistant_manager_internal();
+  return assistant_manager_controller_->assistant_manager_internal();
 }
 
-ServiceController& AssistantManagerServiceImpl::service_controller() {
-  return assistant_proxy_->service_controller();
-}
-
-const ServiceController& AssistantManagerServiceImpl::service_controller()
-    const {
-  return assistant_proxy_->service_controller();
+AssistantManagerController*
+AssistantManagerServiceImpl::assistant_manager_controller() {
+  return assistant_manager_controller_.get();
 }
 
 void AssistantManagerServiceImpl::SetStateAndInformObservers(State new_state) {
