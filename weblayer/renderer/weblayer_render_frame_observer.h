@@ -6,8 +6,13 @@
 #define WEBLAYER_RENDERER_WEBLAYER_RENDER_FRAME_OBSERVER_H_
 
 #include "base/macros.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+
+namespace safe_browsing {
+class PhishingClassifierDelegate;
+}
 
 namespace translate {
 class TranslateAgent;
@@ -26,6 +31,7 @@ class WebLayerRenderFrameObserver : public content::RenderFrameObserver {
   }
 
  private:
+  enum TextCaptureType { PRELIMINARY_CAPTURE, FINAL_CAPTURE };
   ~WebLayerRenderFrameObserver() override;
 
   // RenderFrameObserver:
@@ -37,12 +43,19 @@ class WebLayerRenderFrameObserver : public content::RenderFrameObserver {
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void OnDestruct() override;
 
-  void CapturePageText();
+  void CapturePageText(TextCaptureType capture_type);
+
+  // Initializes a |phishing_classifier_delegate_|.
+  void SetClientSidePhishingDetection();
 
   blink::AssociatedInterfaceRegistry associated_interfaces_;
 
   // Has the same lifetime as this object.
   translate::TranslateAgent* translate_agent_;
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(WebLayerRenderFrameObserver);
 };
