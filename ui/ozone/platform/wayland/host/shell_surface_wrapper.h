@@ -67,6 +67,13 @@ class ShellSurfaceWrapper {
   // their app id. This also helps the compositor to identify application's
   // .desktop file and use the icon set there.
   virtual void SetAppId(const std::string& app_id) = 0;
+
+  // If |is_server_side_decoration| is true, sets a server side decoration,
+  // and a client side decoration otherwise.
+  //
+  // This function sends a request to the wayland compositor to update
+  // the decoration mode for a surface associated with this top level window.
+  virtual void SetDecoration(bool is_server_side_decoration) = 0;
 };
 
 bool CheckIfWlArrayHasValue(struct wl_array* wl_array, uint32_t value);

@@ -48,6 +48,7 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   void SetMinSize(int32_t width, int32_t height) override;
   void SetMaxSize(int32_t width, int32_t height) override;
   void SetAppId(const std::string& app_id) override;
+  void SetDecoration(bool is_server_side_decoration) override;
 
   // xdg_surface_listener
   static void ConfigureV6(void* data,

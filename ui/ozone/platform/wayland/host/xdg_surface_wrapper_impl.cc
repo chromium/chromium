@@ -163,6 +163,12 @@ void XDGSurfaceWrapperImpl::SetAppId(const std::string& app_id) {
   }
 }
 
+void XDGSurfaceWrapperImpl::SetDecoration(bool is_server_side_decoration) {
+  SetTopLevelDecorationMode(is_server_side_decoration
+                                ? ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE
+                                : ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE);
+}
+
 // static
 void XDGSurfaceWrapperImpl::ConfigureStable(void* data,
                                             struct xdg_surface* xdg_surface,
@@ -206,7 +212,7 @@ void XDGSurfaceWrapperImpl::CloseTopLevelStable(
 
 void XDGSurfaceWrapperImpl::SetTopLevelDecorationMode(
     zxdg_toplevel_decoration_v1_mode requested_mode) {
-  if (requested_mode == decoration_mode_)
+  if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
     return;
 
   decoration_mode_ = requested_mode;

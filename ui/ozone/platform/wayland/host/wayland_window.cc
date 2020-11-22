@@ -203,13 +203,13 @@ void WaylandWindow::Deactivate() {
 }
 
 void WaylandWindow::SetUseNativeFrame(bool use_native_frame) {
-  // See comment below in ShouldUseNativeFrame.
-  NOTIMPLEMENTED_LOG_ONCE();
+  // Do nothing here since only shell surfaces can handle server-side
+  // decoration.
 }
 
 bool WaylandWindow::ShouldUseNativeFrame() const {
-  // This depends on availability of XDG-Decoration protocol extension.
-  NOTIMPLEMENTED_LOG_ONCE();
+  // Always returns false here since only shell surfaces can handle server-side
+  // decoration.
   return false;
 }
 

@@ -66,6 +66,7 @@ bool WaylandToplevelWindow::CreateShellSurface() {
 #else
   shell_surface_->SetAppId(wm_class_class_);
 #endif
+  shell_surface_->SetDecoration(use_native_frame_);
   shell_surface_->SetTitle(window_title_);
   SetSizeConstraints();
   TriggerStateChanges();
@@ -239,6 +240,23 @@ std::string WaylandToplevelWindow::GetWindowUniqueId() const {
 #else
   return std::string();
 #endif
+}
+
+void WaylandToplevelWindow::SetUseNativeFrame(bool use_native_frame) {
+  if (use_native_frame_ == use_native_frame)
+    return;
+  use_native_frame_ = use_native_frame;
+  if (shell_surface_)
+    shell_surface_->SetDecoration(use_native_frame);
+}
+
+bool WaylandToplevelWindow::ShouldUseNativeFrame() const {
+  // This depends on availability of xdg-decoration protocol extension.
+  // Returns false if there is no xdg-decoration protocol extension provided
+  // even if use_native_frame_ is true.
+  return use_native_frame_ && const_cast<WaylandToplevelWindow*>(this)
+                                  ->connection()
+                                  ->xdg_decoration_manager_v1();
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,

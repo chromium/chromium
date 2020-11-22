@@ -60,6 +60,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   PlatformWindowState GetPlatformWindowState() const override;
   void SizeConstraintsChanged() override;
   std::string GetWindowUniqueId() const override;
+  void SetUseNativeFrame(bool use_native_frame) override;
+  bool ShouldUseNativeFrame() const override;
 
  private:
   // WaylandWindow overrides:
@@ -147,6 +149,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   base::OnceClosure drag_loop_quit_closure_;
 
   wl::Object<zaura_surface> aura_surface_;
+
+  bool use_native_frame_ = false;
 
   base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};
 };
