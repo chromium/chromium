@@ -67,8 +67,7 @@ std::unique_ptr<WMRStageOrigin> MockWMRStageStatics::CurrentStage() {
   return std::make_unique<MockWMRStageOrigin>();
 }
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
-MockWMRStageStatics::AddStageChangedCallback(
+base::CallbackListSubscription MockWMRStageStatics::AddStageChangedCallback(
     const base::RepeatingCallback<void()>& cb) {
   return callback_list_.Add(cb);
 }

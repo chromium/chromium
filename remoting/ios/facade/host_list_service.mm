@@ -96,14 +96,12 @@ void HostListService::Init() {
               }];
 }
 
-std::unique_ptr<HostListService::CallbackSubscription>
-HostListService::RegisterHostListStateCallback(
+base::CallbackListSubscription HostListService::RegisterHostListStateCallback(
     const base::RepeatingClosure& callback) {
   return host_list_state_callbacks_.Add(callback);
 }
 
-std::unique_ptr<HostListService::CallbackSubscription>
-HostListService::RegisterFetchFailureCallback(
+base::CallbackListSubscription HostListService::RegisterFetchFailureCallback(
     const base::RepeatingClosure& callback) {
   return fetch_failure_callbacks_.Add(callback);
 }

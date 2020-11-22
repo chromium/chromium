@@ -123,10 +123,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   std::unique_ptr<ios_web_view::WebViewJavaScriptDialogPresenter>
       _javaScriptDialogPresenter;
   // Stores the script command callbacks with subscriptions.
-  std::unordered_map<
-      std::string,
-      std::pair<web::WebState::ScriptCommandCallback,
-                std::unique_ptr<web::WebState::ScriptCommandSubscription>>>
+  std::unordered_map<std::string,
+                     std::pair<web::WebState::ScriptCommandCallback,
+                               base::CallbackListSubscription>>
       _scriptCommandCallbacks;
   CRWSessionStorage* _cachedSessionStorage;
 }

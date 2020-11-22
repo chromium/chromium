@@ -196,13 +196,13 @@ HeartbeatScheduler::HeartbeatScheduler(
   if (!gcm_driver_)
     return;
 
-  heartbeat_frequency_observer_ =
+  heartbeat_frequency_subscription_ =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kHeartbeatFrequency,
           base::Bind(&HeartbeatScheduler::RefreshHeartbeatSettings,
                      base::Unretained(this)));
 
-  heartbeat_enabled_observer_ =
+  heartbeat_enabled_subscription_ =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kHeartbeatEnabled,
           base::Bind(&HeartbeatScheduler::RefreshHeartbeatSettings,

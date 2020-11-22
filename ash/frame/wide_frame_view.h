@@ -87,8 +87,7 @@ class ASH_EXPORT WideFrameView
   // Called when |target_|'s "paint as active" state has changed.
   void PaintAsActiveChanged();
 
-  std::unique_ptr<views::Widget::PaintAsActiveCallbackList::Subscription>
-      paint_as_active_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(WideFrameView);
 };

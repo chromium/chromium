@@ -20,15 +20,13 @@
 // dependencies and notify its observers.
 class KEYED_SERVICE_EXPORT KeyedServiceShutdownNotifier : public KeyedService {
  public:
-  using Subscription = base::CallbackList<void()>::Subscription;
-
   KeyedServiceShutdownNotifier();
   ~KeyedServiceShutdownNotifier() override;
 
   // Subscribe for a notification when the keyed services this object depends on
-  // (as defined by its factory) are shut down. The subscription object can be
+  // (as defined by its factory) are shut down. The subscription can be
   // destroyed to unsubscribe.
-  std::unique_ptr<Subscription> Subscribe(
+  base::CallbackListSubscription Subscribe(
       const base::RepeatingClosure& callback);
 
  private:

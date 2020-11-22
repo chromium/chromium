@@ -68,8 +68,8 @@ class MockWMRStageStatics : public WMRStageStatics {
 
   std::unique_ptr<WMRStageOrigin> CurrentStage() override;
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddStageChangedCallback(const base::RepeatingCallback<void()>& cb) override;
+  base::CallbackListSubscription AddStageChangedCallback(
+      const base::RepeatingCallback<void()>& cb) override;
 
  private:
   base::CallbackList<void()> callback_list_;

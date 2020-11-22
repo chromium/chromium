@@ -290,7 +290,7 @@ void WelcomeScreenHandler::HandleSetDeviceRequisition(
 void WelcomeScreenHandler::OnAccessibilityStatusChanged(
     const AccessibilityStatusEventDetails& details) {
   if (details.notification_type == ACCESSIBILITY_MANAGER_SHUTDOWN)
-    accessibility_subscription_.reset();
+    accessibility_subscription_ = {};
   else
     UpdateA11yState();
 }

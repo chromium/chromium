@@ -155,8 +155,8 @@ class TestButtonObserver {
   bool highlighted_changed_ = false;
   bool state_changed_ = false;
 
-  PropertyChangedSubscription highlighted_changed_subscription_;
-  PropertyChangedSubscription state_changed_subscription_;
+  base::CallbackListSubscription highlighted_changed_subscription_;
+  base::CallbackListSubscription state_changed_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TestButtonObserver);
 };

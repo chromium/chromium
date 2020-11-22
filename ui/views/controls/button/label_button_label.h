@@ -42,7 +42,7 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
 
   base::Optional<SkColor> requested_disabled_color_;
   base::Optional<SkColor> requested_enabled_color_;
-  PropertyChangedSubscription enabled_changed_subscription_ =
+  base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&LabelButtonLabel::OnEnabledChanged,
                               base::Unretained(this)));

@@ -146,7 +146,7 @@ class ContentsImage : public gfx::ImageSkia {
   }
 
   base::RepeatingClosure image_invalidated_closure_;
-  std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
+  base::CallbackListSubscription image_subscription_;
 };
 
 }  // namespace

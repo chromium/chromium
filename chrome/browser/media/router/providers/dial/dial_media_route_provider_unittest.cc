@@ -44,7 +44,7 @@ class TestDialMediaSinkServiceImpl : public DialMediaSinkServiceImpl {
     return &app_discovery_service_;
   }
 
-  SinkQueryByAppSubscription StartMonitoringAvailableSinksForApp(
+  base::CallbackListSubscription StartMonitoringAvailableSinksForApp(
       const std::string& app_name,
       const SinkQueryByAppCallback& callback) override {
     DoStartMonitoringAvailableSinksForApp(app_name);

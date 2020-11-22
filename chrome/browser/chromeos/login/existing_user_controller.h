@@ -380,18 +380,13 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      show_user_names_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      allow_new_user_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription> allow_guest_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription> users_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      local_account_auto_login_id_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      local_account_auto_login_delay_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      family_link_allowed_subscription_;
+  base::CallbackListSubscription show_user_names_subscription_;
+  base::CallbackListSubscription allow_new_user_subscription_;
+  base::CallbackListSubscription allow_guest_subscription_;
+  base::CallbackListSubscription users_subscription_;
+  base::CallbackListSubscription local_account_auto_login_id_subscription_;
+  base::CallbackListSubscription local_account_auto_login_delay_subscription_;
+  base::CallbackListSubscription family_link_allowed_subscription_;
 
   std::unique_ptr<OAuth2TokenInitializer> oauth2_token_initializer_;
 

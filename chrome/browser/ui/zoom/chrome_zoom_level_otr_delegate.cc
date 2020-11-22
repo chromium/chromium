@@ -29,8 +29,8 @@ void ChromeZoomLevelOTRDelegate::InitHostZoomMap(
 void ChromeZoomLevelOTRDelegate::OnZoomLevelChanged(
     const content::HostZoomMap::ZoomLevelChange& change) {
   // If there's a manager to aggregate ZoomLevelChanged events, pass this event
-  // along. Since we already hold a subscription to our associated HostZoomMap,
-  // we don't need to create a separate subscription for this.
+  // along. Since we already hold a subscription from our associated
+  // HostZoomMap, we don't need to create a separate subscription for this.
   if (zoom_event_manager_)
     zoom_event_manager_->OnZoomLevelChanged(change);
 }

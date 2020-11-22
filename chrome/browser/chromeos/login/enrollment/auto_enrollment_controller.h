@@ -137,7 +137,7 @@ class AutoEnrollmentController {
   void Retry();
 
   // Registers a callback to invoke on state changes.
-  std::unique_ptr<ProgressCallbackList::Subscription> RegisterProgressCallback(
+  base::CallbackListSubscription RegisterProgressCallback(
       const ProgressCallbackList::CallbackType& callback);
 
   policy::AutoEnrollmentState state() const { return state_; }

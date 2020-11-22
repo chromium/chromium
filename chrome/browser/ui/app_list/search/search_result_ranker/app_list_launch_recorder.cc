@@ -23,8 +23,8 @@ AppListLaunchRecorder* AppListLaunchRecorder::GetInstance() {
 AppListLaunchRecorder::AppListLaunchRecorder() = default;
 AppListLaunchRecorder::~AppListLaunchRecorder() = default;
 
-std::unique_ptr<AppListLaunchRecorder::LaunchEventSubscription>
-AppListLaunchRecorder::RegisterCallback(const LaunchEventCallback& callback) {
+base::CallbackListSubscription AppListLaunchRecorder::RegisterCallback(
+    const LaunchEventCallback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return callback_list_.Add(callback);
 }

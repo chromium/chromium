@@ -189,9 +189,8 @@ OmniboxAPI::OmniboxAPI(content::BrowserContext* context)
       url_service_(TemplateURLServiceFactory::GetForProfile(profile_)) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
   if (url_service_) {
-    template_url_sub_ = url_service_->RegisterOnLoadedCallback(
-        base::Bind(&OmniboxAPI::OnTemplateURLsLoaded,
-                   base::Unretained(this)));
+    template_url_subscription_ = url_service_->RegisterOnLoadedCallback(
+        base::Bind(&OmniboxAPI::OnTemplateURLsLoaded, base::Unretained(this)));
   }
 
   // Use monochrome icons for Omnibox icons.
@@ -199,7 +198,7 @@ OmniboxAPI::OmniboxAPI(content::BrowserContext* context)
 }
 
 void OmniboxAPI::Shutdown() {
-  template_url_sub_.reset();
+  template_url_subscription_ = {};
 }
 
 OmniboxAPI::~OmniboxAPI() {
@@ -257,7 +256,7 @@ gfx::Image OmniboxAPI::GetOmniboxIcon(const std::string& extension_id) {
 
 void OmniboxAPI::OnTemplateURLsLoaded() {
   // Register keywords for pending extensions.
-  template_url_sub_.reset();
+  template_url_subscription_ = {};
   for (const auto* i : pending_extensions_) {
     url_service_->RegisterOmniboxKeyword(
         i->id(), i->short_name(), OmniboxInfo::GetKeyword(i),

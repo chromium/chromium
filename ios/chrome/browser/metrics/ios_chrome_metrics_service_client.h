@@ -155,13 +155,11 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   base::OnceClosure collect_final_metrics_done_callback_;
 
   // Subscription for receiving callbacks that a tab was parented.
-  std::unique_ptr<base::CallbackList<void(web::WebState*)>::Subscription>
-      tab_parented_subscription_;
+  base::CallbackListSubscription tab_parented_subscription_;
 
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-      omnibox_url_opened_subscription_;
+  base::CallbackListSubscription omnibox_url_opened_subscription_;
 
   base::WeakPtrFactory<IOSChromeMetricsServiceClient> weak_ptr_factory_;
 

@@ -100,7 +100,7 @@ DialAppDiscoveryService* DialMediaSinkServiceImpl::app_discovery_service() {
   return app_discovery_service_.get();
 }
 
-DialMediaSinkServiceImpl::SinkQueryByAppSubscription
+base::CallbackListSubscription
 DialMediaSinkServiceImpl::StartMonitoringAvailableSinksForApp(
     const std::string& app_name,
     const SinkQueryByAppCallback& callback) {

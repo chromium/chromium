@@ -231,9 +231,9 @@ GURL TestWebState::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
   return url_;
 }
 
-std::unique_ptr<WebState::ScriptCommandSubscription>
-TestWebState::AddScriptCommandCallback(const ScriptCommandCallback& callback,
-                                       const std::string& command_prefix) {
+base::CallbackListSubscription TestWebState::AddScriptCommandCallback(
+    const ScriptCommandCallback& callback,
+    const std::string& command_prefix) {
   return callback_list_.Add(callback);
 }
 

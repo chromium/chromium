@@ -54,7 +54,7 @@ StatusUploader::StatusUploader(
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
   // Listen for changes to the upload delay, and start sending updates to the
   // server.
-  upload_frequency_observer_ =
+  upload_frequency_subscription_ =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kReportUploadFrequency,
           base::Bind(&StatusUploader::RefreshUploadFrequency,

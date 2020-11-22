@@ -65,8 +65,8 @@ class AppListLaunchMetricsProvider : public metrics::MetricsProvider {
   // Performs initialization once a user has logged in.
   void Initialize();
 
-  // Subscription for receiving logging event callbacks from HashedLogger.
-  std::unique_ptr<AppListLaunchRecorder::LaunchEventSubscription> subscription_;
+  // Subscription for logging event callbacks from HashedLogger.
+  base::CallbackListSubscription subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -74,14 +74,14 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
 
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokensLoaded() override {
-    shutdown_subscription_.reset();
+    shutdown_subscription_ = {};
     scoped_identity_manager_observer_.RemoveAll();
     std::move(callback_).Run(profile_);
   }
 
   void OnShutdown() {
     scoped_identity_manager_observer_.RemoveAll();
-    shutdown_subscription_.reset();
+    shutdown_subscription_ = {};
     std::move(callback_).Run(nullptr);
   }
 
@@ -90,8 +90,7 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
   ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       scoped_identity_manager_observer_{this};
   base::OnceCallback<void(Profile*)> callback_;
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      shutdown_subscription_;
+  base::CallbackListSubscription shutdown_subscription_;
 };
 
 // static

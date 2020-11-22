@@ -40,7 +40,7 @@ class AttestationPolicyObserver {
   CrosSettings* cros_settings_;
   MachineCertificateUploader* certificate_uploader_;
 
-  std::unique_ptr<CrosSettings::ObserverSubscription> attestation_subscription_;
+  base::CallbackListSubscription attestation_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(AttestationPolicyObserver);
 };

@@ -161,8 +161,7 @@ class ArcInputMethodManagerService
 
   std::unique_ptr<ArcInputMethodBoundsObserver> input_method_bounds_observer_;
 
-  std::unique_ptr<chromeos::AccessibilityStatusSubscription>
-      accessibility_status_subscription_;
+  base::CallbackListSubscription accessibility_status_subscription_;
 
   base::ObserverList<Observer> observers_;
 

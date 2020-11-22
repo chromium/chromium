@@ -11,12 +11,11 @@ class MediaNotificationDeviceSelectorViewDelegate {
  public:
   virtual void OnAudioSinkChosen(const std::string& sink_id) = 0;
   virtual void OnDeviceSelectorViewSizeChanged() = 0;
-  virtual std::unique_ptr<MediaNotificationDeviceProvider::
-                              GetOutputDevicesCallbackList::Subscription>
+  virtual base::CallbackListSubscription
   RegisterAudioOutputDeviceDescriptionsCallback(
       MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
           CallbackType callback) = 0;
-  virtual std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+  virtual base::CallbackListSubscription
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       base::RepeatingCallback<void(bool)> callback) = 0;
 };

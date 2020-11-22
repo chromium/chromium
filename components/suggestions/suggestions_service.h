@@ -36,7 +36,7 @@ class SuggestionsService : public KeyedService {
       const = 0;
 
   // Adds a callback that is called when the suggestions are updated.
-  virtual std::unique_ptr<ResponseCallbackList::Subscription> AddCallback(
+  virtual base::CallbackListSubscription AddCallback(
       const ResponseCallback& callback) WARN_UNUSED_RESULT = 0;
 
   // Adds a URL to the blocklist cache, returning true on success or false on

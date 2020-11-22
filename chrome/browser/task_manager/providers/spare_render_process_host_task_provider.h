@@ -41,10 +41,8 @@ class SpareRenderProcessHostTaskProvider : public TaskProvider {
   // no current spare render process host.
   std::unique_ptr<ChildProcessTask> task_;
 
-  // The subscription to the notifications of the spare host changing.
-  std::unique_ptr<
-      base::CallbackList<void(content::RenderProcessHost*)>::Subscription>
-      subscription_;
+  // The subscription for the notifications of the spare host changing.
+  base::CallbackListSubscription subscription_;
 };
 
 }  // namespace task_manager

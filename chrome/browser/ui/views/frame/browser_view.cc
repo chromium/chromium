@@ -1518,8 +1518,7 @@ void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
 #endif
 }
 
-BrowserView::OnLinkOpeningFromGestureSubscription
-BrowserView::AddOnLinkOpeningFromGestureCallback(
+base::CallbackListSubscription BrowserView::AddOnLinkOpeningFromGestureCallback(
     OnLinkOpeningFromGestureCallback callback) {
   return link_opened_from_gesture_callbacks_.Add(callback);
 }

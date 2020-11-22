@@ -40,11 +40,11 @@ const NSTimeInterval kWaitForVerificationTimeout = 8.0;
 // Generic verification injector. Injects one-time mousedown verification into
 // |web_state| that will set the boolean pointed to by |verified| to true when
 // |web_state|'s webview registers the mousedown event.
-std::unique_ptr<web::WebState::ScriptCommandSubscription>
-AddVerifierToElementWithPrefix(web::WebState* web_state,
-                               ElementSelector* selector,
-                               const std::string& prefix,
-                               bool* verified) {
+base::CallbackListSubscription AddVerifierToElementWithPrefix(
+    web::WebState* web_state,
+    ElementSelector* selector,
+    const std::string& prefix,
+    bool* verified) {
   const char kCallbackCommand[] = "verified";
   const std::string kCallbackInvocation = prefix + '.' + kCallbackCommand;
 
@@ -90,7 +90,7 @@ AddVerifierToElementWithPrefix(web::WebState* web_state,
       });
 
   if (!success)
-    return nullptr;
+    return {};
 
   // The callback doesn't care about any of the parameters, just whether it is
   // called or not.
@@ -167,8 +167,7 @@ id<GREYAction> WebViewVerifiedActionOnElement(WebState* state,
     // reference.
     __block bool verified = false;
 
-    __block std::unique_ptr<web::WebState::ScriptCommandSubscription>
-        subscription;
+    __block base::CallbackListSubscription subscription;
     // GREYPerformBlock executes on background thread by default in EG2.
     // Dispatch any call involving UI API to UI thread as they can't be executed
     // on background thread. See go/eg2-migration#greyactions-threading-behavior

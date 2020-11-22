@@ -406,7 +406,7 @@ void ChromeUserManagerImpl::Shutdown() {
     GetMinimumVersionPolicyHandler()->RemoveObserver(this);
   }
 
-  local_accounts_subscription_.reset();
+  local_accounts_subscription_ = {};
 
   if (session_length_limiter_ && IsEnterpriseManaged()) {
     // Store session length before tearing down `session_length_limiter_` for

@@ -356,7 +356,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
       std::make_unique<base::RepeatingTimer>();
 
   views::ImageView* image_ = nullptr;
-  views::PropertyChangedSubscription enabled_changed_subscription_ =
+  base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(base::BindRepeating(
           &LoginPinView::BackspacePinButton::OnEnabledChanged,
           base::Unretained(this)));
@@ -399,7 +399,7 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
 
  private:
   views::ImageView* image_ = nullptr;
-  views::PropertyChangedSubscription enabled_changed_subscription_ =
+  base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&LoginPinView::SubmitPinButton::OnEnabledChanged,
                               base::Unretained(this)));

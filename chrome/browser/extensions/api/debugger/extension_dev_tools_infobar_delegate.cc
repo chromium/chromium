@@ -32,10 +32,10 @@ base::LazyInstance<Delegates>::Leaky g_delegates = LAZY_INSTANCE_INITIALIZER;
 // static
 constexpr base::TimeDelta ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay;
 
-std::unique_ptr<ExtensionDevToolsInfoBarDelegate::CallbackList::Subscription>
-ExtensionDevToolsInfoBarDelegate::Create(const std::string& extension_id,
-                                         const std::string& extension_name,
-                                         base::OnceClosure destroyed_callback) {
+base::CallbackListSubscription ExtensionDevToolsInfoBarDelegate::Create(
+    const std::string& extension_id,
+    const std::string& extension_name,
+    base::OnceClosure destroyed_callback) {
   Delegates& delegates = g_delegates.Get();
   const auto it = delegates.find(extension_id);
   if (it != delegates.end()) {
@@ -48,7 +48,7 @@ ExtensionDevToolsInfoBarDelegate::Create(const std::string& extension_id,
       new ExtensionDevToolsInfoBarDelegate(extension_id, extension_name));
   auto* delegate_raw = delegate.get();
   delegates[extension_id] = delegate_raw;
-  std::unique_ptr<CallbackList::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       delegate->RegisterDestroyedCallback(std::move(destroyed_callback));
   delegate_raw->infobar_ = GlobalConfirmInfoBar::Show(std::move(delegate));
   return subscription;
@@ -105,7 +105,7 @@ ExtensionDevToolsInfoBarDelegate::ExtensionDevToolsInfoBarDelegate(
     : extension_id_(std::move(extension_id)),
       extension_name_(base::UTF8ToUTF16(extension_name)) {}
 
-std::unique_ptr<ExtensionDevToolsInfoBarDelegate::CallbackList::Subscription>
+base::CallbackListSubscription
 ExtensionDevToolsInfoBarDelegate::RegisterDestroyedCallback(
     base::OnceClosure destroyed_callback) {
   return callback_list_.Add(std::move(destroyed_callback));

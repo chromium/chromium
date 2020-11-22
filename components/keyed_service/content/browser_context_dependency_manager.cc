@@ -51,8 +51,7 @@ void BrowserContextDependencyManager::DestroyBrowserContextServices(
   DependencyManager::DestroyContextServices(context);
 }
 
-std::unique_ptr<
-    BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
+base::CallbackListSubscription
 BrowserContextDependencyManager::RegisterCreateServicesCallbackForTesting(
     const CreateServicesCallback& callback) {
   return create_services_callbacks_.Add(callback);

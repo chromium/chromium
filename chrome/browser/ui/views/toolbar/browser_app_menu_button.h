@@ -91,7 +91,7 @@ class BrowserAppMenuButton : public AppMenuButton {
 
   base::Optional<FeaturePromoController::PromoHandle> reopen_tab_promo_handle_;
 
-  std::unique_ptr<ui::TouchUiController::Subscription> subscription_ =
+  base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&BrowserAppMenuButton::OnTouchUiChanged,
                               base::Unretained(this)));

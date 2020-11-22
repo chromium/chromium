@@ -26,7 +26,7 @@ MockCastMediaSinkService::~MockCastMediaSinkService() = default;
 MockCastAppDiscoveryService::MockCastAppDiscoveryService() {}
 MockCastAppDiscoveryService::~MockCastAppDiscoveryService() = default;
 
-CastAppDiscoveryService::Subscription
+base::CallbackListSubscription
 MockCastAppDiscoveryService::StartObservingMediaSinks(
     const CastMediaSource& source,
     const CastAppDiscoveryService::SinkQueryCallback& callback) {

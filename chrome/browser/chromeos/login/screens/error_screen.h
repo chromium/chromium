@@ -29,9 +29,6 @@ class ErrorScreen : public BaseScreen,
                     public LoginPerformer::Delegate,
                     public NetworkConnectionObserver {
  public:
-  using ConnectRequestCallbackSubscription =
-      std::unique_ptr<base::CallbackList<void()>::Subscription>;
-
   // TODO(jdufault): Some of these are no longer used and can be removed. See
   // crbug.com/672142.
   static const char kUserActionConfigureCertsButtonClicked[];
@@ -99,7 +96,7 @@ class ErrorScreen : public BaseScreen,
 
   // Register a callback to be invoked when the user indicates that an attempt
   // to connect to the network should be made.
-  ConnectRequestCallbackSubscription RegisterConnectRequestCallback(
+  base::CallbackListSubscription RegisterConnectRequestCallback(
       const base::Closure& callback);
 
   // Creates an instance of CaptivePortalWindowProxy, if one has not already

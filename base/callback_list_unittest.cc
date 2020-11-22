@@ -33,7 +33,6 @@ class Listener {
   int scaler_ = 1;
 };
 
-template <typename T>
 class Remover {
  public:
   Remover() = default;
@@ -43,18 +42,18 @@ class Remover {
 
   void IncrementTotalAndRemove() {
     ++total_;
-    removal_subscription_.reset();
+    removal_subscription_ = {};
   }
 
-  void SetSubscriptionToRemove(std::unique_ptr<typename T::Subscription> sub) {
-    removal_subscription_ = std::move(sub);
+  void SetSubscriptionToRemove(CallbackListSubscription subscription) {
+    removal_subscription_ = std::move(subscription);
   }
 
   int total() const { return total_; }
 
  private:
   int total_ = 0;
-  std::unique_ptr<typename T::Subscription> removal_subscription_;
+  CallbackListSubscription removal_subscription_;
 };
 
 class Adder {
@@ -81,7 +80,7 @@ class Adder {
   bool added_ = false;
   int total_ = 0;
   RepeatingClosureList* cb_reg_;
-  std::unique_ptr<RepeatingClosureList::Subscription> subscription_;
+  CallbackListSubscription subscription_;
 };
 
 class Summer {
@@ -128,51 +127,43 @@ TEST(CallbackListTest, ArityTest) {
   Summer s;
 
   RepeatingCallbackList<void(int)> c1;
-  std::unique_ptr<RepeatingCallbackList<void(int)>::Subscription>
-      subscription1 =
-          c1.Add(BindRepeating(&Summer::AddOneParam, Unretained(&s)));
+  CallbackListSubscription subscription1 =
+      c1.Add(BindRepeating(&Summer::AddOneParam, Unretained(&s)));
 
   c1.Notify(1);
   EXPECT_EQ(1, s.value());
 
   RepeatingCallbackList<void(int, int)> c2;
-  std::unique_ptr<RepeatingCallbackList<void(int, int)>::Subscription>
-      subscription2 =
-          c2.Add(BindRepeating(&Summer::AddTwoParam, Unretained(&s)));
+  CallbackListSubscription subscription2 =
+      c2.Add(BindRepeating(&Summer::AddTwoParam, Unretained(&s)));
 
   c2.Notify(1, 2);
   EXPECT_EQ(3, s.value());
 
   RepeatingCallbackList<void(int, int, int)> c3;
-  std::unique_ptr<RepeatingCallbackList<void(int, int, int)>::Subscription>
-      subscription3 =
-          c3.Add(BindRepeating(&Summer::AddThreeParam, Unretained(&s)));
+  CallbackListSubscription subscription3 =
+      c3.Add(BindRepeating(&Summer::AddThreeParam, Unretained(&s)));
 
   c3.Notify(1, 2, 3);
   EXPECT_EQ(6, s.value());
 
   RepeatingCallbackList<void(int, int, int, int)> c4;
-  std::unique_ptr<RepeatingCallbackList<void(int, int, int, int)>::Subscription>
-      subscription4 =
-          c4.Add(BindRepeating(&Summer::AddFourParam, Unretained(&s)));
+  CallbackListSubscription subscription4 =
+      c4.Add(BindRepeating(&Summer::AddFourParam, Unretained(&s)));
 
   c4.Notify(1, 2, 3, 4);
   EXPECT_EQ(10, s.value());
 
   RepeatingCallbackList<void(int, int, int, int, int)> c5;
-  std::unique_ptr<
-      RepeatingCallbackList<void(int, int, int, int, int)>::Subscription>
-      subscription5 =
-          c5.Add(BindRepeating(&Summer::AddFiveParam, Unretained(&s)));
+  CallbackListSubscription subscription5 =
+      c5.Add(BindRepeating(&Summer::AddFiveParam, Unretained(&s)));
 
   c5.Notify(1, 2, 3, 4, 5);
   EXPECT_EQ(15, s.value());
 
   RepeatingCallbackList<void(int, int, int, int, int, int)> c6;
-  std::unique_ptr<
-      RepeatingCallbackList<void(int, int, int, int, int, int)>::Subscription>
-      subscription6 =
-          c6.Add(BindRepeating(&Summer::AddSixParam, Unretained(&s)));
+  CallbackListSubscription subscription6 =
+      c6.Add(BindRepeating(&Summer::AddSixParam, Unretained(&s)));
 
   c6.Notify(1, 2, 3, 4, 5, 6);
   EXPECT_EQ(21, s.value());
@@ -184,14 +175,14 @@ TEST(CallbackListTest, BasicTest) {
   Listener a, b, c;
   RepeatingClosureList cb_reg;
 
-  std::unique_ptr<RepeatingClosureList::Subscription> a_subscription =
+  CallbackListSubscription a_subscription =
       cb_reg.Add(BindRepeating(&Listener::IncrementTotal, Unretained(&a)));
-  std::unique_ptr<RepeatingClosureList::Subscription> b_subscription =
+  CallbackListSubscription b_subscription =
       cb_reg.Add(BindRepeating(&Listener::IncrementTotal, Unretained(&b)));
   cb_reg.AddUnsafe(BindRepeating(&Listener::IncrementTotal, Unretained(&c)));
 
-  EXPECT_TRUE(a_subscription.get());
-  EXPECT_TRUE(b_subscription.get());
+  EXPECT_TRUE(a_subscription);
+  EXPECT_TRUE(b_subscription);
 
   cb_reg.Notify();
 
@@ -199,9 +190,9 @@ TEST(CallbackListTest, BasicTest) {
   EXPECT_EQ(1, b.total());
   EXPECT_EQ(1, c.total());
 
-  b_subscription.reset();
+  b_subscription = {};
 
-  std::unique_ptr<RepeatingClosureList::Subscription> c_subscription =
+  CallbackListSubscription c_subscription =
       cb_reg.Add(BindRepeating(&Listener::IncrementTotal, Unretained(&c)));
 
   cb_reg.Notify();
@@ -216,13 +207,13 @@ TEST(CallbackListTest, OnceCallbacks) {
   OnceClosureList cb_reg;
   Listener a, b, c;
 
-  std::unique_ptr<OnceClosureList::Subscription> a_subscription =
+  CallbackListSubscription a_subscription =
       cb_reg.Add(BindOnce(&Listener::IncrementTotal, Unretained(&a)));
-  std::unique_ptr<OnceClosureList::Subscription> b_subscription =
+  CallbackListSubscription b_subscription =
       cb_reg.Add(BindOnce(&Listener::IncrementTotal, Unretained(&b)));
 
-  EXPECT_TRUE(a_subscription.get());
-  EXPECT_TRUE(b_subscription.get());
+  EXPECT_TRUE(a_subscription);
+  EXPECT_TRUE(b_subscription);
 
   cb_reg.Notify();
 
@@ -234,9 +225,9 @@ TEST(CallbackListTest, OnceCallbacks) {
 
   // Destroying a subscription after the callback is canceled should not cause
   // any problems.
-  b_subscription.reset();
+  b_subscription = {};
 
-  std::unique_ptr<OnceClosureList::Subscription> c_subscription =
+  CallbackListSubscription c_subscription =
       cb_reg.Add(BindOnce(&Listener::IncrementTotal, Unretained(&c)));
 
   cb_reg.Notify();
@@ -253,22 +244,22 @@ TEST(CallbackListTest, BasicTestWithParams) {
   CallbackListType cb_reg;
   Listener a(1), b(-1), c(1);
 
-  std::unique_ptr<CallbackListType::Subscription> a_subscription = cb_reg.Add(
+  CallbackListSubscription a_subscription = cb_reg.Add(
       BindRepeating(&Listener::IncrementByMultipleOfScaler, Unretained(&a)));
-  std::unique_ptr<CallbackListType::Subscription> b_subscription = cb_reg.Add(
+  CallbackListSubscription b_subscription = cb_reg.Add(
       BindRepeating(&Listener::IncrementByMultipleOfScaler, Unretained(&b)));
 
-  EXPECT_TRUE(a_subscription.get());
-  EXPECT_TRUE(b_subscription.get());
+  EXPECT_TRUE(a_subscription);
+  EXPECT_TRUE(b_subscription);
 
   cb_reg.Notify(10);
 
   EXPECT_EQ(10, a.total());
   EXPECT_EQ(-10, b.total());
 
-  b_subscription.reset();
+  b_subscription = {};
 
-  std::unique_ptr<CallbackListType::Subscription> c_subscription = cb_reg.Add(
+  CallbackListSubscription c_subscription = cb_reg.Add(
       BindRepeating(&Listener::IncrementByMultipleOfScaler, Unretained(&c)));
 
   cb_reg.Notify(10);
@@ -283,19 +274,15 @@ TEST(CallbackListTest, BasicTestWithParams) {
 TEST(CallbackListTest, RemoveCallbacksDuringIteration) {
   RepeatingClosureList cb_reg;
   Listener a, b;
-  Remover<RepeatingClosureList> remover_1, remover_2;
+  Remover remover_1, remover_2;
 
-  std::unique_ptr<RepeatingClosureList::Subscription> remover_1_sub =
-      cb_reg.Add(
-          BindRepeating(&Remover<RepeatingClosureList>::IncrementTotalAndRemove,
-                        Unretained(&remover_1)));
-  std::unique_ptr<RepeatingClosureList::Subscription> remover_2_sub =
-      cb_reg.Add(
-          BindRepeating(&Remover<RepeatingClosureList>::IncrementTotalAndRemove,
-                        Unretained(&remover_2)));
-  std::unique_ptr<RepeatingClosureList::Subscription> a_subscription =
+  CallbackListSubscription remover_1_sub = cb_reg.Add(
+      BindRepeating(&Remover::IncrementTotalAndRemove, Unretained(&remover_1)));
+  CallbackListSubscription remover_2_sub = cb_reg.Add(
+      BindRepeating(&Remover::IncrementTotalAndRemove, Unretained(&remover_2)));
+  CallbackListSubscription a_subscription =
       cb_reg.Add(BindRepeating(&Listener::IncrementTotal, Unretained(&a)));
-  std::unique_ptr<RepeatingClosureList::Subscription> b_subscription =
+  CallbackListSubscription b_subscription =
       cb_reg.Add(BindRepeating(&Listener::IncrementTotal, Unretained(&b)));
 
   // |remover_1| will remove itself.
@@ -326,17 +313,15 @@ TEST(CallbackListTest, RemoveCallbacksDuringIteration) {
 TEST(CallbackListTest, RemoveOnceCallbacksDuringIteration) {
   OnceClosureList cb_reg;
   Listener a, b;
-  Remover<OnceClosureList> remover_1, remover_2;
+  Remover remover_1, remover_2;
 
-  std::unique_ptr<OnceClosureList::Subscription> remover_1_sub =
-      cb_reg.Add(BindOnce(&Remover<OnceClosureList>::IncrementTotalAndRemove,
-                          Unretained(&remover_1)));
-  std::unique_ptr<OnceClosureList::Subscription> remover_2_sub =
-      cb_reg.Add(BindOnce(&Remover<OnceClosureList>::IncrementTotalAndRemove,
-                          Unretained(&remover_2)));
-  std::unique_ptr<OnceClosureList::Subscription> a_subscription =
+  CallbackListSubscription remover_1_sub = cb_reg.Add(
+      BindOnce(&Remover::IncrementTotalAndRemove, Unretained(&remover_1)));
+  CallbackListSubscription remover_2_sub = cb_reg.Add(
+      BindOnce(&Remover::IncrementTotalAndRemove, Unretained(&remover_2)));
+  CallbackListSubscription a_subscription =
       cb_reg.Add(BindOnce(&Listener::IncrementTotal, Unretained(&a)));
-  std::unique_ptr<OnceClosureList::Subscription> b_subscription =
+  CallbackListSubscription b_subscription =
       cb_reg.Add(BindOnce(&Listener::IncrementTotal, Unretained(&b)));
 
   // |remover_1| will remove itself.
@@ -369,9 +354,9 @@ TEST(CallbackListTest, AddCallbacksDuringIteration) {
   RepeatingClosureList cb_reg;
   Adder a(&cb_reg);
   Listener b;
-  std::unique_ptr<RepeatingClosureList::Subscription> a_subscription =
+  CallbackListSubscription a_subscription =
       cb_reg.Add(BindRepeating(&Adder::AddCallback, Unretained(&a)));
-  std::unique_ptr<RepeatingClosureList::Subscription> b_subscription =
+  CallbackListSubscription b_subscription =
       cb_reg.Add(BindRepeating(&Listener::IncrementTotal, Unretained(&b)));
 
   cb_reg.Notify();
@@ -399,9 +384,9 @@ TEST(CallbackListTest, NonEmptyListDuringIteration) {
   // Declare items such that |cb_reg| is torn down before the subscriptions.
   // This ensures the removal callback's invariant that the callback list is
   // nonempty will always hold.
-  Remover<RepeatingClosureList> remover;
+  Remover remover;
   Listener listener;
-  std::unique_ptr<RepeatingClosureList::Subscription> remover_sub, listener_sub;
+  CallbackListSubscription remover_sub, listener_sub;
   RepeatingClosureList cb_reg;
   cb_reg.set_removal_callback(base::BindRepeating(
       [](const RepeatingClosureList* callbacks) {
@@ -410,8 +395,7 @@ TEST(CallbackListTest, NonEmptyListDuringIteration) {
       Unretained(&cb_reg)));
 
   remover_sub = cb_reg.Add(
-      BindRepeating(&Remover<RepeatingClosureList>::IncrementTotalAndRemove,
-                    Unretained(&remover)));
+      BindRepeating(&Remover::IncrementTotalAndRemove, Unretained(&remover)));
   listener_sub = cb_reg.Add(
       BindRepeating(&Listener::IncrementTotal, Unretained(&listener)));
 
@@ -432,12 +416,11 @@ TEST(CallbackListTest, EmptyListDuringIteration) {
       [](const OnceClosureList* callbacks) { EXPECT_TRUE(callbacks->empty()); },
       Unretained(&cb_reg)));
 
-  Remover<OnceClosureList> remover;
+  Remover remover;
   Listener listener;
-  std::unique_ptr<OnceClosureList::Subscription> remover_sub =
-      cb_reg.Add(BindOnce(&Remover<OnceClosureList>::IncrementTotalAndRemove,
-                          Unretained(&remover)));
-  std::unique_ptr<OnceClosureList::Subscription> listener_sub =
+  CallbackListSubscription remover_sub = cb_reg.Add(
+      BindOnce(&Remover::IncrementTotalAndRemove, Unretained(&remover)));
+  CallbackListSubscription listener_sub =
       cb_reg.Add(BindOnce(&Listener::IncrementTotal, Unretained(&listener)));
 
   // |remover| will remove |listener|.
@@ -455,24 +438,19 @@ TEST(CallbackListTest, RemovalCallback) {
   cb_reg.set_removal_callback(
       BindRepeating(&Counter::Increment, Unretained(&remove_count)));
 
-  std::unique_ptr<RepeatingClosureList::Subscription> subscription =
-      cb_reg.Add(DoNothing());
+  CallbackListSubscription subscription = cb_reg.Add(DoNothing());
 
   // Removing a subscription outside of iteration signals the callback.
   EXPECT_EQ(0, remove_count.value());
-  subscription.reset();
+  subscription = {};
   EXPECT_EQ(1, remove_count.value());
 
   // Configure two subscriptions to remove themselves.
-  Remover<RepeatingClosureList> remover_1, remover_2;
-  std::unique_ptr<RepeatingClosureList::Subscription> remover_1_sub =
-      cb_reg.Add(
-          BindRepeating(&Remover<RepeatingClosureList>::IncrementTotalAndRemove,
-                        Unretained(&remover_1)));
-  std::unique_ptr<RepeatingClosureList::Subscription> remover_2_sub =
-      cb_reg.Add(
-          BindRepeating(&Remover<RepeatingClosureList>::IncrementTotalAndRemove,
-                        Unretained(&remover_2)));
+  Remover remover_1, remover_2;
+  CallbackListSubscription remover_1_sub = cb_reg.Add(
+      BindRepeating(&Remover::IncrementTotalAndRemove, Unretained(&remover_1)));
+  CallbackListSubscription remover_2_sub = cb_reg.Add(
+      BindRepeating(&Remover::IncrementTotalAndRemove, Unretained(&remover_2)));
   remover_1.SetSubscriptionToRemove(std::move(remover_1_sub));
   remover_2.SetSubscriptionToRemove(std::move(remover_2_sub));
 
@@ -485,7 +463,7 @@ TEST(CallbackListTest, RemovalCallback) {
 
 TEST(CallbackListTest, AbandonSubscriptions) {
   Listener listener;
-  std::unique_ptr<RepeatingClosureList::Subscription> subscription;
+  CallbackListSubscription subscription;
   {
     RepeatingClosureList cb_reg;
     subscription = cb_reg.Add(
@@ -497,16 +475,15 @@ TEST(CallbackListTest, AbandonSubscriptions) {
   EXPECT_EQ(1, listener.total());
 
   // Destroying the subscription after the list should not cause any problems.
-  subscription.reset();
+  subscription = {};
 }
 
 // Subscriptions should be movable.
 TEST(CallbackListTest, MoveSubscription) {
   RepeatingClosureList cb_reg;
   Listener listener;
-  std::unique_ptr<RepeatingClosureList::Subscription> subscription1 =
-      cb_reg.Add(
-          BindRepeating(&Listener::IncrementTotal, Unretained(&listener)));
+  CallbackListSubscription subscription1 = cb_reg.Add(
+      BindRepeating(&Listener::IncrementTotal, Unretained(&listener)));
   cb_reg.Notify();
   EXPECT_EQ(1, listener.total());
 
@@ -514,7 +491,7 @@ TEST(CallbackListTest, MoveSubscription) {
   cb_reg.Notify();
   EXPECT_EQ(2, listener.total());
 
-  subscription2.reset();
+  subscription2 = {};
   cb_reg.Notify();
   EXPECT_EQ(2, listener.total());
 }
@@ -523,13 +500,13 @@ TEST(CallbackListTest, CancelBeforeRunning) {
   OnceClosureList cb_reg;
   Listener a;
 
-  std::unique_ptr<OnceClosureList::Subscription> a_subscription =
+  CallbackListSubscription a_subscription =
       cb_reg.Add(BindOnce(&Listener::IncrementTotal, Unretained(&a)));
 
-  EXPECT_TRUE(a_subscription.get());
+  EXPECT_TRUE(a_subscription);
 
   // Canceling a OnceCallback before running it should not cause problems.
-  a_subscription.reset();
+  a_subscription = {};
   cb_reg.Notify();
 
   // |a| should not have received any callbacks.
@@ -541,57 +518,53 @@ TEST(CallbackListTest, CancelBeforeRunning) {
 TEST(CallbackListTest, ReentrantNotify) {
   RepeatingClosureList cb_reg;
   Listener a, b, c, d;
-  std::unique_ptr<RepeatingClosureList::Subscription> a_subscription,
-      c_subscription;
+  CallbackListSubscription a_subscription, c_subscription;
 
   // A callback to run for |a|.
-  const auto a_callback =
-      [](RepeatingClosureList* callbacks, Listener* a,
-         std::unique_ptr<RepeatingClosureList::Subscription>* a_subscription,
-         const Listener* b, Listener* c,
-         std::unique_ptr<RepeatingClosureList::Subscription>* c_subscription,
-         Listener* d) {
-        // This should be the first callback.
-        EXPECT_EQ(0, a->total());
-        EXPECT_EQ(0, b->total());
-        EXPECT_EQ(0, c->total());
-        EXPECT_EQ(0, d->total());
+  const auto a_callback = [](RepeatingClosureList* callbacks, Listener* a,
+                             CallbackListSubscription* a_subscription,
+                             const Listener* b, Listener* c,
+                             CallbackListSubscription* c_subscription,
+                             Listener* d) {
+    // This should be the first callback.
+    EXPECT_EQ(0, a->total());
+    EXPECT_EQ(0, b->total());
+    EXPECT_EQ(0, c->total());
+    EXPECT_EQ(0, d->total());
 
-        // Increment |a| once.
-        a->IncrementTotal();
+    // Increment |a| once.
+    a->IncrementTotal();
 
-        // Prevent |a| from being incremented again during the reentrant
-        // Notify(). Since this is the first callback, this also verifies the
-        // inner Notify() doesn't assume the first callback (or all callbacks)
-        // are valid.
-        a_subscription->reset();
+    // Prevent |a| from being incremented again during the reentrant Notify().
+    // Since this is the first callback, this also verifies the inner Notify()
+    // doesn't assume the first callback (or all callbacks) are valid.
+    *a_subscription = {};
 
-        // Add |c| and |d| to be incremented by the reentrant Notify().
-        *c_subscription = callbacks->Add(
-            BindRepeating(&Listener::IncrementTotal, Unretained(c)));
-        std::unique_ptr<RepeatingClosureList::Subscription> d_subscription =
-            callbacks->Add(
-                BindRepeating(&Listener::IncrementTotal, Unretained(d)));
+    // Add |c| and |d| to be incremented by the reentrant Notify().
+    *c_subscription =
+        callbacks->Add(BindRepeating(&Listener::IncrementTotal, Unretained(c)));
+    CallbackListSubscription d_subscription =
+        callbacks->Add(BindRepeating(&Listener::IncrementTotal, Unretained(d)));
 
-        // Notify reentrantly.  This should not increment |a|, but all the
-        // others should be incremented.
-        callbacks->Notify();
-        EXPECT_EQ(1, b->total());
-        EXPECT_EQ(1, c->total());
-        EXPECT_EQ(1, d->total());
+    // Notify reentrantly.  This should not increment |a|, but all the others
+    // should be incremented.
+    callbacks->Notify();
+    EXPECT_EQ(1, b->total());
+    EXPECT_EQ(1, c->total());
+    EXPECT_EQ(1, d->total());
 
-        // Since |d_subscription| is locally scoped, it should be canceled
-        // before the outer Notify() increments |d|.  |c_subscription| already
-        // exists and thus |c| should get incremented again by the outer
-        // Notify() even though it wasn't subscribed when that was called.
-      };
+    // Since |d_subscription| is locally scoped, it should be canceled before
+    // the outer Notify() increments |d|.  |c_subscription| already exists and
+    // thus |c| should get incremented again by the outer Notify() even though
+    // it wasn't scoped when that was called.
+  };
 
   // Add |a| and |b| to the list to be notified, and notify.
   a_subscription = cb_reg.Add(
       BindRepeating(a_callback, Unretained(&cb_reg), Unretained(&a),
                     Unretained(&a_subscription), Unretained(&b), Unretained(&c),
                     Unretained(&c_subscription), Unretained(&d)));
-  std::unique_ptr<RepeatingClosureList::Subscription> b_subscription =
+  CallbackListSubscription b_subscription =
       cb_reg.Add(BindRepeating(&Listener::IncrementTotal, Unretained(&b)));
 
   // Execute both notifications and check the cumulative effect.

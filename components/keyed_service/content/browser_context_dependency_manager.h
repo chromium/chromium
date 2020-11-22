@@ -66,8 +66,7 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
   // CreateBrowserContextServices() or CreateBrowserContextServicesForTest().
   // This can be useful in browser tests which wish to substitute test or mock
   // builders for the keyed services.
-  std::unique_ptr<CreateServicesCallbackList::Subscription>
-  RegisterCreateServicesCallbackForTesting(
+  base::CallbackListSubscription RegisterCreateServicesCallbackForTesting(
       const CreateServicesCallback& callback) WARN_UNUSED_RESULT;
 
   // Runtime assertion called as a part of GetServiceForBrowserContext() to

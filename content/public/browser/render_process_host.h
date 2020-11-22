@@ -287,8 +287,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 
   using BlockStateChangedCallbackList = base::RepeatingCallbackList<void(bool)>;
   using BlockStateChangedCallback = BlockStateChangedCallbackList::CallbackType;
-  virtual std::unique_ptr<BlockStateChangedCallbackList::Subscription>
-  RegisterBlockStateChangedCallback(const BlockStateChangedCallback& cb) = 0;
+  virtual base::CallbackListSubscription RegisterBlockStateChangedCallback(
+      const BlockStateChangedCallback& cb) = 0;
 
   // Schedules the host for deletion and removes it from the all_hosts list.
   virtual void Cleanup() = 0;
@@ -594,8 +594,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // when the host is ready (RenderProcessHostObserver::RenderProcessReady). If
   // the spare RenderProcessHost is promoted to be a "real" RenderProcessHost or
   // discarded for any reason, the callback is made with a null pointer.
-  static std::unique_ptr<
-      base::CallbackList<void(RenderProcessHost*)>::Subscription>
+  static base::CallbackListSubscription
   RegisterSpareRenderProcessHostChangedCallback(
       const base::RepeatingCallback<void(RenderProcessHost*)>& cb);
 

@@ -128,7 +128,7 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // Used if we need to clear history.
   base::CancelableTaskTracker history_task_tracker_;
 
-  std::unique_ptr<TemplateURLService::Subscription> template_url_subscription_;
+  base::CallbackListSubscription template_url_subscription_;
 
   base::WeakPtrFactory<BrowsingDataRemoverImpl> weak_ptr_factory_;
 

@@ -20,15 +20,12 @@ class TestURLLoaderFactory;
 
 namespace secondary_account_helper {
 
-using ScopedSigninClientFactory = std::unique_ptr<
-    BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>;
-
 // Sets up a factory to create a SigninClient which uses the
 // provided |test_url_loader_factory| for cookie-related requests. Meant to be
 // called from SetUpInProcessBrowserTestFixture. The caller should hold on to
 // the returned object for the duration of the test, e.g. store it in a member
 // of the test fixture class.
-ScopedSigninClientFactory SetUpSigninClient(
+base::CallbackListSubscription SetUpSigninClient(
     network::TestURLLoaderFactory* test_url_loader_factory);
 
 #if defined(OS_CHROMEOS)

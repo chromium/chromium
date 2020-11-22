@@ -120,7 +120,7 @@ class HoverHighlightView : public ActionableView {
   TriView* tri_view_ = nullptr;
   bool expandable_ = false;
   AccessibilityState accessibility_state_ = AccessibilityState::DEFAULT;
-  views::PropertyChangedSubscription enabled_changed_subscription_ =
+  base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&HoverHighlightView::OnEnabledChanged,
                               base::Unretained(this)));

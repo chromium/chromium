@@ -250,8 +250,7 @@ void MediaNotificationService::Session::SetAudioSinkId(const std::string& id) {
   controller_->SetAudioSinkId(id);
 }
 
-std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
-MediaNotificationService::Session::
+base::CallbackListSubscription MediaNotificationService::Session::
     RegisterIsAudioDeviceSwitchingSupportedCallback(
         base::RepeatingCallback<void(bool)> callback) {
   callback.Run(is_audio_device_switching_supported_);
@@ -772,8 +771,7 @@ void MediaNotificationService::OnSessionBecameInactive(const std::string& id) {
   HideNotification(id);
 }
 
-std::unique_ptr<
-    MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::Subscription>
+base::CallbackListSubscription
 MediaNotificationService::RegisterAudioOutputDeviceDescriptionsCallback(
     MediaNotificationDeviceProvider::GetOutputDevicesCallback callback) {
   if (!device_provider_)
@@ -783,7 +781,7 @@ MediaNotificationService::RegisterAudioOutputDeviceDescriptionsCallback(
       std::move(callback));
 }
 
-std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+base::CallbackListSubscription
 MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
     const std::string& id,
     base::RepeatingCallback<void(bool)> callback) {

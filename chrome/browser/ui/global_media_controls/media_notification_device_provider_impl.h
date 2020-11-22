@@ -23,9 +23,7 @@ class MediaNotificationDeviceProviderImpl
   ~MediaNotificationDeviceProviderImpl() override;
 
   // MediaNotificationDeviceProvider
-  std::unique_ptr<MediaNotificationDeviceProvider::
-                      GetOutputDevicesCallbackList::Subscription>
-  RegisterOutputDeviceDescriptionsCallback(
+  base::CallbackListSubscription RegisterOutputDeviceDescriptionsCallback(
       GetOutputDevicesCallback cb) override;
 
   void GetOutputDeviceDescriptions(

@@ -1070,12 +1070,10 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
 
   static void WaitForAutoEnrollmentState(policy::AutoEnrollmentState state) {
     base::RunLoop loop;
-    std::unique_ptr<
-        AutoEnrollmentController::ProgressCallbackList::Subscription>
-        progress_subscription(
-            auto_enrollment_controller()->RegisterProgressCallback(
-                base::BindRepeating(&QuitLoopOnAutoEnrollmentProgress, state,
-                                    &loop)));
+    base::CallbackListSubscription progress_subscription =
+        auto_enrollment_controller()->RegisterProgressCallback(
+            base::BindRepeating(&QuitLoopOnAutoEnrollmentProgress, state,
+                                &loop));
     loop.Run();
   }
 

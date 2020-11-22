@@ -47,8 +47,7 @@ class ForeignSessionHelper {
 
   Profile* profile_;  // weak
   base::android::ScopedJavaGlobalRef<jobject> callback_;
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      foreign_session_updated_subscription_;
+  base::CallbackListSubscription foreign_session_updated_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ForeignSessionHelper);
 };

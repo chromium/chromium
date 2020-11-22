@@ -131,14 +131,13 @@ class CookieStoreIOS : public net::CookieStore,
   class Subscription : public base::LinkNode<Subscription>,
                        public CookieChangeSubscription {
    public:
-    explicit Subscription(
-        std::unique_ptr<CookieChangeCallbackList::Subscription> subscription);
+    explicit Subscription(base::CallbackListSubscription subscription);
     ~Subscription() override;
 
     void ResetSubscription();
 
    private:
-    std::unique_ptr<CookieChangeCallbackList::Subscription> subscription_;
+    base::CallbackListSubscription subscription_;
 
     DISALLOW_COPY_AND_ASSIGN(Subscription);
   };

@@ -84,7 +84,7 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   views::ImageButton* leading_scroll_button_;
   views::ImageButton* trailing_scroll_button_;
 
-  const std::unique_ptr<ui::TouchUiController::Subscription> subscription_ =
+  const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&TabStripRegionView::UpdateNewTabButtonBorder,
                               base::Unretained(this)));

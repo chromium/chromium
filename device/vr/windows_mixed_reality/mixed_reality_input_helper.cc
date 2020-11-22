@@ -192,8 +192,8 @@ MixedRealityInputHelper::MixedRealityInputHelper(
 MixedRealityInputHelper::~MixedRealityInputHelper() {
   // Dispose must be called before destruction, which ensures that we're
   // unsubscribed from events.
-  DCHECK(pressed_subscription_ == nullptr);
-  DCHECK(released_subscription_ == nullptr);
+  DCHECK(!pressed_subscription_);
+  DCHECK(!released_subscription_);
 }
 
 void MixedRealityInputHelper::Dispose() {
@@ -412,8 +412,8 @@ void MixedRealityInputHelper::ProcessSourceEvent(
 
 void MixedRealityInputHelper::SubscribeEvents() {
   DCHECK(input_manager_);
-  DCHECK(pressed_subscription_ == nullptr);
-  DCHECK(released_subscription_ == nullptr);
+  DCHECK(!pressed_subscription_);
+  DCHECK(!released_subscription_);
 
   // Unretained is safe since we explicitly get disposed and unsubscribe before
   // destruction
@@ -426,8 +426,8 @@ void MixedRealityInputHelper::SubscribeEvents() {
 }
 
 void MixedRealityInputHelper::UnsubscribeEvents() {
-  pressed_subscription_ = nullptr;
-  released_subscription_ = nullptr;
+  pressed_subscription_ = {};
+  released_subscription_ = {};
 }
 
 }  // namespace device

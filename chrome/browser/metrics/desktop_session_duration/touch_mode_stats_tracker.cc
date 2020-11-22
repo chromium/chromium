@@ -25,8 +25,8 @@ TouchModeStatsTracker::TouchModeStatsTracker(
     : touch_ui_controller_(touch_ui_controller) {
   session_duration_tracker->AddObserver(this);
 
-  // If this instance is destroyed, |mode_change_subscription_|'s
-  // destructor will unregister the callback. Hence Unretained is safe.
+  // If this instance is destroyed, |mode_change_subscription_|'s destructor
+  // will unregister the callback. Hence Unretained is safe.
   mode_change_subscription_ =
       touch_ui_controller->RegisterCallback(base::BindRepeating(
           &TouchModeStatsTracker::TouchModeChanged, base::Unretained(this)));

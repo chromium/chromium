@@ -65,7 +65,7 @@ MockWMRHolographicSpace::UserPresence() {
   return ABI::Windows::Graphics::Holographic::
       HolographicSpaceUserPresence_PresentActive;
 }
-std::unique_ptr<base::CallbackList<void()>::Subscription>
+base::CallbackListSubscription
 MockWMRHolographicSpace::AddUserPresenceChangedCallback(
     const base::RepeatingCallback<void()>& cb) {
   return user_presence_changed_callback_list_.Add(cb);

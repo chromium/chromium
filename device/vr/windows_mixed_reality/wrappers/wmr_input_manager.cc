@@ -102,13 +102,13 @@ WMRInputManagerImpl::GetDetectedSourcesAtTimestamp(
   return input_states;
 }
 
-std::unique_ptr<WMRInputManager::InputEventCallbackList::Subscription>
-WMRInputManagerImpl::AddPressedCallback(const InputEventCallback& cb) {
+base::CallbackListSubscription WMRInputManagerImpl::AddPressedCallback(
+    const InputEventCallback& cb) {
   return pressed_callback_list_.Add(cb);
 }
 
-std::unique_ptr<WMRInputManager::InputEventCallbackList::Subscription>
-WMRInputManagerImpl::AddReleasedCallback(const InputEventCallback& cb) {
+base::CallbackListSubscription WMRInputManagerImpl::AddReleasedCallback(
+    const InputEventCallback& cb) {
   return released_callback_list_.Add(cb);
 }
 

@@ -48,7 +48,7 @@ void AccessibilityMainHandler::OnJavascriptAllowed() {
 
 void AccessibilityMainHandler::OnJavascriptDisallowed() {
 #if defined(OS_CHROMEOS)
-  accessibility_subscription_.reset();
+  accessibility_subscription_ = {};
 #endif  // defined(OS_CHROMEOS)
 }
 

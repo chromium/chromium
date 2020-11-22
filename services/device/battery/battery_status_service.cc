@@ -35,8 +35,8 @@ BatteryStatusService* BatteryStatusService::GetInstance() {
   return service_wrapper.get();
 }
 
-std::unique_ptr<BatteryStatusService::BatteryUpdateSubscription>
-BatteryStatusService::AddCallback(const BatteryUpdateCallback& callback) {
+base::CallbackListSubscription BatteryStatusService::AddCallback(
+    const BatteryUpdateCallback& callback) {
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
   DCHECK(!is_shutdown_);
 

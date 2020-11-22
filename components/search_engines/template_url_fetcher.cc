@@ -92,7 +92,7 @@ class TemplateURLFetcher::RequestDelegate {
   const GURL osdd_url_;
   const GURL favicon_url_;
 
-  std::unique_ptr<TemplateURLService::Subscription> template_url_subscription_;
+  base::CallbackListSubscription template_url_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(RequestDelegate);
 };
@@ -164,7 +164,7 @@ void TemplateURLFetcher::RequestDelegate::OnTemplateURLParsed(
 }
 
 void TemplateURLFetcher::RequestDelegate::OnLoaded() {
-  template_url_subscription_.reset();
+  template_url_subscription_ = {};
   if (!template_url_)
     return;
   AddSearchProvider();

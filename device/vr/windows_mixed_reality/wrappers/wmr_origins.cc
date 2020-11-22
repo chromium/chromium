@@ -190,8 +190,7 @@ std::unique_ptr<WMRStageOrigin> WMRStageStaticsImpl::CurrentStage() {
   return std::make_unique<WMRStageOriginImpl>(stage_origin);
 }
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
-WMRStageStaticsImpl::AddStageChangedCallback(
+base::CallbackListSubscription WMRStageStaticsImpl::AddStageChangedCallback(
     const base::RepeatingCallback<void()>& cb) {
   return callback_list_.Add(cb);
 }

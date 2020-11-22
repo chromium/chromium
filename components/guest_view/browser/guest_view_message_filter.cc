@@ -74,7 +74,7 @@ void GuestViewMessageFilter::EnsureShutdownNotifierFactoryBuilt() {
 void GuestViewMessageFilter::OnBrowserContextShutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_context_ = nullptr;
-  browser_context_shutdown_subscription_.reset();
+  browser_context_shutdown_subscription_ = {};
 }
 
 GuestViewManager* GuestViewMessageFilter::GetOrCreateGuestViewManager() {

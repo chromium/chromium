@@ -34,9 +34,6 @@ class ZoomEventManager;
 // OnZoomLevelChanged.
 class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
  public:
-  typedef base::CallbackList<void(void)>::Subscription
-      DefaultZoomLevelSubscription;
-
   // Initialize the pref_service and the partition_key via the constructor,
   // as these concepts won't be available in the content base class
   // ZoomLevelDelegate, which will define the InitHostZoomMap interface.
@@ -53,8 +50,8 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
 
   void SetDefaultZoomLevelPref(double level);
   double GetDefaultZoomLevelPref() const;
-  std::unique_ptr<DefaultZoomLevelSubscription>
-  RegisterDefaultZoomLevelCallback(const base::Closure& callback);
+  base::CallbackListSubscription RegisterDefaultZoomLevelCallback(
+      const base::Closure& callback);
 
   void ExtractPerHostZoomLevels(
       const base::DictionaryValue* host_zoom_dictionary,
@@ -72,7 +69,7 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   PrefService* pref_service_;
   base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager_;
   content::HostZoomMap* host_zoom_map_;
-  std::unique_ptr<content::HostZoomMap::Subscription> zoom_subscription_;
+  base::CallbackListSubscription zoom_subscription_;
   std::string partition_key_;
   base::CallbackList<void(void)> default_zoom_changed_callbacks_;
 

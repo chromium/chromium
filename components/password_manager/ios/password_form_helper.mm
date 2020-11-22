@@ -90,7 +90,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
       _formActivityObserverBridge;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> _subscription;
+  base::CallbackListSubscription _subscription;
 }
 
 #pragma mark - Properties

@@ -99,9 +99,7 @@ class TestWebAppProviderCreator {
 
   CreateWebAppProviderCallback callback_;
 
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      create_services_subscription_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 }  // namespace web_app

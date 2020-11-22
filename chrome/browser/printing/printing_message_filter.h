@@ -59,8 +59,7 @@ class PrintingMessageFilter : public content::BrowserMessageFilter {
   void OnCheckForCancel(const mojom::PreviewIds& ids, bool* cancel);
 #endif
 
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      printing_shutdown_notifier_;
+  base::CallbackListSubscription printing_shutdown_subscription_;
 
   BooleanPrefMember is_printing_enabled_;
 

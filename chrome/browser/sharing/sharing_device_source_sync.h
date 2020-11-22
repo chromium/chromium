@@ -61,8 +61,7 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
   syncer::SyncService* sync_service_;
   syncer::LocalDeviceInfoProvider* local_device_info_provider_;
   syncer::DeviceInfoTracker* device_info_tracker_;
-  std::unique_ptr<syncer::LocalDeviceInfoProvider::Subscription>
-      local_device_info_ready_subscription_;
+  base::CallbackListSubscription local_device_info_ready_subscription_;
 
   // The personalized name is stored for deduplicating devices running older
   // clients.

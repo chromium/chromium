@@ -76,8 +76,8 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
           ukm_source_id)),
       proxies_(proxies) {
   // base::Unretained is safe here because the callback will be canceled when
-  // |shutdown_notifier_| is destroyed, and |proxies_| owns this.
-  shutdown_notifier_ =
+  // |shutdown_notifier_subscription_| is destroyed, and |proxies_| owns this.
+  shutdown_notifier_subscription_ =
       ShutdownNotifierFactory::GetInstance()
           ->Get(browser_context)
           ->Subscribe(base::BindRepeating(&WebRequestAPI::ProxySet::RemoveProxy,

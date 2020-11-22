@@ -94,7 +94,7 @@ class IOSBlockingPageTabHelper
       blocking_page_for_currently_committed_navigation_;
 
   // Subscription for JS messages.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   // Helper object that notifies the tab helper of committed navigation IDs.
   CommittedNavigationIDListener navigation_id_listener_;

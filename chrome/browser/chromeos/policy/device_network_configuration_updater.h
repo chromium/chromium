@@ -73,8 +73,7 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
 
   chromeos::NetworkDeviceHandler* network_device_handler_;
   chromeos::CrosSettings* cros_settings_;
-  std::unique_ptr<base::CallbackList<void(void)>::Subscription>
-      data_roaming_setting_subscription_;
+  base::CallbackListSubscription data_roaming_setting_subscription_;
 
   // Returns the device's administrator-set asset id.
   DeviceAssetIDFetcher device_asset_id_fetcher_;

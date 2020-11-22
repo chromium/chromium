@@ -48,7 +48,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   views::Label* label_ = nullptr;
   views::View* label_and_pin_button_container_ = nullptr;
 
-  std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
+  base::CallbackListSubscription image_subscription_;
 };
 
 }  // namespace ash

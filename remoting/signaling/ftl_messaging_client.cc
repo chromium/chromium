@@ -151,8 +151,8 @@ FtlMessagingClient::FtlMessagingClient(
 
 FtlMessagingClient::~FtlMessagingClient() = default;
 
-std::unique_ptr<FtlMessagingClient::MessageCallbackSubscription>
-FtlMessagingClient::RegisterMessageCallback(const MessageCallback& callback) {
+base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
+    const MessageCallback& callback) {
   return callback_list_.Add(callback);
 }
 

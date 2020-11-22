@@ -65,9 +65,9 @@ class SessionSyncServiceMockForRecentTabsTableCoordinator
 
   MOCK_CONST_METHOD0(GetGlobalIdMapper, syncer::GlobalIdMapper*());
   MOCK_METHOD0(GetOpenTabsUIDelegate, sync_sessions::OpenTabsUIDelegate*());
-  MOCK_METHOD1(SubscribeToForeignSessionsChanged,
-               std::unique_ptr<base::CallbackList<void()>::Subscription>(
-                   const base::RepeatingClosure& cb));
+  MOCK_METHOD1(
+      SubscribeToForeignSessionsChanged,
+      base::CallbackListSubscription(const base::RepeatingClosure& cb));
   MOCK_METHOD0(ScheduleGarbageCollection, void());
   MOCK_METHOD0(GetControllerDelegate,
                base::WeakPtr<syncer::ModelTypeControllerDelegate>());

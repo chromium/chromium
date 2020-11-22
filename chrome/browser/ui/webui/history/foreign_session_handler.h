@@ -101,8 +101,7 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
 
   base::Value initial_session_list_;
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      foreign_session_updated_subscription_;
+  base::CallbackListSubscription foreign_session_updated_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ForeignSessionHandler);
 };

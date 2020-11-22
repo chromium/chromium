@@ -156,18 +156,17 @@ class DownloadProtectionService {
 
   // Registers a callback that will be run when a ClientDownloadRequest has
   // been formed.
-  ClientDownloadRequestSubscription RegisterClientDownloadRequestCallback(
+  base::CallbackListSubscription RegisterClientDownloadRequestCallback(
       const ClientDownloadRequestCallback& callback);
 
   // Registers a callback that will be run when a NativeFileSystemWriteRequest
   // has been formed.
-  NativeFileSystemWriteRequestSubscription
-  RegisterNativeFileSystemWriteRequestCallback(
+  base::CallbackListSubscription RegisterNativeFileSystemWriteRequestCallback(
       const NativeFileSystemWriteRequestCallback& callback);
 
   // Registers a callback that will be run when a PPAPI ClientDownloadRequest
   // has been formed.
-  PPAPIDownloadRequestSubscription RegisterPPAPIDownloadRequestCallback(
+  base::CallbackListSubscription RegisterPPAPIDownloadRequestCallback(
       const PPAPIDownloadRequestCallback& callback);
 
   double whitelist_sample_rate() const { return whitelist_sample_rate_; }

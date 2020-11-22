@@ -22,8 +22,7 @@ class MockDevicesChangedObserver
 class MockMediaNotificationDeviceProvider
     : public MediaNotificationDeviceProvider {
  public:
-  MOCK_METHOD(std::unique_ptr<MediaNotificationDeviceProvider::
-                                  GetOutputDevicesCallbackList::Subscription>,
+  MOCK_METHOD(base::CallbackListSubscription,
               RegisterOutputDeviceDescriptionsCallback,
               (GetOutputDevicesCallback cb),
               (override));

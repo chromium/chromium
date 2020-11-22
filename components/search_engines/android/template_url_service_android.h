@@ -122,7 +122,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   // Pointer to the TemplateUrlService for the main profile.
   TemplateURLService* template_url_service_;
 
-  std::unique_ptr<TemplateURLService::Subscription> template_url_subscription_;
+  base::CallbackListSubscription template_url_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TemplateUrlServiceAndroid);
 };

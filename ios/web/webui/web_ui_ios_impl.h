@@ -67,7 +67,7 @@ class WebUIIOSImpl : public web::WebUIIOS,
   std::vector<std::unique_ptr<WebUIIOSMessageHandler>> handlers_;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   // Non-owning pointer to the WebState this WebUIIOS is associated with.
   WebState* web_state_;

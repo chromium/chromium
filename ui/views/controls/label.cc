@@ -504,7 +504,7 @@ std::vector<gfx::Rect> Label::GetSubstringBounds(const gfx::Range& range) {
   return substring_bounds;
 }
 
-views::PropertyChangedSubscription Label::AddTextChangedCallback(
+base::CallbackListSubscription Label::AddTextChangedCallback(
     views::PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&full_text_ + kLabelText,
                                     std::move(callback));

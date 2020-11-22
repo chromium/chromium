@@ -257,10 +257,10 @@ bool MockRenderProcessHost::IsBlocked() {
   return false;
 }
 
-std::unique_ptr<RenderProcessHost::BlockStateChangedCallbackList::Subscription>
+base::CallbackListSubscription
 MockRenderProcessHost::RegisterBlockStateChangedCallback(
     const BlockStateChangedCallback& cb) {
-  return nullptr;
+  return {};
 }
 
 void MockRenderProcessHost::Cleanup() {

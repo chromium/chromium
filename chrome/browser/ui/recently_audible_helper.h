@@ -31,7 +31,6 @@ class RecentlyAudibleHelper
 
   using CallbackList = base::CallbackList<void(bool was_recently_audible)>;
   using Callback = CallbackList::CallbackType;
-  using Subscription = CallbackList::Subscription;
 
   ~RecentlyAudibleHelper() override;
 
@@ -48,7 +47,7 @@ class RecentlyAudibleHelper
   // Registers the provided repeating callback for notifications. Destroying
   // the returned subscription will unregister the callback. This is safe to do
   // while in the context of the callback itself.
-  std::unique_ptr<Subscription> RegisterCallback(const Callback& callback);
+  base::CallbackListSubscription RegisterCallback(const Callback& callback);
 
   // Allows replacing the tick clock that is used by this class. Setting it back
   // to nullptr will restore the default tick clock.

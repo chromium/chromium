@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
   em::ChromeDeviceSettingsProto& proto(device_policy->payload());
   SetPolicyValue(&proto, policy_value, true);
   base::RunLoop run_loop;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription> observer =
+  base::CallbackListSubscription subscription =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kDeviceDisplayResolution, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();

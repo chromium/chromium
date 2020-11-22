@@ -1382,10 +1382,7 @@ class CONTENT_EXPORT NavigationRequest
   // Timer for detecting an unexpectedly long time to commit a navigation.
   base::OneShotTimer commit_timeout_timer_;
 
-  // The subscription to the notification of the changing of the render
-  // process's blocked state.
-  std::unique_ptr<
-      RenderProcessHost::BlockStateChangedCallbackList::Subscription>
+  base::CallbackListSubscription
       render_process_blocked_state_changed_subscription_;
 
   // The headers used for the request. The value of this comes from

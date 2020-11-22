@@ -1055,8 +1055,7 @@ std::string Widget::GetName() const {
   return native_widget_->GetName();
 }
 
-std::unique_ptr<Widget::PaintAsActiveCallbackList::Subscription>
-Widget::RegisterPaintAsActiveChangedCallback(
+base::CallbackListSubscription Widget::RegisterPaintAsActiveChangedCallback(
     PaintAsActiveCallbackList::CallbackType callback) {
   return paint_as_active_callbacks_.Add(std::move(callback));
 }

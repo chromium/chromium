@@ -81,10 +81,8 @@ class HostListServiceTest : public PlatformTest {
   id remoting_service_mock_;
 
  private:
-  std::unique_ptr<HostListService::CallbackSubscription>
-      host_list_state_subscription_;
-  std::unique_ptr<HostListService::CallbackSubscription>
-      fetch_failure_subscription_;
+  base::CallbackListSubscription host_list_state_subscription_;
+  base::CallbackListSubscription fetch_failure_subscription_;
 };
 
 HostListServiceTest::HostListServiceTest()

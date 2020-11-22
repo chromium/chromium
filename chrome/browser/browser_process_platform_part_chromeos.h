@@ -169,8 +169,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   std::unique_ptr<chromeos::InSessionPasswordChangeManager>
       in_session_password_change_manager_;
 
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      primary_profile_shutdown_subscription_;
+  base::CallbackListSubscription primary_profile_shutdown_subscription_;
 
   std::unique_ptr<chromeos::SchedulerConfigurationManager>
       scheduler_configuration_manager_;

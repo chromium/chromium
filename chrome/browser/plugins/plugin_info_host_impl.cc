@@ -149,7 +149,7 @@ void PluginInfoHostImpl::Context::ShutdownOnUIThread() {
 
 PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
     : context_(render_process_id, profile) {
-  shutdown_notifier_ =
+  shutdown_subscription_ =
       PluginInfoHostImplShutdownNotifierFactory::GetInstance()
           ->Get(profile)
           ->Subscribe(base::Bind(&PluginInfoHostImpl::ShutdownOnUIThread,
@@ -159,7 +159,7 @@ PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
 void PluginInfoHostImpl::ShutdownOnUIThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   context_.ShutdownOnUIThread();
-  shutdown_notifier_.reset();
+  shutdown_subscription_ = {};
 }
 
 // static

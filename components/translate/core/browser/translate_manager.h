@@ -162,12 +162,12 @@ class TranslateManager {
   using TranslateInitCallback = TranslateInitCallbackList::CallbackType;
 
   // Registers a callback for translate errors.
-  static std::unique_ptr<TranslateErrorCallbackList::Subscription>
-  RegisterTranslateErrorCallback(const TranslateErrorCallback& callback);
+  static base::CallbackListSubscription RegisterTranslateErrorCallback(
+      const TranslateErrorCallback& callback);
 
   // Registers a callback for translate initialization.
-  static std::unique_ptr<TranslateInitCallbackList::Subscription>
-  RegisterTranslateInitCallback(const TranslateInitCallback& callback);
+  static base::CallbackListSubscription RegisterTranslateInitCallback(
+      const TranslateInitCallback& callback);
 
   // Gets the LanguageState associated with the TranslateManager
   LanguageState* GetLanguageState();

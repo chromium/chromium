@@ -331,8 +331,7 @@ void HostZoomMapImpl::SetDefaultZoomLevel(double level) {
   }
 }
 
-std::unique_ptr<HostZoomMap::Subscription>
-HostZoomMapImpl::AddZoomLevelChangedCallback(
+base::CallbackListSubscription HostZoomMapImpl::AddZoomLevelChangedCallback(
     ZoomLevelChangedCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return zoom_level_changed_callbacks_.Add(std::move(callback));

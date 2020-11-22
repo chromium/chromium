@@ -243,7 +243,7 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
 
 #if defined(OS_CHROMEOS)
 void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
-  reporting_setting_observer_ =
+  reporting_setting_subscription_ =
       chromeos::StatsReportingController::Get()->AddObserver(
           base::BindRepeating(&OnCrosMetricsReportingSettingChange));
   // Invoke the callback once initially to set the metrics reporting state.

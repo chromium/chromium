@@ -79,8 +79,7 @@ MediaNotificationDeviceProviderImpl::~MediaNotificationDeviceProviderImpl() {
     monitor_->RemoveDevicesChangedObserver(this);
 }
 
-std::unique_ptr<
-    MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::Subscription>
+base::CallbackListSubscription
 MediaNotificationDeviceProviderImpl::RegisterOutputDeviceDescriptionsCallback(
     GetOutputDevicesCallback cb) {
   if (!monitor_) {

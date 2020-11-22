@@ -46,7 +46,7 @@ class BreakpadConsentWatcher {
   // Called whenever the crash reporting consent is changed.
   static void OnConsentChangeCollectStatsConsentThread();
 
-  std::unique_ptr<StatsReportingController::ObserverSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 }  // namespace system

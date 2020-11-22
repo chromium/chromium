@@ -24,7 +24,7 @@ CONTENT_EXPORT void ResetNetworkServiceForTesting();
 // mojo::Remote<URLLoaderFactory>).
 //
 // Can only be called on the UI thread.  No-op if NetworkService is disabled.
-CONTENT_EXPORT std::unique_ptr<base::CallbackList<void()>::Subscription>
+CONTENT_EXPORT base::CallbackListSubscription
 RegisterNetworkServiceCrashHandler(base::RepeatingClosure handler);
 
 // Corresponds to the "NetworkServiceAvailability" histogram enumeration type in

@@ -40,7 +40,7 @@ class SessionRestoreTestHelper {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 
   // For automatically unsubscribing from callback-based notifications.
-  SessionRestore::CallbackSubscription callback_subscription_;
+  base::CallbackListSubscription callback_subscription_;
 
   // For safely binding pointers to callbacks.
   base::WeakPtrFactory<SessionRestoreTestHelper> weak_ptr_factory{this};

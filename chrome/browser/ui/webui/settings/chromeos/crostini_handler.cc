@@ -227,7 +227,7 @@ void CrostiniHandler::OnJavascriptDisallowed() {
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveObserver(
       this);
 
-  adb_sideloading_device_policy_subscription_.reset();
+  adb_sideloading_device_policy_subscription_ = {};
   pref_change_registrar_.RemoveAll();
 }
 

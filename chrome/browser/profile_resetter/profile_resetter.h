@@ -114,7 +114,7 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
   // of deleting itself when done.
   content::BrowsingDataRemover* cookies_remover_;
 
-  std::unique_ptr<TemplateURLService::Subscription> template_url_service_sub_;
+  base::CallbackListSubscription template_url_service_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

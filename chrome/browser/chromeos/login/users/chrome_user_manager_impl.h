@@ -264,11 +264,10 @@ class ChromeUserManagerImpl
   FlowMap specific_flows_;
 
   // Cros settings change subscriptions.
-  std::unique_ptr<CrosSettings::ObserverSubscription> allow_guest_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription> users_subscription_;
+  base::CallbackListSubscription allow_guest_subscription_;
+  base::CallbackListSubscription users_subscription_;
 
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      local_accounts_subscription_;
+  base::CallbackListSubscription local_accounts_subscription_;
 
   std::unique_ptr<MultiProfileUserController> multi_profile_user_controller_;
 

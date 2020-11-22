@@ -13,9 +13,6 @@
 class Profile;
 namespace chromeos {
 
-typedef base::CallbackList<void(bool)>::Subscription
-    ChildAccountTypeChangedSubscription;
-
 class ChildAccountTypeChangedUserData : public base::SupportsUserData::Data {
  public:
   ChildAccountTypeChangedUserData();
@@ -32,7 +29,7 @@ class ChildAccountTypeChangedUserData : public base::SupportsUserData::Data {
   void SetValue(bool value);
   bool value() const;
 
-  std::unique_ptr<ChildAccountTypeChangedSubscription> RegisterCallback(
+  base::CallbackListSubscription RegisterCallback(
       const base::RepeatingCallback<void(bool)>& cb);
 
  private:

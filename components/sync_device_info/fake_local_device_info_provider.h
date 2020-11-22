@@ -21,7 +21,7 @@ class FakeLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
   // Overrides for LocalDeviceInfoProvider.
   version_info::Channel GetChannel() const override;
   const DeviceInfo* GetLocalDeviceInfo() const override;
-  std::unique_ptr<Subscription> RegisterOnInitializedCallback(
+  base::CallbackListSubscription RegisterOnInitializedCallback(
       const base::RepeatingClosure& callback) override;
 
   void SetReady(bool ready);

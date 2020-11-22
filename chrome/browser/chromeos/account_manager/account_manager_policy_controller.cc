@@ -169,7 +169,7 @@ void AccountManagerPolicyController::
 }
 
 void AccountManagerPolicyController::Shutdown() {
-  child_account_type_changed_subscription_.reset();
+  child_account_type_changed_subscription_ = {};
   edu_coexistence_consent_invalidation_controller_.reset();
 }
 

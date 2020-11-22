@@ -90,9 +90,7 @@ class LocalNTPOneGoogleBarSmokeTest : public InProcessBrowserTest {
             &LocalNTPOneGoogleBarSmokeTest::CreateOneGoogleBarService));
   }
 
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      create_services_subscription_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalNTPOneGoogleBarSmokeTest,

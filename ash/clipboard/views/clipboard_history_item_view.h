@@ -184,7 +184,7 @@ class ClipboardHistoryItemView : public views::View {
   // through `main_button_` or the delete button.
   ClipboardHistoryUtil::Action action_ = ClipboardHistoryUtil::Action::kEmpty;
 
-  views::PropertyChangedSubscription subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 }  // namespace ash

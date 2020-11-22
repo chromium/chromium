@@ -321,14 +321,12 @@ class BrowserView : public BrowserWindow,
       base::RepeatingCallback<void(WindowOpenDisposition)>;
   using OnLinkOpeningFromGestureCallbackList =
       base::RepeatingCallbackList<OnLinkOpeningFromGestureCallback::RunType>;
-  using OnLinkOpeningFromGestureSubscription =
-      std::unique_ptr<OnLinkOpeningFromGestureCallbackList::Subscription>;
 
   // Listens to the "link opened from gesture" event. Callback will be called
   // when a link is opened from user interaction in the same browser window, but
   // before the tabstrip is actually modified. Useful for doing certain types
   // of animations (e.g. "flying link" animation in tablet mode).
-  OnLinkOpeningFromGestureSubscription AddOnLinkOpeningFromGestureCallback(
+  base::CallbackListSubscription AddOnLinkOpeningFromGestureCallback(
       OnLinkOpeningFromGestureCallback callback);
 
   // BrowserWindow:
@@ -929,7 +927,7 @@ class BrowserView : public BrowserWindow,
 
   std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;
 
-  std::unique_ptr<ui::TouchUiController::Subscription> subscription_ =
+  base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&BrowserView::TouchModeChanged,
                               base::Unretained(this)));

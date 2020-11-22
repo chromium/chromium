@@ -96,7 +96,7 @@ class VIEWS_EXPORT Link : public Label {
   // The color when the link is neither pressed nor disabled.
   base::Optional<SkColor> requested_enabled_color_;
 
-  PropertyChangedSubscription enabled_changed_subscription_;
+  base::CallbackListSubscription enabled_changed_subscription_;
 
   // Whether the link text should use underline style regardless of enabled or
   // focused state.

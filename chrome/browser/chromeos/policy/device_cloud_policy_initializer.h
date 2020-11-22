@@ -169,7 +169,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   // Non-NULL if there is an enrollment operation pending.
   std::unique_ptr<EnrollmentHandlerChromeOS> enrollment_handler_;
 
-  ServerBackedStateKeysBroker::Subscription state_keys_update_subscription_;
+  base::CallbackListSubscription state_keys_update_subscription_;
 
   // Our signing service.
   std::unique_ptr<SigningService> signing_service_;

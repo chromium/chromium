@@ -63,8 +63,8 @@ class ChildAccountService : public KeyedService,
   // Subscribes to changes to the Google authentication state
   // (see IsGoogleAuthenticated()). Can send a notification even if the
   // authentication state has not changed.
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  ObserveGoogleAuthState(const base::Callback<void()>& callback);
+  base::CallbackListSubscription ObserveGoogleAuthState(
+      const base::Callback<void()>& callback);
 
  private:
   friend class ChildAccountServiceFactory;

@@ -10,9 +10,8 @@ OmniboxEventGlobalTracker* OmniboxEventGlobalTracker::GetInstance() {
   return base::Singleton<OmniboxEventGlobalTracker>::get();
 }
 
-std::unique_ptr<
-    OmniboxEventGlobalTracker::OnURLOpenedCallbackList::Subscription>
-OmniboxEventGlobalTracker::RegisterCallback(const OnURLOpenedCallback& cb) {
+base::CallbackListSubscription OmniboxEventGlobalTracker::RegisterCallback(
+    const OnURLOpenedCallback& cb) {
   return on_url_opened_callback_list_.Add(cb);
 }
 

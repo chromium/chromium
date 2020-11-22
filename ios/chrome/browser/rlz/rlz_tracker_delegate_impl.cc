@@ -129,7 +129,7 @@ void RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!log->is_popup_open)
     return;
 
-  on_omnibox_url_opened_subscription_.reset();
+  on_omnibox_url_opened_subscription_ = {};
 
   if (!on_omnibox_search_callback_.is_null())
     std::move(on_omnibox_search_callback_).Run();

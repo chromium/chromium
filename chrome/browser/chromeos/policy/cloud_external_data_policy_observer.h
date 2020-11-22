@@ -115,8 +115,7 @@ class CloudExternalDataPolicyObserver
   Delegate* delegate_;
 
   content::NotificationRegistrar notification_registrar_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      device_local_accounts_subscription_;
+  base::CallbackListSubscription device_local_accounts_subscription_;
 
   // A map from user ID to a base::WeakPtr for each external data fetch
   // currently in progress. This allows fetches to be effectively be canceled by

@@ -284,7 +284,7 @@ void UpdateRequiredScreen::PrepareForUpdateCheck() {
   error_message_timer_.Stop();
   error_screen_->HideCaptivePortal();
 
-  connect_request_subscription_.reset();
+  connect_request_subscription_ = {};
   if (version_updater_->update_info().state ==
       VersionUpdater::State::STATE_ERROR)
     HideErrorMessage();

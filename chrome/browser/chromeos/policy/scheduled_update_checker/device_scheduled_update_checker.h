@@ -129,9 +129,8 @@ class DeviceScheduledUpdateChecker
   // Used to retrieve Chrome OS settings. Not owned.
   chromeos::CrosSettings* const cros_settings_;
 
-  // Used to observe when settings change.
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      cros_settings_observer_;
+  // Subscription for callback when settings change.
+  base::CallbackListSubscription cros_settings_subscription_;
 
   // Currently active scheduled update check policy.
   base::Optional<ScheduledUpdateCheckData> scheduled_update_check_data_;

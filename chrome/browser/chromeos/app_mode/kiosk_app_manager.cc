@@ -708,8 +708,8 @@ void KioskAppManager::MonitorKioskExternalUpdate() {
 }
 
 void KioskAppManager::CleanUp() {
-  local_accounts_subscription_.reset();
-  local_account_auto_login_id_subscription_.reset();
+  local_accounts_subscription_ = {};
+  local_account_auto_login_id_subscription_ = {};
   apps_.clear();
   usb_stick_updater_.reset();
   external_cache_.reset();

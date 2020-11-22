@@ -63,8 +63,8 @@ class VIEWS_EXPORT InstallableInkDrop : public InkDrop,
   InstallableInkDropConfig config() const { return config_; }
 
   // Registers |callback| to be called whenever the highlighted state changes.
-  std::unique_ptr<base::RepeatingClosureList::Subscription>
-  RegisterHighlightedChangedCallback(base::RepeatingClosure callback);
+  base::CallbackListSubscription RegisterHighlightedChangedCallback(
+      base::RepeatingClosure callback);
 
   // Should only be used for inspecting properties of the layer in tests.
   const ui::Layer* layer_for_testing() const { return layer_.get(); }

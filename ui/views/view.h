@@ -129,8 +129,6 @@ using PropertyKey = const void*;
 
 using PropertyChangedCallbacks = base::RepeatingClosureList;
 using PropertyChangedCallback = PropertyChangedCallbacks::CallbackType;
-using PropertyChangedSubscription =
-    std::unique_ptr<PropertyChangedCallbacks::Subscription>;
 
 // The elements in PropertyEffects represent bits which define what effect(s) a
 // changed Property has on the containing class. Additional elements should
@@ -202,7 +200,7 @@ enum PropertyEffects {
 //   Each property should also have a way to "listen" to changes by registering
 //   a callback.
 //
-//   PropertyChangedSubscription AddFrobbleChangedCallback(
+//   base::CallbackListSubscription AddFrobbleChangedCallback(
 //       PropertyChangedCallback callback) WARN_UNUSED_RETURN;
 //
 //   Each callback uses the the existing base::Bind mechanisms which allow for
@@ -214,7 +212,7 @@ enum PropertyEffects {
 //    ...
 //    private:
 //     void OnFrobbleChanged();
-//     PropertyChangeSubscription frobble_changed_subscription_;
+//     base::CallbackListSubscription frobble_changed_subscription_;
 //   }
 //
 //   ...
@@ -226,7 +224,7 @@ enum PropertyEffects {
 //
 //   void MyView::ValidateFrobbleChanged() {
 //     bool frobble_changed = false;
-//     PropertyChangedSubscription subscription =
+//     base::CallbackListSubscription subscription =
 //       frobble_view_->AddFrobbleChangedCallback(
 //           base::BindRepeating([](bool* frobble_changed_ptr) {
 //             *frobble_changed_ptr = true;
@@ -573,9 +571,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Return whether a view is visible.
   bool GetVisible() const;
 
-  // Adds a callback subscription associated with the above Visible property.
-  // The callback will be invoked whenever the Visible property changes.
-  PropertyChangedSubscription AddVisibleChangedCallback(
+  // Adds a callback associated with the above Visible property. The callback
+  // will be invoked whenever the Visible property changes.
+  base::CallbackListSubscription AddVisibleChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // Returns true if this view is drawn on screen.
@@ -591,9 +589,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns whether the view is enabled.
   bool GetEnabled() const;
 
-  // Adds a callback subscription associated with the above |Enabled| property.
-  // The callback will be invoked whenever the property changes.
-  PropertyChangedSubscription AddEnabledChangedCallback(
+  // Adds a callback associated with the above |Enabled| property. The callback
+  // will be invoked whenever the property changes.
+  base::CallbackListSubscription AddEnabledChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // Returns the child views ordered in reverse z-order. That is, views later in
@@ -771,9 +769,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   int GetID() const { return id_; }
   void SetID(int id);
 
-  // Adds a callback subscription associated with the above |ID| property.
-  // The callback will be invoked whenever the property changes.
-  PropertyChangedSubscription AddIDChangedCallback(
+  // Adds a callback associated with the above |ID| property. The callback will
+  // be invoked whenever the property changes.
+  base::CallbackListSubscription AddIDChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // A group id is used to tag views which are part of the same logical group.
@@ -784,9 +782,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns the group id of the view, or -1 if the id is not set yet.
   int GetGroup() const;
 
-  // Adds a callback subscription associated with the above |Group| property.
-  // The callback will be invoked whenever the property changes.
-  PropertyChangedSubscription AddGroupChangedCallback(
+  // Adds a callback associated with the above |Group| property. The callback
+  // will be invoked whenever the property changes.
+  base::CallbackListSubscription AddGroupChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // If this returns true, the views from the same group can each be focused
@@ -913,10 +911,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // the UI directionality.
   void SetFlipCanvasOnPaintForRTLUI(bool enable);
 
-  // Adds a callback subscription associated with the above
-  // FlipCanvasOnPaintForRTLUI property. The callback will be invoked whenever
-  // the FlipCanvasOnPaintForRTLUI property changes.
-  PropertyChangedSubscription AddFlipCanvasOnPaintForRTLUIChangedCallback(
+  // Adds a callback associated with the above FlipCanvasOnPaintForRTLUI
+  // property. The callback will be invoked whenever the
+  // FlipCanvasOnPaintForRTLUI property changes.
+  base::CallbackListSubscription AddFlipCanvasOnPaintForRTLUIChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // When set, this view will ignore base::l18n::IsRTL() and instead be drawn
@@ -1583,7 +1581,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Property Support ----------------------------------------------------------
 
-  PropertyChangedSubscription AddPropertyChangedCallback(
+  base::CallbackListSubscription AddPropertyChangedCallback(
       PropertyKey property,
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
   void OnPropertyChanged(PropertyKey property,

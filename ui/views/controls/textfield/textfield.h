@@ -434,7 +434,7 @@ class VIEWS_EXPORT Textfield : public View,
       bool is_composition_committed) override;
 #endif
 
-  views::PropertyChangedSubscription AddTextChangedCallback(
+  base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
  protected:
@@ -736,7 +736,7 @@ class VIEWS_EXPORT Textfield : public View,
   gfx::Insets extra_insets_ = gfx::Insets();
 
   // Holds the subscription object for the enabled changed callback.
-  PropertyChangedSubscription enabled_changed_subscription_ =
+  base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&Textfield::OnEnabledChanged,
                               base::Unretained(this)));

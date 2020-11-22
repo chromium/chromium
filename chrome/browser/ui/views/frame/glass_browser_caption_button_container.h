@@ -58,7 +58,7 @@ class GlassBrowserCaptionButtonContainer : public views::View,
 
   ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
 
-  std::unique_ptr<ui::TouchUiController::Subscription> subscription_ =
+  base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(
           &GlassBrowserCaptionButtonContainer::UpdateButtons,
           base::Unretained(this)));

@@ -93,7 +93,7 @@ void SupervisedUserGoogleAuthNavigationThrottle::OnGoogleAuthStateChanged() {
 
   switch (result.action()) {
     case content::NavigationThrottle::PROCEED: {
-      google_auth_state_subscription_.reset();
+      google_auth_state_subscription_ = {};
       Resume();
       break;
     }

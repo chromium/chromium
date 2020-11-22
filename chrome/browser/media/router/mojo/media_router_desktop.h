@@ -160,7 +160,7 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
       dial_provider_;
 
   DualMediaSinkService* media_sink_service_;
-  DualMediaSinkService::Subscription media_sink_service_subscription_;
+  base::CallbackListSubscription media_sink_service_subscription_;
 
   // A flag to ensure that we record the provider version once, during the
   // initial event page wakeup attempt.

@@ -156,8 +156,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void OnCanChangeArcAdbSideloading(bool can_change_arc_adb_sideloading);
 
   Profile* profile_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      adb_sideloading_device_policy_subscription_;
+  base::CallbackListSubscription adb_sideloading_device_policy_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<CrostiniHandler> weak_ptr_factory_{this};

@@ -31,7 +31,7 @@ const double kMaxSelectorCount = 200.0;
 }  // namespace
 
 @interface CRWTextFragmentsHandler () {
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> _subscription;
+  base::CallbackListSubscription _subscription;
 }
 
 @property(nonatomic, weak) id<CRWWebViewHandlerDelegate> delegate;

@@ -166,7 +166,7 @@ void MediaNotificationDeviceSelectorView::UpdateCurrentAudioDevice(
 }
 
 MediaNotificationDeviceSelectorView::~MediaNotificationDeviceSelectorView() {
-  audio_device_subscription_.release();
+  audio_device_subscription_ = {};
 
   // If this metric has not been recorded during the lifetime of this view, it
   // means that the device selector was never made available.

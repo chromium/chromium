@@ -61,8 +61,7 @@ class StatsReportingController {
   bool IsEnabled();
 
   // Add an observer |callback| for changes to the setting.
-  using ObserverSubscription = base::CallbackList<void(void)>::Subscription;
-  std::unique_ptr<ObserverSubscription> AddObserver(
+  base::CallbackListSubscription AddObserver(
       const base::RepeatingClosure& callback) WARN_UNUSED_RESULT;
 
   // Called once ownership is taken, |service| is the service of the user taking
@@ -124,7 +123,7 @@ class StatsReportingController {
   PrefService* local_state_;
   bool value_notified_to_observers_;
   base::CallbackList<void(void)> callback_list_;
-  std::unique_ptr<CrosSettings::ObserverSubscription> setting_subscription_;
+  base::CallbackListSubscription setting_subscription_;
 
   base::WeakPtrFactory<StatsReportingController> weak_factory_{this};
 

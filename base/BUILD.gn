@@ -166,6 +166,7 @@ component("base") {
     "callback_helpers.h",
     "callback_internal.cc",
     "callback_internal.h",
+    "callback_list.cc",
     "callback_list.h",
     "cancelable_callback.h",
     "check.cc",

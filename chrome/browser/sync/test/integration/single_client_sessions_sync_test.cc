@@ -236,9 +236,7 @@ class FaviconForPageUrlAvailableChecker : public StatusChangeChecker {
   Profile* const profile_;
   const GURL page_url_;
   const bool should_be_available_;
-  std::unique_ptr<
-      history::HistoryService::FaviconsChangedCallbackList::Subscription>
-      callback_subscription_;
+  base::CallbackListSubscription callback_subscription_;
   bool exit_condition_satisfied_ = false;
   base::CancelableTaskTracker tracker_;
 };

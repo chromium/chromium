@@ -98,8 +98,7 @@ class AdbSideloadingAllowanceModePolicyHandler {
 
   std::unique_ptr<base::OneShotTimer> notification_timer_;
 
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      policy_subscription_;
+  base::CallbackListSubscription policy_subscription_;
 
   CheckSideloadingStatusCallback check_sideloading_status_callback_;
 

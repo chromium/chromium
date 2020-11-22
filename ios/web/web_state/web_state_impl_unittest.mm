@@ -817,10 +817,12 @@ TEST_F(WebStateImplTest, ScriptCommand) {
   const GURL kUrl1("http://foo");
   bool is_called_1 = false;
   web::FakeMainWebFrame main_frame(GURL::EmptyGURL());
-  auto subscription_1 = web_state_->AddScriptCommandCallback(
-      base::BindRepeating(&HandleScriptCommand, &is_called_1, &value_1, kUrl1,
-                          /*expected_user_is_interacting*/ false, &main_frame),
-      kPrefix1);
+  base::CallbackListSubscription subscription_1 =
+      web_state_->AddScriptCommandCallback(
+          base::BindRepeating(
+              &HandleScriptCommand, &is_called_1, &value_1, kUrl1,
+              /*expected_user_is_interacting*/ false, &main_frame),
+          kPrefix1);
 
   const std::string kPrefix2("prefix2");
   const std::string kCommand2("prefix2.command2");
@@ -828,10 +830,12 @@ TEST_F(WebStateImplTest, ScriptCommand) {
   value_2.SetString("c", "d");
   const GURL kUrl2("http://bar");
   bool is_called_2 = false;
-  auto subscription_2 = web_state_->AddScriptCommandCallback(
-      base::BindRepeating(&HandleScriptCommand, &is_called_2, &value_2, kUrl2,
-                          /*expected_user_is_interacting*/ false, &main_frame),
-      kPrefix2);
+  base::CallbackListSubscription subscription_2 =
+      web_state_->AddScriptCommandCallback(
+          base::BindRepeating(
+              &HandleScriptCommand, &is_called_2, &value_2, kUrl2,
+              /*expected_user_is_interacting*/ false, &main_frame),
+          kPrefix2);
 
   const std::string kPrefix3("prefix3");
   const std::string kCommand3("prefix3.command3");
@@ -840,10 +844,12 @@ TEST_F(WebStateImplTest, ScriptCommand) {
   const GURL kUrl3("http://iframe");
   bool is_called_3 = false;
   web::FakeChildWebFrame subframe(GURL::EmptyGURL());
-  auto subscription_3 = web_state_->AddScriptCommandCallback(
-      base::BindRepeating(&HandleScriptCommand, &is_called_3, &value_3, kUrl3,
-                          /*expected_user_is_interacting*/ false, &subframe),
-      kPrefix3);
+  base::CallbackListSubscription subscription_3 =
+      web_state_->AddScriptCommandCallback(
+          base::BindRepeating(
+              &HandleScriptCommand, &is_called_3, &value_3, kUrl3,
+              /*expected_user_is_interacting*/ false, &subframe),
+          kPrefix3);
 
   // Check that a irrelevant or invalid command does not trigger the callbacks.
   web_state_->OnScriptCommandReceived("wohoo.blah", value_1, kUrl1,
@@ -882,7 +888,7 @@ TEST_F(WebStateImplTest, ScriptCommand) {
   is_called_3 = false;
 
   // Remove the callback and check it is no longer called.
-  subscription_1.reset();
+  subscription_1 = {};
   web_state_->OnScriptCommandReceived(kCommand1, value_1, kUrl1,
                                       /*user_is_interacting*/ false,
                                       /*sender_frame*/ &main_frame);

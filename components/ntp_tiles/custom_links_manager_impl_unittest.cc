@@ -447,7 +447,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldDeleteMostVisitedOnHistoryDeletion) {
 
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.
@@ -476,7 +476,7 @@ TEST_F(CustomLinksManagerImplTest,
        ShouldDeleteMostVisitedOnAllHistoryDeletion) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.
@@ -509,7 +509,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldDeleteOnHistoryDeletionAfterShutdown) {
 
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Delete all Most Visited links.
@@ -529,7 +529,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldDeleteOnHistoryDeletionAfterShutdown) {
 TEST_F(CustomLinksManagerImplTest, ShouldNotDeleteCustomLinkOnHistoryDeletion) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.
@@ -573,7 +573,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldNotDeleteCustomLinkOnHistoryDeletion) {
 TEST_F(CustomLinksManagerImplTest, ShouldIgnoreHistoryExpiredDeletions) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.
@@ -607,7 +607,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldIgnoreHistoryExpiredDeletions) {
 TEST_F(CustomLinksManagerImplTest, ShouldIgnoreEmptyHistoryDeletions) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.
@@ -628,7 +628,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldIgnoreEmptyHistoryDeletions) {
 TEST_F(CustomLinksManagerImplTest, ShouldNotUndoAfterHistoryDeletion) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.
@@ -660,7 +660,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldNotUndoAfterHistoryDeletion) {
 TEST_F(CustomLinksManagerImplTest, UpdateListAfterRemoteChange) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.
@@ -690,7 +690,7 @@ TEST_F(CustomLinksManagerImplTest, UpdateListAfterRemoteChange) {
 TEST_F(CustomLinksManagerImplTest, InitializeListAfterRemoteChange) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   ASSERT_FALSE(custom_links_->IsInitialized());
@@ -711,7 +711,7 @@ TEST_F(CustomLinksManagerImplTest, InitializeListAfterRemoteChange) {
 TEST_F(CustomLinksManagerImplTest, UninitializeListAfterRemoteChange) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.
@@ -731,7 +731,7 @@ TEST_F(CustomLinksManagerImplTest, UninitializeListAfterRemoteChange) {
 TEST_F(CustomLinksManagerImplTest, ClearThenUninitializeListAfterRemoteChange) {
   // Set up Most Visited callback.
   base::MockCallback<base::RepeatingClosure> callback;
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       custom_links_->RegisterCallbackForOnChanged(callback.Get());
 
   // Initialize.

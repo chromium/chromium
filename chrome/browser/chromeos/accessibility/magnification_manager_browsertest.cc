@@ -142,7 +142,7 @@ class MockMagnificationObserver {
   bool observed_ = false;
   bool observed_enabled_ = false;
 
-  std::unique_ptr<AccessibilityStatusSubscription> accessibility_subscription_;
+  base::CallbackListSubscription accessibility_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(MockMagnificationObserver);
 };

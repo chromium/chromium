@@ -329,15 +329,13 @@ class WebState : public base::SupportsUserData {
            web::WebFrame* sender_frame);
   using ScriptCommandCallback =
       base::RepeatingCallback<ScriptCommandCallbackSignature>;
-  using ScriptCommandSubscription =
-      base::RepeatingCallbackList<ScriptCommandCallbackSignature>::Subscription;
   // Registers |callback| for JS message whose 'command' matches
-  // |command_prefix|. The returned ScriptCommandSubscription should be stored
-  // by the caller. When the description object is destroyed, it will unregister
-  // |callback| if this WebState is still alive, and do nothing if this WebState
-  // is already destroyed. Therefore if the caller want to stop receiving JS
-  // messages it can just destroy the subscription object.
-  virtual std::unique_ptr<ScriptCommandSubscription> AddScriptCommandCallback(
+  // |command_prefix|. The returned subscription should be stored by the caller.
+  // When the description object is destroyed, it will unregister |callback| if
+  // this WebState is still alive, and do nothing if this WebState is already
+  // destroyed. Therefore if the caller want to stop receiving JS messages it
+  // can just destroy the subscription.
+  virtual base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,
       const std::string& command_prefix) WARN_UNUSED_RESULT = 0;
 

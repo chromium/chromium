@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncHandleRegistry
 
    private:
     base::ScopedClosureRunner remove_runner_;
-    std::unique_ptr<EventCallbackList::Subscription> subscription_;
+    base::CallbackListSubscription subscription_;
   };
   using EventCallbackSubscription = std::unique_ptr<Subscription>;
 

@@ -120,7 +120,7 @@ class CaptivePortalTabHelper
   // portal resolution.
   bool is_captive_portal_window_;
 
-  std::unique_ptr<CaptivePortalService::Subscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

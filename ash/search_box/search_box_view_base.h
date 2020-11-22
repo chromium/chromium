@@ -199,7 +199,7 @@ class SearchBoxViewBase : public views::WidgetDelegateView,
   // Whether to show assistant button.
   bool show_assistant_button_ = false;
 
-  views::PropertyChangedSubscription enabled_changed_subscription_ =
+  base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&SearchBoxViewBase::OnEnabledChanged,
                               base::Unretained(this)));

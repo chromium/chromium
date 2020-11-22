@@ -50,8 +50,6 @@ class BrowserSwitcherPrefs : public KeyedService,
 
  public:
   using PrefsChangedCallback = base::RepeatingCallback<PrefsChangedSignature>;
-  using CallbackSubscription =
-      base::CallbackList<PrefsChangedSignature>::Subscription;
 
   explicit BrowserSwitcherPrefs(Profile* profile);
   ~BrowserSwitcherPrefs() override;
@@ -125,7 +123,7 @@ class BrowserSwitcherPrefs : public KeyedService,
                        const policy::PolicyMap& previous,
                        const policy::PolicyMap& current) override;
 
-  std::unique_ptr<CallbackSubscription> RegisterPrefsChangedCallback(
+  base::CallbackListSubscription RegisterPrefsChangedCallback(
       PrefsChangedCallback cb);
 
  protected:

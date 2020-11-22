@@ -41,8 +41,7 @@ class ShutdownPolicyHandler {
 
   Delegate* delegate_;
 
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      shutdown_policy_subscription_;
+  base::CallbackListSubscription shutdown_policy_subscription_;
 
   base::WeakPtrFactory<ShutdownPolicyHandler> weak_factory_{this};
 

@@ -89,10 +89,8 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
 
   bool auto_launched_with_zero_delay_ = false;
 
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      local_accounts_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      local_account_auto_login_id_subscription_;
+  base::CallbackListSubscription local_accounts_subscription_;
+  base::CallbackListSubscription local_account_auto_login_id_subscription_;
 
   // Current app session.
   std::unique_ptr<AppSession> app_session_;

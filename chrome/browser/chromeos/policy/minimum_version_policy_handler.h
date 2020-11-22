@@ -301,8 +301,7 @@ class MinimumVersionPolicyHandler
 
   base::OnceClosure fetch_eol_callback_;
 
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      policy_subscription_;
+  base::CallbackListSubscription policy_subscription_;
 
   // Handles showing in-session update required notifications on the basis of
   // current network and time to reach the deadline.

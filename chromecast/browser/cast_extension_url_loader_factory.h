@@ -94,8 +94,7 @@ class CastExtensionURLLoaderFactory
   mojo::Remote<network::mojom::URLLoaderFactory> extension_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> network_factory_;
 
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      browser_context_shutdown_subscription_;
+  base::CallbackListSubscription browser_context_shutdown_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(CastExtensionURLLoaderFactory);
 };

@@ -420,7 +420,7 @@ void MenuItemView::SetSelected(bool selected) {
   OnPropertyChanged(&selected_, kPropertyEffectsPaint);
 }
 
-PropertyChangedSubscription MenuItemView::AddSelectedChangedCallback(
+base::CallbackListSubscription MenuItemView::AddSelectedChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&selected_, std::move(callback));
 }

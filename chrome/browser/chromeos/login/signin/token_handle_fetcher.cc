@@ -63,7 +63,7 @@ void TokenHandleFetcher::BackfillToken(Profile* profile,
   if (!identity_manager_->HasAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountId(
               signin::ConsentLevel::kNotRequired))) {
-    profile_shutdown_notification_ =
+    profile_shutdown_subscription_ =
         TokenHandleFetcherShutdownNotifierFactory::GetInstance()
             ->Get(profile)
             ->Subscribe(base::Bind(&TokenHandleFetcher::OnProfileDestroyed,

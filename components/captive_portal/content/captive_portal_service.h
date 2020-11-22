@@ -61,8 +61,6 @@ class CaptivePortalService : public KeyedService {
     GURL landing_url;
   };
 
-  using Subscription = base::CallbackList<void(const Results&)>::Subscription;
-
   CaptivePortalService(
       content::BrowserContext* browser_context,
       PrefService* pref_service,
@@ -75,7 +73,7 @@ class CaptivePortalService : public KeyedService {
   // Always sends the result notification asynchronously.
   void DetectCaptivePortal(CaptivePortalProbeReason probe_reason);
 
-  std::unique_ptr<Subscription> RegisterCallback(
+  base::CallbackListSubscription RegisterCallback(
       const base::RepeatingCallback<void(const Results&)>& cb) {
     return callback_list_.Add(cb);
   }

@@ -114,7 +114,7 @@ void DeviceCloudPolicyInitializer::Shutdown() {
 
   policy_store_->RemoveObserver(this);
   enrollment_handler_.reset();
-  state_keys_update_subscription_.reset();
+  state_keys_update_subscription_ = {};
   is_initialized_ = false;
 }
 

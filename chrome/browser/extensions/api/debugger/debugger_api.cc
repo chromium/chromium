@@ -216,8 +216,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   content::NotificationRegistrar registrar_;
   int last_request_id_ = 0;
   PendingRequests pending_requests_;
-  std::unique_ptr<ExtensionDevToolsInfoBarDelegate::CallbackList::Subscription>
-      subscription_;
+  base::CallbackListSubscription subscription_;
   api::debugger::DetachReason detach_reason_ =
       api::debugger::DETACH_REASON_TARGET_CLOSED;
 

@@ -119,9 +119,7 @@ class PrintingApiTest : public ExtensionApiTest {
         context, base::BindRepeating(&BuildTestCupsPrintersManager));
   }
 
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      create_services_subscription_;
+  base::CallbackListSubscription create_services_subscription_;
 
   scoped_refptr<printing::TestPrintBackend> test_print_backend_;
 };

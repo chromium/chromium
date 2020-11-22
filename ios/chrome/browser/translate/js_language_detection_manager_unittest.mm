@@ -283,7 +283,7 @@ class JsLanguageDetectionManagerDetectLanguageTest
   std::vector<std::unique_ptr<base::DictionaryValue>> commands_received_;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 // Tests if |__gCrWeb.languageDetection.detectLanguage| correctly informs the

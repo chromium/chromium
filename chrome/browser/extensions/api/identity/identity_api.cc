@@ -109,9 +109,7 @@ void IdentityAPI::SetConsentResult(const std::string& result,
   on_set_consent_result_callback_list_.Notify(result, window_id);
 }
 
-std::unique_ptr<base::RepeatingCallbackList<
-    IdentityAPI::OnSetConsentResultSignature>::Subscription>
-IdentityAPI::RegisterOnSetConsentResultCallback(
+base::CallbackListSubscription IdentityAPI::RegisterOnSetConsentResultCallback(
     const base::RepeatingCallback<OnSetConsentResultSignature>& callback) {
   return on_set_consent_result_callback_list_.Add(callback);
 }
@@ -129,8 +127,8 @@ BrowserContextKeyedAPIFactory<IdentityAPI>* IdentityAPI::GetFactoryInstance() {
   return g_identity_api_factory.Pointer();
 }
 
-std::unique_ptr<base::OnceCallbackList<void()>::Subscription>
-IdentityAPI::RegisterOnShutdownCallback(base::OnceClosure cb) {
+base::CallbackListSubscription IdentityAPI::RegisterOnShutdownCallback(
+    base::OnceClosure cb) {
   return on_shutdown_callback_list_.Add(std::move(cb));
 }
 

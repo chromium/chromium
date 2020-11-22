@@ -107,11 +107,8 @@ class MediaNotificationDeviceSelectorView
   ExpandDeviceSelectorButton* expand_button_ = nullptr;
   views::View* device_entry_views_container_ = nullptr;
 
-  std::unique_ptr<MediaNotificationDeviceProvider::
-                      GetOutputDevicesCallbackList::Subscription>
-      audio_device_subscription_;
-  std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
-      is_device_switching_enabled_subscription_;
+  base::CallbackListSubscription audio_device_subscription_;
+  base::CallbackListSubscription is_device_switching_enabled_subscription_;
 
   std::unique_ptr<media_router::CastDialogController> cast_controller_;
 

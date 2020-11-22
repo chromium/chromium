@@ -108,8 +108,8 @@ void DeviceDisablingTest::SetDeviceDisabledPolicy() {
 
 void DeviceDisablingTest::MarkDisabledAndWaitForPolicyFetch() {
   base::RunLoop run_loop;
-  // Set up an |observer| that will wait for the disabled setting to change.
-  std::unique_ptr<CrosSettings::ObserverSubscription> observer =
+  // Set up an observer that will wait for the disabled setting to change.
+  base::CallbackListSubscription subscription =
       CrosSettings::Get()->AddSettingsObserver(kDeviceDisabled,
                                                run_loop.QuitClosure());
   SetDeviceDisabledPolicy();

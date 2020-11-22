@@ -23,8 +23,7 @@ class MockWMRHolographicSpace : public WMRHolographicSpace {
       override;
   ABI::Windows::Graphics::Holographic::HolographicSpaceUserPresence
   UserPresence() override;
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddUserPresenceChangedCallback(
+  base::CallbackListSubscription AddUserPresenceChangedCallback(
       const base::RepeatingCallback<void()>& cb) override;
 
  private:

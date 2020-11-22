@@ -231,8 +231,8 @@ class ParentPermissionInputSection : public views::TextfieldController {
     main_view->set_selected_parent_permission_email_address(parent_email);
   }
 
-  views::PropertyChangedSubscription parent_0_subscription_;
-  views::PropertyChangedSubscription parent_1_subscription_;
+  base::CallbackListSubscription parent_0_subscription_;
+  base::CallbackListSubscription parent_1_subscription_;
 
   // The credential input field.
   views::Textfield* credential_input_field_ = nullptr;

@@ -182,7 +182,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   // Highlights the ink drop for the button.
   void SetHighlighted(bool bubble_visible);
 
-  PropertyChangedSubscription AddStateChangedCallback(
+  base::CallbackListSubscription AddStateChangedCallback(
       PropertyChangedCallback callback);
 
   // Overridden from View:
@@ -355,7 +355,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   // ButtonController.
   std::unique_ptr<ButtonController> button_controller_;
 
-  PropertyChangedSubscription enabled_changed_subscription_{
+  base::CallbackListSubscription enabled_changed_subscription_{
       AddEnabledChangedCallback(base::BindRepeating(&Button::OnEnabledChanged,
                                                     base::Unretained(this)))};
 

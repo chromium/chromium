@@ -4549,7 +4549,7 @@ void NavigationRequest::RenderProcessBlockedStateChanged(bool blocked) {
 
 void NavigationRequest::StopCommitTimeout() {
   commit_timeout_timer_.Stop();
-  render_process_blocked_state_changed_subscription_.reset();
+  render_process_blocked_state_changed_subscription_ = {};
   GetRenderFrameHost()->GetRenderWidgetHost()->RendererIsResponsive();
 }
 
@@ -4599,7 +4599,7 @@ void NavigationRequest::OnCommitTimeout() {
   UMA_HISTOGRAM_BOOLEAN("Navigation.CommitTimeout.IsMainFrame",
                         frame_tree_node_->IsMainFrame());
   base::UmaHistogramSparse("Navigation.CommitTimeout.ErrorCode", -net_error_);
-  render_process_blocked_state_changed_subscription_.reset();
+  render_process_blocked_state_changed_subscription_ = {};
   GetRenderFrameHost()->GetRenderWidgetHost()->RendererIsUnresponsive(
       base::BindRepeating(&NavigationRequest::RestartCommitTimeout,
                           weak_factory_.GetWeakPtr()));

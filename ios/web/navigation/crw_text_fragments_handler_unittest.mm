@@ -52,12 +52,12 @@ class MockWebStateImpl : public web::WebStateImpl {
   MOCK_METHOD1(ExecuteJavaScript, void(const base::string16&));
   MOCK_CONST_METHOD0(GetLastCommittedURL, const GURL&());
 
-  std::unique_ptr<web::WebState::ScriptCommandSubscription>
-  AddScriptCommandCallback(const web::WebState::ScriptCommandCallback& callback,
-                           const std::string& command_prefix) override {
+  base::CallbackListSubscription AddScriptCommandCallback(
+      const web::WebState::ScriptCommandCallback& callback,
+      const std::string& command_prefix) override {
     last_callback_ = callback;
     last_command_prefix_ = command_prefix;
-    return nil;
+    return {};
   }
 
   web::WebState::ScriptCommandCallback last_callback() {

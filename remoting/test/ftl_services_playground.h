@@ -75,8 +75,7 @@ class FtlServicesPlayground {
 
   // Subscription must be deleted before |messaging_client_|.
   std::unique_ptr<FtlMessagingClient> messaging_client_;
-  std::unique_ptr<FtlMessagingClient::MessageCallbackSubscription>
-      message_subscription_;
+  base::CallbackListSubscription message_subscription_;
 
   base::OnceClosure receive_messages_done_callback_;
 

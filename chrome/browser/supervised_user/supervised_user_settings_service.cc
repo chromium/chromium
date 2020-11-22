@@ -87,8 +87,7 @@ void SupervisedUserSettingsService::Init(
   store_->AddObserver(this);
 }
 
-std::unique_ptr<
-    SupervisedUserSettingsService::SettingsCallbackList::Subscription>
+base::CallbackListSubscription
 SupervisedUserSettingsService::SubscribeForSettingsChange(
     const SettingsCallback& callback) {
   if (IsReady()) {
@@ -99,8 +98,7 @@ SupervisedUserSettingsService::SubscribeForSettingsChange(
   return settings_callback_list_.Add(callback);
 }
 
-std::unique_ptr<
-    SupervisedUserSettingsService::ShutdownCallbackList::Subscription>
+base::CallbackListSubscription
 SupervisedUserSettingsService::SubscribeForShutdown(
     const ShutdownCallback& callback) {
   return shutdown_callback_list_.Add(callback);

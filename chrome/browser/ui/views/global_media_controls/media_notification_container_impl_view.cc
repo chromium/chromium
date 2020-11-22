@@ -451,9 +451,7 @@ void MediaNotificationContainerImplView::OnDeviceSelectorViewSizeChanged() {
   OnSizeChanged();
 }
 
-std::unique_ptr<
-    MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::Subscription>
-MediaNotificationContainerImplView::
+base::CallbackListSubscription MediaNotificationContainerImplView::
     RegisterAudioOutputDeviceDescriptionsCallback(
         MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
             CallbackType callback) {
@@ -461,8 +459,7 @@ MediaNotificationContainerImplView::
       std::move(callback));
 }
 
-std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
-MediaNotificationContainerImplView::
+base::CallbackListSubscription MediaNotificationContainerImplView::
     RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
         base::RepeatingCallback<void(bool)> callback) {
   return service_->RegisterIsAudioOutputDeviceSwitchingSupportedCallback(

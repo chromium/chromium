@@ -444,9 +444,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   base::ScopedTempDir scoped_temp_dir_;
   int next_unique_file_suffix_ = 1;
 
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,

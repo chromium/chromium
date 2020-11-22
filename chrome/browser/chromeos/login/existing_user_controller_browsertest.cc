@@ -475,7 +475,7 @@ class ExistingUserControllerPublicSessionTest
     // If both settings have changed we need to wait for both to
     // propagate, so check the new values against the old ones.
     scoped_refptr<content::MessageLoopRunner> runner1;
-    std::unique_ptr<CrosSettings::ObserverSubscription> subscription1;
+    base::CallbackListSubscription subscription1;
     if (!proto.has_device_local_accounts() ||
         !proto.device_local_accounts().has_auto_login_id() ||
         proto.device_local_accounts().auto_login_id() != user_email) {
@@ -485,7 +485,7 @@ class ExistingUserControllerPublicSessionTest
           base::BindLambdaForTesting([&]() { runner1->Quit(); }));
     }
     scoped_refptr<content::MessageLoopRunner> runner2;
-    std::unique_ptr<CrosSettings::ObserverSubscription> subscription2;
+    base::CallbackListSubscription subscription2;
     if (!proto.has_device_local_accounts() ||
         !proto.device_local_accounts().has_auto_login_delay() ||
         proto.device_local_accounts().auto_login_delay() != delay) {

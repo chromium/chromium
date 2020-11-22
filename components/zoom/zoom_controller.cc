@@ -344,7 +344,7 @@ void ZoomController::RenderFrameHostChanged(
     content::RenderFrameHost* old_host,
     content::RenderFrameHost* new_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // If our associated HostZoomMap changes, update our event subscription.
+  // If our associated HostZoomMap changes, update our subscription.
   content::HostZoomMap* new_host_zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents());
   if (new_host_zoom_map == host_zoom_map_)

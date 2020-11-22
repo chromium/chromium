@@ -104,8 +104,7 @@ class ChromeMetricsServicesManagerClient
   PrefService* const local_state_;
 
 #if defined(OS_CHROMEOS)
-  std::unique_ptr<chromeos::StatsReportingController::ObserverSubscription>
-      reporting_setting_observer_;
+  base::CallbackListSubscription reporting_setting_subscription_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServicesManagerClient);

@@ -35,7 +35,7 @@ void OnWillCreateBrowserContextServices(
 
 }  // namespace
 
-ScopedSigninClientFactory SetUpSigninClient(
+base::CallbackListSubscription SetUpSigninClient(
     network::TestURLLoaderFactory* test_url_loader_factory) {
   return BrowserContextDependencyManager::GetInstance()
       ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(

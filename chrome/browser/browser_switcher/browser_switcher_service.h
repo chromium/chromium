@@ -118,8 +118,6 @@ class BrowserSwitcherService : public KeyedService {
   using AllRulesetsParsedCallbackSignature = void(BrowserSwitcherService*);
   using AllRulesetsParsedCallback =
       base::RepeatingCallback<AllRulesetsParsedCallbackSignature>;
-  using CallbackSubscription =
-      base::CallbackList<AllRulesetsParsedCallbackSignature>::Subscription;
 
  public:
   explicit BrowserSwitcherService(Profile* profile);
@@ -187,15 +185,14 @@ class BrowserSwitcherService : public KeyedService {
 
   // Registers a callback that triggers after the sitelists are done downloading
   // and all rules are applied.
-  std::unique_ptr<CallbackSubscription> RegisterAllRulesetsParsedCallback(
+  base::CallbackListSubscription RegisterAllRulesetsParsedCallback(
       AllRulesetsParsedCallback callback);
 
   std::unique_ptr<XmlDownloader> sitelist_downloader_;
 
   Profile* profile_;
   BrowserSwitcherPrefs prefs_;
-  std::unique_ptr<BrowserSwitcherPrefs::CallbackSubscription>
-      prefs_subscription_;
+  base::CallbackListSubscription prefs_subscription_;
 
   // CallbackList for OnAllRulesetsParsed() listeners.
   base::CallbackList<AllRulesetsParsedCallbackSignature> callback_list_;

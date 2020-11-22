@@ -101,8 +101,7 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   SuggestionView* highlighted_candidate_ = nullptr;
 
   // TODO(crbug/1099062): Add tests for mouse hovered and pressed.
-  base::flat_map<views::View*, views::PropertyChangedSubscription>
-      subscriptions_;
+  base::flat_map<views::View*, base::CallbackListSubscription> subscriptions_;
 };
 
 }  // namespace ime

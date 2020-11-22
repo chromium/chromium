@@ -59,8 +59,7 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
   // setting according to policy.
   void NotifyTimezoneAutomaticDetectionPolicy();
 
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      system_timezone_policy_subscription_;
+  base::CallbackListSubscription system_timezone_policy_subscription_;
 
   // Used to listen to changes to the system time zone detection policy.
   PrefChangeRegistrar local_state_pref_change_registrar_;

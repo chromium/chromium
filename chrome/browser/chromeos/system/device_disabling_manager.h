@@ -130,10 +130,8 @@ class DeviceDisablingManager {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      device_disabled_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      disabled_message_subscription_;
+  base::CallbackListSubscription device_disabled_subscription_;
+  base::CallbackListSubscription disabled_message_subscription_;
 
   // Indicates whether the device was disabled when the cros settings were last
   // read.

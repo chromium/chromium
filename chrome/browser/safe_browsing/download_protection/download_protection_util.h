@@ -118,8 +118,6 @@ using ClientDownloadRequestCallbackList =
                                      const ClientDownloadRequest*)>;
 using ClientDownloadRequestCallback =
     ClientDownloadRequestCallbackList::CallbackType;
-using ClientDownloadRequestSubscription =
-    std::unique_ptr<ClientDownloadRequestCallbackList::Subscription>;
 
 // Callbacks run on the main thread when a NativeFileSystemWriteRequest has been
 // formed for a write operation.
@@ -127,8 +125,6 @@ using NativeFileSystemWriteRequestCallbackList =
     base::RepeatingCallbackList<void(const ClientDownloadRequest*)>;
 using NativeFileSystemWriteRequestCallback =
     NativeFileSystemWriteRequestCallbackList::CallbackType;
-using NativeFileSystemWriteRequestSubscription =
-    std::unique_ptr<NativeFileSystemWriteRequestCallbackList::Subscription>;
 
 // Callbacks run on the main thread when a PPAPI ClientDownloadRequest has been
 // formed for a download.
@@ -136,8 +132,6 @@ using PPAPIDownloadRequestCallbackList =
     base::RepeatingCallbackList<void(const ClientDownloadRequest*)>;
 using PPAPIDownloadRequestCallback =
     PPAPIDownloadRequestCallbackList::CallbackType;
-using PPAPIDownloadRequestSubscription =
-    std::unique_ptr<PPAPIDownloadRequestCallbackList::Subscription>;
 
 void RecordCountOfWhitelistedDownload(WhitelistType type);
 

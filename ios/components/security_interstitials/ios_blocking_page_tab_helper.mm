@@ -27,7 +27,7 @@ const char kCommandPrefix[] = "blockingPage";
 #pragma mark - IOSBlockingPageTabHelper
 
 IOSBlockingPageTabHelper::IOSBlockingPageTabHelper(web::WebState* web_state)
-    : subscription_(nullptr), navigation_id_listener_(web_state, this) {
+    : navigation_id_listener_(web_state, this) {
   auto command_callback =
       base::BindRepeating(&IOSBlockingPageTabHelper::OnBlockingPageCommand,
                           weak_factory_.GetWeakPtr());

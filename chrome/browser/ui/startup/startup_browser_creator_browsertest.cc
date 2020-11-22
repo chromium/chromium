@@ -202,7 +202,7 @@ class SessionsRestoredWaiter {
   void OnSessionRestoreDone(int num_tabs_restored);
 
   // For automatically unsubscribing from callback-based notifications.
-  SessionRestore::CallbackSubscription callback_subscription_;
+  base::CallbackListSubscription callback_subscription_;
   base::OnceClosure quit_closure_;
   int num_session_restores_expected_;
   int num_sessions_restored_ = 0;

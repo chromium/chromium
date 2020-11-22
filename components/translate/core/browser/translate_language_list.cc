@@ -254,8 +254,8 @@ void TranslateLanguageList::SetResourceRequestsAllowed(bool allowed) {
   }
 }
 
-std::unique_ptr<TranslateLanguageList::EventCallbackList::Subscription>
-TranslateLanguageList::RegisterEventCallback(const EventCallback& callback) {
+base::CallbackListSubscription TranslateLanguageList::RegisterEventCallback(
+    const EventCallback& callback) {
   return callback_list_.Add(callback);
 }
 

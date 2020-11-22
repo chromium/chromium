@@ -415,8 +415,7 @@ class CaptivePortalObserver {
 
   captive_portal::CaptivePortalService* captive_portal_service_;
 
-  std::unique_ptr<captive_portal::CaptivePortalService::Subscription>
-      subscription_;
+  base::CallbackListSubscription subscription_;
 
   // Last result received.
   CaptivePortalResult captive_portal_result_;

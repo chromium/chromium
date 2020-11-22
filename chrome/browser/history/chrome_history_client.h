@@ -61,9 +61,7 @@ class ChromeHistoryClient : public history::HistoryClient,
   base::RepeatingCallback<void(const std::set<GURL>&)> on_bookmarks_removed_;
 
   // Subscription for notifications of changes to favicons.
-  std::unique_ptr<
-      history::HistoryService::FaviconsChangedCallbackList::Subscription>
-      favicons_changed_subscription_;
+  base::CallbackListSubscription favicons_changed_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeHistoryClient);
 };

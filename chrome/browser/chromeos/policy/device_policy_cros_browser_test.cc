@@ -167,11 +167,10 @@ void DevicePolicyCrosTestHelper::RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
   base::RunLoop run_loop;
 
   // For calls from SetPolicy().
-  std::vector<std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>>
-      observers = {};
+  std::vector<base::CallbackListSubscription> subscriptions = {};
   for (auto setting_it = settings.cbegin(); setting_it != settings.cend();
        setting_it++) {
-    observers.push_back(chromeos::CrosSettings::Get()->AddSettingsObserver(
+    subscriptions.push_back(chromeos::CrosSettings::Get()->AddSettingsObserver(
         *setting_it, run_loop.QuitClosure()));
   }
   RefreshDevicePolicy();

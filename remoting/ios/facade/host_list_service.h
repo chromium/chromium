@@ -46,19 +46,17 @@ class HostListService {
     std::string localized_description;
   };
 
-  using CallbackSubscription = base::RepeatingClosureList::Subscription;
-
   // Returns the singleton instance.
   static HostListService* GetInstance();
 
   ~HostListService();
 
   // Registers callback to be called when the host list state is changed.
-  std::unique_ptr<CallbackSubscription> RegisterHostListStateCallback(
+  base::CallbackListSubscription RegisterHostListStateCallback(
       const base::RepeatingClosure& callback);
 
   // Registers callback to be called when the host list has failed to fetch.
-  std::unique_ptr<CallbackSubscription> RegisterFetchFailureCallback(
+  base::CallbackListSubscription RegisterFetchFailureCallback(
       const base::RepeatingClosure& callback);
 
   // Start a request to fetch the host list. Calls either the host list state

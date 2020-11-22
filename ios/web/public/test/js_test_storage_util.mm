@@ -147,7 +147,7 @@ bool SetAsyncStorage(WebFrame* web_frame,
   // when the async is done, so listen for that here.
   __block bool async_success = false;
   __block NSString* block_error_message;
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_ =
+  base::CallbackListSubscription subscription_ =
       web_state->AddScriptCommandCallback(
           base::BindRepeating(^(const base::DictionaryValue& message,
                                 const GURL& page_url, bool user_is_interacting,
@@ -197,7 +197,7 @@ bool GetAsyncStorage(WebFrame* web_frame,
   __block bool async_success = false;
   __block NSString* block_result;
   __block NSString* block_error_message;
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_ =
+  base::CallbackListSubscription subscription_ =
       web_state->AddScriptCommandCallback(
           base::BindRepeating(^(const base::DictionaryValue& message,
                                 const GURL& page_url, bool user_is_interacting,

@@ -96,9 +96,7 @@ class GaiaRemoteConsentFlow
 
   std::unique_ptr<signin::AccountsCookieMutator::SetAccountsInCookieTask>
       set_accounts_in_cookie_task_;
-  std::unique_ptr<base::RepeatingCallbackList<
-      void(const std::string&, const std::string&)>::Subscription>
-      identity_api_set_consent_result_subscription_;
+  base::CallbackListSubscription identity_api_set_consent_result_subscription_;
   ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       scoped_observer_;
 };

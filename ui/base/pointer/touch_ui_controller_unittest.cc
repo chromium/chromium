@@ -25,7 +25,7 @@ class TestObserver {
 
  private:
   int touch_ui_changes_ = 0;
-  std::unique_ptr<ui::TouchUiController::Subscription> subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 }  // namespace

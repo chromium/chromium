@@ -681,8 +681,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
     return spare_render_process_host_;
   }
 
-  std::unique_ptr<base::CallbackList<void(RenderProcessHost*)>::Subscription>
-  RegisterSpareRenderProcessHostChangedCallback(
+  base::CallbackListSubscription RegisterSpareRenderProcessHostChangedCallback(
       const base::RepeatingCallback<void(RenderProcessHost*)>& cb) {
     // Do an initial notification, as the subscriber will need to know what the
     // current spare host is.
@@ -1178,10 +1177,9 @@ bool PrepareToAddNewPluginExceptions(int process_id) {
 
   process->CleanupNetworkServicePluginExceptionsUponDestruction();
 
-  static base::NoDestructor<
-      std::unique_ptr<base::CallbackList<void()>::Subscription>>
+  static base::NoDestructor<base::CallbackListSubscription>
       s_crash_handler_subscription;
-  if (!*s_crash_handler_subscription) {
+  if (!(*s_crash_handler_subscription)) {
     *s_crash_handler_subscription = RegisterNetworkServiceCrashHandler(
         base::BindRepeating(&OnNetworkServiceCrashRestorePluginExceptions));
   }
@@ -3056,7 +3054,7 @@ RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHostForTesting() {
 }
 
 // static
-std::unique_ptr<base::CallbackList<void(RenderProcessHost*)>::Subscription>
+base::CallbackListSubscription
 RenderProcessHost::RegisterSpareRenderProcessHostChangedCallback(
     const base::RepeatingCallback<void(RenderProcessHost*)>& cb) {
   return SpareRenderProcessHostManager::GetInstance()
@@ -3709,7 +3707,7 @@ bool RenderProcessHostImpl::IsBlocked() {
   return is_blocked_;
 }
 
-std::unique_ptr<RenderProcessHost::BlockStateChangedCallbackList::Subscription>
+base::CallbackListSubscription
 RenderProcessHostImpl::RegisterBlockStateChangedCallback(
     const BlockStateChangedCallback& cb) {
   return blocked_state_changed_callback_list_.Add(cb);

@@ -357,10 +357,12 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, CrashHandlers) {
   // Register 2 crash handlers.
   int counter1 = 0;
   int counter2 = 0;
-  auto handler1 = RegisterNetworkServiceCrashHandler(
-      base::BindRepeating(&IncrementInt, base::Unretained(&counter1)));
-  auto handler2 = RegisterNetworkServiceCrashHandler(
-      base::BindRepeating(&IncrementInt, base::Unretained(&counter2)));
+  base::CallbackListSubscription subscription1 =
+      RegisterNetworkServiceCrashHandler(
+          base::BindRepeating(&IncrementInt, base::Unretained(&counter1)));
+  base::CallbackListSubscription subscription2 =
+      RegisterNetworkServiceCrashHandler(
+          base::BindRepeating(&IncrementInt, base::Unretained(&counter2)));
 
   // Crash the NetworkService process.
   SimulateNetworkServiceCrash();
@@ -381,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, CrashHandlers) {
   EXPECT_TRUE(network_context.is_bound());
 
   // Unregister one of the handlers.
-  handler2.reset();
+  subscription2 = {};
 
   // Crash the NetworkService process.
   SimulateNetworkServiceCrash();

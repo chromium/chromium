@@ -58,12 +58,8 @@ class MixedRealityInputHelper {
   void UnsubscribeEvents();
 
   std::unique_ptr<WMRInputManager> input_manager_;
-  std::unique_ptr<
-      base::CallbackList<void(const WMRInputSourceEventArgs&)>::Subscription>
-      pressed_subscription_;
-  std::unique_ptr<
-      base::CallbackList<void(const WMRInputSourceEventArgs&)>::Subscription>
-      released_subscription_;
+  base::CallbackListSubscription pressed_subscription_;
+  base::CallbackListSubscription released_subscription_;
 
   struct ControllerState {
     bool pressed = false;

@@ -78,10 +78,10 @@ void CookieManagerImpl::GetCookie(const GURL& url, GetCookieCallback callback) {
                       base::BindOnce(&GetCookieComplete, std::move(callback)));
 }
 
-std::unique_ptr<CookieManager::CookieChangedSubscription>
-CookieManagerImpl::AddCookieChangedCallback(const GURL& url,
-                                            const std::string* name,
-                                            CookieChangedCallback callback) {
+base::CallbackListSubscription CookieManagerImpl::AddCookieChangedCallback(
+    const GURL& url,
+    const std::string* name,
+    CookieChangedCallback callback) {
   auto callback_list = std::make_unique<CookieChangedCallbackList>();
   auto* callback_list_ptr = callback_list.get();
   int id = AddCookieChangedCallbackInternal(

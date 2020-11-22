@@ -25,8 +25,7 @@ class DeviceWiFiAllowedHandler {
   void OnWiFiPolicyChanged();
 
   chromeos::CrosSettings* cros_settings_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      wifi_policy_subscription_;
+  base::CallbackListSubscription wifi_policy_subscription_;
   base::WeakPtrFactory<DeviceWiFiAllowedHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceWiFiAllowedHandler);

@@ -628,8 +628,7 @@ class AppMenu::ZoomView : public AppMenuView {
     return zoom_label_max_width_;
   }
 
-  std::unique_ptr<content::HostZoomMap::Subscription>
-      browser_zoom_subscription_;
+  base::CallbackListSubscription browser_zoom_subscription_;
 
   // Button for incrementing the zoom.
   LabelButton* increment_button_;

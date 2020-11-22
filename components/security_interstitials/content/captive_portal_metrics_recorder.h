@@ -40,8 +40,7 @@ class CaptivePortalMetricsRecorder {
   bool captive_portal_no_response_;
   bool captive_portal_detected_;
 
-  std::unique_ptr<captive_portal::CaptivePortalService::Subscription>
-      subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CAPTIVE_PORTAL_METRICS_RECORDER_H_

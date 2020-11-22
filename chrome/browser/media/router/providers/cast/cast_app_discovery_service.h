@@ -44,15 +44,14 @@ class CastAppDiscoveryService {
                              const std::vector<MediaSinkInternal>& sinks);
   using SinkQueryCallback = base::RepeatingCallback<SinkQueryFunc>;
   using SinkQueryCallbackList = base::CallbackList<SinkQueryFunc>;
-  using Subscription = std::unique_ptr<SinkQueryCallbackList::Subscription>;
 
   virtual ~CastAppDiscoveryService() = default;
 
   // Adds a sink query for |source|. Results will be continuously returned via
-  // |callback| until the returned Subscription is destroyed by the caller.
-  // If there are cached results available, |callback| will be invoked before
-  // this method returns.
-  virtual Subscription StartObservingMediaSinks(
+  // |callback| until the returned subscription is destroyed by the caller. If
+  // there are cached results available, |callback| will be invoked before this
+  // method returns.
+  virtual base::CallbackListSubscription StartObservingMediaSinks(
       const CastMediaSource& source,
       const SinkQueryCallback& callback) = 0;
 
@@ -84,7 +83,7 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
   ~CastAppDiscoveryServiceImpl() override;
 
   // CastAppDiscoveryService implementation.
-  Subscription StartObservingMediaSinks(
+  base::CallbackListSubscription StartObservingMediaSinks(
       const CastMediaSource& source,
       const SinkQueryCallback& callback) override;
 

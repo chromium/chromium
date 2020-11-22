@@ -60,11 +60,11 @@ class WMRInputManager {
       Microsoft::WRL::ComPtr<ABI::Windows::Perception::IPerceptionTimestamp>
           timestamp) = 0;
 
-  virtual std::unique_ptr<InputEventCallbackList::Subscription>
-  AddPressedCallback(const InputEventCallback& cb) = 0;
+  virtual base::CallbackListSubscription AddPressedCallback(
+      const InputEventCallback& cb) = 0;
 
-  virtual std::unique_ptr<InputEventCallbackList::Subscription>
-  AddReleasedCallback(const InputEventCallback& cb) = 0;
+  virtual base::CallbackListSubscription AddReleasedCallback(
+      const InputEventCallback& cb) = 0;
 };
 
 class WMRInputManagerImpl : public WMRInputManager {
@@ -85,10 +85,10 @@ class WMRInputManagerImpl : public WMRInputManager {
       Microsoft::WRL::ComPtr<ABI::Windows::Perception::IPerceptionTimestamp>
           timestamp) override;
 
-  std::unique_ptr<InputEventCallbackList::Subscription> AddPressedCallback(
+  base::CallbackListSubscription AddPressedCallback(
       const InputEventCallback& cb) override;
 
-  std::unique_ptr<InputEventCallbackList::Subscription> AddReleasedCallback(
+  base::CallbackListSubscription AddReleasedCallback(
       const InputEventCallback& cb) override;
 
  private:

@@ -27,7 +27,6 @@ class ServerBackedStateKeysBroker {
  public:
   using UpdateCallbackList = base::RepeatingClosureList;
   using UpdateCallback = UpdateCallbackList::CallbackType;
-  using Subscription = std::unique_ptr<UpdateCallbackList::Subscription>;
   using StateKeysCallbackList =
       base::OnceCallbackList<void(const std::vector<std::string>&)>;
   using StateKeysCallback = StateKeysCallbackList::CallbackType;
@@ -37,10 +36,11 @@ class ServerBackedStateKeysBroker {
   ~ServerBackedStateKeysBroker();
 
   // Registers a callback to be invoked whenever the state keys get updated.
-  // Note that consuming code needs to hold on to the returned Subscription as
+  // Note that consuming code needs to hold on to the returned subscription as
   // long as it wants to receive the callback. If the state keys haven't been
   // requested yet, calling this will also trigger their initial fetch.
-  Subscription RegisterUpdateCallback(const UpdateCallback& callback);
+  base::CallbackListSubscription RegisterUpdateCallback(
+      const UpdateCallback& callback);
 
   // Requests state keys asynchronously. Invokes the passed callback at most
   // once, with the current state keys passed as a parameter to the callback. If

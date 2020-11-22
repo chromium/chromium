@@ -457,50 +457,28 @@ class DeviceStatusCollector : public StatusCollector,
   bool report_system_info_ = false;
   bool stat_reporting_pref_ = false;
 
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      activity_times_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      network_interfaces_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      users_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      hardware_status_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      session_status_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      os_update_status_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      running_kiosk_app_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      power_status_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      storage_status_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      board_status_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      cpu_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      graphics_status_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      timezone_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      memory_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      backlight_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      crash_report_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      bluetooth_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      fan_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      vpd_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      system_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      app_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      stats_reporting_pref_subscription_;
+  base::CallbackListSubscription activity_times_subscription_;
+  base::CallbackListSubscription network_interfaces_subscription_;
+  base::CallbackListSubscription users_subscription_;
+  base::CallbackListSubscription hardware_status_subscription_;
+  base::CallbackListSubscription session_status_subscription_;
+  base::CallbackListSubscription os_update_status_subscription_;
+  base::CallbackListSubscription running_kiosk_app_subscription_;
+  base::CallbackListSubscription power_status_subscription_;
+  base::CallbackListSubscription storage_status_subscription_;
+  base::CallbackListSubscription board_status_subscription_;
+  base::CallbackListSubscription cpu_info_subscription_;
+  base::CallbackListSubscription graphics_status_subscription_;
+  base::CallbackListSubscription timezone_info_subscription_;
+  base::CallbackListSubscription memory_info_subscription_;
+  base::CallbackListSubscription backlight_info_subscription_;
+  base::CallbackListSubscription crash_report_info_subscription_;
+  base::CallbackListSubscription bluetooth_info_subscription_;
+  base::CallbackListSubscription fan_info_subscription_;
+  base::CallbackListSubscription vpd_info_subscription_;
+  base::CallbackListSubscription system_info_subscription_;
+  base::CallbackListSubscription app_info_subscription_;
+  base::CallbackListSubscription stats_reporting_pref_subscription_;
 
   AffiliatedSessionService affiliated_session_service_;
 

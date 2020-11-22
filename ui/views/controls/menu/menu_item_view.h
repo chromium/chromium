@@ -239,7 +239,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Adds a callback subscription associated with the above selected property.
   // The callback will be invoked whenever the selected property changes.
-  PropertyChangedSubscription AddSelectedChangedCallback(
+  base::CallbackListSubscription AddSelectedChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // Sets whether the submenu area of an ACTIONABLE_SUBMENU is selected.

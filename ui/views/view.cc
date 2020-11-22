@@ -546,7 +546,7 @@ void View::SetVisible(bool visible) {
   }
 }
 
-PropertyChangedSubscription View::AddVisibleChangedCallback(
+base::CallbackListSubscription View::AddVisibleChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&visible_, std::move(callback));
 }
@@ -569,7 +569,7 @@ void View::SetEnabled(bool enabled) {
   OnPropertyChanged(&enabled_, kPropertyEffectsPaint);
 }
 
-PropertyChangedSubscription View::AddEnabledChangedCallback(
+base::CallbackListSubscription View::AddEnabledChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&enabled_, std::move(callback));
 }
@@ -842,7 +842,7 @@ void View::SetID(int id) {
   OnPropertyChanged(&id_, kPropertyEffectsNone);
 }
 
-PropertyChangedSubscription View::AddIDChangedCallback(
+base::CallbackListSubscription View::AddIDChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&id_, callback);
 }
@@ -860,7 +860,7 @@ int View::GetGroup() const {
   return group_;
 }
 
-PropertyChangedSubscription View::AddGroupChangedCallback(
+base::CallbackListSubscription View::AddGroupChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&group_, callback);
 }
@@ -1167,7 +1167,8 @@ void View::SetFlipCanvasOnPaintForRTLUI(bool enable) {
   OnPropertyChanged(&flip_canvas_on_paint_for_rtl_ui_, kPropertyEffectsPaint);
 }
 
-PropertyChangedSubscription View::AddFlipCanvasOnPaintForRTLUIChangedCallback(
+base::CallbackListSubscription
+View::AddFlipCanvasOnPaintForRTLUIChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&flip_canvas_on_paint_for_rtl_ui_,
                                     std::move(callback));
@@ -2177,7 +2178,7 @@ void View::HandlePropertyChangeEffects(PropertyEffects effects) {
     SchedulePaint();
 }
 
-PropertyChangedSubscription View::AddPropertyChangedCallback(
+base::CallbackListSubscription View::AddPropertyChangedCallback(
     PropertyKey property,
     PropertyChangedCallback callback) {
   auto entry = property_changed_vectors_.find(property);

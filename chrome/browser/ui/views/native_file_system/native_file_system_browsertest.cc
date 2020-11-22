@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, SafeBrowsing) {
 
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
-  safe_browsing::NativeFileSystemWriteRequestSubscription subscription =
+  base::CallbackListSubscription subscription =
       sb_service->download_protection_service()
           ->RegisterNativeFileSystemWriteRequestCallback(
               base::BindLambdaForTesting(

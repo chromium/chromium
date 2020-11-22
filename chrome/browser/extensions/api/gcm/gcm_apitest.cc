@@ -73,9 +73,7 @@ class GcmApiTest : public ExtensionApiTest {
  private:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context);
 
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      create_services_subscription_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 void GcmApiTest::SetUpCommandLine(base::CommandLine* command_line) {

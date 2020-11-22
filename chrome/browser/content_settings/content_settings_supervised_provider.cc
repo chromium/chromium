@@ -115,7 +115,7 @@ void SupervisedProvider::ClearAllContentSettingsRules(
 void SupervisedProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());
   RemoveAllObservers();
-  user_settings_subscription_.reset();
+  user_settings_subscription_ = {};
 }
 
 }  // namespace content_settings

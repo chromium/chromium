@@ -40,8 +40,6 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   using SinkQueryByAppCallbackList =
       base::RepeatingCallbackList<void(const std::string&)>;
   using SinkQueryByAppCallback = SinkQueryByAppCallbackList::CallbackType;
-  using SinkQueryByAppSubscription =
-      std::unique_ptr<SinkQueryByAppCallbackList::Subscription>;
 
   // Represents DIAL app status on receiver device.
   enum SinkAppStatus { kUnknown = 0, kAvailable, kUnavailable };
@@ -68,11 +66,10 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   virtual DialAppDiscoveryService* app_discovery_service();
 
   // Registers |callback| to callback list entry in |sink_queries_|, with the
-  // key |app_name|. Returns a unique_ptr of callback list subscription. Caller
-  // owns the returned subscription and is responsible for destroying when it
-  // wants to unregister |callback|.
-  // Marked virtual for tests.
-  virtual SinkQueryByAppSubscription StartMonitoringAvailableSinksForApp(
+  // key |app_name|. Caller owns the returned subscription and is responsible
+  // for destroying when it wants to unregister |callback|. Marked virtual for
+  // tests.
+  virtual base::CallbackListSubscription StartMonitoringAvailableSinksForApp(
       const std::string& app_name,
       const SinkQueryByAppCallback& callback);
 

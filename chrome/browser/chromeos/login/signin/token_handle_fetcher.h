@@ -70,8 +70,7 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_client_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      profile_shutdown_notification_;
+  base::CallbackListSubscription profile_shutdown_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TokenHandleFetcher);
 };

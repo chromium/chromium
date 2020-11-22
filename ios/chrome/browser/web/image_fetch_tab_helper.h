@@ -104,7 +104,7 @@ class ImageFetchTabHelper : public web::WebStateObserver,
   int call_id_ = 0;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   base::WeakPtrFactory<ImageFetchTabHelper> weak_ptr_factory_;
 

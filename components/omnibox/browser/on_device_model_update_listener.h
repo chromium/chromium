@@ -26,7 +26,7 @@ class OnDeviceModelUpdateListener {
 
   // Adds a callback which will be run on model update. This method will also
   // notify the provider immediately if a model is available.
-  std::unique_ptr<UpdateSubscription> AddModelUpdateCallback(
+  base::CallbackListSubscription AddModelUpdateCallback(
       ModelUpdateCallback callback);
 
   // Called by Component Updater when model update is completed to notify the

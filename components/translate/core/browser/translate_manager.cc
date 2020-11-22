@@ -115,8 +115,7 @@ const char kForceAutoTranslateKey[] = "force-auto-translate";
 TranslateManager::~TranslateManager() = default;
 
 // static
-std::unique_ptr<TranslateManager::TranslateErrorCallbackList::Subscription>
-TranslateManager::RegisterTranslateErrorCallback(
+base::CallbackListSubscription TranslateManager::RegisterTranslateErrorCallback(
     const TranslateManager::TranslateErrorCallback& callback) {
   if (!g_error_callback_list_)
     g_error_callback_list_ = new TranslateErrorCallbackList;
@@ -124,8 +123,7 @@ TranslateManager::RegisterTranslateErrorCallback(
 }
 
 // static
-std::unique_ptr<TranslateManager::TranslateInitCallbackList::Subscription>
-TranslateManager::RegisterTranslateInitCallback(
+base::CallbackListSubscription TranslateManager::RegisterTranslateInitCallback(
     const TranslateManager::TranslateInitCallback& callback) {
   if (!g_init_callback_list_)
     g_init_callback_list_ = new TranslateInitCallbackList;

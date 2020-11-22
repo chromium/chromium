@@ -31,8 +31,7 @@ class DeviceDockMacAddressHandler {
 
   chromeos::CrosSettings* cros_settings_;
   chromeos::NetworkDeviceHandler* network_device_handler_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      dock_mac_address_source_policy_subscription_;
+  base::CallbackListSubscription dock_mac_address_source_policy_subscription_;
   base::WeakPtrFactory<DeviceDockMacAddressHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceDockMacAddressHandler);

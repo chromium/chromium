@@ -44,7 +44,7 @@ class GeolocationProviderImpl : public GeolocationProvider,
                                 public base::Thread {
  public:
   // GeolocationProvider implementation:
-  std::unique_ptr<GeolocationProvider::Subscription> AddLocationUpdateCallback(
+  base::CallbackListSubscription AddLocationUpdateCallback(
       const LocationUpdateCallback& callback,
       bool enable_high_accuracy) override;
   bool HighAccuracyLocationInUse() override;

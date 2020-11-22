@@ -329,7 +329,7 @@ void IdentityGetAuthTokenFunction::StartAsyncRun() {
 }
 
 void IdentityGetAuthTokenFunction::CompleteAsyncRun(ResponseValue response) {
-  identity_api_shutdown_subscription_.reset();
+  identity_api_shutdown_subscription_ = {};
 
   Respond(std::move(response));
   Release();  // Balanced in StartAsyncRun

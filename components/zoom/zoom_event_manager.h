@@ -42,8 +42,7 @@ class ZoomEventManager : public base::SupportsUserData::Data {
   // Add and remove zoom level changed callbacks.
   // TODO(wjmaclean): Convert this callback mechanism to use
   // ZoomEventManagerObserver instead.
-  std::unique_ptr<content::HostZoomMap::Subscription>
-  AddZoomLevelChangedCallback(
+  base::CallbackListSubscription AddZoomLevelChangedCallback(
       content::HostZoomMap::ZoomLevelChangedCallback callback);
 
   // Called by ZoomLevelDelegates when changes are made to the default zoom

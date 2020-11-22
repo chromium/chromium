@@ -221,7 +221,7 @@ class WebStateImpl : public WebState,
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
   bool IsShowingWebInterstitial() const override;
   WebInterstitial* GetWebInterstitial() const override;
-  std::unique_ptr<ScriptCommandSubscription> AddScriptCommandCallback(
+  base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,
       const std::string& command_prefix) override;
   id<CRWWebViewProxy> GetWebViewProxy() const override;

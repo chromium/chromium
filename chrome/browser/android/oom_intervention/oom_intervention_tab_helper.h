@@ -90,7 +90,7 @@ class OomInterventionTabHelper
   bool navigation_started_ = false;
   bool load_finished_ = false;
   base::Optional<base::TimeTicks> near_oom_detected_time_;
-  std::unique_ptr<NearOomMonitor::Subscription> subscription_;
+  base::CallbackListSubscription subscription_;
   base::OneShotTimer renderer_detection_timer_;
 
   // Not owned. This will be nullptr in incognito mode.

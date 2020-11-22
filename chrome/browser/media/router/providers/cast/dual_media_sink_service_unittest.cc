@@ -79,7 +79,7 @@ TEST_F(DualMediaSinkServiceTest, AddSinksDiscoveredCallback) {
   EXPECT_EQ(sink_map, dual_media_sink_service()->current_sinks());
 
   // |this| no longer receive updates.
-  subscription.reset();
+  subscription = {};
 
   std::string cast_provider_name = "cast";
   MediaSinkInternal cast_sink;

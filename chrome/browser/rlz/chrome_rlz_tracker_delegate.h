@@ -62,8 +62,7 @@ class ChromeRLZTrackerDelegate : public rlz::RLZTrackerDelegate,
 
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-      omnibox_url_opened_subscription_;
+  base::CallbackListSubscription omnibox_url_opened_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeRLZTrackerDelegate);
 };

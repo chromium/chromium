@@ -91,9 +91,7 @@ class LocalNTPSearchSuggestTest : public InProcessBrowserTest {
                      &LocalNTPSearchSuggestTest::CreateSearchSuggestService));
   }
 
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalNTPSearchSuggestTest,

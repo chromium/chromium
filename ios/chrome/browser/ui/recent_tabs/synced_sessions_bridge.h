@@ -48,8 +48,7 @@ class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
   signin::IdentityManager* identity_manager_ = nullptr;
   ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       identity_manager_observer_;
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      foreign_session_updated_subscription_;
+  base::CallbackListSubscription foreign_session_updated_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncedSessionsObserverBridge);
 };

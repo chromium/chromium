@@ -32,9 +32,9 @@ class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
 
   MOCK_CONST_METHOD0(GetGlobalIdMapper, syncer::GlobalIdMapper*());
   MOCK_METHOD0(GetOpenTabsUIDelegate, sync_sessions::OpenTabsUIDelegate*());
-  MOCK_METHOD1(SubscribeToForeignSessionsChanged,
-               std::unique_ptr<base::CallbackList<void()>::Subscription>(
-                   const base::RepeatingClosure& cb));
+  MOCK_METHOD1(
+      SubscribeToForeignSessionsChanged,
+      base::CallbackListSubscription(const base::RepeatingClosure& cb));
   MOCK_METHOD0(ScheduleGarbageCollection, void());
   MOCK_METHOD0(GetControllerDelegate,
                base::WeakPtr<syncer::ModelTypeControllerDelegate>());
@@ -130,10 +130,10 @@ class BrowserTabsModelProviderImplTest
         CreatePhoneDevice(/*pii_name=*/pii_free_name)));
   }
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  MockSubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) {
+  base::CallbackListSubscription MockSubscribeToForeignSessionsChanged(
+      const base::RepeatingClosure& cb) {
     foreign_sessions_changed_callback_ = std::move(cb);
-    return nullptr;
+    return {};
   }
 
   bool MockGetAllForeignSessions(

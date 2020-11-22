@@ -203,8 +203,7 @@ class UserSelectionScreen
   // Input Method Engine state used at the user selection screen.
   scoped_refptr<input_method::InputMethodManager::State> ime_state_;
 
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      allowed_input_methods_subscription_;
+  base::CallbackListSubscription allowed_input_methods_subscription_;
 
   // Collection of verifiers that check validity of password sync token for SAML
   // users corresponding to visible pods.

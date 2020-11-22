@@ -44,7 +44,7 @@ class FooListener {
 void WontCompile() {
   FooListener f;
   CallbackList<void(std::unique_ptr<Foo>)> c1;
-  std::unique_ptr<CallbackList<void(std::unique_ptr<Foo>)>::Subscription> sub =
+  CallbackListSubscription sub =
       c1.Add(BindRepeating(&FooListener::GotAScopedFoo, Unretained(&f)));
   c1.Notify(std::unique_ptr<Foo>(new Foo()));
 }

@@ -1210,8 +1210,8 @@ base::TimeDelta AccessibilityManager::PlayShutdownSound() {
   return audio::SoundsManager::Get()->GetDuration(SOUND_SHUTDOWN);
 }
 
-std::unique_ptr<AccessibilityStatusSubscription>
-AccessibilityManager::RegisterCallback(const AccessibilityStatusCallback& cb) {
+base::CallbackListSubscription AccessibilityManager::RegisterCallback(
+    const AccessibilityStatusCallback& cb) {
   return callback_list_.Add(cb);
 }
 

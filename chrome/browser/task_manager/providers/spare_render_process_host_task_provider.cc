@@ -46,7 +46,7 @@ void SpareRenderProcessHostTaskProvider::StartUpdating() {
 void SpareRenderProcessHostTaskProvider::StopUpdating() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  subscription_.reset();
+  subscription_ = {};
 
   task_.reset();
 }

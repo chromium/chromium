@@ -142,8 +142,8 @@ class WMRStageStatics {
 
   virtual std::unique_ptr<WMRStageOrigin> CurrentStage() = 0;
 
-  virtual std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddStageChangedCallback(const base::RepeatingCallback<void()>& cb) = 0;
+  virtual base::CallbackListSubscription AddStageChangedCallback(
+      const base::RepeatingCallback<void()>& cb) = 0;
 };
 
 class WMRStageStaticsImpl : public WMRStageStatics {
@@ -156,8 +156,8 @@ class WMRStageStaticsImpl : public WMRStageStatics {
 
   std::unique_ptr<WMRStageOrigin> CurrentStage() override;
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddStageChangedCallback(const base::RepeatingCallback<void()>& cb) override;
+  base::CallbackListSubscription AddStageChangedCallback(
+      const base::RepeatingCallback<void()>& cb) override;
 
  private:
   HRESULT OnCurrentChanged(IInspectable* sender, IInspectable* args);

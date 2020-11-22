@@ -191,7 +191,7 @@ CustomLinksManagerImpl::FindLinkWithUrl(const GURL& url) {
                       [&url](const Link& link) { return link.url == url; });
 }
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
+base::CallbackListSubscription
 CustomLinksManagerImpl::RegisterCallbackForOnChanged(
     base::RepeatingClosure callback) {
   return callback_list_.Add(callback);

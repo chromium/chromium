@@ -54,8 +54,7 @@ class ArcApplicationNotifierController : public NotifierController,
   std::vector<std::unique_ptr<ArcAppIcon>> icons_;
   std::map<std::string, std::string> package_to_app_ids_;
   Profile* last_profile_;
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      shutdown_notifier_;
+  base::CallbackListSubscription shutdown_subscription_;
 };
 
 }  // namespace arc

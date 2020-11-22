@@ -241,7 +241,7 @@ void BrowserSwitcherPrefs::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-std::unique_ptr<BrowserSwitcherPrefs::CallbackSubscription>
+base::CallbackListSubscription
 BrowserSwitcherPrefs::RegisterPrefsChangedCallback(
     BrowserSwitcherPrefs::PrefsChangedCallback cb) {
   return callback_list_.Add(cb);

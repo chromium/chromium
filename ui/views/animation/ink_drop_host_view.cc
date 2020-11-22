@@ -182,7 +182,7 @@ bool InkDropHostView::GetHighlighted() const {
   return ink_drop_ && ink_drop_->IsHighlightFadingInOrVisible();
 }
 
-PropertyChangedSubscription InkDropHostView::AddHighlightedChangedCallback(
+base::CallbackListSubscription InkDropHostView::AddHighlightedChangedCallback(
     PropertyChangedCallback callback) {
   // Since the highlight state is not directly represented by a member, use the
   // applicable member (|ink_drop_|) as the property key.  Note that this won't

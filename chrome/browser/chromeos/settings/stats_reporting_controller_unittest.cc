@@ -88,7 +88,7 @@ class StatsReportingControllerTest : public testing::Test {
   }
 
   void TearDown() override {
-    observer_subscription_.reset();
+    observer_subscription_ = {};
     StatsReportingController::Shutdown();
   }
 
@@ -102,8 +102,7 @@ class StatsReportingControllerTest : public testing::Test {
   policy::DevicePolicyBuilder device_policy_;
 
   bool value_at_last_notification_{false};
-  std::unique_ptr<StatsReportingController::ObserverSubscription>
-      observer_subscription_;
+  base::CallbackListSubscription observer_subscription_;
 
   scoped_refptr<ownership::MockOwnerKeyUtil> both_keys{
       base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};

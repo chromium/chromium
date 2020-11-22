@@ -231,7 +231,7 @@ class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {
   ~SingleClientPasswordsWithAccountStorageSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    test_signin_client_factory_ =
+    test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
   }
 
@@ -262,8 +262,7 @@ class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 
-  secondary_account_helper::ScopedSigninClientFactory
-      test_signin_client_factory_;
+  base::CallbackListSubscription test_signin_client_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(SingleClientPasswordsWithAccountStorageSyncTest);
 };

@@ -331,7 +331,7 @@ void BrowserSwitcherService::OnAllRulesetsParsed() {
     std::move(all_rulesets_loaded_callback_for_testing_).Run();
 }
 
-std::unique_ptr<BrowserSwitcherService::CallbackSubscription>
+base::CallbackListSubscription
 BrowserSwitcherService::RegisterAllRulesetsParsedCallback(
     AllRulesetsParsedCallback callback) {
   return callback_list_.Add(callback);

@@ -131,7 +131,7 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
 
     // Set of registered media sources for current sink query.
     base::flat_set<MediaSource> media_sources;
-    DialMediaSinkServiceImpl::SinkQueryByAppSubscription subscription;
+    base::CallbackListSubscription subscription;
 
     DISALLOW_COPY_AND_ASSIGN(MediaSinkQuery);
   };

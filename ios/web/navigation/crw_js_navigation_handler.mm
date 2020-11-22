@@ -39,7 +39,7 @@ GURL URLEscapedForHistory(const GURL& url) {
 
 @interface CRWJSNavigationHandler () {
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> _subscription;
+  base::CallbackListSubscription _subscription;
 }
 
 @property(nonatomic, weak) id<CRWJSNavigationHandlerDelegate> delegate;

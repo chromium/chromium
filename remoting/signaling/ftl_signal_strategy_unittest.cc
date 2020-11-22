@@ -78,7 +78,7 @@ class MockOAuthTokenGetter : public OAuthTokenGetter {
 
 class FakeMessagingClient : public MessagingClient {
  public:
-  std::unique_ptr<MessageCallbackSubscription> RegisterMessageCallback(
+  base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback) override {
     return callback_list_.Add(callback);
   }

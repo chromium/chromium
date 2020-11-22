@@ -476,7 +476,7 @@ void LabelButton::AddedToWidget() {
 }
 
 void LabelButton::RemovedFromWidget() {
-  paint_as_active_subscription_.reset();
+  paint_as_active_subscription_ = {};
 }
 
 void LabelButton::OnFocus() {

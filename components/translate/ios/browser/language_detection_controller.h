@@ -80,7 +80,7 @@ class LanguageDetectionController : public web::WebStateObserver {
   web::WebState* web_state_ = nullptr;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   JsLanguageDetectionManager* js_manager_;
   BooleanPrefMember translate_enabled_;

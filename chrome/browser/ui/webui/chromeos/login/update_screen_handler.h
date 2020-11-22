@@ -102,7 +102,7 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
 
   UpdateScreen* screen_ = nullptr;
 
-  std::unique_ptr<AccessibilityStatusSubscription> accessibility_subscription_;
+  base::CallbackListSubscription accessibility_subscription_;
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;

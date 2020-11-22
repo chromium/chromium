@@ -30,7 +30,7 @@ ServerBackedStateKeysBroker::ServerBackedStateKeysBroker(
 ServerBackedStateKeysBroker::~ServerBackedStateKeysBroker() {
 }
 
-ServerBackedStateKeysBroker::Subscription
+base::CallbackListSubscription
 ServerBackedStateKeysBroker::RegisterUpdateCallback(
     const UpdateCallback& callback) {
   if (!available())

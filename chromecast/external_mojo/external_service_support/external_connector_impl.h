@@ -35,8 +35,8 @@ class ExternalConnectorImpl : public ExternalConnector {
   ~ExternalConnectorImpl() override;
 
   // ExternalConnector implementation:
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddConnectionErrorCallback(base::RepeatingClosure callback) override;
+  base::CallbackListSubscription AddConnectionErrorCallback(
+      base::RepeatingClosure callback) override;
   void RegisterService(const std::string& service_name,
                        ExternalService* service) override;
   void RegisterService(

@@ -66,8 +66,7 @@ class TtsEngineExtensionObserverChromeOS
 
   std::set<std::string> engine_extension_ids_;
 
-  std::unique_ptr<chromeos::AccessibilityStatusSubscription>
-      accessibility_status_subscription_;
+  base::CallbackListSubscription accessibility_status_subscription_;
 
   mojo::Remote<chromeos::tts::mojom::TtsService> tts_service_;
 

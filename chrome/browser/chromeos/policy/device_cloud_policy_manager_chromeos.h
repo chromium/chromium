@@ -181,7 +181,7 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
   // The TaskRunner used to do device status and log uploads.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  ServerBackedStateKeysBroker::Subscription state_keys_update_subscription_;
+  base::CallbackListSubscription state_keys_update_subscription_;
 
   // PrefService instance to read the policy refresh rate from.
   PrefService* local_state_;

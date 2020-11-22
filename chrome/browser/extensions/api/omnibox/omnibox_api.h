@@ -139,7 +139,7 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   // Keeps track of favicon-sized omnibox icons for extensions.
   ExtensionIconManager omnibox_icon_manager_;
 
-  std::unique_ptr<TemplateURLService::Subscription> template_url_sub_;
+  base::CallbackListSubscription template_url_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxAPI);
 };

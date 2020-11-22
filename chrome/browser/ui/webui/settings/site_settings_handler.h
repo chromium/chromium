@@ -87,7 +87,6 @@ class SiteSettingsHandler
       ContentSettingsType guard_content_settings_type,
       ContentSettingsType data_content_settings_type) override;
 
-  // content::HostZoomMap subscription.
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
  private:
@@ -265,8 +264,7 @@ class SiteSettingsHandler
   ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
 
   // Keeps track of events related to zooming.
-  std::unique_ptr<content::HostZoomMap::Subscription>
-      host_zoom_map_subscription_;
+  base::CallbackListSubscription host_zoom_map_subscription_;
 
   // The host for which to fetch usage.
   std::string usage_host_;

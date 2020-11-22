@@ -4383,7 +4383,7 @@ void AutotestPrivateSetMetricsEnabledFunction::OnStatsReportingStateChanged() {
   } else {
     Respond(Error("Failed to set metrics consent"));
   }
-  stats_reporting_observer_subscription_.reset();
+  stats_reporting_observer_subscription_ = {};
 }
 
 ///////////////////////////////////////////////////////////////////////////////

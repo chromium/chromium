@@ -120,8 +120,7 @@ class CrosSettings {
       CrosSettingsProvider* provider);
 
   // Add an observer Callback for changes for the given |path|.
-  using ObserverSubscription = base::CallbackList<void(void)>::Subscription;
-  std::unique_ptr<ObserverSubscription> AddSettingsObserver(
+  base::CallbackListSubscription AddSettingsObserver(
       const std::string& path,
       base::RepeatingClosure callback) WARN_UNUSED_RESULT;
 

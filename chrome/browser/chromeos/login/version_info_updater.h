@@ -91,8 +91,7 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   // Text obtained from OnVersion.
   std::string version_text_;
 
-  std::vector<std::unique_ptr<CrosSettings::ObserverSubscription>>
-      subscriptions_;
+  std::vector<base::CallbackListSubscription> subscriptions_;
 
   chromeos::CrosSettings* cros_settings_;
 

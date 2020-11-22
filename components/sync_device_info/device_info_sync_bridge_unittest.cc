@@ -374,10 +374,10 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     return local_device_info_.get();
   }
 
-  std::unique_ptr<Subscription> RegisterOnInitializedCallback(
+  base::CallbackListSubscription RegisterOnInitializedCallback(
       const base::RepeatingClosure& callback) override {
     NOTIMPLEMENTED();
-    return nullptr;
+    return {};
   }
 
  private:

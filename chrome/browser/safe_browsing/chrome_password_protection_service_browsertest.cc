@@ -171,9 +171,7 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      create_services_subscription_;
+  base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromePasswordProtectionServiceBrowserTest);

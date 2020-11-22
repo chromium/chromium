@@ -130,8 +130,7 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   cast_channel::CastMessageHandler* const message_handler_;
 
   // Registered sink queries.
-  base::flat_map<MediaSource::Id, CastAppDiscoveryService::Subscription>
-      sink_queries_;
+  base::flat_map<MediaSource::Id, base::CallbackListSubscription> sink_queries_;
 
   std::unique_ptr<CastActivityManager> activity_manager_;
 

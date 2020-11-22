@@ -519,10 +519,6 @@ class LocalCardMigrationBrowserTest
     }
   }
 
-  std::unique_ptr<
-      base::CallbackList<void(content::BrowserContext*)>::Subscription>
-      will_create_browser_context_services_subscription_;
-
   LocalCardMigrationManager* local_card_migration_manager_;
 
   PersonalDataManager* personal_data_;

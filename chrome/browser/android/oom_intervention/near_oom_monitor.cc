@@ -56,7 +56,7 @@ NearOomMonitor::NearOomMonitor(
 
 NearOomMonitor::~NearOomMonitor() = default;
 
-std::unique_ptr<NearOomMonitor::Subscription> NearOomMonitor::RegisterCallback(
+base::CallbackListSubscription NearOomMonitor::RegisterCallback(
     base::RepeatingClosure callback) {
   if (callbacks_.empty() && !ComponentCallbackIsEnabled())
     ScheduleCheck();

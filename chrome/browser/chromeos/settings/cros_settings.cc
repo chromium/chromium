@@ -294,18 +294,13 @@ std::unique_ptr<CrosSettingsProvider> CrosSettings::RemoveSettingsProvider(
   return nullptr;
 }
 
-std::unique_ptr<CrosSettings::ObserverSubscription>
-CrosSettings::AddSettingsObserver(const std::string& path,
-                                  base::RepeatingClosure callback) {
+base::CallbackListSubscription CrosSettings::AddSettingsObserver(
+    const std::string& path,
+    base::RepeatingClosure callback) {
   DCHECK(!path.empty());
   DCHECK(callback);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!GetProvider(path)) {
-    NOTREACHED() << "Trying to add an observer for an unregistered setting: "
-                 << path;
-    return std::unique_ptr<CrosSettings::ObserverSubscription>();
-  }
+  DCHECK(GetProvider(path));
 
   // Get the callback registry associated with the path.
   base::CallbackList<void(void)>* registry = nullptr;

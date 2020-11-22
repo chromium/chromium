@@ -798,8 +798,7 @@ class ExtensionURLLoaderFactory
   const int render_process_id_;
   scoped_refptr<extensions::InfoMap> extension_info_map_;
 
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      browser_context_shutdown_subscription_;
+  base::CallbackListSubscription browser_context_shutdown_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionURLLoaderFactory);
 };

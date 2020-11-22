@@ -2194,7 +2194,7 @@ void Textfield::RequestFocusForGesture(const ui::GestureEventDetails& details) {
     ShowVirtualKeyboardIfEnabled();
 }
 
-views::PropertyChangedSubscription Textfield::AddTextChangedCallback(
+base::CallbackListSubscription Textfield::AddTextChangedCallback(
     views::PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&model_ + kTextfieldText,
                                     std::move(callback));

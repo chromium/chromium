@@ -35,8 +35,7 @@ class MediaRouterBase : public MediaRouter {
   void Initialize();
 
   // MediaRouter implementation.
-  std::unique_ptr<PresentationConnectionStateSubscription>
-  AddPresentationConnectionStateChangedCallback(
+  base::CallbackListSubscription AddPresentationConnectionStateChangedCallback(
       const MediaRoute::Id& route_id,
       const content::PresentationConnectionStateChangedCallback& callback)
       override;

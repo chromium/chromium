@@ -172,8 +172,7 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
   void CloseAuthenticationUI();
 
   chromeos::CrosSettings* cros_settings_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      system_proxy_subscription_;
+  base::CallbackListSubscription system_proxy_subscription_;
 
   bool system_proxy_enabled_ = false;
   // The authority URI in the format host:port of the local proxy worker for

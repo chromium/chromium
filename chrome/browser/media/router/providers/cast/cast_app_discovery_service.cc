@@ -48,7 +48,7 @@ CastAppDiscoveryServiceImpl::~CastAppDiscoveryServiceImpl() {
   media_sink_service_->RemoveObserver(this);
 }
 
-CastAppDiscoveryService::Subscription
+base::CallbackListSubscription
 CastAppDiscoveryServiceImpl::StartObservingMediaSinks(
     const CastMediaSource& source,
     const SinkQueryCallback& callback) {

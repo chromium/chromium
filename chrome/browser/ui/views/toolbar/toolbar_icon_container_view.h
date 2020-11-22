@@ -110,7 +110,7 @@ class ToolbarIconContainerView : public views::View,
   // Tracks when the widget is restored and resets the layout.
   std::unique_ptr<WidgetRestoreObserver> restore_observer_;
 
-  std::list<views::PropertyChangedSubscription> subscriptions_;
+  std::list<base::CallbackListSubscription> subscriptions_;
 
   base::ObserverList<Observer> observers_;
 };

@@ -61,7 +61,7 @@ class TranslateLanguageList {
 
   // Registers a callback for translate events related to the language list,
   // such as updates and download errors.
-  std::unique_ptr<EventCallbackList::Subscription> RegisterEventCallback(
+  base::CallbackListSubscription RegisterEventCallback(
       const EventCallback& callback);
 
   // Helper methods used by specific unit tests.

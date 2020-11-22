@@ -99,17 +99,13 @@ class TranslateInternalsHandler {
   void SendCountryToJs(bool was_updated);
 
   // Subscription for translate events coming from the translate language list.
-  std::unique_ptr<TranslateLanguageList::EventCallbackList::Subscription>
-      event_subscription_;
+  base::CallbackListSubscription event_subscription_;
 
   // Subscription for translate errors coming from the translate manager.
-  std::unique_ptr<TranslateManager::TranslateErrorCallbackList::Subscription>
-      error_subscription_;
+  base::CallbackListSubscription error_subscription_;
 
   // Subscription for translate initialization event.
-  std::unique_ptr<
-      translate::TranslateManager::TranslateInitCallbackList::Subscription>
-      init_subscription_;
+  base::CallbackListSubscription init_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TranslateInternalsHandler);
 };

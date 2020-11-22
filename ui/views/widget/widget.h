@@ -932,8 +932,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Registers |callback| to be called whenever the "paint as active" state
   // changes.
-  std::unique_ptr<PaintAsActiveCallbackList::Subscription>
-  RegisterPaintAsActiveChangedCallback(
+  base::CallbackListSubscription RegisterPaintAsActiveChangedCallback(
       PaintAsActiveCallbackList::CallbackType callback);
 
   // Prevents the widget from being rendered as inactive during the lifetime of

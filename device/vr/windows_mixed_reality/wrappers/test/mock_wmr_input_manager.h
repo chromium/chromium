@@ -37,10 +37,10 @@ class MockWMRInputManager : public WMRInputManager {
       Microsoft::WRL::ComPtr<ABI::Windows::Perception::IPerceptionTimestamp>
           timestamp) override;
 
-  std::unique_ptr<InputEventCallbackList::Subscription> AddPressedCallback(
+  base::CallbackListSubscription AddPressedCallback(
       const InputEventCallback& cb) override;
 
-  std::unique_ptr<InputEventCallbackList::Subscription> AddReleasedCallback(
+  base::CallbackListSubscription AddReleasedCallback(
       const InputEventCallback& cb) override;
 
  private:

@@ -75,8 +75,7 @@ bool HoldingSpaceImage::operator==(const HoldingSpaceImage& rhs) const {
   return gfx::BitmapsAreEqual(*image_skia_.bitmap(), *rhs.image_skia_.bitmap());
 }
 
-std::unique_ptr<HoldingSpaceImage::Subscription>
-HoldingSpaceImage::AddImageSkiaChangedCallback(
+base::CallbackListSubscription HoldingSpaceImage::AddImageSkiaChangedCallback(
     CallbackList::CallbackType callback) const {
   return callback_list_.Add(std::move(callback));
 }

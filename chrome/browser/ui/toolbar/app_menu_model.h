@@ -231,8 +231,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   Browser* const browser_;  // weak
   AppMenuIconController* const app_menu_icon_controller_;
 
-  std::unique_ptr<content::HostZoomMap::Subscription>
-      browser_zoom_subscription_;
+  base::CallbackListSubscription browser_zoom_subscription_;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
 

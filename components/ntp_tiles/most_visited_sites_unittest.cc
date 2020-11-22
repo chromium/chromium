@@ -202,9 +202,9 @@ class MockSuggestionsService : public SuggestionsService {
   MOCK_METHOD0(FetchSuggestionsData, bool());
   MOCK_CONST_METHOD0(GetSuggestionsDataFromCache,
                      base::Optional<SuggestionsProfile>());
-  MOCK_METHOD1(AddCallback,
-               std::unique_ptr<ResponseCallbackList::Subscription>(
-                   const ResponseCallback& callback));
+  MOCK_METHOD1(
+      AddCallback,
+      base::CallbackListSubscription(const ResponseCallback& callback));
   MOCK_METHOD1(BlocklistURL, bool(const GURL& candidate_url));
   MOCK_METHOD1(UndoBlocklistURL, bool(const GURL& url));
   MOCK_METHOD0(ClearBlocklist, void());
@@ -283,8 +283,7 @@ class MockCustomLinksManager : public CustomLinksManager {
   MOCK_METHOD1(DeleteLink, bool(const GURL& url));
   MOCK_METHOD0(UndoAction, bool());
   MOCK_METHOD1(RegisterCallbackForOnChanged,
-               std::unique_ptr<base::RepeatingClosureList::Subscription>(
-                   base::RepeatingClosure callback));
+               base::CallbackListSubscription(base::RepeatingClosure callback));
 };
 
 class PopularSitesFactoryForTest {
@@ -1663,8 +1662,8 @@ TEST_P(MostVisitedSitesWithCustomLinksTest, RebuildTilesOnCustomLinksChanged) {
   // Build initial tiles with Top Sites.
   base::RepeatingClosure custom_links_callback;
   EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_))
-      .WillOnce(
-          DoAll(SaveArg<0>(&custom_links_callback), Return(ByMove(nullptr))));
+      .WillOnce(DoAll(SaveArg<0>(&custom_links_callback),
+                      Return(ByMove(base::CallbackListSubscription()))));
   ExpectBuildWithTopSites(
       MostVisitedURLList{MakeMostVisitedURL(kTestTitle1, kTestUrl1)},
       &sections);

@@ -33,7 +33,7 @@ class TemplateURLServiceObserver {
   TemplateURLServiceObserver(TemplateURLService* service, base::RunLoop* loop)
       : runner_(loop) {
     DCHECK(loop);
-    template_url_sub_ = service->RegisterOnLoadedCallback(base::Bind(
+    template_url_subscription_ = service->RegisterOnLoadedCallback(base::Bind(
         &TemplateURLServiceObserver::StopLoop, base::Unretained(this)));
     service->Load();
   }
@@ -42,7 +42,7 @@ class TemplateURLServiceObserver {
  private:
   void StopLoop() { runner_->Quit(); }
   base::RunLoop* runner_;
-  std::unique_ptr<TemplateURLService::Subscription> template_url_sub_;
+  base::CallbackListSubscription template_url_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceObserver);
 };

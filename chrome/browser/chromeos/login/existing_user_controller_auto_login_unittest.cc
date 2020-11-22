@@ -82,10 +82,9 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
     settings_helper_.Set(kAccountsPrefDeviceLocalAccounts, accounts);
 
     // Prevent settings changes from auto-starting the timer.
-    existing_user_controller_->local_account_auto_login_id_subscription_
-        .reset();
-    existing_user_controller_->local_account_auto_login_delay_subscription_
-        .reset();
+    existing_user_controller_->local_account_auto_login_id_subscription_ = {};
+    existing_user_controller_
+        ->local_account_auto_login_delay_subscription_ = {};
   }
 
   ExistingUserController* existing_user_controller() const {

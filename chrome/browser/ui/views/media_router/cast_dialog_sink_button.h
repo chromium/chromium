@@ -52,7 +52,7 @@ class CastDialogSinkButton : public HoverButton {
 
   const UIMediaSink sink_;
   base::Optional<base::string16> saved_status_text_;
-  views::PropertyChangedSubscription enabled_changed_subscription_ =
+  base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&CastDialogSinkButton::OnEnabledChanged,
                               base::Unretained(this)));

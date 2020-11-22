@@ -73,10 +73,6 @@ class SystemClock : public chromeos::LoginState::Observer,
   void ActiveUserChanged(user_manager::User* active_user) override;
 
  private:
-  // Should be the same as CrosSettings::ObserverSubscription.
-  typedef base::CallbackList<void(void)>::Subscription
-      CrosSettingsObserverSubscription;
-
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
@@ -95,7 +91,7 @@ class SystemClock : public chromeos::LoginState::Observer,
 
   base::ObserverList<SystemClockObserver>::Unchecked observer_list_;
 
-  std::unique_ptr<CrosSettingsObserverSubscription> device_settings_observer_;
+  base::CallbackListSubscription device_settings_observer_;
 
   base::WeakPtrFactory<SystemClock> weak_ptr_factory_{this};
 

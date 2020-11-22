@@ -82,8 +82,7 @@ class FtlSignalStrategy::Core {
   std::string user_email_;
   SignalingAddress local_address_;
 
-  std::unique_ptr<MessagingClient::MessageCallbackSubscription>
-      receive_message_subscription_;
+  base::CallbackListSubscription receive_message_subscription_;
 
   Error error_ = OK;
   bool is_sign_in_error_ = false;
@@ -143,7 +142,7 @@ void FtlSignalStrategy::Core::Disconnect() {
 
   if (receive_message_subscription_) {
     local_address_ = SignalingAddress();
-    receive_message_subscription_.reset();
+    receive_message_subscription_ = {};
     messaging_client_->StopReceivingMessages();
 
     for (auto& observer : listeners_)

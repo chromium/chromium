@@ -51,8 +51,7 @@ class ArcCastReceiverService
 
   // Observers for preferences and settings changes.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      receiver_name_subscription_;
+  base::CallbackListSubscription receiver_name_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcCastReceiverService);
 };

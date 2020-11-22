@@ -63,15 +63,11 @@ class MockMediaNotificationDeviceProvider
 
   void RunUICallback() { output_devices_callback_.Run(device_descriptions_); }
 
-  std::unique_ptr<MediaNotificationDeviceProvider::
-                      GetOutputDevicesCallbackList::Subscription>
-  RegisterOutputDeviceDescriptionsCallback(
+  base::CallbackListSubscription RegisterOutputDeviceDescriptionsCallback(
       GetOutputDevicesCallback cb) override {
     output_devices_callback_ = std::move(cb);
     RunUICallback();
-    return std::unique_ptr<MockMediaNotificationDeviceProvider::
-                               GetOutputDevicesCallbackList::Subscription>(
-        nullptr);
+    return base::CallbackListSubscription();
   }
 
   MOCK_METHOD(void,
@@ -98,9 +94,7 @@ class MockMediaNotificationDeviceSelectorViewDelegate
               (override));
   MOCK_METHOD(void, OnDeviceSelectorViewSizeChanged, (), (override));
 
-  std::unique_ptr<MediaNotificationDeviceProvider::
-                      GetOutputDevicesCallbackList::Subscription>
-  RegisterAudioOutputDeviceDescriptionsCallback(
+  base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
       MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
           CallbackType callback) override {
     return provider_->RegisterOutputDeviceDescriptionsCallback(
@@ -109,12 +103,12 @@ class MockMediaNotificationDeviceSelectorViewDelegate
 
   MockMediaNotificationDeviceProvider* GetProvider() { return provider_.get(); }
 
-  std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+  base::CallbackListSubscription
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       base::RepeatingCallback<void(bool)> callback) override {
     callback.Run(supports_switching);
     supports_switching_callback_ = std::move(callback);
-    return nullptr;
+    return base::CallbackListSubscription();
   }
 
   void RunSupportsDeviceSwitchingCallback() {

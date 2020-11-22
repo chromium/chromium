@@ -110,7 +110,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
 
-  std::unique_ptr<AccessibilityStatusSubscription> accessibility_subscription_;
+  base::CallbackListSubscription accessibility_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(WelcomeScreenHandler);
 };

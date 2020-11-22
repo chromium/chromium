@@ -219,7 +219,7 @@ class UpdateScreen : public BaseScreen,
   base::TimeDelta verify_time_;
   base::TimeDelta finalize_time_;
 
-  ErrorScreen::ConnectRequestCallbackSubscription connect_request_subscription_;
+  base::CallbackListSubscription connect_request_subscription_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
   std::unique_ptr<

@@ -36,7 +36,7 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   virtual void SetChecked(bool checked);
   bool GetChecked() const;
 
-  PropertyChangedSubscription AddCheckedChangedCallback(
+  base::CallbackListSubscription AddCheckedChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   void SetMultiLine(bool multi_line);

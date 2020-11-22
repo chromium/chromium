@@ -99,8 +99,7 @@ class IOSChromeLocalSessionEventRouter
   sync_sessions::SyncSessionsClient* const sessions_client_;
   syncer::SyncableService::StartSyncFlare flare_;
 
-  std::unique_ptr<base::CallbackList<void(web::WebState*)>::Subscription>
-      tab_parented_subscription_;
+  base::CallbackListSubscription tab_parented_subscription_;
 
   // Track the number of WebStateList we are observing that are in a batch
   // operation.

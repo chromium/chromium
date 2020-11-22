@@ -168,5 +168,5 @@ void NotificationDisplayServiceTester::SetProcessNotificationOperationDelegate(
 
 void NotificationDisplayServiceTester::OnProfileShutdown() {
   profile_ = nullptr;
-  profile_shutdown_subscription_.reset();
+  profile_shutdown_subscription_ = {};
 }

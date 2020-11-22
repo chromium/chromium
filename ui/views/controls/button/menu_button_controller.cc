@@ -319,7 +319,7 @@ void MenuButtonController::DecrementPressedLocked() {
   // If this was the last lock, manually reset state to the desired state.
   if (pressed_lock_count_ == 0) {
     menu_closed_time_ = TimeTicks::Now();
-    state_changed_subscription_.reset();
+    state_changed_subscription_ = {};
     LabelButton::ButtonState desired_state = Button::STATE_NORMAL;
     if (should_disable_after_press_) {
       desired_state = Button::STATE_DISABLED;

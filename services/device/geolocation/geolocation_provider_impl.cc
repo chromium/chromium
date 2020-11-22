@@ -64,12 +64,12 @@ void GeolocationProviderImpl::SetGeolocationConfiguration(
   }
 }
 
-std::unique_ptr<GeolocationProvider::Subscription>
+base::CallbackListSubscription
 GeolocationProviderImpl::AddLocationUpdateCallback(
     const LocationUpdateCallback& callback,
     bool enable_high_accuracy) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  std::unique_ptr<GeolocationProvider::Subscription> subscription;
+  base::CallbackListSubscription subscription;
   if (enable_high_accuracy) {
     subscription = high_accuracy_callbacks_.Add(callback);
   } else {

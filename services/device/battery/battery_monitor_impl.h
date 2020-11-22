@@ -31,8 +31,7 @@ class BatteryMonitorImpl : public mojom::BatteryMonitor {
   void ReportStatus();
 
   mojo::SelfOwnedReceiverRef<mojom::BatteryMonitor> receiver_;
-  std::unique_ptr<BatteryStatusService::BatteryUpdateSubscription>
-      subscription_;
+  base::CallbackListSubscription subscription_;
   QueryNextStatusCallback callback_;
   mojom::BatteryStatus status_;
   bool status_to_report_;

@@ -74,9 +74,7 @@ class SettingsPrivateEventRouter
   PrefChangeRegistrar* FindRegistrarForPref(const std::string& pref_name);
 
 #if defined(OS_CHROMEOS)
-  using SubscriptionMap =
-      std::map<std::string,
-               std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>>;
+  using SubscriptionMap = std::map<std::string, base::CallbackListSubscription>;
   SubscriptionMap cros_settings_subscription_map_;
 #endif
 

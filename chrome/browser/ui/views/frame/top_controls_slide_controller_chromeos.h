@@ -183,8 +183,7 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
                  std::unique_ptr<TopControlsSlideTabObserver>>
       observed_tabs_;
 
-  std::unique_ptr<chromeos::AccessibilityStatusSubscription>
-      accessibility_status_subscription_;
+  base::CallbackListSubscription accessibility_status_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TopControlsSlideControllerChromeOS);
 };

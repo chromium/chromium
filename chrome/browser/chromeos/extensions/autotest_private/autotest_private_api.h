@@ -1190,8 +1190,7 @@ class AutotestPrivateSetMetricsEnabledFunction : public ExtensionFunction {
 
   void OnStatsReportingStateChanged();
 
-  std::unique_ptr<chromeos::StatsReportingController::ObserverSubscription>
-      stats_reporting_observer_subscription_;
+  base::CallbackListSubscription stats_reporting_observer_subscription_;
   bool target_value_ = false;
 };
 

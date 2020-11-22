@@ -840,10 +840,9 @@ void TemplateURLService::Load() {
     ChangeToLoadedState();
 }
 
-std::unique_ptr<TemplateURLService::Subscription>
-TemplateURLService::RegisterOnLoadedCallback(
+base::CallbackListSubscription TemplateURLService::RegisterOnLoadedCallback(
     const base::RepeatingClosure& callback) {
-  return loaded_ ? std::unique_ptr<TemplateURLService::Subscription>()
+  return loaded_ ? base::CallbackListSubscription()
                  : on_loaded_callbacks_.Add(callback);
 }
 

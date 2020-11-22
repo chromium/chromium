@@ -193,11 +193,10 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // Menu button and page status icons. Only used by web-app windows.
   WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
 
-  std::unique_ptr<views::Widget::PaintAsActiveCallbackList::Subscription>
-      paint_as_active_subscription_ =
-          frame_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-              &BrowserNonClientFrameView::PaintAsActiveChanged,
-              base::Unretained(this)));
+  base::CallbackListSubscription paint_as_active_subscription_ =
+      frame_->RegisterPaintAsActiveChangedCallback(
+          base::BindRepeating(&BrowserNonClientFrameView::PaintAsActiveChanged,
+                              base::Unretained(this)));
 
   ScopedObserver<TabStrip, TabStripObserver> tab_strip_observer_{this};
 

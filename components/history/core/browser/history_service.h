@@ -484,11 +484,10 @@ class HistoryService : public KeyedService {
   using FaviconsChangedCallback = FaviconsChangedCallbackList::CallbackType;
 
   // Add a callback to the list. The callback will remain registered until the
-  // returned Subscription is destroyed. The Subscription must be destroyed
+  // returned subscription is destroyed. The subscription must be destroyed
   // before HistoryService is destroyed.
-  std::unique_ptr<FaviconsChangedCallbackList::Subscription>
-  AddFaviconsChangedCallback(const FaviconsChangedCallback& callback)
-      WARN_UNUSED_RESULT;
+  base::CallbackListSubscription AddFaviconsChangedCallback(
+      const FaviconsChangedCallback& callback) WARN_UNUSED_RESULT;
 
   // Testing -------------------------------------------------------------------
 

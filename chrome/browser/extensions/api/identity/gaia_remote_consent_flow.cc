@@ -104,7 +104,7 @@ void GaiaRemoteConsentFlow::OnConsentResultSet(
   if (!web_flow_ || window_id != web_flow_->GetAppWindowKey())
     return;
 
-  identity_api_set_consent_result_subscription_.reset();
+  identity_api_set_consent_result_subscription_ = {};
 
   bool consent_approved = false;
   std::string gaia_id;

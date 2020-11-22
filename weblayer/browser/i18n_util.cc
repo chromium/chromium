@@ -43,7 +43,7 @@ std::string GetAcceptLangs() {
   return net::HttpUtil::ExpandLanguageList(locale_list);
 }
 
-std::unique_ptr<LocaleChangeSubscription> RegisterLocaleChangeCallback(
+base::CallbackListSubscription RegisterLocaleChangeCallback(
     base::RepeatingClosure locale_changed) {
   return GetLocaleChangeCallbacks().Add(locale_changed);
 }

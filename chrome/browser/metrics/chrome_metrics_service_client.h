@@ -199,8 +199,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-      omnibox_url_opened_subscription_;
+  base::CallbackListSubscription omnibox_url_opened_subscription_;
 
 #if !defined(OS_ANDROID)
   std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;

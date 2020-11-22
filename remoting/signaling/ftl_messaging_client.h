@@ -49,7 +49,7 @@ class FtlMessagingClient final : public MessagingClient {
   ~FtlMessagingClient() override;
 
   // MessagingClient implementations.
-  std::unique_ptr<MessageCallbackSubscription> RegisterMessageCallback(
+  base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback) override;
   void PullMessages(DoneCallback on_done) override;
   void SendMessage(const std::string& destination,

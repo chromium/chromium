@@ -260,8 +260,8 @@ class SafeBrowsingDatabaseManager
   // when it's loaded from disk at startup, and then periodically. These
   // callbacks will be on the UI thread.
   using OnDatabaseUpdated = base::RepeatingClosure;
-  std::unique_ptr<base::RepeatingClosureList::Subscription>
-  RegisterDatabaseUpdatedCallback(const OnDatabaseUpdated& cb);
+  base::CallbackListSubscription RegisterDatabaseUpdatedCallback(
+      const OnDatabaseUpdated& cb);
 
   // Called to stop or shutdown operations on the io_thread. All subclasses
   // should override this method, set enabled_ to false and call the base class

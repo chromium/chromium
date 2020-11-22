@@ -139,10 +139,8 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  std::unique_ptr<base::RepeatingClosureList::Subscription>
-      database_updated_subscription_;
-  std::unique_ptr<base::RepeatingClosureList::Subscription>
-      database_changed_subscription_;
+  base::CallbackListSubscription database_updated_subscription_;
+  base::CallbackListSubscription database_changed_subscription_;
 
   // The cached BlocklistState's, received from BlocklistStateFetcher.
   BlocklistStateMap blocklist_state_cache_;

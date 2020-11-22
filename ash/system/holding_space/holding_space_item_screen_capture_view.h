@@ -34,7 +34,7 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
 
   RoundedImageView* image_ = nullptr;
 
-  std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
+  base::CallbackListSubscription image_subscription_;
 };
 
 }  // namespace ash

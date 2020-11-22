@@ -14,9 +14,6 @@
 
 class PrefService;
 
-using StateSubscription =
-    base::CallbackList<void(const std::string& username)>::Subscription;
-
 namespace password_manager {
 
 // Responsible for saving, clearing, retrieving and encryption of a password
@@ -60,7 +57,7 @@ class HashPasswordManager {
   // Should only be called on the UI thread. The callback is only called when
   // the sign-in isn't the first change on the |kPasswordHashDataList| and
   // saving the password hash actually succeeded.
-  virtual std::unique_ptr<StateSubscription> RegisterStateCallback(
+  virtual base::CallbackListSubscription RegisterStateCallback(
       const base::RepeatingCallback<void(const std::string& username)>&
           callback);
 

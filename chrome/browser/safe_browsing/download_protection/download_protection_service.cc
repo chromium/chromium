@@ -290,21 +290,21 @@ void DownloadProtectionService::CheckNativeFileSystemWrite(
   request_copy->Start();
 }
 
-ClientDownloadRequestSubscription
+base::CallbackListSubscription
 DownloadProtectionService::RegisterClientDownloadRequestCallback(
     const ClientDownloadRequestCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return client_download_request_callbacks_.Add(callback);
 }
 
-NativeFileSystemWriteRequestSubscription
+base::CallbackListSubscription
 DownloadProtectionService::RegisterNativeFileSystemWriteRequestCallback(
     const NativeFileSystemWriteRequestCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_file_system_write_request_callbacks_.Add(callback);
 }
 
-PPAPIDownloadRequestSubscription
+base::CallbackListSubscription
 DownloadProtectionService::RegisterPPAPIDownloadRequestCallback(
     const PPAPIDownloadRequestCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

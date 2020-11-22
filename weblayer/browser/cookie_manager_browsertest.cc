@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest, CookieChanged) {
       embedded_test_server()->GetURL("/simple_page.html"), shell());
 
   GURL base_url = embedded_test_server()->base_url();
-  auto subscription =
+  base::CallbackListSubscription subscription =
       GetProfile()->GetCookieManager()->AddCookieChangedCallback(
           base_url, nullptr,
           base::BindRepeating(&CookieManagerBrowserTest::OnCookieChanged,
@@ -79,13 +79,13 @@ IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest,
 
   GURL base_url = embedded_test_server()->base_url();
   std::string cookie1 = "cookie1";
-  auto subscription1 =
+  base::CallbackListSubscription subscription1 =
       GetProfile()->GetCookieManager()->AddCookieChangedCallback(
           base_url, &cookie1,
           base::BindRepeating(&CookieManagerBrowserTest::OnCookieChanged,
                               base::Unretained(this)));
   std::string cookie2 = "cookie2";
-  auto subscription2 =
+  base::CallbackListSubscription subscription2 =
       GetProfile()->GetCookieManager()->AddCookieChangedCallback(
           base_url, &cookie2,
           base::BindRepeating(&CookieManagerBrowserTest::OnCookieChanged,
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest,
   }
 
   Reset();
-  subscription1 = nullptr;
+  subscription1 = {};
 
   // Set cookie1 first and then cookie2. We should only receive a cookie change
   // event for cookie2.

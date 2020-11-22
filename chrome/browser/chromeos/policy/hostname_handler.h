@@ -51,8 +51,7 @@ class HostnameHandler : public chromeos::NetworkStateHandlerObserver {
   void OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded();
 
   chromeos::CrosSettings* cros_settings_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      policy_subscription_;
+  base::CallbackListSubscription policy_subscription_;
   std::string hostname_;
   base::WeakPtrFactory<HostnameHandler> weak_factory_{this};
 

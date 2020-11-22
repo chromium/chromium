@@ -416,8 +416,7 @@ void SafeBrowsingService::CreateServicesForProfile(Profile* profile) {
   observed_profiles_.Add(profile);
 }
 
-std::unique_ptr<SafeBrowsingService::StateSubscription>
-SafeBrowsingService::RegisterStateCallback(
+base::CallbackListSubscription SafeBrowsingService::RegisterStateCallback(
     const base::RepeatingClosure& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return state_callback_list_.Add(callback);

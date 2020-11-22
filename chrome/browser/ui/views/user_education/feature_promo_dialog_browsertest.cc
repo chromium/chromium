@@ -91,11 +91,10 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     return mock_tracker;
   }
 
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      subscription_{BrowserContextDependencyManager::GetInstance()
-                        ->RegisterCreateServicesCallbackForTesting(
-                            base::BindRepeating(RegisterMockTracker))};
+  base::CallbackListSubscription subscription_{
+      BrowserContextDependencyManager::GetInstance()
+          ->RegisterCreateServicesCallbackForTesting(
+              base::BindRepeating(RegisterMockTracker))};
 };
 
 // Adding new tests for your promo

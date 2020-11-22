@@ -144,7 +144,7 @@ class WebFrameImpl : public WebFrame, public web::WebStateObserver {
   // The associated web state.
   web::WebState* web_state_ = nullptr;
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   base::WeakPtrFactory<WebFrameImpl> weak_ptr_factory_;
 

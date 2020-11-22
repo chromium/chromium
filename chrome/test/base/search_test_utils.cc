@@ -17,7 +17,7 @@ void WaitForTemplateURLServiceToLoad(TemplateURLService* service) {
     return;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner =
       new content::MessageLoopRunner;
-  std::unique_ptr<TemplateURLService::Subscription> subscription =
+  base::CallbackListSubscription subscription =
       service->RegisterOnLoadedCallback(
           base::BindLambdaForTesting([&]() { message_loop_runner->Quit(); }));
   service->Load();

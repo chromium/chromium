@@ -280,7 +280,7 @@ class VIEWS_EXPORT Label : public View,
   // within the |range|. See gfx::RenderText.
   std::vector<gfx::Rect> GetSubstringBounds(const gfx::Range& range);
 
-  views::PropertyChangedSubscription AddTextChangedCallback(
+  base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // View:

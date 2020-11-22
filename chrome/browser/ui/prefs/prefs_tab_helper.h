@@ -63,8 +63,7 @@ class PrefsTabHelper : public content::NotificationObserver,
   Profile* profile_;
   content::NotificationRegistrar registrar_;
 #if !defined(OS_ANDROID)
-  std::unique_ptr<ChromeZoomLevelPrefs::DefaultZoomLevelSubscription>
-      default_zoom_level_subscription_;
+  base::CallbackListSubscription default_zoom_level_subscription_;
   FontPrefChangeNotifier::Registrar font_change_registrar_;
 #endif  // !defined(OS_ANDROID)
   base::WeakPtrFactory<PrefsTabHelper> weak_ptr_factory_{this};

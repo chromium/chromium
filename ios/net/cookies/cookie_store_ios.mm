@@ -131,7 +131,7 @@ void OnlyCookiesWithName(const net::CookieAccessResultList& cookies,
 #pragma mark CookieStoreIOS::Subscription
 
 CookieStoreIOS::Subscription::Subscription(
-    std::unique_ptr<CookieChangeCallbackList::Subscription> subscription)
+    base::CallbackListSubscription subscription)
     : subscription_(std::move(subscription)) {
   DCHECK(subscription_);
 }
@@ -147,7 +147,7 @@ CookieStoreIOS::Subscription::~Subscription() {
 }
 
 void CookieStoreIOS::Subscription::ResetSubscription() {
-  subscription_.reset();
+  subscription_ = {};
 }
 
 #pragma mark -

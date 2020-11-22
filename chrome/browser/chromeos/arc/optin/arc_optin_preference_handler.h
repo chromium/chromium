@@ -58,8 +58,7 @@ class ArcOptInPreferenceHandler {
   // Used to track backup&restore and location service preference.
   PrefChangeRegistrar pref_change_registrar_;
   // Metrics consent observer.
-  std::unique_ptr<chromeos::StatsReportingController::ObserverSubscription>
-      reporting_consent_subscription_;
+  base::CallbackListSubscription reporting_consent_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcOptInPreferenceHandler);
 };

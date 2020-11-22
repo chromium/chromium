@@ -86,8 +86,8 @@ class CustomLinksManager {
   // Registers a callback that will be invoked when custom links are updated by
   // sources other than this interface's methods (i.e. when links are deleted by
   // history clear or when links are updated by Chrome sync).
-  virtual std::unique_ptr<base::CallbackList<void()>::Subscription>
-  RegisterCallbackForOnChanged(base::RepeatingClosure callback) = 0;
+  virtual base::CallbackListSubscription RegisterCallbackForOnChanged(
+      base::RepeatingClosure callback) = 0;
 };
 
 }  // namespace ntp_tiles

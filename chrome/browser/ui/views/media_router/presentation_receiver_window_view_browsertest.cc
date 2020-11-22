@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
     }
 
     PresentationReceiverWindowView* const receiver_view_;
-    views::PropertyChangedSubscription subscription_;
+    base::CallbackListSubscription subscription_;
     const AwaitType await_type_;
     base::OnceClosure fullscreen_callback_;
 

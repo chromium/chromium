@@ -83,7 +83,7 @@ GeolocationImpl::~GeolocationImpl() {
 }
 
 void GeolocationImpl::PauseUpdates() {
-  geolocation_subscription_.reset();
+  geolocation_subscription_ = {};
 }
 
 void GeolocationImpl::ResumeUpdates() {
@@ -134,7 +134,7 @@ void GeolocationImpl::SetOverride(const mojom::Geoposition& position) {
   if (!ValidateGeoposition(position_override_))
     ResumeUpdates();
 
-  geolocation_subscription_.reset();
+  geolocation_subscription_ = {};
 
   OnLocationUpdate(position_override_);
 }

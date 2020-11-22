@@ -60,7 +60,7 @@ class MockCastAppDiscoveryService : public CastAppDiscoveryService {
   MockCastAppDiscoveryService();
   ~MockCastAppDiscoveryService() override;
 
-  Subscription StartObservingMediaSinks(
+  base::CallbackListSubscription StartObservingMediaSinks(
       const CastMediaSource& source,
       const SinkQueryCallback& callback) override;
   scoped_refptr<base::SequencedTaskRunner> task_runner() override;

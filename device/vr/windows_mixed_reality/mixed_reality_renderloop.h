@@ -123,11 +123,9 @@ class MixedRealityRenderLoop : public XRCompositorCommon {
   std::unique_ptr<MixedRealityInputHelper> input_helper_;
 
   std::unique_ptr<WMRStageStatics> stage_statics_;
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      stage_changed_subscription_;
+  base::CallbackListSubscription stage_changed_subscription_;
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      user_presence_changed_subscription_;
+  base::CallbackListSubscription user_presence_changed_subscription_;
 
   std::vector<gfx::Point3F> bounds_;
   bool bounds_updated_ = false;

@@ -44,8 +44,7 @@ class AccessibilityMainHandler : public ::settings::SettingsPageUIHandler {
   void OnAccessibilityStatusChanged(
       const chromeos::AccessibilityStatusEventDetails& details);
 
-  std::unique_ptr<chromeos::AccessibilityStatusSubscription>
-      accessibility_subscription_;
+  base::CallbackListSubscription accessibility_subscription_;
 #endif  // defined(OS_CHROMEOS)
 };
 

@@ -333,10 +333,11 @@ SystemLogUploader::SystemLogUploader(
   SYSLOG(INFO) << "Creating system log uploader.";
 
   // Watch for policy changes.
-  upload_enabled_observer_ = chromeos::CrosSettings::Get()->AddSettingsObserver(
-      chromeos::kSystemLogUploadEnabled,
-      base::Bind(&SystemLogUploader::RefreshUploadSettings,
-                 base::Unretained(this)));
+  upload_enabled_subscription_ =
+      chromeos::CrosSettings::Get()->AddSettingsObserver(
+          chromeos::kSystemLogUploadEnabled,
+          base::Bind(&SystemLogUploader::RefreshUploadSettings,
+                     base::Unretained(this)));
 
   // Fetch the current value of the policy.
   RefreshUploadSettings();

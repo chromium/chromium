@@ -83,7 +83,7 @@ class SearchEngineJsTest : public web::WebJsTest<web::WebTestWithWebState> {
   bool message_received_ = false;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchEngineJsTest);
 };

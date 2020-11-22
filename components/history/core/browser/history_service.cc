@@ -1248,8 +1248,7 @@ void HistoryService::NotifyKeywordSearchTermDeleted(URLID url_id) {
     observer.OnKeywordSearchTermDeleted(this, url_id);
 }
 
-std::unique_ptr<HistoryService::FaviconsChangedCallbackList::Subscription>
-HistoryService::AddFaviconsChangedCallback(
+base::CallbackListSubscription HistoryService::AddFaviconsChangedCallback(
     const HistoryService::FaviconsChangedCallback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return favicons_changed_callback_list_.Add(callback);

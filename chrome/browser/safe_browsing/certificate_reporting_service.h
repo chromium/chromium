@@ -218,11 +218,10 @@ class CertificateReportingService : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<Reporter> reporter_;
 
-  // Subscription for state changes. When this subscription is notified, it
+  // Subscription for state changes. When the callback is notified, it
   // means SafeBrowsingService is enabled/disabled or one of the preferences
   // related to it is changed.
-  std::unique_ptr<base::RepeatingClosureList::Subscription>
-      safe_browsing_state_subscription_;
+  base::CallbackListSubscription safe_browsing_state_subscription_;
 
   // Maximum number of reports to be queued for retry.
   const size_t max_queued_report_count_;

@@ -42,9 +42,6 @@ class ModelTypeControllerDelegate;
 class ProxyModelTypeControllerDelegate;
 }  // namespace syncer
 
-using StateSubscription =
-    base::CallbackList<void(const std::string& username)>::Subscription;
-
 namespace password_manager {
 
 struct PasswordForm;
@@ -421,7 +418,7 @@ class PasswordStore : protected PasswordStoreSync,
 
   // Adds a listener on |hash_password_manager_| for when |kHashPasswordData|
   // list might have changed. Should only be called on the UI thread.
-  virtual std::unique_ptr<StateSubscription>
+  virtual base::CallbackListSubscription
   RegisterStateCallbackOnHashPasswordManager(
       const base::RepeatingCallback<void(const std::string& username)>&
           callback);

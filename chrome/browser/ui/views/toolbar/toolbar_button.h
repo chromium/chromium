@@ -280,7 +280,7 @@ class ToolbarButton : public views::LabelButton,
   base::Optional<SkColor> last_border_color_;
   gfx::Insets last_paint_insets_;
 
-  std::unique_ptr<ui::TouchUiController::Subscription> subscription_ =
+  base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&ToolbarButton::UpdateIcon,
                               base::Unretained(this)));

@@ -73,7 +73,7 @@ class TestWebState : public WebState {
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
-  std::unique_ptr<ScriptCommandSubscription> AddScriptCommandCallback(
+  base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,
       const std::string& command_prefix) override;
   CRWWebViewProxyType GetWebViewProxy() const override;

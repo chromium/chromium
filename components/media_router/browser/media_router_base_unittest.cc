@@ -25,8 +25,7 @@ class MockMediaRouterBase : public MockMediaRouter {
   MockMediaRouterBase() {}
   ~MockMediaRouterBase() override {}
 
-  std::unique_ptr<PresentationConnectionStateSubscription>
-  AddPresentationConnectionStateChangedCallback(
+  base::CallbackListSubscription AddPresentationConnectionStateChangedCallback(
       const MediaRoute::Id& route_id,
       const content::PresentationConnectionStateChangedCallback& callback)
       override {
@@ -74,10 +73,10 @@ TEST_F(MediaRouterBaseTest, NotifyCallbacks) {
       callback1;
   base::MockCallback<content::PresentationConnectionStateChangedCallback>
       callback2;
-  std::unique_ptr<PresentationConnectionStateSubscription> subscription1 =
+  base::CallbackListSubscription subscription1 =
       router_.AddPresentationConnectionStateChangedCallback(route_id1,
                                                             callback1.Get());
-  std::unique_ptr<PresentationConnectionStateSubscription> subscription2 =
+  base::CallbackListSubscription subscription2 =
       router_.AddPresentationConnectionStateChangedCallback(route_id2,
                                                             callback2.Get());
 
@@ -105,7 +104,7 @@ TEST_F(MediaRouterBaseTest, NotifyCallbacks) {
 
   // After removing a subscription, the corresponding callback should no longer
   // be called.
-  subscription1.reset();
+  subscription1 = {};
   router_.NotifyPresentationConnectionStateChange(
       route_id1, PresentationConnectionState::TERMINATED);
 
@@ -113,7 +112,7 @@ TEST_F(MediaRouterBaseTest, NotifyCallbacks) {
   router_.NotifyPresentationConnectionStateChange(
       route_id2, PresentationConnectionState::TERMINATED);
 
-  subscription2.reset();
+  subscription2 = {};
   router_.NotifyPresentationConnectionStateChange(
       route_id2, PresentationConnectionState::TERMINATED);
 }

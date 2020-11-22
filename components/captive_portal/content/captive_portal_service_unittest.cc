@@ -56,7 +56,7 @@ class CaptivePortalObserver {
 
   CaptivePortalService* captive_portal_service_;
 
-  std::unique_ptr<CaptivePortalService::Subscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalObserver);
 };

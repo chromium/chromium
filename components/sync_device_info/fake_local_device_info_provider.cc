@@ -37,7 +37,7 @@ const DeviceInfo* FakeLocalDeviceInfoProvider::GetLocalDeviceInfo() const {
   return ready_ ? &device_info_ : nullptr;
 }
 
-std::unique_ptr<LocalDeviceInfoProvider::Subscription>
+base::CallbackListSubscription
 FakeLocalDeviceInfoProvider::RegisterOnInitializedCallback(
     const base::RepeatingClosure& callback) {
   return callback_list_.Add(callback);

@@ -224,13 +224,11 @@ class ArcSettingsServiceImpl
   // Manages pref observation registration.
   PrefChangeRegistrar registrar_;
 
-  std::unique_ptr<chromeos::StatsReportingController::ObserverSubscription>
-      reporting_consent_subscription_;
+  base::CallbackListSubscription reporting_consent_subscription_;
 
   // Subscription for preference change of default zoom level. Subscription
   // automatically unregisters a callback when it's destructed.
-  std::unique_ptr<ChromeZoomLevelPrefs::DefaultZoomLevelSubscription>
-      default_zoom_level_subscription_;
+  base::CallbackListSubscription default_zoom_level_subscription_;
 
   // Name of the default network. Used to keep track of whether the default
   // network has changed.
@@ -377,7 +375,7 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
 
 void ArcSettingsServiceImpl::StopObservingSettingsChanges() {
   registrar_.RemoveAll();
-  reporting_consent_subscription_.reset();
+  reporting_consent_subscription_ = {};
 
   TimezoneSettings::GetInstance()->RemoveObserver(this);
   chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(

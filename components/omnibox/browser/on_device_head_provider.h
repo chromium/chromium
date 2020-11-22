@@ -97,11 +97,9 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
   // AutocompleteController.
   size_t on_device_search_request_id_;
 
-  // Owns the subscription after adding the model update callback to the
-  // listener such that the callback can be removed automatically from the
-  // listener on provider's deconstruction.
-  std::unique_ptr<OnDeviceModelUpdateListener::UpdateSubscription>
-      model_update_subscription_;
+  // Owns the callback added to the listener such that it can be removed
+  // automatically from the listener on provider's deconstruction.
+  base::CallbackListSubscription model_update_subscription_;
 
   base::WeakPtrFactory<OnDeviceHeadProvider> weak_ptr_factory_{this};
 };

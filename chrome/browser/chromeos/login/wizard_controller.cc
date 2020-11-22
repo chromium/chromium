@@ -1839,7 +1839,7 @@ void WizardController::OnAccessibilityStatusChanged(
     const AccessibilityStatusEventDetails& details) {
   enum AccessibilityNotificationType type = details.notification_type;
   if (type == ACCESSIBILITY_MANAGER_SHUTDOWN) {
-    accessibility_subscription_.reset();
+    accessibility_subscription_ = {};
     return;
   } else if (type != ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK || !details.enabled) {
     return;

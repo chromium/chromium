@@ -185,8 +185,7 @@ class ArcAccessibilityHelperBridge
 
   std::map<int32_t, int32_t> window_id_to_task_id_;
 
-  std::unique_ptr<chromeos::AccessibilityStatusSubscription>
-      accessibility_status_subscription_;
+  base::CallbackListSubscription accessibility_status_subscription_;
 
   arc::mojom::AccessibilityFilterType filter_type_ =
       arc::mojom::AccessibilityFilterType::OFF;

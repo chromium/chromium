@@ -163,7 +163,7 @@ void ProfileResetter::MarkAsDone(Resettable resettable) {
     content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                                  std::move(callback_));
     master_settings_.reset();
-    template_url_service_sub_.reset();
+    template_url_service_subscription_ = {};
   }
 }
 
@@ -190,9 +190,10 @@ void ProfileResetter::ResetDefaultSearchEngine() {
 
     MarkAsDone(DEFAULT_SEARCH_ENGINE);
   } else {
-    template_url_service_sub_ = template_url_service_->RegisterOnLoadedCallback(
-        base::BindRepeating(&ProfileResetter::OnTemplateURLServiceLoaded,
-                            weak_ptr_factory_.GetWeakPtr()));
+    template_url_service_subscription_ =
+        template_url_service_->RegisterOnLoadedCallback(
+            base::BindRepeating(&ProfileResetter::OnTemplateURLServiceLoaded,
+                                weak_ptr_factory_.GetWeakPtr()));
     template_url_service_->Load();
   }
 }
@@ -361,7 +362,7 @@ void ProfileResetter::OnTemplateURLServiceLoaded() {
   // TemplateURLService has loaded. If we need to clean search engines, it's
   // time to go on.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  template_url_service_sub_.reset();
+  template_url_service_subscription_ = {};
   if (pending_reset_flags_ & DEFAULT_SEARCH_ENGINE)
     ResetDefaultSearchEngine();
 }

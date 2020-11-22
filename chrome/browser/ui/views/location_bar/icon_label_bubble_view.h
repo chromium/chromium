@@ -264,7 +264,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // virtual child of this view.
   views::AXVirtualView* alert_virtual_view_;
 
-  std::unique_ptr<ui::TouchUiController::Subscription> subscription_ =
+  base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&IconLabelBubbleView::OnTouchUiChanged,
                               base::Unretained(this)));

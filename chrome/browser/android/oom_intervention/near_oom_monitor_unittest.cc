@@ -60,7 +60,7 @@ class TestNearOomObserver {
         &TestNearOomObserver::OnNearOomDetected, base::Unretained(this)));
   }
 
-  void Unsubscribe() { subscription_.reset(); }
+  void Unsubscribe() { subscription_ = {}; }
 
   bool is_detected() const { return is_detected_; }
 
@@ -68,7 +68,7 @@ class TestNearOomObserver {
   void OnNearOomDetected() { is_detected_ = true; }
 
   bool is_detected_ = false;
-  std::unique_ptr<NearOomMonitor::Subscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNearOomObserver);
 };

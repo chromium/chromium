@@ -136,10 +136,8 @@ class StatusCollector {
   bool report_activity_times_ = false;
   bool report_boot_mode_ = false;
 
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      version_info_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      boot_mode_subscription_;
+  base::CallbackListSubscription version_info_subscription_;
+  base::CallbackListSubscription boot_mode_subscription_;
 
   base::Clock* clock_;
 

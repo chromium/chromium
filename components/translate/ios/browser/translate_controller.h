@@ -127,7 +127,7 @@ class TranslateController : public web::WebStateObserver {
   std::unique_ptr<network::SimpleURLLoader> script_fetcher_;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   Observer* observer_;
   __strong JsTranslateManager* js_manager_;

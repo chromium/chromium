@@ -142,11 +142,10 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
 
   std::unique_ptr<NonClientFrameViewAshImmersiveHelper> immersive_helper_;
 
-  std::unique_ptr<views::Widget::PaintAsActiveCallbackList::Subscription>
-      paint_as_active_subscription_ =
-          frame_->RegisterPaintAsActiveChangedCallback(
-              base::BindRepeating(&NonClientFrameViewAsh::PaintAsActiveChanged,
-                                  base::Unretained(this)));
+  base::CallbackListSubscription paint_as_active_subscription_ =
+      frame_->RegisterPaintAsActiveChangedCallback(
+          base::BindRepeating(&NonClientFrameViewAsh::PaintAsActiveChanged,
+                              base::Unretained(this)));
 
   base::WeakPtrFactory<NonClientFrameViewAsh> weak_factory_{this};
 

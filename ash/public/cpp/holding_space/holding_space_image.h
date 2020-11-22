@@ -18,7 +18,6 @@ namespace ash {
 class ASH_PUBLIC_EXPORT HoldingSpaceImage {
  public:
   using CallbackList = base::RepeatingClosureList;
-  using Subscription = CallbackList::Subscription;
 
   // Returns a bitmap.
   using BitmapCallback = base::OnceCallback<void(const SkBitmap*)>;
@@ -36,7 +35,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   bool operator==(const HoldingSpaceImage& rhs) const;
 
   // Adds `callback` to be notified of changes to the underlying `image_skia_`.
-  std::unique_ptr<Subscription> AddImageSkiaChangedCallback(
+  base::CallbackListSubscription AddImageSkiaChangedCallback(
       CallbackList::CallbackType callback) const;
 
   // Returns the underlying `gfx::ImageSkia`. Note that the image source may be

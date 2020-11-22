@@ -144,10 +144,9 @@ class UpdateRequiredScreen : public BaseScreen,
 
   base::TimeDelta error_message_delay_;
 
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      eol_message_subscription_;
+  base::CallbackListSubscription eol_message_subscription_;
 
-  ErrorScreen::ConnectRequestCallbackSubscription connect_request_subscription_;
+  base::CallbackListSubscription connect_request_subscription_;
 
   base::WeakPtrFactory<UpdateRequiredScreen> weak_factory_{this};
 

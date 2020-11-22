@@ -28,7 +28,7 @@ void AppListLaunchMetricsProvider::OnRecordingEnabled() {
 
 void AppListLaunchMetricsProvider::OnRecordingDisabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  subscription_.reset();
+  subscription_ = {};
 }
 
 void AppListLaunchMetricsProvider::Initialize() {

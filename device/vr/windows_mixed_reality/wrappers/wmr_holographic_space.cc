@@ -81,7 +81,7 @@ HolographicSpaceUserPresence WMRHolographicSpaceImpl::UserPresence() {
   return user_presence;
 }
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
+base::CallbackListSubscription
 WMRHolographicSpaceImpl::AddUserPresenceChangedCallback(
     const base::RepeatingCallback<void()>& cb) {
   return user_presence_changed_callback_list_.Add(cb);

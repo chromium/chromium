@@ -189,7 +189,7 @@ void ExtensionTestNotificationObserver::WaitForCondition(
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription> subscription;
+  base::CallbackListSubscription subscription;
   if (notification_set) {
     subscription = notification_set->callback_list().Add(base::BindRepeating(
         &ExtensionTestNotificationObserver::MaybeQuit, base::Unretained(this)));

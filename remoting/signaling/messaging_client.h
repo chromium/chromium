@@ -26,16 +26,15 @@ class MessagingClient {
                                    const ftl::ChromotingMessage& message)>;
   using MessageCallbackList = base::CallbackList<
       void(const ftl::Id&, const std::string&, const ftl::ChromotingMessage&)>;
-  using MessageCallbackSubscription = MessageCallbackList::Subscription;
   using DoneCallback =
       base::OnceCallback<void(const ProtobufHttpStatus& status)>;
 
   virtual ~MessagingClient() = default;
 
-  // Registers a callback which is run for each new message received.
-  // Simply delete the returned subscription object to unregister. The
-  // subscription object must be deleted before |this| is deleted.
-  virtual std::unique_ptr<MessageCallbackSubscription> RegisterMessageCallback(
+  // Registers a callback which is run for each new message received. Simply
+  // delete the returned subscription object to unregister. The subscription
+  // object must be deleted before |this| is deleted.
+  virtual base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback) = 0;
 
   // Retrieves messages from the user's inbox over slow path and calls the

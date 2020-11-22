@@ -50,9 +50,7 @@ class SpotlightSuggestionsBridge;
   syncer::SyncService* _syncService;                    // weak
 
   scoped_refptr<history::TopSites> _topSites;
-  std::unique_ptr<
-      suggestions::SuggestionsService::ResponseCallbackList::Subscription>
-      _suggestionsServiceResponseSubscription;
+  base::CallbackListSubscription _suggestionsServiceResponseSubscription;
 
   // Indicates if a reindex is pending. Reindexes made by calling the external
   // reindexTopSites method are executed at most every second.

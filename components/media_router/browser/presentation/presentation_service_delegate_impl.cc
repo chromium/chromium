@@ -124,8 +124,7 @@ class PresentationFrame {
   base::small_map<
       std::map<std::string, std::unique_ptr<PresentationMediaSinksObserver>>>
       url_to_sinks_observer_;
-  std::unordered_map<MediaRoute::Id,
-                     std::unique_ptr<PresentationConnectionStateSubscription>>
+  std::unordered_map<MediaRoute::Id, base::CallbackListSubscription>
       connection_state_subscriptions_;
   std::unordered_map<MediaRoute::Id,
                      std::unique_ptr<BrowserPresentationConnectionProxy>>

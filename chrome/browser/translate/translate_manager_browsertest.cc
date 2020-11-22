@@ -359,8 +359,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   TranslateErrors::Type error_type_;
 
-  std::unique_ptr<TranslateManager::TranslateErrorCallbackList::Subscription>
-      error_subscription_;
+  base::CallbackListSubscription error_subscription_;
 
   std::unique_ptr<TranslateWaiter> language_determined_waiter_;
 

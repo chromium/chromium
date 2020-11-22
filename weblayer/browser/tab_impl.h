@@ -371,7 +371,7 @@ class TabImpl : public Tab,
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NavigationControllerImpl> navigation_controller_;
   base::ObserverList<TabObserver>::Unchecked observers_;
-  std::unique_ptr<i18n::LocaleChangeSubscription> locale_change_subscription_;
+  base::CallbackListSubscription locale_change_subscription_;
 
 #if defined(OS_ANDROID)
   BrowserControlsContainerView* top_controls_container_view_ = nullptr;

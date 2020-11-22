@@ -138,7 +138,7 @@ void SafeBrowsingDatabaseManager::StopOnIOThread(bool shutdown) {
   v4_get_hash_protocol_manager_.reset();
 }
 
-std::unique_ptr<base::RepeatingClosureList::Subscription>
+base::CallbackListSubscription
 SafeBrowsingDatabaseManager::RegisterDatabaseUpdatedCallback(
     const OnDatabaseUpdated& cb) {
   return update_complete_callback_list_.Add(cb);

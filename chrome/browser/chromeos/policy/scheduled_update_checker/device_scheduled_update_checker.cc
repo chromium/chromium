@@ -259,7 +259,7 @@ std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
 
 }  // namespace update_checker_internal
 
-// |cros_settings_observer_| will be destroyed as part of this object
+// |cros_settings_subscription_| will be destroyed as part of this object
 // guaranteeing to not run |OnScheduledUpdateCheckDataChanged| after its
 // destruction. Therefore, it's safe to use "this" while adding this observer.
 // Similarly, |start_update_check_timer_task_executor_| and
@@ -269,7 +269,7 @@ DeviceScheduledUpdateChecker::DeviceScheduledUpdateChecker(
     chromeos::CrosSettings* cros_settings,
     chromeos::NetworkStateHandler* network_state_handler)
     : cros_settings_(cros_settings),
-      cros_settings_observer_(cros_settings_->AddSettingsObserver(
+      cros_settings_subscription_(cros_settings_->AddSettingsObserver(
           chromeos::kDeviceScheduledUpdateCheck,
           base::BindRepeating(
               &DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged,

@@ -259,6 +259,6 @@ void ChromeRLZTrackerDelegate::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!log->is_popup_open)
     return;
 
-  omnibox_url_opened_subscription_.reset();
+  omnibox_url_opened_subscription_ = {};
   std::move(on_omnibox_search_callback_).Run();
 }

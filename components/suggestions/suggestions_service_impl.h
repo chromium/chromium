@@ -68,7 +68,7 @@ class SuggestionsServiceImpl : public SuggestionsService,
   bool FetchSuggestionsData() override;
   base::Optional<SuggestionsProfile> GetSuggestionsDataFromCache()
       const override;
-  std::unique_ptr<ResponseCallbackList::Subscription> AddCallback(
+  base::CallbackListSubscription AddCallback(
       const ResponseCallback& callback) override WARN_UNUSED_RESULT;
   bool BlocklistURL(const GURL& candidate_url) override;
   bool UndoBlocklistURL(const GURL& url) override;

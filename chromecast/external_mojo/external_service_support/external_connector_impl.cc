@@ -162,7 +162,7 @@ ExternalConnectorImpl::ExternalConnectorImpl(
 
 ExternalConnectorImpl::~ExternalConnectorImpl() = default;
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
+base::CallbackListSubscription
 ExternalConnectorImpl::AddConnectionErrorCallback(
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

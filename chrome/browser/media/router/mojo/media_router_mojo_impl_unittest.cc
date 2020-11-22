@@ -1027,7 +1027,7 @@ TEST_F(MediaRouterMojoImplTest, PresentationConnectionStateChangedCallback) {
   blink::mojom::PresentationInfo connection(presentation_url, kPresentationId);
   base::MockCallback<content::PresentationConnectionStateChangedCallback>
       callback;
-  std::unique_ptr<PresentationConnectionStateSubscription> subscription =
+  base::CallbackListSubscription subscription =
       router()->AddPresentationConnectionStateChangedCallback(route_id,
                                                               callback.Get());
 
@@ -1065,12 +1065,12 @@ TEST_F(MediaRouterMojoImplTest,
   MediaRoute::Id route_id("route-id");
   base::MockCallback<content::PresentationConnectionStateChangedCallback>
       callback;
-  std::unique_ptr<PresentationConnectionStateSubscription> subscription =
+  base::CallbackListSubscription subscription =
       router()->AddPresentationConnectionStateChangedCallback(route_id,
                                                               callback.Get());
 
   // Callback has been removed, so we don't expect it to be called anymore.
-  subscription.reset();
+  subscription = {};
   EXPECT_TRUE(router()->presentation_connection_state_callbacks_.empty());
 
   EXPECT_CALL(callback, Run(_)).Times(0);

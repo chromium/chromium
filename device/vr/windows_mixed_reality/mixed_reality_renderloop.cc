@@ -294,7 +294,7 @@ void MixedRealityRenderLoop::StopRuntime() {
   rendering_params_ = nullptr;
   camera_ = nullptr;
 
-  user_presence_changed_subscription_ = nullptr;
+  user_presence_changed_subscription_ = {};
 
   if (input_helper_)
     input_helper_->Dispose();
@@ -386,7 +386,7 @@ bool MixedRealityRenderLoop::EnsureStageStatics() {
 }
 
 void MixedRealityRenderLoop::ClearStageStatics() {
-  stage_changed_subscription_ = nullptr;
+  stage_changed_subscription_ = {};
   stage_statics_ = nullptr;
 }
 

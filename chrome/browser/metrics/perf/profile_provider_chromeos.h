@@ -74,11 +74,10 @@ class ProfileProvider : public chromeos::PowerManagerClient::Observer,
  private:
   // Points to the on-session-restored callback that was registered with
   // SessionRestore's callback list. When objects of this class are destroyed,
-  // the subscription object's destructor will automatically unregister the
-  // callback in SessionRestore, so that the callback list does not contain any
-  // obsolete callbacks.
-  SessionRestore::CallbackSubscription
-      on_session_restored_callback_subscription_;
+  // the subscription's destructor will automatically unregister the callback in
+  // SessionRestore, so that the callback list does not contain any obsolete
+  // callbacks.
+  base::CallbackListSubscription on_session_restored_callback_subscription_;
 
   scoped_refptr<content::JankMonitor> jank_monitor_;
 

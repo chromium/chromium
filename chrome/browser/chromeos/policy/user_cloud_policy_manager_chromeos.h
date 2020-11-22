@@ -321,8 +321,7 @@ class UserCloudPolicyManagerChromeOS
   std::unique_ptr<RemoteCommandsInvalidator> invalidator_;
 
   // Listening to notification that profile is destroyed.
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      shutdown_notifier_;
+  base::CallbackListSubscription shutdown_subscription_;
 
   // The SharedURLLoaderFactory used in some tests to simulate network requests.
   scoped_refptr<network::SharedURLLoaderFactory>

@@ -117,7 +117,7 @@ class SettingsBinder : public CalculatorsPoliciesBinder {
 
  private:
   CrosSettings* settings_;
-  std::list<std::unique_ptr<CrosSettings::ObserverSubscription>> subscriptions_;
+  std::list<base::CallbackListSubscription> subscriptions_;
 };
 
 }  // namespace

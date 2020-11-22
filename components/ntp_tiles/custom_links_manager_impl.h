@@ -53,8 +53,8 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   bool DeleteLink(const GURL& url) override;
   bool UndoAction() override;
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  RegisterCallbackForOnChanged(base::RepeatingClosure callback) override;
+  base::CallbackListSubscription RegisterCallbackForOnChanged(
+      base::RepeatingClosure callback) override;
 
   // Register preferences used by this class.
   static void RegisterProfilePrefs(

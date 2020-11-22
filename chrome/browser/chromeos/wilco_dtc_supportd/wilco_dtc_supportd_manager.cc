@@ -85,7 +85,7 @@ WilcoDtcSupportdManager::WilcoDtcSupportdManager(
   DCHECK(delegate_);
   DCHECK(!g_wilco_dtc_supportd_manager_instance);
   g_wilco_dtc_supportd_manager_instance = this;
-  wilco_dtc_allowed_observer_ = CrosSettings::Get()->AddSettingsObserver(
+  wilco_dtc_allowed_subscription_ = CrosSettings::Get()->AddSettingsObserver(
       kDeviceWilcoDtcAllowed,
       base::BindRepeating(&WilcoDtcSupportdManager::StartOrStopWilcoDtc,
                           weak_ptr_factory_.GetWeakPtr()));

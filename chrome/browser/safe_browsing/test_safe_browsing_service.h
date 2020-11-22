@@ -69,7 +69,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   // TestURLLoaderFactory for mocking network traffic.
   void SetUseTestUrlLoaderFactory(bool use_test_url_loader_factory);
 
-  std::unique_ptr<SafeBrowsingService::StateSubscription> RegisterStateCallback(
+  base::CallbackListSubscription RegisterStateCallback(
       const base::RepeatingClosure& callback) override;
   network::TestURLLoaderFactory* GetTestUrlLoaderFactory();
 

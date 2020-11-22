@@ -100,7 +100,7 @@ class ImageFetchJsTest : public web::WebJsTest<web::WebTestWithWebState> {
   }
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   net::EmbeddedTestServer server_;
   base::Value message_;

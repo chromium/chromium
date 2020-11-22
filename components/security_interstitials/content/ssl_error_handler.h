@@ -257,8 +257,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   captive_portal::CaptivePortalService* captive_portal_service_;
 #endif
 
-  std::unique_ptr<captive_portal::CaptivePortalService::Subscription>
-      subscription_;
+  base::CallbackListSubscription subscription_;
 
   base::OneShotTimer timer_;
 

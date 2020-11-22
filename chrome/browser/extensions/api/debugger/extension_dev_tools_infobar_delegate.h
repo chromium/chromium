@@ -29,7 +29,7 @@ class ExtensionDevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Ensures a global infobar corresponding to the supplied extension is
   // showing and registers |destroyed_callback| with it to be called back on
   // destruction.
-  static std::unique_ptr<CallbackList::Subscription> Create(
+  static base::CallbackListSubscription Create(
       const std::string& extension_id,
       const std::string& extension_name,
       base::OnceClosure destroyed_callback);
@@ -55,7 +55,7 @@ class ExtensionDevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
                                    const std::string& extension_name);
 
   // Adds |destroyed_callback| to the list of callbacks to run on destruction.
-  std::unique_ptr<CallbackList::Subscription> RegisterDestroyedCallback(
+  base::CallbackListSubscription RegisterDestroyedCallback(
       base::OnceClosure destroyed_callback);
 
   const std::string extension_id_;

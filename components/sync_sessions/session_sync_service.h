@@ -39,9 +39,8 @@ class SessionSyncService : public KeyedService {
   virtual OpenTabsUIDelegate* GetOpenTabsUIDelegate() = 0;
 
   // Allows client code to be notified when foreign sessions change.
-  virtual std::unique_ptr<base::CallbackList<void()>::Subscription>
-  SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb)
-      WARN_UNUSED_RESULT = 0;
+  virtual base::CallbackListSubscription SubscribeToForeignSessionsChanged(
+      const base::RepeatingClosure& cb) WARN_UNUSED_RESULT = 0;
 
   // For ProfileSyncService to initialize the controller for SESSIONS.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>

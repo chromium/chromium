@@ -72,8 +72,7 @@ class AccountManagerPolicyController : public KeyedService {
   // For listening on Pref changes.
   PrefChangeRegistrar pref_change_registrar_;
 
-  std::unique_ptr<chromeos::ChildAccountTypeChangedSubscription>
-      child_account_type_changed_subscription_;
+  base::CallbackListSubscription child_account_type_changed_subscription_;
 
   std::unique_ptr<EduCoexistenceConsentInvalidationController>
       edu_coexistence_consent_invalidation_controller_;

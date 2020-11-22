@@ -156,11 +156,10 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
   int minimum_title_bar_x_ = 0;
   int maximum_title_bar_x_ = -1;
 
-  std::unique_ptr<Widget::PaintAsActiveCallbackList::Subscription>
-      paint_as_active_subscription_ =
-          frame_->RegisterPaintAsActiveChangedCallback(
-              base::BindRepeating(&CustomFrameView::SchedulePaint,
-                                  base::Unretained(this)));
+  base::CallbackListSubscription paint_as_active_subscription_ =
+      frame_->RegisterPaintAsActiveChangedCallback(
+          base::BindRepeating(&CustomFrameView::SchedulePaint,
+                              base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(CustomFrameView);
 };

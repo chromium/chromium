@@ -57,9 +57,7 @@ class SupervisedUserInternalsMessageHandler
                     supervised_user_error_page::FilteringBehaviorReason reason,
                     bool uncertain) override;
 
-  std::unique_ptr<
-      base::CallbackList<void(const base::DictionaryValue*)>::Subscription>
-      user_settings_subscription_;
+  base::CallbackListSubscription user_settings_subscription_;
 
   ScopedObserver<SupervisedUserURLFilter, SupervisedUserURLFilter::Observer>
       scoped_observer_{this};

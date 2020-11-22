@@ -263,10 +263,9 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // UI direction).
   gfx::HorizontalAlignment horizontal_alignment_ = gfx::ALIGN_LEFT;
 
-  std::unique_ptr<Widget::PaintAsActiveCallbackList::Subscription>
-      paint_as_active_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 
-  PropertyChangedSubscription flip_canvas_on_paint_subscription_ =
+  base::CallbackListSubscription flip_canvas_on_paint_subscription_ =
       AddFlipCanvasOnPaintForRTLUIChangedCallback(
           base::BindRepeating(&LabelButton::FlipCanvasOnPaintForRTLUIChanged,
                               base::Unretained(this)));

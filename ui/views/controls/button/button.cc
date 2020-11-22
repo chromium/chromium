@@ -347,7 +347,7 @@ void Button::SetHighlighted(bool bubble_visible) {
                  nullptr);
 }
 
-PropertyChangedSubscription Button::AddStateChangedCallback(
+base::CallbackListSubscription Button::AddStateChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&state_, std::move(callback));
 }

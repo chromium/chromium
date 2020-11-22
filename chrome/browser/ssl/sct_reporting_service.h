@@ -44,8 +44,7 @@ class SCTReportingService : public KeyedService {
   safe_browsing::SafeBrowsingService* safe_browsing_service_;
   const PrefService& pref_service_;
   Profile* profile_;
-  std::unique_ptr<base::CallbackList<void(void)>::Subscription>
-      safe_browsing_state_subscription_;
+  base::CallbackListSubscription safe_browsing_state_subscription_;
 };
 
 #endif  // CHROME_BROWSER_SSL_SCT_REPORTING_SERVICE_H_

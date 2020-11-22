@@ -62,8 +62,8 @@ AutoEnrollmentCheckScreen::~AutoEnrollmentCheckScreen() {
 }
 
 void AutoEnrollmentCheckScreen::ClearState() {
-  auto_enrollment_progress_subscription_.reset();
-  connect_request_subscription_.reset();
+  auto_enrollment_progress_subscription_ = {};
+  connect_request_subscription_ = {};
   network_portal_detector::GetInstance()->RemoveObserver(this);
 
   auto_enrollment_state_ = policy::AUTO_ENROLLMENT_STATE_IDLE;
@@ -262,8 +262,8 @@ void AutoEnrollmentCheckScreen::SignalCompletion() {
   VLOG(1) << "AutoEnrollmentCheckScreen::SignalCompletion()";
 
   network_portal_detector::GetInstance()->RemoveObserver(this);
-  auto_enrollment_progress_subscription_.reset();
-  connect_request_subscription_.reset();
+  auto_enrollment_progress_subscription_ = {};
+  connect_request_subscription_ = {};
 
   // Running exit callback can cause `this` destruction, so let other methods
   // finish their work before.

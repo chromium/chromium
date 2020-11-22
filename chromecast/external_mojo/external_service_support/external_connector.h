@@ -39,14 +39,12 @@ class ExternalConnector {
   virtual ~ExternalConnector() = default;
 
   // Adds a callback that will be called if this class loses its connection to
-  // the Mojo broker. The calling class must retain the returned Subscription
-  // until it intends to unregister.
-  // By the time |callback| is executed, a new attempt at connecting will be
-  // started, and this object is valid. Note that some prior messages may be
-  // lost.
-  virtual std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddConnectionErrorCallback(base::RepeatingClosure callback)
-      WARN_UNUSED_RESULT = 0;
+  // the Mojo broker. The calling class must retain the returned subscription
+  // until it intends to unregister. By the time |callback| is executed, a new
+  // attempt at connecting will be started, and this object is valid. Note that
+  // some prior messages may be lost.
+  virtual base::CallbackListSubscription AddConnectionErrorCallback(
+      base::RepeatingClosure callback) WARN_UNUSED_RESULT = 0;
 
   // Registers a service that other Mojo processes/services can bind to. Others
   // can call BindInterface(|service_name|, interface_name) to bind to this

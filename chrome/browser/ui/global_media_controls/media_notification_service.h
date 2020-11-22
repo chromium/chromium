@@ -122,15 +122,13 @@ class MediaNotificationService
 
   // Used by a |MediaNotificationDeviceSelectorView| to query the system
   // for connected audio output devices.
-  std::unique_ptr<MediaNotificationDeviceProvider::
-                      GetOutputDevicesCallbackList::Subscription>
-  RegisterAudioOutputDeviceDescriptionsCallback(
+  base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
       MediaNotificationDeviceProvider::GetOutputDevicesCallback callback);
 
   // Used by a |MediaNotificationAudioDeviceSelectorView| to become notified of
   // audio device switching capabilities. The callback will be immediately run
   // with the current availability.
-  std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+  base::CallbackListSubscription
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback);
@@ -232,7 +230,7 @@ class MediaNotificationService
 
     void SetAudioSinkId(const std::string& id);
 
-    std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+    base::CallbackListSubscription
     RegisterIsAudioDeviceSwitchingSupportedCallback(
         base::RepeatingCallback<void(bool)> callback);
 

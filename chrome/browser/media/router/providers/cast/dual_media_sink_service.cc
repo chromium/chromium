@@ -44,8 +44,7 @@ MediaSinkServiceBase* DualMediaSinkService::GetCastMediaSinkServiceImpl() {
   return cast_media_sink_service_->impl();
 }
 
-DualMediaSinkService::Subscription
-DualMediaSinkService::AddSinksDiscoveredCallback(
+base::CallbackListSubscription DualMediaSinkService::AddSinksDiscoveredCallback(
     const OnSinksDiscoveredProviderCallback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sinks_discovered_callbacks_.Add(callback);

@@ -110,7 +110,7 @@ void DateTimeHandler::OnJavascriptAllowed() {
 
 void DateTimeHandler::OnJavascriptDisallowed() {
   scoped_observer_.RemoveAll();
-  system_timezone_policy_subscription_.reset();
+  system_timezone_policy_subscription_ = {};
   local_state_pref_change_registrar_.RemoveAll();
 }
 

@@ -241,7 +241,7 @@ void OomInterventionTabHelper::StopMonitoring() {
   if (OomInterventionConfig::GetInstance()->should_detect_in_renderer()) {
     ResetInterfaces();
   } else {
-    subscription_.reset();
+    subscription_ = {};
   }
 }
 
@@ -286,7 +286,7 @@ void OomInterventionTabHelper::OnNearOomDetected() {
   DCHECK(!OomInterventionConfig::GetInstance()->should_detect_in_renderer());
   DCHECK_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);
   DCHECK(!near_oom_detected_time_);
-  subscription_.reset();
+  subscription_ = {};
 
   StartDetectionInRenderer();
   DCHECK(!renderer_detection_timer_.IsRunning());

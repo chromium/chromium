@@ -172,9 +172,7 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<
-      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
-      subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,

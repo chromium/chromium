@@ -35,7 +35,7 @@ class CookieManagerImpl : public CookieManager {
                  const std::string& value,
                  SetCookieCallback callback) override;
   void GetCookie(const GURL& url, GetCookieCallback callback) override;
-  std::unique_ptr<CookieChangedSubscription> AddCookieChangedCallback(
+  base::CallbackListSubscription AddCookieChangedCallback(
       const GURL& url,
       const std::string* name,
       CookieChangedCallback callback) override;

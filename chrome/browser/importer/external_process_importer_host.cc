@@ -98,7 +98,7 @@ ExternalProcessImporterHost::~ExternalProcessImporterHost() {
 }
 
 void ExternalProcessImporterHost::LaunchImportIfReady() {
-  if (waiting_for_bookmarkbar_model_ || template_service_subscription_.get() ||
+  if (waiting_for_bookmarkbar_model_ || template_service_subscription_ ||
       !is_source_readable_ || cancelled_)
     return;
 
@@ -134,7 +134,7 @@ void ExternalProcessImporterHost::BookmarkModelChanged() {
 }
 
 void ExternalProcessImporterHost::OnTemplateURLServiceLoaded() {
-  template_service_subscription_.reset();
+  template_service_subscription_ = {};
   LaunchImportIfReady();
 }
 

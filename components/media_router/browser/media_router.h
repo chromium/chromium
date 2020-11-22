@@ -58,12 +58,6 @@ using MediaRouteResponseCallback =
     base::OnceCallback<void(mojom::RoutePresentationConnectionPtr connection,
                             const RouteRequestResult& result)>;
 
-// Subscription object returned by calling
-// |AddPresentationConnectionStateChangedCallback|. See the method comments for
-// details.
-using PresentationConnectionStateSubscription = base::CallbackList<void(
-    const content::PresentationConnectionStateChangeInfo&)>::Subscription;
-
 // An interface for handling resources related to media routing.
 // Responsible for registering observers for receiving sink availability
 // updates, handling route requests/responses, and operating on routes (e.g.
@@ -161,10 +155,10 @@ class MediaRouter : public KeyedService {
   virtual void OnUserGesture() = 0;
 
   // Adds |callback| to listen for state changes for presentation connected to
-  // |route_id|. The returned Subscription object is owned by the caller.
-  // |callback| will be invoked whenever there are state changes, until the
-  // caller destroys the Subscription object.
-  virtual std::unique_ptr<PresentationConnectionStateSubscription>
+  // |route_id|. The returned subscription is owned by the caller. |callback|
+  // will be invoked whenever there are state changes, until the caller destroys
+  // the subscription.
+  virtual base::CallbackListSubscription
   AddPresentationConnectionStateChangedCallback(
       const MediaRoute::Id& route_id,
       const content::PresentationConnectionStateChangedCallback& callback) = 0;

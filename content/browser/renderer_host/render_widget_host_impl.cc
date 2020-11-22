@@ -2189,7 +2189,7 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
   // on the renderer to delete Popup widgets.
   blink_popup_widget_host_receiver_.reset();
 
-  render_process_blocked_state_changed_subscription_.reset();
+  render_process_blocked_state_changed_subscription_ = {};
   pending_show_closure_.Reset();
   GetProcess()->RemovePriorityClient(this);
   GetProcess()->RemoveObserver(this);

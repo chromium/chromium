@@ -27,8 +27,8 @@ class WMRHolographicSpace {
           device) = 0;
   virtual ABI::Windows::Graphics::Holographic::HolographicSpaceUserPresence
   UserPresence() = 0;
-  virtual std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddUserPresenceChangedCallback(const base::RepeatingCallback<void()>& cb) = 0;
+  virtual base::CallbackListSubscription AddUserPresenceChangedCallback(
+      const base::RepeatingCallback<void()>& cb) = 0;
 };
 
 class WMRHolographicSpaceImpl : public WMRHolographicSpace {
@@ -47,8 +47,7 @@ class WMRHolographicSpaceImpl : public WMRHolographicSpace {
       override;
   ABI::Windows::Graphics::Holographic::HolographicSpaceUserPresence
   UserPresence() override;
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddUserPresenceChangedCallback(
+  base::CallbackListSubscription AddUserPresenceChangedCallback(
       const base::RepeatingCallback<void()>& cb) override;
 
  private:

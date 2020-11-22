@@ -51,9 +51,7 @@ class SupervisedProvider : public ObservableProvider {
   // thread safety.
   mutable base::Lock lock_;
 
-  std::unique_ptr<
-      base::CallbackList<void(const base::DictionaryValue*)>::Subscription>
-      user_settings_subscription_;
+  base::CallbackListSubscription user_settings_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedProvider);
 };

@@ -95,8 +95,8 @@ bool StatsReportingController::IsEnabled() {
   return value;
 }
 
-std::unique_ptr<CrosSettings::ObserverSubscription>
-StatsReportingController::AddObserver(const base::RepeatingClosure& callback) {
+base::CallbackListSubscription StatsReportingController::AddObserver(
+    const base::RepeatingClosure& callback) {
   DCHECK(!callback.is_null());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return callback_list_.Add(callback);

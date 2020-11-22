@@ -135,7 +135,7 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // animating into "highlight visible" steady state).
   bool GetHighlighted() const;
 
-  PropertyChangedSubscription AddHighlightedChangedCallback(
+  base::CallbackListSubscription AddHighlightedChangedCallback(
       PropertyChangedCallback callback);
 
   // Should be called by InkDrop implementations when their highlight state

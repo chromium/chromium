@@ -143,8 +143,7 @@ ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
                                      : AuthState::NOT_AUTHENTICATED;
 }
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
-ChildAccountService::ObserveGoogleAuthState(
+base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
     const base::Callback<void()>& callback) {
   return google_auth_state_observers_.Add(callback);
 }

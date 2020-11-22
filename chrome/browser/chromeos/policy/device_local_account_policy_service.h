@@ -271,8 +271,7 @@ class DeviceLocalAccountPolicyService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  const std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      local_accounts_subscription_;
+  const base::CallbackListSubscription local_accounts_subscription_;
 
   // Path to the directory that contains the cached policy for components
   // for device-local accounts.

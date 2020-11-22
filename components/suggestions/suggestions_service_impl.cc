@@ -150,8 +150,8 @@ SuggestionsServiceImpl::GetSuggestionsDataFromCache() const {
   return suggestions;
 }
 
-std::unique_ptr<SuggestionsServiceImpl::ResponseCallbackList::Subscription>
-SuggestionsServiceImpl::AddCallback(const ResponseCallback& callback) {
+base::CallbackListSubscription SuggestionsServiceImpl::AddCallback(
+    const ResponseCallback& callback) {
   return callback_list_.Add(callback);
 }
 

@@ -45,7 +45,7 @@ void HistoryClientImpl::OnHistoryServiceCreated(
 }
 
 void HistoryClientImpl::Shutdown() {
-  favicons_changed_subscription_.reset();
+  favicons_changed_subscription_ = {};
   StopObservingBookmarkModel();
 }
 

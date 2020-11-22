@@ -42,7 +42,7 @@ bool ChildAccountTypeChangedUserData::value() const {
   return value_;
 }
 
-std::unique_ptr<base::CallbackList<void(bool)>::Subscription>
+base::CallbackListSubscription
 ChildAccountTypeChangedUserData::RegisterCallback(
     const base::RepeatingCallback<void(bool)>& cb) {
   return callback_list_.Add(cb);

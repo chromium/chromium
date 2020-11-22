@@ -80,7 +80,6 @@ class TemplateURLService : public WebDataServiceConsumer,
   using TemplateURLVector = TemplateURL::TemplateURLVector;
   using OwnedTemplateURLVector = TemplateURL::OwnedTemplateURLVector;
   using SyncDataMap = std::map<std::string, syncer::SyncData>;
-  using Subscription = base::CallbackList<void(void)>::Subscription;
 
   // We may want to treat the keyword in a TemplateURL as being a different
   // length than it actually is.  For example, for keywords that end in a
@@ -319,7 +318,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Registers a callback to be called when the service has loaded.
   //
   // If the service has already loaded, this function does nothing.
-  std::unique_ptr<Subscription> RegisterOnLoadedCallback(
+  base::CallbackListSubscription RegisterOnLoadedCallback(
       const base::RepeatingClosure& callback);
 
 #if defined(UNIT_TEST)

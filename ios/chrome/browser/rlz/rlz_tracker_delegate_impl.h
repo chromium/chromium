@@ -46,8 +46,7 @@ class RLZTrackerDelegateImpl : public rlz::RLZTrackerDelegate {
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
   base::OnceClosure on_omnibox_search_callback_;
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-      on_omnibox_url_opened_subscription_;
+  base::CallbackListSubscription on_omnibox_url_opened_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(RLZTrackerDelegateImpl);
 };

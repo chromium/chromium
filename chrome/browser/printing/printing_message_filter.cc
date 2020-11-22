@@ -71,7 +71,7 @@ PrintingMessageFilter::PrintingMessageFilter(int render_process_id,
       render_process_id_(render_process_id),
       queue_(g_browser_process->print_job_manager()->queue()) {
   DCHECK(queue_.get());
-  printing_shutdown_notifier_ =
+  printing_shutdown_subscription_ =
       PrintingMessageFilterShutdownNotifierFactory::GetInstance()
           ->Get(profile)
           ->Subscribe(base::Bind(&PrintingMessageFilter::ShutdownOnUIThread,
@@ -87,7 +87,7 @@ PrintingMessageFilter::~PrintingMessageFilter() {
 void PrintingMessageFilter::ShutdownOnUIThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   is_printing_enabled_.Destroy();
-  printing_shutdown_notifier_.reset();
+  printing_shutdown_subscription_ = {};
 }
 
 void PrintingMessageFilter::OnDestruct() const {

@@ -636,7 +636,7 @@ void PasswordStore::ClearAllNonGmailPasswordHash() {
       base::BindOnce(&PasswordStore::ClearAllNonGmailPasswordHashImpl, this));
 }
 
-std::unique_ptr<StateSubscription>
+base::CallbackListSubscription
 PasswordStore::RegisterStateCallbackOnHashPasswordManager(
     const base::RepeatingCallback<void(const std::string& username)>&
         callback) {

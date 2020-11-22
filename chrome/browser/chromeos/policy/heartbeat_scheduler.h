@@ -129,11 +129,9 @@ class HeartbeatScheduler : public gcm::GCMAppHandler,
   // Cached copy of the current heartbeat interval, in milliseconds.
   base::TimeDelta heartbeat_interval_;
 
-  // Observers to changes in the heartbeat settings.
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      heartbeat_frequency_observer_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      heartbeat_enabled_observer_;
+  // Subscriptions for callbacks for changes in the heartbeat settings.
+  base::CallbackListSubscription heartbeat_frequency_subscription_;
+  base::CallbackListSubscription heartbeat_enabled_subscription_;
 
   // The time the last heartbeat was sent.
   base::Time last_heartbeat_;

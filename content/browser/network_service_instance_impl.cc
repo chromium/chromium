@@ -397,8 +397,8 @@ network::mojom::NetworkService* GetNetworkService() {
   return g_network_service_remote->get();
 }
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
-RegisterNetworkServiceCrashHandler(base::RepeatingClosure handler) {
+base::CallbackListSubscription RegisterNetworkServiceCrashHandler(
+    base::RepeatingClosure handler) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(!handler.is_null());
 

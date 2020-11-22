@@ -32,7 +32,7 @@ class OmniboxEventGlobalTracker {
   static OmniboxEventGlobalTracker* GetInstance();
 
   // Registers |cb| to be invoked when user open an URL from the omnibox.
-  std::unique_ptr<OnURLOpenedCallbackList::Subscription> RegisterCallback(
+  base::CallbackListSubscription RegisterCallback(
       const OnURLOpenedCallback& cb);
 
   // Called to notify all registered callbacks that an URL was opened from

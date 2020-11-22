@@ -105,8 +105,8 @@ void TouchUiController::OnTabletModeToggled(bool enabled) {
     TouchUiChanged();
 }
 
-std::unique_ptr<TouchUiController::Subscription>
-TouchUiController::RegisterCallback(const base::RepeatingClosure& closure) {
+base::CallbackListSubscription TouchUiController::RegisterCallback(
+    const base::RepeatingClosure& closure) {
   return callback_list_.Add(closure);
 }
 

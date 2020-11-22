@@ -109,7 +109,7 @@ void InstallableInkDrop::SetConfig(InstallableInkDropConfig config) {
   SchedulePaint();
 }
 
-std::unique_ptr<base::RepeatingClosureList::Subscription>
+base::CallbackListSubscription
 InstallableInkDrop::RegisterHighlightedChangedCallback(
     base::RepeatingClosure callback) {
   return highlighted_changed_list_.Add(std::move(callback));

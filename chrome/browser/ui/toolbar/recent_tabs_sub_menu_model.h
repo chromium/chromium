@@ -184,8 +184,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
                  sessions::TabRestoreServiceObserver>
       tab_restore_service_observer_{this};
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      foreign_session_updated_subscription_;
+  base::CallbackListSubscription foreign_session_updated_subscription_;
 
   base::WeakPtrFactory<RecentTabsSubMenuModel> weak_ptr_factory_{this};
   base::WeakPtrFactory<RecentTabsSubMenuModel>

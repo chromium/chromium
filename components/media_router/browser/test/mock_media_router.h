@@ -107,8 +107,7 @@ class MockMediaRouter : public MediaRouterBase {
   MOCK_METHOD0(OnUserGesture, void());
   MOCK_METHOD1(OnPresentationSessionDetached,
                void(const MediaRoute::Id& route_id));
-  std::unique_ptr<PresentationConnectionStateSubscription>
-  AddPresentationConnectionStateChangedCallback(
+  base::CallbackListSubscription AddPresentationConnectionStateChangedCallback(
       const MediaRoute::Id& route_id,
       const content::PresentationConnectionStateChangedCallback& callback)
       override {

@@ -48,10 +48,7 @@ TranslateInternalsHandler::TranslateInternalsHandler() {
                           base::Unretained(this)));
 }
 
-TranslateInternalsHandler::~TranslateInternalsHandler() {
-  // |event_subscription_|, |error_subscription_| and |init_subscription_| are
-  // deleted automatically and un-register the callbacks automatically.
-}
+TranslateInternalsHandler::~TranslateInternalsHandler() = default;
 
 // static.
 void TranslateInternalsHandler::GetLanguages(base::DictionaryValue* dict) {

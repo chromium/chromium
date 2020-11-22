@@ -378,9 +378,9 @@ class DownloadProtectionServiceTestBase
   void TearDown() override {
     enterprise_connectors::ConnectorsManager::GetInstance()
         ->TearDownForTesting();
-    client_download_request_subscription_.reset();
-    ppapi_download_request_subscription_.reset();
-    native_file_system_write_request_subscription_.reset();
+    client_download_request_subscription_ = {};
+    ppapi_download_request_subscription_ = {};
+    native_file_system_write_request_subscription_ = {};
     sb_service_->ShutDown();
     // Flush all of the thread message loops to ensure that there are no
     // tasks currently running.
@@ -716,10 +716,9 @@ class DownloadProtectionServiceTestBase
   std::unique_ptr<content::InProcessUtilityThreadHelper>
       in_process_utility_thread_helper_;
   base::FilePath testdata_path_;
-  ClientDownloadRequestSubscription client_download_request_subscription_;
-  PPAPIDownloadRequestSubscription ppapi_download_request_subscription_;
-  NativeFileSystemWriteRequestSubscription
-      native_file_system_write_request_subscription_;
+  base::CallbackListSubscription client_download_request_subscription_;
+  base::CallbackListSubscription ppapi_download_request_subscription_;
+  base::CallbackListSubscription native_file_system_write_request_subscription_;
   std::unique_ptr<ClientDownloadRequest> last_client_download_request_;
   // The following 5 fields are used by PrepareBasicDownloadItem() function to
   // store attributes of the last download item. They can be modified

@@ -37,7 +37,7 @@ class CookieBlockingErrorLogger final {
   WebState* web_state_impl_ = nullptr;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 }  // namespace web

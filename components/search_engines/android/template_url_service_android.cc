@@ -119,7 +119,7 @@ TemplateUrlServiceAndroid::IsSearchResultsPageFromDefaultSearchProvider(
 }
 
 void TemplateUrlServiceAndroid::OnTemplateURLServiceLoaded() {
-  template_url_subscription_.reset();
+  template_url_subscription_ = {};
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_ref_)
     return;

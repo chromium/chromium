@@ -51,7 +51,7 @@ MediaRouterBase::~MediaRouterBase() {
   CHECK(!internal_routes_observer_);
 }
 
-std::unique_ptr<PresentationConnectionStateSubscription>
+base::CallbackListSubscription
 MediaRouterBase::AddPresentationConnectionStateChangedCallback(
     const MediaRoute::Id& route_id,
     const content::PresentationConnectionStateChangedCallback& callback) {

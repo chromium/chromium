@@ -217,9 +217,7 @@ class TranslateBrowserTest : public WebLayerBrowserTest {
 
   translate::TranslateErrors::Type error_type_ =
       translate::TranslateErrors::NONE;
-  std::unique_ptr<
-      translate::TranslateManager::TranslateErrorCallbackList::Subscription>
-      error_subscription_;
+  base::CallbackListSubscription error_subscription_;
   std::string script_;
 };
 

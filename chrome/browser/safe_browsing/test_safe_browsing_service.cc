@@ -48,13 +48,12 @@ TestSafeBrowsingService::GetTestUrlLoaderFactory() {
   return &test_url_loader_factory_;
 }
 
-std::unique_ptr<SafeBrowsingService::StateSubscription>
-TestSafeBrowsingService::RegisterStateCallback(
+base::CallbackListSubscription TestSafeBrowsingService::RegisterStateCallback(
     const base::RepeatingClosure& callback) {
   // This override is required since TestSafeBrowsingService can be destroyed
   // before CertificateReportingService, which causes a crash due to the
   // leftover callback at destruction time.
-  return nullptr;
+  return {};
 }
 
 std::string TestSafeBrowsingService::serilized_download_report() {

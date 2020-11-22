@@ -42,8 +42,7 @@ class TouchModeStatsTracker
 
   ui::TouchUiController* const touch_ui_controller_;
 
-  std::unique_ptr<ui::TouchUiController::Subscription>
-      mode_change_subscription_;
+  base::CallbackListSubscription mode_change_subscription_;
 
   // The time passed by OnSessionStarted() if there is an ongoing
   // session, or 0 otherwise.

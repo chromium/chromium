@@ -130,8 +130,7 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
                            std::unique_ptr<PluginMetadata> plugin_metadata);
 
   Context context_;
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      shutdown_notifier_;
+  base::CallbackListSubscription shutdown_subscription_;
 
   base::WeakPtrFactory<PluginInfoHostImpl> weak_factory_{this};
 

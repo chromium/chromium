@@ -144,7 +144,7 @@ void SharingDeviceSourceSync::InitPersonalizableLocalDeviceName(
 
 void SharingDeviceSourceSync::OnLocalDeviceInfoProviderReady() {
   DCHECK(local_device_info_provider_->GetLocalDeviceInfo());
-  local_device_info_ready_subscription_.reset();
+  local_device_info_ready_subscription_ = {};
   MaybeRunReadyCallbacks();
 }
 

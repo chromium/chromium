@@ -19,8 +19,6 @@ class DeviceInfo;
 // local device.
 class LocalDeviceInfoProvider {
  public:
-  using Subscription = base::CallbackList<void(void)>::Subscription;
-
   virtual ~LocalDeviceInfoProvider() = default;
 
   virtual version_info::Channel GetChannel() const = 0;
@@ -32,10 +30,9 @@ class LocalDeviceInfoProvider {
   virtual const DeviceInfo* GetLocalDeviceInfo() const = 0;
 
   // Registers a callback to be called when local device info becomes available.
-  // The callback will remain registered until the
-  // returned Subscription is destroyed, which must occur before the
-  // CallbackList is destroyed.
-  virtual std::unique_ptr<Subscription> RegisterOnInitializedCallback(
+  // The callback will remain registered until the returned subscription is
+  // destroyed, which must occur before the CallbackList is destroyed.
+  virtual base::CallbackListSubscription RegisterOnInitializedCallback(
       const base::RepeatingClosure& callback) WARN_UNUSED_RESULT = 0;
 };
 

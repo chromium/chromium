@@ -121,10 +121,10 @@ class WallpaperControllerClient : public ash::WallpaperControllerClient {
   // The registrar used to watch DeviceWallpaperImageFilePath pref changes.
   PrefChangeRegistrar pref_registrar_;
 
-  // Observes if user names should be shown on the login screen, which
-  // determines whether a user wallpaper or a default wallpaper should be shown.
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      show_user_names_on_signin_subscription_;
+  // Subscription for a callback that monitors if user names should be shown on
+  // the login screen, which determines whether a user wallpaper or a default
+  // wallpaper should be shown.
+  base::CallbackListSubscription show_user_names_on_signin_subscription_;
 
   base::WeakPtrFactory<WallpaperControllerClient> weak_factory_{this};
 

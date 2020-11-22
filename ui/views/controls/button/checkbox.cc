@@ -83,7 +83,7 @@ bool Checkbox::GetChecked() const {
   return checked_;
 }
 
-PropertyChangedSubscription Checkbox::AddCheckedChangedCallback(
+base::CallbackListSubscription Checkbox::AddCheckedChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&checked_, callback);
 }

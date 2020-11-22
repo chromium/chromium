@@ -194,7 +194,7 @@ class ZoomController : public content::WebContentsObserver,
   // Keep track of the HostZoomMap we're currently subscribed to.
   content::HostZoomMap* host_zoom_map_;
 
-  std::unique_ptr<content::HostZoomMap::Subscription> zoom_subscription_;
+  base::CallbackListSubscription zoom_subscription_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

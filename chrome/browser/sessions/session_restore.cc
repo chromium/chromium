@@ -850,7 +850,7 @@ bool SessionRestore::IsRestoringSynchronously() {
 }
 
 // static
-SessionRestore::CallbackSubscription
+base::CallbackListSubscription
 SessionRestore::RegisterOnSessionRestoredCallback(
     const base::RepeatingCallback<void(int)>& callback) {
   return on_session_restored_callbacks()->Add(callback);

@@ -794,10 +794,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
     return &test_url_loader_factory_;
   }
 
-  std::unique_ptr<
-      base::CallbackList<void(content::BrowserContext*)>::Subscription>
-      will_create_browser_context_services_subscription_;
-
   std::unique_ptr<ProfileSyncServiceHarness> harness_;
 
   CreditCardSaveManager* credit_card_save_manager_ = nullptr;
@@ -1130,7 +1126,7 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
-    test_signin_client_factory_ =
+    test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(test_url_loader_factory());
 
     SaveCardBubbleViewsFullFormBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -1153,8 +1149,7 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  secondary_account_helper::ScopedSigninClientFactory
-      test_signin_client_factory_;
+  base::CallbackListSubscription test_signin_client_subscription_;
 };
 
 // Tests the upload save bubble. Ensures that clicking the [Save] button

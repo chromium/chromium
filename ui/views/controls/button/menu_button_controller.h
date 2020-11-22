@@ -115,7 +115,7 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   bool should_disable_after_press_ = false;
 
   // Subscribes to state changes on the button while pressed lock is engaged.
-  views::PropertyChangedSubscription state_changed_subscription_;
+  base::CallbackListSubscription state_changed_subscription_;
 
   base::WeakPtrFactory<MenuButtonController> weak_factory_{this};
 

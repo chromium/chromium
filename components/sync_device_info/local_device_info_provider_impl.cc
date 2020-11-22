@@ -48,7 +48,7 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   return local_device_info_.get();
 }
 
-std::unique_ptr<LocalDeviceInfoProvider::Subscription>
+base::CallbackListSubscription
 LocalDeviceInfoProviderImpl::RegisterOnInitializedCallback(
     const base::RepeatingClosure& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

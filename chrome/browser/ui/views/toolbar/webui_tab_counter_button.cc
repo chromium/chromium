@@ -487,8 +487,7 @@ class WebUITabCounterButton : public views::Button,
 
   TabStripModel* const tab_strip_model_;
   BrowserView* const browser_view_;
-  BrowserView::OnLinkOpeningFromGestureSubscription
-      link_opened_from_gesture_subscription_;
+  base::CallbackListSubscription link_opened_from_gesture_subscription_;
 };
 
 WebUITabCounterButton::WebUITabCounterButton(PressedCallback pressed_callback,

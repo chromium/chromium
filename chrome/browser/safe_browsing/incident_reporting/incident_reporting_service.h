@@ -272,7 +272,7 @@ class IncidentReportingService : public ProfileManagerObserver,
 
   // A subscription for ClientDownloadRequests, used to persist them for later
   // use.
-  ClientDownloadRequestSubscription client_download_request_subscription_;
+  base::CallbackListSubscription client_download_request_subscription_;
 
   // True when the asynchronous environment collection task has been fired off
   // but has not yet completed.

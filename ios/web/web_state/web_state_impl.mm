@@ -774,9 +774,9 @@ GURL WebStateImpl::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
   return result;
 }
 
-std::unique_ptr<WebState::ScriptCommandSubscription>
-WebStateImpl::AddScriptCommandCallback(const ScriptCommandCallback& callback,
-                                       const std::string& command_prefix) {
+base::CallbackListSubscription WebStateImpl::AddScriptCommandCallback(
+    const ScriptCommandCallback& callback,
+    const std::string& command_prefix) {
   DCHECK(!command_prefix.empty());
   DCHECK(command_prefix.find_first_of('.') == std::string::npos);
   DCHECK(script_command_callbacks_.count(command_prefix) == 0 ||

@@ -56,7 +56,7 @@ class TextChangeWaiter {
 
   bool observed_change_ = false;
   base::RunLoop run_loop_;
-  views::PropertyChangedSubscription subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 }  // anonymous namespace

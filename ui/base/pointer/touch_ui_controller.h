@@ -24,7 +24,6 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE) TouchUiController {
  public:
   using CallbackList = base::RepeatingClosureList;
-  using Subscription = CallbackList::Subscription;
 
   enum class TouchUiState {
     kDisabled,
@@ -62,7 +61,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
            ((touch_ui_state_ == TouchUiState::kAuto) && tablet_mode_);
   }
 
-  std::unique_ptr<Subscription> RegisterCallback(
+  base::CallbackListSubscription RegisterCallback(
       const base::RepeatingClosure& closure);
 
   void OnTabletModeToggled(bool enabled);

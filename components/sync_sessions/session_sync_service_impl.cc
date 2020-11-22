@@ -44,7 +44,7 @@ OpenTabsUIDelegate* SessionSyncServiceImpl::GetOpenTabsUIDelegate() {
   return bridge_->GetOpenTabsUIDelegate();
 }
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
+base::CallbackListSubscription
 SessionSyncServiceImpl::SubscribeToForeignSessionsChanged(
     const base::RepeatingClosure& cb) {
   return foreign_sessions_changed_callback_list_.Add(cb);

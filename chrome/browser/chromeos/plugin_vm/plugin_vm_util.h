@@ -119,12 +119,9 @@ class PluginVmPolicySubscription {
   PluginVmAllowedChanged callback_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      device_allowed_subscription_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      license_subscription_;
-  std::unique_ptr<base::CallbackList<void(void)>::Subscription>
-      fake_license_subscription_;
+  base::CallbackListSubscription device_allowed_subscription_;
+  base::CallbackListSubscription license_subscription_;
+  base::CallbackListSubscription fake_license_subscription_;
 };
 
 }  // namespace plugin_vm

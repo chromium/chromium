@@ -19,9 +19,7 @@ std::string GetApplicationLocale();
 // This may be called on any thread.
 std::string GetAcceptLangs();
 
-using LocaleChangeSubscription = base::CallbackList<void()>::Subscription;
-
-std::unique_ptr<LocaleChangeSubscription> RegisterLocaleChangeCallback(
+base::CallbackListSubscription RegisterLocaleChangeCallback(
     base::RepeatingClosure locale_changed);
 
 }  // namespace i18n

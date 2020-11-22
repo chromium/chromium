@@ -95,10 +95,8 @@ using remoting::HostListService;
   HostFetchingErrorViewController* _fetchingErrorViewController;
   HostSetupViewController* _setupViewController;
   HostListService* _hostListService;
-  std::unique_ptr<HostListService::CallbackSubscription>
-      _hostListStateSubscription;
-  std::unique_ptr<HostListService::CallbackSubscription>
-      _hostListFetchFailureSubscription;
+  base::CallbackListSubscription _hostListStateSubscription;
+  base::CallbackListSubscription _hostListFetchFailureSubscription;
 
   NSArray<id<RemotingRefreshControl>>* _refreshControls;
 }

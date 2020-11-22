@@ -79,7 +79,7 @@ class APP_LIST_EXPORT SearchResultActionsView : public views::View {
   base::Optional<int> selected_action_;
 
   SearchResultActionsViewDelegate* const delegate_;  // Not owned.
-  std::list<views::PropertyChangedSubscription> subscriptions_;
+  std::list<base::CallbackListSubscription> subscriptions_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchResultActionsView);
 };

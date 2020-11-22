@@ -48,7 +48,7 @@ OnDeviceModelUpdateListener::OnDeviceModelUpdateListener()
 
 OnDeviceModelUpdateListener::~OnDeviceModelUpdateListener() = default;
 
-std::unique_ptr<OnDeviceModelUpdateListener::UpdateSubscription>
+base::CallbackListSubscription
 OnDeviceModelUpdateListener::AddModelUpdateCallback(
     ModelUpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

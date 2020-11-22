@@ -181,7 +181,7 @@ class ProfileImpl : public Profile {
 
   DownloadDelegate* download_delegate_ = nullptr;
 
-  std::unique_ptr<i18n::LocaleChangeSubscription> locale_change_subscription_;
+  base::CallbackListSubscription locale_change_subscription_;
 
   std::unique_ptr<CookieManagerImpl> cookie_manager_;
   std::unique_ptr<PrerenderControllerImpl> prerender_controller_;

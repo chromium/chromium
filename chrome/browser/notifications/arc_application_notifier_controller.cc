@@ -138,17 +138,18 @@ void ArcApplicationNotifierController::OnNotificationsEnabledChanged(
 
 void ArcApplicationNotifierController::StartObserving() {
   ArcAppListPrefs::Get(last_profile_)->AddObserver(this);
-  shutdown_notifier_ = ArcAppNotifierShutdownNotifierFactory::GetInstance()
-                           ->Get(last_profile_)
-                           ->Subscribe(base::BindRepeating(
-                               &ArcApplicationNotifierController::StopObserving,
-                               base::Unretained(this)));
+  shutdown_subscription_ =
+      ArcAppNotifierShutdownNotifierFactory::GetInstance()
+          ->Get(last_profile_)
+          ->Subscribe(base::BindRepeating(
+              &ArcApplicationNotifierController::StopObserving,
+              base::Unretained(this)));
 }
 
 void ArcApplicationNotifierController::StopObserving() {
   if (!last_profile_)
     return;
-  shutdown_notifier_.reset();
+  shutdown_subscription_ = {};
   ArcAppListPrefs::Get(last_profile_)->RemoveObserver(this);
   last_profile_ = nullptr;
 }

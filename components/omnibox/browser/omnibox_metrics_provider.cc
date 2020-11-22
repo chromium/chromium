@@ -37,7 +37,7 @@ void OmniboxMetricsProvider::OnRecordingEnabled() {
 }
 
 void OmniboxMetricsProvider::OnRecordingDisabled() {
-  subscription_.reset();
+  subscription_ = {};
 }
 
 void OmniboxMetricsProvider::ProvideCurrentSessionData(

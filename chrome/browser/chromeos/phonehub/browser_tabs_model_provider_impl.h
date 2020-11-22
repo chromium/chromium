@@ -50,8 +50,7 @@ class BrowserTabsModelProviderImpl
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   sync_sessions::SessionSyncService* session_sync_service_;
   std::unique_ptr<BrowserTabsMetadataFetcher> browser_tabs_metadata_fetcher_;
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      session_updated_subscription_;
+  base::CallbackListSubscription session_updated_subscription_;
 
   base::WeakPtrFactory<BrowserTabsModelProviderImpl> weak_ptr_factory_{this};
 };

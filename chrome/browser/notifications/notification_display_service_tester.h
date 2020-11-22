@@ -92,8 +92,7 @@ class NotificationDisplayServiceTester {
 
   Profile* profile_;
   StubNotificationDisplayService* display_service_;
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      profile_shutdown_subscription_;
+  base::CallbackListSubscription profile_shutdown_subscription_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_TESTER_H_

@@ -1402,7 +1402,7 @@ void SAMLPolicyTest::EnableTransferSAMLCookiesPolicy() {
   proto.mutable_saml_settings()->set_transfer_saml_cookies(true);
 
   base::RunLoop run_loop;
-  std::unique_ptr<CrosSettings::ObserverSubscription> observer =
+  base::CallbackListSubscription subscription =
       CrosSettings::Get()->AddSettingsObserver(kAccountsPrefTransferSAMLCookies,
                                                run_loop.QuitClosure());
   device_policy_->SetDefaultSigningKey();
@@ -1419,7 +1419,7 @@ void SAMLPolicyTest::SetLoginBehaviorPolicyToSAMLInterstitial() {
           em::LoginAuthenticationBehaviorProto_LoginBehavior_SAML_INTERSTITIAL);
 
   base::RunLoop run_loop;
-  std::unique_ptr<CrosSettings::ObserverSubscription> observer =
+  base::CallbackListSubscription subscription =
       CrosSettings::Get()->AddSettingsObserver(kLoginAuthenticationBehavior,
                                                run_loop.QuitClosure());
   device_policy_->SetDefaultSigningKey();
@@ -1436,7 +1436,7 @@ void SAMLPolicyTest::SetLoginVideoCaptureAllowedUrls(
     proto.mutable_login_video_capture_allowed_urls()->add_urls(url.spec());
 
   base::RunLoop run_loop;
-  std::unique_ptr<CrosSettings::ObserverSubscription> observer =
+  base::CallbackListSubscription subscription =
       CrosSettings::Get()->AddSettingsObserver(kLoginVideoCaptureAllowedUrls,
                                                run_loop.QuitClosure());
   device_policy_->SetDefaultSigningKey();

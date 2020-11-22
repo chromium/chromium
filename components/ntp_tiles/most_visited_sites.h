@@ -375,9 +375,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   // incremented if custom links was not initialized during this session.
   int custom_links_action_count_ = -1;
 
-  std::unique_ptr<
-      suggestions::SuggestionsService::ResponseCallbackList::Subscription>
-      suggestions_subscription_;
+  base::CallbackListSubscription suggestions_subscription_;
 
   base::ScopedObservation<history::TopSites, history::TopSitesObserver>
       top_sites_observation_{this};
@@ -386,8 +384,7 @@ class MostVisitedSites : public history::TopSitesObserver,
                           RepeatableQueriesServiceObserver>
       repeatable_queries_observation_{this};
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      custom_links_subscription_;
+  base::CallbackListSubscription custom_links_subscription_;
 
   // The main source of personal tiles - either TOP_SITES or SUGGESTIONS_SEVICE.
   TileSource mv_source_;

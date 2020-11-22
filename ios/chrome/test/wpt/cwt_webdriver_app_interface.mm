@@ -192,8 +192,7 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
       });
 
   __block BOOL webStateFound = NO;
-  __block std::unique_ptr<web::WebState::ScriptCommandSubscription>
-      subscription;
+  __block base::CallbackListSubscription subscription;
   grey_dispatch_sync_on_main_thread(^{
     web::WebState* webState = GetWebStateWithId(tabID);
     if (!webState)

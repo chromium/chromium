@@ -86,7 +86,7 @@ class SearchEngineTabHelper
   GURL searchable_url_;
 
   // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
+  base::CallbackListSubscription subscription_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

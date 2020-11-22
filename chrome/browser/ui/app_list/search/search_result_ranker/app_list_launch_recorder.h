@@ -62,7 +62,6 @@ class AppListLaunchRecorder {
   using EventFn = void(const LaunchInfo&);
   using LaunchEventCallback = base::RepeatingCallback<EventFn>;
   using LaunchEventCallbackList = base::CallbackList<EventFn>;
-  using LaunchEventSubscription = LaunchEventCallbackList::Subscription;
 
   AppListLaunchRecorder();
   ~AppListLaunchRecorder();
@@ -94,7 +93,7 @@ class AppListLaunchRecorder {
   }
 
   // Registers a callback to be invoked on a call to Log().
-  std::unique_ptr<LaunchEventSubscription> RegisterCallback(
+  base::CallbackListSubscription RegisterCallback(
       const LaunchEventCallback& callback);
 
   LaunchEventCallbackList callback_list_;

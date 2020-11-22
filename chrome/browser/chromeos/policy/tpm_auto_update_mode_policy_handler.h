@@ -102,8 +102,7 @@ class TPMAutoUpdateModePolicyHandler {
 
   std::unique_ptr<base::OneShotTimer> notification_timer_;
 
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      policy_subscription_;
+  base::CallbackListSubscription policy_subscription_;
 
   UpdateCheckerCallback update_checker_callback_;
 

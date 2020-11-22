@@ -123,7 +123,7 @@ void DeviceCloudPolicyManagerChromeOS::Shutdown() {
   syslog_uploader_.reset();
   status_uploader_.reset();
   external_data_manager_->Disconnect();
-  state_keys_update_subscription_.reset();
+  state_keys_update_subscription_ = {};
   CloudPolicyManager::Shutdown();
   signin_profile_forwarding_schema_registry_.reset();
 }

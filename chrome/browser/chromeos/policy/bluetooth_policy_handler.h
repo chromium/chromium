@@ -35,8 +35,7 @@ class BluetoothPolicyHandler {
   void SetBluetoothPolicy(scoped_refptr<device::BluetoothAdapter> adapter);
 
   chromeos::CrosSettings* cros_settings_;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      bluetooth_policy_subscription_;
+  base::CallbackListSubscription bluetooth_policy_subscription_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   base::WeakPtrFactory<BluetoothPolicyHandler> weak_factory_{this};
 

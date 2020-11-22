@@ -59,7 +59,7 @@ void UpdateScreenHandler::Unbind() {
 void UpdateScreenHandler::OnAccessibilityStatusChanged(
     const AccessibilityStatusEventDetails& details) {
   if (details.notification_type == ACCESSIBILITY_MANAGER_SHUTDOWN) {
-    accessibility_subscription_.reset();
+    accessibility_subscription_ = {};
     return;
   }
 

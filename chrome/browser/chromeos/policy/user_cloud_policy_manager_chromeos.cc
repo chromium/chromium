@@ -818,7 +818,7 @@ void UserCloudPolicyManagerChromeOS::OnProfileAdded(Profile* profile) {
       invalidation_provider->GetInvalidationServiceForCustomSender(
           policy::kPolicyFCMInvalidationSenderID));
 
-  shutdown_notifier_ =
+  shutdown_subscription_ =
       UserCloudPolicyManagerChromeOSNotifierFactory::GetInstance()
           ->Get(profile_)
           ->Subscribe(base::AdaptCallbackForRepeating(
@@ -830,7 +830,7 @@ void UserCloudPolicyManagerChromeOS::ProfileShutdown() {
   // Unregister the RemoteCommandsInvalidatorImpl from the InvalidatorRegistrar.
   invalidator_->Shutdown();
   invalidator_.reset();
-  shutdown_notifier_.reset();
+  shutdown_subscription_ = {};
 }
 
 void UserCloudPolicyManagerChromeOS::SetUserContextRefreshTokenForTests(

@@ -53,7 +53,7 @@ class SystemUse24HourClockPolicyTest
  protected:
   void RefreshPolicyAndWaitDeviceSettingsUpdated() {
     base::RunLoop run_loop;
-    std::unique_ptr<CrosSettings::ObserverSubscription> observer =
+    base::CallbackListSubscription subscription =
         CrosSettings::Get()->AddSettingsObserver(
             kSystemUse24HourClock, run_loop.QuitWhenIdleClosure());
 

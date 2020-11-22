@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
   proto.mutable_display_rotation_default()->set_display_rotation_default(
       static_cast<em::DisplayRotationDefaultProto::Rotation>(policy_rotation));
   base::RunLoop run_loop;
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription> observer =
+  base::CallbackListSubscription subscription =
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kDisplayRotationDefault, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();

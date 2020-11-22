@@ -83,13 +83,12 @@ class SupervisedUserSettingsService : public KeyedService,
 
   // Adds a callback to be called when supervised user settings are initially
   // available, or when they change.
-  std::unique_ptr<SettingsCallbackList::Subscription>
-  SubscribeForSettingsChange(const SettingsCallback& callback)
-      WARN_UNUSED_RESULT;
+  base::CallbackListSubscription SubscribeForSettingsChange(
+      const SettingsCallback& callback) WARN_UNUSED_RESULT;
 
   // Subscribe for a notification when the keyed service is shut down. The
-  // subscription object can be destroyed to unsubscribe.
-  std::unique_ptr<ShutdownCallbackList::Subscription> SubscribeForShutdown(
+  // subscription can be destroyed to unsubscribe.
+  base::CallbackListSubscription SubscribeForShutdown(
       const ShutdownCallback& callback);
 
   // Activates/deactivates the service. This is called by the

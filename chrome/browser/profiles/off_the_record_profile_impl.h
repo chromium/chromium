@@ -151,9 +151,8 @@ class OffTheRecordProfileImpl : public Profile {
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
 
 #if !defined(OS_ANDROID)
-  std::unique_ptr<content::HostZoomMap::Subscription> track_zoom_subscription_;
-  std::unique_ptr<ChromeZoomLevelPrefs::DefaultZoomLevelSubscription>
-      parent_default_zoom_level_subscription_;
+  base::CallbackListSubscription track_zoom_subscription_;
+  base::CallbackListSubscription parent_default_zoom_level_subscription_;
 #endif  // !defined(OS_ANDROID)
   ProfileIODataHandle io_data_;
 
