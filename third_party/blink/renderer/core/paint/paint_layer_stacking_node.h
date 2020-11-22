@@ -201,7 +201,7 @@ class CORE_EXPORT PaintLayerStackingNode {
   PaintLayers overlay_overflow_controls_reordered_list_;
 
   // Indicates whether the z-order lists above are dirty.
-  bool z_order_lists_dirty_ : 1;
+  bool z_order_lists_dirty_ = true;
 };
 
 }  // namespace blink

@@ -61,7 +61,7 @@ namespace blink {
 // in order to determine if we isStacked() we have to ask the paint
 // layer about some of its state.
 PaintLayerStackingNode::PaintLayerStackingNode(PaintLayer& layer)
-    : layer_(layer), z_order_lists_dirty_(true) {
+    : layer_(layer) {
   DCHECK(layer.GetLayoutObject().IsStackingContext());
 }
 

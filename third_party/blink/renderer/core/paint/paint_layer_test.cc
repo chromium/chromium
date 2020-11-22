@@ -465,8 +465,14 @@ class ReorderOverlayOverflowControlsTest
   void InitOverflowStyle(const char* id) {
     GetDocument().getElementById(id)->setAttribute(
         html_names::kStyleAttr, GetOverlayType() == kOverlayScrollbars
-                                    ? "overflow : auto"
+                                    ? "overflow: auto"
                                     : "overflow: hidden; resize: both");
+    UpdateAllLifecyclePhasesForTest();
+  }
+
+  void RemoveOverflowStyle(const char* id) {
+    GetDocument().getElementById(id)->setAttribute(html_names::kStyleAttr,
+                                                   "overflow: visible");
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -542,13 +548,13 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
 TEST_P(ReorderOverlayOverflowControlsTest, StackedWithOutOfFlowDescendant) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      #child {
-        width: 200px;
-        height: 200px;
-      }
       #parent {
         position: relative;
         height: 100px;
+      }
+      #child {
+        width: 200px;
+        height: 200px;
       }
     </style>
     <div id='parent'>
@@ -1006,6 +1012,42 @@ TEST_P(ReorderOverlayOverflowControlsTest,
   auto* child = GetPaintLayerByElementId("child_2");
   EXPECT_TRUE(ancestor->NeedsReorderOverlayOverflowControls());
   EXPECT_TRUE(LayersPaintingOverlayOverflowControlsAfter(child));
+}
+
+TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveScrollableArea) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #parent {
+        position: relative;
+        height: 100px;
+      }
+      #child {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+      }
+    </style>
+    <div id='parent'>
+      <div id='child'></div>
+    </div>
+  )HTML");
+
+  auto* parent = GetPaintLayerByElementId("parent");
+  auto* child = GetPaintLayerByElementId("child");
+  EXPECT_FALSE(parent->GetScrollableArea());
+  EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
+  EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(child));
+
+  InitOverflowStyle("parent");
+  EXPECT_TRUE(parent->GetScrollableArea());
+  EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
+  EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
+              Pointee(ElementsAre(parent)));
+
+  RemoveOverflowStyle("parent");
+  EXPECT_FALSE(parent->GetScrollableArea());
+  EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
+  EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(child));
 }
 
 TEST_P(PaintLayerTest, SubsequenceCachingStackedLayers) {
