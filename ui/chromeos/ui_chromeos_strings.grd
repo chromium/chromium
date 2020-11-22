@@ -1020,14 +1020,8 @@
       <message name="IDS_IME_NAME_KEYBOARD_ETHIOPIC" desc="The input method name shows in system tray menu and settings page.">
         Ethiopic keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_GUJARATI_NEW_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Gujarati keyboard (New Phonetic)
-      </message>
       <message name="IDS_IME_NAME_KEYBOARD_GUJARATI_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
         Gujarati Phonetic
-      </message>
-      <message name="IDS_IME_NAME_KEYBOARD_HINDI_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Hindi keyboard (Phonetic)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_KANNADA_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
         Kannada Phonetic
@@ -1040,9 +1034,6 @@
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_MALAYALAM_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
         Malayalam Phonetic
-      </message>
-      <message name="IDS_IME_NAME_KEYBOARD_MARATHI_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Marathi keyboard (Phonetic)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_MYANMAR" desc="The input method name shows in system tray menu and settings page.">
         Myanmar keyboard
