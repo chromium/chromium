@@ -150,6 +150,11 @@
   } /* namespace protobuf */     \
   } /* namespace google */
 
+#ifdef PROTOBUF_ALLOW_DEPRECATED
+#define PROTOBUF_DEPRECATED
+#define PROTOBUF_DEPRECATED_ENUM
+#define PROTOBUF_DEPRECATED_MSG(msg)
+#else
 #if defined(__GNUC__) || defined(__clang__)
 #define PROTOBUF_DEPRECATED __attribute__((deprecated))
 #define PROTOBUF_DEPRECATED_ENUM __attribute__((deprecated))
@@ -158,6 +163,7 @@
 #define PROTOBUF_DEPRECATED __declspec(deprecated)
 #define PROTOBUF_DEPRECATED_ENUM
 #define PROTOBUF_DEPRECATED_MSG(msg) __declspec(deprecated(msg))
+#endif
 #endif
 
 #define PROTOBUF_SECTION_VARIABLE(x)

@@ -75,3 +75,8 @@ Description of the patches:
 - 0021-Fix-protobuf-s-library-.gitinore-file.patch
 
   Un-ignores python/google/protobuf/descriptor_pb2.py
+
+
+- 0022-Allow-deprecated-fields.patch
+
+  Allows depreacated fields to be used without extra C++ compiler warnings.

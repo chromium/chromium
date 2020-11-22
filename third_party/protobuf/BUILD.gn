@@ -25,9 +25,7 @@ config("protobuf_warnings") {
   cflags = []
   if (is_clang) {
     # protobuf-3 contains a few functions that are unused.
-    cflags += [
-      "-Wno-unused-function" ,
-    ]
+    cflags += [ "-Wno-unused-function" ]
   }
 }
 
@@ -35,9 +33,7 @@ config("protoc_warnings") {
   cflags = []
   if (is_clang) {
     # Some generates contain a few fields that are not used.
-    cflags += [
-      "-Wno-unused-private-field" ,
-    ]
+    cflags += [ "-Wno-unused-private-field" ]
   }
 }
 
@@ -58,7 +54,7 @@ config("using_proto") {
 
 config("allow_deprecated_proto_fields") {
   if (is_clang) {
-    cflags = [  "-Wno-deprecated-declarations" ]
+    cflags = [ "-DPROTOBUF_ALLOW_DEPRECATED=1" ]
   }
 }
 
@@ -93,8 +89,8 @@ protobuf_lite_sources = [
   "src/google/protobuf/io/zero_copy_stream_impl.h",
   "src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
   "src/google/protobuf/io/zero_copy_stream_impl_lite.h",
-  "src/google/protobuf/map.h",
   "src/google/protobuf/map.cc",
+  "src/google/protobuf/map.h",
   "src/google/protobuf/map_entry_lite.h",
   "src/google/protobuf/map_field_lite.h",
   "src/google/protobuf/map_type_handler.h",

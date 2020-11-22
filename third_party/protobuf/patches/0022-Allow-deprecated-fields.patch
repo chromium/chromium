@@ -1,0 +1,24 @@
+diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
+index 19e71f80c..4283ed099 100644
+--- a/src/google/protobuf/port_def.inc
++++ b/src/google/protobuf/port_def.inc
+@@ -150,6 +150,11 @@
+   } /* namespace protobuf */     \
+   } /* namespace google */
+ 
++#ifdef PROTOBUF_ALLOW_DEPRECATED
++#define PROTOBUF_DEPRECATED
++#define PROTOBUF_DEPRECATED_ENUM
++#define PROTOBUF_DEPRECATED_MSG(msg)
++#else
+ #if defined(__GNUC__) || defined(__clang__)
+ #define PROTOBUF_DEPRECATED __attribute__((deprecated))
+ #define PROTOBUF_DEPRECATED_ENUM __attribute__((deprecated))
+@@ -159,6 +164,7 @@
+ #define PROTOBUF_DEPRECATED_ENUM
+ #define PROTOBUF_DEPRECATED_MSG(msg) __declspec(deprecated(msg))
+ #endif
++#endif
+ 
+ #define PROTOBUF_SECTION_VARIABLE(x)
+ #define PROTOBUF_MUST_USE_RESULT
