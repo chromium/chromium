@@ -5864,13 +5864,6 @@ crbug.com/1057060 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-aut
 crbug.com/1045599 fast/css-grid-layout/flex-content-sized-columns-resize.html [ Pass Failure Timeout ]
 
 # TODO(michaelludwig) - Remove after Skia roll and rebaseline
-crbug.com/1135225 fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Pass Failure ]
-# TODO(michaelludwig) - Remove after Skia roll and rebaseline
-crbug.com/1136863 svg/W3C-SVG-1.1/filters-morph-01-f.svg [ Pass Failure ]
-crbug.com/1136863 svg/batik/text/smallFonts.svg [ Pass Failure ]
-# TODO(michaelludwig) - Remove after Skia roll and rebaseline
-crbug.com/1143918 virtual/gpu/fast/canvas/canvas-imageSmoothingEnabled-patterns.html [ Pass Failure ]
-# TODO(michaelludwig) - Remove after Skia roll and rebaseline
 crbug.com/1143929 compositing/reflections/animation-inside-reflection.html [ Pass Failure ]
 crbug.com/1143929 compositing/reflections/nested-reflection-transformed.html [ Pass Failure ]
 crbug.com/1143929 compositing/reflections/nested-reflection-transformed2.html [ Pass Failure ]
@@ -5885,9 +5878,11 @@ crbug.com/1143929 images/color-profile-image-filter-all.html [ Pass Failure ]
 crbug.com/1143929 paint/invalidation/reflection/reflection-with-rotation.html [ Pass Failure ]
 crbug.com/1143929 svg/W3C-SVG-1.1/filters-blend-01-b.svg [ Pass Failure ]
 crbug.com/1143929 svg/W3C-SVG-1.1/filters-example-01-b.svg [ Pass Failure ]
+crbug.com/1143929 svg/W3C-SVG-1.1/filters-morph-01-f.svg [ Pass Failure ]
 crbug.com/1143929 svg/W3C-SVG-1.1/filters-offset-01-b.svg [ Pass Failure ]
 crbug.com/1143929 svg/W3C-SVG-1.1/filters-turb-02-f.svg [ Pass Failure ]
 crbug.com/1143929 svg/batik/filters/feTile.svg [ Pass Failure ]
+crbug.com/1143929 svg/batik/text/smallFonts.svg [ Pass Failure ]
 crbug.com/1143929 svg/batik/text/textFeatures.svg [ Pass Failure ]
 crbug.com/1143929 svg/custom/grayscale-gradient-mask-2.svg [ Pass Failure ]
 crbug.com/1143929 svg/dynamic-updates/SVGFEBlendElement-dom-in-attr.html [ Pass Failure ]
