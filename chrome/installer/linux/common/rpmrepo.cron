@@ -37,15 +37,6 @@ if [ "$repo_add_once" = "true" ]; then
     if [ $? -ne 0 ]; then
       install_${PACKAGEMANAGER}
     fi
-
-    # Now do any extra configuration that couldn't be done by post-install.
-    case $PACKAGEMANAGER in
-    "urpmi")
-      # We need to configure urpmi after the install has finished.
-      # See configure_urpmi() for details.
-      configure_urpmi
-      ;;
-    esac
   done
 
   if [ $? -eq 0 ]; then

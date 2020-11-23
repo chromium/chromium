@@ -138,9 +138,6 @@ if [ "$repo_add_once" = "true" ]; then
     "yum")
       install_yum
       ;;
-    "urpmi")
-      install_urpmi
-      ;;
     "yast")
       install_yast
       ;;
@@ -218,9 +215,6 @@ fi
 #  case $PACKAGEMANAGER in
 #  "yum")
 #    remove_yum
-#    ;;
-#  "urpmi")
-#    remove_urpmi
 #    ;;
 #  "yast")
 #    remove_yast
