@@ -38,7 +38,7 @@ void BeginUserExperiment(const InstallerState& installer_state,
 
 // Runs the experiment for the current user.
 void RunUserExperiment(const base::CommandLine& command_line,
-                       const InitialPreferences& master_preferences,
+                       const InitialPreferences& initial_preferences,
                        InstallationState* original_state,
                        InstallerState* installer_state);
 

@@ -37,14 +37,14 @@ const install_static::InstallConstants* FindInstallMode(
 
 void InitializeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::InitialPreferences& master_preferences) {
+    const installer::InitialPreferences& initial_preferences) {
   install_static::InstallDetails::SetForProcess(
-      MakeInstallDetails(command_line, master_preferences));
+      MakeInstallDetails(command_line, initial_preferences));
 }
 
 std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::InitialPreferences& master_preferences) {
+    const installer::InitialPreferences& initial_preferences) {
   std::unique_ptr<install_static::PrimaryInstallDetails> details(
       std::make_unique<install_static::PrimaryInstallDetails>());
 
@@ -54,14 +54,14 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
   details->set_mode(mode);
 
   // The install level may be set by any of:
-  // - distribution.system_level=true in master_preferences,
+  // - distribution.system_level=true in initial_preferences,
   // - --system-level on the command line, or
   // - the GoogleUpdateIsMachine=1 environment variable.
   // In all three cases the value is sussed out in InitialPreferences
   // initialization.
   bool system_level = false;
-  master_preferences.GetBool(installer::initial_preferences::kSystemLevel,
-                             &system_level);
+  initial_preferences.GetBool(installer::initial_preferences::kSystemLevel,
+                              &system_level);
   details->set_system_level(system_level);
 
   // The channel is determined based on the brand and the mode's

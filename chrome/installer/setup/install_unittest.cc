@@ -286,16 +286,16 @@ class InstallShortcutTest : public testing::Test {
          do_not_create_quick_launch_shortcut},
     };
 
-    std::string master_prefs("{\"distribution\":{");
+    std::string initial_prefs("{\"distribution\":{");
     for (size_t i = 0; i < base::size(desired_prefs); ++i) {
-      master_prefs += (i == 0 ? "\"" : ",\"");
-      master_prefs += desired_prefs[i].pref_name;
-      master_prefs += "\":";
-      master_prefs += desired_prefs[i].is_desired ? "true" : "false";
+      initial_prefs += (i == 0 ? "\"" : ",\"");
+      initial_prefs += desired_prefs[i].pref_name;
+      initial_prefs += "\":";
+      initial_prefs += desired_prefs[i].is_desired ? "true" : "false";
     }
-    master_prefs += "}}";
+    initial_prefs += "}}";
 
-    return new installer::InitialPreferences(master_prefs);
+    return new installer::InitialPreferences(initial_prefs);
   }
 
   base::win::ScopedCOMInitializer com_initializer_;

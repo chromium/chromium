@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Unit tests for master preferences related methods.
+// Unit tests for initial preferences related methods.
 
 #include "chrome/installer/util/initial_preferences.h"
 
@@ -221,7 +221,7 @@ TEST(MasterPrefsExtension, ValidateExtensionJSON) {
       "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.version", &version));
 }
 
-// Test that we are parsing master preferences correctly.
+// Test that we are parsing initial preferences correctly.
 TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
   // Create a temporary prefs file.
   base::FilePath prefs_file;
@@ -239,7 +239,7 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
   EXPECT_TRUE(
       base::WriteFile(prefs_file, text, static_cast<int>(strlen(text))));
 
-  // Make sure command line values override the values in master preferences.
+  // Make sure command line values override the values in initial preferences.
   std::wstring cmd_str(L"setup.exe --installerdata=\"" + prefs_file.value() +
                        L"\"");
   cmd_str.append(L" --do-not-launch-chrome");
@@ -263,7 +263,7 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
   // Delete temporary prefs file.
   EXPECT_TRUE(base::DeleteFile(prefs_file));
 
-  // Check that if master prefs doesn't exist, we can still parse the common
+  // Check that if initial prefs doesn't exist, we can still parse the common
   // prefs.
   cmd_str = L"setup.exe --do-not-launch-chrome";
   cmd_line.ParseFromString(cmd_str);
@@ -326,23 +326,23 @@ TEST_F(InitialPreferencesTest, EnforceLegacyPreferences) {
   EXPECT_FALSE(do_not_create_taskbar_shortcut);
 
   bool actual_value = false;
-  EXPECT_TRUE(prefs.master_dictionary().GetBoolean(prefs::kImportBookmarks,
-                                                   &actual_value));
+  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportBookmarks,
+                                                    &actual_value));
   EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.master_dictionary().GetBoolean(prefs::kImportHistory,
-                                                   &actual_value));
+  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportHistory,
+                                                    &actual_value));
   EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.master_dictionary().GetBoolean(prefs::kImportHomepage,
-                                                   &actual_value));
+  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportHomepage,
+                                                    &actual_value));
   EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.master_dictionary().GetBoolean(prefs::kImportSearchEngine,
-                                                   &actual_value));
+  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportSearchEngine,
+                                                    &actual_value));
   EXPECT_TRUE(actual_value);
 
 #if BUILDFLAG(ENABLE_RLZ)
   int rlz_ping_delay = 0;
-  EXPECT_TRUE(prefs.master_dictionary().GetInteger(prefs::kRlzPingDelaySeconds,
-                                                   &rlz_ping_delay));
+  EXPECT_TRUE(prefs.initial_dictionary().GetInteger(prefs::kRlzPingDelaySeconds,
+                                                    &rlz_ping_delay));
   EXPECT_EQ(40, rlz_ping_delay);
 #endif  // BUILDFLAG(ENABLE_RLZ)
 }

@@ -334,14 +334,14 @@ void BeginUserExperiment(const InstallerState& installer_state,
 // setup.exe immediately after a successful update or following user logon as a
 // result of Active Setup.
 void RunUserExperiment(const base::CommandLine& command_line,
-                       const InitialPreferences& master_preferences,
+                       const InitialPreferences& initial_preferences,
                        InstallationState* original_state,
                        InstallerState* installer_state) {
   VLOG(1) << __func__;
 
   ExperimentStorage storage;
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      command_line, master_preferences, original_state, installer_state));
+      command_line, initial_preferences, original_state, installer_state));
   if (!setup_singleton) {
     VLOG(1) << "Timed out while waiting for setup singleton";
     WriteInitialState(&storage, ExperimentMetrics::kSingletonWaitTimeout);

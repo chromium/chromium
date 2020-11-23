@@ -20,7 +20,7 @@ namespace installer {
 
 std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
     const base::CommandLine& command_line,
-    const InitialPreferences& master_preferences,
+    const InitialPreferences& initial_preferences,
     InstallationState* original_state,
     InstallerState* installer_state) {
   DCHECK(original_state);
@@ -84,7 +84,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
 
   // Update |original_state| and |installer_state|.
   original_state->Initialize();
-  installer_state->Initialize(command_line, master_preferences,
+  installer_state->Initialize(command_line, initial_preferences,
                               *original_state);
 
   // UMA data indicates that this method succeeds > 99% of the time.

@@ -27,7 +27,7 @@ namespace {
 const char kFirstRunTabs[] = "first_run_tabs";
 
 base::LazyInstance<installer::InitialPreferences>::DestructorAtExit
-    g_master_preferences = LAZY_INSTANCE_INITIALIZER;
+    g_initial_preferences = LAZY_INSTANCE_INITIALIZER;
 
 bool GetURLFromValue(const base::Value* in_value, std::string* out_value) {
   return in_value && out_value && in_value->GetAsString(out_value);
@@ -62,11 +62,11 @@ base::DictionaryValue* ParseDistributionPreferences(
   std::string error;
   std::unique_ptr<base::Value> root(json.Deserialize(nullptr, &error));
   if (!root.get()) {
-    LOG(WARNING) << "Failed to parse master prefs file: " << error;
+    LOG(WARNING) << "Failed to parse initial prefs file: " << error;
     return nullptr;
   }
   if (!root->is_dict()) {
-    LOG(WARNING) << "Failed to parse master prefs file: "
+    LOG(WARNING) << "Failed to parse initial prefs file: "
                  << "Root item must be a dictionary.";
     return nullptr;
   }
@@ -103,10 +103,10 @@ void InitialPreferences::InitializeFromCommandLine(
         cmd_line.GetSwitchValuePath(installer::switches::kInstallerData));
     InitializeFromFilePath(prefs_path);
   } else {
-    master_dictionary_.reset(new base::DictionaryValue());
+    initial_dictionary_.reset(new base::DictionaryValue());
   }
 
-  DCHECK(master_dictionary_.get());
+  DCHECK(initial_dictionary_.get());
 
   // A simple map from command line switches to equivalent switches in the
   // distribution dictionary.  Currently all switches added will be set to
@@ -137,7 +137,7 @@ void InitialPreferences::InitializeFromCommandLine(
     if (cmd_line.HasSwitch(translate_switches[i].cmd_line_switch)) {
       name.assign(installer::initial_preferences::kDistroDict);
       name.append(".").append(translate_switches[i].distribution_switch);
-      master_dictionary_->SetBoolean(name, true);
+      initial_dictionary_->SetBoolean(name, true);
     }
   }
 
@@ -147,7 +147,7 @@ void InitialPreferences::InitializeFromCommandLine(
   if (!str_value.empty()) {
     name.assign(installer::initial_preferences::kDistroDict);
     name.append(".").append(installer::initial_preferences::kLogFile);
-    master_dictionary_->SetString(name, str_value);
+    initial_dictionary_->SetString(name, str_value);
   }
 
   // Handle the special case of --system-level being implied by the presence of
@@ -160,13 +160,13 @@ void InitialPreferences::InitializeFromCommandLine(
       VLOG(1) << "Taking system-level from environment.";
       name.assign(installer::initial_preferences::kDistroDict);
       name.append(".").append(installer::initial_preferences::kSystemLevel);
-      master_dictionary_->SetBoolean(name, true);
+      initial_dictionary_->SetBoolean(name, true);
     }
   }
 
   // Cache a pointer to the distribution dictionary. Ignore errors if any.
-  master_dictionary_->GetDictionary(installer::initial_preferences::kDistroDict,
-                                    &distribution_);
+  initial_dictionary_->GetDictionary(
+      installer::initial_preferences::kDistroDict, &distribution_);
 #endif
 }
 
@@ -186,15 +186,15 @@ void InitialPreferences::InitializeFromFilePath(
 
 bool InitialPreferences::InitializeFromString(const std::string& json_data) {
   if (!json_data.empty())
-    master_dictionary_.reset(ParseDistributionPreferences(json_data));
+    initial_dictionary_.reset(ParseDistributionPreferences(json_data));
 
   bool data_is_valid = true;
-  if (!master_dictionary_.get()) {
-    master_dictionary_.reset(new base::DictionaryValue());
+  if (!initial_dictionary_.get()) {
+    initial_dictionary_.reset(new base::DictionaryValue());
     data_is_valid = false;
   } else {
     // Cache a pointer to the distribution dictionary.
-    master_dictionary_->GetDictionary(
+    initial_dictionary_->GetDictionary(
         installer::initial_preferences::kDistroDict, &distribution_);
   }
 
@@ -221,8 +221,8 @@ void InitialPreferences::EnforceLegacyPreferences() {
         installer::initial_preferences::kDoNotCreateQuickLaunchShortcut, true);
   }
 
-  // Deprecated boolean import master preferences now mapped to their duplicates
-  // in prefs::.
+  // Deprecated boolean import initial preferences now mapped to their
+  // duplicates in prefs::.
   static constexpr char kDistroImportHistoryPref[] = "import_history";
   static constexpr char kDistroImportHomePagePref[] = "import_home_page";
   static constexpr char kDistroImportSearchPref[] = "import_search_engine";
@@ -241,7 +241,7 @@ void InitialPreferences::EnforceLegacyPreferences() {
   for (const auto& mapping : kLegacyDistroImportPrefMappings) {
     bool value = false;
     if (GetBool(mapping.old_distro_pref_path, &value))
-      master_dictionary_->SetBoolean(mapping.modern_pref_path, value);
+      initial_dictionary_->SetBoolean(mapping.modern_pref_path, value);
   }
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -250,7 +250,8 @@ void InitialPreferences::EnforceLegacyPreferences() {
   static constexpr char kDistroPingDelay[] = "ping_delay";
   int rlz_ping_delay = 0;
   if (GetInt(kDistroPingDelay, &rlz_ping_delay))
-    master_dictionary_->SetInteger(prefs::kRlzPingDelaySeconds, rlz_ping_delay);
+    initial_dictionary_->SetInteger(prefs::kRlzPingDelaySeconds,
+                                    rlz_ping_delay);
 #endif  // BUILDFLAG(ENABLE_RLZ)
 }
 
@@ -277,12 +278,12 @@ bool InitialPreferences::GetString(const std::string& name,
 }
 
 std::vector<std::string> InitialPreferences::GetFirstRunTabs() const {
-  return GetNamedList(kFirstRunTabs, master_dictionary_.get());
+  return GetNamedList(kFirstRunTabs, initial_dictionary_.get());
 }
 
 bool InitialPreferences::GetExtensionsBlock(
     base::DictionaryValue** extensions) const {
-  return master_dictionary_->GetDictionary(
+  return initial_dictionary_->GetDictionary(
       initial_preferences::kExtensionsBlock, extensions);
 }
 
@@ -298,7 +299,7 @@ std::string InitialPreferences::ExtractPrefString(
     const std::string& name) const {
   std::string result;
   std::unique_ptr<base::Value> pref_value;
-  if (master_dictionary_->Remove(name, &pref_value)) {
+  if (initial_dictionary_->Remove(name, &pref_value)) {
     if (!pref_value->GetAsString(&result))
       NOTREACHED();
   }
@@ -307,7 +308,7 @@ std::string InitialPreferences::ExtractPrefString(
 
 // static
 const InitialPreferences& InitialPreferences::ForCurrentProcess() {
-  return g_master_preferences.Get();
+  return g_initial_preferences.Get();
 }
 
 }  // namespace installer

@@ -76,7 +76,7 @@ const char kInputFile[] = "input-file";
 // of an uncompressed archive).
 const char kInstallArchive[] = "install-archive";
 
-// Specify the file path of Chrome master preference file.
+// Specify the file path of Chrome initial preference file.
 const char kInstallerData[] = "installerdata";
 
 // If present, specify file path to write logging info.

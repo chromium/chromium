@@ -148,9 +148,9 @@ void AddChromeToMediaPlayerList() {
 void CopyPreferenceFileForFirstRun(const InstallerState& installer_state,
                                    const base::FilePath& prefs_source_path) {
   base::FilePath prefs_dest_path(
-      installer_state.target_path().AppendASCII(kDefaultMasterPrefs));
+      installer_state.target_path().AppendASCII(kDefaultInitialPrefs));
   if (!base::CopyFile(prefs_source_path, prefs_dest_path)) {
-    VLOG(1) << "Failed to copy master preferences from:"
+    VLOG(1) << "Failed to copy initial preferences from:"
             << prefs_source_path.value() << " gle: " << ::GetLastError();
   }
 }
@@ -578,7 +578,7 @@ void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
 
   // Read master_preferences copied beside chrome.exe at install.
   const InitialPreferences prefs(
-      installer_state.target_path().AppendASCII(kDefaultMasterPrefs));
+      installer_state.target_path().AppendASCII(kDefaultInitialPrefs));
 
   // Update shortcuts at this install level (per-user shortcuts on system-level
   // installs will be updated through Active Setup).
@@ -655,7 +655,7 @@ void HandleActiveSetupForBrowser(const InstallerState& installer_state,
   // Read master_preferences copied beside chrome.exe at install for the sake of
   // creating/updating shortcuts.
   const base::FilePath installation_root = installer_state.target_path();
-  InitialPreferences prefs(installation_root.AppendASCII(kDefaultMasterPrefs));
+  InitialPreferences prefs(installation_root.AppendASCII(kDefaultInitialPrefs));
   base::FilePath chrome_exe(installation_root.Append(kChromeExe));
   CreateOrUpdateShortcuts(chrome_exe, prefs, CURRENT_USER, install_operation);
 

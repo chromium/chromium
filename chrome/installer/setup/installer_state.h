@@ -26,7 +26,7 @@ class InstallationState;
 class InitialPreferences;
 
 // Encapsulates the state of the current installation operation. This class
-// interprets the command-line arguments and master preferences and determines
+// interprets the command-line arguments and initial preferences and determines
 // the operations to be performed.
 class InstallerState {
  public:
@@ -69,7 +69,7 @@ class InstallerState {
   bool is_msi() const { return msi_; }
 
   // True if the --verbose-logging command-line flag is set or if the
-  // verbose_logging master preferences option is true.
+  // verbose_logging initial preferences option is true.
   bool verbose_logging() const { return verbose_logging_; }
 
   HKEY root_key() const { return root_key_; }

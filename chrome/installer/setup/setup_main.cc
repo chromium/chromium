@@ -678,14 +678,14 @@ installer::InstallStatus InstallProducts(InstallationState& original_state,
     DCHECK_NE(install_status, installer::UNKNOWN_STATUS);
   }
 
-  // Delete the master preferences file if present. Note that we do not care
+  // Delete the initial preferences file if present. Note that we do not care
   // about rollback here and we schedule for deletion on reboot if the delete
   // fails. As such, we do not use DeleteTreeWorkItem.
   if (cmd_line.HasSwitch(installer::switches::kInstallerData)) {
     base::FilePath prefs_path(
         cmd_line.GetSwitchValuePath(installer::switches::kInstallerData));
     if (!base::DeleteFile(prefs_path)) {
-      LOG(ERROR) << "Failed deleting master preferences file "
+      LOG(ERROR) << "Failed deleting initial preferences file "
                  << prefs_path.value()
                  << ", scheduling for deletion after reboot.";
       ScheduleFileSystemEntityForDeletion(prefs_path);
@@ -1233,13 +1233,13 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
   // If the installation completed successfully...
   if (InstallUtil::GetInstallReturnCode(install_status) == 0) {
     // Update the DisplayVersion created by an MSI-based install.
-    base::FilePath master_preferences_file(
+    base::FilePath initial_preferences_file(
         installer_state.target_path().AppendASCII(
-            installer::kDefaultMasterPrefs));
+            installer::kDefaultInitialPrefs));
     std::string install_id;
     if (prefs.GetString(installer::initial_preferences::kMsiProductId,
                         &install_id)) {
-      // A currently active MSI install will have specified the master-
+      // A currently active MSI install will have specified the initial-
       // preferences file on the command-line that includes the product-id.
       // We must delay the setting of the DisplayVersion until after the
       // grandparent "msiexec" process has exited.

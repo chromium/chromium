@@ -24,11 +24,11 @@ class InitialPreferences;
 // global InstallDetails for the process.
 void InitializeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::InitialPreferences& master_preferences);
+    const installer::InitialPreferences& initial_preferences);
 
 // Returns a PrimaryInstallDetails instance for the installer.
 std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::InitialPreferences& master_preferences);
+    const installer::InitialPreferences& initial_preferences);
 
 #endif  // CHROME_INSTALLER_SETUP_SETUP_INSTALL_DETAILS_H_
