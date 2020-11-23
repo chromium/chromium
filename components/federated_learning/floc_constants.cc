@@ -4,6 +4,8 @@
 
 #include "components/federated_learning/floc_constants.h"
 
+#include <limits>
+
 namespace federated_learning {
 
 // This is only for experimentation and won't be served to websites.
