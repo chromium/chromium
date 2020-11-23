@@ -2290,7 +2290,7 @@
       'default': True,
       'example_value': False,
       'id': 803,
-      'caption': '''Enable or disable the display of connection related UI on the host desktop when a connection is active.''',
+      'caption': '''Enable connection-related UI on the host desktop when a connection is active''',
       'tags': [],
       'desc': '''If this policy is disabled, connection related UI (e.g. the disconnect window) will not be shown for non-curtained remote access connections. Curtained remote access sessions and remote support sessions are not affected by this policy.
 
