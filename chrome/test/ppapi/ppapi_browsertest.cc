@@ -108,11 +108,14 @@ using content::RenderViewHost;
       RunTestWithSSLServer(STRIP_PREFIXES(test_name)); \
     }
 
-// Disable all NaCl tests for --disable-nacl flag and on Mac ASAN builds.
-// Flaky on Mac ASAN:
-//    http://crbug.com/428670
+// Disable all NaCl tests for --disable-nacl flag and on Mac ASAN and Windows
+// builds.
+//
+// Flaky on Mac ASAN: https://crbug.com/428670
+// Flaky on Win7: https://crbug.com/1003252
 
-#if !BUILDFLAG(ENABLE_NACL) || (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
+#if !BUILDFLAG(ENABLE_NACL) || \
+    (defined(OS_MAC) && defined(ADDRESS_SANITIZER)) || defined(OS_WIN)
 
 #define MAYBE_PPAPI_NACL(test_name) DISABLED_##test_name
 #define MAYBE_PPAPI_PNACL(test_name) DISABLED_##test_name
