@@ -8,21 +8,34 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
 
+import org.chromium.base.BundleUtils;
+
 /**
  * JobService base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
  */
 public class SplitCompatJobService extends JobService {
     private String mServiceClassName;
+    private String mSplitName;
     private Impl mImpl;
 
     public SplitCompatJobService(String serviceClassName) {
         mServiceClassName = serviceClassName;
     }
 
+    public SplitCompatJobService(String serviceClassName, String splitName) {
+        mServiceClassName = serviceClassName;
+        mSplitName = splitName;
+    }
+
     @Override
     protected void attachBaseContext(Context context) {
-        context = SplitCompatUtils.createChromeContext(context);
+        // Make sure specified split is installed, otherwise fall back to chrome split.
+        if (mSplitName != null && BundleUtils.isIsolatedSplitInstalled(context, mSplitName)) {
+            context = BundleUtils.createIsolatedSplitContext(context, mSplitName);
+        } else {
+            context = SplitCompatUtils.createChromeContext(context);
+        }
         mImpl = (Impl) SplitCompatUtils.newInstance(context, mServiceClassName);
         mImpl.setService(this);
         super.attachBaseContext(context);
