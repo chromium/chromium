@@ -26,8 +26,16 @@ absl_source_set("program_name") {
   visibility = [ ":*" ]
 }
 
+# Since absl/flags are only used by some test binaries (e.g. in WebRTC),
+# there is no need to strip flags from mobile platforms binaries.
+# This does not affect Chromium.
+config("absl_flags_config") {
+  defines = [ "ABSL_FLAGS_STRIP_NAMES=0" ]
+}
+
 absl_source_set("config") {
   sources = [ "usage_config.cc" ]
+  public_configs = [ ":absl_flags_config" ]
   public = [
     "config.h",
     "usage_config.h",
