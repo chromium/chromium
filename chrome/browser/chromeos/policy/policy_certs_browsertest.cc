@@ -330,6 +330,8 @@ class MultiProfilePolicyProviderHelper {
     // browser initialization.
     EXPECT_CALL(policy_for_profile_1_, IsInitializationComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(policy_for_profile_1_, IsFirstPolicyLoadComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
     policy::PushProfilePolicyConnectorProviderForTesting(
         &policy_for_profile_1_);
   }
@@ -352,6 +354,8 @@ class MultiProfilePolicyProviderHelper {
 
     // Prepare policy provider for second profile.
     EXPECT_CALL(policy_for_profile_2_, IsInitializationComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(policy_for_profile_2_, IsFirstPolicyLoadComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
     policy::PushProfilePolicyConnectorProviderForTesting(
         &policy_for_profile_2_);
@@ -707,6 +711,8 @@ class PolicyProvidedCertsDeviceLocalAccountTest
     // Set up the mock policy provider.
     EXPECT_CALL(user_policy_provider_, IsInitializationComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(user_policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
     BrowserPolicyConnector::SetPolicyProviderForTesting(&user_policy_provider_);
 
     device_policy()->policy_data().set_public_key_version(1);
@@ -890,6 +896,8 @@ class PolicyProvidedClientCertsTest
 
     // Set up the mock policy provider.
     EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
     BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 

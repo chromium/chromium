@@ -697,8 +697,10 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestBase
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
 
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     policy::PolicyMap values;
@@ -720,7 +722,7 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestBase
   virtual bool WebRtcEventLogCollectionPolicy() const = 0;
 
  private:
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
 // Test StartEventLogging's behavior when the feature is active (kill-switch

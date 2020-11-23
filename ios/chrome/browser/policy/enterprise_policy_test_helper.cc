@@ -18,8 +18,10 @@
 
 EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
     const base::FilePath& state_directory_path) {
-  EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-      .WillRepeatedly(testing::Return(true));
+  ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+      .WillByDefault(testing::Return(true));
+  ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+      .WillByDefault(testing::Return(true));
 
   // Create a BrowserPolicyConnectorIOS, install the mock policy
   // provider, and hook up Local State.

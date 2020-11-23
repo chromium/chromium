@@ -231,8 +231,10 @@ class CorbAndCorsExtensionBrowserTest
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy_provider_.SetAutoRefresh();
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
@@ -557,7 +559,7 @@ class CorbAndCorsExtensionBrowserTest
   }
 
  protected:
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
  private:
   // Executes |regular_script| in |web_contents|.

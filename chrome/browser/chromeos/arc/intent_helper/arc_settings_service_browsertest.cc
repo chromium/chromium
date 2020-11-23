@@ -225,8 +225,9 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -336,7 +337,7 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
                                      base::Value(kUserProfilePath));
   }
 
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcSettingsServiceTest);
 };

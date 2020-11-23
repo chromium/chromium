@@ -9,7 +9,9 @@
 policy::MockConfigurationPolicyProvider* GetTestPlatformPolicyProvider() {
   static base::NoDestructor<policy::MockConfigurationPolicyProvider> provider;
   provider->SetAutoRefresh();
-  EXPECT_CALL(*provider.get(), IsInitializationComplete(testing::_))
-      .WillRepeatedly(testing::Return(true));
+  ON_CALL(*provider.get(), IsInitializationComplete(testing::_))
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*provider.get(), IsFirstPolicyLoadComplete(testing::_))
+      .WillByDefault(testing::Return(true));
   return provider.get();
 }

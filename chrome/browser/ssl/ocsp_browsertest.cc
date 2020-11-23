@@ -58,8 +58,10 @@ class OCSPBrowserTest : public PlatformBrowserTest,
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         false);
 
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
 
@@ -201,7 +203,7 @@ class OCSPBrowserTest : public PlatformBrowserTest,
     content::FlushNetworkServiceInstanceForTesting();
   }
 
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   std::unique_ptr<net::ScopedTestEVPolicy> ev_test_policy_;
   base::test::ScopedFeatureList scoped_feature_list_;

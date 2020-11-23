@@ -39,8 +39,10 @@ ForceInstalledTestBase::ForceInstalledTestBase() = default;
 ForceInstalledTestBase::~ForceInstalledTestBase() = default;
 
 void ForceInstalledTestBase::SetUp() {
-  EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-      .WillRepeatedly(testing::Return(false));
+  ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+      .WillByDefault(testing::Return(false));
+  ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+      .WillByDefault(testing::Return(false));
 
   auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
       std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
@@ -80,6 +82,8 @@ void ForceInstalledTestBase::SetupForceList(bool is_from_store) {
 
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+      .WillRepeatedly(testing::Return(true));
 
   policy::PolicyMap map;
   map.Set("ExtensionInstallForcelist", policy::POLICY_LEVEL_MANDATORY,
@@ -94,6 +98,8 @@ void ForceInstalledTestBase::SetupEmptyForceList() {
   prefs_->SetManagedPref(pref_names::kInstallForceList, std::move(dict));
 
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
       .WillRepeatedly(testing::Return(true));
 
   policy::PolicyMap map;

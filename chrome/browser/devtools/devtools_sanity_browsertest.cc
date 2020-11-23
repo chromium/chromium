@@ -2524,14 +2524,16 @@ IN_PROC_BROWSER_TEST_F(KeepAliveDevToolsTest, KeepsAliveUntilBrowserClose) {
 class DevToolsPolicyTest : public InProcessBrowserTest {
  protected:
   DevToolsPolicyTest() {
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlackListedDevTools) {

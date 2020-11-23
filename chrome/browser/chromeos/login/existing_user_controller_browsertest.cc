@@ -867,8 +867,10 @@ class ExistingUserControllerActiveDirectoryTest
     chromeos::CryptohomeClient::InitializeFake();
 
     RefreshDevicePolicy();
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(policy_provider_, IsInitializationComplete(_))
+        .WillByDefault(Return(true));
+    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
   }
@@ -978,7 +980,7 @@ class ExistingUserControllerActiveDirectoryTest
   }
 
  private:
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 class ExistingUserControllerActiveDirectoryUserAllowlistTest

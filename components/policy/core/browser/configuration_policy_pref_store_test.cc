@@ -29,6 +29,8 @@ ConfigurationPolicyPrefStoreTest::ConfigurationPolicyPrefStoreTest()
                     /* allow_all_future_policies*/ true) {
   EXPECT_CALL(provider_, IsInitializationComplete(_))
       .WillRepeatedly(Return(false));
+  ON_CALL(provider_, IsFirstPolicyLoadComplete(_)).WillByDefault(Return(false));
+
   provider_.Init();
   providers_.push_back(&provider_);
   policy_service_ = std::make_unique<PolicyServiceImpl>(providers_);

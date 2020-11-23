@@ -350,8 +350,9 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
     ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
         &policy_helper_, device_affiliation_ids)));
 
-    EXPECT_CALL(provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -469,7 +470,7 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
       &mixin_host_, chromeos::DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
-  MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<MockConfigurationPolicyProvider> provider_;
   DevicePolicyCrosTestHelper policy_helper_;
 };
 

@@ -25,15 +25,17 @@ class ManagedUiTest : public InProcessBrowserTest {
   ~ManagedUiTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(&provider_);
   }
 
   policy::MockConfigurationPolicyProvider* provider() { return &provider_; }
 
  private:
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
   DISALLOW_COPY_AND_ASSIGN(ManagedUiTest);
 };

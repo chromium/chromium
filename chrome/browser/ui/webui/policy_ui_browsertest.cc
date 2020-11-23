@@ -214,7 +214,7 @@ class PolicyUITest : public InProcessBrowserTest {
   void VerifyExportingPolicies(const base::DictionaryValue& expected);
 
  protected:
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PolicyUITest);
@@ -266,8 +266,8 @@ PolicyUITest::PolicyUITest() {}
 PolicyUITest::~PolicyUITest() {}
 
 void PolicyUITest::SetUpInProcessBrowserTestFixture() {
-  EXPECT_CALL(provider_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
+  ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+  ON_CALL(provider_, IsFirstPolicyLoadComplete(_)).WillByDefault(Return(true));
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   policy::PushProfilePolicyConnectorProviderForTesting(&provider_);
 

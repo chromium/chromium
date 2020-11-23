@@ -98,8 +98,10 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
   ~BrowserSwitcherServiceTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     BrowserSwitcherService::SetRefreshDelayForTesting(base::TimeDelta());
   }
@@ -197,7 +199,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
 #endif
 
  private:
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
 #if defined(OS_WIN)
   base::FilePath fake_appdata_dir_;

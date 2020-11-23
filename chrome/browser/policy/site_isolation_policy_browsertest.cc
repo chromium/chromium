@@ -60,7 +60,7 @@ class SiteIsolationPolicyBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SiteIsolationPolicyBrowserTest);
@@ -77,8 +77,10 @@ class SitePerProcessPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
     // to the renderer via a command-line. Setting the policy in the test
     // itself or in SetUpOnMainThread works for update-able policies, but
     // is too late for this one.
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     policy::PolicyMap values;
@@ -113,8 +115,10 @@ class IsolateOriginsPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
     // to the renderer via a command-line. Setting the policy in the test
     // itself or in SetUpOnMainThread works for update-able policies, but
     // is too late for this one.
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     policy::PolicyMap values;

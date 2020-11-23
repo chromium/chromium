@@ -161,8 +161,10 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
     InProcessBrowserTest::SetUp();
@@ -369,7 +371,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
  private:
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   // Non-owning pointer.
   TestLocationBarModel* test_location_bar_model_ = nullptr;

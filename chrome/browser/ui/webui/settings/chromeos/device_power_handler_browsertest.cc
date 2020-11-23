@@ -84,6 +84,8 @@ class PowerHandlerTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     // Initialize user policy.
     ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -188,7 +190,7 @@ class PowerHandlerTest : public InProcessBrowserTest {
 
   content::TestWebUI web_ui_;
 
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PowerHandlerTest);

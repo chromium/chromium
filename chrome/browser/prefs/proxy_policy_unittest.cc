@@ -95,8 +95,9 @@ class ProxyPolicyTest : public testing::Test {
   ProxyPolicyTest() : command_line_(base::CommandLine::NO_PROGRAM) {}
 
   void SetUp() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
 
     PolicyServiceImpl::Providers providers;
     providers.push_back(&provider_);

@@ -26,8 +26,10 @@ class PolicyMakeDefaultBrowserTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kMakeDefaultBrowser);
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-               .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
 
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
@@ -39,8 +41,8 @@ class PolicyMakeDefaultBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-   policy::MockConfigurationPolicyProvider provider_;
-   DISALLOW_COPY_AND_ASSIGN(PolicyMakeDefaultBrowserTest);
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  DISALLOW_COPY_AND_ASSIGN(PolicyMakeDefaultBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PolicyMakeDefaultBrowserTest, MakeDefaultDisabled) {

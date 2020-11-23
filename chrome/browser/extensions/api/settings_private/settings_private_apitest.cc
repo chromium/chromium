@@ -50,8 +50,9 @@ class SettingsPrivateApiTest : public ExtensionApiTest {
   ~SettingsPrivateApiTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
   }
@@ -73,7 +74,7 @@ class SettingsPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
 #if defined(OS_CHROMEOS)
   chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;

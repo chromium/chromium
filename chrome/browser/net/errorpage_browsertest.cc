@@ -837,6 +837,8 @@ class ErrorPageOfflineTest : public ErrorPageTest {
     // Sets up a mock policy provider for user and device policies.
     EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillRepeatedly(testing::Return(true));
 
     policy::PolicyMap policy_map;
 #if defined(OS_CHROMEOS)
@@ -903,7 +905,7 @@ class ErrorPageOfflineTest : public ErrorPageTest {
 #endif
 
   // Mock policy provider for both user and device policies.
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 

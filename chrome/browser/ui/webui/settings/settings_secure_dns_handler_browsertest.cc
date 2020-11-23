@@ -112,6 +112,8 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     // Initialize user policy.
     ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -183,7 +185,7 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
 
   std::unique_ptr<TestSecureDnsHandler> handler_;
   content::TestWebUI web_ui_;
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
  private:
 #if defined(OS_WIN)

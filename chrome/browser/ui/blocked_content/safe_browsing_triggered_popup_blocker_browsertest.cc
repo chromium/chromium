@@ -101,8 +101,10 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
   void SetUp() override {
     FinalizeFeatures();
     database_helper_ = CreateTestDatabase();
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     InProcessBrowserTest::SetUp();
   }
@@ -164,7 +166,7 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
   std::unique_ptr<TestSafeBrowsingDatabaseHelper> database_helper_;
   std::unique_ptr<blocked_content::SafeBrowsingTriggeredPopupBlocker>
       popup_blocker_;
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingTriggeredPopupBlockerBrowserTest);
 };

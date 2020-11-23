@@ -199,8 +199,9 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
@@ -493,7 +494,7 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
   ShillProfileClient::TestInterface* profile_test_;
   ShillServiceClient::TestInterface* service_test_;
   ShillDeviceClient::TestInterface* device_test_;
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
   std::string userhash_;

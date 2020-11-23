@@ -102,6 +102,8 @@ void PolicyTest::SetUpInProcessBrowserTestFixture() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch("noerrdialogs");
   EXPECT_CALL(provider_, IsInitializationComplete(_))
       .WillRepeatedly(Return(true));
+  EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(_))
+      .WillRepeatedly(Return(true));
   BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 

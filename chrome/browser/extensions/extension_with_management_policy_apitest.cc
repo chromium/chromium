@@ -16,8 +16,10 @@ void ExtensionApiTestWithManagementPolicy::SetUpInProcessBrowserTestFixture() {
   embedded_test_server()->RegisterRequestMonitor(
       base::Bind(&ExtensionApiTestWithManagementPolicy::MonitorRequestHandler,
                  base::Unretained(this)));
-  EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-      .WillRepeatedly(testing::Return(true));
+  ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+      .WillByDefault(testing::Return(true));
+  ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+      .WillByDefault(testing::Return(true));
   policy_provider_.SetAutoRefresh();
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
       &policy_provider_);

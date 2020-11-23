@@ -35,7 +35,7 @@ class ConfigurationPolicyPrefStoreTest : public testing::Test {
 
   PolicyServiceImpl::Providers providers_;
   ConfigurationPolicyHandlerList handler_list_;
-  MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<PolicyServiceImpl> policy_service_;
   scoped_refptr<ConfigurationPolicyPrefStore> store_;
   base::test::SingleThreadTaskEnvironment task_environment_;

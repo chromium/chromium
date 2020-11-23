@@ -1294,7 +1294,7 @@ class StartupBrowserCreatorFirstRunTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
 
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   policy::PolicyMap policy_map_;
 
  private:
@@ -1317,8 +1317,8 @@ void StartupBrowserCreatorFirstRunTest::SetUpInProcessBrowserTestFixture() {
 #endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
         // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  EXPECT_CALL(provider_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
+  ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+  ON_CALL(provider_, IsFirstPolicyLoadComplete(_)).WillByDefault(Return(true));
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 
@@ -1568,8 +1568,10 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   StartupBrowserCreatorWelcomeBackTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
 
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
@@ -1621,7 +1623,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   Profile* profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
   StartupBrowserCreator browser_creator_;
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorWelcomeBackTest,
@@ -1710,8 +1712,10 @@ class StartupBrowserCreatorInfobarsTest
 
  private:
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(policy_provider_, IsInitializationComplete(_))
+        .WillByDefault(Return(true));
+    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
 
@@ -1727,7 +1731,7 @@ class StartupBrowserCreatorInfobarsTest
     }
   }
 
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,

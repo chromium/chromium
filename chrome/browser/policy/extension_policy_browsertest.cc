@@ -2074,8 +2074,10 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
-    EXPECT_CALL(profile1_policy_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(profile1_policy_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(profile1_policy_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::PushProfilePolicyConnectorProviderForTesting(&profile1_policy_);
   }
 
@@ -2158,8 +2160,10 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   // The policy for the profile has to be passed via policy_for_profile.
   // This method is called from SetUp and only from there.
   Profile* CreateProfile(MockConfigurationPolicyProvider* policy_for_profile) {
-    EXPECT_CALL(*policy_for_profile, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(*policy_for_profile, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*policy_for_profile, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     Profile* profile = nullptr;
     policy::PushProfilePolicyConnectorProviderForTesting(policy_for_profile);
 

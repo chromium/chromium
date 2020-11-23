@@ -198,6 +198,8 @@ TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
 
   EXPECT_FALSE(connector.policy_service()->IsInitializationComplete(
       POLICY_DOMAIN_CHROME));
+  EXPECT_FALSE(connector.policy_service()->IsFirstPolicyLoadComplete(
+      POLICY_DOMAIN_CHROME));
 
   PolicyServiceInitializedWaiter(connector.policy_service(),
                                  POLICY_DOMAIN_CHROME)
@@ -224,6 +226,8 @@ TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
 TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
   MockConfigurationPolicyProvider mock_platform_provider;
   EXPECT_CALL(mock_platform_provider, IsInitializationComplete(_))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_platform_provider, IsFirstPolicyLoadComplete(_))
       .WillRepeatedly(Return(true));
 
   ProfilePolicyConnector connector;

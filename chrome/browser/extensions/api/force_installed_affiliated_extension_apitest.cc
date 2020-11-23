@@ -113,6 +113,8 @@ void ForceInstalledAffiliatedExtensionApiTest::
   // Init the user policy provider.
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+      .WillRepeatedly(testing::Return(true));
   policy_provider_.SetAutoRefresh();
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
       &policy_provider_);

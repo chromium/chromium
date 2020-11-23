@@ -175,8 +175,9 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
   CertificateProviderApiTest() {}
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
@@ -261,7 +262,7 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   chromeos::CertificateProviderService* cert_provider_service_ = nullptr;
 
  private:

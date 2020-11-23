@@ -387,8 +387,10 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionUpdateClientBaseTest::SetUpInProcessBrowserTestFixture();
 
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
 
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
@@ -468,7 +470,7 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
   std::string id_ = "aohghmighlieiainnegkcijnfilokake";
 
  private:
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   content_verifier_test::DownloaderTestDelegate downloader_;
 };
 

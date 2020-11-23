@@ -156,8 +156,9 @@ class TrayAccessibilityTest
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    EXPECT_CALL(provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillByDefault(Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -204,7 +205,7 @@ class TrayAccessibilityTest
   // Disable animations so that tray icons hide immediately.
   ui::ScopedAnimationDurationScaleMode disable_animations_;
 
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
 

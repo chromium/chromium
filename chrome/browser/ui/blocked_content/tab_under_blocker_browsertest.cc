@@ -48,8 +48,10 @@ class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(
         TabUnderNavigationThrottle::kBlockTabUnders);
 
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -89,7 +91,7 @@ class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
   DISALLOW_COPY_AND_ASSIGN(TabUnderBlockerBrowserTest);
 };
