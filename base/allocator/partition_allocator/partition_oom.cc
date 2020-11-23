@@ -10,6 +10,8 @@
 namespace base {
 namespace internal {
 
+OomFunction g_oom_handling_function = nullptr;
+
 void NOINLINE PartitionExcessiveAllocationSize(size_t size) {
   OOM_CRASH(size);
 }

@@ -21,7 +21,7 @@ typedef void (*OomFunction)(size_t);
 namespace internal {
 
 // g_oom_handling_function is invoked when PartitionAlloc hits OutOfMemory.
-static OomFunction g_oom_handling_function = nullptr;
+extern OomFunction g_oom_handling_function;
 
 BASE_EXPORT NOINLINE void PartitionExcessiveAllocationSize(size_t size);
 
