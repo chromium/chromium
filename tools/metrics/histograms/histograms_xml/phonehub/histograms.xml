@@ -92,6 +92,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.NotificationInteraction"
+    enum="PhoneHubNotificationInteraction" expires_after="2021-11-20">
+  <owner>meilinw@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    Events logged after the user interacts with a PhoneHub notification by
+    sending an inline reply or dismissing it.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.NotificationOptInEvents"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>
