@@ -35,7 +35,8 @@ class CompositorViewImpl : public CompositorView,
  public:
   CompositorViewImpl(JNIEnv* env,
                      jobject obj,
-                     ui::WindowAndroid* window_android);
+                     ui::WindowAndroid* window_android,
+                     int64_t java_background_color);
   ~CompositorViewImpl() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& object);
