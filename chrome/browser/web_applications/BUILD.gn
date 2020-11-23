@@ -141,6 +141,8 @@ source_set("web_applications_test_support") {
     "test/test_pending_app_manager.h",
     "test/test_pending_app_manager_impl.cc",
     "test/test_pending_app_manager_impl.h",
+    "test/test_protocol_handler_manager.cc",
+    "test/test_protocol_handler_manager.h",
     "test/test_system_web_app_manager.cc",
     "test/test_system_web_app_manager.h",
     "test/test_system_web_app_url_data_source.cc",

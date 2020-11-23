@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_run_on_os_login.h"
@@ -70,7 +71,8 @@ class OsIntegrationManager {
   explicit OsIntegrationManager(
       Profile* profile,
       std::unique_ptr<AppShortcutManager> shortcut_manager,
-      std::unique_ptr<FileHandlerManager> file_handler_manager);
+      std::unique_ptr<FileHandlerManager> file_handler_manager,
+      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager);
   virtual ~OsIntegrationManager();
 
   void SetSubsystems(AppRegistrar* registrar,
@@ -138,6 +140,9 @@ class OsIntegrationManager {
   FileHandlerManager* file_handler_manager() {
     return file_handler_manager_.get();
   }
+  ProtocolHandlerManager* protocol_handler_manager() {
+    return protocol_handler_manager_.get();
+  }
   void set_shortcut_manager(
       std::unique_ptr<AppShortcutManager> shortcut_manager) {
     shortcut_manager_ = std::move(shortcut_manager);
@@ -145,6 +150,10 @@ class OsIntegrationManager {
   void set_file_handler_manager(
       std::unique_ptr<FileHandlerManager> file_handler_manager) {
     file_handler_manager_ = std::move(file_handler_manager);
+  }
+  void set_protocol_handler_manager(
+      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager) {
+    protocol_handler_manager_ = std::move(protocol_handler_manager);
   }
 
   virtual void CreateShortcuts(const AppId& app_id,
@@ -193,6 +202,7 @@ class OsIntegrationManager {
 
   std::unique_ptr<AppShortcutManager> shortcut_manager_;
   std::unique_ptr<FileHandlerManager> file_handler_manager_;
+  std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager_;
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };

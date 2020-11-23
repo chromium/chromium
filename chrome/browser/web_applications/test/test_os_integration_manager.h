@@ -15,13 +15,15 @@ namespace web_app {
 
 class AppShortcutManager;
 class FileHandlerManager;
+class ProtocolHandlerManager;
 
 class TestOsIntegrationManager : public OsIntegrationManager {
  public:
   explicit TestOsIntegrationManager(
       Profile* profile,
       std::unique_ptr<AppShortcutManager> shortcut_manager,
-      std::unique_ptr<FileHandlerManager> file_handler_manager);
+      std::unique_ptr<FileHandlerManager> file_handler_manager,
+      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager);
   ~TestOsIntegrationManager() override;
 
   // OsIntegrationManager:
@@ -66,6 +68,9 @@ class TestOsIntegrationManager : public OsIntegrationManager {
 
   void SetFileHandlerManager(
       std::unique_ptr<FileHandlerManager> file_handler_manager);
+
+  void SetProtocolHandlerManager(
+      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager);
 
   TestOsIntegrationManager* AsTestOsIntegrationManager() override;
 

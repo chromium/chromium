@@ -38,8 +38,8 @@ namespace {
 
 std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {
   auto provider = std::make_unique<TestWebAppProvider>(profile);
-  provider->SetOsIntegrationManager(
-      std::make_unique<TestOsIntegrationManager>(profile, nullptr, nullptr));
+  provider->SetOsIntegrationManager(std::make_unique<TestOsIntegrationManager>(
+      profile, nullptr, nullptr, nullptr));
   provider->Start();
   DCHECK(provider);
   return provider;

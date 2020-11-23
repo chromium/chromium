@@ -34,7 +34,8 @@ void WebAppProvider::CreateBookmarkAppsSubsystems(Profile* profile) {
   auto shortcut_manager =
       std::make_unique<extensions::BookmarkAppShortcutManager>(profile);
   os_integration_manager_ = std::make_unique<OsIntegrationManager>(
-      profile, std::move(shortcut_manager), std::move(file_handler_manager));
+      profile, std::move(shortcut_manager), std::move(file_handler_manager),
+      /*protocol_handler_manager*/ nullptr);
 
   // Upcast to unified subsystem types:
   registrar_ = std::move(registrar);

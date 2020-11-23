@@ -120,7 +120,8 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
     os_integration_manager_ =
         std::make_unique<web_app::TestOsIntegrationManager>(
             profile(), /*shortcut_manager=*/nullptr,
-            /*file_handler_manager=*/nullptr);
+            /*file_handler_manager=*/nullptr,
+            /*protocol_handler_manager=*/nullptr);
 
     finalizer_ = std::make_unique<BookmarkAppInstallFinalizer>(profile());
     finalizer_->SetSubsystems(registrar_.get(), ui_manager_.get(),

@@ -79,10 +79,12 @@ InstallOsHooksOptions::InstallOsHooksOptions(
 OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
     std::unique_ptr<AppShortcutManager> shortcut_manager,
-    std::unique_ptr<FileHandlerManager> file_handler_manager)
+    std::unique_ptr<FileHandlerManager> file_handler_manager,
+    std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager)
     : profile_(profile),
       shortcut_manager_(std::move(shortcut_manager)),
-      file_handler_manager_(std::move(file_handler_manager)) {}
+      file_handler_manager_(std::move(file_handler_manager)),
+      protocol_handler_manager_(std::move(protocol_handler_manager)) {}
 
 OsIntegrationManager::~OsIntegrationManager() = default;
 
@@ -93,6 +95,8 @@ void OsIntegrationManager::SetSubsystems(AppRegistrar* registrar,
   ui_manager_ = ui_manager;
   file_handler_manager_->SetSubsystems(registrar);
   shortcut_manager_->SetSubsystems(icon_manager, registrar);
+  if (protocol_handler_manager_)
+    protocol_handler_manager_->SetSubsystems(registrar);
 }
 
 void OsIntegrationManager::Start() {
@@ -113,6 +117,8 @@ void OsIntegrationManager::Start() {
   }
 #endif
   file_handler_manager_->Start();
+  if (protocol_handler_manager_)
+    protocol_handler_manager_->Start();
 }
 
 void OsIntegrationManager::InstallOsHooks(

@@ -21,7 +21,7 @@ namespace web_app {
 class MockOsIntegrationManager : public OsIntegrationManager {
  public:
   MockOsIntegrationManager()
-      : OsIntegrationManager(nullptr, nullptr, nullptr) {}
+      : OsIntegrationManager(nullptr, nullptr, nullptr, nullptr) {}
   ~MockOsIntegrationManager() override = default;
 
   MOCK_METHOD(void,

@@ -47,7 +47,8 @@ class WebFileTasksTest : public ::testing::Test {
     auto os_integration_manager =
         std::make_unique<web_app::TestOsIntegrationManager>(
             profile_.get(), /*app_shortcut_manager=*/nullptr,
-            std::move(file_handler_manager));
+            std::move(file_handler_manager),
+            /*protocol_handler_manager=*/nullptr);
     app_provider_->SetOsIntegrationManager(std::move(os_integration_manager));
 
     app_provider_->Start();

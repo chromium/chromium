@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/components/install_bounce_metric.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
@@ -208,10 +209,13 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
 
   auto file_handler_manager =
       std::make_unique<WebAppFileHandlerManager>(profile);
+  auto protocol_handler_manager =
+      std::make_unique<ProtocolHandlerManager>(profile);
   auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
       profile, icon_manager.get(), file_handler_manager.get());
   os_integration_manager_ = std::make_unique<OsIntegrationManager>(
-      profile, std::move(shortcut_manager), std::move(file_handler_manager));
+      profile, std::move(shortcut_manager), std::move(file_handler_manager),
+      std::move(protocol_handler_manager));
 
   migration_manager_ = std::make_unique<WebAppMigrationManager>(
       profile, database_factory_.get(), icon_manager.get(),
