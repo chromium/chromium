@@ -15,6 +15,7 @@
 #include "base/format_macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1599,32 +1600,11 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
   TemplateURLID previous_id = existing_turl->id();
   RemoveFromMaps(existing_turl);
 
-  // Check for new keyword conflicts with another normal engine.
-  // This is possible when autogeneration of the keyword for a Google default
-  // search provider at load time causes it to conflict with an existing
-  // keyword. If the conflicting engines are replaceable, we delete them.
-  // If they're not replaceable, we leave them alone, and trust AddToMaps() to
-  // choose the best engine to assign the keyword.
-  std::vector<TemplateURL*> turls_to_remove;
-  for (const auto& turl : template_urls_) {
-    // TODO(tommycli): Investigate also replacing TemplateURL::LOCAL engines.
-    if (turl.get() != existing_turl && (turl->type() == TemplateURL::NORMAL) &&
-        (turl->keyword() == new_values.keyword()) && CanReplace(turl.get())) {
-      // Remove() invalidates iterators.
-      turls_to_remove.push_back(turl.get());
-    }
-  }
-  for (TemplateURL* turl : turls_to_remove) {
-    Remove(turl);
-  }
-
-  // Update existing turl with new values. This must happen after calling
-  // Remove(conflicting_keyword_turl) above, since otherwise during that
-  // function RemoveFromMaps() may find |existing_turl| as an alternate engine
-  // for the same keyword.  Duplicate keyword handling is only meant for the
-  // case of extensions, and if done here would leave internal state
-  // inconsistent (e.g. |existing_turl| would already be re-added to maps before
-  // calling AddToMaps() below).
+  // Update existing turl with new values and add back to the map.
+  // We don't do any keyword conflict handling here, as TemplateURLService
+  // already can pick the best engine out of duplicates. Replaceable duplicates
+  // will be culled during next startup's Add() loop. We did this to keep
+  // Update() simple: it never fails, and never deletes |existing_engine|.
   existing_turl->CopyFrom(new_values);
   existing_turl->data_.id = previous_id;
 
@@ -1875,35 +1855,12 @@ TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
 
   template_url->ResetKeywordIfNecessary(search_terms_data(), false);
 
-  // If |template_url| is not created by an extension, its keyword must not
-  // conflict with any already in the model.
-  if (!IsCreatedByExtension(template_url.get())) {
-    TemplateURL* existing_turl =
-        FindNonExtensionTemplateURLForKeyword(template_url->keyword());
-
-    // Note that we can reach here during the loading phase while processing the
-    // template URLs from the web data service.  In this case,
-    // GetTemplateURLForKeyword() will look not only at what's already in the
-    // model, but at the |initial_default_search_provider_|.  Since this engine
-    // will presumably also be present in the web data, we need to double-check
-    // that any "pre-existing" entries we find are actually coming from
-    // |template_urls_|, lest we detect a "conflict" between the
-    // |initial_default_search_provider_| and the web data version of itself.
-    if (existing_turl && Contains(&template_urls_, existing_turl)) {
-      DCHECK_NE(existing_turl, template_url.get());
-      if (CanReplace(existing_turl)) {
-        Remove(existing_turl);
-      } else if (CanReplace(template_url.get())) {
-        return nullptr;
-      } else {
-        // Neither engine can be replaced. Uniquify the existing keyword.
-        base::string16 new_keyword = UniquifyKeyword(*existing_turl, false);
-        ResetTemplateURL(existing_turl, existing_turl->short_name(),
-                         new_keyword, existing_turl->url());
-        DCHECK_EQ(new_keyword, existing_turl->keyword());
-      }
-    }
+  // Early exit if the newly added TemplateURL was a replaceable duplicate.
+  // No need to inform either Sync or flag on the model-mutated in that case.
+  if (RemoveDuplicateReplaceableEnginesOf(template_url.get())) {
+    return nullptr;
   }
+
   TemplateURL* template_url_ptr = template_url.get();
   template_urls_.push_back(std::move(template_url));
   AddToMaps(template_url_ptr);
@@ -2272,4 +2229,59 @@ TemplateURL* TemplateURLService::FindMatchingDefaultExtensionTemplateURL(
       return turl.get();
   }
   return nullptr;
+}
+
+bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
+    TemplateURL* candidate) {
+  DCHECK(candidate);
+  const base::string16& keyword = candidate->keyword();
+
+  // If there's not at least one conflicting TemplateURL, there's nothing to do.
+  const auto match_range = keyword_to_turl_and_length_.equal_range(keyword);
+  if (match_range.first == match_range.second) {
+    return false;
+  }
+
+  // Partition into two separate lists, non-replaceable vs replaceable. We don't
+  // do it in-place, as we later call Remove(), which invalidates iterators.
+  std::vector<TemplateURL*> non_replaceable_turls;
+  std::vector<TemplateURL*> replaceable_turls;
+  for (auto it = match_range.first; it != match_range.second; ++it) {
+    TemplateURL* turl = it->second.first;
+    DCHECK_NE(turl, candidate) << "This algorithm runs BEFORE |candidate| is "
+                                  "added to the keyword map.";
+
+    if (CanReplace(turl)) {
+      replaceable_turls.push_back(turl);
+    } else {
+      non_replaceable_turls.push_back(turl);
+    }
+  }
+  // Add the new candidate to the proper list at the end. Because ties are
+  // broken via Sync GUID, we specifically do not promise "last one wins".
+  const bool candidate_is_replaceable = CanReplace(candidate);
+  if (candidate_is_replaceable) {
+    replaceable_turls.push_back(candidate);
+  } else {
+    non_replaceable_turls.push_back(candidate);
+  }
+
+  // Now we remove all but the BEST replaceable engine.
+  // But if there are ANY non-replaceable engines, we should remove ALL the
+  // replaceable engines, and we do that by considering best == nullptr.
+  TemplateURL* best = nullptr;
+  if (non_replaceable_turls.empty()) {
+    best = *base::ranges::min_element(
+        replaceable_turls, [&](const auto& a, const auto& b) {
+          return a->IsBetterThanEngineWithConflictingKeyword(b);
+        });
+  }
+  for (TemplateURL* turl : replaceable_turls) {
+    if (turl != best && turl != candidate) {
+      Remove(turl);
+    }
+  }
+
+  // Caller needs to know if |candidate| would have been deleted.
+  return candidate_is_replaceable && candidate != best;
 }

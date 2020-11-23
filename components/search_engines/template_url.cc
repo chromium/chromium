@@ -1350,8 +1350,8 @@ bool TemplateURL::IsBetterThanEngineWithConflictingKeyword(
                                 : base::Time(),
         // Prefer engines that CANNOT be auto-replaced.
         !engine->safe_for_autoreplace(),
-        // More recently modified engines win.
-        engine->last_modified(),
+        // More recently modified engines or created engines win.
+        engine->last_modified(), engine->date_created(),
         // TODO(tommycli): This should be a tie-breaker than provides a total
         // ordering of all TemplateURLs so that distributed clients resolve
         // conflicts identically. This sync_guid is not globally unique today,

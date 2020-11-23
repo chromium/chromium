@@ -463,12 +463,14 @@ class TemplateURLService : public WebDataServiceConsumer,
   // A mapping from keywords to the corresponding TemplateURLs and their
   // meaningful keyword lengths.  This is a multimap, so the system can
   // efficiently tolerate multiple engines with the same keyword, like from
-  // extensions.  The values are not sorted from best to worst for each keyword,
-  // since multimaps don't sort on value. Users that want the best value for
-  // each key must traverse through all matching items, but we expect there to
-  // be below three values per key.
+  // extensions.
+  //
+  // The values for any given keyword are not sorted. Users that want the best
+  // value for each key must traverse through all matching items. The vast
+  // majority of keywords should only have one item.
   using KeywordToTURLAndMeaningfulLength =
       std::multimap<base::string16, TURLAndMeaningfulLength>;
+
   // Declaration of values to be used in an enumerated histogram to tally
   // changes to the default search provider from various entry points. In
   // particular, we use this to see what proportion of changes are from Sync
@@ -697,6 +699,20 @@ class TemplateURLService : public WebDataServiceConsumer,
   // wants to be default. Returns nullptr if not found.
   TemplateURL* FindMatchingDefaultExtensionTemplateURL(
       const TemplateURLData& data);
+
+  // This method removes all TemplateURLs that meet all three criteria:
+  //  - Duplicate: Shares the same keyword as |candidate|.
+  //  - Replaceable: Engine is eligible for automatic removal. See CanReplace().
+  //  - Worse: There exists a better engine with the same keyword.
+  //
+  // This method must run BEFORE |candidate| is added to the engine list / map.
+  // It would be simpler to run the algorithm AFTER |candidate| is added, but
+  // that makes extra sync updates, observer notifications, and database churn.
+  //
+  // This method returns true if |candidate| ITSELF is rendundant.
+  // But notably, this method NEVER calls Remove() on |candidate|, leaving the
+  // correct handling to its caller.
+  bool RemoveDuplicateReplaceableEnginesOf(TemplateURL* candidate);
 
   // ---------- Browser state related members ---------------------------------
   PrefService* prefs_ = nullptr;

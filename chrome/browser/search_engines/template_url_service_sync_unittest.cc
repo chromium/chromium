@@ -1115,8 +1115,14 @@ TEST_F(TemplateURLServiceSyncTest, ProcessChangesWithLocalExtensions) {
     CreateTestTemplateURL(ASCIIToUTF16("keyword2"), "http://bbb.com")));
   ProcessAndExpectNotify(changes, 1);
 
-  EXPECT_TRUE(model()->GetTemplateURLForHost("aaa.com"));
+  // Because aaa.com was marked as replaceable, it was removed in favor of the
+  // extension engine.
+  EXPECT_FALSE(model()->GetTemplateURLForHost("aaa.com"));
+  // But bbb.com was marked as non-replaceable, so it coexists with extension2.
   EXPECT_TRUE(model()->GetTemplateURLForHost("bbb.com"));
+
+  // The extensions should continue to take precedence over the normal
+  // user-created engines.
   EXPECT_EQ(extension1,
             model()->GetTemplateURLForKeyword(ASCIIToUTF16("keyword1")));
   EXPECT_EQ(extension2,

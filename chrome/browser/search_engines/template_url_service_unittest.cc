@@ -417,6 +417,7 @@ TEST_F(TemplateURLServiceTest, AddSameKeyword) {
   data.SetKeyword(ASCIIToUTF16("keyword"));
   data.SetURL("http://test2");
   data.safe_for_autoreplace = false;
+  data.last_modified = base::Time::FromTimeT(20);
   TemplateURL* t_url = model()->Add(std::make_unique<TemplateURL>(data));
 
   // Because the old TemplateURL was replaceable and the new one wasn't, the new
@@ -432,25 +433,28 @@ TEST_F(TemplateURLServiceTest, AddSameKeyword) {
   data.SetShortName(ASCIIToUTF16("third"));
   data.SetURL("http://test3");
   data.safe_for_autoreplace = true;
-  model()->Add(std::make_unique<TemplateURL>(data));
+  EXPECT_EQ(nullptr, model()->Add(std::make_unique<TemplateURL>(data)));
   VerifyObserverCount(0);
   EXPECT_EQ(t_url, model()->GetTemplateURLForKeyword(ASCIIToUTF16("keyword")));
   EXPECT_EQ(ASCIIToUTF16("second"), t_url->short_name());
   EXPECT_EQ(ASCIIToUTF16("keyword"), t_url->keyword());
   EXPECT_FALSE(t_url->safe_for_autoreplace());
 
-  // Now try adding a non-replaceable TemplateURL again.  This should uniquify
-  // the existing entry's keyword.
+  // Now try adding a non-replaceable TemplateURL again.  This should allow both
+  // TemplateURLs to exist under keyword, although the old one should still be
+  // better, since it was more recently last_modified.
   data.SetShortName(ASCIIToUTF16("fourth"));
   data.SetURL("http://test4");
+  // Make sure this one is not as recent as |t_url|.
+  data.last_modified = base::Time();
   data.safe_for_autoreplace = false;
   TemplateURL* t_url2 = model()->Add(std::make_unique<TemplateURL>(data));
   VerifyObserverCount(1);
-  EXPECT_EQ(t_url2, model()->GetTemplateURLForKeyword(ASCIIToUTF16("keyword")));
+  EXPECT_EQ(t_url, model()->GetTemplateURLForKeyword(ASCIIToUTF16("keyword")));
   EXPECT_EQ(ASCIIToUTF16("fourth"), t_url2->short_name());
   EXPECT_EQ(ASCIIToUTF16("keyword"), t_url2->keyword());
   EXPECT_EQ(ASCIIToUTF16("second"), t_url->short_name());
-  EXPECT_EQ(ASCIIToUTF16("test2"), t_url->keyword());
+  EXPECT_EQ(ASCIIToUTF16("keyword"), t_url->keyword());
 }
 
 TEST_F(TemplateURLServiceTest, AddOmniboxExtensionKeyword) {
@@ -1711,6 +1715,7 @@ TEST_F(TemplateURLServiceTest, CheckEnginesWithSameKeywords) {
   std::unique_ptr<TemplateURLData> turl_data =
       GenerateDummyTemplateURLData("common_keyword");
   turl_data->safe_for_autoreplace = false;
+  turl_data->last_modified = base::Time();
 
   // Add non replaceable user engine.
   const TemplateURL* user1 =
@@ -1721,8 +1726,11 @@ TEST_F(TemplateURLServiceTest, CheckEnginesWithSameKeywords) {
       "common_keyword", "extension_id", true, Time::FromDoubleT(2));
 
   // Add another non replaceable user engine with same keyword as extension.
+  // But make it slightly "better" than the other one via last-modified date.
+  turl_data->last_modified = base::Time::FromTimeT(20);
   const TemplateURL* user2 =
       model()->Add(std::make_unique<TemplateURL>(*turl_data));
+  turl_data->last_modified = base::Time();
 
   // Check extension DSE is set as default and its keyword is not changed.
   const TemplateURL* current_dse = model()->GetDefaultSearchProvider();
@@ -1739,12 +1747,9 @@ TEST_F(TemplateURLServiceTest, CheckEnginesWithSameKeywords) {
   TemplateURL* omnibox_api = model()->FindTemplateURLForExtension(
       "omnibox_api_extension_id", TemplateURL::OMNIBOX_API_EXTENSION);
 
-  // Expect that first non replaceable user engine keyword is changed because of
-  // conflict. Second user engine will keep its keyword.
-  EXPECT_NE(ASCIIToUTF16("common_keyword"), user1->keyword());
+  // Expect that all four engines kept their keywords.
+  EXPECT_EQ(ASCIIToUTF16("common_keyword"), user1->keyword());
   EXPECT_EQ(ASCIIToUTF16("common_keyword"), user2->keyword());
-
-  // Check that extensions kept their keywords.
   EXPECT_EQ(ASCIIToUTF16("common_keyword"), extension->keyword());
   EXPECT_EQ(ASCIIToUTF16("common_keyword"), omnibox_api->keyword());
 
@@ -1823,8 +1828,9 @@ TEST_F(TemplateURLServiceTest, ConflictingReplaceableEnginesShouldOverwrite) {
   TemplateURL* user1 =
       AddKeywordWithDate("user_engine1", "user1", "http://test1", std::string(),
                          std::string(), std::string(), true);
-  AddKeywordWithDate("user_engine2", "user2", "http://test2", std::string(),
-                     std::string(), std::string(), true);
+  TemplateURL* user2 =
+      AddKeywordWithDate("user_engine2", "user2", "http://test2", std::string(),
+                         std::string(), std::string(), true);
   // Update first engine to conflict with second by keyword. This should
   // overwrite the second engine.
   model()->ResetTemplateURL(user1, ASCIIToUTF16("title"), ASCIIToUTF16("user2"),
@@ -1835,8 +1841,9 @@ TEST_F(TemplateURLServiceTest, ConflictingReplaceableEnginesShouldOverwrite) {
   model()->ResetTemplateURL(user1, ASCIIToUTF16("title"), ASCIIToUTF16("user1"),
                             "http://test_search.com");
   EXPECT_EQ(user1, model()->GetTemplateURLForKeyword(ASCIIToUTF16("user1")));
-  // Check that no engine is now found by keyword user2.
-  EXPECT_FALSE(model()->GetTemplateURLForKeyword(ASCIIToUTF16("user2")));
+  // Expect that |user2| is now unmasked, since we don't delete replaceable
+  // engines during the Update() phase, only on Add().
+  EXPECT_EQ(user2, model()->GetTemplateURLForKeyword(ASCIIToUTF16("user2")));
 }
 
 TEST_F(TemplateURLServiceTest, CheckNonreplaceableEnginesKeywordsConflicts) {
@@ -1849,76 +1856,43 @@ TEST_F(TemplateURLServiceTest, CheckNonreplaceableEnginesKeywordsConflicts) {
                          std::string(), std::string(), std::string(), false);
 
   // Check it is accessible by keyword and host.
+  EXPECT_EQ(kCommonKeyword, user1->keyword());
   EXPECT_EQ(user1, model()->GetTemplateURLForKeyword(kCommonKeyword));
   EXPECT_EQ(user1, model()->GetTemplateURLForHost("test1"));
 
   // 2. Add another non replaceable user engine with same keyword but different
-  // search url.
-  const TemplateURL* user2 =
-      AddKeywordWithDate("nonreplaceable2", "common_keyword", "http://test2",
-                         std::string(), std::string(), std::string(), false);
-  // Existing engine conflicting keyword must be changed to value generated from
-  // its search url. Both engines must be acessible by keyword and host.
-  EXPECT_EQ(ASCIIToUTF16("test1"), user1->keyword());
-  EXPECT_EQ(user1, model()->GetTemplateURLForKeyword(ASCIIToUTF16("test1")));
-  EXPECT_EQ(user1, model()->GetTemplateURLForHost("test1"));
+  // search url. Make it a bit "better" with a non-zero date.
+  const TemplateURL* user2 = AddKeywordWithDate(
+      "nonreplaceable2", "common_keyword", "http://test2", std::string(),
+      std::string(), std::string(), false, "UTF-8", base::Time::FromTimeT(20));
+  // Both engines must be accessible by host. Prefer user2 because newer.
+  EXPECT_EQ(kCommonKeyword, user1->keyword());
+  EXPECT_EQ(kCommonKeyword, user2->keyword());
   EXPECT_EQ(user2, model()->GetTemplateURLForKeyword(kCommonKeyword));
+  EXPECT_EQ(user1, model()->GetTemplateURLForHost("test1"));
   EXPECT_EQ(user2, model()->GetTemplateURLForHost("test2"));
-
-  // 3. Add another non replaceable user engine with same keyword and same url
-  // as in engine that already exists in model.
-  const TemplateURL* user3 =
-      AddKeywordWithDate("nonreplaceable3", "common_keyword", "http://test2",
-                         std::string(), std::string(), std::string(), false);
-  // Previous conflicting engine will get keyword generated from url. Both
-  // engines must be acessible.
-  EXPECT_EQ(ASCIIToUTF16("test2"), user2->keyword());
-  EXPECT_EQ(user2, model()->GetTemplateURLForKeyword(ASCIIToUTF16("test2")));
-  EXPECT_EQ(kCommonKeyword, user3->keyword());
-  EXPECT_EQ(user3, model()->GetTemplateURLForKeyword(kCommonKeyword));
-  // Expect user2 or user3 returned for host "test2" because now both user2 and
-  // user3 engines correspond to host "test2" and GetTemplateURLForHost returns
-  // one of them.
-  const TemplateURL* url_for_test2 = model()->GetTemplateURLForHost("test2");
-  EXPECT_TRUE(user2 == url_for_test2 || user3 == url_for_test2);
-
-  // 4. Add another non replaceable user engine with common keyword.
-  const TemplateURL* user4 =
-      AddKeywordWithDate("nonreplaceable4", "common_keyword", "http://test3",
-                         std::string(), std::string(), std::string(), false);
-  // Existing conflicting engine user3 will get keyword generated by appending
-  // '_' to its keyword because it can not get keyword autogenerated from search
-  // url - "test2" keyword is already in use by user2 engine. Both engines must
-  // be acessible.
-  EXPECT_EQ(ASCIIToUTF16("common_keyword_"), user3->keyword());
-  EXPECT_EQ(user3,
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("common_keyword_")));
-  EXPECT_EQ(kCommonKeyword, user4->keyword());
-  EXPECT_EQ(user4, model()->GetTemplateURLForKeyword(kCommonKeyword));
-  EXPECT_EQ(user4, model()->GetTemplateURLForHost("test3"));
 
   // Check conflict between search engines with html tags embedded in URL host.
   // URLs with embedded HTML canonicalize to contain uppercase characters in the
   // hostname. Ensure these URLs are still handled correctly for conflict
   // resolution.
-  const TemplateURL* user5 =
-      AddKeywordWithDate("nonreplaceable5", "embedded.%3chtml%3eweb",
-                         "http://embedded.<html>web/?q={searchTerms}",
-                         std::string(), std::string(), std::string(), false);
-  EXPECT_EQ(ASCIIToUTF16("embedded.%3chtml%3eweb"), user5->keyword());
-  EXPECT_EQ(user5, model()->GetTemplateURLForKeyword(
-                       ASCIIToUTF16("embedded.%3chtml%3eweb")));
-  const TemplateURL* user6 =
+  const TemplateURL* embed_better = AddKeywordWithDate(
+      "nonreplaceable5", "embedded.%3chtml%3eweb",
+      "http://embedded.<html>web/?q={searchTerms}", std::string(),
+      std::string(), std::string(), false, "UTF-8", base::Time::FromTimeT(20));
+  EXPECT_EQ(ASCIIToUTF16("embedded.%3chtml%3eweb"), embed_better->keyword());
+  EXPECT_EQ(embed_better, model()->GetTemplateURLForKeyword(
+                              ASCIIToUTF16("embedded.%3chtml%3eweb")));
+  const TemplateURL* embed_worse =
       AddKeywordWithDate("nonreplaceable6", "embedded.%3chtml%3eweb",
                          "http://embedded.<html>web/?q={searchTerms}",
                          std::string(), std::string(), std::string(), false);
-  EXPECT_EQ(ASCIIToUTF16("embedded.%3chtml%3eweb"), user6->keyword());
-  EXPECT_EQ(user6, model()->GetTemplateURLForKeyword(
-                       ASCIIToUTF16("embedded.%3chtml%3eweb")));
-  // Expect existing engine changed its keyword.
-  EXPECT_EQ(ASCIIToUTF16("embedded.%3chtml%3eweb_"), user5->keyword());
-  EXPECT_EQ(user5, model()->GetTemplateURLForKeyword(
-                       ASCIIToUTF16("embedded.%3chtml%3eweb_")));
+  // Expect both to have kept their keyword, but to return the "better" one
+  // when requesting the engine for the shared keyword.
+  EXPECT_EQ(ASCIIToUTF16("embedded.%3chtml%3eweb"), embed_better->keyword());
+  EXPECT_EQ(ASCIIToUTF16("embedded.%3chtml%3eweb"), embed_worse->keyword());
+  EXPECT_EQ(embed_better, model()->GetTemplateURLForKeyword(
+                              ASCIIToUTF16("embedded.%3chtml%3eweb")));
 }
 
 TEST_F(TemplateURLServiceTest, CheckReplaceableEnginesKeywordsConflicts) {
@@ -1934,10 +1908,10 @@ TEST_F(TemplateURLServiceTest, CheckReplaceableEnginesKeywordsConflicts) {
   EXPECT_EQ(user1, model()->GetTemplateURLForHost("test1"));
 
   // 2. Try to add replaceable user engine with conflicting keyword. Addition
-  // must fail.
-  const TemplateURL* user2 =
-      AddKeywordWithDate("replaceable", "common_keyword", "http://test2",
-                         std::string(), std::string(), std::string(), true);
+  // must fail, even if it has a more recent date.
+  const TemplateURL* user2 = AddKeywordWithDate(
+      "replaceable", "common_keyword", "http://test2", std::string(),
+      std::string(), std::string(), true, "UTF-8", base::Time::FromTimeT(20));
   EXPECT_FALSE(user2);
   EXPECT_FALSE(model()->GetTemplateURLForHost("test2"));
 
@@ -1950,18 +1924,18 @@ TEST_F(TemplateURLServiceTest, CheckReplaceableEnginesKeywordsConflicts) {
   EXPECT_EQ(user3, model()->GetTemplateURLForKeyword(kCommonKeyword2));
   EXPECT_EQ(user3, model()->GetTemplateURLForHost("test3"));
 
-  // 4. Add another replaceable user engine with conflicting keyword.
-  const TemplateURL* user4 =
-      AddKeywordWithDate("replaceable3", "common_keyword2", "http://test4",
-                         std::string(), std::string(), std::string(), true);
+  // 4. Add a newer replaceable user engine with conflicting keyword.
+  const TemplateURL* user4 = AddKeywordWithDate(
+      "replaceable3", "common_keyword2", "http://test4", std::string(),
+      std::string(), std::string(), true, "UTF-8", base::Time::FromTimeT(20));
   // New engine must exist and be accessible. Old replaceable engine must be
-  // evicted from model.
+  // evicted from model, because it has a "worse" creation date.
   EXPECT_FALSE(model()->GetTemplateURLForHost("test3"));
   EXPECT_EQ(user4, model()->GetTemplateURLForKeyword(kCommonKeyword2));
   EXPECT_EQ(user4, model()->GetTemplateURLForHost("test4"));
 
   // 5. Add non replaceable user engine with common_keyword2. Must evict
-  // conflicting replaceable engine.
+  // conflicting replaceable engine, even though it has a better creation date.
   const TemplateURL* user5 =
       AddKeywordWithDate("nonreplaceable5", "common_keyword2", "http://test5",
                          std::string(), std::string(), std::string(), false);
