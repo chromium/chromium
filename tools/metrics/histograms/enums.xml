@@ -43267,6 +43267,7 @@ from previous Chrome versions.
   <int value="-612480090" label="FasterLocationReload:enabled"/>
   <int value="-610411643" label="enable-printer-app-search"/>
   <int value="-608775184" label="PasswordsWeaknessCheck:enabled"/>
+  <int value="-607925721" label="WebViewVulkan:disabled"/>
   <int value="-606898702" label="MaterialDesignSettings:disabled"/>
   <int value="-606696801" label="TabGroupsUiImprovementsAndroid:enabled"/>
   <int value="-606431158" label="DrawVerticallyEdgeToEdge:enabled"/>
@@ -45578,6 +45579,7 @@ from previous Chrome versions.
   <int value="1670161209" label="ClickToOpenPDFPlaceholder:enabled"/>
   <int value="1670799163" label="ChromeHomeShowGoogleGWhenUrlCleared:enabled"/>
   <int value="1671021713" label="AutofillImportDynamicForms:disabled"/>
+  <int value="1671985641" label="WebViewVulkan:enabled"/>
   <int value="1673427566" label="ChromeHomeExpandButton:disabled"/>
   <int value="1677167062" label="AutomaticPasswordGeneration:enabled"/>
   <int value="1677258310" label="DragAppsInTabletMode:disabled"/>
