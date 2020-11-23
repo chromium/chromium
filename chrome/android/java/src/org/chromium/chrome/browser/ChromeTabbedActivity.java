@@ -1656,6 +1656,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Supplier<TabDelegateFactory> tabDelegateFactorySupplier = () -> {
             return new TabbedModeTabDelegateFactory(this, getAppBrowserControlsVisibilityDelegate(),
                     getShareDelegateSupplier(), mEphemeralTabCoordinatorSupplier,
+                    ((TabbedRootUiCoordinator) mRootUiCoordinator)::onContextMenuCopyLink,
                     mRootUiCoordinator.getBottomSheetController());
         };
 

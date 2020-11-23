@@ -180,6 +180,12 @@ public final class EventConstants {
 
     public static final String TAB_SWITCHER_BUTTON_CLICKED = "tab_switcher_button_clicked";
 
+    /** Read later related events. */
+    public static final String READ_LATER_CONTEXT_MENU_TAPPED = "read_later_context_menu_tapped";
+    public static final String READ_LATER_ARTICLE_SAVED = "read_later_article_saved";
+    public static final String READ_LATER_BOOKMARK_FOLDER_OPENED =
+            "read_later_bookmark_folder_opened";
+
     /** Video tutorial related events. */
     public static final String VIDEO_TUTORIAL_DISMISSED_SUMMARY =
             "video_tutorial_iph_dismissed_summary";

@@ -23,12 +23,15 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.feature_engagement.EventConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -309,6 +312,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             setBookmarks(mTopLevelFolders);
         } else {
             setBookmarks(mDelegate.getModel().getChildIDs(folder));
+        }
+
+        if (folder.getType() == BookmarkType.READING_LIST) {
+            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                    .notifyEvent(EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
         }
     }
 

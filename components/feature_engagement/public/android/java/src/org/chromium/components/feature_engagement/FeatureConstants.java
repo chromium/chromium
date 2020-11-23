@@ -65,6 +65,8 @@ public @interface FeatureConstants {
     String TRANSLATE_MENU_BUTTON_FEATURE = "IPH_TranslateMenuButton";
     String EXPLORE_SITES_TILE_FEATURE = "IPH_ExploreSitesTile";
     String READ_LATER_CONTEXT_MENU_FEATURE = "IPH_ReadLaterContextMenu";
+    String READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE = "IPH_ReadLaterAppMenuBookmarkThisPage";
+    String READ_LATER_APP_MENU_BOOKMARKS_FEATURE = "IPH_ReadLaterAppMenuBookmarks";
 
     /**
      * An IPH feature that encourages users to get better translations by enabling access to page

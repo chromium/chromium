@@ -477,7 +477,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 new TabContextMenuItemDelegate(tab, tabModelSelector,
                         EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : ()
                                 -> null,
-                        mActivity == null ? null : mActivity::getSnackbarManager),
+                        () -> {}, mActivity == null ? null : mActivity::getSnackbarManager),
                 shareDelegateSupplier, contextMenuMode, AppHooks.get().getExternalAuthUtils());
     }
 
