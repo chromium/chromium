@@ -23,10 +23,11 @@ namespace viz {
 scoped_refptr<VulkanInProcessContextProvider>
 VulkanInProcessContextProvider::Create(
     gpu::VulkanImplementation* vulkan_implementation,
+    const GrContextOptions& options,
     const gpu::GPUInfo* gpu_info) {
   scoped_refptr<VulkanInProcessContextProvider> context_provider(
       new VulkanInProcessContextProvider(vulkan_implementation));
-  if (!context_provider->Initialize(gpu_info))
+  if (!context_provider->Initialize(options, gpu_info))
     return nullptr;
   return context_provider;
 }
@@ -40,6 +41,7 @@ VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {
 }
 
 bool VulkanInProcessContextProvider::Initialize(
+    const GrContextOptions& context_options,
     const gpu::GPUInfo* gpu_info) {
   DCHECK(!device_queue_);
 
@@ -62,11 +64,6 @@ bool VulkanInProcessContextProvider::Initialize(
   if (!device_queue_)
     return false;
 
-  return true;
-}
-
-bool VulkanInProcessContextProvider::InitializeGrContext(
-    const GrContextOptions& context_options) {
   GrVkBackendContext backend_context;
   backend_context.fInstance = device_queue_->GetVulkanInstance();
   backend_context.fPhysicalDevice = device_queue_->GetVulkanPhysicalDevice();
@@ -88,10 +85,6 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
     }
     return vkGetInstanceProcAddr(instance, proc_name);
   };
-
-  const auto& instance_extensions = vulkan_implementation_->GetVulkanInstance()
-                                        ->vulkan_info()
-                                        .enabled_instance_extensions;
 
   std::vector<const char*> device_extensions;
   device_extensions.reserve(device_queue_->enabled_extensions().size());

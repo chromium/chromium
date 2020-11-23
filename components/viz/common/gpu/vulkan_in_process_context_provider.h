@@ -30,12 +30,12 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
  public:
   static scoped_refptr<VulkanInProcessContextProvider> Create(
       gpu::VulkanImplementation* vulkan_implementation,
+      const GrContextOptions& context_options = GrContextOptions(),
       const gpu::GPUInfo* gpu_info = nullptr);
 
   void Destroy();
 
   // VulkanContextProvider implementation
-  bool InitializeGrContext(const GrContextOptions& context_options) override;
   gpu::VulkanImplementation* GetVulkanImplementation() override;
   gpu::VulkanDeviceQueue* GetDeviceQueue() override;
   GrDirectContext* GetGrContext() override;
@@ -49,7 +49,8 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
       gpu::VulkanImplementation* vulkan_implementation);
   ~VulkanInProcessContextProvider() override;
 
-  bool Initialize(const gpu::GPUInfo* gpu_info);
+  bool Initialize(const GrContextOptions& context_options,
+                  const gpu::GPUInfo* gpu_info);
 
 #if BUILDFLAG(ENABLE_VULKAN)
   sk_sp<GrDirectContext> gr_context_;

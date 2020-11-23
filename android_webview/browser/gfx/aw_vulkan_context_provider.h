@@ -48,7 +48,6 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
       AwDrawFn_InitVkParams* params);
 
   // viz::VulkanContextProvider implementation:
-  bool InitializeGrContext(const GrContextOptions& context_options) override;
   gpu::VulkanImplementation* GetVulkanImplementation() override;
   gpu::VulkanDeviceQueue* GetDeviceQueue() override;
   GrDirectContext* GetGrContext() override;
