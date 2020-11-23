@@ -86,8 +86,6 @@ void SharesheetService::OnTargetSelected(uint32_t delegate_id,
         sharesheet_action_cache_->GetActionFromName(target_name);
     if (share_action == nullptr)
       return;
-    sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
-        sharesheet::SharesheetMetrics::UserAction::kAction);
     delegate->OnActionLaunched();
     share_action->LaunchAction(delegate, share_action_view, std::move(intent));
   } else if (type == TargetType::kApp) {

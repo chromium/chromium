@@ -14,8 +14,7 @@ class SharesheetMetrics {
   enum class UserAction {
     kCancelled = 0,  // User cancelled sharesheet.
     kArc,            // Opened an ARC app.
-    kAction,         // User selected an action.
-    kMaxValue = kAction,
+    kMaxValue = kArc,
   };
 
   SharesheetMetrics();
