@@ -191,9 +191,6 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kLoginVideoCaptureAllowedUrls[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
-extern const char kDeviceLoginScreenExtensions[];
-
-COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceLoginScreenLocales[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceLoginScreenInputMethods[];

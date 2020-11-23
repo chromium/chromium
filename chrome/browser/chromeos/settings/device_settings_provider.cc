@@ -82,7 +82,6 @@ const char* const kKnownSettings[] = {
     kDeviceDisplayResolution,
     kDeviceDockMacAddressSource,
     kDeviceHostnameTemplate,
-    kDeviceLoginScreenExtensions,
     kDeviceLoginScreenInputMethods,
     kDeviceLoginScreenLocales,
     kDeviceLoginScreenSystemInfoEnforced,
@@ -424,17 +423,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
     new_values_cache->SetValue(kLoginVideoCaptureAllowedUrls,
                                base::Value(std::move(list)));
-  }
-
-  if (policy.has_device_login_screen_extensions()) {
-    std::vector<base::Value> apps;
-    const em::DeviceLoginScreenExtensionsProto& proto(
-        policy.device_login_screen_extensions());
-    for (const auto& app : proto.device_login_screen_extensions()) {
-      apps.push_back(base::Value(app));
-    }
-    new_values_cache->SetValue(kDeviceLoginScreenExtensions,
-                               base::Value(std::move(apps)));
   }
 
   if (policy.has_login_screen_locales()) {

@@ -327,12 +327,6 @@ const char kDeviceQuirksDownloadEnabled[] =
 const char kLoginVideoCaptureAllowedUrls[] =
     "cros.device.login_video_capture_allowed_urls";
 
-// A list pref storing the apps or extensions to install on the login page. It
-// is a list of strings, each string contains an extension ID and an update URL,
-// delimited by a semicolon. This preference is set by an admin policy.
-const char kDeviceLoginScreenExtensions[] =
-    "cros.device.login_screen_extensions";
-
 // A list pref specifying the locales allowed on the login screen. Currently
 // only the first value is used, as the single locale allowed on the login
 // screen.
