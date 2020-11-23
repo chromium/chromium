@@ -234,6 +234,15 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
     return;
   }
 
+// This block is separate from the outdated check, because the deprecated UI
+// must take precedence over any content setting or HTML5 by Default.
+#if BUILDFLAG(ENABLE_PLUGINS)
+  if (security_status == PluginMetadata::SECURITY_STATUS_DEPRECATED) {
+    *status = chrome::mojom::PluginStatus::kDeprecated;
+    return;
+  }
+#endif
+
   ContentSetting plugin_setting = CONTENT_SETTING_DEFAULT;
   bool uses_default_content_setting = true;
   bool is_managed = false;

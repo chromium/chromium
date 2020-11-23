@@ -1019,6 +1019,19 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
             l10n_util::GetStringFUTF16(IDS_PLUGIN_OUTDATED, group_name));
         break;
       }
+      case chrome::mojom::PluginStatus::kDeprecated: {
+        // kDeprecatedPlugins act similarly to kOutdatedBlocked ones, but do
+        // not allow for loading. They still show an infobar.
+        placeholder = create_blocked_plugin(
+            IDR_BLOCKED_PLUGIN_HTML,
+            l10n_util::GetStringFUTF16(IDS_PLUGIN_DEPRECATED, group_name));
+        mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
+        render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+            plugin_host.BindNewEndpointAndPassReceiver());
+        plugin_host->BlockedOutdatedPlugin(placeholder->BindPluginRenderer(),
+                                           identifier);
+        break;
+      }
       case chrome::mojom::PluginStatus::kUnauthorized: {
         placeholder = create_blocked_plugin(
             IDR_BLOCKED_PLUGIN_HTML,

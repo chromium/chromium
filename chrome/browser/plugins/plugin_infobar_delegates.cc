@@ -123,8 +123,9 @@ base::string16 OutdatedPluginInfoBarDelegate::GetMessageText() const {
 }
 
 int OutdatedPluginInfoBarDelegate::GetButtons() const {
+  // Deprecated plugins cannot be run anymore, not even temporarily.
   if (plugin_metadata_->plugin_is_deprecated())
-    return BUTTON_CANCEL;
+    return BUTTON_NONE;
 
   return BUTTON_OK | BUTTON_CANCEL;
 }
