@@ -1,0 +1,13 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer invisible
+++++++++++genericContainer invisible
+++++++++++++staticText invisible name='target'
+++++++++++staticText invisible name='xxx<newline>'
+++++++++++genericContainer invisible
+++++++++++++staticText invisible name='<newline>function runTest() {<newline>  window.location.href += "#target";<newline>}<newline>window.onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));<newline>'
+++++++++++staticText invisible name='<newline>'
+++++++++staticText invisible name='<newline>'

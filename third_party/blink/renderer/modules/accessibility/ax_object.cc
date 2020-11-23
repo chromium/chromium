@@ -1534,6 +1534,10 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
   last_modification_count_ = cache.ModificationCount();
 
   cached_background_color_ = ComputeBackgroundColor();
+  // TODO(aleventhal) Temporary crash fix until CL:2485519 lands.
+  if (IsDetached())
+    return;
+
   cached_is_hidden_via_style = ComputeIsHiddenViaStyle();
   cached_is_inert_or_aria_hidden_ = ComputeIsInertOrAriaHidden();
   cached_is_descendant_of_leaf_node_ = !!LeafNodeAncestor();
