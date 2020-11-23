@@ -738,8 +738,7 @@ Response InspectorAccessibilityAgent::getFullAXTree(
         BuildProtocolAXObject(*ax_object, nullptr, false, *nodes, cache);
 
     auto child_ids = std::make_unique<protocol::Array<AXNodeId>>();
-    const AXObject::AXObjectVector& children =
-        ax_object->ChildrenIncludingIgnored();
+    const AXObject::AXObjectVector& children = ax_object->UnignoredChildren();
     for (unsigned i = 0; i < children.size(); i++) {
       AXObject& child_ax_object = *children[i].Get();
       child_ids->emplace_back(String::Number(child_ax_object.AXObjectID()));
@@ -822,8 +821,7 @@ void InspectorAccessibilityAgent::AddChildren(
     return;
   }
 
-  const AXObject::AXObjectVector& children =
-      ax_object.ChildrenIncludingIgnored();
+  const AXObject::AXObjectVector& children = ax_object.UnignoredChildren();
   for (unsigned i = 0; i < children.size(); i++) {
     AXObject& child_ax_object = *children[i].Get();
     child_ids->emplace_back(String::Number(child_ax_object.AXObjectID()));
@@ -893,8 +891,7 @@ Response InspectorAccessibilityAgent::queryAXTree(
   while (!reachable.IsEmpty()) {
     AXObject* ax_object = reachable.back();
     reachable.pop_back();
-    const AXObject::AXObjectVector& children =
-        ax_object->ChildrenIncludingIgnored();
+    const AXObject::AXObjectVector& children = ax_object->UnignoredChildren();
     reachable.AppendRange(children.rbegin(), children.rend());
 
     // if querying by name: skip if name of current object does not match.
