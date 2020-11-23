@@ -332,9 +332,9 @@ void PlatformVerificationFlow::OnChallengeReady(
   }
   VLOG(1) << "Platform verification successful.";
   UMA_HISTOGRAM_ENUMERATION(kAttestationResultHistogram, SUCCESS, RESULT_MAX);
-  std::move(context).callback.Run(SUCCESS, signed_data_pb.data(),
-                                  signed_data_pb.signature(),
-                                  certificate_chain);
+  std::move(context.callback)
+      .Run(SUCCESS, signed_data_pb.data(), signed_data_pb.signature(),
+           certificate_chain);
   if (is_expiring_soon && renewals_in_progress_.count(certificate_chain) == 0) {
     renewals_in_progress_.insert(certificate_chain);
     // Fire off a certificate request so next time we'll have a new one.
