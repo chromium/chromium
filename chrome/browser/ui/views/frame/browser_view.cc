@@ -3239,7 +3239,9 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
           [](base::WeakPtr<BrowserView> view, const gfx::Rect& bounds,
              bool maximize) {
             if (view && view->frame()) {
-              view->frame()->SetBounds(bounds);
+              // Adjust the restored bounds to be onscreen, in case the original
+              // screen was disconnected or repositioned during fullscreen.
+              view->frame()->SetBoundsConstrained(bounds);
               if (maximize)
                 view->frame()->Maximize();
             }
