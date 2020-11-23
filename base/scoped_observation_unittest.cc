@@ -77,6 +77,25 @@ TEST(ScopedObservationTest, RemoveObservation) {
   EXPECT_EQ(0u, s1.num_observers());
 }
 
+TEST(ScopedObservationTest, Reset) {
+  TestSource s1;
+  TestSourceObserver o1;
+  TestScopedObservation obs(&o1);
+  EXPECT_EQ(0u, s1.num_observers());
+  obs.Reset();
+
+  obs.Observe(&s1);
+  EXPECT_EQ(1u, s1.num_observers());
+  EXPECT_TRUE(s1.HasObserver(&o1));
+
+  obs.Reset();
+  EXPECT_EQ(0u, s1.num_observers());
+
+  // Safe to call with no observation.
+  obs.Reset();
+  EXPECT_EQ(0u, s1.num_observers());
+}
+
 TEST(ScopedObservationTest, IsObserving) {
   TestSource s1;
   TestSourceObserver o1;
