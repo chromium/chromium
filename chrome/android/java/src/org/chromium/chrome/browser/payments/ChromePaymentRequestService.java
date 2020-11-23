@@ -172,7 +172,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void onQueryForQuotaCreated(
+    public void modifyQueryForQuotaCreatedIfNeeded(
             Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {
         if (queryForQuota.containsKey(MethodStrings.BASIC_CARD)
                 && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
@@ -334,7 +334,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void modifyMethodData(@Nullable Map<String, PaymentMethodData> methodDataMap) {
+    public void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodDataMap) {
         if (!mIsGooglePayBridgeActivated || methodDataMap == null) return;
         Map<String, PaymentMethodData> result = new ArrayMap<>();
         for (PaymentMethodData methodData : methodDataMap.values()) {
@@ -551,7 +551,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void retry(PaymentValidationErrors errors) {
+    public void onRetry(PaymentValidationErrors errors) {
         mWasRetryCalled = true;
         mPaymentUiService.onRetry(errors);
     }

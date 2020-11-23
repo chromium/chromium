@@ -60,11 +60,11 @@ public interface BrowserPaymentRequest {
     void complete(int result, Runnable onCompleteHandled);
 
     /**
-     * The browser part of the {@link PaymentRequest#retry} implementation.
+     * Called when {@link PaymentRequest#retry} is invoked.
      * @param errors The merchant-defined error message strings, which are used to indicate to the
      *         end-user that something is wrong with the data of the payment response.
      */
-    void retry(PaymentValidationErrors errors);
+    void onRetry(PaymentValidationErrors errors);
 
     /**
      * Close this instance. The callers of this method should stop referencing this instance upon
@@ -73,18 +73,18 @@ public interface BrowserPaymentRequest {
     void close();
 
     /**
-     * Modifies the given method data.
+     * Modifies the given method data if needed, called when methodData is created.
      * @param methodData A map of method names to PaymentMethodData, could be null. This parameter
      * could be modified in place.
      */
-    default void modifyMethodData(@Nullable Map<String, PaymentMethodData> methodData) {}
+    default void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodData) {}
 
     /**
-     * Called when queryForQuota is created.
+     * Modifies queryForQuota if needed, called when queryForQuota is created.
      * @param queryForQuota The created queryForQuota, which could be modified in place.
      * @param paymentOptions The payment options specified by the merchant.
      */
-    default void onQueryForQuotaCreated(
+    default void modifyQueryForQuotaCreatedIfNeeded(
             Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {}
 
     /**

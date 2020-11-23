@@ -21,38 +21,37 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
      */
     public WebLayerPaymentRequestService(
             PaymentRequestService paymentRequestService, Delegate delegate) {
-        assert false : "Not implemented yet";
     }
 
+    // Implements BrowserPaymentRequest:
     @Override
     public void onPaymentDetailsUpdated(
             PaymentDetails details, boolean hasNotifiedInvokedPaymentApp) {
-        assert false : "Not implemented yet";
     }
 
+    // Implements BrowserPaymentRequest:
     @Override
     public void onPaymentDetailsNotUpdated(String selectedShippingOptionError) {
-        assert false : "Not implemented yet";
     }
 
+    // Implements BrowserPaymentRequest:
     @Override
     public void complete(int result, Runnable onCompleteHandled) {
-        assert false : "Not implemented yet";
     }
 
+    // Implements BrowserPaymentRequest:
     @Override
-    public void retry(PaymentValidationErrors errors) {
-        assert false : "Not implemented yet";
-    }
+    public void onRetry(PaymentValidationErrors errors) {}
 
+    // Implements BrowserPaymentRequest:
     @Override
     public void close() {
-        assert false : "Not implemented yet";
     }
 
+    // Implements BrowserPaymentRequest:
     @Override
     public void addPaymentAppFactories(
             PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-        assert false : "Not implemented yet";
+        // WebLayer only adds the GPay factory, but not using this method.
     }
 }

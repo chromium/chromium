@@ -164,7 +164,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         /** Record the show event to the journey logger and record the transaction amount. */
         void recordShowEventAndTransactionAmount();
         /**
-         * @return Whether {@link ChromePaymentRequestService#retry} has been
+         * @return Whether {@link ChromePaymentRequestService#onRetry} has been
          *         called.
          */
         boolean wasRetryCalled();

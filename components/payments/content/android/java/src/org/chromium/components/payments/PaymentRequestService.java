@@ -494,7 +494,7 @@ public class PaymentRequestService
                 googlePayBridgeEligible, mWebContents, rawMethodData);
         @Nullable
         Map<String, PaymentMethodData> methodData = getValidatedMethodData(rawMethodData);
-        mBrowserPaymentRequest.modifyMethodData(methodData);
+        mBrowserPaymentRequest.modifyMethodDataIfNeeded(methodData);
         if (methodData == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
@@ -504,7 +504,7 @@ public class PaymentRequestService
         methodData = Collections.unmodifiableMap(methodData);
 
         mQueryForQuota = new HashMap<>(methodData);
-        mBrowserPaymentRequest.onQueryForQuotaCreated(mQueryForQuota, mPaymentOptions);
+        mBrowserPaymentRequest.modifyQueryForQuotaCreatedIfNeeded(mQueryForQuota, mPaymentOptions);
 
         if (!PaymentValidator.validatePaymentDetails(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -1133,7 +1133,7 @@ public class PaymentRequestService
         assert mSpec != null;
         assert !mSpec.isDestroyed() : "mSpec should not be used after being destroyed.";
         mSpec.retry(errors);
-        mBrowserPaymentRequest.retry(errors);
+        mBrowserPaymentRequest.onRetry(errors);
     }
 
     /** The component part of the {@link PaymentRequest#canMakePayment} implementation. */
