@@ -140,7 +140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.ZeroStateLatency" units="ms"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -325,7 +325,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.LauncherSearchProvider.QueryTime" units="ms"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -643,7 +643,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateSearchResultRemovalDecision"
-    enum="AppListZeroStateResultRemovalConfirmation" expires_after="2020-12-31">
+    enum="AppListZeroStateResultRemovalConfirmation" expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -655,7 +655,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateSearchResultUserActionType"
     enum="AppListZeroStateSearchResultUserActionType"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -725,7 +725,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListDefaultSearchResultOpenType"
-    enum="AppListSearchResult" expires_after="2020-12-31">
+    enum="AppListSearchResult" expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -858,7 +858,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListPlayStoreAppLaunchedIndex" units="indices"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -874,7 +874,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListPlayStoreSearchAppsDisplayed" units="apss"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
