@@ -3841,4 +3841,24 @@ IN_PROC_BROWSER_TEST_F(NetworkIsolationSplitCacheAppendIframeOrigin,
   EXPECT_EQ("success", EvalJs(main_rfh, fetch_cacheable));
 }
 
+// The Content Security Policy directive 'treat-as-public-address' is parsed
+// into the parsed headers by services/network and applied there. That directive
+// is ignored in report-only policies. Here we check that Blink reports a
+// console message if 'treat-as-public-address' is delivered in a report-only
+// policy. This serves also as a regression test for https://crbug.com/1150314
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       TreatAsPublicAddressInReportOnly) {
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "The Content Security Policy directive 'treat-as-public-address' is "
+      "ignored when delivered in a report-only policy.");
+
+  GURL url = embedded_test_server()->GetURL(
+      "/set-header?"
+      "Content-Security-Policy-Report-Only: treat-as-public-address");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  console_observer.Wait();
+}
+
 }  // namespace content
