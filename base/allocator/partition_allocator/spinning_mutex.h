@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <atomic>
 
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/yield_processor.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -18,11 +19,20 @@
 #include <windows.h>
 #endif
 
+#if defined(OS_APPLE)
+#include <errno.h>
+#include <pthread.h>
+#endif
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #define PA_HAS_LINUX_KERNEL
 #endif
 
-#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN)
+// Linux:   futex() makes Try() fast without a syscall.
+// Windows: SRWLock are futex()-like.
+// Apple:   pthread has futex()-like locks (see pthread_mutex.c in Apple's
+//          libpthread).
+#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN) || defined(OS_APPLE)
 #define PA_HAS_SPINNING_MUTEX
 #endif
 
@@ -75,8 +85,10 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
   static constexpr int kLockedContended = 2;
 
   std::atomic<int32_t> state_{kUnlocked};
-#else
+#elif defined(OS_WIN)
   SRWLOCK lock_ = SRWLOCK_INIT;
+#elif defined(OS_APPLE)
+  pthread_mutex_t lock_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
 };
 
@@ -141,7 +153,7 @@ ALWAYS_INLINE void SpinningMutex::Release() {
   }
 }
 
-#else
+#elif defined(OS_WIN)
 
 ALWAYS_INLINE bool SpinningMutex::Try() {
   return !!::TryAcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
@@ -149,6 +161,19 @@ ALWAYS_INLINE bool SpinningMutex::Try() {
 
 ALWAYS_INLINE void SpinningMutex::Release() {
   ::ReleaseSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
+}
+
+#elif defined(OS_APPLE)
+
+ALWAYS_INLINE bool SpinningMutex::Try() {
+  int retval = pthread_mutex_trylock(&lock_);
+  PA_DCHECK(retval == 0 || retval == EBUSY);
+  return retval == 0;
+}
+
+ALWAYS_INLINE void SpinningMutex::Release() {
+  int retval = pthread_mutex_unlock(&lock_);
+  PA_DCHECK(retval == 0);
 }
 
 #endif
