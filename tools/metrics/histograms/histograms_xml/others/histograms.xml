@@ -5267,7 +5267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstRun.IOSFirebaseConfigured" enum="FirebaseConfiguredState"
-    expires_after="M87">
+    expires_after="M89">
   <owner>ghendel@chromium.org</owner>
   <owner>pkl@chromium.org</owner>
   <summary>Track whether Firebase is enabled or not at app startup.</summary>
