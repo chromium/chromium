@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -58,7 +59,10 @@ SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
       web_enabler_(WebUsageEnablerBrowserAgent::FromBrowser(browser)),
       browser_state_(browser->GetBrowserState()),
       session_ios_factory_(
-          [[SessionIOSFactory alloc] initWithWebStateList:web_state_list_]) {
+          [[SessionIOSFactory alloc] initWithWebStateList:web_state_list_]),
+      all_web_state_observer_(
+          std::make_unique<AllWebStateObservationForwarder>(web_state_list_,
+                                                            this)) {
   browser->AddObserver(this);
   web_state_list_->AddObserver(this);
 }
@@ -217,6 +221,9 @@ bool SessionRestorationBrowserAgent::CanSaveSession() {
 // Browser Observer methods:
 void SessionRestorationBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
+  // Stop observing web states.
+  all_web_state_observer_.reset();
+  // Stop observing web state list.
   browser->GetWebStateList()->RemoveObserver(this);
   browser->RemoveObserver(this);
 }
@@ -246,4 +253,12 @@ base::FilePath SessionRestorationBrowserAgent::GetSessionStoragePath(
   }
 
   return path;
+}
+
+// WebStateObserver methods
+void SessionRestorationBrowserAgent::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  // Save the session each time a navigation finishes.
+  SaveSession(/*immediately=*/false);
 }

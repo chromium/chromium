@@ -3755,13 +3755,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self updateToolbar];
 }
 
-- (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigation {
-  SessionRestorationBrowserAgent::FromBrowser(self.browser)
-      ->SaveSession(
-          /*immediately=*/false);
-}
-
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   [_toolbarUIUpdater updateState];
   if ([self canShowTabStrip]) {

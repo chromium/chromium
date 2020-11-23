@@ -14,7 +14,9 @@
 #include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#include "ios/web/public/web_state_observer.h"
 
+class AllWebStateObservationForwarder;
 namespace base {
 class FilePath;
 }
@@ -29,11 +31,13 @@ class WebUsageEnablerBrowserAgent;
 // This class is responsible for handling requests of session restoration. It
 // can be observed via SeassonRestorationObserver which it uses to notify
 // observers of session restoration events. This class also automatically
-// save sessions when the active webState changes.
+// save sessions when the active webState changes, and when each web state
+// completes a navigation.
 class SessionRestorationBrowserAgent
     : BrowserObserver,
       public BrowserUserData<SessionRestorationBrowserAgent>,
-      WebStateListObserver {
+      WebStateListObserver,
+      public web::WebStateObserver {
  public:
   // Creates an SessionRestorationBrowserAgent scoped to |browser|.
   static void CreateForBrowser(Browser* browser,
@@ -86,12 +90,16 @@ class SessionRestorationBrowserAgent
   // BrowserObserver methods
   void BrowserDestroyed(Browser* browser) override;
 
-  // WebStateListObserver methods
+  // WebStateListObserver methods.
   void WebStateActivatedAt(WebStateList* web_state_list,
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,
                            int active_index,
                            ActiveWebStateChangeReason reason) override;
+
+  // web::WebStateObserver methods.
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
 
   // The path to use for all session storage reads and writes. If multi-window
   // is enabled, the session ID for this agent is used to determine this path;
@@ -120,6 +128,9 @@ class SessionRestorationBrowserAgent
 
   // True when session restoration is in progress.
   bool restoring_session_ = false;
+
+  // Observer for the active web state in |browser_|'s web state list.
+  std::unique_ptr<AllWebStateObservationForwarder> all_web_state_observer_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_BROWSER_AGENT_H_
