@@ -98,12 +98,14 @@ template <class Key, class Mapped, size_t N, class Compare = std::less<>>
 constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
     std::pair<Key, Mapped>(&&data)[N],
     const Compare& comp = Compare()) {
-  internal::InsertionSort(data, data + N, comp);
-  CHECK(internal::is_sorted_and_unique(data, comp));
+  using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
+  typename FixedFlatMap::value_compare value_comp(comp);
+  internal::InsertionSort(data, data + N, value_comp);
+  CHECK(internal::is_sorted_and_unique(data, value_comp));
   // Specify the value_type explicitly to ensure that the returned array has
   // immutable keys.
-  return fixed_flat_map<Key, Mapped, N, Compare>(
-      sorted_unique, internal::ToArray<std::pair<const Key, Mapped>>(data),
+  return FixedFlatMap(
+      sorted_unique, internal::ToArray<typename FixedFlatMap::value_type>(data),
       comp);
 }
 

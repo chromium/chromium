@@ -8,6 +8,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
+#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,6 +16,23 @@ using ::testing::ElementsAre;
 using ::testing::Pair;
 
 namespace base {
+
+namespace {
+
+struct Unsortable {
+  int value;
+};
+
+bool operator==(const Unsortable& lhs, const Unsortable& rhs) {
+  return lhs.value == rhs.value;
+}
+
+bool operator<(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator<=(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator>(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator>=(const Unsortable& lhs, const Unsortable& rhs) = delete;
+
+}  // namespace
 
 TEST(FixedFlatMapTest, MakeFixedFlatMap_SortedInput) {
   constexpr auto kSquares =
@@ -43,6 +61,30 @@ TEST(FixedFlatMapTest, MutableValues) {
   EXPECT_THAT(map, ElementsAre(Pair("bar", 1), Pair("foo", 2)));
   map.at("bar") = 2;
   EXPECT_THAT(map, ElementsAre(Pair("bar", 2), Pair("foo", 2)));
+}
+
+// Tests that even though the values are unsortable the built in sort still
+// correctly orders the keys.
+TEST(FixedFlatMapTest, UnsortableValues) {
+  using PairType = std::pair<int, Unsortable>;
+
+  constexpr auto kSquares = MakeFixedFlatMap<int, Unsortable>({
+      {4, {16}},
+      {3, {9}},
+      {2, {4}},
+      {1, {1}},
+  });
+  EXPECT_THAT(kSquares, ElementsAre(PairType(1, {1}), PairType(2, {4}),
+                                    PairType(3, {9}), PairType(4, {16})));
+}
+
+// Verifies that passing repeated keys to MakeFixedFlatMap results in a CHECK
+// failure.
+TEST(FixedFlatMapTest, RepeatedKeys) {
+  // Note: The extra pair of parens is needed to escape the nested commas in the
+  // type list.
+  EXPECT_CHECK_DEATH((MakeFixedFlatMap<StringPiece, int>(
+      {{"foo", 1}, {"bar", 2}, {"foo", 3}})));
 }
 
 }  // namespace base
