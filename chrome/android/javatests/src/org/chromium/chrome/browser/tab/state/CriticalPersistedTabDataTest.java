@@ -61,8 +61,8 @@ public class CriticalPersistedTabDataTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PersistedTabDataConfiguration.setUseTestConfig(true);
-        mStorage =
-                (MockPersistedTabDataStorage) PersistedTabDataConfiguration.getTestConfig().storage;
+        mStorage = (MockPersistedTabDataStorage) PersistedTabDataConfiguration.getTestConfig()
+                           .getStorage();
     }
 
     @SmallTest

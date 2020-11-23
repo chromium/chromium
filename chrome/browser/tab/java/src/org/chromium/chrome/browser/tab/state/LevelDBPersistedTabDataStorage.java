@@ -20,24 +20,34 @@ import java.util.Locale;
  * of {@link PersistedTabDataStorage}.
  */
 public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
+    // In a mock environment, the native code will not be running so we should not
+    // make assertions about mNativePersistedStateDB
+    private static boolean sSkipNativeAssertionsForTesting;
     private long mNativePersistedStateDB;
     // Callback is only used for synchronization of save and delete in testing.
     // Otherwise it is a no-op.
     private Runnable mOnCompleteForTesting;
     // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or @RemovableInRelease to improve
     // performance
+    private boolean mIsDestroyed;
 
     LevelDBPersistedTabDataStorage(Profile profile) {
         assert !profile.isOffTheRecord()
             : "LevelDBPersistedTabDataStorage is not supported for incognito profiles";
         LevelDBPersistedTabDataStorageJni.get().init(this, profile);
-        assert mNativePersistedStateDB != 0;
+        makeNativeAssertion();
+    }
+
+    private void makeNativeAssertion() {
+        if (!sSkipNativeAssertionsForTesting) {
+            assert mNativePersistedStateDB != 0;
+        }
     }
 
     @MainThread
     @Override
     public void save(int tabId, String dataId, byte[] data) {
-        assert mNativePersistedStateDB != 0;
+        makeNativeAssertion();
         LevelDBPersistedTabDataStorageJni.get().save(
                 mNativePersistedStateDB, getKey(tabId, dataId), data, mOnCompleteForTesting);
     }
@@ -45,7 +55,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     @MainThread
     @Override
     public void restore(int tabId, String dataId, Callback<byte[]> callback) {
-        assert mNativePersistedStateDB != 0;
+        makeNativeAssertion();
         LevelDBPersistedTabDataStorageJni.get().load(
                 mNativePersistedStateDB, getKey(tabId, dataId), callback);
     }
@@ -65,7 +75,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     @MainThread
     @Override
     public void delete(int tabId, String dataId) {
-        assert mNativePersistedStateDB != 0;
+        makeNativeAssertion();
         LevelDBPersistedTabDataStorageJni.get().delete(
                 mNativePersistedStateDB, getKey(tabId, dataId), mOnCompleteForTesting);
     }
@@ -86,15 +96,25 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
      * Destroy native instance of persisted_tab_state
      */
     public void destroy() {
-        assert mNativePersistedStateDB != 0;
+        if (!sSkipNativeAssertionsForTesting) {
+            assert mNativePersistedStateDB != 0;
+        }
         LevelDBPersistedTabDataStorageJni.get().destroy(mNativePersistedStateDB);
         mNativePersistedStateDB = 0;
+        mIsDestroyed = true;
+    }
+
+    @VisibleForTesting
+    protected boolean isDestroyed() {
+        return mIsDestroyed;
     }
 
     @CalledByNative
     private void setNativePtr(long nativePtr) {
-        assert nativePtr != 0;
-        assert mNativePersistedStateDB == 0;
+        if (!sSkipNativeAssertionsForTesting) {
+            assert nativePtr != 0;
+            assert mNativePersistedStateDB == 0;
+        }
         mNativePersistedStateDB = nativePtr;
     }
 
@@ -103,8 +123,13 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
         mOnCompleteForTesting = onComplete;
     }
 
+    @VisibleForTesting
+    public static void setSkipNativeAssertionsForTesting(boolean skipNativeAssertionsForTesting) {
+        sSkipNativeAssertionsForTesting = skipNativeAssertionsForTesting;
+    }
+
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void init(LevelDBPersistedTabDataStorage caller, BrowserContextHandle handle);
         void destroy(long nativePersistedStateDB);
         void save(long nativePersistedStateDB, String key, byte[] data, Runnable onComplete);

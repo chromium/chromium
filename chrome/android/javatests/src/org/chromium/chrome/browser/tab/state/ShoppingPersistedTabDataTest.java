@@ -81,6 +81,7 @@ public class ShoppingPersistedTabDataTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
+        PersistedTabDataConfiguration.setUseTestConfig(true);
     }
 
     @UiThreadTest

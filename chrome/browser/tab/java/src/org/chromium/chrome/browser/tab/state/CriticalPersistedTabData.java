@@ -76,9 +76,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
     private CriticalPersistedTabData(Tab tab) {
         super(tab,
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, tab.isIncognito())
-                        .storage,
+                        .getStorage(),
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, tab.isIncognito())
-                        .id);
+                        .getId());
     }
 
     /**
@@ -164,7 +164,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     public static byte[] restore(int tabId, boolean isIncognito) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, isIncognito);
-        return config.storage.restore(tabId, config.id);
+        return config.getStorage().restore(tabId, config.getId());
     }
 
     /**
@@ -176,7 +176,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     public static void restore(int tabId, boolean isIncognito, Callback<byte[]> callback) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, isIncognito);
-        config.storage.restore(tabId, config.id, callback);
+        config.getStorage().restore(tabId, config.getId(), callback);
     }
 
     /**
