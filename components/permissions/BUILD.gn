@@ -19,6 +19,8 @@ source_set("permissions") {
     "contexts/font_access_permission_context.h",
     "contexts/geolocation_permission_context.cc",
     "contexts/geolocation_permission_context.h",
+    "contexts/payment_handler_permission_context.cc",
+    "contexts/payment_handler_permission_context.h",
     "contexts/webxr_permission_context.cc",
     "contexts/webxr_permission_context.h",
     "notification_permission_ui_selector.cc",
