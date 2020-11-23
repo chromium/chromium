@@ -17,7 +17,7 @@
           "${pref}": {
             "value": "The value that |pref| should take on. Defaults to the value that the policy was set to.",
             "expect_default": "Whether or not the pref value should be the default one.",
-            "local_state": "Whether |pref| is registered in local state's PrefService instead of the profile's PrefService. Defaults to |false| if not specified."
+            "location": "The location where the pref is registered, possible values are ['user_profile', 'local_state']. Defaults to 'user_profile' if not specified."
           }
         }
       }
@@ -53,7 +53,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "CloudReportingEnabled": true },
-        "prefs": { "enterprise_reporting.chrome_cloud_reporting": { "local_state": true } }
+        "prefs": { "enterprise_reporting.chrome_cloud_reporting": { "location": "local_state" } }
       }
     ]
   },
@@ -65,7 +65,7 @@
         "policies": {
           "ChromeVariations": 1
         },
-        "prefs": { "variations_restrictions_by_policy": { "local_state": true } }
+        "prefs": { "variations_restrictions_by_policy": { "location": "local_state" } }
       }
     ]
   },
@@ -313,7 +313,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "MetricsReportingEnabled": false },
-        "prefs": { "user_experience_metrics.reporting_enabled": { "local_state": true } }
+        "prefs": { "user_experience_metrics.reporting_enabled": { "location": "local_state" } }
       }
     ]
   },

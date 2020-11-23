@@ -27,7 +27,7 @@
             "${pref}": {
               "value": "The value that |pref| should take on.",
               "expect_default": "Whether or not the pref value should be the default one.",
-              "local_state": "Whether |pref| is registered in local state's PrefService instead of the profile's PrefService. Defaults to |false| if not specified.",
+              "location": "The location where the pref is registered, possible values are ['user_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
               "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified.",
               "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified."
             }
@@ -56,7 +56,7 @@
             "*.example.com"
           ]
         },
-        "prefs": { "unsafely_treat_insecure_origin_as_secure": { "local_state": true } }
+        "prefs": { "unsafely_treat_insecure_origin_as_secure": { "location": "local_state" } }
       }
     ]
   },
@@ -72,7 +72,7 @@
             "*.example.com"
           ]
         },
-        "prefs": { "unsafely_treat_insecure_origin_as_secure": { "local_state": true } }
+        "prefs": { "unsafely_treat_insecure_origin_as_secure": { "location": "local_state" } }
       }
     ]
   },
@@ -114,7 +114,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultBrowserSettingEnabled": true },
-        "prefs": { "browser.default_browser_setting_enabled": { "local_state": true } }
+        "prefs": { "browser.default_browser_setting_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -125,7 +125,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "ApplicationLocaleValue": "fr" },
-        "prefs": { "intl.app_locale": { "local_state": true } }
+        "prefs": { "intl.app_locale": { "location": "local_state" } }
       }
     ]
   },
@@ -161,7 +161,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DnsOverHttpsMode": "off" },
-        "prefs": { "dns_over_https.mode": { "local_state": true } }
+        "prefs": { "dns_over_https.mode": { "location": "local_state" } }
       }
     ]
   },
@@ -174,7 +174,7 @@
           "DnsOverHttpsMode": "automatic",
           "DnsOverHttpsTemplates": "https://cloudflare-dns.com/dns-query https://dns.quad9.net/dns-query{?dns}"
         },
-        "prefs": { "dns_over_https.templates": { "local_state": true } }
+        "prefs": { "dns_over_https.templates": { "location": "local_state" } }
       }
     ]
   },
@@ -832,7 +832,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "MetricsReportingEnabled": false },
-        "prefs": { "user_experience_metrics.reporting_enabled": { "local_state": true } },
+        "prefs": { "user_experience_metrics.reporting_enabled": { "location": "local_state" } },
         "indicator_tests": [
           {
             "pref": "user_experience_metrics.reporting_enabled",
@@ -988,7 +988,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DiskCacheDir": "${user_home}/test-cache" },
-        "prefs": { "browser.disk_cache_dir": { "local_state": true } }
+        "prefs": { "browser.disk_cache_dir": { "location": "local_state" } }
       }
     ]
   },
@@ -998,7 +998,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DiskCacheSize": 100 },
-        "prefs": { "browser.disk_cache_size": { "local_state": true } }
+        "prefs": { "browser.disk_cache_size": { "location": "local_state" } }
       }
     ]
   },
@@ -1160,7 +1160,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "EnableOnlineRevocationChecks": true },
-        "prefs": { "ssl.rev_checking.enabled": { "local_state": true } }
+        "prefs": { "ssl.rev_checking.enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -1169,8 +1169,14 @@
     "os": ["win", "linux", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "RequireOnlineRevocationChecksForLocalAnchors": true },
-        "prefs": { "ssl.rev_checking.required_for_local_anchors": { "local_state": true } }
+        "policies": {
+          "RequireOnlineRevocationChecksForLocalAnchors": true
+        },
+        "prefs": {
+          "ssl.rev_checking.required_for_local_anchors": {
+            "location": "local_state"
+          }
+        }
       }
     ]
   },
@@ -1192,7 +1198,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "BuiltinCertificateVerifierEnabled": true },
-        "prefs": { "builtin_certificate_verifier_enabled": { "local_state": true } }
+        "prefs": { "builtin_certificate_verifier_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -1202,7 +1208,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AuthSchemes": "AuthSchemes" },
-        "prefs": { "auth.schemes": { "local_state": true } }
+        "prefs": { "auth.schemes": { "location": "local_state" } }
       }
     ]
   },
@@ -1212,7 +1218,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DisableAuthNegotiateCnameLookup": true },
-        "prefs": { "auth.disable_negotiate_cname_lookup": { "local_state": true } }
+        "prefs": { "auth.disable_negotiate_cname_lookup": { "location": "local_state" } }
       }
     ]
   },
@@ -1222,7 +1228,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "EnableAuthNegotiatePort": true },
-        "prefs": { "auth.enable_negotiate_port": { "local_state": true } }
+        "prefs": { "auth.enable_negotiate_port": { "location": "local_state" } }
       }
     ]
   },
@@ -1232,7 +1238,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "BasicAuthOverHttpEnabled": false },
-        "prefs": { "auth.basic_over_http_enabled": { "local_state": true } }
+        "prefs": { "auth.basic_over_http_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -1242,7 +1248,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AuthServerWhitelist": "localhost" },
-        "prefs": { "auth.server_allowlist": { "local_state": true } }
+        "prefs": { "auth.server_allowlist": { "location": "local_state" } }
       }
     ]
   },
@@ -1252,7 +1258,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AuthServerAllowlist": "localhost" },
-        "prefs": { "auth.server_allowlist": { "local_state": true } }
+        "prefs": { "auth.server_allowlist": { "location": "local_state" } }
       }
     ]
   },
@@ -1262,7 +1268,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AuthNegotiateDelegateWhitelist": "localhost" },
-        "prefs": { "auth.negotiate_delegate_whitelist": { "local_state": true } }
+        "prefs": { "auth.negotiate_delegate_whitelist": { "location": "local_state" } }
       }
     ]
   },
@@ -1272,7 +1278,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AuthNegotiateDelegateAllowlist": "localhost" },
-        "prefs": { "auth.negotiate_delegate_whitelist": { "local_state": true } }
+        "prefs": { "auth.negotiate_delegate_whitelist": { "location": "local_state" } }
       }
     ]
   },
@@ -1282,7 +1288,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AuthNegotiateDelegateByKdcPolicy": true },
-        "prefs": { "auth.negotiate_delegate_by_kdc_policy": { "local_state": true } }
+        "prefs": { "auth.negotiate_delegate_by_kdc_policy": { "location": "local_state" } }
       }
     ]
   },
@@ -1292,7 +1298,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "GSSAPILibraryName": "libwhatever.so" },
-        "prefs": { "auth.gssapi_library_name": { "local_state": true } }
+        "prefs": { "auth.gssapi_library_name": { "location": "local_state" } }
       }
     ]
   },
@@ -1302,7 +1308,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AuthAndroidNegotiateAccountType": "com.example.spnego" },
-        "prefs": { "auth.android_negotiate_account_type": { "local_state": true } }
+        "prefs": { "auth.android_negotiate_account_type": { "location": "local_state" } }
       }
     ]
   },
@@ -1312,7 +1318,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AllowCrossOriginAuthPrompt": true },
-        "prefs": { "auth.allow_cross_origin_prompt": { "local_state": true } }
+        "prefs": { "auth.allow_cross_origin_prompt": { "location": "local_state" } }
       }
     ]
   },
@@ -1322,7 +1328,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "NtlmV2Enabled": true },
-        "prefs": { "auth.ntlm_v2_enabled": { "local_state": true } }
+        "prefs": { "auth.ntlm_v2_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -1332,7 +1338,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "KerberosEnabled": true },
-        "prefs": { "kerberos.enabled": { "local_state": true } }
+        "prefs": { "kerberos.enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -1342,7 +1348,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "KerberosRememberPasswordEnabled": false },
-        "prefs": { "kerberos.remember_password_enabled": { "local_state": true } }
+        "prefs": { "kerberos.remember_password_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -1352,7 +1358,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "KerberosAddAccountsAllowed": false },
-        "prefs": { "kerberos.add_accounts_allowed": { "local_state": true } }
+        "prefs": { "kerberos.add_accounts_allowed": { "location": "local_state" } }
       }
     ]
   },
@@ -1381,7 +1387,7 @@
             }
           ]
         },
-        "prefs": { "kerberos.accounts": { "local_state": true } }
+        "prefs": { "kerberos.accounts": { "location": "local_state" } }
       }
     ]
   },
@@ -1492,7 +1498,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "ThirdPartyBlockingEnabled": false },
-        "prefs": { "third_party_blocking_enabled": { "local_state": true } }
+        "prefs": { "third_party_blocking_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -2725,7 +2731,7 @@
             }
           ]
         },
-        "prefs": { "device_login_screen_webusb_allow_devices_for_urls": { "local_state": true } }
+        "prefs": { "device_login_screen_webusb_allow_devices_for_urls": { "location": "local_state" } }
       }
     ]
   },
@@ -2864,7 +2870,7 @@
       {
         "policies": {"AllowFileSelectionDialogs": false},
         "prefs": {
-          "select_file_dialogs.allowed": { "local_state": true },
+          "select_file_dialogs.allowed": { "location": "local_state" },
           "download.prompt_for_download": {}
         }
       }
@@ -2956,7 +2962,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {"MaxConnectionsPerProxy": 16},
-        "prefs": { "net.max_connections_per_proxy": { "local_state": true }}
+        "prefs": { "net.max_connections_per_proxy": { "location": "local_state" }}
       }
     ]
   },
@@ -3070,7 +3076,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {"BackgroundModeEnabled": false},
-        "prefs": { "background_mode.enabled": { "local_state": true }}
+        "prefs": { "background_mode.enabled": { "location": "local_state" }}
       }
     ]
   },
@@ -3080,7 +3086,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {"RestrictSigninToPattern": ".*@google.com"},
-        "prefs": { "google.services.username_pattern": { "local_state": true }}
+        "prefs": { "google.services.username_pattern": { "location": "local_state" }}
       }
     ]
   },
@@ -3128,7 +3134,7 @@
         "policies": {
           "BuiltInDnsClientEnabled": true
         },
-        "prefs": { "async_dns.enabled": { "local_state": true } }
+        "prefs": { "async_dns.enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -3140,7 +3146,7 @@
         "policies": {
           "WPADQuickCheckEnabled": true
         },
-        "prefs": { "proxy.quick_check_enabled": { "local_state": true } }
+        "prefs": { "proxy.quick_check_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -3184,7 +3190,7 @@
         "policies": {
           "VariationsRestrictParameter": "restricted"
         },
-        "prefs": { "variations_restrict_parameter": { "local_state": true } }
+        "prefs": { "variations_restrict_parameter": { "location": "local_state" } }
       }
     ]
   },
@@ -3196,7 +3202,7 @@
         "policies": {
           "ChromeVariations": 1
         },
-        "prefs": { "variations_restrictions_by_policy": { "local_state": true } }
+        "prefs": { "variations_restrictions_by_policy": { "location": "local_state" } }
       }
     ]
   },
@@ -3252,7 +3258,7 @@
         "policies": {
           "BrowserGuestModeEnabled": true
         },
-        "prefs": { "profile.browser_guest_enabled": { "local_state": true } }
+        "prefs": { "profile.browser_guest_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -3264,7 +3270,7 @@
         "policies": {
           "BrowserGuestModeEnforced": true
         },
-        "prefs": { "profile.browser_guest_enforced": { "local_state": true } }
+        "prefs": { "profile.browser_guest_enforced": { "location": "local_state" } }
       }
     ]
   },
@@ -3276,7 +3282,7 @@
         "policies": {
           "BrowserAddPersonEnabled": true
         },
-        "prefs": { "profile.add_person_enabled": { "local_state": true } }
+        "prefs": { "profile.add_person_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -3288,7 +3294,7 @@
         "policies": {
           "ForceBrowserSignin": false
         },
-        "prefs": { "profile.force_browser_signin": { "local_state": true } }
+        "prefs": { "profile.force_browser_signin": { "location": "local_state" } }
       }
     ]
   },
@@ -3317,8 +3323,8 @@
         },
         "prefs": {
           "signin.allowed_on_next_startup": {},
-          "profile.force_browser_signin": { "local_state": true },
-          "profile.browser_guest_enabled": { "local_state": true }
+          "profile.force_browser_signin": { "location": "local_state" },
+          "profile.browser_guest_enabled": { "location": "local_state" }
           }
       }
     ]
@@ -3349,7 +3355,7 @@
         },
         "prefs": {
           "signin.allowed": {},
-          "profile.force_browser_signin": { "local_state": true }
+          "profile.force_browser_signin": { "location": "local_state" }
         }
       }
     ]
@@ -3366,7 +3372,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "CloudManagementEnrollmentMandatory": true },
-        "prefs": { "policy.cloud_management_enrollment_mandatory": { "local_state": true } }
+        "prefs": { "policy.cloud_management_enrollment_mandatory": { "location": "local_state" } }
       }
     ]
   },
@@ -3376,7 +3382,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "SSLVersionMin": "tls1.1" },
-        "prefs": { "ssl.version_min": { "local_state": true } }
+        "prefs": { "ssl.version_min": { "location": "local_state" } }
       }
     ]
   },
@@ -3455,7 +3461,7 @@
         "policies": {
           "SuppressUnsupportedOSWarning": true
         },
-        "prefs": { "browser.suppress_unsupported_os_warning": { "local_state": true } }
+        "prefs": { "browser.suppress_unsupported_os_warning": { "location": "local_state" } }
       }
     ]
   },
@@ -3509,7 +3515,7 @@
         "policies": {
           "MediaRouterCastAllowAllIPs": false
         },
-        "prefs": { "media_router.cast_allow_all_ips": { "local_state": true } }
+        "prefs": { "media_router.cast_allow_all_ips": { "location": "local_state" } }
       }
     ]
   },
@@ -3586,7 +3592,7 @@
         "policies": {
           "ComponentUpdatesEnabled": true
         },
-        "prefs": { "component_updates.component_updates_enabled": { "local_state": true } }
+        "prefs": { "component_updates.component_updates_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -3622,7 +3628,7 @@
         "policies": {
           "RelaunchNotification": 1
         },
-        "prefs": { "browser.relaunch_notification": { "local_state": true } }
+        "prefs": { "browser.relaunch_notification": { "location": "local_state" } }
       }
     ]
   },
@@ -3634,7 +3640,7 @@
         "policies": {
           "RelaunchNotificationPeriod": 86400000
         },
-        "prefs": { "browser.relaunch_notification_period": { "local_state": true } }
+        "prefs": { "browser.relaunch_notification_period": { "location": "local_state" } }
       }
     ]
   },
@@ -3646,7 +3652,7 @@
         "policies": {
           "RelaunchHeadsUpPeriod": 86400000
         },
-        "prefs": { "browser.relaunch_heads_up_period": { "local_state": true } }
+        "prefs": { "browser.relaunch_heads_up_period": { "location": "local_state" } }
       }
     ]
   },
@@ -3658,7 +3664,7 @@
         "policies": {
           "PromotionalTabsEnabled": false
         },
-        "prefs": { "browser.promotional_tabs_enabled": { "local_state": true } }
+        "prefs": { "browser.promotional_tabs_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -3674,7 +3680,7 @@
         "policies": {
           "CommandLineFlagSecurityWarningsEnabled": true
         },
-        "prefs": { "browser.command_line_flag_security_warnings_enabled": { "local_state": true } }
+        "prefs": { "browser.command_line_flag_security_warnings_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -3698,7 +3704,10 @@
         "policies": {
           "ExternalProtocolDialogShowAlwaysOpenCheckbox": true
         },
-        "prefs": { "external_protocol_dialog.show_always_open_checkbox": { "local_state": false, "value": true }
+        "prefs": {
+          "external_protocol_dialog.show_always_open_checkbox": {
+            "value": true
+          }
         }
       }
     ]
@@ -3756,7 +3765,7 @@
         "policies": { "TargetBlankImpliesNoOpener": false },
         "prefs": {
           "policy.target_blank_implies_noopener": {
-            "local_state": true,
+            "location": "local_state",
             "value": false
           }
         }
@@ -3815,7 +3824,7 @@
         },
         "prefs": {
           "browser.dns_interception_checks_enabled": {
-            "local_state": true,
+            "location": "local_state",
             "value": false
           }
         }
@@ -3830,7 +3839,7 @@
         "policies": { "IntranetRedirectBehavior": 0 },
         "prefs": {
           "browser.intranet_redirect_behavior": {
-            "local_state": true,
+            "location": "local_state",
             "value": 0
           }
         }
@@ -3860,7 +3869,7 @@
         "policies": {
           "PolicyRefreshRate": 300000
         },
-        "prefs": { "policy.user_refresh_rate": { "local_state": true } }
+        "prefs": { "policy.user_refresh_rate": { "location": "local_state" } }
       }
     ]
   },
@@ -3958,7 +3967,7 @@
         "policies": {
           "AudioOutputAllowed": true
         },
-        "prefs": { "hardware.audio_output_enabled": { "local_state": true } }
+        "prefs": { "hardware.audio_output_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -4011,7 +4020,7 @@
           "ManagedGuestSessionPrivacyWarningsEnabled": false
         },
         "prefs": {
-          "managed_session.privacy_warning_enabled": { "local_state": true }
+          "managed_session.privacy_warning_enabled": { "location": "local_state" }
         }
       }
     ]
@@ -4042,8 +4051,8 @@
         "policies": {
           "SystemFeaturesDisableList": ["os_settings", "scanning"]
         },
-        "prefs": { "policy.system_features_disable_list": { "local_state": true },
-                   "os_settings_enabled": { "local_state": true } }
+        "prefs": { "policy.system_features_disable_list": { "location": "local_state" },
+                   "os_settings_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -4053,7 +4062,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "SystemFeaturesDisableMode": "hidden" },
-        "prefs": { "policy.system_features_disable_mode": { "local_state": true } }
+        "prefs": { "policy.system_features_disable_mode": { "location": "local_state" } }
       }
     ]
   },
@@ -4065,7 +4074,7 @@
         "policies": {
           "SessionLengthLimit": 3600000
         },
-        "prefs": { "session.length_limit": { "local_state": true } }
+        "prefs": { "session.length_limit": { "location": "local_state" } }
       }
     ]
   },
@@ -4298,7 +4307,7 @@
           "WaitForInitialUserActivity": true
         },
         "prefs": {
-          "session.wait_for_initial_user_activity": { "local_state": true },
+          "session.wait_for_initial_user_activity": { "location": "local_state" },
           "power.wait_for_initial_user_activity": {}
         }
       }
@@ -4804,7 +4813,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "HardwareAccelerationModeEnabled": true },
-        "prefs": { "hardware_acceleration_mode.enabled": { "local_state": true } }
+        "prefs": { "hardware_acceleration_mode.enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -5070,7 +5079,7 @@
         "policies": {
           "SchedulerConfiguration": "performance"
         },
-        "prefs": { "chromeos.scheduler_configuration": { "local_state": true } }
+        "prefs": { "chromeos.scheduler_configuration": { "location": "local_state" } }
       }
     ]
   },
@@ -5082,7 +5091,7 @@
         "policies": {
           "CloudPolicyOverridesPlatformPolicy": false
         },
-        "prefs": { "policy.cloud_override": { "local_state": true } }
+        "prefs": { "policy.cloud_override": { "location": "local_state" } }
       }
     ]
   },
@@ -5175,7 +5184,7 @@
             "example.com"
           ]
         },
-        "prefs": { "ssl.client_certs.h2_coalescing_hosts": { "local_state": true } }
+        "prefs": { "ssl.client_certs.h2_coalescing_hosts": { "location": "local_state" } }
       }
     ]
   },
@@ -5223,7 +5232,7 @@
         "policies": {
           "AmbientAuthenticationInPrivateModesEnabled": 0
         },
-        "prefs": { "auth.ambient_auth_in_private_modes": {"local_state": true } }
+        "prefs": { "auth.ambient_auth_in_private_modes": {"location": "local_state" } }
       }
     ]
   },
@@ -5489,7 +5498,7 @@
         "policies": {
           "DevicePolicyRefreshRate": 300000
         },
-        "prefs": { "policy.device_refresh_rate": { "local_state": true } }
+        "prefs": { "policy.device_refresh_rate": { "location": "local_state" } }
       }
     ]
   },
@@ -5836,7 +5845,7 @@
         "policies": {
           "TaskManagerEndProcessEnabled": false
         },
-        "prefs": { "task_manager.end_process_enabled": { "local_state": true } }
+        "prefs": { "task_manager.end_process_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -5852,7 +5861,7 @@
             "download_rate_kbits": "5600"
           }
         },
-        "prefs": { "net.throttling_enabled": { "local_state": true } }
+        "prefs": { "net.throttling_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -5864,7 +5873,7 @@
         "policies": {
           "DeviceWiFiFastTransitionEnabled": true
         },
-        "prefs": { "net.device_wifi_fast_transition_enabled": { "local_state": true } }
+        "prefs": { "net.device_wifi_fast_transition_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -5919,7 +5928,7 @@
         "policies": {
           "BrowserNetworkTimeQueriesEnabled": true
         },
-        "prefs": { "network_time.network_time_queries_enabled": { "local_state": true } }
+        "prefs": { "network_time.network_time_queries_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -5978,7 +5987,7 @@
         "policies": {
           "CastReceiverName": "Hallway"
         },
-        "prefs": { "cros.device.cast_receiver.name": { "local_state": true } }
+        "prefs": { "cros.device.cast_receiver.name": { "location": "local_state" } }
       }
     ]
   },
@@ -6054,7 +6063,7 @@
         "policies": { "DeviceExternalPrintServersAllowlist": ["id4", "id7", "id10"]},
         "prefs": {
           "native_printing.device_external_print_servers_allowlist": {
-            "local_state": true,
+            "location": "local_state",
             "value": ["id4", "id7", "id10"]
           }
         }
@@ -6456,7 +6465,7 @@
         "policies": {
           "ChromeCleanupEnabled": true
         },
-        "prefs": { "software_reporter.enabled": { "local_state": true } }
+        "prefs": { "software_reporter.enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -6904,7 +6913,7 @@
         "policies": {
           "DevicePowerPeakShiftEnabled": true
         },
-        "prefs": { "ash.power.peak_shift_enabled": { "local_state": true } }
+        "prefs": { "ash.power.peak_shift_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -6916,7 +6925,7 @@
         "policies": {
           "DevicePowerPeakShiftBatteryThreshold": 20
         },
-        "prefs": { "ash.power.peak_shift_battery_threshold": { "local_state": true } }
+        "prefs": { "ash.power.peak_shift_battery_threshold": { "location": "local_state" } }
       }
     ]
   },
@@ -6961,7 +6970,7 @@
             ]
           }
         },
-        "prefs": { "ash.power.peak_shift_day_config": { "local_state": true } }
+        "prefs": { "ash.power.peak_shift_day_config": { "location": "local_state" } }
       }
     ]
   },
@@ -6973,7 +6982,7 @@
         "policies": {
           "DeviceBootOnAcEnabled": true
         },
-        "prefs": { "ash.power.boot_on_ac_enabled": { "local_state": true } }
+        "prefs": { "ash.power.boot_on_ac_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -6997,7 +7006,7 @@
         "policies": {
           "DeviceAdvancedBatteryChargeModeEnabled": true
         },
-        "prefs": { "ash.power.advanced_battery_charge_mode_enabled": { "local_state": true } }
+        "prefs": { "ash.power.advanced_battery_charge_mode_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -7034,7 +7043,7 @@
             ]
           }
         },
-        "prefs": { "ash.power.advanced_battery_charge_mode_day_config": { "local_state": true } }
+        "prefs": { "ash.power.advanced_battery_charge_mode_day_config": { "location": "local_state" } }
       }
     ]
   },
@@ -7046,7 +7055,7 @@
         "policies": {
           "DeviceBatteryChargeMode": 5
         },
-        "prefs": { "ash.power.battery_charge_mode": { "local_state": true } }
+        "prefs": { "ash.power.battery_charge_mode": { "location": "local_state" } }
       }
     ]
   },
@@ -7058,7 +7067,7 @@
         "policies": {
           "DeviceBatteryChargeCustomStartCharging": 60
         },
-        "prefs": { "ash.power.battery_charge_custom_start_charging": { "local_state": true } }
+        "prefs": { "ash.power.battery_charge_custom_start_charging": { "location": "local_state" } }
       }
     ]
   },
@@ -7070,7 +7079,7 @@
         "policies": {
           "DeviceBatteryChargeCustomStopCharging": 91
         },
-        "prefs": { "ash.power.battery_charge_custom_stop_charging": { "local_state": true } }
+        "prefs": { "ash.power.battery_charge_custom_stop_charging": { "location": "local_state" } }
       }
     ]
   },
@@ -7082,7 +7091,7 @@
         "policies": {
           "DeviceUsbPowerShareEnabled": true
         },
-        "prefs": { "ash.power.usb_power_share_enabled": { "local_state": true } }
+        "prefs": { "ash.power.usb_power_share_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -7094,7 +7103,7 @@
         "policies": {
           "DevicePowerwashAllowed": true
         },
-        "prefs": { "cros.device.device_powerwash_allowed": { "local_state": true } }
+        "prefs": { "cros.device.device_powerwash_allowed": { "location": "local_state" } }
       }
     ]
   },
@@ -7120,7 +7129,9 @@
         "policies": {
           "EmojiSuggestionEnabled": false
         },
-        "prefs": { "assistive_input.emoji_suggestion.enterprise_allowed": { "local_state": false } }
+        "prefs": {
+          "assistive_input.emoji_suggestion.enterprise_allowed": {}
+        }
       }
     ]
   },
@@ -7309,7 +7320,7 @@
               "policy_version": "some_hash",
               "enable_remote_attestation_check": true
             }],
-            "local_state": true
+            "location": "local_state"
           }
         }
       }
@@ -7347,7 +7358,7 @@
           }
         },
         "prefs": {
-          "arc.snapshot_hours": { "local_state": true }
+          "arc.snapshot_hours": { "location": "local_state" }
         }
       }
     ]
@@ -7511,7 +7522,7 @@
         "policies": {
           "CloudReportingEnabled": true
         },
-        "prefs": { "enterprise_reporting.chrome_cloud_reporting": { "local_state": true } }
+        "prefs": { "enterprise_reporting.chrome_cloud_reporting": { "location": "local_state" } }
       }
     ]
   },
@@ -7738,7 +7749,7 @@
             }
           ]
         },
-        "prefs": { "enterprise_connectors.on_file_attached": { "local_state": true } }
+        "prefs": { "enterprise_connectors.on_file_attached": { "location": "local_state" } }
       }
     ]
   },
@@ -7773,7 +7784,7 @@
             }
           ]
         },
-        "prefs": { "enterprise_connectors.on_file_downloaded": { "local_state": true } }
+        "prefs": { "enterprise_connectors.on_file_downloaded": { "location": "local_state" } }
       }
     ]
   },
@@ -7806,7 +7817,7 @@
             }
           ]
         },
-        "prefs": { "enterprise_connectors.on_bulk_data_entry": { "local_state": true } }
+        "prefs": { "enterprise_connectors.on_bulk_data_entry": { "location": "local_state" } }
       }
     ]
   },
@@ -7822,7 +7833,7 @@
             }
           ]
         },
-        "prefs": { "enterprise_connectors.on_security_event": { "local_state": true } }
+        "prefs": { "enterprise_connectors.on_security_event": { "location": "local_state" } }
       }
     ]
   },
@@ -7844,7 +7855,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "RendererCodeIntegrityEnabled": true },
-        "prefs": { "renderer_code_integrity_enabled": { "local_state": true } }
+        "prefs": { "renderer_code_integrity_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -7854,7 +7865,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "HSTSPolicyBypassList": ["example"]},
-        "prefs": { "hsts.policy.upgrade_bypass_list": { "local_state": true } }
+        "prefs": { "hsts.policy.upgrade_bypass_list": { "location": "local_state" } }
       }
     ]
   },
@@ -7867,7 +7878,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "TotalMemoryLimitMb": 2048 },
-        "prefs": { "total_memory_limit_mb": { "local_state": true } }
+        "prefs": { "total_memory_limit_mb": { "location": "local_state" } }
       }
     ]
   },
@@ -7893,7 +7904,7 @@
       {
         "policies": { "UserDataSnapshotRetentionLimit": 2 },
         "prefs": {
-          "downgrade.snapshot_retention_limit": { "value": 2, "local_state": true }
+          "downgrade.snapshot_retention_limit": { "value": 2, "location": "local_state" }
         }
       }
     ]
@@ -7955,7 +7966,7 @@
        }
       },
       "prefs": {
-       "cros.system_proxy_settings": { "local_state": true }
+       "cros.system_proxy_settings": { "location": "local_state" }
       }
      }
     ]
@@ -7967,7 +7978,7 @@
         "policies":  {
           "NativeWindowOcclusionEnabled":  true
         },
-        "prefs": { "policy.native_window_occlusion_enabled":  {"local_state":  true} }
+        "prefs": { "policy.native_window_occlusion_enabled":  {"location":  "local_state"} }
       }
     ]
   },
@@ -8003,7 +8014,7 @@
         "policies": { "IntensiveWakeUpThrottlingEnabled": true },
         "prefs": {
           "policy.intensive_wake_up_throttling_enabled": {
-            "local_state":  true,
+            "location": "local_state",
             "value": true
           }
         }
@@ -8017,7 +8028,7 @@
         "policies": { "UserAgentClientHintsEnabled": true },
         "prefs": {
           "policy.user_agent_client_hints_enabled": {
-            "local_state":  true,
+            "location": "local_state",
             "value": true
           }
         }
@@ -8068,7 +8079,7 @@
         "policies": { "BackForwardCacheEnabled": true },
         "prefs": {
           "policy.back_forward_cache_enabled": {
-            "local_state":  true,
+            "location": "local_state",
             "value": true
           }
         }
@@ -8083,7 +8094,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "TosDialogBehavior": 2 },
-        "prefs": { "policy.cct_tos_dialog_behavior": { "local_state": true } }
+        "prefs": { "policy.cct_tos_dialog_behavior": { "location": "local_state" } }
       }
     ]
   },
@@ -8198,7 +8209,7 @@
             }
           ]
         },
-        "prefs": { "policy.dlp_rules_list": { "local_state": true } }
+        "prefs": { "policy.dlp_rules_list": { "location": "local_state" } }
       }
     ]
   },
@@ -8246,7 +8257,7 @@
       {
         "policies": { "LacrosAllowed": false },
         "prefs": {
-          "lacros_allowed": { "local_state": true }
+          "lacros_allowed": { "location": "local_state" }
         }
       }
     ]
