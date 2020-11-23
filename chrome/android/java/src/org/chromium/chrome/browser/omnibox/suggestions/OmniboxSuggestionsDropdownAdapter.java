@@ -63,7 +63,7 @@ class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
 
     /** Ensures selection is reset to beginning of the list. */
     void resetSelection() {
-        setSelectedViewIndex(0);
+        setSelectedViewIndex(RecyclerView.NO_POSITION);
     }
 
     /**
