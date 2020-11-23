@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {$, hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 
@@ -672,6 +672,15 @@ export class Viewport {
   }
 
   /**
+   * @param {number} index
+   * @return {number} The y coordinate of the bottom of the given page.
+   * @private
+   */
+  getPageBottom_(index) {
+    return this.pageDimensions_[index].y + this.pageDimensions_[index].height;
+  }
+
+  /**
    * Get the page at a given y position. If there are multiple pages
    * overlapping the given y-coordinate, return the page with the smallest
    * index.
@@ -680,21 +689,38 @@ export class Viewport {
    * @private
    */
   getPageAtY_(y) {
+    if (y < 0) {
+      assert(this.topToolbarHeight_ > 0);
+      return 0;
+    }
+
+    // Drop decimal part of |y| otherwise it can appear as larger than the
+    // bottom of the last page in the document (even without the presence of a
+    // horizontal scrollbar).
+    y = Math.floor(y);
+
     let min = 0;
     let max = this.pageDimensions_.length - 1;
+    if (max === min) {
+      return min;
+    }
+
     while (max >= min) {
-      const page = Math.floor(min + ((max - min) / 2));
+      const page = min + Math.floor((max - min) / 2);
       // There might be a gap between the pages, in which case use the bottom
       // of the previous page as the top for finding the page.
-      let top = 0;
-      if (page > 0) {
-        top = this.pageDimensions_[page - 1].y +
-            this.pageDimensions_[page - 1].height;
-      }
-      const bottom =
-          this.pageDimensions_[page].y + this.pageDimensions_[page].height;
+      const top = page > 0 ? this.getPageBottom_(page - 1) : 0;
+      const bottom = this.getPageBottom_(page);
 
       if (top <= y && y <= bottom) {
+        return page;
+      }
+
+      // If the search reached the last page just return that page. |y| is
+      // larger than the last page's |bottom|, which can happen either because a
+      // horizontal scrollbar exists, or the document is zoomed out enough for
+      // free space to exist at the bottom.
+      if (page === this.pageDimensions_.length - 1) {
         return page;
       }
 
@@ -704,7 +730,10 @@ export class Viewport {
         min = page + 1;
       }
     }
-    return 0;
+
+    // Should always return within the while loop above.
+    assertNotReached('Could not find page for Y position: ' + y);
+    return -1;
   }
 
   /**
@@ -761,6 +790,7 @@ export class Viewport {
 
     const firstVisiblePage = this.getPageAtY_(viewportRect.y);
     const lastPossibleVisiblePage = this.getLastPageInViewport_(viewportRect);
+    assert(firstVisiblePage <= lastPossibleVisiblePage);
     if (firstVisiblePage === lastPossibleVisiblePage) {
       return firstVisiblePage;
     }
