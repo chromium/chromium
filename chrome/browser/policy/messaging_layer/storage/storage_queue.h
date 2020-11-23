@@ -156,7 +156,12 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
     // Attempts to read |size| bytes from position |pos| and returns
     // reference to the data that were actually read (no more than |size|).
     // End of file is indicated by empty data.
-    StatusOr<base::StringPiece> Read(uint32_t pos, uint32_t size);
+    // |max_buffer_size| specifies the largest allowed buffer, which
+    // must accommodate the largest possible data block plus header and
+    // overhead.
+    StatusOr<base::StringPiece> Read(uint32_t pos,
+                                     uint32_t size,
+                                     size_t max_buffer_size);
 
     // Appends data to the file.
     StatusOr<uint32_t> Append(base::StringPiece data);
@@ -192,6 +197,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
     size_t data_start_ = 0;
     size_t data_end_ = 0;
     uint64_t file_position_ = 0;
+    size_t buffer_size_ = 0;
     std::unique_ptr<char[]> buffer_;
   };
 

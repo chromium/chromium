@@ -981,7 +981,8 @@ INSTANTIATE_TEST_SUITE_P(VaryingFileSize,
 // 1) Options object with a bad path.
 // 2) Have bad prefix files in the directory.
 // 3) Attempt to create file with duplicated file extension.
-// 4) Other negative tests.
+// 4) Disk and memory limit exceeded.
+// 5) Other negative tests.
 
 }  // namespace
 }  // namespace reporting
