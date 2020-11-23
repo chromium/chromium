@@ -91,16 +91,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticator
                       bool replace_existing,
                       base::OnceClosure success_callback) = 0;
 
-  // Attempts to perform an authorized update of the key in |context| with the
-  // new |key|. The update is authorized by providing the |signature| of the
-  // key. The original key must have the |PRIV_AUTHORIZED_UPDATE| privilege to
-  // perform this operation. The key labels in |context| and in |key| should be
-  // the same.
-  virtual void UpdateKeyAuthorized(const UserContext& context,
-                                   const cryptohome::KeyDefinition& key,
-                                   const std::string& signature,
-                                   base::OnceClosure success_callback) = 0;
-
   // Attempts to remove the key labeled |key_to_remove| for the user identified/
   // authorized by |context|. It is possible to remove the key used for
   // authorization, although it should be done with extreme care.

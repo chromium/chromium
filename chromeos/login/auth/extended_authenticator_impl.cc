@@ -139,17 +139,6 @@ void ExtendedAuthenticatorImpl::AddKey(const UserContext& context,
                               clobber_if_exists, std::move(success_callback)));
 }
 
-void ExtendedAuthenticatorImpl::UpdateKeyAuthorized(
-    const UserContext& context,
-    const cryptohome::KeyDefinition& key,
-    const std::string& signature,
-    base::OnceClosure success_callback) {
-  TransformKeyIfNeeded(
-      context,
-      base::BindOnce(&ExtendedAuthenticatorImpl::DoUpdateKeyAuthorized, this,
-                     key, signature, std::move(success_callback)));
-}
-
 void ExtendedAuthenticatorImpl::RemoveKey(const UserContext& context,
                                           const std::string& key_to_remove,
                                           base::OnceClosure success_callback) {
@@ -234,27 +223,6 @@ void ExtendedAuthenticatorImpl::DoAddKey(const cryptohome::KeyDefinition& key,
       request,
       base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete, this,
                      "AddKeyEx", user_context, std::move(success_callback)));
-}
-
-void ExtendedAuthenticatorImpl::DoUpdateKeyAuthorized(
-    const cryptohome::KeyDefinition& key,
-    const std::string& signature,
-    base::OnceClosure success_callback,
-    const UserContext& user_context) {
-  RecordStartMarker("UpdateKeyAuthorized");
-
-  const Key* const auth_key = user_context.GetKey();
-  cryptohome::UpdateKeyRequest request;
-  cryptohome::KeyDefinitionToKey(key, request.mutable_changes());
-  request.set_authorization_signature(signature);
-  cryptohome::HomedirMethods::GetInstance()->UpdateKeyEx(
-      cryptohome::Identification(user_context.GetAccountId()),
-      cryptohome::CreateAuthorizationRequest(auth_key->GetLabel(),
-                                             auth_key->GetSecret()),
-      request,
-      base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete, this,
-                     "UpdateKeyAuthorized", user_context,
-                     std::move(success_callback)));
 }
 
 void ExtendedAuthenticatorImpl::DoRemoveKey(const std::string& key_to_remove,

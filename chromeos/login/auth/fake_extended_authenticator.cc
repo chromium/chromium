@@ -81,14 +81,6 @@ void FakeExtendedAuthenticator::AddKey(const UserContext& context,
   NOTREACHED();
 }
 
-void FakeExtendedAuthenticator::UpdateKeyAuthorized(
-    const UserContext& context,
-    const cryptohome::KeyDefinition& key,
-    const std::string& signature,
-    base::OnceClosure success_callback) {
-  NOTREACHED();
-}
-
 void FakeExtendedAuthenticator::RemoveKey(const UserContext& context,
                                           const std::string& key_to_remove,
                                           base::OnceClosure success_callback) {

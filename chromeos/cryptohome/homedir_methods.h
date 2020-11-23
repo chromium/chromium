@@ -47,15 +47,6 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) HomedirMethods {
                         const AddKeyRequest& request,
                         Callback callback) = 0;
 
-  // Asks cryptohomed to update the key for the user identified by |id| using
-  // |auth| to unlock the key. Label for |auth| and the requested key have to be
-  // the same. Key used in |auth| should have PRIV_AUTHORIZED_UPDATE privilege.
-  // |callback| will be called with status info on completion.
-  virtual void UpdateKeyEx(const Identification& id,
-                           const AuthorizationRequest& auth,
-                           const UpdateKeyRequest& request,
-                           Callback callback) = 0;
-
   // Asks cryptohomed to remove a specific key for the user identified by |id|
   // using |auth|.
   virtual void RemoveKeyEx(const Identification& id,

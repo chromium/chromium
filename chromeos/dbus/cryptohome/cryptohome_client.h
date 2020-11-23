@@ -43,7 +43,6 @@ class SetBootAttributeRequest;
 class SetFirmwareManagementParametersRequest;
 class StartFingerprintAuthSessionRequest;
 class UnmountRequest;
-class UpdateKeyRequest;
 
 }  // namespace cryptohome
 
@@ -373,17 +372,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   virtual void AddDataRestoreKey(
       const cryptohome::AccountIdentifier& id,
       const cryptohome::AuthorizationRequest& auth,
-      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
-
-  // Asynchronously calls UpdateKeyEx method. |callback| is called after method
-  // call, and with reply protobuf. Reply will contain MountReply extension.
-  // UpdateKeyEx replaces key used for authorization, without affecting any
-  // other keys. If specified at home dir creation time, new key may have
-  // to be signed and/or encrypted.
-  virtual void UpdateKeyEx(
-      const cryptohome::AccountIdentifier& id,
-      const cryptohome::AuthorizationRequest& auth,
-      const cryptohome::UpdateKeyRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
   // Asynchronously calls RemoveKeyEx method. |callback| is called after method

@@ -60,16 +60,6 @@ class HomedirMethodsImpl : public HomedirMethods {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void UpdateKeyEx(const Identification& id,
-                   const AuthorizationRequest& auth,
-                   const UpdateKeyRequest& request,
-                   Callback callback) override {
-    chromeos::CryptohomeClient::Get()->UpdateKeyEx(
-        CreateAccountIdentifierFromIdentification(id), auth, request,
-        base::BindOnce(&HomedirMethodsImpl::OnBaseReplyCallback,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
   void MassRemoveKeys(const Identification& id,
                       const AuthorizationRequest& auth,
                       const MassRemoveKeysRequest& request,

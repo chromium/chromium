@@ -3947,7 +3947,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="TpmIsOwned" label=""/>
   <suffix name="TpmIsReady" label=""/>
   <suffix name="Unmount" label=""/>
-  <suffix name="UpdateKeyEx" label=""/>
+  <suffix name="UpdateKeyEx" label="">
+    <obsolete>
+      Unused as of 2020-12
+    </obsolete>
+  </suffix>
   <suffix name="VerifyBootLockbox" label=""/>
   <affected-histogram name="CryptohomeClient"/>
 </histogram_suffixes>

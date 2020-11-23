@@ -38,10 +38,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) FakeExtendedAuthenticator
               const cryptohome::KeyDefinition& key,
               bool replace_existing,
               base::OnceClosure success_callback) override;
-  void UpdateKeyAuthorized(const UserContext& context,
-                           const cryptohome::KeyDefinition& key,
-                           const std::string& signature,
-                           base::OnceClosure success_callback) override;
   void RemoveKey(const UserContext& context,
                  const std::string& key_to_remove,
                  base::OnceClosure success_callback) override;

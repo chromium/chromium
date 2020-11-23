@@ -39,11 +39,6 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) MockHomedirMethods
                     const AuthorizationRequest& auth,
                     const RemoveKeyRequest& request,
                     Callback callback));
-  MOCK_METHOD4(UpdateKeyEx,
-               void(const Identification& id,
-                    const AuthorizationRequest& auth,
-                    const UpdateKeyRequest& request,
-                    Callback callback));
 
  private:
   void DoCallback(Callback callback);

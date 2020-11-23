@@ -47,10 +47,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
               const cryptohome::KeyDefinition& key,
               bool clobber_if_exists,
               base::OnceClosure success_callback) override;
-  void UpdateKeyAuthorized(const UserContext& context,
-                           const cryptohome::KeyDefinition& key,
-                           const std::string& signature,
-                           base::OnceClosure success_callback) override;
   void RemoveKey(const UserContext& context,
                  const std::string& key_to_remove,
                  base::OnceClosure success_callback) override;
@@ -73,10 +69,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
                 bool clobber_if_exists,
                 base::OnceClosure success_callback,
                 const UserContext& context);
-  void DoUpdateKeyAuthorized(const cryptohome::KeyDefinition& key,
-                             const std::string& signature,
-                             base::OnceClosure success_callback,
-                             const UserContext& context);
   void DoRemoveKey(const std::string& key_to_remove,
                    base::OnceClosure success_callback,
                    const UserContext& context);

@@ -454,14 +454,6 @@ void FakeCryptohomeClient::RemoveKeyEx(
   ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
 }
 
-void FakeCryptohomeClient::UpdateKeyEx(
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const cryptohome::AuthorizationRequest& auth,
-    const cryptohome::UpdateKeyRequest& request,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
-  ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
-}
-
 void FakeCryptohomeClient::MassRemoveKeys(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const cryptohome::AuthorizationRequest& auth,
