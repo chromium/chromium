@@ -273,6 +273,11 @@ Status StorageQueue::EnumerateDataFiles(
                    << ", status=" << file_seq_number_result.status();
       continue;
     }
+    if (!GetDiskResource()->Reserve(dir_enum.GetInfo().GetSize())) {
+      LOG(WARNING) << "Disk space exceeded adding file "
+                   << full_name.MaybeAsASCII();
+      continue;
+    }
     used_files_set->emplace(full_name);  // File is in use.
     if (!first_seq_number.has_value() ||
         first_seq_number.value() > file_seq_number_result.ValueOrDie()) {
@@ -424,6 +429,9 @@ Status StorageQueue::WriteHeaderAndBlock(
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   // Prepare header.
   RecordHeader header;
+  // Pad to the whole frame, if necessary.
+  const size_t pad_size =
+      GetPaddingToNextFrameSize(sizeof(header) + data.size());
   // Assign sequence number.
   header.record_seq_number = next_seq_number_++;
   header.record_hash = base::PersistentHash(data.data(), data.size());
@@ -434,6 +442,12 @@ Status StorageQueue::WriteHeaderAndBlock(
     return Status(error::ALREADY_EXISTS,
                   base::StrCat({"Cannot open file=", file->name(),
                                 " status=", open_status.ToString()}));
+  }
+  if (!GetDiskResource()->Reserve(pad_size)) {
+    return Status(
+        error::RESOURCE_EXHAUSTED,
+        base::StrCat({"Not enough disk space available to write into file=",
+                      file->name()}));
   }
   auto write_status = file->Append(base::StringPiece(
       reinterpret_cast<const char*>(&header), sizeof(header)));
@@ -450,9 +464,6 @@ Status StorageQueue::WriteHeaderAndBlock(
           base::StrCat({"Cannot write file=", file->name(),
                         " status=", write_status.status().ToString()}));
     }
-    // Pad to the whole frame, if necessary.
-    const size_t pad_size =
-        GetPaddingToNextFrameSize(sizeof(header) + data.size());
     if (pad_size != FRAME_SIZE) {
       // Fill in with random bytes.
       char junk_bytes[FRAME_SIZE];
@@ -478,6 +489,15 @@ Status StorageQueue::WriteMetadata() {
           .AddExtensionASCII(base::NumberToString(next_seq_number_)),
       /*size=*/0);
   RETURN_IF_ERROR(meta_file->Open(/*read_only=*/false));
+  // Account for the metadata file size.
+  DCHECK(last_record_digest_.has_value());  // Must be set by now.
+  if (!GetDiskResource()->Reserve(sizeof(generation_id_) +
+                                  last_record_digest_.value().size())) {
+    return Status(
+        error::RESOURCE_EXHAUSTED,
+        base::StrCat({"Not enough disk space available to write into file=",
+                      meta_file->name()}));
+  }
   // Write generation id.
   auto append_result = meta_file->Append(base::StringPiece(
       reinterpret_cast<const char*>(&generation_id_), sizeof(generation_id_)));
@@ -488,7 +508,6 @@ Status StorageQueue::WriteMetadata() {
                       " status=", append_result.status().ToString()}));
   }
   // Write last record digest.
-  DCHECK(last_record_digest_.has_value());  // Must be set by now.
   append_result = meta_file->Append(last_record_digest_.value());
   if (!append_result.ok()) {
     return Status(
@@ -575,12 +594,18 @@ Status StorageQueue::RestoreMetadata(
   generation_id_ = generation_id;
   last_record_digest_ = std::string(read_result.ValueOrDie());
   // Store used metadata file.
+  if (!GetDiskResource()->Reserve(meta_file->size())) {
+    LOG(WARNING) << "Disk space exceeded adding file " << meta_file->name();
+    return Status::StatusOK();  // Ignore lack of space.
+  }
   used_files_set->emplace(meta_file_path);
   return Status::StatusOK();
 }
 
 void StorageQueue::DeleteUnusedFiles(
     const base::flat_set<base::FilePath>& used_files_setused_files_set) {
+  // Note, that these files were not reserved against disk allowance and do not
+  // need to be discarded.
   base::FileEnumerator dir_enum(options_.directory(),
                                 /*recursive=*/true,
                                 base::FileEnumerator::FILES);
@@ -589,12 +614,12 @@ void StorageQueue::DeleteUnusedFiles(
     if (used_files_setused_files_set.count(full_name) > 0) {
       continue;  // File is used, keep it.
     }
-    DeleteFile(full_name);
+    base::DeleteFile(full_name);
   }
 }
 
 void StorageQueue::DeleteOutdatedMetadata(uint64_t seq_number_to_keep) {
-  std::vector<base::FilePath> files_to_delete;
+  std::vector<std::pair<base::FilePath, uint64_t>> files_to_delete;
   base::FileEnumerator dir_enum(
       options_.directory(),
       /*recursive=*/false, base::FileEnumerator::FILES,
@@ -614,10 +639,13 @@ void StorageQueue::DeleteOutdatedMetadata(uint64_t seq_number_to_keep) {
     if (seq_number >= seq_number_to_keep) {
       continue;
     }
-    files_to_delete.emplace_back(full_name);
+    files_to_delete.emplace_back(
+        std::make_pair(full_name, dir_enum.GetInfo().GetSize()));
   }
-  for (const auto& file_path : files_to_delete) {
-    base::DeleteFile(file_path);  // Ignore any errors.
+  for (const auto& file_to_delete : files_to_delete) {
+    if (base::DeleteFile(file_to_delete.first)) {
+      GetDiskResource()->Discard(file_to_delete.second);
+    }
   }
 }
 
@@ -1249,6 +1277,7 @@ Status StorageQueue::RemoveConfirmedData(uint64_t seq_number) {
     // Delete it.
     files_.begin()->second->Close();
     if (files_.begin()->second->Delete().ok()) {
+      GetDiskResource()->Discard(files_.begin()->second->size());
       files_.erase(files_.begin());
     }
   }

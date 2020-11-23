@@ -1217,6 +1217,8 @@ static_library("browser") {
     "policy/messaging_layer/public/report_queue.h",
     "policy/messaging_layer/public/report_queue_configuration.cc",
     "policy/messaging_layer/public/report_queue_configuration.h",
+    "policy/messaging_layer/storage/resources/disk_resource_impl.cc",
+    "policy/messaging_layer/storage/resources/disk_resource_impl.h",
     "policy/messaging_layer/storage/resources/memory_resource_impl.cc",
     "policy/messaging_layer/storage/resources/memory_resource_impl.h",
     "policy/messaging_layer/storage/resources/resource_interface.cc",
