@@ -581,12 +581,14 @@ void GpuChannelManager::DoWakeUpGpu() {
   const CommandBufferStub* stub = nullptr;
   for (const auto& kv : gpu_channels_) {
     const GpuChannel* channel = kv.second.get();
-    stub = channel->GetOneStub();
-    if (stub) {
-      DCHECK(stub->decoder_context());
+    const CommandBufferStub* stub_candidate = channel->GetOneStub();
+    if (stub_candidate) {
+      DCHECK(stub_candidate->decoder_context());
       // With Vulkan, Dawn, etc, RasterDecoders don't use GL.
-      if (stub->decoder_context()->GetGLContext())
+      if (stub_candidate->decoder_context()->GetGLContext()) {
+        stub = stub_candidate;
         break;
+      }
     }
   }
   if (!stub || !stub->decoder_context()->MakeCurrent())
