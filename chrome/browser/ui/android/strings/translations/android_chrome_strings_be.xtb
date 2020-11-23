@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
-<translation id="151267239139452619">Дадаць у Спампоўкі?</translation>
 <translation id="1513352483775369820">Закладкі і гісторыя вэб-пошуку</translation>
 <translation id="1513858653616922153">Выдаліць пароль</translation>
 <translation id="1521774566618522728">Апошнія дзеянні адбываліся сёння</translation>
@@ -326,7 +325,7 @@
 <translation id="32895400574683172">Апавяшчэнні дазволены</translation>
 <translation id="3290991969712132877">Каб вы маглі пераходзіць на гэты сайт хутчэй, дадайце яго на галоўны экран, выкарыстаўшы кнопку "Дадатковыя параметры"</translation>
 <translation id="3295530008794733555">Больш хуткая загрузка вэб-старонак і эканомія трафіка.</translation>
-<translation id="3297344142967351106">Дапамога па выкарыстанні голасу</translation>
+<translation id="3297344142967351106">Галасавая дапамога</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Перайсці да спампоўкі змесціва?</translation>
 <translation id="3315103659806849044">Вы змяняеце налады сэрвісаў Google і сінхранізацыі. Каб завяршыць уключэнне сінхранізацыі, націсніце кнопку "Пацвердзіць" унізе экрана. Перайсці ўверх</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# гадз}one{# гадз}few{# гадз}many{# гадз}other{# гадз}}</translation>
 <translation id="4045764304651014138">Даныя пра выкарыстанне</translation>
 <translation id="4056223980640387499">Сепія</translation>
-<translation id="4057643060762047384">Куды дадаць:</translation>
 <translation id="4060598801229743805">Параметры даступныя ўверсе экрана</translation>
 <translation id="4062305924942672200">Юрыдычная інфармацыя</translation>
 <translation id="4084682180776658562">Дадаць у закладкі</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">Выйсці і выключыць сінхранізацыю</translation>
 <translation id="6312687380483398334">Вэб-праграмы (бязгучныя)</translation>
 <translation id="6316139424528454185">Версія Android не падтрымлів.</translation>
-<translation id="6321526113093607004">Дадаць у Закладкі</translation>
 <translation id="6324034347079777476">Сінхранізацыя сістэмы Android выключана</translation>
 <translation id="6333140779060797560">Абагуліць праз <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шыфраванне</translation>

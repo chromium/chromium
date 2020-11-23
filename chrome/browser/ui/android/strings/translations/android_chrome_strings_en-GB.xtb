@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Can't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="1506061864768559482">Search engine</translation>
-<translation id="151267239139452619">Add to downloads</translation>
 <translation id="1513352483775369820">Bookmarks and web history</translation>
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1521774566618522728">Active today</translation>
@@ -423,7 +422,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4045764304651014138">Usage data</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4057643060762047384">Add to:</translation>
 <translation id="4060598801229743805">Options available near the top of the screen</translation>
 <translation id="4062305924942672200">Legal information</translation>
 <translation id="4084682180776658562">Bookmark</translation>
@@ -493,6 +491,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">This offline page is from <ph name="CREATION_TIME" /> and may differ from the online version.</translation>
 <translation id="4605958867780575332">Item removed: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Save pages for later and get a reminder</translation>
 <translation id="4616150815774728855">Open <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Use password</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 compromised password}other{# compromised passwords}}</translation>
@@ -754,7 +753,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6312687380483398334">Web apps (quiet)</translation>
 <translation id="6316139424528454185">Android version is unsupported</translation>
-<translation id="6321526113093607004">Add to Bookmarks</translation>
 <translation id="6324034347079777476">Android system sync disabled</translation>
 <translation id="6333140779060797560">Share via <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Encryption</translation>
@@ -976,6 +974,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}}</translation>
 <translation id="7778840695157240389">Check back later for new stories</translation>
 <translation id="7786595606756654269">Google Assistant provides a better voice experience for searching the web and engaging with sites that you have open. Google Assistant will receive the URL and contents of sites that you use with it.</translation>
+<translation id="7790349552933995572">Home screen</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780301667611848630">No, thanks</translation>

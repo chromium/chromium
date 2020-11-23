@@ -755,7 +755,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" tekla: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (gutun-azala)</translation>
-<translation id="4067669230157909013">Pantaila grabatzeari berrekin zaio.</translation>
+<translation id="4067669230157909013">Pantaila-kapturari berrekin zaio.</translation>
 <translation id="4067947977115446013">Gehitu balio duen helbide bat</translation>
 <translation id="4072486802667267160">Errore bat gertatu da eskaera prozesatzean. Saiatu berriro.</translation>
 <translation id="4075732493274867456">Bezeroak eta zerbitzariak ez dute onartzen SSL protokoloaren bertsio edo enkriptatze multzo arrunta.</translation>
@@ -2058,7 +2058,7 @@ Xehetasun gehiago:
 <translation id="939736085109172342">Karpeta berria</translation>
 <translation id="945855313015696284">Egiaztatu beheko informazioa eta ezabatu txartel baliogabeak</translation>
 <translation id="950736567201356821">Hiru zulo goian</translation>
-<translation id="951941430552851965">Administratzaileak pausatu egin du pantaila-grabaketa, pantailan agertu den edukia dela eta.</translation>
+<translation id="951941430552851965">Administratzaileak pausatu egin du pantaila-kaptura, pantailan agertu den edukia dela eta.</translation>
 <translation id="961663415146723894">Koadernatu behetik</translation>
 <translation id="962484866189421427">Eduki hau beste zerbaiten plantak egiten dituzten aplikazio iruzurtiak instalatzen saia daiteke edo datuak bil ditzake zure jarraipena egiteko. <ph name="BEGIN_LINK" />Erakutsi hala ere<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Konpilazio ofiziala</translation>

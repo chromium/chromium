@@ -86,7 +86,7 @@
 <translation id="1091767800771861448">건너뛰려면 Esc 키를 누르세요(비공식 빌드만 해당).</translation>
 <translation id="1093457606523402488">표시된 네트워크:</translation>
 <translation id="1094607894174825014">기기(<ph name="DEVICE_NAME" />)에서 잘못된 오프셋으로 읽기 또는 쓰기 작업을 요청했습니다.</translation>
-<translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요.</translation>
+<translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
 <translation id="109647177154844434">Parallels Desktop을 제거하면 Windows 이미지가 삭제됩니다. 여기에는 애플리케이션, 설정, 데이터가 포함됩니다. 계속하시겠습니까?</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{링크 1개}other{링크 #개}}</translation>
 <translation id="1097658378307015415">로그인하기 전에 게스트로 로그인하여 <ph name="NETWORK_ID" /> 네트워크를 활성화하세요.</translation>
@@ -147,7 +147,7 @@
 <translation id="1151917987301063366"><ph name="HOST" />에서 센서에 액세스하도록 항상 허용</translation>
 <translation id="1153356358378277386">페어링된 기기</translation>
 <translation id="1153636665119721804">Google 고급 보호 프로그램</translation>
-<translation id="1155816283571436363">스마트폰에 연결하는 중</translation>
+<translation id="1155816283571436363">휴대전화에 연결하는 중</translation>
 <translation id="1161575384898972166"><ph name="TOKEN_NAME" />에 로그인하여 클라이언트 인증서를 내보내세요.</translation>
 <translation id="1163931534039071049">프레임 소스 보기(&amp;V)</translation>
 <translation id="1164891049599601209">사기성 사이트에서 입력됨</translation>
@@ -4310,7 +4310,7 @@
 <translation id="6031600495088157824">툴바의 입력 옵션</translation>
 <translation id="6032715498678347852">사이트 액세스를 허용하려면 확장 프로그램을 클릭하세요.</translation>
 <translation id="6032912588568283682">파일 시스템</translation>
-<translation id="603539183851330738">자동 수정 실행취소 버튼입니다. <ph name="TYPED_WORD" /> 입력으로 되돌립니다.  활성화하려면 Enter를, 닫으려면 Esc를 누르세요.</translation>
+<translation id="603539183851330738">자동 수정 실행취소 버튼입니다. <ph name="TYPED_WORD" />(으)로 되돌립니다.  활성화하려면 Enter를, 닫으려면 Esc를 누르세요.</translation>
 <translation id="6035517790085323771">내 기기와 공유할 수 있는 사람</translation>
 <translation id="6038929619733116134">사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시하는 경우 광고를 차단합니다.</translation>
 <translation id="6039651071822577588">네트워크 속성 사전 형식이 잘못되었습니다.</translation>
@@ -4888,6 +4888,7 @@
 <translation id="671928215901716392">화면 잠금</translation>
 <translation id="6721678857435001674">보안 키 제조업체와 모델을 확인하려고 합니다.</translation>
 <translation id="6721972322305477112">파일(&amp;F)</translation>
+<translation id="672208878794563299">사이트에서 나중에 다시 요청합니다.</translation>
 <translation id="672213144943476270">프로필을 잠금 해제한 후에 게스트로 탐색하세요.</translation>
 <translation id="6723661294526996303">북마크 및 설정 가져오기...</translation>
 <translation id="6723839937902243910">전원</translation>
@@ -6739,7 +6740,7 @@
 <translation id="8830796635868321089">현재 프록시 설정을 사용하여 업데이트를 확인하지 못했습니다. <ph name="PROXY_SETTINGS_LINK_START" />프록시 설정<ph name="PROXY_SETTINGS_LINK_END" />을 조정하세요.</translation>
 <translation id="8831140208248705279"><ph name="DEVICE_TYPE" /> 기기를 Android 휴대전화와 함께 사용하면 더 좋습니다. 두 기기를 연결한 다음 컴퓨터에서 문자 메시지를 보내고, 인터넷 연결을 공유하고, 휴대전화로 <ph name="DEVICE_TYPE" /> 잠금을 해제하세요.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">네트워크 구성은 <ph name="USER_EMAIL" />님이 관리합니다.</translation>
-<translation id="8835786707922974220">언제든지 저장된 비밀번호에 액세스할 수 있도록 하세요.</translation>
+<translation id="8835786707922974220">언제든지 저장된 비밀번호에 액세스할 수 있도록 하세요</translation>
 <translation id="8838601485495657486">불투명</translation>
 <translation id="8838770651474809439">햄버거</translation>
 <translation id="883911313571074303">이미지에 주석 달기</translation>
@@ -7119,7 +7120,7 @@
 <translation id="971774202801778802">북마크 URL</translation>
 <translation id="973473557718930265">종료</translation>
 <translation id="975893173032473675">번역 도착어</translation>
-<translation id="976499800099896273"><ph name="CORRECTED_WORD" /> 입력으로 수정된 <ph name="TYPED_WORD" /> 입력에 관한 자동 수정 실행취소 대화상자가 표시되었습니다.  액세스하려면 위쪽 화살표를, 무시하려면 Esc를 누르세요.</translation>
+<translation id="976499800099896273"><ph name="TYPED_WORD" />에서 <ph name="CORRECTED_WORD" />(으)로 수정된 것과 관련하여 자동 수정 실행취소 대화상자가 표시되었습니다.  액세스하려면 위쪽 화살표를, 무시하려면 Esc를 누르세요.</translation>
 <translation id="978146274692397928">초기 구두점 폭을 최대로 설정</translation>
 <translation id="97905529126098460">취소가 완료되면 이 창이 닫힙니다.</translation>
 <translation id="980731642137034229">작업 메뉴 버튼</translation>

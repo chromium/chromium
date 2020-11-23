@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> бөлісу мүмкін емес</translation>
 <translation id="1477626028522505441">Сервердегі ақаулықтар себебінен <ph name="FILE_NAME" /> жүктелмеді.</translation>
 <translation id="1506061864768559482">Іздеу жүйесі</translation>
-<translation id="151267239139452619">Жүктеп алынғандарға қосу</translation>
 <translation id="1513352483775369820">Бетбелгілер мен веб-журнал</translation>
 <translation id="1513858653616922153">Құпия сөзді жою</translation>
 <translation id="1521774566618522728">Бүгін белсенді болды</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# сағ}other{# сағ}}</translation>
 <translation id="4045764304651014138">Пайдаланылуы туралы дерек</translation>
 <translation id="4056223980640387499">Сепия</translation>
-<translation id="4057643060762047384">Мына жерге қосу:</translation>
 <translation id="4060598801229743805">Опциялар экранның жоғарғы жағында тұрады</translation>
 <translation id="4062305924942672200">Құқықтық ақпарат</translation>
 <translation id="4084682180776658562">Бетбелгі</translation>
@@ -754,7 +752,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6303969859164067831">Есептік жазбадан шығу және синхрондау функциясын өшіру</translation>
 <translation id="6312687380483398334">Вебқолданбалар (дыбыссыз)</translation>
 <translation id="6316139424528454185">Android: қолдау көрсетілмейді</translation>
-<translation id="6321526113093607004">Бетбелгілерге қосу</translation>
 <translation id="6324034347079777476">Android жүйесін синхрондау өшірілді</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> арқылы бөлісу</translation>
 <translation id="6337234675334993532">Шифрлау</translation>

@@ -726,7 +726,7 @@
 <translation id="9017798300203431059">Fonètic rus</translation>
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9035012421917565900">Com que els elements no es poden retornar a <ph name="DESTINATION_NAME" />, aquesta acció no es pot desfer.</translation>
-<translation id="9038620279323455325">Ja hi ha un fitxer anomenat "<ph name="FILE_NAME" />". Tria un altre nom.</translation>
+<translation id="9038620279323455325">Ja hi ha un fitxer anomenat <ph name="FILE_NAME" />. Tria un altre nom.</translation>
 <translation id="9064939804718829769">S'està transferint...</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9099674669267916096">Nombre de pàgines</translation>

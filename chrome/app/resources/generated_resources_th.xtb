@@ -4258,7 +4258,7 @@
 <translation id="5958529069007801266">ผู้ใช้ภายใต้การดูแล</translation>
 <translation id="5959471481388474538">เครือข่ายไม่สามารถใช้งานได้</translation>
 <translation id="595959584676692139">โหลดหน้าซ้ำเพื่อใช้ส่วนขยายนี้</translation>
-<translation id="5963117322306686970">คลิกขวาที่แท็บเพื่อจัดไว้ด้วยกันเป็นกลุ่ม</translation>
+<translation id="5963117322306686970">คลิกขวาที่แท็บเพื่อจัดกลุ่มแท็บไว้ด้วยกัน</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (สูงสุด <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างใหม่}=1{เปิดใน&amp;หน้าต่างใหม่}other{เปิดทั้งหมด ({COUNT}) ใน&amp;หน้าต่างใหม่}}</translation>
 <translation id="5965661248935608907">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณคลิกปุ่ม "หน้าแรก" หรือทำการค้นหาจากแถบอเนกประสงค์</translation>
@@ -4890,6 +4890,7 @@
 <translation id="671928215901716392">ล็อกหน้าจอ</translation>
 <translation id="6721678857435001674">ดูยี่ห้อและรุ่นของคีย์ความปลอดภัย</translation>
 <translation id="6721972322305477112">&amp;ไฟล์</translation>
+<translation id="672208878794563299">เว็บไซต์นี้จะถามอีกครั้งในครั้งถัดไป</translation>
 <translation id="672213144943476270">โปรดปลดล็อกโปรไฟล์ของคุณก่อนท่องเว็บในฐานะผู้เยี่ยมชม</translation>
 <translation id="6723661294526996303">นำเข้าบุ๊กมาร์กและการตั้งค่า...</translation>
 <translation id="6723839937902243910">พลังงาน</translation>

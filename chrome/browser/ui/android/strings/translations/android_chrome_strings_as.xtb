@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="1477626028522505441">ছার্ভাৰৰ সমস্যাৰ বাবে <ph name="FILE_NAME" /> ডাউনল'ড কৰিব পৰা নগ'ল।</translation>
 <translation id="1506061864768559482">সন্ধান ইঞ্জিন</translation>
-<translation id="151267239139452619">ডাউনল’ডত যোগ দিয়ক</translation>
 <translation id="1513352483775369820">বুকমার্কবোৰ আৰু ৱেব ইতিহাস</translation>
 <translation id="1513858653616922153">পাছৱৰ্ড মচক</translation>
 <translation id="1521774566618522728">আজি সক্ৰিয় হৈছে</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
 <translation id="4045764304651014138">ব্যৱহাৰৰ ডেটা</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
-<translation id="4057643060762047384">ইয়াত যোগ দিয়ক:</translation>
 <translation id="4060598801229743805">স্ক্ৰীণৰ ওপৰৰ অংশত কাষত থকা বিকল্প</translation>
 <translation id="4062305924942672200">আইনী তথ্য</translation>
 <translation id="4084682180776658562">বুকমাৰ্ক কৰক</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">ছাইন আউট কৰি ছিংক অফ কৰক</translation>
 <translation id="6312687380483398334">ৱেব এপ্‌সমূহ (নীৰৱ)</translation>
 <translation id="6316139424528454185">Android সংস্কৰণটো নচলে</translation>
-<translation id="6321526113093607004">বুকমাৰ্কত যোগ দিয়ক</translation>
 <translation id="6324034347079777476">Android ছিষ্টেম ছিংক কৰাটো অক্ষম কৰা হ’ল</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" />ৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="6337234675334993532">এনক্ৰিপশ্বন</translation>
@@ -1173,7 +1170,7 @@
 <translation id="9204836675896933765">১টা ফাইল বাকী আছে</translation>
 <translation id="9206873250291191720">অ</translation>
 <translation id="9209888181064652401">কল কৰিব নোৱাৰি</translation>
-<translation id="9219103736887031265">প্ৰতিচ্ছবি</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="926205370408745186">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাওক</translation>
 <translation id="927968626442779827">Google Chromeত লাইট ম’ড ব্যৱহাৰ কৰক</translation>
 <translation id="932327136139879170">গৃহ</translation>

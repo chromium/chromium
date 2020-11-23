@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />ವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1477626028522505441">ಸರ್ವರ್ ಸಮಸ್ಯೆಗಳ ಕಾರಣದಿಂದಾಗಿ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
-<translation id="151267239139452619">ಡೌನ್‌ಲೋಡ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="1513352483775369820">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ವೆಬ್ ಇತಿಹಾಸ</translation>
 <translation id="1513858653616922153">ಪಾಸ್‌ವರ್ಡ್ ಅಳಿಸಿ</translation>
 <translation id="1521774566618522728">ಇಂದು ಸಕ್ರಿಯ</translation>
@@ -424,7 +423,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ಗಂಟೆ}one{# ಗಂಟೆಗಳು}other{# ಗಂಟೆಗಳು}}</translation>
 <translation id="4045764304651014138">ಬಳಕೆಯ ಡೇಟಾ</translation>
 <translation id="4056223980640387499">ಸೆಪಿಯಾ</translation>
-<translation id="4057643060762047384">ಇದಕ್ಕೆ ಸೇರಿಸಿ:</translation>
 <translation id="4060598801229743805">ಪರದೆಯ ಮೇಲಿನ ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿರುವ ಆಯ್ಕೆಗಳು</translation>
 <translation id="4062305924942672200">ಕಾನೂನು ಮಾಹಿತಿ</translation>
 <translation id="4084682180776658562">ಬುಕ್‌ಮಾರ್ಕ್</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಸಿಂಕ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="6312687380483398334">ವೆಬ್ ಆ್ಯಪ್‌ಗಳು (ನಿಶ್ಶಬ್ದ)</translation>
 <translation id="6316139424528454185">Android ಆವೃತ್ತಿಗೆ ಬೆಂಬಲವಿಲ್ಲ</translation>
-<translation id="6321526113093607004">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="6324034347079777476">Android ಸಿಸ್ಟಂ ಸಿಂಕ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ಮೂಲಕ ಹಂಚು</translation>
 <translation id="6337234675334993532">ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>

@@ -297,7 +297,7 @@
 <translation id="3799080171973636491">전체 화면 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="380165613292957338">안녕하세요, 무엇을 도와드릴까요?</translation>
 <translation id="3826099427150913765">비밀번호로 전환</translation>
-<translation id="383058930331066723">절전 모드 사용 중</translation>
+<translation id="383058930331066723">절전 모드 사용</translation>
 <translation id="383629559565718788">키보드 설정 표시</translation>
 <translation id="3846214748874656680">전체화면 종료</translation>
 <translation id="3846575436967432996">네트워크 정보 없음</translation>
@@ -486,7 +486,7 @@
 <translation id="556042886152191864">버튼</translation>
 <translation id="5571066253365925590">블루투스를 사용함</translation>
 <translation id="557563299383177668">다음 단락</translation>
-<translation id="55808498489107691">화면의 콘텐츠 때문에 관리자가 화면 캡처를 중지했습니다.</translation>
+<translation id="55808498489107691">화면의 콘텐츠 때문에 관리자가 화면 캡처를 차단했습니다.</translation>
 <translation id="558849140439112033">드래그하여 캡처할 영역을 선택하세요.</translation>
 <translation id="5597451508971090205"><ph name="DATE" /> <ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">음성 피드백을 사용 중지하려면 Ctrl + Alt + Z를 누르세요.</translation>

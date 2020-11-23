@@ -86,7 +86,7 @@
 <translation id="1091767800771861448">Appuyez sur ÉCHAP pour ne pas faire la mise à jour (versions non officielles uniquement).</translation>
 <translation id="1093457606523402488">Réseaux visibles :</translation>
 <translation id="1094607894174825014">Une opération de lecture ou d'écriture a été demandée avec un décalage non valide sur « <ph name="DEVICE_NAME" /> ».</translation>
-<translation id="1095761715416917775">Assurez-vous de toujours pouvoir accéder à vos données</translation>
+<translation id="1095761715416917775">Assurez-vous de toujours pouvoir accéder à vos données de synchronisation</translation>
 <translation id="109647177154844434">La désinstallation de Parallels Desktop supprimera votre image Windows. Cela comprend ses applications, ses paramètres et ses données. Souhaitez-vous vraiment continuer?</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{1 lien}one{# lien}many{# links}other{# liens}}</translation>
 <translation id="1097658378307015415">Avant de vous connecter, veuillez démarrer une session d'invité afin d'activer le réseau <ph name="NETWORK_ID" /></translation>

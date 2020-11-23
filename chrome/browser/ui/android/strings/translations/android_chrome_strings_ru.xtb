@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Не удается отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неполадок на сервере.</translation>
 <translation id="1506061864768559482">Поисковая система</translation>
-<translation id="151267239139452619">Добавить в Загрузки</translation>
 <translation id="1513352483775369820">Закладки и история поиска</translation>
 <translation id="1513858653616922153">Удалить пароль</translation>
 <translation id="1521774566618522728">Последние действия: сегодня</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
 <translation id="4045764304651014138">Данные об использовании</translation>
 <translation id="4056223980640387499">Сепия</translation>
-<translation id="4057643060762047384">Выберите действие</translation>
 <translation id="4060598801229743805">Меню доступно в верхней части экрана</translation>
 <translation id="4062305924942672200">Юридическая информация</translation>
 <translation id="4084682180776658562">Закладка</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
 <translation id="6312687380483398334">Веб-приложения (тихий режим)</translation>
 <translation id="6316139424528454185">Устаревшая версия Android</translation>
-<translation id="6321526113093607004">Добавить в закладки</translation>
 <translation id="6324034347079777476">Синхронизация системы Android отключена</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифрование</translation>

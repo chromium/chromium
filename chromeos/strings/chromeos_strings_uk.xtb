@@ -63,7 +63,7 @@
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
 <translation id="3838338534323494292">Новий пароль</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
-<translation id="3941014780699102620">Не вдалося розпізнати хост</translation>
+<translation id="3941014780699102620">не вдалося розпізнати хост</translation>
 <translation id="39823212440917567">Завдання друку, старіші за <ph name="NUMBER_OF_DAYS" /> дн., буде вилучено</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих сторінок, паролів і електронних листів.</translation>
 <translation id="4003384961948020559">Не надруковано – вихідний лоток заповнений</translation>
@@ -82,7 +82,7 @@
 <translation id="445059817448385655">Старий пароль</translation>
 <translation id="4454245904991689773">Зберегти зіскановані файли в</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
-<translation id="4548483925627140043">Сигнал не знайдено</translation>
+<translation id="4548483925627140043">сигнал не знайдено</translation>
 <translation id="458794348635939462">Не вдалося розпізнати всі хости</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="4646949265910132906">Надійне з'єднання Wi-Fi</translation>
@@ -122,12 +122,12 @@
 <translation id="6058625436358447366">Щоб завершити, введіть старий і новий паролі</translation>
 <translation id="6061772781719867950">невдалі запити HTTPS</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
-<translation id="6108689792487843350">Шлюз недоступний</translation>
+<translation id="6108689792487843350">шлюз недоступний</translation>
 <translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6191293864534840972">Неправильні сервери імен</translation>
-<translation id="6325525973963619867">Не вдалось</translation>
+<translation id="6325525973963619867">Помилка</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
 <translation id="6517239166834772319">Можливості</translation>
@@ -153,7 +153,7 @@
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7855434858642800953">Відсканований файл збережено.</translation>
-<translation id="7936303884198020182">Не знайдено серверів імен</translation>
+<translation id="7936303884198020182">не знайдено серверів імен</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="808894953321890993">Змінити пароль</translation>
 <translation id="8160445423316272678">Щоб почати, покладіть документ і виберіть опцію <ph name="SPAN_BEGIN" />Сканувати<ph name="SPAN_END" /></translation>

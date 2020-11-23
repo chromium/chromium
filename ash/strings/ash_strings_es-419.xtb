@@ -128,7 +128,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2132302418721800944">Grabar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa con vista acoplada</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Volver a intentar</translation>
-<translation id="2170530631236737939">Para salir de Recientes, desliza tres dedos hacia abajo.</translation>
+<translation id="2170530631236737939">Para salir de la Vista general, desliza tres dedos hacia abajo.</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222338659135520253">Se requiere el acceso a la cuenta</translation>
@@ -238,7 +238,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3236488194889173876">No hay redes móviles disponibles</translation>
 <translation id="3249513730522716925">La ventana <ph name="WINDOW_TITLE" /> se movió del escritorio <ph name="ACTIVE_DESK" /> al <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">¿Qué puedes hacer?</translation>
-<translation id="3289674678944039601">Si está cargando mediante el adaptador</translation>
+<translation id="3289674678944039601">Se está cargando mediante el adaptador</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3307642347673023554">Se cambió al modo laptop</translation>
@@ -487,7 +487,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="557563299383177668">Párrafo siguiente</translation>
-<translation id="55808498489107691">El administrador bloqueó la captura de pantalla debido al contenido que se muestra en la pantalla.</translation>
+<translation id="55808498489107691">El administrador bloqueó la captura de pantalla debido al contenido que se muestra en ella.</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
@@ -547,7 +547,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6059276912018042191">Pestañas recientes de Chrome</translation>
 <translation id="6062360702481658777">Saldrás de la sesión automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">La computadora es visible para dispositivos Bluetooth cercanos y aparecerá como "<ph name="NAME" />" con la dirección <ph name="ADDRESS" />.</translation>
-<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
 <translation id="6137566720514957455">Abrir el diálogo para quitar la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Mostrar el teclado en pantalla</translation>
@@ -719,7 +719,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7837740436429729974">Tiempo agotado</translation>
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
-<translation id="7860671499921112077">Para ingresar a Recientes, desliza tres dedos hacia arriba.</translation>
+<translation id="7860671499921112077">Para ingresar a la Vista general, desliza tres dedos hacia arriba.</translation>
 <translation id="7868900307798234037">Desbloqueando con huella digital</translation>
 <translation id="7872786842639831132">No</translation>
 <translation id="7886169021410746335">Ajustar la configuración de privacidad</translation>
@@ -761,7 +761,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8152092012181020186">Presiona Ctrl + W para cerrar.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />: El administrador controla esta configuración.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en uso</translation>
-<translation id="8170567869359129153">Red móvil. Intensidad de la señal de <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8170567869359129153">Red móvil. Intensidad de la señal de <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="8192202700944119416">Las notificaciones están ocultas.</translation>
 <translation id="8196787716797768628">Usa gestos para cambiar rápidamente de app o interactuar con la Chromebook en el modo tablet.</translation>
 <translation id="8200772114523450471">Reanudar</translation>

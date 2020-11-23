@@ -9,6 +9,7 @@
 <translation id="1238612778414822719">HTTPS தாமதம்</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">ஸ்கேன் செய்யும் பகுதிக்கு ஏற்பப் பொருத்து</translation>
 <translation id="1397738625398125236">கேட்வேயிற்குப் பிங் செய்வது</translation>
 <translation id="1398634363027580500">HTTPS கோரிக்கைகள் மிகவும் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="1413240736185167732">ஃபில்டர் வேலை செய்யாததால் அச்சிட முடியவில்லை</translation>
@@ -17,6 +18,7 @@
 <translation id="1482734542997480527">இந்தச் சாதனத்தை <ph name="ENROLLMENT_DOMAIN" /> நிர்வகிக்கிறது. இது உங்கள் செயல்பாட்டையும் கண்காணிக்கக்கூடும்.</translation>
 <translation id="150962533380566081">தவறான PUK.</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
+<translation id="1641857168437328880">டாக்குமெண்ட் ஃபீடர் (ஒரு பக்கம்)</translation>
 <translation id="1644574205037202324">வரலாறு</translation>
 <translation id="1662989795263954667">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -45,6 +47,7 @@
 <translation id="3083667275341675831">இணைப்புநிலையைக் கண்டறிதல்</translation>
 <translation id="3091839911843451378">பிரிண்டர் நிறுத்தப்பட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="3188257591659621405">எனது கோப்புகள்</translation>
+<translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
 <translation id="3310640316857623290">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடக் குறிப்பிடத்தக்க அளவு அதிகமாக உள்ளது</translation>
@@ -73,6 +76,7 @@
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="4378373042927530923">இயங்கவில்லை</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">ஸ்கேன் செய்யப்பட்ட கோப்புகள் சேமிக்கப்பட்டன!</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
 <translation id="445059817448385655">தற்போதைய கடவுச்சொல்</translation>
@@ -128,6 +132,7 @@
 <translation id="649050271426829538">காகிதம் சிக்கிக் கொண்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">அறியப்படாத WiFi பாதுகாப்பு நெறிமுறை</translation>
+<translation id="65587193855025101">ஃபிளாட்பெட்</translation>
 <translation id="6564646048574748301">பிரிண்டரை அணுக முடியாததால் அச்சிட முடியவில்லை</translation>
 <translation id="6618744767048954150">சோதனை செய்கிறது</translation>
 <translation id="6620487321149975369">பிரிண்ட்டிங் பணிகளை நீங்களாகவே அகற்றும் வரை அவை வரலாற்றில் காட்டப்படும்</translation>
@@ -136,6 +141,7 @@
 <translation id="6747215703636344499">பிரிண்ட் வெளியே வரும் டிரே நிரம்பிவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
 <translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
+<translation id="6839141349259399400">ஸ்கேனர்களுடன் இணைக்க முடியவில்லையா?</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
 <translation id="7162487448488904999">கேலரி</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -146,9 +152,11 @@
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
 <translation id="7805768142964895445">நிலை</translation>
+<translation id="7855434858642800953">ஸ்கேன் செய்யப்பட்ட கோப்பு சேமிக்கப்பட்டது!</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
+<translation id="8160445423316272678">ஸ்கேன் செய்ய, ஸ்கேனரில் ஆவணத்தை வைத்துவிட்டு <ph name="SPAN_BEGIN" />ஸ்கேன் செய்<ph name="SPAN_END" /> என்பதைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8294431847097064396">மூலம்</translation>
@@ -169,5 +177,6 @@
 <translation id="8919837981463578619">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="8928727111548978589">காகிதம் இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
+<translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">பூட்டைத் திற</translation>
 </translationbundle>

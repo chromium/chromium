@@ -1931,7 +1931,7 @@
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
 <translation id="3188465121994729530">गतिशील औसत</translation>
 <translation id="3189187154924005138">बड़ा कर्सर</translation>
-<translation id="3190558889382726167">पासवर्ड सहेजा गया</translation>
+<translation id="3190558889382726167">पासवर्ड सेव किया गया</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
 <translation id="3199127022143353223">सर्वर</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome अभी इस पासवर्ड की जांच करने का सुझाव देता है}one{Chrome अभी इस पासवर्ड की जांच करने का सुझाव देता है}other{Chrome अभी इन पासवर्ड की जांच करने का सुझाव देता है}}</translation>
@@ -6091,7 +6091,7 @@
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" से जोड़ना चाहते हैं?</translation>
 <translation id="8082390128630131497">ADB डीबग करने की सुविधा बंद करने से यह <ph name="DEVICE_TYPE" /> फ़ैक्ट्री सेटिंग पर रीसेट हो जाएगा. सभी उपयोगकर्ता खातों और स्थानीय डेटा को हमेशा के लिए मिटा दिया जाएगा.</translation>
 <translation id="8083058154738359867">सेटिंग में लाइव कैप्शन की सुविधा को चालू करके, अपने मीडिया के लिए कैप्शन पाएं</translation>
-<translation id="8084114998886531721">सहेजा गया पासवर्ड</translation>
+<translation id="8084114998886531721">सेव किया गया पासवर्ड</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेट अप करें</translation>
 <translation id="8086550884324762001">उदाहरण: ऑफ़िस के काम, निजी इस्तेमाल, बच्चों या किसी नाम से</translation>
@@ -7069,7 +7069,7 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" जोड़ा गया</translation>
 <translation id="9215742531438648683">'Google Play स्टोर' अनइंस्टॉल करें</translation>
 <translation id="9218430445555521422">डिफ़ॉल्ट के रूप में सेट करें</translation>
-<translation id="9219103736887031265">इमेज</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="9220525904950070496">खाता हटाएं</translation>
 <translation id="9220820413868316583">उंगली उठाएं और फिर से कोशिश करें.</translation>
 <translation id="923467487918828349">सभी दिखाएं</translation>

@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Споделянето на <ph name="CONTENT_TYPE" /> не е възможно</translation>
 <translation id="1477626028522505441">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради проблеми в сървъра.</translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
-<translation id="151267239139452619">Добавяне към изтеглянията</translation>
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
 <translation id="1521774566618522728">Активно днес</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
 <translation id="4045764304651014138">Данни за употребата</translation>
 <translation id="4056223980640387499">Сепия</translation>
-<translation id="4057643060762047384">Добавяне към:</translation>
 <translation id="4060598801229743805">Опциите са в горната част на екрана</translation>
 <translation id="4062305924942672200">Правна информация</translation>
 <translation id="4084682180776658562">Отметка</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">Изход от профила и изключване на синхронизирането</translation>
 <translation id="6312687380483398334">Уеб приложения (без прекъсвания)</translation>
 <translation id="6316139424528454185">Неподдържана версия на Android</translation>
-<translation id="6321526113093607004">Добавяне към отметките</translation>
 <translation id="6324034347079777476">Системното синхронизиране под Android е деактивирано</translation>
 <translation id="6333140779060797560">Споделяне чрез <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифроване</translation>

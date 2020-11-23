@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
-<translation id="151267239139452619">డౌన్‌లోడ్‌లకు జోడించు</translation>
 <translation id="1513352483775369820">బుక్‌మార్క్‌లు మరియు వెబ్ చరిత్ర</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించు</translation>
 <translation id="1521774566618522728">ఈ రోజు యాక్టివ్‌గా ఉంది</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# గం}other{# గం}}</translation>
 <translation id="4045764304651014138">డేటా వినియోగం</translation>
 <translation id="4056223980640387499">సెపియా</translation>
-<translation id="4057643060762047384">దీనికి జోడించు:</translation>
 <translation id="4060598801229743805">ఎంపికలు స్క్రీన్ పైభాగానికి సమీపంలో అందుబాటులో ఉంటాయి</translation>
 <translation id="4062305924942672200">చట్ట సంబంధిత సమాచారం</translation>
 <translation id="4084682180776658562">బుక్‌మార్క్ చేయి</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">సైన్ అవుట్ చేసి, సమకాలీకరణను ఆఫ్ చేయండి</translation>
 <translation id="6312687380483398334">వెబ్ యాప్‌లు (నిశ్శబ్దం)</translation>
 <translation id="6316139424528454185">Android వెర్షన్‌కు మద్దతు లేదు</translation>
-<translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించు</translation>
 <translation id="6324034347079777476">Android సిస్టమ్ సమకాలీకరణ నిలిపివేయబడింది</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ద్వారా భాగస్వామ్యం చేయి</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>

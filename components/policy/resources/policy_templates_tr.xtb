@@ -839,7 +839,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
 <translation id="2384233438419344179">Politikanın Etkin değerine ayarlanması tarayıcının adres çubuğundaki alan adına ait olmayan web sayfası öğelerinin çerez yerleştirmesini engeller. Politikanın Devre Dışı değerine ayarlanması bu öğelerin çerez yerleştirmesine izin verir ve kullanıcıların bu ayarı değiştirmelerini önler.
 
-      Politikayı ayarlanmadan bırakılırsa üçüncü taraf çerezlerine izin verilir, ancak kullanıcılar bu ayarı değiştirebilir.</translation>
+      Politika ayarlanmadan bırakılırsa üçüncü taraf çerezlerine izin verilir, ancak kullanıcılar bu ayarı değiştirebilir.</translation>
 <translation id="2386362615870139244">Ekran uyandırma kilitlerine izin ver</translation>
 <translation id="2394674739523870144">Bu politika bir dize listesine ayarlanırsa dizeler boşluklarla birleştirilir ve <ph name="IE_PRODUCT_NAME" /> tarayıcısından <ph name="PRODUCT_NAME" /> tarayıcısına komut satırı parametreleri olarak aktarılır. Bir parametre <ph name="URL_PLACEHOLDER" /> içeriyorsa <ph name="URL_PLACEHOLDER" />, açılacak sayfanın URL'siyle değiştirilir. Hiçbir öğe <ph name="URL_PLACEHOLDER" /> içermiyorsa URL, komut satırının sonuna eklenir.
 
@@ -3329,7 +3329,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 
       Politika Devre Dışı değerine ayarlandığında veya ayarlanmadan bırakıldığında bulut politikasıyla çakışıyorsa platform politikası tercih edilir.
 
-      Bu zorunlu politika, makine kapsamı bulut politikalarını etkiler.</translation>
+      Bu zorunlu politika, makine genelinde geçerli olan bulut politikalarını etkiler.</translation>
 <translation id="5961137303188584693">Cihazın dahili NIC MAC adresi</translation>
 <translation id="5966615072639944554">Uzaktan doğrulama API'sını kullanmasına izin verilen uzantılar</translation>
 <translation id="5975765799383881158">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar Menü &gt; Yardım &gt; Sorun Bildirin adımlarını veya tuş kombinasyonunu kullanarak Google'a geri bildirim gönderebilir.

@@ -86,7 +86,7 @@
 <translation id="1091767800771861448">Притиснете ESCAPE за да прескокнете (Само неофицијални верзии).</translation>
 <translation id="1093457606523402488">Видливи мрежи:</translation>
 <translation id="1094607894174825014">Операцијата за читање или пишување беше побарана со неважечко отстапување на: „<ph name="DEVICE_NAME" />".</translation>
-<translation id="1095761715416917775">Проверете дали може секогаш да пристапувате до синхронизираните податоци</translation>
+<translation id="1095761715416917775">Погрижете се секогаш да имате пристап до синхронизираните податоци</translation>
 <translation id="109647177154844434">Деинсталирањето на Parallels Desktop ќе ја избрише сликата на Windows. Тоа ги опфаќа апликациите, поставките и податоците. Дали сигурно сакате да продолжите?</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{1 линк}one{# линк}other{# линка}}</translation>
 <translation id="1097658378307015415">Пред да се најавите, влезете како Гостин за да ја активирате мрежата <ph name="NETWORK_ID" /></translation>
@@ -817,7 +817,7 @@
 <translation id="1887597546629269384">Повторно кажете „Hey Google“</translation>
 <translation id="1887850431809612466">Ревизија на хардвер</translation>
 <translation id="1890674179660343635">&lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
-<translation id="1891362123137972260">Просторот на дискот е екстремно низок. Ослободете простор на дискот.</translation>
+<translation id="1891362123137972260">Дискот е речиси полн. Ослободете простор на дискот.</translation>
 <translation id="189210018541388520">Отвори на цел екран</translation>
 <translation id="1892341345406963517">Здраво <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Други јазици</translation>
@@ -1425,7 +1425,7 @@
 <translation id="2607101320794533334">Информации за јавен клуч на субјект</translation>
 <translation id="2607968157341167679">Нема албуми. Создајте албум во<ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Направи кратенки...</translation>
-<translation id="2609980095400624569">Не може да се воспостави врска</translation>
+<translation id="2609980095400624569">Не можеше да се воспостави врска</translation>
 <translation id="2610157865375787051">Режим во мирување</translation>
 <translation id="2610260699262139870">В&amp;истинска големина</translation>
 <translation id="2610780100389066815">Запишување во список за доверба на Microsoft</translation>
@@ -3820,7 +3820,7 @@
 <translation id="5457991019809708398">Вклучена, не е во роаминг</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Белешки на заклучениот екран</translation>
-<translation id="5461050611724244538">Загубена е врската со телефонот</translation>
+<translation id="5461050611724244538">Врската со телефонот се прекина</translation>
 <translation id="5463231940765244860">Внеси</translation>
 <translation id="5463275305984126951">Индекс на <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Мени што содржи сокриени обележувачи</translation>
@@ -4313,7 +4313,7 @@
 <translation id="6031600495088157824">Опции за внесување во алатникот</translation>
 <translation id="6032715498678347852">Кликнете на екстензијата за да ѝ дадете пристап до сајтов.</translation>
 <translation id="6032912588568283682">Датотечен систем</translation>
-<translation id="603539183851330738">Копче за враќање на автокорекцијата. Врати на <ph name="TYPED_WORD" />.  Притиснете го копчето Enter за да активирате или копчето Escape за да отрфлите.</translation>
+<translation id="603539183851330738">Копче за враќање на автокорекцијата. Врати на <ph name="TYPED_WORD" />.  Притиснете го копчето Enter за да активирате или копчето Escape за да отфрлите.</translation>
 <translation id="6035517790085323771">Кој може да споделува со вашиот уред</translation>
 <translation id="6038929619733116134">Блокирај ако сајтот прикажува нападни или лажни реклами</translation>
 <translation id="6039651071822577588">Деформиран мрежен речник на својства</translation>
@@ -6746,7 +6746,7 @@
 <translation id="8830796635868321089">Проверката за поставувањето не успеа со помош на моменталните поставки за прокси. Приспособете ги <ph name="PROXY_SETTINGS_LINK_START" />поставките за прокси<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="8831140208248705279">Вашиот <ph name="DEVICE_TYPE" /> и телефонот со Android работат подобро заедно. Поврзете ги за да испраќате пораки од компјутерот, да ја споделувате интернет-врската и да го отклучувате вашиот <ph name="DEVICE_TYPE" /> со телефонот.<ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717"><ph name="USER_EMAIL" /> ја контролира мрежната конфигурација.</translation>
-<translation id="8835786707922974220">Проверете дали може да пристапите до зачуваните лозинки во секое време</translation>
+<translation id="8835786707922974220">Погрижете се секогаш да имате пристап до зачуваните лозинки</translation>
 <translation id="8838601485495657486">Непроѕирно</translation>
 <translation id="8838770651474809439">Хамбургер</translation>
 <translation id="883911313571074303">Стави прибелешка на слика</translation>

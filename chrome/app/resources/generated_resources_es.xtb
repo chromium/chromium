@@ -299,7 +299,7 @@
 <translation id="1327495825214193325">Para habilitar la depuración ADB, es necesario reiniciar este <ph name="DEVICE_TYPE" />. Para inhabilitarla, es necesario restablecer la configuración de fábrica.</translation>
 <translation id="1327794256477341646">Las funciones que necesiten la ubicación no se podrán utilizar</translation>
 <translation id="1327977588028644528">Pasarela</translation>
-<translation id="1329584516321524826">Actualizada ahora mismo</translation>
+<translation id="1329584516321524826">Actualizada justo ahora</translation>
 <translation id="1330145147221172764">Habilitar teclado en pantalla</translation>
 <translation id="1331977651797684645">Es mi perfil</translation>
 <translation id="1333489022424033687">Es posible que algunas funciones de <ph name="ORIGIN" /> no estén disponibles si no borras los datos que otros sitios web han almacenado en tu dispositivo</translation>
@@ -816,7 +816,7 @@
 <translation id="1887597546629269384">Di "Ok Google" otra vez</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="1890674179660343635">&lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
-<translation id="1891362123137972260">Queda muy poco espacio en el disco. Libera espacio en el disco.</translation>
+<translation id="1891362123137972260">Queda muy poco espacio en el disco. Libera espacio ahora.</translation>
 <translation id="189210018541388520">Abrir en pantalla completa</translation>
 <translation id="1892341345406963517">Hola, <ph name="PARENT_NAME" />:</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
@@ -3278,7 +3278,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4804827417948292437">Aguacate</translation>
 <translation id="4807098396393229769">Titular de la tarjeta</translation>
-<translation id="4808024018088054533">Chrome no ha detectado software dañino en tu ordenador • Comprobado ahora mismo</translation>
+<translation id="4808024018088054533">Chrome no ha detectado software dañino en tu ordenador • Comprobado justo ahora</translation>
 <translation id="4808667324955055115">Pop-ups bloqueados</translation>
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
 <translation id="480990236307250886">Abrir la página principal</translation>
@@ -4311,7 +4311,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6031600495088157824">Opciones de entrada en la barra de herramientas</translation>
 <translation id="6032715498678347852">Para permitir que una extensión acceda a este sitio web, haz clic en ella.</translation>
 <translation id="6032912588568283682">Sistema de archivos</translation>
-<translation id="603539183851330738">Botón para deshacer la autocorrección. Volver a <ph name="TYPED_WORD" />.  Pulsa Intro para activar el botón y tecla Escape para salir.</translation>
+<translation id="603539183851330738">Botón para deshacer la autocorrección. Revierte el cambio a <ph name="TYPED_WORD" />.  Pulsa Intro para activar el botón o Escape para salir.</translation>
 <translation id="6035517790085323771">Quién puede compartir archivos con tu dispositivo</translation>
 <translation id="6038929619733116134">Bloquear si el sitio web muestra anuncios invasivos o engañosos</translation>
 <translation id="6039651071822577588">El formato del diccionario de propiedades de la red es incorrecto.</translation>
@@ -5316,7 +5316,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7213903639823314449">Buscador utilizado en la barra de direcciones</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
 <translation id="7216595297012131718">Ordena los idiomas según tus preferencias</translation>
-<translation id="7219473482981809164">Hemos encontrado varios perfiles disponibles para descargar. Antes de continuar, selecciona los que quieras descargar.</translation>
+<translation id="7219473482981809164">Hemos encontrado varios perfiles disponibles para descargar. Selecciona los que quieras descargar antes de continuar.</translation>
 <translation id="7220019174139618249">No se pueden exportar contraseñas a la carpeta "<ph name="FOLDER" />"</translation>
 <translation id="722055596168483966">Personalizar los servicios de Google</translation>
 <translation id="722099540765702221">Fuente de carga</translation>
@@ -5600,7 +5600,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7556033326131260574">Smart Lock no ha podido verificar tu cuenta. Introduce la contraseña para acceder.</translation>
 <translation id="7556242789364317684">Lamentablemente, <ph name="SHORT_PRODUCT_NAME" /> no puede recuperar tu configuración. Para solucionar el error, <ph name="SHORT_PRODUCT_NAME" /> debe restablecer tu dispositivo con Powerwash.</translation>
 <translation id="7557194624273628371">Redirección de puertos de Linux</translation>
-<translation id="7559269329306630685">Los datos de tu huella digital se almacenan de forma segura y nunca se envían fuera de tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="7559269329306630685">Los datos de tu huella digital se almacenan de forma segura y nunca abandonan tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7559719679815339381">Por favor, espera... La aplicación de kiosco se está actualizando. No extraigas el dispositivo USB.</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="756445078718366910">Abrir ventana del navegador</translation>
@@ -6054,7 +6054,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8045923671629973368">Introducir el ID de la aplicación o la URL de Chrome Web Store</translation>
 <translation id="8047242494569930800">Mover a cuenta de Google</translation>
 <translation id="804786196054284061">Contrato de licencia de usuario final</translation>
-<translation id="8048977114738515028">Crea un acceso directo del escritorio en tu dispositivo para acceder directamente a este perfil</translation>
+<translation id="8048977114738515028">Crea un acceso directo en el escritorio de tu dispositivo para acceder directamente a este perfil</translation>
 <translation id="8049705080247101012">Google ha marcado "<ph name="EXTENSION_NAME" />" como extensión maliciosa, por lo que ha evitado que se instale</translation>
 <translation id="8049948037269924837">Desplazamiento inverso del panel táctil</translation>
 <translation id="8050038245906040378">Firma de código comercial de Microsoft</translation>
@@ -7120,7 +7120,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="971774202801778802">Añadir URL a marcadores</translation>
 <translation id="973473557718930265">Salir</translation>
 <translation id="975893173032473675">Idioma al que se va a traducir</translation>
-<translation id="976499800099896273">Aparece el cuadro de diálogo para deshacer la autocorrección. Se ha corregido <ph name="TYPED_WORD" /> como <ph name="CORRECTED_WORD" />.  Pulsa la flecha hacia arriba para ir a la palabra autocorregida y la tecla Escape para ignorarla.</translation>
+<translation id="976499800099896273">Se muestra el cuadro de diálogo para deshacer la autocorrección de <ph name="TYPED_WORD" /> a <ph name="CORRECTED_WORD" />.  Pulsa la flecha hacia arriba para acceder a la palabra y Escape para ignorar.</translation>
 <translation id="978146274692397928">La puntuación inicial de los caracteres es de ancho completo.</translation>
 <translation id="97905529126098460">Esta ventana se cerrará cuando la cancelación se haya completado.</translation>
 <translation id="980731642137034229">Botón del menú de acciones</translation>

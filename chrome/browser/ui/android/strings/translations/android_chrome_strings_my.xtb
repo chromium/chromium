@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍ မရပါ</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ အကြောင်း အမျိုးမျိုးကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
-<translation id="151267239139452619">'ဒေါင်းလုဒ်များ' သို့ ထည့်ရန်</translation>
 <translation id="1513352483775369820">စာညှပ်များ နှင့် ဝဘ် မှတ်တမ်း</translation>
 <translation id="1513858653616922153">စကားဝှက်ကို ဖျက်ရန်</translation>
 <translation id="1521774566618522728">ယနေ့ အသုံးပြုထားသည်</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# နာရီ}other{# နာရီ}}</translation>
 <translation id="4045764304651014138">သုံးစွဲမှုဒေတာ</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4057643060762047384">ဤနေရာသို့ ထည့်ရန်-</translation>
 <translation id="4060598801229743805">မျက်နှာပြင်၏ ထိပ်ပိုင်းတွင် ရွေးချယ်စရာများ ရှိပါသည်</translation>
 <translation id="4062305924942672200">တရားဝင် သိသင့်စရာများ</translation>
 <translation id="4084682180776658562">စာညှပ်</translation>
@@ -753,7 +751,6 @@
 <translation id="6303969859164067831">ထွက်ပြီးနောက် စင့်ခ်လုပ်ခြင်းကို ပိတ်ပါ</translation>
 <translation id="6312687380483398334">ဝဘ်အက်ပ်များ (ငြိမ်)</translation>
 <translation id="6316139424528454185">Android ဗားရှင်းကို ပံ့ပိုးမထားပါ</translation>
-<translation id="6321526113093607004">လိပ်စာများသို့ ထည့်ရန်</translation>
 <translation id="6324034347079777476">Android စနစ်စင့်ခ်ပြုလုပ်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> မှတစ်ဆင့် မျှဝေရန်</translation>
 <translation id="6337234675334993532">လျှို့ဝှက်ကုဒ်သွင်းခြင်း</translation>

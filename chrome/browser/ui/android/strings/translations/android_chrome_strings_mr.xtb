@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
 <translation id="1506061864768559482">शोध इंजिन</translation>
-<translation id="151267239139452619">डाउनलोड मध्ये जोडा</translation>
 <translation id="1513352483775369820">बुकमार्क आणि वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड हटवा</translation>
 <translation id="1521774566618522728">आज ॲक्टिव्ह होते</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
 <translation id="4045764304651014138">वापर डेटा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
-<translation id="4057643060762047384">यात जोडा:</translation>
 <translation id="4060598801229743805">स्क्रीनच्या शीर्षावर पर्याय उपलब्ध आहेत</translation>
 <translation id="4062305924942672200">कायदेशीर माहिती</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
 <translation id="6312687380483398334">वेब अ‍ॅप्स (शांत)</translation>
 <translation id="6316139424528454185">Android आवृत्तीला सपोर्ट नाही</translation>
-<translation id="6321526113093607004">बुकमार्क मध्ये जोडा</translation>
 <translation id="6324034347079777476">Android सिस्‍टीम सिंक अक्षम केले</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> द्वारे शेअर करा</translation>
 <translation id="6337234675334993532">एंक्रिप्शन</translation>

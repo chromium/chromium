@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> менен бөлүшүү мүмкүн эмес</translation>
 <translation id="1477626028522505441">Сервердеги маселелерден улам <ph name="FILE_NAME" /> жүктөлүп алынган жок.</translation>
 <translation id="1506061864768559482">Издөө каражаты</translation>
-<translation id="151267239139452619">Жүктөлүп алынгандарга кошуу</translation>
 <translation id="1513352483775369820">Кыстармалар жана издөө таржымалы</translation>
 <translation id="1513858653616922153">Сырсөздү жок кылуу</translation>
 <translation id="1521774566618522728">Акыркы аракеттер: бүгүн</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# саат}other{# саат}}</translation>
 <translation id="4045764304651014138">Колдонуу статистикасы</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4057643060762047384">Төмөнкүгө кошуу:</translation>
 <translation id="4060598801229743805">Параметрлер экрандын жогору жагында берилген</translation>
 <translation id="4062305924942672200">Юридикалык маалымат</translation>
 <translation id="4084682180776658562">Кыстарма</translation>
@@ -754,7 +752,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6303969859164067831">Аккаунттан чыгып, шайкештирүүнү өчүрүү</translation>
 <translation id="6312687380483398334">Веб колдонмолор (добушсуз)</translation>
 <translation id="6316139424528454185">Android колдоого алынбайт</translation>
-<translation id="6321526113093607004">Кыстармаларга кошуу</translation>
 <translation id="6324034347079777476">Android тутумун шайкештирүү өчүрүлдү</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> аркылуу бөлүшүү</translation>
 <translation id="6337234675334993532">Шифрлөө</translation>

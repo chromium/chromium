@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el servidor.</translation>
 <translation id="1506061864768559482">Buscador</translation>
-<translation id="151267239139452619">Añadir a Descargas</translation>
 <translation id="1513352483775369820">Historial web y marcadores</translation>
 <translation id="1513858653616922153">Eliminar contraseña</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
@@ -423,7 +422,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Datos de uso</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4057643060762047384">Añadir a:</translation>
 <translation id="4060598801229743805">Opciones disponibles junto a la parte superior de la pantalla</translation>
 <translation id="4062305924942672200">Información legal</translation>
 <translation id="4084682180776658562">Añadir a marcadores</translation>
@@ -754,7 +752,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6303969859164067831">Cerrar sesión y desactivar la sincronización</translation>
 <translation id="6312687380483398334">Aplicaciones web (no interrumpir)</translation>
 <translation id="6316139424528454185">Esta versión de Android no es compatible</translation>
-<translation id="6321526113093607004">Añadir a Marcadores</translation>
 <translation id="6324034347079777476">Sincronización del sistema Android inhabilitada</translation>
 <translation id="6333140779060797560">Compartir a través de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Cifrado</translation>
@@ -975,7 +972,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7772375229873196092">Cerrar <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="7778840695157240389">Vuelve en otro momento para descubrir más historias</translation>
-<translation id="7786595606756654269">El Asistente de Google proporciona una mejor experiencia por voz de búsqueda en la Web y de interacción con sitios abiertos. El Asistente de Google recibe la URL y el contenido de los sitios en los que lo usas.</translation>
+<translation id="7786595606756654269">El Asistente de Google proporciona una mejor experiencia por voz al buscar en la Web e interactuar con los sitios que tengas abiertos. El Asistente de Google recibe la URL y el contenido de los sitios en los que lo usas.</translation>
 <translation id="7791543448312431591">Añadir</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> pestañas restauradas</translation>
 <translation id="780301667611848630">No, gracias</translation>
@@ -1014,7 +1011,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8027863900915310177">Elige dónde descargarlo</translation>
 <translation id="8035133914807600019">Nueva carpeta…</translation>
 <translation id="8037750541064988519">Quedan <ph name="DAYS" /> días</translation>
-<translation id="8037801708772278989">Comprobado ahora mismo</translation>
+<translation id="8037801708772278989">Comprobado justo ahora</translation>
 <translation id="804335162455518893">No se ha encontrado la tarjeta SD</translation>
 <translation id="805047784848435650">Según tu historial de navegación</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponible(s)</translation>
@@ -1063,7 +1060,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8372925856448695381"><ph name="LANG" /> ya está listo.</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8407396331882458341">1. Elige <ph name="APP_NAME" />\n2. Toca "Siempre"</translation>
-<translation id="8410695015584479363">Seguimiento de precios</translation>
+<translation id="8410695015584479363">Seguir precios</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8427875596167638501">La pestaña de vista previa está medio abierta</translation>

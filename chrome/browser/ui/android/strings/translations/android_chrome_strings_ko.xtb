@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
-<translation id="151267239139452619">다운로드에 추가</translation>
 <translation id="1513352483775369820">북마크 및 방문 기록</translation>
 <translation id="1513858653616922153">비밀번호 삭제</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{#시간}other{#시간}}</translation>
 <translation id="4045764304651014138">사용 데이터</translation>
 <translation id="4056223980640387499">세피아</translation>
-<translation id="4057643060762047384">추가할 위치</translation>
 <translation id="4060598801229743805">화면 상단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="4062305924942672200">법적 정보</translation>
 <translation id="4084682180776658562">북마크</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6312687380483398334">웹 앱(무음)</translation>
 <translation id="6316139424528454185">지원되지 않는 Android 버전입니다.</translation>
-<translation id="6321526113093607004">북마크에 추가</translation>
 <translation id="6324034347079777476">Android 시스템 동기화 사용 안함</translation>
 <translation id="6333140779060797560">공유 방법: <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">암호화</translation>
@@ -943,7 +940,7 @@
 <translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
 <translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />개 파일 다운로드됨}other{<ph name="FILES_DOWNLOADED_MANY" />개 파일 다운로드됨}}</translation>
-<translation id="7583262514280211622">여기에서 읽기 목록을 확인할 수 있습니다.</translation>
+<translation id="7583262514280211622">여기에서 읽기 목록 확인</translation>
 <translation id="7588219262685291874">기기 절전 모드 사용 시 어두운 테마 사용 설정</translation>
 <translation id="7593557518625677601">Android 설정을 열고 Android 시스템 동기화를 다시 사용 설정하여 Chrome 동기화를 시작합니다.</translation>
 <translation id="7596558890252710462">운영체제</translation>
@@ -1132,6 +1129,7 @@
 <translation id="8920114477895755567">부모님의 세부정보를 기다리는 중</translation>
 <translation id="8922289737868596582">옵션 더보기 버튼을 눌러 페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
 <translation id="8928626432984354940">북마크 폴더 목록이 절반 높이로 열림</translation>
+<translation id="8937267401510745927">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠가 Google에 전송됩니다. 이 정보는 Google 계정에 저장될 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지할 수 있습니다.</translation>
 <translation id="8937772741022875483">디지털 웰빙에서 Chrome 활동을 삭제할까요?</translation>
 <translation id="8942627711005830162">다른 창에서 열기</translation>
 <translation id="8951232171465285730">Chrome을 통해 <ph name="MEGABYTES" />MB를 절약했습니다.</translation>

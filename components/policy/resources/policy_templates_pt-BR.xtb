@@ -3322,7 +3322,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se a política for definida como "Desativada" ou deixada sem definição, a política da plataforma terá precedência caso haja um conflito com a política da nuvem.
 
-      Esta política obrigatória afeta as políticas da nuvem do escopo da máquina.</translation>
+      Esta política obrigatória afeta as políticas da nuvem no escopo da máquina.</translation>
 <translation id="5961137303188584693">Endereço MAC da placa de rede integrada do dispositivo</translation>
 <translation id="5966615072639944554">Extensões que podem usar a API de declaração remota</translation>
 <translation id="5975765799383881158">Se a política for definida como "Ativada" ou não for definida, os usuários poderão enviar feedback ao Google em "Menu &gt; Ajuda &gt; Informar um problema" ou usando uma combinação de teclas.
@@ -3443,7 +3443,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se ela for definida como "Desativada" ou não for definida, o <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> será opcional e não impedirá o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
 
-      O registro de políticas da nuvem para o escopo da máquina em computadores usa esta política. Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+      A inscrição de políticas da nuvem para o escopo da máquina em computadores usa esta política. Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="6155936611791017817">Definir estado padrão do cursor grande na tela de login</translation>
 <translation id="6157537876488211233">Lista separada por vírgulas das regras de proxies ignoráveis</translation>
 <translation id="6158324314836466367">Nome da loja on-line da empresa (uso suspenso)</translation>
@@ -3553,7 +3553,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se esta política for definida como verdadeira, o teclado na tela será ativado no momento do login. Se ela for definida como falsa, o teclado na tela será desativado no login.
 
-      Se você definir a política, os usuários poderão ativar ou desativar o teclado na tela temporariamente. Quando a tela de login for atualizada ou ficar inativa por um minuto, o ele retornará ao estado original.
+      Se você definir a política, os usuários poderão ativar ou desativar o teclado na tela temporariamente. Quando a tela de login for atualizada ou ficar inativa por um minuto, ele retornará ao estado original.
 
       Se a política não for definida, o teclado na tela será desativado na tela de login. Os usuários podem ativá-lo a qualquer momento, e o status na tela de login persistirá para todos os usuários.
 
@@ -4433,7 +4433,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7448430478749155471">Ativa o recurso "Selecionar para ouvir" na tela de login</translation>
 <translation id="7458437477941640506">Não faça a reversão para a versão de destino se a versão do SO for mais recente que a de destino. As atualizações também estão desativadas.</translation>
 <translation id="7459601923199346224">Controla as políticas do usuário e dispositivo para o gerenciamento de certificados.</translation>
-<translation id="7459633275230216698">Permitir caixas de diálogo de seleção de arquivo</translation>
+<translation id="7459633275230216698">Permitir caixas de diálogo para seleção de arquivo</translation>
 <translation id="7464991223784276288">Limita cookies de URLs correspondentes à sessão atual</translation>
 <translation id="7468182772656807573">Se a política for definida, a frequência do envio de pacotes de monitoramento de rede será determinada, em milissegundos. Os intervalos variam de 30 segundos a 24 horas. Valores fora desse intervalo serão ajustados dentro dessa faixa.
 
@@ -4640,7 +4640,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
       Observação: atualmente, as reinicializações automáticas ficam ativadas apenas enquanto a tela de login é exibida ou uma sessão de aplicativo de quiosque está em andamento. Isso mudará no futuro, quando a política será sempre aplicada, independentemente de qualquer tipo específico de sessão estar ou não em andamento.</translation>
 <translation id="7701341006446125684">Definir o tamanho do cache de aplicativos e extensões (em bytes)</translation>
-<translation id="7703737669292992839">Impedir caixas de diálogo de seleção de arquivo</translation>
+<translation id="7703737669292992839">Impedir caixas de diálogo para seleção de arquivo</translation>
 <translation id="7709470712369261710">Não permitir que os Serviços do Google forneçam descrições automáticas de imagens</translation>
 <translation id="7710950688502974809">Lista de configurações para os serviços do Chrome Enterprise Connectors que serão aplicadas ao conector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, que é acionado quando dados são inseridos no Chrome pela área de transferência ou arrastando e soltando conteúdos da Web.
 
@@ -4836,7 +4836,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8006219716745491366">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> especificará uma lista de URLs alternativos para extrair termos de pesquisa do mecanismo. Os URLs precisam incluir a string <ph name="SEARCH_TERM_MARKER" />.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> não for definida, nenhum URL alternativo será usado para extrair termos de pesquisa.</translation>
-<translation id="8006921530139404577">Se a política for desativada, IUs relacionadas à conexão, como a janela de desconexão, não serão exibidas para conexões de acesso remoto não ocultas. Sessões de acesso remoto ocultas e sessões de suporte remotas não serão afetadas por esta política.
+<translation id="8006921530139404577">Se a política for desativada, IUs relacionadas à conexão, como a janela de desconexão, não serão exibidas para conexões de acesso remoto que não estejam no modo cortina. Sessões de acesso remoto e sessões de suporte remotas que estejam no modo cortina não serão afetadas por esta política.
 
           Esta política não terá efeito se for definida como verdadeira, deixada vazia ou sem definição.</translation>
 <translation id="8011935490612940798">Controlar o recurso de <ph name="PRODUCT_NAME" />.</translation>
@@ -5119,7 +5119,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a política for definida como verdadeira ou não for definida, o acesso root aos contêineres do Crostini será concedido ao usuário.
       Se a política for definida como falsa, o acesso root aos contêineres do Crostini novos e já existentes não será concedido ao usuário.</translation>
-<translation id="8415953438346821074">Se você ativar esta configuração, as definições armazenadas nos perfis do <ph name="PRODUCT_NAME" />, como favoritos, dados de preenchimento automático, senhas, entre outros, serão gravadas em um arquivo armazenado na pasta "Perfil de usuário de roaming" ou em um local especificado pelo administrador por meio da política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. A ativação dessa política desativa a sincronização em nuvem.
+<translation id="8415953438346821074">Se você ativar esta configuração, as definições armazenadas nos perfis do <ph name="PRODUCT_NAME" />, como favoritos, dados de preenchimento automático, senhas, entre outras, serão gravadas em um arquivo armazenado na pasta "Perfil de usuário de roaming" ou em um local especificado pelo administrador por meio da política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. A ativação dessa política desativa a sincronização em nuvem.
 
       Se a política for desativada ou não for configurada, apenas os perfis locais normais serão usados.</translation>
 <translation id="8417305981081876834">Definir o tamanho máximo do PIN da tela de bloqueio</translation>
@@ -5403,7 +5403,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
        Observação: esta política não se aplica ao modo de navegação anônima. Leia sobre hospedagem de extensões (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8832829916385857156">A página Nova guia exibirá cards se houver conteúdo disponível</translation>
 <translation id="8833109046074170275">Autenticação por fluxo GAIA padrão</translation>
-<translation id="8834641112681661892">A definição da política especifica o atraso máximo em milissegundos entre o recebimento de uma invalidação de política e a busca de uma nova política a partir do serviço de gerenciamento do dispositivo. O intervalo de valores válidos é de 1.000 (1 segundo) até 300.000 (5 minutos). Valores fora desse intervalo serão ajustados para o respectivo limite.
+<translation id="8834641112681661892">A definição da política especifica o atraso máximo em milissegundos entre o recebimento de uma invalidação de política e a busca de uma nova política pelo serviço de gerenciamento do dispositivo. O intervalo de valores válidos é de 1.000 (1 segundo) até 300.000 (5 minutos). Valores fora desse intervalo serão ajustados para o respectivo limite.
 
       Se a política não for definida, o valor padrão de 10 segundos será usado pelo <ph name="PRODUCT_NAME" />.</translation>
 <translation id="885147810817138322">Exibir recomendações de mídia aos usuários</translation>

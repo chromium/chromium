@@ -15,7 +15,7 @@
 <translation id="1413240736185167732">Error: error en el filtre</translation>
 <translation id="1468664791493211953">Ofertes</translation>
 <translation id="1478594628797167447">Escàners</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i és possible que pugui supervisar la teva activitat.</translation>
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i és possible que pugui monitorar la teva activitat.</translation>
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="1641857168437328880">Alimentador de documents (a una cara)</translation>
@@ -120,7 +120,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6048107060512778456">Error: embús de paper</translation>
 <translation id="6050189528197190982">Escala de grisos</translation>
 <translation id="6058625436358447366">Per acabar, introdueix la contrasenya antiga i la nova</translation>
-<translation id="6061772781719867950">Algunes sol·licituds HTTP han fallat</translation>
+<translation id="6061772781719867950">Algunes sol·licituds HTTPS han fallat</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>

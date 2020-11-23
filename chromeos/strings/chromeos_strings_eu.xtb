@@ -70,7 +70,7 @@
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> da <ph name="DEVICE_TYPE" /> gailuaren kudeatzailea. Baliteke administratzaileek urrunetik konfiguratzea gailua.</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
-<translation id="4145784616224233563">HTTP suebakia</translation>
+<translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
@@ -160,7 +160,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8208861521865154048">Abantailak</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
 <translation id="8294431847097064396">Iturburua</translation>
-<translation id="8302368968391049045">HTTPS suebakia</translation>
+<translation id="8302368968391049045">HTTPS protokolorako suebakia</translation>
 <translation id="8347227221149377169">Inprimatze-lanak</translation>
 <translation id="8352772353338965963">Gehitu kontu bat saio-hasiera anitzean. Saioa hasita daukaten kontu guztiak pasahitzik gabe atzi daitezkeenez, kontu fidagarriekin soilik erabili behar da eginbide hori.</translation>
 <translation id="8364946094152050673">Izenen zerbitzariak hutsik daude</translation>

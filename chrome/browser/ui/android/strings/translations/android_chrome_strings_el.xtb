@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Δεν είναι δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω προβλημάτων στον διακομιστή.</translation>
 <translation id="1506061864768559482">Μηχανή αναζήτησης</translation>
-<translation id="151267239139452619">Προσθήκη στις λήψεις</translation>
 <translation id="1513352483775369820">Σελιδοδείκτες και ιστορικό ιστού</translation>
 <translation id="1513858653616922153">Διαγραφή κωδικού πρόσβασης</translation>
 <translation id="1521774566618522728">Ενεργή σήμερα</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
 <translation id="4045764304651014138">Δεδομένα χρήσης</translation>
 <translation id="4056223980640387499">Σέπια</translation>
-<translation id="4057643060762047384">Προσθήκη σε:</translation>
 <translation id="4060598801229743805">Διαθέσιμες επιλογές κοντά στην κορυφή της οθόνης</translation>
 <translation id="4062305924942672200">Νομικές πληροφορίες</translation>
 <translation id="4084682180776658562">Σελιδοδείκτης</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">Αποσύνδεση και απενεργοποίηση συγχρονισμού</translation>
 <translation id="6312687380483398334">Εφαρμογές ιστού (αθόρυβα)</translation>
 <translation id="6316139424528454185">Μη υποστηρ. έκδοση Android</translation>
-<translation id="6321526113093607004">Προσθήκη στους σελιδοδείκτες</translation>
 <translation id="6324034347079777476">Ο συγχρονισμός συστήματος Android απενεργοποιήθηκε</translation>
 <translation id="6333140779060797560">Μοιραστείτε μέσω <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Κρυπτογράφηση</translation>

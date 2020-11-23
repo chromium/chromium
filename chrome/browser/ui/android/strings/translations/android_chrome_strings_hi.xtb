@@ -74,7 +74,6 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सकता</translation>
 <translation id="1477626028522505441">सर्वर संबधी समस्‍याओं के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
-<translation id="151267239139452619">डाउनलोड में जोड़ें</translation>
 <translation id="1513352483775369820">बुकमार्क और वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मिटाएं</translation>
 <translation id="1521774566618522728">आज सक्रिय है</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# घंटा}one{# घंटे}other{# घंटे}}</translation>
 <translation id="4045764304651014138">इस्तेमाल के बारे में डेटा</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4057643060762047384">इनमें जोड़ें:</translation>
 <translation id="4060598801229743805">स्क्रीन के शीर्ष भाग में मौजूद विकल्प</translation>
 <translation id="4062305924942672200">कानूनी जानकारी</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">साइन आउट करें और सिंक बंद करें</translation>
 <translation id="6312687380483398334">वेब ऐप्लिकेशन (म्यूट)</translation>
 <translation id="6316139424528454185">Android वर्शन काम नहीं कर रहा है</translation>
-<translation id="6321526113093607004">Bookmarks में जोड़ें</translation>
 <translation id="6324034347079777476">Android सिस्टम समन्वयन अक्षम है</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
 <translation id="6337234675334993532">सुरक्षित करने का तरीका</translation>
@@ -1023,7 +1020,7 @@
 <translation id="806745655614357130">मेरा डेटा अलग रखें</translation>
 <translation id="8073388330009372546">इमेज 'नए टैब' में खोलें</translation>
 <translation id="8076492880354921740">टैब</translation>
-<translation id="8084114998886531721">सहेजा गया पासवर्ड</translation>
+<translation id="8084114998886531721">सेव किया गया पासवर्ड</translation>
 <translation id="8103578431304235997">गुप्त टैब</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, 'सिंक करें' को चालू करें</translation>
@@ -1176,7 +1173,7 @@
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">कॉल नहीं कर पा रहे</translation>
-<translation id="9219103736887031265">इमेज</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="926205370408745186">'डिजिटल वेलबीइंग' से अपनी Chrome गतिविधि हटाएं</translation>
 <translation id="927968626442779827">Google Chrome पर लाइट मोड का इस्तेमाल करें</translation>
 <translation id="932327136139879170">होम बटन</translation>

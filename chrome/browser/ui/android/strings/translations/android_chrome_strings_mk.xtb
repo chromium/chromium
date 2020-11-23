@@ -74,7 +74,6 @@
 <translation id="1450753235335490080">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Преземањето на <ph name="FILE_NAME" /> не успеа поради проблеми со серверот.</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
-<translation id="151267239139452619">Додај во „Преземања“</translation>
 <translation id="1513352483775369820">Обележувачи и веб-историја</translation>
 <translation id="1513858653616922153">Избриши ја лозинката</translation>
 <translation id="1521774566618522728">Активен денес</translation>
@@ -423,7 +422,6 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч.}one{# ч.}other{# ч.}}</translation>
 <translation id="4045764304651014138">Податоци за користењето</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4057643060762047384">Додај во:</translation>
 <translation id="4060598801229743805">Достапни се опции речиси на врвот на екранот</translation>
 <translation id="4062305924942672200">Правни информации</translation>
 <translation id="4084682180776658562">Обележувач</translation>
@@ -754,7 +752,6 @@
 <translation id="6303969859164067831">Одјавете се и исклучете ја синхронизацијата</translation>
 <translation id="6312687380483398334">Веб-апликации (тивки)</translation>
 <translation id="6316139424528454185">Верзијата на Android не е поддржана</translation>
-<translation id="6321526113093607004">Додај во „Обележувачи“</translation>
 <translation id="6324034347079777476">Синхронизацијата на системот Android е оневозможена</translation>
 <translation id="6333140779060797560">Сподели преку <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифрирање</translation>
@@ -975,7 +972,7 @@
 <translation id="7772375229873196092">Затвори <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Проверете подоцна дали има нови статии</translation>
-<translation id="7786595606756654269">„Помошникот на Google“ обезбедува подобро гласовно искуство за пребарување на интернет и интеракција со сајтовите што сте ги отвориле. „Помошникот на Google“ ќе ги добие URL-адресата и содржините на сајтовите што ги користите со него.</translation>
+<translation id="7786595606756654269">„Помошникот на Google“ обезбедува подобро доживување при гласовното пребарување на интернет и интеракцијата со отворените сајтови. „Помошникот на Google“ ќе ги добива URL-адресите и содржините на сајтовите што ги користите со него.</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780301667611848630">Не, фала</translation>

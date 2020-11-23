@@ -122,7 +122,7 @@
 <translation id="1128591060186966949">Փոխել որոնման համակարգը</translation>
 <translation id="1129850422003387628">Կառավարել հավելվածները</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – «<ph name="GROUP_NAME" />» խմբից</translation>
-<translation id="1130712065489627903">Այժմ դուք կարող եք ծանուցումներ ստանալ ձեր հեռախոսից <ph name="DEVICE_TYPE" /> սարքում։ Եթե դուք անջատեք ծանուցումները <ph name="DEVICE_TYPE" /> սարքում, դրանք կանջատվեն նաև ձեր հեռախոսում։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
+<translation id="1130712065489627903">Այժմ դուք կարող եք ծանուցումներ ստանալ ձեր հեռախոսից <ph name="DEVICE_TYPE" /> սարքում։ Եթե անջատեք ծանուցումները <ph name="DEVICE_TYPE" /> սարքում, դրանք կանջատվեն նաև ձեր հեռախոսում։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="1134009406053225289">Բացել ինկոգնիտո պատուհանում</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />։ <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />։</translation>
 <translation id="1136712381129578788">Անվտանգության բանալին կողպվել է, քանի որ PIN կոդի սխալ մուտքագրված փորձերը շատ էին։ Բանալին ապակողպելու համար հեռացրեք ու նորից տեղադրեք այն։</translation>
@@ -818,7 +818,7 @@
 <translation id="1887597546629269384">Նորից ասեք «Ok Google»</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="1890674179660343635">&lt;span&gt;ID` &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
-<translation id="1891362123137972260">Սկավառակում տարածքը շատ քիչ է։ Խնդրում ենք տարածք ազատել:</translation>
+<translation id="1891362123137972260">Սկավառակում տարածքը շատ քիչ է։ Խնդրում ենք տարածք ազատել։</translation>
 <translation id="189210018541388520">Բացել լիաէկրան ռեժիմում</translation>
 <translation id="1892341345406963517">Ողջույն, <ph name="PARENT_NAME" />:</translation>
 <translation id="189358972401248634">Այլ լեզուներ</translation>
@@ -5607,7 +5607,7 @@
 <translation id="7556033326131260574">Smart Lock գործառույթին չհաջողվեց հաստատել ձեր հաշիվը: Մտնելու համար մուտքագրեք գաղտնաբառը:</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" />-ը չի կարող վերականգնել ձեր կարգավորումները: Սխալն ուղղելու համար <ph name="SHORT_PRODUCT_NAME" />-ը պետք է վերակայի ձեր սարքը Powerwash-ով:</translation>
 <translation id="7557194624273628371">Միացքների փոխանցում Լինուքսում</translation>
-<translation id="7559269329306630685">Մատնահետքի տվյալներն ապահով պահվում են ձեր <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց:</translation>
+<translation id="7559269329306630685">Մատնահետքի տվյալներն ապահով պահվում են ձեր <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
 <translation id="7559719679815339381">Խնդրում ենք սպասել… Kiosk հավելվածը թարմացվում է: Մի հեռացրեք USB հիշողությունը:</translation>
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="756445078718366910">Բացել դիտարկիչի պատուհան</translation>
@@ -6059,7 +6059,7 @@
 <translation id="8045923671629973368">Մուտքագրեք հավելվածի ID-ն կամ վեբ խանութի URL-ը</translation>
 <translation id="8047242494569930800">Տեղափոխել Google հաշիվ</translation>
 <translation id="804786196054284061">Վերջնական օգտատիրոջ արտոնագրային պայմանագիր</translation>
-<translation id="8048977114738515028">Ստեղծեք աշխատասեղանի դյուրանցում ձեր սարքում՝ այս պրոֆիլն ուղղակի բացելու համար</translation>
+<translation id="8048977114738515028">Ստեղծեք աշխատասեղանի դյուրանցում ձեր սարքում՝ այս պրոֆիլն ուղղակիորեն բացելու համար</translation>
 <translation id="8049705080247101012">«<ph name="EXTENSION_NAME" />» ընդլայնումը նշվել է Google-ի կողմից որպես վնասարար, և նրա տեղադրումը կանխվել է</translation>
 <translation id="8049948037269924837">Հպահարթակով հետադարձ ոլորում</translation>
 <translation id="8050038245906040378">Microsoft-ի առևտրային կոդի ստորագրում</translation>
