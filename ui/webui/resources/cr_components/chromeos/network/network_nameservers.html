@@ -67,18 +67,20 @@
           on-selected-changed="onTypeChange_"
           aria-label="[[i18n('networkNameservers')]]">
         <!-- Automatic nameservers -->
-        <cr-radio-button name="automatic" disabled="[[!canChangeConfigType_]]">
+        <cr-radio-button name="[[nameserversTypeEnum_.AUTOMATIC]]"
+          disabled="[[!canChangeConfigType_]]">
           [[i18n('networkNameserversAutomatic')]]
         </cr-radio-button>
         <template is="dom-if" if="[[showNameservers_(nameserversType_,
-            'automatic', nameservers_)]]">
+            nameserversTypeEnum_.AUTOMATIC, nameservers_)]]">
           <div class="nameservers" changeable$="[[canChangeConfigType_]]">
             [[getNameserversString_(nameservers_)]]
           </div>
         </template>
 
         <!-- Google nameservers -->
-        <cr-radio-button name="google" disabled="[[!canChangeConfigType_]]">
+        <cr-radio-button name="[[nameserversTypeEnum_.GOOGLE]]"
+          disabled="[[!canChangeConfigType_]]">
           [[i18n('networkNameserversGoogle')]]
           <template is="dom-if"
               if="[[i18nExists('networkGoogleNameserversLearnMoreUrl')]]">
@@ -89,18 +91,19 @@
           </template>
         </cr-radio-button>
         <template is="dom-if" if="[[showNameservers_(nameserversType_,
-            'google', nameservers_)]]">
+            nameserversTypeEnum_.GOOGLE, nameservers_)]]">
           <div class="nameservers" changeable>
             [[getNameserversString_(nameservers_)]]
           </div>
         </template>
 
         <!-- Custom nameservers -->
-        <cr-radio-button name="custom" disabled="[[!canChangeConfigType_]]">
+        <cr-radio-button name="[[nameserversTypeEnum_.CUSTOM]]"
+          disabled="[[!canChangeConfigType_]]">
           [[i18n('networkNameserversCustom')]]
         </cr-radio-button>
         <template is="dom-if" if="[[showNameservers_(nameserversType_,
-            'custom')]]">
+            nameserversTypeEnum_.CUSTOM)]]">
           <div class="property-box single-column two-line">
             <template is="dom-repeat" items="[[nameservers_]]">
               <cr-input id="nameserver[[index]]" value="[[item]]"
