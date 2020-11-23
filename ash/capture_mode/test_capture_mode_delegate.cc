@@ -26,18 +26,32 @@ class FakeRecordingService : public recording::mojom::RecordingService {
   }
 
   // mojom::RecordingService:
-  void SetClient(mojo::PendingRemote<recording::mojom::RecordingServiceClient>
-                     client) override {
+  void RecordFullscreen(
+      mojo::PendingRemote<recording::mojom::RecordingServiceClient> client,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      const viz::FrameSinkId& frame_sink_id,
+      const gfx::Size& fullscreen_size) override {
     remote_client_.Bind(std::move(client));
   }
-  void RecordFullscreen(const viz::FrameSinkId& frame_sink_id,
-                        const gfx::Size& fullscreen_size) override {}
-  void RecordWindow(const viz::FrameSinkId& frame_sink_id,
-                    const gfx::Size& initial_window_size,
-                    const gfx::Size& max_window_size) override {}
-  void RecordRegion(const viz::FrameSinkId& frame_sink_id,
-                    const gfx::Size& fullscreen_size,
-                    const gfx::Rect& corp_region) override {}
+  void RecordWindow(
+      mojo::PendingRemote<recording::mojom::RecordingServiceClient> client,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      const viz::FrameSinkId& frame_sink_id,
+      const gfx::Size& initial_window_size,
+      const gfx::Size& max_window_size) override {
+    remote_client_.Bind(std::move(client));
+  }
+  void RecordRegion(
+      mojo::PendingRemote<recording::mojom::RecordingServiceClient> client,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      const viz::FrameSinkId& frame_sink_id,
+      const gfx::Size& fullscreen_size,
+      const gfx::Rect& corp_region) override {
+    remote_client_.Bind(std::move(client));
+  }
   void StopRecording() override {
     remote_client_->OnRecordingEnded(/*success=*/true);
     remote_client_.FlushForTesting();
@@ -51,8 +65,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
 // -----------------------------------------------------------------------------
 // TestCaptureModeDelegate:
 
-TestCaptureModeDelegate::TestCaptureModeDelegate()
-    : fake_service_(std::make_unique<FakeRecordingService>()) {}
+TestCaptureModeDelegate::TestCaptureModeDelegate() = default;
 
 TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
 
@@ -91,7 +104,8 @@ void TestCaptureModeDelegate::StopObservingRestrictedContent() {}
 void TestCaptureModeDelegate::OpenFeedbackDialog() {}
 
 mojo::Remote<recording::mojom::RecordingService>
-TestCaptureModeDelegate::LaunchRecordingService() const {
+TestCaptureModeDelegate::LaunchRecordingService() {
+  fake_service_ = std::make_unique<FakeRecordingService>();
   mojo::Remote<recording::mojom::RecordingService> service;
   fake_service_->Bind(service.BindNewPipeAndPassReceiver());
   return service;
