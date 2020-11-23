@@ -146,7 +146,7 @@ component("gpu") {
       "//gpu/ipc/common:android_image_reader_utils",
 
       # TODO(crbug.com/789435): This can be removed once CdmManager is removed.
-      "//gpu/ipc/common:ipc_common_sources",
+      "//gpu/ipc/common",
       "//media/mojo:buildflags",
       "//services/service_manager/public/cpp:cpp",
       "//ui/gl:gl_jni_headers",
