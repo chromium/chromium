@@ -125,7 +125,8 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
   }
   JNIEnv* env = AttachCurrentThread();
   auto jheader_model =
-      Java_AssistantTriggerScriptBridge_getHeaderModel(env, java_object_);
+      Java_AssistantTriggerScriptBridge_createHeaderAndGetModel(env,
+                                                                java_object_);
   AssistantHeaderModel header_model(jheader_model);
   if (disable_header_animations_for_testing_) {
     header_model.SetDisableAnimations(disable_header_animations_for_testing_);

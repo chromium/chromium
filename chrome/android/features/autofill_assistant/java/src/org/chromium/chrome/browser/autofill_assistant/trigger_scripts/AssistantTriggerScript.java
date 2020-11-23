@@ -59,7 +59,7 @@ public class AssistantTriggerScript {
     private final ApplicationViewportInsetSupplier mApplicationViewportInsetSupplier;
 
     private AssistantHeaderCoordinator mHeaderCoordinator;
-    private final AssistantHeaderModel mHeaderModel = new AssistantHeaderModel();
+    private AssistantHeaderModel mHeaderModel;
     private LinearLayout mChipsContainer;
     private final int mInnerChipSpacing;
     /** Height of the bottom sheet's shadow, used to compute the viewport resize offset. */
@@ -109,8 +109,6 @@ public class AssistantTriggerScript {
                 R.dimen.autofill_assistant_actions_spacing);
         mShadowHeight = mContext.getResources().getDimensionPixelSize(
                 R.dimen.bottom_sheet_toolbar_shadow_height);
-        mHeaderModel.set(
-                AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
     }
 
     private void createBottomSheetContents() {
@@ -133,10 +131,6 @@ public class AssistantTriggerScript {
         // Allow swipe-to-dismiss.
         mContent.setPeekModeDisabled(true);
 
-        if (mHeaderCoordinator != null) {
-            mHeaderCoordinator.destroy();
-        }
-        mHeaderCoordinator = new AssistantHeaderCoordinator(mContext, mHeaderModel);
         mChipsContainer = new LinearLayout(mContext);
         mChipsContainer.setOrientation(LinearLayout.HORIZONTAL);
         int horizontalMargin = mContext.getResources().getDimensionPixelSize(
@@ -196,7 +190,14 @@ public class AssistantTriggerScript {
         }
     }
 
-    public AssistantHeaderModel getHeaderModel() {
+    public AssistantHeaderModel createHeaderAndGetModel() {
+        mHeaderModel = new AssistantHeaderModel();
+        if (mHeaderCoordinator != null) {
+            mHeaderCoordinator.destroy();
+        }
+        mHeaderCoordinator = new AssistantHeaderCoordinator(mContext, mHeaderModel);
+        mHeaderModel.set(
+                AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
         return mHeaderModel;
     }
 
@@ -248,7 +249,11 @@ public class AssistantTriggerScript {
         addChipsToContainer(mChipsContainer, mRightAlignedChips);
     }
 
-    public void show(boolean resizeVisualViewport) {
+    public boolean show(boolean resizeVisualViewport) {
+        if (mHeaderModel == null || mHeaderCoordinator == null) {
+            assert false : "createHeaderAndGetModel() must be called before show()";
+            return false;
+        }
         mResizeVisualViewport = resizeVisualViewport;
         createBottomSheetContents();
         update();
@@ -256,6 +261,7 @@ public class AssistantTriggerScript {
         mBottomSheetController.addObserver(mBottomSheetObserver);
         BottomSheetUtils.showContentAndMaybeExpand(mBottomSheetController, mContent,
                 /* shouldExpand = */ true, /* animate = */ mAnimateBottomSheet);
+        return true;
     }
 
     public void hide() {

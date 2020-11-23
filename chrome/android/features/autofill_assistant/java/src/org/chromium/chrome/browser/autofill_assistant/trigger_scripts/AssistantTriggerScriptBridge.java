@@ -100,9 +100,14 @@ public class AssistantTriggerScriptBridge {
                 .startTriggerScript(this, initialUrl, scriptParameters, experimentIds);
     }
 
+    /**
+     * Re-creates the header and returns the new header model. Must be called before every
+     * invocation of {@code showTriggerScript}. It is not possible to persist headers across
+     * multiple shown trigger scripts.
+     */
     @CalledByNative
-    private AssistantHeaderModel getHeaderModel() {
-        return mTriggerScript.getHeaderModel();
+    private AssistantHeaderModel createHeaderAndGetModel() {
+        return mTriggerScript.createHeaderAndGetModel();
     }
 
     @CalledByNative
@@ -111,8 +116,8 @@ public class AssistantTriggerScriptBridge {
     }
 
     /**
-     * Used by native to update and show the UI. The header should be updated using {@code
-     * getHeaderModel} prior to calling this function.
+     * Used by native to update and show the UI. The header should be created and updated using
+     * {@code createHeaderAndGetModel} prior to calling this function.
      * @return true if the trigger script was displayed, else false.
      */
     @CalledByNative
@@ -130,11 +135,13 @@ public class AssistantTriggerScriptBridge {
         mTriggerScript.setCancelPopupMenu(cancelPopupMenuItems, cancelPopupMenuActions);
         mTriggerScript.setLeftAlignedChips(leftAlignedChips, leftAlignedChipsActions);
         mTriggerScript.setRightAlignedChips(rightAlignedChips, rightAlignedChipsActions);
-        mTriggerScript.show(resizeVisualViewport);
+        boolean shown = mTriggerScript.show(resizeVisualViewport);
 
         // A trigger script was displayed, users are no longer considered first-time users.
-        AutofillAssistantPreferencesUtil.setAutofillAssistantReturningLiteScriptUser();
-        return true;
+        if (shown) {
+            AutofillAssistantPreferencesUtil.setAutofillAssistantReturningLiteScriptUser();
+        }
+        return shown;
     }
 
     @CalledByNative
