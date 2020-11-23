@@ -1375,8 +1375,8 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
 
 void PasswordAutofillAgent::InformAboutFormClearing(
     const WebFormElement& form) {
-  DCHECK(FrameCanAccessPasswordManager());
-  if (!base::FeatureList::IsEnabled(
+  if (!FrameCanAccessPasswordManager() ||
+      !base::FeatureList::IsEnabled(
           password_manager::features::kDetectFormSubmissionOnFormClear)) {
     return;
   }
