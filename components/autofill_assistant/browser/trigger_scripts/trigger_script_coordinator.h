@@ -46,6 +46,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
     virtual void OnTriggerScriptHidden() = 0;
     virtual void OnTriggerScriptFinished(
         Metrics::LiteScriptFinishedState state) = 0;
+    virtual void OnWebContentsVisibilityChanged(bool visible) = 0;
   };
 
   // |client| and |web_contents| must outlive this instance.
@@ -86,6 +87,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // have failed, for example when trying to show a trigger script after
   // switching from CCT to regular tab.
   void OnTriggerScriptShown(bool success);
+
+  // Called when the proactive help Chrome setting has changed.
+  void OnProactiveHelpSettingChanged(bool proactive_help_enabled);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);

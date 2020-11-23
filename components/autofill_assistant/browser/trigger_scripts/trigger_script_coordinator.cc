@@ -217,6 +217,15 @@ void TriggerScriptCoordinator::OnTriggerScriptShown(bool success) {
   }
 }
 
+void TriggerScriptCoordinator::OnProactiveHelpSettingChanged(
+    bool proactive_help_enabled) {
+  if (!proactive_help_enabled) {
+    Stop(Metrics::LiteScriptFinishedState::
+             LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING);
+    return;
+  }
+}
+
 void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
   HideTriggerScript();
   StopCheckingTriggerConditions();
@@ -281,6 +290,10 @@ void TriggerScriptCoordinator::OnVisibilityChanged(
     // Hide UI on tab switch.
     StopCheckingTriggerConditions();
     HideTriggerScript();
+  }
+
+  for (Observer& observer : observers_) {
+    observer.OnWebContentsVisibilityChanged(visible);
   }
 }
 

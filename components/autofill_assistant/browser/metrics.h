@@ -260,6 +260,9 @@ class Metrics {
     // for example, if the activity was changed after triggering (e.g.,
     // switching from CCT to regular tab).
     LITE_SCRIPT_FAILED_TO_SHOW = 22,
+    // The proactive help switch was enabled at start, but then manually
+    // disabled in the Chrome settings.
+    LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING = 23,
 
     // NOTE: All values in this block are DEPRECATED and will only be sent by
     // Chrome M-86 and M-87.
@@ -290,7 +293,7 @@ class Metrics {
     // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
     LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
 
-    kMaxValue = LITE_SCRIPT_FAILED_TO_SHOW
+    kMaxValue = LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING
   };
 
   // The different ways a user who has successfully completed a light script may

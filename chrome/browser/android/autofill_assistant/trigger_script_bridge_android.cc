@@ -202,6 +202,18 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptFinished(
   StopTriggerScript();
 }
 
+void TriggerScriptBridgeAndroid::OnWebContentsVisibilityChanged(bool visible) {
+  if (!visible || !trigger_script_coordinator_) {
+    return;
+  }
+
+  // Every time the tab becomes visible again we have to double-check if the
+  // proactive help settings is still enabled.
+  trigger_script_coordinator_->OnProactiveHelpSettingChanged(
+      Java_AssistantTriggerScriptBridge_isProactiveHelpEnabled(
+          AttachCurrentThread()));
+}
+
 base::Optional<TriggerScriptUIProto>
 TriggerScriptBridgeAndroid::GetLastShownTriggerScript() const {
   return last_shown_trigger_script_;

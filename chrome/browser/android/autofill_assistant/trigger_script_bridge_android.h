@@ -74,6 +74,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
   void OnTriggerScriptShown(const TriggerScriptUIProto& proto) override;
   void OnTriggerScriptHidden() override;
   void OnTriggerScriptFinished(Metrics::LiteScriptFinishedState state) override;
+  void OnWebContentsVisibilityChanged(bool visible) override;
 
   // Reference to the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

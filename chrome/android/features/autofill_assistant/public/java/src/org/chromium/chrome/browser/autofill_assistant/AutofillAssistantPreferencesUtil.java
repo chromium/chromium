@@ -27,7 +27,7 @@ public class AutofillAssistantPreferencesUtil {
     }
 
     /** Checks whether the proactive help switch preference in settings is on. */
-    static boolean isProactiveHelpSwitchOn() {
+    public static boolean isProactiveHelpSwitchOn() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)) {
             return false;
         }

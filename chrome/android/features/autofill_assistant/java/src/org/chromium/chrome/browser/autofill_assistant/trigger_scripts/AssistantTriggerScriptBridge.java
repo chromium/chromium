@@ -151,6 +151,11 @@ public class AssistantTriggerScriptBridge {
     }
 
     @CalledByNative
+    private static boolean isProactiveHelpEnabled() {
+        return AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn();
+    }
+
+    @CalledByNative
     private void setNativePtr(long nativePtr) {
         mNativeBridge = nativePtr;
     }
