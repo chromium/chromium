@@ -59,6 +59,8 @@ class SingleLogFileLogSource : public SystemLogsSource {
   // system_logs::SystemLogsSource:
   void Fetch(SysLogsSourceCallback callback) override;
 
+  void SetMaxReadSizeForTesting(int64_t max_read_size);
+
  private:
   friend class SingleLogFileLogSourceTest;
 
@@ -66,7 +68,7 @@ class SingleLogFileLogSource : public SystemLogsSource {
   base::FilePath GetLogFilePath() const;
 
   // Reads all available content from |file_| that has not already been read.
-  // Stores results as a single entry in |result|, with |source_name()| as key
+  // Stores results as a single entry in |response|, with |source_name()| as key
   // and the read log contents as value.
   //
   // Handles rotation of underlying log file by reading all remaining contents
@@ -78,7 +80,22 @@ class SingleLogFileLogSource : public SystemLogsSource {
   // during a call, ReadFile() stops checking for log file rotation for the
   // remainder of its execution. Any further rotation could result in missed log
   // data.
-  void ReadFile(size_t num_rotations_allowed, SystemLogsResponse* result);
+  void ReadFile(size_t num_rotations_allowed, SystemLogsResponse* response);
+
+  // Continues an in-progress file read.
+  //
+  // |result_string| stores accumulated logs read across file rotations to
+  // ensure at most |max_read_size_| bytes are read when combining data from
+  // multiple rotations for a log file into a single read.
+  //
+  // |bytes_skipped| is true when some bytes in the current read were skipped
+  // to avoid exceeding |max_read_size_|.
+  //
+  // See |ReadFile| for |num_rotations_allowed| and |response|.
+  void ContinueReadFile(std::unique_ptr<std::string> result_string,
+                        bool bytes_skipped,
+                        size_t num_rotations_allowed,
+                        SystemLogsResponse* response);
 
   // The source type.
   const SupportedSource source_type_;
@@ -86,8 +103,11 @@ class SingleLogFileLogSource : public SystemLogsSource {
   // Path to system log file directory.
   base::FilePath log_file_dir_path_;
 
-  // Keeps track of how much data has been read from |file_|.
-  size_t num_bytes_read_;
+  // The maximum size of a read from |file_|.
+  int64_t max_read_size_;
+
+  // Keeps track of how much data has been read or skipped from |file_|.
+  size_t file_cursor_position_;
 
   // Handle for reading the log file that is source of logging data.
   base::File file_;
