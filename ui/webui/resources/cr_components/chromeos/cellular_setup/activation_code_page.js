@@ -36,10 +36,9 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @private */
-    activationCode_: {
+    activationCode: {
       type: String,
-      value: '',
+      notify: true,
       observer: 'onActivationCodeChanged_',
     },
 
@@ -166,7 +165,7 @@ Polymer({
             oldStream.getTracks()[0].stop();
           }
 
-          this.activationCode_ = '';
+          this.activationCode = '';
           this.state_ = useUserFacingCamera ?
               PageState.SCANNING_USER_FACING :
               PageState.SCANNING_ENVIRONMENT_FACING;
@@ -177,7 +176,7 @@ Polymer({
 
   /**
    * Continuously checks stream if it contains a QR code. If a QR code is
-   * detected, activationCode_ is set to the QR code's value and the detection
+   * detected, activationCode is set to the QR code's value and the detection
    * stops.
    * @param {MediaStream} stream
    * @private
@@ -191,7 +190,7 @@ Polymer({
             const activationCode = await this.detectActivationCode_(frame);
             if (activationCode) {
               clearTimeout(this.qrCodeDetectorTimer_);
-              this.activationCode_ = activationCode;
+              this.activationCode = activationCode;
             }
           }).bind(this),
           QR_CODE_DETECTION_INTERVAL_MS);
@@ -224,7 +223,7 @@ Polymer({
 
   /** @private */
   onActivationCodeChanged_() {
-    const activationCode = this.validateActivationCode_(this.activationCode_);
+    const activationCode = this.validateActivationCode_(this.activationCode);
     this.fire('activation-code-updated', {activationCode: activationCode});
     // TODO(crbug.com/1093185): Handle if activation code is invalid.
     if (activationCode) {

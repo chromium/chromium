@@ -81,6 +81,28 @@ cr.define('cellular_setup', function() {
       });
     }
 
+    /**
+     * @override
+     * @param {string} activationCode
+     * @param {string} confirmationCode
+     * @return {!Promise<{result:
+     *     chromeos.cellularSetup.mojom.ProfileInstallResult},}>}
+     */
+    installProfileFromActivationCode(activationCode, confirmationCode) {
+      return Promise.resolve({
+        result: this.profileInstallResult_ ?
+            this.profileInstallResult_ :
+            chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess,
+      });
+    }
+
+    /**
+     * @param {chromeos.cellularSetup.mojom.ProfileInstallResult} result
+     */
+    setProfileInstallResultForTest(result) {
+      this.profileInstallResult_ = result;
+    }
+
     /** @private */
     addProfileForTest_() {
       const id = this.profiles_.length + 1;

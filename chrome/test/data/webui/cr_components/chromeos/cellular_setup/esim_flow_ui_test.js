@@ -36,7 +36,57 @@ suite('CrComponentsEsimFlowUiTest', function() {
     Polymer.dom.flush();
   });
 
-  test('No eSIM profile flow', async function() {
+  test('No eSIM profile flow invalid activation code', async function() {
+    eSimManagerRemote.addEuiccForTest(0);
+    const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+    availableEuiccs.euiccs[0].setProfileInstallResultForTest(
+        chromeos.cellularSetup.mojom.ProfileInstallResult
+            .kErrorInvalidActivationCode);
+
+    const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
+    const activationCodePage = eSimPage.$$('#activationCodePage');
+    const finalPage = eSimPage.$$('#finalPage');
+
+    assertTrue(!!profileLoadingPage);
+    assertTrue(!!activationCodePage);
+    assertTrue(!!finalPage);
+
+    // Loading page should be showing.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.PROFILE_LOADING &&
+        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+
+    await flushAsync();
+
+    // Should now be at the activation code page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.ACTIVATION_CODE &&
+        eSimPage.selectedESimPageName_ === activationCodePage.id);
+    // Insert an activation code.
+    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
+
+    // Next button should now be enabled.
+    assertTrue(
+        eSimPage.buttonState.next ===
+        cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+
+    eSimPage.navigateForward();
+
+    await flushAsync();
+
+    // Install should fail and still be at activation code page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.ACTIVATION_CODE &&
+        eSimPage.selectedESimPageName_ === activationCodePage.id);
+    // TODO(crbug.com/1093185) We don't have a way to show the error on the DOM
+    // right now. Check internal property for now.
+    assertTrue(eSimPage.showError_);
+  });
+
+  test('No eSIM profile flow valid activation code', async function() {
     eSimManagerRemote.addEuiccForTest(0);
 
     const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
@@ -69,9 +119,10 @@ suite('CrComponentsEsimFlowUiTest', function() {
         cellularSetup.ButtonState.SHOWN_AND_ENABLED);
 
     eSimPage.navigateForward();
-    Polymer.dom.flush();
 
-    // Should now be at the final page.
+    await flushAsync();
+
+    // Should go to final page.
     assertTrue(
         eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
         eSimPage.selectedESimPageName_ === finalPage.id);
@@ -177,7 +228,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
         eSimPage.buttonState.next ===
         cellularSetup.ButtonState.SHOWN_AND_ENABLED);
     eSimPage.navigateForward();
-    Polymer.dom.flush();
+    await flushAsync();
 
     // Should now be at the final page.
     assertTrue(
