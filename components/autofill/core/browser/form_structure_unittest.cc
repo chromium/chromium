@@ -634,23 +634,28 @@ TEST_F(FormStructureTestImpl, StripCommonNameAffix) {
 
   field.label = ASCIIToUTF16("First Name");
   field.name = ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$firstname");
+  field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Last Name");
   field.name = ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$lastname");
+  field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Email");
   field.name = ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$email");
+  field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Phone");
   field.name = ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$phone");
+  field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$submit");
   field.form_control_type = "submit";
+  field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   std::unique_ptr<FormStructure> form_structure(new FormStructure(form));
@@ -5306,18 +5311,21 @@ TEST_F(FormStructureTestImpl,
   // First name field.
   field.label = ASCIIToUTF16("Nombre");
   field.name = ASCIIToUTF16("Nombre");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // First last name field.
   // Should be identified by local heuristics.
   field.label = ASCIIToUTF16("Apellido Paterno");
   field.name = ASCIIToUTF16("apellido_paterno");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // Second last name field.
   // Should be identified by local heuristics.
   field.label = ASCIIToUTF16("Apellido Materno");
   field.name = ASCIIToUTF16("apellido materno");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   FormStructure form(form_data);
@@ -5389,21 +5397,25 @@ TEST_F(FormStructureTestImpl,
   // Field for the name.
   field.label = ASCIIToUTF16("Name");
   field.name = ASCIIToUTF16("Name");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // Field for the street name.
   field.label = ASCIIToUTF16("Street Name");
   field.name = ASCIIToUTF16("street_name");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // Field for the house number.
   field.label = ASCIIToUTF16("House Number");
   field.name = ASCIIToUTF16("house_number");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // Field for the postal code.
   field.label = ASCIIToUTF16("ZIP");
   field.name = ASCIIToUTF16("ZIP");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   FormStructure form(form_data);
@@ -5470,15 +5482,18 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
 
   field.label = ASCIIToUTF16("First Name");
   field.name = ASCIIToUTF16("fname");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Last Name");
   field.name = ASCIIToUTF16("lname");
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   field.label = ASCIIToUTF16("email");
   field.name = ASCIIToUTF16("email");
   field.autocomplete_attribute = "address-level2";
+  field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   FormStructure form(form_data);

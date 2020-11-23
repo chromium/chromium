@@ -40,6 +40,7 @@ class AutofillField : public FormFieldData {
   };
 
   AutofillField();
+  explicit AutofillField(const FormFieldData& field);
   AutofillField(const FormFieldData& field, const base::string16& unique_name);
   virtual ~AutofillField();
 
@@ -49,6 +50,9 @@ class AutofillField : public FormFieldData {
   static std::unique_ptr<AutofillField> CreateForPasswordManagerUpload(
       FieldSignature field_signature);
 
+  // Unique names are not stable across dynamic change. Use renderer IDs instead
+  // if possible.
+  // TODO(crbug/896689): Remove unique_name.
   const base::string16& unique_name() const { return unique_name_; }
 
   ServerFieldType heuristic_type() const { return heuristic_type_; }

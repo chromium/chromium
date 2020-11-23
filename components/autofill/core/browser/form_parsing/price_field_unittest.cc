@@ -40,6 +40,13 @@ class PriceFieldTest : public testing::Test {
   std::vector<std::unique_ptr<AutofillField>> list_;
   std::unique_ptr<PriceField> field_;
   FieldCandidatesMap field_candidates_map_;
+
+  FieldRendererId MakeFieldRendererId() {
+    return FieldRendererId(++id_counter_);
+  }
+
+ private:
+  uint64_t id_counter_ = 0;
 };
 
 TEST_F(PriceFieldTest, ParsePrice) {
@@ -49,17 +56,17 @@ TEST_F(PriceFieldTest, ParsePrice) {
   price_field.label = ASCIIToUTF16("name your price");
   price_field.name = ASCIIToUTF16("userPrice");
 
-  list_.push_back(
-      std::make_unique<AutofillField>(price_field, ASCIIToUTF16("price1")));
+  price_field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(price_field));
+  FieldRendererId price1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("price1")) !=
+  ASSERT_TRUE(field_candidates_map_.find(price1) !=
               field_candidates_map_.end());
-  EXPECT_EQ(PRICE,
-            field_candidates_map_[ASCIIToUTF16("price1")].BestHeuristicType());
+  EXPECT_EQ(PRICE, field_candidates_map_[price1].BestHeuristicType());
 }
 
 TEST_F(PriceFieldTest, ParseNonPrice) {
@@ -69,8 +76,8 @@ TEST_F(PriceFieldTest, ParseNonPrice) {
   address_field.label = ASCIIToUTF16("Name");
   address_field.name = ASCIIToUTF16("firstName");
 
-  list_.push_back(
-      std::make_unique<AutofillField>(address_field, ASCIIToUTF16("name1")));
+  address_field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(address_field));
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);

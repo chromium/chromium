@@ -660,7 +660,7 @@ void FormStructure::DetermineHeuristicTypes(LogManager* log_manager) {
     const FieldCandidatesMap field_type_map = FormField::ParseFormFields(
         fields_, page_language_, is_form_tag_, log_manager);
     for (const auto& field : fields_) {
-      const auto iter = field_type_map.find(field->unique_name());
+      const auto iter = field_type_map.find(field->unique_renderer_id);
       if (iter != field_type_map.end()) {
         field->set_heuristic_type(iter->second.BestHeuristicType());
       }

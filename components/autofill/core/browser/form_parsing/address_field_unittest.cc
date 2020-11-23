@@ -39,9 +39,16 @@ class AddressFieldTest : public testing::Test {
         static_cast<AddressField*>(field.release()));
   }
 
+  FieldRendererId MakeFieldRendererId() {
+    return FieldRendererId(++id_counter_);
+  }
+
   std::vector<std::unique_ptr<AutofillField>> list_;
   std::unique_ptr<AddressField> field_;
   FieldCandidatesMap field_candidates_map_;
+
+ private:
+  uint64_t id_counter_ = 0;
 };
 
 TEST_F(AddressFieldTest, Empty) {
@@ -63,17 +70,17 @@ TEST_F(AddressFieldTest, ParseOneLineAddress) {
 
   field.label = ASCIIToUTF16("Address");
   field.name = ASCIIToUTF16("address");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("addr1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId addr1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("addr1")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(addr1) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_LINE1,
-            field_candidates_map_[ASCIIToUTF16("addr1")].BestHeuristicType());
+            field_candidates_map_[addr1].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseTwoLineAddress) {
@@ -82,26 +89,26 @@ TEST_F(AddressFieldTest, ParseTwoLineAddress) {
 
   field.label = ASCIIToUTF16("Address");
   field.name = ASCIIToUTF16("address");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("addr1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId addr1 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("address2");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("addr2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId addr2 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("addr1")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(addr1) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_LINE1,
-            field_candidates_map_[ASCIIToUTF16("addr1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("addr2")) !=
-              field_candidates_map_.end());
+            field_candidates_map_[addr1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(addr2) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_LINE2,
-            field_candidates_map_[ASCIIToUTF16("addr2")].BestHeuristicType());
+            field_candidates_map_[addr2].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseThreeLineAddress) {
@@ -110,35 +117,35 @@ TEST_F(AddressFieldTest, ParseThreeLineAddress) {
 
   field.label = ASCIIToUTF16("Address Line1");
   field.name = ASCIIToUTF16("Address1");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("addr1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId addr1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Address Line2");
   field.name = ASCIIToUTF16("Address2");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("addr2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId addr2 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Address Line3");
   field.name = ASCIIToUTF16("Address3");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("addr3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId addr3 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("addr1")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(addr1) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_LINE1,
-            field_candidates_map_[ASCIIToUTF16("addr1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("addr2")) !=
-              field_candidates_map_.end());
+            field_candidates_map_[addr1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(addr2) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_LINE2,
-            field_candidates_map_[ASCIIToUTF16("addr2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("addr3")) !=
-              field_candidates_map_.end());
+            field_candidates_map_[addr2].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(addr3) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_LINE3,
-            field_candidates_map_[ASCIIToUTF16("addr3")].BestHeuristicType());
+            field_candidates_map_[addr3].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseStreetAddressFromTextArea) {
@@ -147,16 +154,17 @@ TEST_F(AddressFieldTest, ParseStreetAddressFromTextArea) {
 
   field.label = ASCIIToUTF16("Address");
   field.name = ASCIIToUTF16("address");
-  list_.push_back(std::make_unique<AutofillField>(field, ASCIIToUTF16("addr")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId addr = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("addr")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(addr) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_STREET_ADDRESS,
-            field_candidates_map_[ASCIIToUTF16("addr")].BestHeuristicType());
+            field_candidates_map_[addr].BestHeuristicType());
 }
 
 // Tests that fields are classified as |ADDRESS_HOME_STREET_NAME| and
@@ -173,28 +181,29 @@ TEST_F(AddressFieldTest, ParseStreetNameAndHouseNumber) {
 
   field.label = ASCIIToUTF16("Street");
   field.name = ASCIIToUTF16("street");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("street")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId street = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("House number");
   field.name = ASCIIToUTF16("house-number");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("house")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId house = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("street")) !=
+  ASSERT_TRUE(field_candidates_map_.find(street) !=
               field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_STREET_NAME,
-            field_candidates_map_[ASCIIToUTF16("street")].BestHeuristicType());
+            field_candidates_map_[street].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("house")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(house) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_HOUSE_NUMBER,
-            field_candidates_map_[ASCIIToUTF16("house")].BestHeuristicType());
+            field_candidates_map_[house].BestHeuristicType());
 }
 
 // Tests that the field is not classified as |ADDRESS_HOME_STREET_NAME| when
@@ -211,8 +220,9 @@ TEST_F(AddressFieldTest, NotParseStreetNameWithoutHouseNumber) {
 
   field.label = ASCIIToUTF16("Street");
   field.name = ASCIIToUTF16("street");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("street")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId street = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
@@ -224,7 +234,7 @@ TEST_F(AddressFieldTest, NotParseStreetNameWithoutHouseNumber) {
     return;
 
   EXPECT_NE(ADDRESS_HOME_STREET_NAME,
-            field_candidates_map_[ASCIIToUTF16("street")].BestHeuristicType());
+            field_candidates_map_[street].BestHeuristicType());
 }
 
 // Tests that the field is not classified as |ADDRESS_HOME_HOUSE_NUMBER| when
@@ -241,8 +251,9 @@ TEST_F(AddressFieldTest, NotParseHouseNumberWithoutStreetName) {
 
   field.label = ASCIIToUTF16("House number");
   field.name = ASCIIToUTF16("house-number");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("house")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId house = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
@@ -254,7 +265,7 @@ TEST_F(AddressFieldTest, NotParseHouseNumberWithoutStreetName) {
     return;
 
   EXPECT_NE(ADDRESS_HOME_HOUSE_NUMBER,
-            field_candidates_map_[ASCIIToUTF16("house")].BestHeuristicType());
+            field_candidates_map_[house].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseCity) {
@@ -263,17 +274,17 @@ TEST_F(AddressFieldTest, ParseCity) {
 
   field.label = ASCIIToUTF16("City");
   field.name = ASCIIToUTF16("city");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("city1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId city1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("city1")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(city1) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_CITY,
-            field_candidates_map_[ASCIIToUTF16("city1")].BestHeuristicType());
+            field_candidates_map_[city1].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseState) {
@@ -282,17 +293,18 @@ TEST_F(AddressFieldTest, ParseState) {
 
   field.label = ASCIIToUTF16("State");
   field.name = ASCIIToUTF16("state");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("state1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId state1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("state1")) !=
+  ASSERT_TRUE(field_candidates_map_.find(state1) !=
               field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_STATE,
-            field_candidates_map_[ASCIIToUTF16("state1")].BestHeuristicType());
+            field_candidates_map_[state1].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseZip) {
@@ -301,16 +313,16 @@ TEST_F(AddressFieldTest, ParseZip) {
 
   field.label = ASCIIToUTF16("Zip");
   field.name = ASCIIToUTF16("zip");
-  list_.push_back(std::make_unique<AutofillField>(field, ASCIIToUTF16("zip1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId zip1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("zip1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(ADDRESS_HOME_ZIP,
-            field_candidates_map_[ASCIIToUTF16("zip1")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(zip1) != field_candidates_map_.end());
+  EXPECT_EQ(ADDRESS_HOME_ZIP, field_candidates_map_[zip1].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseStateAndZipOneLabel) {
@@ -319,25 +331,25 @@ TEST_F(AddressFieldTest, ParseStateAndZipOneLabel) {
 
   field.label = ASCIIToUTF16("State/Province, Zip/Postal Code");
   field.name = ASCIIToUTF16("state");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("state")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId state = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("State/Province, Zip/Postal Code");
   field.name = ASCIIToUTF16("zip");
-  list_.push_back(std::make_unique<AutofillField>(field, ASCIIToUTF16("zip")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId zip = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("state")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(state) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_STATE,
-            field_candidates_map_[ASCIIToUTF16("state")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("zip")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(ADDRESS_HOME_ZIP,
-            field_candidates_map_[ASCIIToUTF16("zip")].BestHeuristicType());
+            field_candidates_map_[state].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(zip) != field_candidates_map_.end());
+  EXPECT_EQ(ADDRESS_HOME_ZIP, field_candidates_map_[zip].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseCountry) {
@@ -346,18 +358,18 @@ TEST_F(AddressFieldTest, ParseCountry) {
 
   field.label = ASCIIToUTF16("Country");
   field.name = ASCIIToUTF16("country");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("country1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId country1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("country1")) !=
+  ASSERT_TRUE(field_candidates_map_.find(country1) !=
               field_candidates_map_.end());
-  EXPECT_EQ(
-      ADDRESS_HOME_COUNTRY,
-      field_candidates_map_[ASCIIToUTF16("country1")].BestHeuristicType());
+  EXPECT_EQ(ADDRESS_HOME_COUNTRY,
+            field_candidates_map_[country1].BestHeuristicType());
 }
 
 TEST_F(AddressFieldTest, ParseCompany) {
@@ -366,18 +378,17 @@ TEST_F(AddressFieldTest, ParseCompany) {
 
   field.label = ASCIIToUTF16("Company");
   field.name = ASCIIToUTF16("company");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("company1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId company1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("company1")) !=
+  ASSERT_TRUE(field_candidates_map_.find(company1) !=
               field_candidates_map_.end());
-  EXPECT_EQ(
-      COMPANY_NAME,
-      field_candidates_map_[ASCIIToUTF16("company1")].BestHeuristicType());
+  EXPECT_EQ(COMPANY_NAME, field_candidates_map_[company1].BestHeuristicType());
 }
 
 // Tests that the city, state, country and zip-code fields are correctly
@@ -388,48 +399,49 @@ TEST_F(AddressFieldTest, ParseCityStateCountryZipcodeTogether) {
 
   field.label = ASCIIToUTF16("City");
   field.name = ASCIIToUTF16("city");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("city1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId city1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("State");
   field.name = ASCIIToUTF16("state");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("state1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId state1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Country");
   field.name = ASCIIToUTF16("country");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("country1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId country1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Zip");
   field.name = ASCIIToUTF16("zip");
-  list_.push_back(std::make_unique<AutofillField>(field, ASCIIToUTF16("zip1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId zip1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("city1")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(city1) != field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_CITY,
-            field_candidates_map_[ASCIIToUTF16("city1")].BestHeuristicType());
+            field_candidates_map_[city1].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("state1")) !=
+  ASSERT_TRUE(field_candidates_map_.find(state1) !=
               field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_STATE,
-            field_candidates_map_[ASCIIToUTF16("state1")].BestHeuristicType());
+            field_candidates_map_[state1].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("country1")) !=
+  ASSERT_TRUE(field_candidates_map_.find(country1) !=
               field_candidates_map_.end());
-  EXPECT_EQ(
-      ADDRESS_HOME_COUNTRY,
-      field_candidates_map_[ASCIIToUTF16("country1")].BestHeuristicType());
+  EXPECT_EQ(ADDRESS_HOME_COUNTRY,
+            field_candidates_map_[country1].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("zip1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(ADDRESS_HOME_ZIP,
-            field_candidates_map_[ASCIIToUTF16("zip1")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(zip1) != field_candidates_map_.end());
+  EXPECT_EQ(ADDRESS_HOME_ZIP, field_candidates_map_[zip1].BestHeuristicType());
 }
 
 // Tests that the field is classified as |ADDRESS_HOME_COUNTRY| when the field
@@ -440,19 +452,19 @@ TEST_F(AddressFieldTest, ParseCountryLabelRegion) {
 
   field.label = ASCIIToUTF16("Country/Region");
   field.name = ASCIIToUTF16("country");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("country1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId country1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("country1")) !=
+  ASSERT_TRUE(field_candidates_map_.find(country1) !=
               field_candidates_map_.end());
-  EXPECT_EQ(
-      ADDRESS_HOME_COUNTRY,
-      field_candidates_map_[ASCIIToUTF16("country1")].BestHeuristicType());
+  EXPECT_EQ(ADDRESS_HOME_COUNTRY,
+            field_candidates_map_[country1].BestHeuristicType());
 }
 
 // Tests that the field is classified as |ADDRESS_HOME_COUNTRY| when the field
@@ -463,19 +475,19 @@ TEST_F(AddressFieldTest, ParseCountryNameRegion) {
 
   field.label = ASCIIToUTF16("Land");
   field.name = ASCIIToUTF16("client_region");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("country1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId country1 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("country1")) !=
+  ASSERT_TRUE(field_candidates_map_.find(country1) !=
               field_candidates_map_.end());
-  EXPECT_EQ(
-      ADDRESS_HOME_COUNTRY,
-      field_candidates_map_[ASCIIToUTF16("country1")].BestHeuristicType());
+  EXPECT_EQ(ADDRESS_HOME_COUNTRY,
+            field_candidates_map_[country1].BestHeuristicType());
 }
 
 }  // namespace autofill

@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FIELD_CANDIDATES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FIELD_CANDIDATES_H_
 
-#include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/renderer_id.h"
 
 namespace autofill {
 
@@ -50,7 +51,7 @@ class FieldCandidates {
 };
 
 // A map from the field's unique name to its possible candidates.
-using FieldCandidatesMap = std::unordered_map<base::string16, FieldCandidates>;
+using FieldCandidatesMap = base::flat_map<FieldRendererId, FieldCandidates>;
 
 }  // namespace autofill
 

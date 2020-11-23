@@ -18,6 +18,13 @@ using base::ASCIIToUTF16;
 
 namespace autofill {
 
+namespace {
+FieldRendererId MakeFieldRendererId() {
+  static uint64_t id_counter_ = 0;
+  return FieldRendererId(++id_counter_);
+}
+}  // namespace
+
 TEST(FormFieldTest, Match) {
   AutofillField field;
 
@@ -117,8 +124,8 @@ TEST(FormFieldTest, ParseFormFields) {
 
   field_data.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field_data.label = ASCIIToUTF16("Is PO Box");
-  fields.push_back(
-      std::make_unique<AutofillField>(field_data, field_data.label));
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
 
   // Does not parse since there are only field and it's checkable.
   // An empty page_language means the language is unknown and patterns of all
@@ -128,10 +135,9 @@ TEST(FormFieldTest, ParseFormFields) {
 
   // reset |is_checkable| to false.
   field_data.check_status = FormFieldData::CheckStatus::kNotCheckable;
-
   field_data.label = ASCIIToUTF16("Address line1");
-  fields.push_back(
-      std::make_unique<AutofillField>(field_data, field_data.label));
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
 
   // Parse a single address line 1 field.
   ASSERT_EQ(0u,
@@ -139,8 +145,8 @@ TEST(FormFieldTest, ParseFormFields) {
 
   // Parses address line 1 and 2.
   field_data.label = ASCIIToUTF16("Address line2");
-  fields.push_back(
-      std::make_unique<AutofillField>(field_data, field_data.label));
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
 
   // An empty page_language means the language is unknown and patterns of
   // all languages are used.
@@ -156,12 +162,12 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
   field_data.form_control_type = "text";
 
   field_data.label = ASCIIToUTF16("Address line 1");
-  fields.push_back(
-      std::make_unique<AutofillField>(field_data, field_data.label));
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
 
   field_data.label = ASCIIToUTF16("Address line 2");
-  fields.push_back(
-      std::make_unique<AutofillField>(field_data, field_data.label));
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
 
   // Don't parse forms with 2 fields.
   // An empty page_language means the language is unknown and patterns of all
@@ -170,8 +176,8 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
             FormField::ParseFormFields(fields, LanguageCode(""), true).size());
 
   field_data.label = ASCIIToUTF16("Search");
-  fields.push_back(
-      std::make_unique<AutofillField>(field_data, field_data.label));
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
 
   // Before the fix in kAutofillFixFillableFieldTypes, we would parse the form
   // now, although a search field is not fillable.

@@ -42,6 +42,13 @@ class NameFieldTest : public testing::Test {
   std::vector<std::unique_ptr<AutofillField>> list_;
   std::unique_ptr<NameField> field_;
   FieldCandidatesMap field_candidates_map_;
+
+  FieldRendererId MakeFieldRendererId() {
+    return FieldRendererId(++id_counter_);
+  }
+
+ private:
+  uint64_t id_counter_ = 0;
 };
 
 TEST_F(NameFieldTest, FirstMiddleLast) {
@@ -50,35 +57,32 @@ TEST_F(NameFieldTest, FirstMiddleLast) {
 
   field.label = ASCIIToUTF16("First Name");
   field.name = ASCIIToUTF16("First");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Middle Name");
   field.name = ASCIIToUTF16("Middle");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Last Name");
   field.name = ASCIIToUTF16("Last");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name3 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_MIDDLE, field_candidates_map_[name2].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name3) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name3].BestHeuristicType());
 }
 
 TEST_F(NameFieldTest, FirstMiddleLast2) {
@@ -87,35 +91,32 @@ TEST_F(NameFieldTest, FirstMiddleLast2) {
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("firstName");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("middleName");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("lastName");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name3 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_MIDDLE, field_candidates_map_[name2].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name3) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name3].BestHeuristicType());
 }
 
 // Test that a field for a honoric title is parsed correctly.
@@ -132,38 +133,36 @@ TEST_F(NameFieldTest, HonorificPrefixFirstLast) {
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("salutation");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name0")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name0 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name0")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(name0) != field_candidates_map_.end());
   EXPECT_EQ(NAME_HONORIFIC_PREFIX,
-            field_candidates_map_[ASCIIToUTF16("name0")].BestHeuristicType());
+            field_candidates_map_[name0].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name2].BestHeuristicType());
 }
 
 TEST_F(NameFieldTest, FirstLast) {
@@ -172,26 +171,24 @@ TEST_F(NameFieldTest, FirstLast) {
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name2].BestHeuristicType());
 }
 
 TEST_F(NameFieldTest, FirstLast2) {
@@ -200,26 +197,24 @@ TEST_F(NameFieldTest, FirstLast2) {
 
   field.label = ASCIIToUTF16("Name");
   field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Name");
   field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name2].BestHeuristicType());
 }
 
 TEST_F(NameFieldTest, FirstLastMiddleWithSpaces) {
@@ -228,35 +223,32 @@ TEST_F(NameFieldTest, FirstLastMiddleWithSpaces) {
 
   field.label = ASCIIToUTF16("First  Name");
   field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Middle  Name");
   field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Last  Name");
   field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name3 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_MIDDLE, field_candidates_map_[name2].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name3) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name3].BestHeuristicType());
 }
 
 TEST_F(NameFieldTest, FirstLastEmpty) {
@@ -265,26 +257,24 @@ TEST_F(NameFieldTest, FirstLastEmpty) {
 
   field.label = ASCIIToUTF16("Name");
   field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name2].BestHeuristicType());
 }
 
 TEST_F(NameFieldTest, FirstMiddleLastEmpty) {
@@ -293,35 +283,33 @@ TEST_F(NameFieldTest, FirstMiddleLastEmpty) {
 
   field.label = ASCIIToUTF16("Name");
   field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name3 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
   EXPECT_EQ(NAME_MIDDLE_INITIAL,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+            field_candidates_map_[name2].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name3) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name3].BestHeuristicType());
 }
 
 TEST_F(NameFieldTest, MiddleInitial) {
@@ -330,35 +318,33 @@ TEST_F(NameFieldTest, MiddleInitial) {
 
   field.label = ASCIIToUTF16("First Name");
   field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("MI");
   field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("Last Name");
   field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name3 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
   EXPECT_EQ(NAME_MIDDLE_INITIAL,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+            field_candidates_map_[name2].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name3) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name3].BestHeuristicType());
 }
 
 TEST_F(NameFieldTest, MiddleInitialNoLastName) {
@@ -367,13 +353,13 @@ TEST_F(NameFieldTest, MiddleInitialNoLastName) {
 
   field.label = ASCIIToUTF16("First Name");
   field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
 
   field.label = ASCIIToUTF16("MI");
   field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
@@ -395,48 +381,45 @@ TEST_F(NameFieldTest, HonorificPrefixAndFirstNameAndHispanicLastNames) {
 
   field.label = ASCIIToUTF16("tratamiento");
   field.name = ASCIIToUTF16("tratamiento");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name3 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("nombre");
   field.name = ASCIIToUTF16("nombre");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name0")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name0 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("apellido paterno");
   field.name = ASCIIToUTF16("apellido_paterno");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("segunda apellido");
   field.name = ASCIIToUTF16("segunda_apellido");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
 
   field_ = Parse(&scanner);
   field_->AddClassificationsForTesting(&field_candidates_map_);
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name0")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name0")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name0) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name0].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST_FIRST, field_candidates_map_[name1].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST_SECOND,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST_SECOND, field_candidates_map_[name2].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(name3) != field_candidates_map_.end());
   EXPECT_EQ(NAME_HONORIFIC_PREFIX,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+            field_candidates_map_[name3].BestHeuristicType());
 }
 
 // Tests that a website with a first and second surname field is parsed
@@ -453,45 +436,41 @@ TEST_F(NameFieldTest, FirstNameAndOptionalMiddleNameAndHispanicLastNames) {
 
   field.label = ASCIIToUTF16("nombre");
   field.name = ASCIIToUTF16("nombre");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name0")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name0 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("apellido paterno");
   field.name = ASCIIToUTF16("apellido_paterno");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("segunda apellido");
   field.name = ASCIIToUTF16("segunda_apellido");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   field.label = ASCIIToUTF16("middle name");
   field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name3 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
 
   field_ = Parse(&scanner);
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name0")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name0")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST_SECOND,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name0) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name0].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST_SECOND, field_candidates_map_[name2].BestHeuristicType());
 
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name3) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_MIDDLE, field_candidates_map_[name3].BestHeuristicType());
 }
 
 // This case is from the dell.com checkout page.  The middle initial "mi" string
@@ -502,35 +481,33 @@ TEST_F(NameFieldTest, MiddleInitialAtEnd) {
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("XXXnameXXXfirst");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name1 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("XXXnameXXXmi");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name2 = list_.back()->unique_renderer_id;
 
   field.label = base::string16();
   field.name = ASCIIToUTF16("XXXnameXXXlast");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name3 = list_.back()->unique_renderer_id;
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
   field_->AddClassificationsForTesting(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
+  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FIRST, field_candidates_map_[name1].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
   EXPECT_EQ(NAME_MIDDLE_INITIAL,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+            field_candidates_map_[name2].BestHeuristicType());
+  ASSERT_TRUE(field_candidates_map_.find(name3) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_LAST, field_candidates_map_[name3].BestHeuristicType());
 }
 
 // Test the coverage of all found strings for first and second last names.
