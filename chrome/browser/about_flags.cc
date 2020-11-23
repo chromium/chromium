@@ -2415,6 +2415,27 @@ const FeatureEntry::FeatureVariation kPrerender2Variations[] = {
      base::size(kPrerender2DisableActivation), nullptr},
 };
 
+const FeatureEntry::FeatureParam kSubresourceRedirectPublicImageHints[] = {
+    {"enable_public_image_hints_based_compression", "true"},
+    {"enable_subresource_server_redirect", "true"},
+    {"enable_login_robots_based_compression", "false"},
+};
+
+const FeatureEntry::FeatureParam
+    kSubresourceRedirectLoginRobotsBasedCompression[] = {
+        {"enable_login_robots_based_compression", "true"},
+        {"enable_subresource_server_redirect", "true"},
+        {"enable_public_image_hints_based_compression", "false"},
+};
+
+const FeatureEntry::FeatureVariation kSubresourceRedirectVariations[] = {
+    {"Public image hints based compression",
+     kSubresourceRedirectPublicImageHints,
+     base::size(kSubresourceRedirectPublicImageHints), nullptr},
+    {"robots.txt allowed image compression in non logged-in pages",
+     kSubresourceRedirectLoginRobotsBasedCompression,
+     base::size(kSubresourceRedirectLoginRobotsBasedCompression), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -3191,7 +3212,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-subresource-redirect",
      flag_descriptions::kEnableSubresourceRedirectName,
      flag_descriptions::kEnableSubresourceRedirectDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kSubresourceRedirect)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kSubresourceRedirect,
+                                    kSubresourceRedirectVariations,
+                                    "SubresourceRedirect")},
 #if defined(OS_ANDROID)
     {"enable-offline-previews", flag_descriptions::kEnableOfflinePreviewsName,
      flag_descriptions::kEnableOfflinePreviewsDescription, kOsAndroid,

@@ -993,9 +993,9 @@ const char kEnableUseZoomForDsfChoiceEnabled[] = "Enabled";
 const char kEnableUseZoomForDsfChoiceDisabled[] = "Disabled";
 
 const char kEnableSubresourceRedirectName[] =
-    "Enable Render Level Data Use Optimization";
+    "Enable Subresource Redirect Compression";
 const char kEnableSubresourceRedirectDescription[] =
-    "Allow Render Level Data Use Optimization";
+    "Allow subresource compression for data savings";
 
 const char kEnableWebAuthenticationCableV2SupportName[] =
     "Web Authentication caBLE v2 support";
