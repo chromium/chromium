@@ -277,6 +277,13 @@ class CrostiniManager::CrostiniRestarter
     // separate.
     if (!is_initial_install_) {
       base::UmaHistogramEnumeration("Crostini.RestarterResult", result_);
+      if (crostini_manager_->IsUncleanStartup()) {
+        base::UmaHistogramEnumeration("Crostini.UncleanSession.RestarterResult",
+                                      result_);
+      } else {
+        base::UmaHistogramEnumeration("Crostini.CleanSession.RestarterResult",
+                                      result_);
+      }
     }
     crostini_manager_->RemoveVmShutdownObserver(this);
     if (completed_callback_) {

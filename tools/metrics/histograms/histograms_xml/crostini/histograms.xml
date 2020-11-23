@@ -140,6 +140,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Time taken for successful backup.</summary>
 </histogram>
 
+<histogram name="Crostini.CleanSession.RestarterResult" enum="CrostiniResult"
+    expires_after="2021-04-04">
+  <owner>clumptini@google.com</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is the same as
+    Crostini.RestarterResult except only emitted in sessions that happen after a
+    clean start (e.g. after fresh login).
+  </summary>
+</histogram>
+
 <histogram name="Crostini.ContainerOsVersion" enum="CrostiniContainerOsVersion"
     expires_after="2021-04-04">
   <owner>clumptini@google.com</owner>
@@ -253,7 +264,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The result of a single run of CrostiniRestarter. This is recorded any time
-    the crostini restart flow is triggered, except during the initial install.
+    the crostini restart flow is triggered except during the initial install.
   </summary>
 </histogram>
 
@@ -379,6 +390,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The time taken for the crostini installer to finish successfully. This is
     recorded any time the user successfully installs crostini. This includes
     cases where e.g. they previously tried installing and got an error.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.UncleanSession.RestarterResult" enum="CrostiniResult"
+    expires_after="2021-04-04">
+  <owner>clumptini@google.com</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is the same as
+    Crostini.RestarterResult except only emitted in sessions that happen after
+    an unclean restart (e.g. after a Chrome crash).
   </summary>
 </histogram>
 

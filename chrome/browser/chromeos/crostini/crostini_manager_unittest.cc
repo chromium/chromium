@@ -739,6 +739,10 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   void ExpectRestarterUmaCount(int count) {
     histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", count);
     histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", count);
+    histogram_tester_.ExpectTotalCount("Crostini.CleanSession.RestarterResult",
+                                       count);
+    histogram_tester_.ExpectTotalCount(
+        "Crostini.UncleanSession.RestarterResult", 0);
     histogram_tester_.ExpectTotalCount("Crostini.Installer.Started", 0);
   }
 
@@ -788,6 +792,33 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
   EXPECT_EQ(container_info.value().username,
             DefaultContainerUserNameForProfile(profile()));
   ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
+  crostini_manager()->SetUncleanStartupForTesting(true);
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  // Mount only performed for termina/penguin.
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  EXPECT_EQ(1, restart_crostini_callback_count_);
+
+  base::Optional<ContainerInfo> container_info =
+      crostini_manager()->GetContainerInfo(container_id());
+  EXPECT_EQ(container_info.value().username,
+            DefaultContainerUserNameForProfile(profile()));
+  histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 1);
+  histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 1);
+  histogram_tester_.ExpectTotalCount("Crostini.CleanSession.RestarterResult",
+                                     0);
+  histogram_tester_.ExpectTotalCount("Crostini.UncleanSession.RestarterResult",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Crostini.Installer.Started", 0);
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartDelayAndSuccessWhenVmStopping) {
