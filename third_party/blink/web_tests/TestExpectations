@@ -1098,7 +1098,6 @@ crbug.com/1066626 virtual/layout_ng_block_frag/fast/multicol/layers-split-across
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/line-too-tall-for-second-outer-row.html [ Failure ]
 crbug.com/1066626 virtual/layout_ng_block_frag/fast/multicol/mixed-opacity-fixed-test.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/mixed-opacity-test.html [ Crash Failure ]
-crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/mixed-positioning-stacking-order.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-auto-height-short-first-row.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-balanced-inner-column-count-1-with-forced-break.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-columns.html [ Failure ]
