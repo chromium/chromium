@@ -102,6 +102,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Profile.ColorsUniqueness" enum="ProfileColorsUniqueness"
+    expires_after="2021-05-30">
+  <owner>jkrcal@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records how profile colors are unique on all profiles of the installation.
+    Recorded every 24 hours (or at the soonest moment after that when Chrome is
+    started again).
+  </summary>
+</histogram>
+
 <histogram name="Profile.CookiesSize" units="MB" expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>Size of the cookies database.</summary>

@@ -26,6 +26,8 @@ void LogProfileMetricsCounts(const Counts& counts) {
                              counts.gaia_icon);
     UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfProfilesWithAuthErrors",
                              counts.auth_errors);
+    UMA_HISTOGRAM_ENUMERATION("Profile.ColorsUniqueness",
+                              counts.colors_uniqueness);
   }
 }
 
