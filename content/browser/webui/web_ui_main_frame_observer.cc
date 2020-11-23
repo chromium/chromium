@@ -20,14 +20,22 @@
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #endif
 
 namespace content {
+
 WebUIMainFrameObserver::WebUIMainFrameObserver(WebUIImpl* web_ui,
                                                WebContents* contents)
     : WebContentsObserver(contents), web_ui_(web_ui) {}
 WebUIMainFrameObserver::~WebUIMainFrameObserver() = default;
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+void WebUIMainFrameObserver::DisableJavaScriptErrorReporting() {
+  error_reporting_enabled_ = false;
+}
+#endif
 
 void WebUIMainFrameObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
@@ -50,6 +58,11 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     const base::string16& source_id,
     const base::Optional<base::string16>& untrusted_stack_trace) {
   VLOG(3) << "OnDidAddMessageToConsole called for " << message;
+  if (!error_reporting_enabled_) {
+    VLOG(3) << "Message not reported, error reporting disabled for this page";
+    return;
+  }
+
   if (log_level != blink::mojom::ConsoleMessageLevel::kError) {
     VLOG(3) << "Message not reported, not an error";
     return;
@@ -58,6 +71,14 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   if (!base::FeatureList::IsEnabled(
           features::kSendWebUIJavaScriptErrorReports)) {
     VLOG(3) << "Message not reported, error report sending flag off";
+    return;
+  }
+
+  // Some WebUI pages have another WebUI page in an <iframe>. Both
+  // WebUIMainFrameObservers will get a callback when either page gets an error.
+  // To avoid duplicates, only report on errors from this page's frame.
+  if (source_frame != web_ui_->frame_host()) {
+    VLOG(3) << "Message not reported, different frame";
     return;
   }
 
@@ -77,6 +98,17 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     VLOG(3) << "Message not reported, invalid URL";
     return;
   }
+
+  // If this is not a chrome:// page, do not report the error. In particular,
+  // some WebUIs use chrome-untrusted:// to host pages with some
+  // not-controlled-by-Chrome content. The code must not send reports for such
+  // content because Chrome cannot control what information is being included in
+  // the reports.
+  if (!url.SchemeIs(kChromeUIScheme)) {
+    VLOG(3) << "Message not reported, not a chrome:// URL";
+    return;
+  }
+
   std::string redacted_url = url.GetOrigin().spec();
   // Path will start with / and GetOrigin ends with /. Cut one / to avoid
   // chrome://discards//graph.
@@ -84,12 +116,6 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     redacted_url.pop_back();
   }
   base::StrAppend(&redacted_url, {url.path_piece()});
-
-  // TODO(https://crbug.com/1121816): Don't send error reports for subframes in
-  // most cases.
-
-  // TODO(https://crbug.com/1121816): Don't send error reports for non-chrome://
-  // URLs in most cases.
 
   JavaScriptErrorReport report;
   report.message = base::UTF16ToUTF8(message);

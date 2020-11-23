@@ -394,11 +394,10 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, NavigateWhileWebUISend) {
   web_contents->GetWebUI()->AddMessageHandler(base::WrapUnique(test_handler));
 
   auto* webui = static_cast<WebUIImpl*>(web_contents->GetWebUI());
-  EXPECT_EQ(web_contents->GetMainFrame(), webui->frame_host_for_test());
+  EXPECT_EQ(web_contents->GetMainFrame(), webui->frame_host());
 
-  test_handler->set_finish_closure(base::BindLambdaForTesting([&]() {
-    EXPECT_NE(web_contents->GetMainFrame(), webui->frame_host_for_test());
-  }));
+  test_handler->set_finish_closure(base::BindLambdaForTesting(
+      [&]() { EXPECT_NE(web_contents->GetMainFrame(), webui->frame_host()); }));
 
   bool received_send_message = false;
   test_handler->set_send_message_closure(

@@ -273,6 +273,12 @@ WebUIImpl::GetHandlersForTesting() {
   return &handlers_;
 }
 
+void WebUIImpl::DisableJavaScriptErrorReporting() {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  web_contents_observer_->DisableJavaScriptErrorReporting();
+#endif
+}
+
 // WebUIImpl, protected: -------------------------------------------------------
 
 void WebUIImpl::AddMessageHandler(

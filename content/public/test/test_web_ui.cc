@@ -155,6 +155,8 @@ TestWebUI::GetHandlersForTesting() {
   return &handlers_;
 }
 
+void TestWebUI::DisableJavaScriptErrorReporting() {}
+
 TestWebUI::CallData::CallData(const std::string& function_name)
     : function_name_(function_name) {
 }

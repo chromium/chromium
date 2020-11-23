@@ -91,10 +91,11 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
       const std::vector<const base::Value*>& args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
+  void DisableJavaScriptErrorReporting() override;
 
   const mojo::Remote<mojom::WebUI>& GetRemoteForTest() const { return remote_; }
 
-  RenderFrameHost* frame_host_for_test() const { return frame_host_; }
+  RenderFrameHost* frame_host() const { return frame_host_; }
 
  private:
   friend class WebUIMainFrameObserver;

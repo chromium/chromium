@@ -25,12 +25,19 @@ class RenderFrameHost;
 class WebContents;
 class WebUIImpl;
 
+// The WebContentObserver for WebUIImpl. Each WebUIImpl has exactly one
+// WebUIMainFrameObserver to watch for notifications from the associated
+// WebContents object.
 class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
  public:
   WebUIMainFrameObserver(WebUIImpl* web_ui, WebContents* contents);
   ~WebUIMainFrameObserver() override;
   WebUIMainFrameObserver(const WebUIMainFrameObserver& rhs) = delete;
   WebUIMainFrameObserver& operator=(const WebUIMainFrameObserver& rhs) = delete;
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  void DisableJavaScriptErrorReporting();
+#endif
 
  protected:
   friend class WebUIMainFrameObserverTest;
@@ -54,6 +61,11 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
  private:
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // Do we report JavaScript errors ?
+  bool error_reporting_enabled_ = true;
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
   WebUIImpl* web_ui_;
 };
 
