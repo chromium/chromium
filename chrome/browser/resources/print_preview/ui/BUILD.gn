@@ -72,6 +72,7 @@ js_library("app") {
     "..:cloud_print_interface",
     "..:cloud_print_interface_impl",
     "..:native_layer",
+    "..:native_layer_cros",
     "../data:destination",
     "../data:document_info",
     "../data:margins",
@@ -524,6 +525,7 @@ js_library("advanced_settings_item") {
     ":highlight_utils",
     ":settings_behavior",
     "..:print_preview_utils",
+    "../data:cdd",
     "../data:destination",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

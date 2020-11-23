@@ -28,6 +28,9 @@ import {PrintableArea} from '../data/printable_area.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
 import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
+// <if expr="chromeos">
+import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
+// </if>
 
 import {DestinationState} from './destination_settings.js';
 import {PreviewAreaState} from './preview_area.js';
@@ -134,6 +137,11 @@ Polymer({
   /** @private {?NativeLayer} */
   nativeLayer_: null,
 
+  // <if expr="chromeos">
+  /** @private {?NativeLayerCros} */
+  nativeLayerCros_: null,
+  // </if>
+
   /** @private {!EventTracker} */
   tracker_: new EventTracker(),
 
@@ -181,6 +189,9 @@ Polymer({
   attached() {
     document.documentElement.classList.remove('loading');
     this.nativeLayer_ = NativeLayerImpl.getInstance();
+    // <if expr="chromeos">
+    this.nativeLayerCros_ = NativeLayerCrosImpl.getInstance();
+    // </if>
     this.addWebUIListener('print-failed', this.onPrintFailed_.bind(this));
     this.addWebUIListener(
         'print-preset-options', this.onPrintPresetOptions_.bind(this));
@@ -233,7 +244,7 @@ Polymer({
       // <if expr="chromeos">
       if (this.destination_ &&
           this.destination_.origin === DestinationOrigin.CROS) {
-        this.nativeLayer_.recordPrinterStatusHistogram(
+        this.nativeLayerCros_.recordPrinterStatusHistogram(
             this.destination_.printerStatusReason, false);
       }
       // </if>
@@ -364,8 +375,7 @@ Polymer({
   initializeCloudPrint_(cloudPrintUrl, appKioskMode, uiLocale) {
     assert(!this.cloudPrintInterface_);
     this.cloudPrintInterface_ = CloudPrintInterfaceImpl.getInstance();
-    this.cloudPrintInterface_.configure(
-        cloudPrintUrl, assert(this.nativeLayer_), appKioskMode, uiLocale);
+    this.cloudPrintInterface_.configure(cloudPrintUrl, appKioskMode, uiLocale);
     this.tracker_.add(
         assert(this.cloudPrintInterface_).getEventTarget(),
         CloudPrintInterfaceEventType.SUBMIT_DONE, this.close_.bind(this));
@@ -490,7 +500,7 @@ Polymer({
     // <if expr="chromeos">
     if (this.destination_ &&
         this.destination_.origin === DestinationOrigin.CROS) {
-      this.nativeLayer_.recordPrinterStatusHistogram(
+      this.nativeLayerCros_.recordPrinterStatusHistogram(
           this.destination_.printerStatusReason, true);
     }
     // </if>
@@ -503,7 +513,7 @@ Polymer({
     // <if expr="chromeos">
     if (this.destination_ &&
         this.destination_.origin === DestinationOrigin.CROS) {
-      this.nativeLayer_.recordPrinterStatusHistogram(
+      this.nativeLayerCros_.recordPrinterStatusHistogram(
           this.destination_.printerStatusReason, false);
     }
     // </if>

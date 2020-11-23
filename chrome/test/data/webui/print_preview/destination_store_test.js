@@ -11,6 +11,9 @@ import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise} from '../test_util.m.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
+// <if expr="chromeos">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, createDestinationWithCertificateStatus, getCddTemplate, getDefaultInitialSettings, getDestinations, getGoogleDriveDestination, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
@@ -75,6 +78,9 @@ suite(destination_store_test.suiteName, function() {
 
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
+    // <if expr="chromeos">
+    setNativeLayerCrosInstance();
+    // </if>
 
     initialSettings = getDefaultInitialSettings();
     initialSettings.userAccounts = [];

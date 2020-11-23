@@ -9,8 +9,8 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
-
-import {Cdd, CddCapabilities, Destination, DestinationOrigin, DestinationType, RecentDestination, VendorCapability} from './destination.js';
+import {Cdd, CddCapabilities, VendorCapability} from './cdd.js';
+import {Destination, DestinationOrigin, DestinationType, RecentDestination} from './destination.js';
 import {getPrinterTypeForDestination, PrinterType} from './destination_match.js';
 // <if expr="chromeos">
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from './destination_policies.js';

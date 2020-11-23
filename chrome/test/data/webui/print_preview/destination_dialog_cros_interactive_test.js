@@ -10,6 +10,7 @@ import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise, fakeDataBind} from '../test_util.m.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
 
@@ -43,6 +44,7 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
     // Create destinations.
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
+    setNativeLayerCrosInstance();
     const localDestinations = [];
     const destinations = getDestinations(localDestinations);
     const recentDestinations = [makeRecentDestination(destinations[4])];

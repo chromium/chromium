@@ -12,6 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise} from '../test_util.m.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, getGoogleDriveDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
@@ -60,6 +61,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
+    setNativeLayerCrosInstance();
     cloudPrintInterface = new CloudPrintInterfaceStub();
     destinationStore = createDestinationStore();
     destinationStore.setCloudPrintInterface(cloudPrintInterface);

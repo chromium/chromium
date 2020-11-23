@@ -9,6 +9,10 @@ import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js'
 import {getCddTemplate} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {fakeDataBind} from 'chrome://test/test_util.m.js';
 
+// <if expr="chromeos">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
+
 window.print_preview_sidebar_test = {};
 print_preview_sidebar_test.suiteName = 'PrintPreviewSidebarTest';
 /** @enum {string} */
@@ -36,6 +40,9 @@ suite(print_preview_sidebar_test.suiteName, function() {
     // Stub out the native layer and cloud print interface
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
+    // <if expr="chromeos">
+    setNativeLayerCrosInstance();
+    // </if>
     nativeLayer.setLocalDestinationCapabilities(getCddTemplate('FooDevice'));
     cloudPrintInterface = new CloudPrintInterfaceStub();
     CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;

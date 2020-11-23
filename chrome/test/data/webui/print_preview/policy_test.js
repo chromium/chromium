@@ -10,6 +10,10 @@ import {getCddTemplate, getDefaultInitialSettings} from 'chrome://test/print_pre
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 import {TestPluralStringProxy} from 'chrome://test/test_plural_string_proxy.js';
 
+// <if expr="chromeos">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
+
 window.policy_tests = {};
 policy_tests.suiteName = 'PolicyTest';
 /** @enum {string} */
@@ -48,6 +52,9 @@ suite(policy_tests.suiteName, function() {
         getCddTemplate(initialSettings.printerName));
     nativeLayer.setPageCount(3);
     NativeLayerImpl.instance_ = nativeLayer;
+    // <if expr="chromeos">
+    setNativeLayerCrosInstance();
+    // </if>
     const pluginProxy = new TestPluginProxy();
     PluginProxyImpl.instance_ = pluginProxy;
 

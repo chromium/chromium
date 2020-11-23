@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayer, NativeLayerImpl, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayerCros, NativeLayerCrosImpl, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals} from '../chai_assert.js';
 import {waitBeforeNextRender} from '../test_util.m.js';
 
-import {NativeLayerStub} from './native_layer_stub.js';
+import {NativeLayerCrosStub} from './native_layer_cros_stub.js';
 
 window.destination_item_test_cros = {};
 const destination_item_test_cros = window.destination_item_test_cros;
@@ -25,8 +25,8 @@ suite(destination_item_test_cros.suiteName, function() {
   /** @type {!PrintPreviewDestinationListItemElement} */
   let listItem;
 
-  /** @type {?NativeLayerStub} */
-  let nativeLayer = null;
+  /** @type {?NativeLayerCrosStub} */
+  let nativeLayerCros = null;
 
   function setNativeLayerPrinterStatusMap() {
     [{
@@ -44,8 +44,8 @@ suite(destination_item_test_cros.suiteName, function() {
        }],
      }]
         .forEach(
-            status =>
-                nativeLayer.addPrinterStatusToMap(status.printerId, status));
+            status => nativeLayerCros.addPrinterStatusToMap(
+                status.printerId, status));
   }
 
   /** @override */
@@ -55,8 +55,8 @@ suite(destination_item_test_cros.suiteName, function() {
           </print-preview-destination-list-item>`;
 
     // Stub out native layer.
-    nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    nativeLayerCros = new NativeLayerCrosStub();
+    NativeLayerCrosImpl.instance_ = nativeLayerCros;
     setNativeLayerPrinterStatusMap();
 
     listItem = /** @type {!PrintPreviewDestinationListItemElement} */ (

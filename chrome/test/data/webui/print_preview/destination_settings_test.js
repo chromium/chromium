@@ -12,6 +12,9 @@ import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise, fakeDataBind, waitBeforeNextRender} from '../test_util.m.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
+// <if expr="chromeos">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDestinations, getGoogleDriveDestination, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
@@ -36,8 +39,6 @@ destination_settings_test.TestNames = {
   ResetDestinationOnSignOut: 'reset destination on sign out',
   DisabledSaveAsPdf: 'disabled save as pdf',
   NoDestinations: 'no destinations',
-  EulaIsRetrieved: 'eula is retrieved',
-  DriveIsNotMounted: 'drive is not mounted',
 };
 
 suite(destination_settings_test.suiteName, function() {
@@ -95,6 +96,9 @@ suite(destination_settings_test.suiteName, function() {
     // Stub out native layer and cloud print interface.
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
+    // <if expr="chromeos">
+    setNativeLayerCrosInstance();
+    // </if>
     localDestinations = [];
     destinations = getDestinations(localDestinations);
     // Add some extra destinations.
@@ -1012,88 +1016,4 @@ suite(destination_settings_test.suiteName, function() {
         ])
         .then(() => assertDropdownItems(['noDestinations']));
   });
-
-    /**
-     * Tests that destinations with a EULA will fetch the EULA URL when
-     * selected.
-     */
-    test(
-        assert(destination_settings_test.TestNames.EulaIsRetrieved),
-        function() {
-          // Recent destinations start out empty.
-          assertRecentDestinations([]);
-
-          const expectedUrl = 'chrome://os-credits/eula';
-
-          assertEquals(0, nativeLayer.getCallCount('getEulaUrl'));
-
-          initialize();
-
-          return nativeLayer.whenCalled('getEulaUrl')
-              .then(() => {
-                assertEquals(1, nativeLayer.getCallCount('getEulaUrl'));
-                nativeLayer.resetResolver('getEulaUrl');
-
-                // Add printers to the store.
-                destinationSettings.getDestinationStoreForTest()
-                    .startLoadAllDestinations();
-                return nativeLayer.whenCalled('getPrinters');
-              })
-              .then(() => {
-                nativeLayer.setEulaUrl('chrome://os-credits/eula');
-                // Simulate selecting a destination that has a EULA URL from the
-                // dialog.
-                selectDestination(destinations[0]);
-                return nativeLayer.whenCalled('getEulaUrl');
-              })
-              .then(() => {
-                assertEquals(1, nativeLayer.getCallCount('getEulaUrl'));
-                nativeLayer.resetResolver('getEulaUrl');
-                assertEquals(
-                    expectedUrl, destinationSettings.destination.eulaUrl);
-
-                nativeLayer.setEulaUrl('');
-                // Select a destination without a EULA URL.
-                selectDestination(destinations[1]);
-                return nativeLayer.whenCalled('getEulaUrl');
-              })
-              .then(() => {
-                assertEquals(1, nativeLayer.getCallCount('getEulaUrl'));
-                nativeLayer.resetResolver('getEulaUrl');
-                assertEquals('', destinationSettings.destination.eulaUrl);
-
-                // Reselect a destination with a EULA URL. This destination
-                // already had its EULA URL set, so expect that it still retains
-                // it. Since capabilities for this destination are already set,
-                // we don't try to fetch the license again.
-                nativeLayer.resetResolver('getPrinterCapabilities');
-                destinationSettings.$$('#destinationSelect')
-                    .fire('selected-option-change', 'ID1/chrome_os/');
-              })
-              .then(() => {
-                assertEquals(
-                    0, nativeLayer.getCallCount('getPrinterCapabilities'));
-                assertEquals(0, nativeLayer.getCallCount('getEulaUrl'));
-                assertRecentDestinations(['ID1', 'ID2', 'Save as PDF']);
-                assertEquals(
-                    expectedUrl, destinationSettings.destination.eulaUrl);
-              });
-        });
-
-    // Tests that disabling Google Drive on Chrome OS hides the Save to Drive
-    // destination.
-    test(
-        assert(destination_settings_test.TestNames.DriveIsNotMounted),
-        function() {
-          isDriveMounted = false;
-          initialize();
-
-          return nativeLayer.whenCalled('getPrinterCapabilities')
-              .then(() => {
-                return waitBeforeNextRender(destinationSettings);
-              })
-              .then(() => {
-                assertDropdownItems(['Save as PDF/local/']);
-              });
-        });
 });

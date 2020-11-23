@@ -8,6 +8,7 @@ import("//tools/polymer/polymer.gni")
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":cdd",
     ":cloud_parsers",
     ":coordinate2d",
     ":destination",
@@ -30,17 +31,22 @@ js_type_check("closure_compile_module") {
   ]
 }
 
+js_library("cdd") {
+}
+
 js_library("destination_policies") {
 }
 
 js_library("destination_store") {
   deps = [
+    ":cdd",
     ":destination",
     ":destination_match",
     ":local_parsers",
     "..:cloud_print_interface",
     "..:metrics",
     "..:native_layer",
+    "..:native_layer_cros",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:event_tracker.m",
@@ -62,6 +68,7 @@ js_library("local_parsers") {
   deps = [
     ":destination",
     ":destination_match",
+    ":destination_policies",
     "..:native_layer",
     "//ui/webui/resources/js:cr.m",
   ]
@@ -94,7 +101,10 @@ js_library("destination") {
   ]
 
   if (is_chromeos) {
-    deps += [ ":destination_policies" ]
+    deps += [
+      ":destination_policies",
+      "..:native_layer_cros",
+    ]
   }
 }
 

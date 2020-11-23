@@ -133,17 +133,20 @@ void TestDataSource::ReadFile(
         << url.spec() << "=" << file_path.value();
     content = "<script type=\"module\" src=\"" + js_path + "\"></script>";
   } else {
-    // Try the |src_root_| folder first.
+    // Try the |gen_root_| folder first, covering cases where the test file is
+    // generated at build time. We do this first as if a test file exists under
+    // the same name in the src and gen directories, the generated file is
+    // generally the desired file (for example, may have been preprocessed).
     base::FilePath file_path =
-        src_root_.Append(base::FilePath::FromUTF8Unsafe(path));
+        gen_root_.Append(base::FilePath::FromUTF8Unsafe(path));
     if (base::PathExists(file_path)) {
       CHECK(base::ReadFileToString(file_path, &content))
           << url.spec() << "=" << file_path.value();
     } else {
-      // Then try the |gen_root_| folder, covering cases where the test file is
+      // Then try the |src_root_| folder, covering cases where the test file is
       // generated at build time.
       base::FilePath file_path =
-          gen_root_.Append(base::FilePath::FromUTF8Unsafe(path));
+          src_root_.Append(base::FilePath::FromUTF8Unsafe(path));
       CHECK(base::ReadFileToString(file_path, &content))
           << url.spec() << "=" << file_path.value();
     }

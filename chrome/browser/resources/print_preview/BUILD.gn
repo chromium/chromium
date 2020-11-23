@@ -82,6 +82,7 @@ preprocess_grit("preprocess") {
     "native_layer.js",
     "print_preview.js",
     "print_preview_utils.js",
+    "data/cdd.js",
     "data/cloud_parsers.js",
     "data/coordinate2d.js",
     "data/destination.js",
@@ -108,7 +109,10 @@ preprocess_grit("preprocess") {
   ]
 
   if (is_chromeos) {
-    in_files += [ "data/printer_status_cros.js" ]
+    in_files += [
+      "native_layer_cros.js",
+      "data/printer_status_cros.js",
+    ]
   }
 }
 
@@ -224,6 +228,7 @@ js_type_check("print_preview_module_resources") {
     ":dark_mode_behavior",
     ":metrics",
     ":native_layer",
+    ":native_layer_cros",
     ":print_preview",
     ":print_preview_utils",
   ]
@@ -233,8 +238,10 @@ js_library("print_preview") {
   deps = [
     ":cloud_print_interface",
     ":native_layer",
+    ":native_layer_cros",
     "data:destination",
     "data:destination_store",
+    "data:local_parsers",
     "data:measurement_system",
     "ui:app",
     "ui:settings_select",
@@ -265,7 +272,7 @@ js_library("cloud_print_interface") {
 js_library("cloud_print_interface_impl") {
   deps = [
     ":cloud_print_interface",
-    ":native_layer",
+    ":native_layer_cros",
     "data:cloud_parsers",
     "data:destination",
     "data:invitation",
@@ -277,10 +284,18 @@ js_library("cloud_print_interface_impl") {
 
 js_library("native_layer") {
   deps = [
+    "data:cdd",
     "data:destination",
     "data:destination_match",
-    "data:destination_policies",
     "data:measurement_system",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("native_layer_cros") {
+  deps = [
+    "data:destination_policies",
     "data:printer_status_cros",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",

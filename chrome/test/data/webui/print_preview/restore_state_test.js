@@ -9,6 +9,10 @@ import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js'
 import {getCddTemplate, getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 
+// <if expr="chromeos">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
+
 window.restore_state_test = {};
 restore_state_test.suiteName = 'RestoreStateTest';
 /** @enum {string} */
@@ -28,6 +32,9 @@ suite(restore_state_test.suiteName, function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
+    // <if expr="chromeos">
+    setNativeLayerCrosInstance();
+    // </if>
     document.body.innerHTML = '';
   });
 

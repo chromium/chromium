@@ -10,7 +10,9 @@ import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInte
 import {parseCloudDestination, parseInvitation} from './data/cloud_parsers.js';
 import {CloudOrigins, DestinationOrigin} from './data/destination.js';
 import {Invitation} from './data/invitation.js';
-import {NativeLayer} from './native_layer.js';
+// <if expr="chromeos">
+import {NativeLayerCrosImpl} from './native_layer_cros.js';
+// </if>
 
 
 /** @implements {CloudPrintInterface} */
@@ -21,12 +23,6 @@ export class CloudPrintInterfaceImpl {
      * @private {string}
      */
     this.baseUrl_ = '';
-
-    /**
-     * Used to get Auth2 tokens.
-     * @private {?NativeLayer}
-     */
-    this.nativeLayer_ = null;
 
     /**
      * Whether Print Preview is in App Kiosk mode; use only printers available
@@ -77,9 +73,8 @@ export class CloudPrintInterfaceImpl {
   }
 
   /** @override */
-  configure(baseUrl, nativeLayer, isInAppKioskMode, uiLocale) {
+  configure(baseUrl, isInAppKioskMode, uiLocale) {
     this.baseUrl_ = baseUrl;
-    this.nativeLayer_ = nativeLayer;
     this.isInAppKioskMode_ = isInAppKioskMode;
     this.uiLocale_ = uiLocale;
   }
@@ -290,7 +285,8 @@ export class CloudPrintInterfaceImpl {
     // <if expr="chromeos">
     assert(request.origin === DestinationOrigin.DEVICE);
     if (this.accessTokenRequestPromise_ === null) {
-      this.accessTokenRequestPromise_ = this.nativeLayer_.getAccessToken();
+      this.accessTokenRequestPromise_ =
+          NativeLayerCrosImpl.getInstance().getAccessToken();
     }
 
     this.accessTokenRequestPromise_.then(

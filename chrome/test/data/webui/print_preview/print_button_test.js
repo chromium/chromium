@@ -8,6 +8,10 @@ import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js'
 import {getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 
+// <if expr="chromeos">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
+
 window.print_button_test = {};
 print_button_test.suiteName = 'PrintButtonTest';
 /** @enum {string} */
@@ -37,6 +41,9 @@ suite(print_button_test.suiteName, function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
+    // <if expr="chromeos">
+    setNativeLayerCrosInstance();
+    // </if>
     document.body.innerHTML = '';
     nativeLayer.setInitialSettings(initialSettings);
     const localDestinationInfos = [

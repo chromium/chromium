@@ -239,6 +239,24 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
     ]
+
+    if (enable_print_preview) {
+      deps += [ "print_preview:preprocess" ]
+      data += [
+        "$root_gen_dir/chrome/test/data/webui/print_preview/destination_settings_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/destination_store_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/invalid_settings_browsertest.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/key_event_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/policy_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/preview_generation_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/print_button_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/print_preview_app_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/print_preview_sidebar_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/restore_state_test.js",
+        "$root_gen_dir/chrome/test/data/webui/print_preview/user_manager_test.js",
+      ]
+    }
+
     if (is_chromeos) {
       data += [
         "$root_gen_dir/chrome/test/data/webui/chromeos/fake_network_config_mojom.m.js",

@@ -3,6 +3,25 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
+
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir"
+  in_files = [
+    "destination_settings_test.js",
+    "destination_store_test.js",
+    "invalid_settings_browsertest.js",
+    "key_event_test.js",
+    "policy_test.js",
+    "preview_generation_test.js",
+    "print_button_test.js",
+    "print_preview_app_test.js",
+    "print_preview_sidebar_test.js",
+    "restore_state_test.js",
+    "user_manager_test.js",
+  ]
+}
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -75,6 +94,8 @@ js_type_check("closure_compile") {
       ":destination_item_test_cros",
       ":destination_search_test_chromeos",
       ":destination_select_test_cros",
+      ":destination_settings_test_cros",
+      ":native_layer_cros_stub",
     ]
   } else {
     deps += [
@@ -281,6 +302,28 @@ js_library("destination_item_test") {
 }
 
 if (is_chromeos) {
+  js_library("native_layer_cros_stub") {
+    deps = [
+      "..:test_browser_proxy.m",
+      "//chrome/browser/resources/print_preview:print_preview",
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:promise_resolver.m",
+    ]
+  }
+
+  js_library("destination_settings_test_cros") {
+    deps = [
+      ":native_layer_cros_stub",
+      ":native_layer_stub",
+      "..:chai_assert",
+      "..:test_util.m",
+      "//chrome/browser/resources/print_preview:print_preview",
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:cr.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
+
   js_library("destination_dropdown_cros_test") {
     deps = [
       ":print_preview_test_utils",
@@ -292,6 +335,7 @@ if (is_chromeos) {
 
   js_library("destination_select_test_cros") {
     deps = [
+      ":native_layer_cros_stub",
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",
@@ -303,6 +347,7 @@ if (is_chromeos) {
 
   js_library("destination_search_test_chromeos") {
     deps = [
+      ":native_layer_cros_stub",
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",

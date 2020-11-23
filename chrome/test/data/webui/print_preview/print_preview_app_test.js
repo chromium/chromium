@@ -10,6 +10,10 @@ import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js'
 import {getCddTemplate, getGoogleDriveDestination} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 
+// <if expr="chromeos">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
+
 window.print_preview_app_test = {};
 print_preview_app_test.suiteName = 'PrintPreviewAppTest';
 /** @enum {string} */
@@ -76,6 +80,9 @@ suite(print_preview_app_test.suiteName, function() {
     document.body.innerHTML = '';
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
+    // <if expr="chromeos">
+    setNativeLayerCrosInstance();
+    // </if>
     cloudPrintInterface = new CloudPrintInterfaceStub();
     CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
     pluginProxy = new TestPluginProxy();

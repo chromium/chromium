@@ -80,13 +80,11 @@ export class CloudPrintInterface {
    * @param {string} baseUrl Base part of the Google Cloud Print service URL
    *     with no trailing slash. For example,
    *     'https://www.google.com/cloudprint'.
-   * @param {!NativeLayer} nativeLayer Native layer used to get
-   *     Auth2 tokens.
    * @param {boolean} isInAppKioskMode Whether the print preview is in App
    *     Kiosk mode.
    * @param {string} uiLocale The UI locale.
    */
-  configure(baseUrl, nativeLayer, isInAppKioskMode, uiLocale) {}
+  configure(baseUrl, isInAppKioskMode, uiLocale) {}
 
   /** @return {boolean} Whether the interface has been configured. */
   isConfigured() {}

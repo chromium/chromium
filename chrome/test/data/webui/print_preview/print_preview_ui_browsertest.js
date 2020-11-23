@@ -1499,12 +1499,12 @@ GEN('#if defined(OS_CHROMEOS)');
 var PrintPreviewDestinationSettingsTestCros = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/destination_settings_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/destination_settings_test_cros.js';
   }
 
   /** @override */
   get suiteName() {
-    return destination_settings_test.suiteName;
+    return destination_settings_test_cros.suiteName;
   }
 
   /** @override */
@@ -1520,12 +1520,14 @@ var PrintPreviewDestinationSettingsTestCros = class extends PrintPreviewTest {
 
 TEST_F(
     'PrintPreviewDestinationSettingsTestCros', 'EulaIsRetrieved', function() {
-      this.runMochaTest(destination_settings_test.TestNames.EulaIsRetrieved);
+      this.runMochaTest(
+          destination_settings_test_cros.TestNames.EulaIsRetrieved);
     });
 
 TEST_F(
     'PrintPreviewDestinationSettingsTestCros', 'DriveIsNotMounted', function() {
-      this.runMochaTest(destination_settings_test.TestNames.DriveIsNotMounted);
+      this.runMochaTest(
+          destination_settings_test_cros.TestNames.DriveIsNotMounted);
     });
 GEN('#endif');
 

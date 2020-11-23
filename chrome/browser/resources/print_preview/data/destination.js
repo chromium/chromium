@@ -9,10 +9,11 @@ import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 // <if expr="chromeos">
-import {NativeLayerImpl} from '../native_layer.js';
+import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
+import {Cdd} from './cdd.js';
 import {ColorModeRestriction, DestinationPolicies, DuplexModeRestriction, PinModeRestriction} from './destination_policies.js';
-import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
+import {getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
 // </if>
 
 /**
@@ -93,105 +94,6 @@ export const DestinationCertificateStatus = {
   // Printer has a valid 2018 certificate. Sent by GCP server.
   YES: 'YES',
 };
-
-/**
- * @typedef {{
- *   display_name: (string),
- *   type: (string | undefined),
- *   value: (number | string | boolean),
- *   is_default: (boolean | undefined),
- * }}
- */
-export let VendorCapabilitySelectOption;
-
-/**
- * Same as cloud_devices::printer::TypedValueVendorCapability::ValueType.
- * @enum {string}
- */
-export const VendorCapabilityValueType = {
-  BOOLEAN: 'BOOLEAN',
-  FLOAT: 'FLOAT',
-  INTEGER: 'INTEGER',
-  STRING: 'STRING',
-};
-
-/**
- * Specifies a custom vendor capability.
- * @typedef {{
- *   id: (string),
- *   display_name: (string),
- *   localized_display_name: (string | undefined),
- *   type: (string),
- *   select_cap: ({
- *     option: (Array<!VendorCapabilitySelectOption>|undefined),
- *   }|undefined),
- *   typed_value_cap: ({
- *     default: (number | string | boolean | undefined),
- *     value_type: (VendorCapabilityValueType | undefined),
- *   }|undefined),
- *   range_cap: ({
- *     default: (number),
- *   }),
- * }}
- */
-export let VendorCapability;
-
-/**
- * Capabilities of a print destination represented in a CDD.
- * Pin capability is not a part of standard CDD description and is defined
- * only on Chrome OS.
- *
- * @typedef {{
- *   vendor_capability: (Array<!VendorCapability>|undefined),
- *   collate: ({default: (boolean|undefined)}|undefined),
- *   color: ({
- *     option: !Array<{
- *       type: (string|undefined),
- *       vendor_id: (string|undefined),
- *       custom_display_name: (string|undefined),
- *       is_default: (boolean|undefined)
- *     }>
- *   }|undefined),
- *   copies: ({default: (number|undefined),
- *             max: (number|undefined)}|undefined),
- *   duplex: ({option: !Array<{type: (string|undefined),
- *                             is_default: (boolean|undefined)}>}|undefined),
- *   page_orientation: ({
- *     option: !Array<{type: (string|undefined),
- *                      is_default: (boolean|undefined)}>
- *   }|undefined),
- *   media_size: ({
- *     option: !Array<{
- *       type: (string|undefined),
- *       vendor_id: (string|undefined),
- *       custom_display_name: (string|undefined),
- *       is_default: (boolean|undefined),
- *       name: (string|undefined),
- *     }>
- *   }|undefined),
- *   dpi: ({
- *     option: !Array<{
- *       vendor_id: (string|undefined),
- *       horizontal_dpi: number,
- *       vertical_dpi: number,
- *       is_default: (boolean|undefined)
- *     }>
- *   }|undefined),
- *   pin: ({supported: (boolean|undefined)}|undefined)
- * }}
- */
-export let CddCapabilities;
-
-/**
- * The CDD (Cloud Device Description) describes the capabilities of a print
- * destination.
- *
- * @typedef {{
- *   version: string,
- *   printer: !CddCapabilities,
- * }}
- */
-export let Cdd;
 
 /**
  * Enumeration of color modes used by Chromium.
@@ -644,10 +546,13 @@ export class Destination {
 
     // Request printer status then set and return the promise.
     this.printerStatusRequestedPromise_ =
-        NativeLayerImpl.getInstance().requestPrinterStatusUpdate(this.id_).then(
-            status => {
-              this.printerStatusReason_ =
-                  getStatusReasonFromPrinterStatus(status);
+        NativeLayerCrosImpl.getInstance()
+            .requestPrinterStatusUpdate(this.id_)
+            .then(status => {
+              if (status) {
+                this.printerStatusReason_ = getStatusReasonFromPrinterStatus(
+                    /** @type {!PrinterStatus} */ (status));
+              }
               return Promise.resolve(this.key);
             });
     return this.printerStatusRequestedPromise_;

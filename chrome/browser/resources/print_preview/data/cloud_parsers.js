@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {Cdd, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationType} from './destination.js';
+import {Cdd} from './cdd.js';
+import {Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationType} from './destination.js';
 import {Invitation} from './invitation.js';
 
 /**
