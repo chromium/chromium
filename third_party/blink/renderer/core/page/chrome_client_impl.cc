@@ -1186,4 +1186,11 @@ void ChromeClientImpl::FormElementReset(HTMLFormElement& element) {
     fill_client->FormElementReset(WebFormElement(&element));
 }
 
+void ChromeClientImpl::PasswordFieldReset(HTMLInputElement& element) {
+  if (auto* fill_client =
+          AutofillClientFromFrame(element.GetDocument().GetFrame())) {
+    fill_client->PasswordFieldReset(WebInputElement(&element));
+  }
+}
+
 }  // namespace blink

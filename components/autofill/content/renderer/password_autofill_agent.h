@@ -223,9 +223,15 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   std::unique_ptr<FormData> GetFormDataFromUnownedInputElements();
 
-  // Notification that form was cleared. This can be used as a signal of
-  // a successful submission for change password forms.
+  // Notification that form element was cleared by HTMLFormElement::reset()
+  // method. This can be used as a signal of a successful submission for change
+  // password forms.
   void InformAboutFormClearing(const blink::WebFormElement& form);
+
+  // Notification that input element was cleared by HTMLInputValue::SetValue()
+  // method by setting an empty value. This can be used as a signal of a
+  // successful submission for change password forms.
+  void InformAboutFieldClearing(const blink::WebInputElement& element);
 
   bool logging_state_active() const { return logging_state_active_; }
 
@@ -470,6 +476,15 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   bool CanShowPopupWithoutPasswords(
       const blink::WebInputElement& password_element) const;
+
+  // Returns true if the element is of type 'password' and has either user typed
+  // input or input autofilled on user trigger.
+  bool IsPasswordFieldFilledByUser(
+      const blink::WebFormControlElement& element) const;
+
+  // Extracts and sends the form data of |cleared_form| to PasswordManager.
+  void NotifyPasswordManagerAboutClearedForm(
+      const blink::WebFormElement& cleared_form);
 
   // The logins we have filled so far with their associated info.
   WebInputToPasswordInfoMap web_input_to_password_info_;

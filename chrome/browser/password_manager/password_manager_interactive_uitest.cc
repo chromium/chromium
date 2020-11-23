@@ -315,6 +315,7 @@ class PasswordManagerInteractiveTestSubmissionDetectionOnFormClear
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Tests that submission is detected when change password form is reset.
 IN_PROC_BROWSER_TEST_F(
     PasswordManagerInteractiveTestSubmissionDetectionOnFormClear,
     ChangePwdFormCleared) {
@@ -331,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(
   signin_form.password_value = base::ASCIIToUTF16("old_pw");
   password_store->AddLogin(signin_form);
 
-  NavigateToFile("/password/password_form.html");
+  NavigateToFile("/password/cleared_change_password_forms.html");
 
   // Fill a form and submit through a <input type="submit"> button.
   std::unique_ptr<BubbleObserver> prompt_observer(
@@ -356,6 +357,125 @@ IN_PROC_BROWSER_TEST_F(
       "PasswordManager.SuccessfulSubmissionIndicatorEvent",
       autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED,
       1);
+}
+
+// Tests that submission is detected when all password fields in a change
+// password form are cleared and not detected when only some fields are cleared.
+IN_PROC_BROWSER_TEST_F(
+    PasswordManagerInteractiveTestSubmissionDetectionOnFormClear,
+    ChangePwdFormFieldsCleared) {
+  // At first let us save credentials to the PasswordManager.
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = embedded_test_server()->base_url().spec();
+  signin_form.username_value = base::ASCIIToUTF16("temp");
+  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  password_store->AddLogin(signin_form);
+
+  for (bool all_fields_cleared : {false, true}) {
+    base::HistogramTester histogram_tester;
+    SCOPED_TRACE(testing::Message("#all_fields_cleared = ")
+                 << all_fields_cleared);
+    NavigateToFile("/password/cleared_change_password_forms.html");
+
+    // Fill a form and submit through a <input type="submit"> button.
+    std::unique_ptr<BubbleObserver> prompt_observer(
+        new BubbleObserver(WebContents()));
+
+    FillElementWithValue("chg_new_password_1", "new_pw", "new_pw");
+    FillElementWithValue("chg_new_password_2", "new_pw", "new_pw");
+
+    std::string submit =
+        all_fields_cleared
+            ? "document.getElementById('chg_clear_all_fields_button').click();"
+            : "document.getElementById('chg_clear_some_fields_button').click()"
+              ";";
+    ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
+
+    if (all_fields_cleared)
+      EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+    else
+      EXPECT_FALSE(prompt_observer->IsUpdatePromptShownAutomatically());
+
+    if (all_fields_cleared) {
+      // We emulate that the user clicks "Update" button.
+      prompt_observer->AcceptUpdatePrompt();
+
+      // Check that credentials are stored.
+      WaitForPasswordStore();
+      CheckThatCredentialsStored("temp", "new_pw");
+      histogram_tester.ExpectUniqueSample(
+          "PasswordManager.SuccessfulSubmissionIndicatorEvent",
+          autofill::mojom::SubmissionIndicatorEvent::
+              CHANGE_PASSWORD_FORM_CLEARED,
+          1);
+    }
+  }
+}
+
+// Tests that submission is detected when the new password field outside the
+// form tag is cleared not detected when other password fields are cleared.
+IN_PROC_BROWSER_TEST_F(
+    PasswordManagerInteractiveTestSubmissionDetectionOnFormClear,
+    ChangePwdFormRelevantFormlessFieldsCleared) {
+  base::HistogramTester histogram_tester;
+  // At first let us save credentials to the PasswordManager.
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = embedded_test_server()->base_url().spec();
+  signin_form.username_value = base::ASCIIToUTF16("temp");
+  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  password_store->AddLogin(signin_form);
+
+  for (bool relevant_fields_cleared : {false, true}) {
+    SCOPED_TRACE(testing::Message("#relevant_fields_cleared = ")
+                 << relevant_fields_cleared);
+    NavigateToFile("/password/cleared_change_password_forms.html");
+
+    // Fill a form and submit through a <input type="submit"> button.
+    std::unique_ptr<BubbleObserver> prompt_observer(
+        new BubbleObserver(WebContents()));
+
+    FillElementWithValue("formless_chg_new_password_1", "new_pw", "new_pw");
+    FillElementWithValue("formless_chg_new_password_2", "new_pw", "new_pw");
+
+    std::string submit = relevant_fields_cleared
+                             ? "document.getElementById('chg_clear_all_"
+                               "formless_fields_button').click();"
+                             : "document.getElementById('chg_clear_some_"
+                               "formless_fields_button').click();";
+
+    ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
+
+    if (relevant_fields_cleared) {
+      prompt_observer->WaitForAutomaticUpdatePrompt();
+      EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+    } else {
+      EXPECT_FALSE(prompt_observer->IsUpdatePromptShownAutomatically());
+    }
+
+    if (relevant_fields_cleared) {
+      // We emulate that the user clicks "Update" button.
+      prompt_observer->AcceptUpdatePrompt();
+
+      // Check that credentials are stored.
+      WaitForPasswordStore();
+      CheckThatCredentialsStored("temp", "new_pw");
+      histogram_tester.ExpectUniqueSample(
+          "PasswordManager.SuccessfulSubmissionIndicatorEvent",
+          autofill::mojom::SubmissionIndicatorEvent::
+              CHANGE_PASSWORD_FORM_CLEARED,
+          1);
+    }
+  }
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

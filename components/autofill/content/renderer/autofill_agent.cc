@@ -931,6 +931,10 @@ void AutofillAgent::FormElementReset(const WebFormElement& form) {
   password_autofill_agent_->InformAboutFormClearing(form);
 }
 
+void AutofillAgent::PasswordFieldReset(const WebInputElement& element) {
+  password_autofill_agent_->InformAboutFieldClearing(element);
+}
+
 void AutofillAgent::SelectWasUpdated(
     const blink::WebFormControlElement& element) {
   // Look for the form and field associated with the select element. If they are
