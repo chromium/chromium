@@ -16074,6 +16074,27 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="VoiceInteraction.AssistantActionPerformed{Source}"
+    enum="AssistantActionPerformed" expires_after="2021-04-04">
+  <owner>jds@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Android: The action performed by Assistant upon being invoked during a voice
+    search initiated via the {Source}, such as transcription of a voice search
+    query or translation of the current page. This is recorded after an
+    Assistant intent has completed successfully.
+  </summary>
+  <token key="Source">
+<!-- Must be kept in sync with VoiceInteractionEventSource in enums.xml. -->
+
+    <variant name=".NTP" summary="NTP"/>
+    <variant name=".Omnibox" summary="Omnibox"/>
+    <variant name=".SearchWidget" summary="Search widget"/>
+    <variant name=".TasksSurface" summary="Tasks surface"/>
+    <variant name=".Toolbar" summary="Toolbar"/>
+  </token>
+</histogram>
+
 <histogram name="VoiceInteraction.DismissedEventSource"
     enum="VoiceInteractionEventSource" expires_after="2021-03-28">
   <owner>wylieb@chromium.org</owner>
@@ -16114,13 +16135,36 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android" units="ms"
-    expires_after="2021-01-24">
+    expires_after="2021-04-04">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
     Records the time it takes between the user clicking the mic and chrome
-    recieving the transcribed voice query.
+    receiving the transcribed voice query. This is recorded after an Assistant
+    intent has completed successfully.
   </summary>
+</histogram>
+
+<histogram name="VoiceInteraction.QueryDuration.Android{Action}" units="ms"
+    expires_after="2021-04-04">
+  <owner>wylieb@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    Records the time it takes between the user clicking the mic and chrome
+    receiving the intent response for {Action} actions. This is recorded after
+    an Assistant intent has completed successfully. These per-action variants
+    are recorded only when non-transcription actions are enabled. See
+    VoiceInteraction.QueryDuration.Android for the total count that includes
+    clients with non-transcription actions disabled.
+  </summary>
+  <token key="Action">
+<!-- Must be kept in sync with AssistantActionPerformed in enums.xml. -->
+
+    <variant name=".Readout" summary="Readout"/>
+    <variant name=".Transcription" summary="Transcription"/>
+    <variant name=".Translate" summary="Translate"/>
+    <variant name=".Unknown" summary="Unknown"/>
+  </token>
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventSource"
