@@ -1083,7 +1083,6 @@ static_library("browser") {
     "password_manager/password_store_utils.h",
     "payments/payment_handler_permission_context.cc",
     "payments/payment_handler_permission_context.h",
-    "payments/ssl_validity_checker.cc",
     "performance_hints/performance_hints_features.cc",
     "performance_hints/performance_hints_features.h",
     "performance_hints/performance_hints_observer.cc",
@@ -3114,7 +3113,6 @@ static_library("browser") {
       "payments/android/payment_manifest_web_data_service_android.cc",
       "payments/android/payment_manifest_web_data_service_android.h",
       "payments/android/service_worker_payment_app_bridge.cc",
-      "payments/android/ssl_validity_checker_android.cc",
       "permissions/grouped_permission_infobar_delegate_android.cc",
       "permissions/grouped_permission_infobar_delegate_android.h",
       "permissions/permission_update_infobar_delegate_android.cc",
@@ -5231,6 +5229,7 @@ static_library("browser") {
       "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",
       "//components/payments/content",
+      "//components/payments/content:utils",
       "//media/cast:net",
     ]
   }

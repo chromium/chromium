@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAYMENTS_SSL_VALIDITY_CHECKER_H_
-#define CHROME_BROWSER_PAYMENTS_SSL_VALIDITY_CHECKER_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_SSL_VALIDITY_CHECKER_H_
+#define COMPONENTS_PAYMENTS_CONTENT_SSL_VALIDITY_CHECKER_H_
 
 #include <string>
 
@@ -45,4 +45,4 @@ class SslValidityChecker {
 
 }  // namespace payments
 
-#endif  // CHROME_BROWSER_PAYMENTS_SSL_VALIDITY_CHECKER_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_SSL_VALIDITY_CHECKER_H_

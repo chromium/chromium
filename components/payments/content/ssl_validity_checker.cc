@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/ssl_validity_checker.h"
+#include "components/payments/content/ssl_validity_checker.h"
 
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "base/strings/string_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/url_util.h"
+#include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -86,11 +88,12 @@ bool SslValidityChecker::IsValidPageInPaymentHandlerWindow(
 security_state::SecurityLevel SslValidityChecker::GetSecurityLevel(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
-  return helper->GetSecurityLevel();
+  std::unique_ptr<security_state::VisibleSecurityState> state =
+      security_state::GetVisibleSecurityState(web_contents);
+  DCHECK(state);
+
+  return security_state::GetSecurityLevel(
+      *state, /*used_policy_installed_certificate=*/false);
 }
 
 }  // namespace payments

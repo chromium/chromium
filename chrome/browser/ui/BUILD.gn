@@ -4143,6 +4143,7 @@ static_library("ui") {
       "//components/media_message_center",
       "//components/page_info",
       "//components/payments/content",
+      "//components/payments/content:utils",
       "//components/payments/core",
       "//components/reading_list/features:flags",
       "//components/tab_count_metrics",

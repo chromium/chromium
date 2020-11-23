@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
