@@ -18,8 +18,6 @@ CertificateViewerUITest.prototype = {
   extraLibraries: [
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
-    'test_util.js',
-    'certificate_viewer_dialog_test.js',
   ],
 
   /**
@@ -37,6 +35,23 @@ CertificateViewerUITest.prototype = {
   },
 };
 
+// Helper for loading the Mocha test file as a JS module. Not using
+// test_loader.html, as the test code needs to be loaded in the context of the
+// dialog triggered with the ShowCertificateViewer() C++ call above.
+function loadTestModule() {
+  const scriptPolicy =
+      window.trustedTypes.createPolicy('certificate-test-script', {
+        createScriptURL: () =>
+            'chrome://test/certificate_viewer_dialog_test.js',
+      });
+  const s = document.createElement('script');
+  s.type = 'module';
+  s.src = scriptPolicy.createScriptURL('');
+  document.body.appendChild(s);
+  return new Promise(function(resolve, reject) {
+    s.addEventListener('load', () => resolve());
+  });
+}
 
 // Include the bulk of c++ code.
 // Certificate viewer UI tests are disabled on platforms with native certificate
@@ -49,13 +64,19 @@ GEN('CertificateViewerUITest::CertificateViewerUITest() {}');
 GEN('CertificateViewerUITest::~CertificateViewerUITest() {}');
 
 TEST_F('CertificateViewerUITest', 'DialogURL', function() {
-  mocha.grep('DialogURL').run();
+  loadTestModule().then(() => {
+    mocha.grep('DialogURL').run();
+  });
 });
 
 TEST_F('CertificateViewerUITest', 'CommonName', function() {
-  mocha.grep('CommonName').run();
+  loadTestModule().then(() => {
+    mocha.grep('CommonName').run();
+  });
 });
 
 TEST_F('CertificateViewerUITest', 'Details', function() {
-  mocha.grep('Details').run();
+  loadTestModule().then(() => {
+    mocha.grep('Details').run();
+  });
 });

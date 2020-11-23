@@ -84,14 +84,10 @@
    * This policy maps a given string to a `TrustedHTML` object
    * without performing any validation. Callsites must ensure
    * that the resulting object will only be used in inert
-   * documents.
+   * documents. Initialized lazily.
    * @type {!TrustedTypePolicy}
    */
   let unsanitizedPolicy;
-  if (window.trustedTypes) {
-    unsanitizedPolicy = trustedTypes.createPolicy(
-        'parse-html-subset', {createHTML: untrustedHTML => untrustedHTML});
-  }
 
   /**
    * @param {!Array<string>} optTags an Array to merge.
@@ -154,6 +150,10 @@
     r.selectNode(doc.body);
 
     if (window.trustedTypes) {
+      if (!unsanitizedPolicy) {
+        unsanitizedPolicy = trustedTypes.createPolicy(
+            'parse-html-subset', {createHTML: untrustedHTML => untrustedHTML});
+      }
       s = unsanitizedPolicy.createHTML(s);
     }
 

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN('#include "content/public/test/browser_test.h"');
+import {$} from 'chrome://resources/js/util.m.js';
+import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 /**
  * Find the first tree item (in the certificate fields tree) with a value.
@@ -34,7 +35,6 @@ suite('CertificateViewer', function() {
     assertEquals('www.google.com', $('issued-cn').textContent);
   });
 
-
   test('Details', async function() {
     var certHierarchy = $('hierarchy');
     var certFields = $('cert-fields');
@@ -49,7 +49,7 @@ suite('CertificateViewer', function() {
     // Wait for the '-for-testing' event to fire only if |certFields| is not
     // populated yet, otherwise don't wait, the event has already fired.
     const whenLoaded = certFields.childNodes.length === 0 ?
-        test_util.eventToPromise(
+        eventToPromise(
             'certificate-fields-updated-for-testing', document.body) :
         Promise.resolve();
 

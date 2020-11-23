@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-  'use strict';
+import './strings.m.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
   /**
    * @typedef {{
@@ -18,7 +24,7 @@
    * substituting in translated strings and requesting certificate details.
    */
   function initialize() {
-    cr.ui.decorate('tabbox', cr.ui.TabBox);
+    decorate('tabbox', TabBox);
 
     const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
     getCertificateInfo(/** @type {!CertificateInfo} */ (args));
@@ -69,13 +75,13 @@
   }
 
   /**
-   * Initialize a cr.ui.Tree object from a given element using the specified
+   * Initialize a Tree object from a given element using the specified
    * change handler.
    * @param {!HTMLElement} tree The HTMLElement to style as a tree.
    * @param {function()} handler Function to call when a node is selected.
    */
   function initializeTree(tree, handler) {
-    cr.ui.decorate(tree, cr.ui.Tree);
+    decorate(tree, Tree);
     tree['detail'] = {payload: {}, children: {}};
     tree.addEventListener('change', handler);
   }
@@ -97,7 +103,7 @@
 
   /**
    * Expand all nodes of the given tree object.
-   * @param {!cr.ui.Tree} tree The tree object to expand all nodes on.
+   * @param {!Tree} tree The tree object to expand all nodes on.
    */
   function revealTree(tree) {
     tree.expanded = true;
@@ -122,7 +128,7 @@
    * @param {Object} hierarchy A dictionary containing the hierarchy.
    */
   function createCertificateHierarchy(hierarchy) {
-    const treeItem = /** @type {!cr.ui.Tree} */ ($('hierarchy'));
+    const treeItem = /** @type {!Tree} */ ($('hierarchy'));
     const root = constructTree(hierarchy[0]);
     treeItem['detail'].children['root'] = root;
     treeItem.add(root);
@@ -138,12 +144,12 @@
   }
 
   /**
-   * Constructs a cr.ui.TreeItem corresponding to the passed in tree
+   * Constructs a TreeItem corresponding to the passed in tree
    * @param {Object} tree Dictionary describing the tree structure.
-   * @return {!cr.ui.TreeItem} Tree node corresponding to the input dictionary.
+   * @return {!TreeItem} Tree node corresponding to the input dictionary.
    */
   function constructTree(tree) {
-    const treeItem = new cr.ui.TreeItem({
+    const treeItem = new TreeItem({
       label: tree.label,
       detail: {payload: tree.payload ? tree.payload : {}, children: {}}
     });
@@ -160,7 +166,7 @@
    * Clear any previous certificate fields in the tree.
    */
   function clearCertificateFields() {
-    const treeItem = /** @type {!cr.ui.Tree} */ ($('cert-fields'));
+    const treeItem = /** @type {!Tree} */ ($('cert-fields'));
     for (const key in treeItem['detail'].children) {
       treeItem.remove(treeItem['detail'].children[key]);
       delete treeItem['detail'].children[key];
@@ -174,7 +180,7 @@
     clearCertificateFields();
     const item = $('hierarchy').selectedItem;
     if (item && item.detail.payload.index !== undefined) {
-      cr.sendWithPromise('requestCertificateFields', item.detail.payload.index)
+      sendWithPromise('requestCertificateFields', item.detail.payload.index)
           .then(onCertificateFields);
     }
   }
@@ -186,7 +192,7 @@
    */
   function onCertificateFields(certFields) {
     clearCertificateFields();
-    const treeItem = /** @type {!cr.ui.Tree} */ ($('cert-fields'));
+    const treeItem = /** @type {!Tree} */ ($('cert-fields'));
     treeItem.add(
         treeItem['detail'].children['root'] = constructTree(certFields[0]));
     revealTree(treeItem);
@@ -219,4 +225,3 @@
   }
 
   document.addEventListener('DOMContentLoaded', initialize);
-})();

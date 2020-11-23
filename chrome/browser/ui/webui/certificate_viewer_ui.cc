@@ -50,7 +50,10 @@ content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
 
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types cr-ui-tree-js-static;");
+      "trusted-types cr-ui-tree-js-static certificate-test-script;");
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
 
   html_source->UseStringsJs();
 
