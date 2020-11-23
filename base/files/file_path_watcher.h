@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -43,6 +44,12 @@ class BASE_EXPORT FilePathWatcher {
     // and its descendants for changes. If the path names a directory, changes
     // within the directory are watched.
     kRecursive,
+
+#if defined(OS_MAC)
+    // Indicates that the watcher should watch the given path only (neither
+    // ancestors nor descendants). The watch fails if the path does not exist.
+    kTrivial,
+#endif  // defined(OS_MAC)
   };
 
   // Callback type for Watch(). |path| points to the file that was updated,

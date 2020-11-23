@@ -8,6 +8,10 @@
 #include <stddef.h>
 #include <sys/param.h>
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/file_descriptor_posix.h"
 #include "base/files/file_util.h"
@@ -47,7 +51,7 @@ int FilePathWatcherKQueue::EventsForPath(FilePath path, EventVector* events) {
   path.GetComponents(&components);
 
   if (components.size() < 1) {
-    return -1;
+    return 0;
   }
 
   int last_existing_entry = 0;
@@ -78,6 +82,23 @@ int FilePathWatcherKQueue::EventsForPath(FilePath path, EventVector* events) {
     events->push_back(event);
   }
   return last_existing_entry;
+}
+
+// static
+int FilePathWatcherKQueue::EventForItem(const FilePath& path,
+                                        EventVector* events) {
+  // Make sure that we are working with a clean slate.
+  DCHECK(events->empty());
+
+  events->resize(1);
+  auto& event = events->front();
+  EV_SET(&event, FileDescriptorForPath(path), EVFILT_VNODE,
+         (EV_ADD | EV_CLEAR | EV_RECEIPT),
+         (NOTE_DELETE | NOTE_WRITE | NOTE_ATTRIB | NOTE_RENAME | NOTE_REVOKE |
+          NOTE_EXTEND),
+         0, new EventData(path, /*subdir=*/FilePath::StringType()));
+
+  return event.ident != kNoFileDescriptor ? 1 : 0;
 }
 
 uintptr_t FilePathWatcherKQueue::FileDescriptorForPath(const FilePath& path) {
@@ -255,8 +276,14 @@ bool FilePathWatcherKQueue::Watch(const FilePath& path,
     return false;
   }
 
-  int last_entry = EventsForPath(target_, &events_);
-  DCHECK_NE(last_entry, 0);
+  int last_entry = type == Type::kNonRecursive
+                       ? EventsForPath(target_, &events_)
+                       : EventForItem(target_, &events_);
+  if (last_entry < 1) {
+    // No notifications can possibly come in, so fail fast.
+    Cancel();
+    return false;
+  }
 
   EventVector responses(last_entry);
 

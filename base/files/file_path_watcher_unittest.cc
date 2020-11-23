@@ -892,6 +892,64 @@ TEST_F(FilePathWatcherTest, DirAttributesChanged) {
 }
 
 #endif  // OS_APPLE
+
+#if defined(OS_MAC)
+
+// Fail fast if trying to trivially watch a non-existent item.
+TEST_F(FilePathWatcherTest, TrivialNoDir) {
+  const FilePath tmp_dir = temp_dir_.GetPath();
+  const FilePath non_existent = tmp_dir.Append(FILE_PATH_LITERAL("nope"));
+
+  FilePathWatcher watcher;
+  auto delegate = std::make_unique<TestDelegate>(collector());
+  ASSERT_FALSE(SetupWatch(non_existent, &watcher, delegate.get(),
+                          FilePathWatcher::Type::kTrivial));
+}
+
+// Succeed starting a watch on a directory.
+TEST_F(FilePathWatcherTest, TrivialDirStart) {
+  const FilePath tmp_dir = temp_dir_.GetPath();
+
+  FilePathWatcher watcher;
+  auto delegate = std::make_unique<TestDelegate>(collector());
+  ASSERT_TRUE(SetupWatch(tmp_dir, &watcher, delegate.get(),
+                         FilePathWatcher::Type::kTrivial));
+}
+
+// Observe a change on a directory
+TEST_F(FilePathWatcherTest, TrivialDirChange) {
+  const FilePath tmp_dir = temp_dir_.GetPath();
+
+  FilePathWatcher watcher;
+  auto delegate = std::make_unique<TestDelegate>(collector());
+  ASSERT_TRUE(SetupWatch(tmp_dir, &watcher, delegate.get(),
+                         FilePathWatcher::Type::kTrivial));
+
+  ASSERT_TRUE(TouchFile(tmp_dir, base::Time::Now(), base::Time::Now()));
+  ASSERT_TRUE(WaitForEvents());
+}
+
+// Observe no change when a parent is modified.
+TEST_F(FilePathWatcherTest, TrivialParentDirChange) {
+  const FilePath tmp_dir = temp_dir_.GetPath();
+  const FilePath sub_dir1 = tmp_dir.Append(FILE_PATH_LITERAL("subdir"));
+  const FilePath sub_dir2 = sub_dir1.Append(FILE_PATH_LITERAL("subdir_redux"));
+
+  ASSERT_TRUE(CreateDirectory(sub_dir1));
+  ASSERT_TRUE(CreateDirectory(sub_dir2));
+
+  FilePathWatcher watcher;
+  auto delegate = std::make_unique<TestDelegate>(collector());
+  ASSERT_TRUE(SetupWatch(sub_dir2, &watcher, delegate.get(),
+                         FilePathWatcher::Type::kTrivial));
+
+  // There should be no notification for a change to |sub_dir2|'s parent.
+  ASSERT_TRUE(Move(sub_dir1, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
+  ASSERT_FALSE(WaitForEvents());
+}
+
+#endif  // defined(OS_MAC)
+
 }  // namespace
 
 }  // namespace base
