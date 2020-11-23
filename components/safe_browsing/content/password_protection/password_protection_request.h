@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/buildflags.h"
@@ -18,10 +19,15 @@
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+#if defined(OS_IOS)
+// TODO(crbug.com/1147967): Enable in iOS once this file is moved to /core.
+#else
+#include "content/public/browser/browser_thread.h"
+#endif  // defined(OS_IOS)
 
 class GURL;
 
@@ -34,6 +40,13 @@ namespace safe_browsing {
 class PasswordProtectionNavigationThrottle;
 
 using password_manager::metrics_util::PasswordType;
+
+#if defined(OS_IOS)
+using DeleteOnUIThread = web::WebThread::DeleteOnThread<web::WebThread::UI>;
+#else
+using DeleteOnUIThread =
+    content::BrowserThread::DeleteOnThread<content::BrowserThread::UI>;
+#endif  // defined(OS_IOS)
 
 // A request for checking if an unfamiliar login form or a password reuse event
 // is safe. PasswordProtectionRequest objects are owned by
@@ -54,10 +67,10 @@ using password_manager::metrics_util::PasswordType;
 // (8) |   UI   | On receiving response, handle response and finish.
 //     |        | On request timeout, cancel request.
 //     |        | On deletion of |password_protection_service_|, cancel request.
-class PasswordProtectionRequest : public base::RefCountedThreadSafe<
-                                      PasswordProtectionRequest,
-                                      content::BrowserThread::DeleteOnUIThread>,
-                                  public content::WebContentsObserver {
+class PasswordProtectionRequest
+    : public base::RefCountedThreadSafe<PasswordProtectionRequest,
+                                        DeleteOnUIThread>,
+      public content::WebContentsObserver {
  public:
   PasswordProtectionRequest(
       content::WebContents* web_contents,
@@ -144,8 +157,7 @@ class PasswordProtectionRequest : public base::RefCountedThreadSafe<
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
 
  private:
-  friend struct content::BrowserThread::DeleteOnThread<
-      content::BrowserThread::UI>;
+  friend DeleteOnUIThread;
   friend class base::DeleteHelper<PasswordProtectionRequest>;
   friend class PasswordProtectionServiceTest;
   friend class ChromePasswordProtectionServiceTest;
