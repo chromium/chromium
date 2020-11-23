@@ -732,6 +732,13 @@ gfx::Rect View::GetMirroredBounds() const {
   return bounds;
 }
 
+gfx::Rect View::GetMirroredContentsBounds() const {
+  gfx::Rect bounds(bounds_);
+  bounds.Inset(GetInsets());
+  bounds.set_x(GetMirroredX());
+  return bounds;
+}
+
 gfx::Point View::GetMirroredPosition() const {
   return gfx::Point(GetMirroredX(), y());
 }

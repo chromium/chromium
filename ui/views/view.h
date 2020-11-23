@@ -682,6 +682,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   //       transparent to the View subclasses and therefore you should use the
   //       bounds() accessor instead.
   gfx::Rect GetMirroredBounds() const;
+  gfx::Rect GetMirroredContentsBounds() const;
   gfx::Point GetMirroredPosition() const;
   int GetMirroredX() const;
 
