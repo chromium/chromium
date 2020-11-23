@@ -31,7 +31,7 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
 
   // FilePathWatcher::PlatformDelegate overrides.
   bool Watch(const FilePath& path,
-             bool recursive,
+             Type type,
              const FilePathWatcher::Callback& callback) override;
   void Cancel() override;
 

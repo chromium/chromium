@@ -236,13 +236,13 @@ bool FilePathWatcherKQueue::UpdateWatches(bool* target_file_affected) {
 }
 
 bool FilePathWatcherKQueue::Watch(const FilePath& path,
-                                  bool recursive,
+                                  Type type,
                                   const FilePathWatcher::Callback& callback) {
   DCHECK(target_.value().empty());  // Can only watch one path.
   DCHECK(!callback.is_null());
   DCHECK_EQ(kqueue_, -1);
   // Recursive watch is not supported using kqueue.
-  DCHECK(!recursive);
+  DCHECK_NE(type, Type::kRecursive);
 
   callback_ = callback;
   target_ = path;

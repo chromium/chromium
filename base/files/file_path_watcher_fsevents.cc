@@ -83,14 +83,14 @@ FilePathWatcherFSEvents::~FilePathWatcherFSEvents() {
 }
 
 bool FilePathWatcherFSEvents::Watch(const FilePath& path,
-                                    bool recursive,
+                                    Type type,
                                     const FilePathWatcher::Callback& callback) {
   DCHECK(!callback.is_null());
   DCHECK(callback_.is_null());
 
   // This class could support non-recursive watches, but that is currently
   // left to FilePathWatcherKQueue.
-  if (!recursive)
+  if (type != Type::kRecursive)
     return false;
 
   set_task_runner(SequencedTaskRunnerHandle::Get());
