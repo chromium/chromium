@@ -3741,7 +3741,16 @@
   "ScrollToTextFragmentEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "test_policy": { "ScrollToTextFragmentEnabled": true },
-    "policy_pref_mapping_tests": { "scroll_to_text_fragment_enabled": {} }
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "ScrollToTextFragmentEnabled": true },
+        "prefs": {
+          "scroll_to_text_fragment_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
   },
 
   "TargetBlankImpliesNoOpener": {
@@ -3772,7 +3781,18 @@
   "GloballyScopeHTTPAuthCacheEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "test_policy": { "GloballyScopeHTTPAuthCacheEnabled": true },
-    "policy_pref_mapping_tests": { "auth.globally_scoped_http_auth_cache_enabled": {} }
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GloballyScopeHTTPAuthCacheEnabled": true
+        },
+        "prefs": {
+          "auth.globally_scoped_http_auth_cache_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
   },
 
   "PaymentMethodQueryEnabled" : {
@@ -5423,7 +5443,18 @@
   "ClickToCallEnabled" : {
     "os": ["win", "linux", "mac", "chromeos"],
     "test_policy": { "ClickToCallEnabled": false },
-    "policy_pref_mapping_tests": { "browser.click_to_call_enabled": {} }
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ClickToCallEnabled": false
+        },
+        "prefs": {
+          "browser.click_to_call_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
   },
 
   "AudioSandboxEnabled": {
@@ -5445,11 +5476,18 @@
   "SuggestedContentEnabled": {
     "os": ["chromeos"],
     "test_policy": {"SuggestedContentEnabled": false },
-    "policy_pref_mapping_tests": {
-      "settings.suggested_content_enabled": {
-        "value": false
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SuggestedContentEnabled": false
+        },
+        "prefs": {
+          "settings.suggested_content_enabled": {
+            "value": false
+          }
+        }
       }
-    }
+    ]
   },
 
   "----- Chrome OS device policies ---------------------------------------": {},
@@ -6360,14 +6398,16 @@
 
   "CrostiniAnsiblePlaybook": {
     "os": ["chromeos"],
-    "policy_pref_mapping_tests": {
-      "policies": {
-        "CrostiniAnsiblePlaybook": {
-          "url": "https://example.com/ansibleplaybook",
-          "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CrostiniAnsiblePlaybook": {
+            "url": "https://example.com/ansibleplaybook",
+            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+          }
         }
       }
-    }
+    ]
   },
 
   "CrostiniArcAdbSideloadingAllowed": {
