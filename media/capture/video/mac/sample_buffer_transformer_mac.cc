@@ -445,7 +445,8 @@ base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
       destination_width_ == CVPixelBufferGetWidth(source_pixel_buffer) &&
       destination_height_ == CVPixelBufferGetHeight(source_pixel_buffer) &&
       destination_pixel_format_ ==
-          CVPixelBufferGetPixelFormatType(source_pixel_buffer)) {
+          CVPixelBufferGetPixelFormatType(source_pixel_buffer) &&
+      CVPixelBufferGetIOSurface(source_pixel_buffer)) {
     return base::ScopedCFTypeRef<CVPixelBufferRef>(source_pixel_buffer,
                                                    base::scoped_policy::RETAIN);
   }
