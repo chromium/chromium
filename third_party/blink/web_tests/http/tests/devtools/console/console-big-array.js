@@ -72,9 +72,11 @@
     var node = element.traverseNextNode(element);
 
     while (node) {
-      if (node._section) {
-        sections.push(node._section);
-        node._section.expand();
+      const section =
+          ObjectUI.ObjectPropertiesSection.getObjectPropertiesSectionFrom(node);
+      if (section) {
+        sections.push(section);
+        section.expand();
       }
 
       node = node.traverseNextNode(element);
