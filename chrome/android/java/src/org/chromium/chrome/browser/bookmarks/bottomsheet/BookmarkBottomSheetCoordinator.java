@@ -114,12 +114,7 @@ public class BookmarkBottomSheetCoordinator {
                                R.plurals.bookmarks_count, totalCount, totalCount)
                                       : mContext.getResources().getString(R.string.no_bookmarks);
             case BookmarkType.READING_LIST:
-                List<BookmarkId> children = mBookmarkModel.getChildIDs(bookmarkItem.getId());
-                int unreadCount = 0;
-                for (BookmarkId child : children) {
-                    BookmarkItem childItem = mBookmarkModel.getBookmarkById(child);
-                    if (!childItem.isRead()) unreadCount++;
-                }
+                int unreadCount = mBookmarkModel.getUnreadCount(bookmarkItem.getId());
                 return unreadCount > 0
                         ? mContext.getResources().getQuantityString(
                                 R.plurals.reading_list_unread_page_count, unreadCount, unreadCount)

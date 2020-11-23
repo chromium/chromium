@@ -3109,6 +3109,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
           =1 {<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE">%1$d<ex>1</ex></ph> unread page}
           other {<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY">%1$d<ex>8</ex></ph> unread pages}}
       </message>
+      <message name="IDS_READING_LIST_NO_UNREAD_PAGES" desc="The text as reading list folder subtitle to inform the user that there is no reading list articles.">
+        No unread pages
+      </message>
       <message name="IDS_READING_LIST_INTRO_TEXT" desc="The text on the reading list in product help bubble and other UIs to introduce the feature to the user.">
         Save this page for later and get a reminder
       </message>
