@@ -27,7 +27,7 @@ const base::Feature kInCaptureConvertToNv12WithLibyuv{
 
 namespace {
 
-constexpr size_t kDefaultBufferPoolSize = 5;
+constexpr size_t kDefaultBufferPoolSize = 10;
 
 // NV12 a.k.a. 420v
 constexpr OSType kPixelFormatNv12 =
