@@ -32,7 +32,9 @@ SpeechRecognitionService::~SpeechRecognitionService() = default;
 void SpeechRecognitionService::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   LaunchIfNotRunning();
-  speech_recognition_service_->BindContext(std::move(receiver));
+
+  if (speech_recognition_service_.is_bound())
+    speech_recognition_service_->BindContext(std::move(receiver));
 }
 
 void SpeechRecognitionService::OnNetworkServiceDisconnect() {
