@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -119,6 +120,12 @@ class ModelTypeWorker : public UpdateHandler,
   base::WeakPtr<ModelTypeWorker> AsWeakPtr();
 
  private:
+  struct UnknownEncryptionKeyInfo {
+    // Not increased if the cryptographer knows it's in a pending state
+    // (cf. Cryptographer::CanEncrypt()).
+    int gu_responses_while_should_have_been_known = 0;
+  };
+
   // Attempts to decrypt the given specifics and return them in the |out|
   // parameter. The cryptographer must know the decryption key, i.e.
   // cryptographer.CanDecrypt(specifics.encrypted()) must return true.
@@ -197,6 +204,10 @@ class ModelTypeWorker : public UpdateHandler,
   // response body.
   void OnFullCommitFailure(SyncCommitError commit_error);
 
+  // Removes |unknown_encryption_keys_| that no longer fit the definition of
+  // an unknown key, and returns their info.
+  std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
+
   ModelType type_;
 
   // State that applies to the entire model type.
@@ -220,7 +231,15 @@ class ModelTypeWorker : public UpdateHandler,
   // A map of sync entities, keyed by server_id. Holds updates encrypted with
   // pending keys. Entries are stored in a map for de-duplication (applying only
   // the latest).
+  // TODO(crbug.com/1109221): Use a name mentioning "updates" and "server id".
   std::map<std::string, sync_pb::SyncEntity> entries_pending_decryption_;
+
+  // A key is unknown if it encrypts a subset of |entries_pending_decryption_|.
+  // It'll be added here when the worker receives the first update entity
+  // encrypted with it.
+  // TODO(crbug.com/1109221): Enlarge this concept to cover ignored keys.
+  std::map<std::string, UnknownEncryptionKeyInfo>
+      unknown_encryption_keys_by_name_;
 
   // Accumulates all the updates from a single GetUpdates cycle in memory so
   // they can all be sent to the processor at once.

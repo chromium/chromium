@@ -1321,6 +1321,46 @@ TEST_F(ModelTypeWorkerTest, ReceiveCorruptEncryption) {
   EXPECT_TRUE(processor()->HasUpdateResponse(kHash1));
 }
 
+TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
+  base::HistogramTester histogram_tester;
+  NormalInitialize();
+  int gu_responses_while_should_have_been_known = 0;
+
+  // Send a GetUpdatesResponse containing data encrypted with an unknown key.
+  // The cryptographer doesn't have pending keys, so in theory this key should
+  // have been known.
+  SetUpdateEncryptionFilter(1);
+  TriggerUpdateFromServer(10, kTag1, kValue1);
+  gu_responses_while_should_have_been_known++;
+
+  // Send empty GetUpdatesResponse. Again, the cryptographer isn't in a pending
+  // state, so increase |gu_responses_while_should_have_been_known|.
+  worker()->ProcessGetUpdatesResponse(
+      server()->GetProgress(), server()->GetContext(), {}, status_controller());
+  gu_responses_while_should_have_been_known++;
+
+  // Send the Nigori containing the missing key. The key isn't available yet
+  // though.
+  AddPendingKey();
+
+  // Another empty GetUpdatesResponse. This one shouldn't be counted, since the
+  // cryptographer now knows it's lacking some keys.
+  worker()->ProcessGetUpdatesResponse(
+      server()->GetProgress(), server()->GetContext(), {}, status_controller());
+
+  // Double check the histogram hasn't been recorded so far.
+  const std::string histogram_name =
+      std::string("Sync.ModelTypeTimeUntilEncryptionKeyFound.") +
+      ModelTypeToString(worker()->GetModelType());
+  EXPECT_TRUE(histogram_tester.GetAllSamples(histogram_name).empty());
+
+  // Make the key available. The correct number of GetUpdatesResponse should
+  // have been recorded.
+  DecryptPendingKey();
+  histogram_tester.ExpectUniqueSample(
+      histogram_name, gu_responses_while_should_have_been_known, 1);
+}
+
 // Test that processor has been disconnected from Sync when worker got
 // disconnected.
 TEST_F(ModelTypeWorkerTest, DisconnectProcessorFromSyncTest) {
