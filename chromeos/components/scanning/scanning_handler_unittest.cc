@@ -24,6 +24,12 @@
 
 namespace chromeos {
 
+namespace {
+
+constexpr char kHandlerFunctionName[] = "handlerFunctionName";
+
+}  // namespace
+
 class TestSelectFilePolicy : public ui::SelectFilePolicy {
  public:
   TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
@@ -138,8 +144,20 @@ class ScanningHandlerTest : public testing::Test {
 
   void TearDown() override { ui::SelectFileDialog::SetFactory(nullptr); }
 
-  const content::TestWebUI::CallData& CallDataAtIndex(size_t index) {
-    return *web_ui_.call_data()[index];
+  // Gets the call data after a ScanningHandler WebUI call and asserts the
+  // expected response.
+  const content::TestWebUI::CallData& GetCallData(int size_before_call) {
+    const std::vector<std::unique_ptr<content::TestWebUI::CallData>>&
+        call_data_list = web_ui_.call_data();
+    EXPECT_EQ(size_before_call + 1u, call_data_list.size());
+
+    const content::TestWebUI::CallData& call_data = *call_data_list.back();
+    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+    EXPECT_EQ(kHandlerFunctionName, call_data.arg1()->GetString());
+    // True if ResolveJavascriptCallback and false if RejectJavascriptCallback
+    // is called by the handler.
+    EXPECT_TRUE(call_data.arg2()->GetBool());
+    return call_data;
   }
 
  protected:
@@ -158,16 +176,11 @@ TEST_F(ScanningHandlerTest, SelectDirectory) {
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
   base::ListValue args;
-  args.Append("handlerFunctionName");
+  args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("requestScanToLocation", &args);
 
-  EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
   const content::TestWebUI::CallData& call_data =
-      CallDataAtIndex(call_data_count_before_call);
-  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-  EXPECT_EQ("handlerFunctionName", call_data.arg1()->GetString());
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-
+      GetCallData(call_data_count_before_call);
   const base::DictionaryValue* selected_path_dict;
   EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
   EXPECT_EQ(base_file_path.value(),
@@ -184,16 +197,11 @@ TEST_F(ScanningHandlerTest, CancelDialog) {
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
   base::ListValue args;
-  args.Append("handlerFunctionName");
+  args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("requestScanToLocation", &args);
 
-  EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
   const content::TestWebUI::CallData& call_data =
-      CallDataAtIndex(call_data_count_before_call);
-  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-  EXPECT_EQ("handlerFunctionName", call_data.arg1()->GetString());
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-
+      GetCallData(call_data_count_before_call);
   const base::DictionaryValue* selected_path_dict;
   EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
   EXPECT_EQ("", *selected_path_dict->FindStringPath("filePath"));
