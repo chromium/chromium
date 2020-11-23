@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
 import android.view.Gravity;
@@ -34,6 +35,7 @@ import org.chromium.ui.touch_selection.TouchHandleOrientation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 
 /**
  * View that displays a selection or insertion handle for text editing.
@@ -512,6 +514,17 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
         mDrawable.setBounds(0, 0, getRight() - getLeft(), getBottom() - getTop());
         mDrawable.draw(c);
         if (needsMirror) c.restore();
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        // Resolve conflict with gesture navigation back when dragging this handle view on the
+        // edge of the screen.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setSystemGestureExclusionRects(Collections.singletonList(new Rect(0, 0, w, h)));
+        }
     }
 
     @Override
