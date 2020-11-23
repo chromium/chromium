@@ -14,10 +14,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -128,20 +128,20 @@ class WebstoreInstallListener : public WebstoreInstaller::Delegate {
 }  // namespace
 
 // A base class for tests below.
-class ExtensionWebstorePrivateApiTest : public ExtensionApiTest {
+class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
  public:
   ExtensionWebstorePrivateApiTest() {}
   ~ExtensionWebstorePrivateApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
+    MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         switches::kAppsGalleryURL,
         "http://www.example.com/extensions/api_test");
   }
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    MixinBasedExtensionApiTest::SetUpOnMainThread();
 
     // Start up the test server and get us ready for calling the install
     // API functions.
@@ -381,41 +381,13 @@ class ExtensionWebstorePrivateApiTestChild
     set_chromeos_user_ = false;
   }
 
-  void SetUp() override {
-    mixin_host_.SetUp();
-    ExtensionWebstorePrivateApiTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    mixin_host_.SetUpCommandLine(command_line);
     ExtensionWebstorePrivateApiTest::SetUpCommandLine(command_line);
     // Shortens the merge session timeout from 20 to 1 seconds to speed up the
     // test by about 19 seconds.
     // TODO (crbug.com/995575): figure out why this switch speeds up the test,
     // and fix the test setup so this is not required.
     command_line->AppendSwitch(switches::kShortMergeSessionTimeoutForTest);
-  }
-
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    mixin_host_.SetUpDefaultCommandLine(command_line);
-    ExtensionWebstorePrivateApiTest::SetUpDefaultCommandLine(command_line);
-  }
-
-  bool SetUpUserDataDirectory() override {
-    return mixin_host_.SetUpUserDataDirectory() &&
-           ExtensionWebstorePrivateApiTest::SetUpUserDataDirectory();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    mixin_host_.SetUpInProcessBrowserTestFixture();
-    ExtensionWebstorePrivateApiTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    mixin_host_.CreatedBrowserMainParts(browser_main_parts);
-    ExtensionWebstorePrivateApiTest::CreatedBrowserMainParts(
-        browser_main_parts);
   }
 
   void InitializeFamilyData() {
@@ -433,7 +405,6 @@ class ExtensionWebstorePrivateApiTestChild
   }
 
   void SetUpOnMainThread() override {
-    mixin_host_.SetUpOnMainThread();
     logged_in_user_mixin_.LogInUser(true /* issue_any_scope_token */);
     ExtensionWebstorePrivateApiTest::SetUpOnMainThread();
 
@@ -442,21 +413,6 @@ class ExtensionWebstorePrivateApiTestChild
         SupervisedUserServiceFactory::GetForProfile(profile());
     service->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(
         true);
-  }
-
-  void TearDownOnMainThread() override {
-    mixin_host_.TearDownOnMainThread();
-    ExtensionWebstorePrivateApiTest::TearDownOnMainThread();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    mixin_host_.TearDownInProcessBrowserTestFixture();
-    ExtensionWebstorePrivateApiTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  void TearDown() override {
-    mixin_host_.TearDown();
-    ExtensionWebstorePrivateApiTest::TearDown();
   }
 
   chromeos::LoggedInUserMixin* GetLoggedInUserMixin() {
@@ -475,9 +431,6 @@ class ExtensionWebstorePrivateApiTestChild
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
  private:
-  // Replicate what MixinBasedInProcessBrowserTest does since inheriting from
-  // that class is inconvenient here.
-  InProcessBrowserTestMixinHost mixin_host_;
   // Create another embedded test server to avoid starting the same one twice.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
   chromeos::LoggedInUserMixin logged_in_user_mixin_;

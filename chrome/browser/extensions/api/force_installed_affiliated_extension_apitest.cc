@@ -58,34 +58,15 @@ ForceInstalledAffiliatedExtensionApiTest::
 ForceInstalledAffiliatedExtensionApiTest::
     ~ForceInstalledAffiliatedExtensionApiTest() = default;
 
-void ForceInstalledAffiliatedExtensionApiTest::SetUp() {
-  mixin_host_.SetUp();
-  ExtensionApiTest::SetUp();
-}
-
 void ForceInstalledAffiliatedExtensionApiTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  mixin_host_.SetUpCommandLine(command_line);
   policy::AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
       command_line);
-  ExtensionApiTest::SetUpCommandLine(command_line);
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::SetUpDefaultCommandLine(
-    base::CommandLine* command_line) {
-  mixin_host_.SetUpDefaultCommandLine(command_line);
-  ExtensionApiTest::SetUpDefaultCommandLine(command_line);
-}
-
-bool ForceInstalledAffiliatedExtensionApiTest::SetUpUserDataDirectory() {
-  return mixin_host_.SetUpUserDataDirectory() &&
-         ExtensionApiTest::SetUpUserDataDirectory();
+  MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
 }
 
 void ForceInstalledAffiliatedExtensionApiTest::
     SetUpInProcessBrowserTestFixture() {
-  mixin_host_.SetUpInProcessBrowserTestFixture();
-
   // Initialize clients here so they are available during setup. They will be
   // shutdown in ChromeBrowserMain.
   chromeos::SessionManagerClient::InitializeFakeInMemory();
@@ -122,17 +103,10 @@ void ForceInstalledAffiliatedExtensionApiTest::
   // Set retry delay to prevent timeouts.
   policy::DeviceManagementService::SetRetryDelayForTesting(0);
 
-  ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::CreatedBrowserMainParts(
-    content::BrowserMainParts* browser_main_parts) {
-  mixin_host_.CreatedBrowserMainParts(browser_main_parts);
-  ExtensionApiTest::CreatedBrowserMainParts(browser_main_parts);
+  MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
 }
 
 void ForceInstalledAffiliatedExtensionApiTest::SetUpOnMainThread() {
-  mixin_host_.SetUpOnMainThread();
   // Log in user that was created with
   // policy::AffiliationTestHelper::PreLoginUser() in the PRE_ test.
   const base::ListValue* users =
@@ -142,23 +116,8 @@ void ForceInstalledAffiliatedExtensionApiTest::SetUpOnMainThread() {
   }
 
   force_install_mixin_.InitWithMockPolicyProvider(profile(), &policy_provider_);
-  ExtensionApiTest::SetUpOnMainThread();
-}
 
-void ForceInstalledAffiliatedExtensionApiTest::TearDownOnMainThread() {
-  mixin_host_.TearDownOnMainThread();
-  ExtensionApiTest::TearDownOnMainThread();
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::
-    TearDownInProcessBrowserTestFixture() {
-  mixin_host_.TearDownInProcessBrowserTestFixture();
-  ExtensionApiTest::TearDownInProcessBrowserTestFixture();
-}
-
-void ForceInstalledAffiliatedExtensionApiTest::TearDown() {
-  mixin_host_.TearDown();
-  ExtensionApiTest::TearDown();
+  MixinBasedExtensionApiTest::SetUpOnMainThread();
 }
 
 const extensions::Extension*
