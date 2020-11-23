@@ -106,7 +106,9 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   // These aren't particularly tied to surfaces, but since we already
   // have the static InitializeOneOff here, it's easiest to reuse its
   // initialization guards.
+  static const char* GetEGLClientExtensions();
   static const char* GetEGLExtensions();
+  static bool HasEGLClientExtension(const char* name);
   static bool HasEGLExtension(const char* name);
   static bool IsCreateContextRobustnessSupported();
   static bool IsRobustnessVideoMemoryPurgeSupported();
