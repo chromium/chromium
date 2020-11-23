@@ -8,5 +8,7 @@
     value="[[getTotalUsedMemory_(memoryUsage_)]]"
     max="[[memoryUsage_.totalMemoryKib]]">
   </percent-bar-chart>
-  <routine-section slot="routines" routines="[[routines_]]"></routine-section>
+  <routine-section slot="routines" routines="[[routines_]]"
+    is-test-running="{{isTestRunning}}">
+  </routine-section>
 </diagnostics-card>

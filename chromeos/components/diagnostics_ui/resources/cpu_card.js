@@ -63,6 +63,12 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @type {boolean} */
+    isTestRunning: {
+      type: Boolean,
+      notify: true,
+    }
   },
 
   /** @override */

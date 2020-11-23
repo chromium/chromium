@@ -7,10 +7,41 @@ import 'chrome://diagnostics/diagnostics_app.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo, fakeSystemInfoWithoutBattery} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
+import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
+
+import * as dx_utils from './diagnostics_test_utils.js';
+
+/**
+ * @param {Array<?T>} cards
+ * @template T
+ * @throws {!Error}
+ */
+function assertRunTestButtonsDisabled(cards) {
+  cards.forEach((card) => {
+    const routineSection = dx_utils.getRoutineSection(card);
+    const runTestsButton =
+        dx_utils.getRunTestsButtonFromSection(routineSection);
+    assertTrue(runTestsButton.disabled);
+  });
+}
+
+/**
+ * @param {Array<?T>} cards
+ * @template T
+ * @throws {!Error}
+ */
+function assertRunTestButtonsEnabled(cards) {
+  cards.forEach((card) => {
+    const routineSection = dx_utils.getRoutineSection(card);
+    const runTestsButton =
+        dx_utils.getRunTestsButtonFromSection(routineSection);
+    assertFalse(runTestsButton.disabled);
+  });
+}
 
 export function appTestSuite() {
   /** @type {?DiagnosticsAppElement} */
@@ -101,5 +132,29 @@ export function appTestSuite() {
           const batteryStatus = page.$$('#batteryStatusCard');
           assertFalse(!!batteryStatus);
         });
+  });
+
+  test('AllRunTestsButtonsDisabledWhileRunning', () => {
+    let cards = null;
+    let memoryRoutinesSection = null;
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          const batteryStatusCard = page.$$('battery-status-card');
+          const cpuCard = page.$$('cpu-card');
+          const memoryCard = page.$$('memory-card');
+          cards = [batteryStatusCard, cpuCard, memoryCard];
+
+          memoryRoutinesSection = dx_utils.getRoutineSection(memoryCard);
+          memoryRoutinesSection.isTestRunning = true;
+          return flushTasks();
+        })
+        .then(() => {
+          assertRunTestButtonsDisabled(cards);
+          memoryRoutinesSection.isTestRunning = false;
+          return flushTasks();
+        })
+        .then(() => assertRunTestButtonsEnabled(cards));
   });
 }

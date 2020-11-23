@@ -37,12 +37,6 @@ Polymer({
   executor_: null,
 
   /**
-   * @type {boolean}
-   * @private
-   */
-  isRunTestsDisabled_: false,
-
-  /**
    * Boolean whether last run had at least one failure,
    * @type {boolean}
    * @private
@@ -78,10 +72,10 @@ Polymer({
       value: '',
     },
 
-    /** @private {boolean} */
-    isRunTestsDisabled_: {
+    /** @type {boolean} */
+    isTestRunning: {
       type: Boolean,
-      value: false,
+      notify: true,
     },
 
     /** @private {boolean} */
@@ -99,7 +93,7 @@ Polymer({
 
   /** @private */
   onRunTestsClicked_() {
-    this.isRunTestsDisabled_ = true;
+    this.isTestRunning = true;
     this.hasTestFailure_ = false;
 
     this.systemRoutineController_ = getSystemRoutineController();
@@ -133,7 +127,7 @@ Polymer({
           .then(() => {
             this.executionStatus_ = ExecutionProgress.kCompleted;
             this.systemRoutineController_ = null;
-            this.isRunTestsDisabled_ = false;
+            this.isTestRunning = false;
           });
     });
   },

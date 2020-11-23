@@ -38,10 +38,16 @@
   </div>
   <div class="diagonstics-cards-container">
     <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
-      <battery-status-card id="batteryStatusCard"></battery-status-card>
+      <battery-status-card id="batteryStatusCard"
+        is-test-running="{{isTestRunning}}">
+      </battery-status-card>
     </template>
-    <cpu-card id="cpuCard"></cpu-card>
-    <memory-card id="memoryCard"></memory-card>
+    <cpu-card id="cpuCard"
+      is-test-running="{{isTestRunning}}">
+    </cpu-card>
+    <memory-card id="memoryCard"
+      is-test-running="{{isTestRunning}}">
+    </memory-card>
   </div>
   <div class="session-log-container">
     <cr-button class="session-log-button">

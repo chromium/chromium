@@ -61,6 +61,7 @@ export function routineSectionTestSuite() {
 
     // Assign the routines to the property.
     routineSectionElement.routines = routines;
+    routineSectionElement.isTestRunning = false;
 
     return flushTasks();
   }
@@ -173,10 +174,12 @@ export function routineSectionTestSuite() {
     return initializeRoutineSection(routines)
         .then(() => {
           assertFalse(isRunTestsButtonDisabled());
+          assertFalse(routineSectionElement.isTestRunning);
           return clickRunTestsButton();
         })
         .then(() => {
           assertTrue(isRunTestsButtonDisabled());
+          assertTrue(routineSectionElement.isTestRunning);
         });
   });
 

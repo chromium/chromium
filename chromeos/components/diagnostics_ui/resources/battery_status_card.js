@@ -81,6 +81,12 @@ Polymer({
       type: String,
       computed: 'decodeString16_(batteryChargeStatus_.powerTime)',
     },
+
+    /** @type {boolean} */
+    isTestRunning: {
+      type: Boolean,
+      notify: true,
+    },
   },
 
   /** @override */

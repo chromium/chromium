@@ -137,3 +137,15 @@ export function getDiagnosticsCard(element) {
   return /** @type {!DiagnosticsCardElement} */ (
       element.shadowRoot.querySelector('diagnostics-card'));
 }
+
+/**
+ * Helper function for getting the routine-section from an element.
+ * @param {?Element} element
+ * @return {!RoutineSectionElement}
+ */
+export function getRoutineSection(element) {
+  const routineSection =
+      /** @type {!RoutineSectionElement} */ (element.$$('routine-section'));
+  assertTrue(!!routineSection);
+  return routineSection;
+}

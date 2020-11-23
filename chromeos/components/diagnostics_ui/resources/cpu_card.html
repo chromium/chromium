@@ -24,5 +24,7 @@
   <data-point slot="body" id="cpuTemp" header="[[i18n('cpuSpeedLabel')]]"
     value="">
 </data-point>
-  <routine-section slot="routines" routines="[[routines_]]"></routine-section>
+  <routine-section slot="routines" routines="[[routines_]]"
+    is-test-running="{{isTestRunning}}">
+  </routine-section>
 </diagnostics-card>

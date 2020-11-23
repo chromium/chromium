@@ -55,6 +55,12 @@ Polymer({
     memoryUsage_: {
       type: Object,
     },
+
+    /** @type {boolean} */
+    isTestRunning: {
+      type: Boolean,
+      notify: true,
+    }
   },
 
   /** @override */

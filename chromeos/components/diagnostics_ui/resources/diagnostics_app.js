@@ -40,6 +40,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    isTestRunning: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @override */
