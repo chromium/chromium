@@ -209,7 +209,6 @@
 #endif
 
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/cocoa/rosetta_required_infobar_delegate.h"
 #include "content/public/browser/frame_service_base.h"
 #include "media/mojo/mojom/cdm_infobar_service.mojom.h"
@@ -444,10 +443,8 @@ class CdmInfobarServiceImpl final
     if (!web_contents)
       return;
 
-    if (RosettaRequiredInfoBarDelegate::ShouldShow()) {
-      RosettaRequiredInfoBarDelegate::Create(
-          InfoBarService::FromWebContents(web_contents));
-    }
+    if (RosettaRequiredInfoBarDelegate::ShouldShow())
+      RosettaRequiredInfoBarDelegate::Create(web_contents);
   }
 };
 

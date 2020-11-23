@@ -34,9 +34,14 @@ bool RosettaRequiredInfoBarDelegate::ShouldShow() {
 }
 
 // static
-void RosettaRequiredInfoBarDelegate::Create(InfoBarService* infobar_service) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-      std::make_unique<RosettaRequiredInfoBarDelegate>()));
+void RosettaRequiredInfoBarDelegate::Create(
+    content::WebContents* web_contents) {
+  auto* infobar_service = InfoBarService::FromWebContents(web_contents);
+
+  if (infobar_service) {
+    infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+        std::make_unique<RosettaRequiredInfoBarDelegate>()));
+  }
 }
 
 RosettaRequiredInfoBarDelegate::RosettaRequiredInfoBarDelegate() = default;
