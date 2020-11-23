@@ -10,7 +10,6 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -506,6 +505,11 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
             EXPECT_THAT(
                 install_results,
                 UnorderedElementsAre(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                    Pair(GURL("https://calendar.google.com/calendar/"
+                              "installwebapp?usp=chrome_default"),
+                         InstallResultCode::kSuccessOfflineOnlyInstall),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                     Pair(GURL("https://docs.google.com/document/"
                               "installwebapp?usp=chrome_default"),
                          InstallResultCode::kSuccessOfflineOnlyInstall),
@@ -529,6 +533,11 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
           }));
   run_loop.Run();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(
+      provider.registrar().GetAppLaunchUrl(kGoogleCalendarAppId),
+      GURL("https://calendar.google.com/calendar/r?usp=installed_webapp"));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleDocsAppId),
             GURL("https://docs.google.com/document/?usp=installed_webapp"));
   EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleSlidesAppId),

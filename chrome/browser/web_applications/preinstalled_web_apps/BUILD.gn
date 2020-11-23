@@ -15,8 +15,8 @@ source_set("preinstalled_web_apps") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//chrome/browser:browser_process",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_process",
     "//chrome/browser/web_applications/components",
     "//skia",
     "//ui/base",
@@ -37,6 +37,13 @@ source_set("preinstalled_web_apps") {
       "youtube.cc",
       "youtube.h",
     ]
+
+    if (is_chromeos) {
+      sources += [
+        "google_calendar.cc",
+        "google_calendar.h",
+      ]
+    }
 
     deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
   }

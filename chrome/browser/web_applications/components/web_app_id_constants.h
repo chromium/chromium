@@ -15,7 +15,7 @@ namespace web_app {
 //     "chrome://camera-app/views/main.html"))
 constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 
-// Generated as: // web_app::GenerateAppIdFromURL(GURL(
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://canvas.apps.chrome/"))
 constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
@@ -24,8 +24,8 @@ constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 constexpr char kGmailAppId[] = "fpgpbaljnbnpjbpnlnjjhfeigfpemdda";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
-//     "https://calendar.google.com/calendar/?usp=installed_webapp"))
-constexpr char kGoogleCalendarAppId[] = "anejmkjdeaeoepnomjgklommefloacja";
+//     "https://calendar.google.com/calendar/r"))
+constexpr char kGoogleCalendarAppId[] = "kjbdgfilnfhdoflbpgamdcdgpehopbep";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://docs.google.com/document/?usp=installed_webapp"))

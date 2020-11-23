@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -17,6 +18,11 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_sheets.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_slides.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace web_app {
@@ -47,6 +53,9 @@ std::vector<ExternalInstallOptions> GetPreinstalledAppData() {
       GetConfigForGoogleSheets(),
       GetConfigForGoogleSlides(),
       GetConfigForYouTube(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      GetConfigForGoogleCalendar(),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       // clang-format on
   };
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
