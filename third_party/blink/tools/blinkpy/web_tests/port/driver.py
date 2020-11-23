@@ -359,6 +359,8 @@ class Driver(object):
                 test_dir_prefix = 'external/wpt/'
                 test_url_prefix = '/'
             hostname, insecure_port, secure_port = self.WPT_HOST_AND_PORTS
+            if '.www.' in test_name:
+                hostname = "www.%s" % hostname
         else:
             test_dir_prefix = self.HTTP_DIR
             test_url_prefix = '/'
