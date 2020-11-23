@@ -843,7 +843,14 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
             GetPlaybackSessionsSync(GetOTRMediaHistoryService(browser), 2));
 }
 
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_AudioVideo) {
+#if defined(OS_MAC) && !defined(NDEBUG)
+// TODO(crbug.com/1152073): This test has flaky timeouts on Mac Debug.
+#define MAYBE_RecordWatchtime_AudioVideo DISABLED_RecordWatchtime_AudioVideo
+#else
+#define MAYBE_RecordWatchtime_AudioVideo RecordWatchtime_AudioVideo
+#endif
+IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
+                       MAYBE_RecordWatchtime_AudioVideo) {
   auto* browser = CreateBrowserFromParam();
 
   // Start a page and wait for significant playback so we record watchtime.
