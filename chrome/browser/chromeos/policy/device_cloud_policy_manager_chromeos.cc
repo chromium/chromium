@@ -68,6 +68,8 @@ const char kZeroTouchEnrollmentHandsOff[] = "hands-off";
 
 // Default frequency for uploading enterprise status reports. Can be overriden
 // by Device Policy.
+// Keep the default value in sync with device_status_frequency in
+// DeviceReportingProto in components/policy/proto/chrome_device_policy.proto.
 constexpr base::TimeDelta kDeviceStatusUploadFrequency =
     base::TimeDelta::FromHours(3);
 

@@ -192,10 +192,11 @@ void ChildStatusCollector::UpdateReportingSettings() {
   }
 
   // Settings related.
+  // Keep the default values in sync with DeviceReportingProto in
+  // chrome/browser/chromeos/policy/status_collector/child_status_collector.cc.
   report_version_info_ = true;
   cros_settings_->GetBoolean(chromeos::kReportDeviceVersionInfo,
                              &report_version_info_);
-
   report_boot_mode_ = true;
   cros_settings_->GetBoolean(chromeos::kReportDeviceBootMode,
                              &report_boot_mode_);

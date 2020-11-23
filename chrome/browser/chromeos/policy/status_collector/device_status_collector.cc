@@ -1545,6 +1545,8 @@ void DeviceStatusCollector::UpdateReportingSettings() {
     return;
   }
 
+  // Keep the default values in sync with DeviceReportingProto in
+  // components/policy/proto/chrome_device_policy.proto.
   if (!cros_settings_->GetBoolean(chromeos::kReportDeviceVersionInfo,
                                   &report_version_info_)) {
     report_version_info_ = true;
