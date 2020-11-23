@@ -1374,6 +1374,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Enterprise.UserPolicyChromeOS.SessionAbort"
     enum="EnterpriseUserPolicyChromeOSSessionAbortType"
     expires_after="2020-02-23">
+  <obsolete>
+    Removed 2020/11.
+  </obsolete>
   <owner>emaxx@chromium.org</owner>
   <summary>
     Session abort due to a fatal error of Chrome OS user policy initialization.

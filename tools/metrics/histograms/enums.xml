@@ -22831,6 +22831,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="EnterpriseUserPolicyChromeOSSessionAbortType">
+  <obsolete>
+    Deprecated 11/2020.
+  </obsolete>
   <int value="0" label="Initialization, Google cloud management">
     Abort of asynchronous user policy initialization when the user is managed
     with the Google cloud management.

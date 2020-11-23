@@ -14,9 +14,6 @@ const char kMetricUserPolicyInvalidations[] = "Enterprise.PolicyInvalidations";
 const char kMetricUserPolicyInvalidationsFcm[] =
     "Enterprise.FCMInvalidationService.PolicyInvalidations";
 
-const char kMetricUserPolicyChromeOSSessionAbort[] =
-    "Enterprise.UserPolicyChromeOS.SessionAbort";
-
 const char kMetricDevicePolicyRefresh[] = "Enterprise.DevicePolicyRefresh3";
 const char kMetricDevicePolicyRefreshFcm[] =
     "Enterprise.FCMInvalidationService.DevicePolicyRefresh3";

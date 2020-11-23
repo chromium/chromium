@@ -12,8 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -41,7 +39,6 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/known_user.h"
@@ -75,12 +72,7 @@ constexpr base::TimeDelta kPolicyRefreshTimeout =
 
 // Called when the user policy loading fails with a fatal error, and the user
 // session has to be terminated.
-void OnUserPolicyFatalError(
-    const AccountId& account_id,
-    MetricUserPolicyChromeOSSessionAbortType metric_value) {
-  base::UmaHistogramEnumeration(
-      kMetricUserPolicyChromeOSSessionAbort, metric_value,
-      MetricUserPolicyChromeOSSessionAbortType::kCount);
+void OnUserPolicyFatalError(const AccountId& account_id) {
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       account_id, true /* force_online_signin */);
   chrome::AttemptUserExit();
@@ -186,13 +178,6 @@ void CreateConfigurationPolicyProvider(
   if (policy_check_required && force_immediate_load) {
     LOG(ERROR) << "Exiting non-stub session because browser restarted before"
                << " profile was initialized.";
-    base::UmaHistogramEnumeration(
-        kMetricUserPolicyChromeOSSessionAbort,
-        is_active_directory ? MetricUserPolicyChromeOSSessionAbortType::
-                                  kBlockingInitWithActiveDirectoryManagement
-                            : MetricUserPolicyChromeOSSessionAbortType::
-                                  kBlockingInitWithGoogleCloudManagement,
-        MetricUserPolicyChromeOSSessionAbortType::kCount);
     chrome::AttemptUserExit();
     return;
   }
@@ -288,10 +273,8 @@ void CreateConfigurationPolicyProvider(
   if (is_active_directory) {
     auto manager = std::make_unique<UserActiveDirectoryPolicyManager>(
         account_id, policy_required, policy_refresh_timeout,
-        base::BindOnce(&OnUserPolicyFatalError, account_id,
-                       MetricUserPolicyChromeOSSessionAbortType::
-                           kInitWithActiveDirectoryManagement),
-        std::move(store), std::move(external_data_manager));
+        base::BindOnce(&OnUserPolicyFatalError, account_id), std::move(store),
+        std::move(external_data_manager));
     manager->Init(profile->GetPolicySchemaRegistryService()->registry());
     *active_directory_policy_manager_out = std::move(manager);
   } else {
@@ -300,10 +283,8 @@ void CreateConfigurationPolicyProvider(
             profile, std::move(store), std::move(external_data_manager),
             component_policy_cache_dir, enforcement_type,
             policy_refresh_timeout,
-            base::BindOnce(&OnUserPolicyFatalError, account_id,
-                           MetricUserPolicyChromeOSSessionAbortType::
-                               kInitWithGoogleCloudManagement),
-            account_id, base::ThreadTaskRunnerHandle::Get());
+            base::BindOnce(&OnUserPolicyFatalError, account_id), account_id,
+            base::ThreadTaskRunnerHandle::Get());
 
     bool wildcard_match = false;
     if (connector->IsEnterpriseManaged() &&
