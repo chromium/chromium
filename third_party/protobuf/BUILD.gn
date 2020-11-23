@@ -133,6 +133,7 @@ protobuf_lite_sources = [
   "src/google/protobuf/stubs/template_util.h",
   "src/google/protobuf/stubs/time.cc",
   "src/google/protobuf/stubs/time.h",
+  "src/google/protobuf/util/time_util.h",
   "src/google/protobuf/wire_format_lite.cc",
   "src/google/protobuf/wire_format_lite.h",
 ]
