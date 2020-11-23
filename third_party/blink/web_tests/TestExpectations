@@ -969,7 +969,7 @@ crbug.com/591099 [ Mac ] paint/invalidation/flexbox/remove-inline-block-descenda
 crbug.com/982211 fast/events/before-unload-return-value-from-listener.html [ Pass Crash Timeout ]
 
 ### With LayoutNGFragmentItem enabled
-crbug.com/982194 [ Win7 ] external/wpt/css/css-text/white-space/seg-break-transformation-018.html [ Failure ]
+crbug.com/982194 [ Win7 ] external/wpt/css/css-text/white-space/seg-break-transformation-018.tentative.html [ Failure ]
 crbug.com/982194 [ Win10 ] fast/inline/emptyInlinesWithinLists.html [ Pass Failure ]
 crbug.com/982194 [ Win10 ] fast/writing-mode/background-vertical-rl.html [ Pass Failure ]
 crbug.com/982194 [ Win10 ] fast/writing-mode/border-image-vertical-lr.html [ Pass Failure ]
@@ -2592,6 +2592,8 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Timeout ]
+crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-text/white-space/full-width-leading-spaces-004.html [ Failure ]
 crbug.com/626703 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
@@ -2927,7 +2929,6 @@ crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-nesting
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-end-of-line-001.html [ Failure ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-destroy-script-execution.html [ Timeout ]
-crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-no-sink.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-dynamic-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html [ Failure ]
 ### See crbug.com/891427 comment near the top of this file:

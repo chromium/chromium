@@ -1036,6 +1036,13 @@
        null,
        {}
       ]
+     ],
+     "operator-and-first-letter.html": [
+      "a4d56de72ffaf872860379735b86d09278a0ffc7",
+      [
+       null,
+       {}
+      ]
      ]
     }
    },
@@ -10060,7 +10067,7 @@
    },
    "web-nfc": {
     "NDEFReader-document-hidden-manual.https.html": [
-     "f2027dc99d1dad8004c72f0af5e7eea48836c3b2",
+     "ffbd7ebc45618a905b91eaa5a6cfa4f41f8efcd9",
      [
       null,
       {}
@@ -52665,6 +52672,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "widows-001.html": [
+      "eb453ee64d8cfa1bcee456d614b64a3d67be122e",
+      [
+       null,
+       [
+        [
+         "/css/css-break/reference/widows-001-ref.html",
          "=="
         ]
        ],
@@ -96778,7 +96798,7 @@
        ]
       ],
       "abspos-004.html": [
-       "b7685f1db3836e6785aad5a70dbcff217655ac48",
+       "c16c8c78b02038b3db85f1535c72e8d799ca559a",
        [
         null,
         [
@@ -96909,6 +96929,19 @@
       ],
       "abspos-014.html": [
        "b0accc68dc85564b851f746965a1bad48318ab40",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "abspos-015.html": [
+       "efd9759a862c631cef8846ba8eb12b8f37376083",
        [
         null,
         [
@@ -110508,7 +110541,7 @@
         {}
        ]
       ],
-      "seg-break-transformation-018.html": [
+      "seg-break-transformation-018.tentative.html": [
        "2faf185856baf75b4820b57cd9b4ffe4161f7a29",
        [
         null,
@@ -110521,7 +110554,7 @@
         {}
        ]
       ],
-      "seg-break-transformation-019.html": [
+      "seg-break-transformation-019.tentative.html": [
        "afbba2642524209eda0378577305b5c0e48d1232",
        [
         null,
@@ -154148,7 +154181,7 @@
      ]
     ],
     "forced-colors-mode-18.html": [
-     "435b9e4326f9a012e3f9a0eacc4cb9761477f3f3",
+     "6b415f765873e1201d65d54e455e946d9e0acd98",
      [
       null,
       [
@@ -154200,7 +154233,7 @@
      ]
     ],
     "forced-colors-mode-26.html": [
-     "a9aa59013217ecdc32908330a4c520a761c0d09b",
+     "5379564563d60fcac37cc6ee063812ecab4736ba",
      [
       null,
       [
@@ -154291,7 +154324,7 @@
      ]
     ],
     "forced-colors-mode-35.html": [
-     "098a9ce9d339260af059354235874123831683af",
+     "5d80e80418ce540d450ebc41577e0fdfbbde95d4",
      [
       null,
       [
@@ -156953,6 +156986,19 @@
          [
           [
            "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-border-gap-position-relative-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fieldset-border-radius-with-alpha.html": [
+        "36b9fc8c8ef7aa08473e4061c090042882b8b582",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-border-radius-with-alpha-ref.html",
            "=="
           ]
          ],
@@ -174542,7 +174588,7 @@
       []
      ],
      "helpers.py": [
-      "1002b84a8f9287a0bcf83722c54644abd544a2d7",
+      "47f40b4fc19a8304ef39141f5a3d31b1d56368ef",
       []
      ],
      "imgIfMatch.py": [
@@ -181570,6 +181616,10 @@
       ]
      },
      "reference": {
+      "widows-001-ref.html": [
+       "4f822f8fd67aed18355177a5e9de18d8a63f895e",
+       []
+      ],
       "widows-orphans-001-ref.html": [
        "06108ac800c19c68841f2a0e8867fb05e868c1ab",
        []
@@ -201334,7 +201384,15 @@
        "9612dd0cf28a2ed03a2080e68e2278792060a7e9",
        []
       ],
+      "seg-break-transformation-001.tentative-expected.txt": [
+       "9612dd0cf28a2ed03a2080e68e2278792060a7e9",
+       []
+      ],
       "seg-break-transformation-002-expected.txt": [
+       "405bb8e17b14c4b65d41d11c69995c0459fd545f",
+       []
+      ],
+      "seg-break-transformation-002.tentative-expected.txt": [
        "405bb8e17b14c4b65d41d11c69995c0459fd545f",
        []
       ],
@@ -201342,11 +201400,23 @@
        "716b04b855afad7fb770f34e21606576d2615415",
        []
       ],
+      "seg-break-transformation-003.tentative-expected.txt": [
+       "716b04b855afad7fb770f34e21606576d2615415",
+       []
+      ],
       "seg-break-transformation-008-expected.txt": [
        "69421f2947e4db37f2b1f753f383b151b543b2f1",
        []
       ],
+      "seg-break-transformation-008.tentative-expected.txt": [
+       "69421f2947e4db37f2b1f753f383b151b543b2f1",
+       []
+      ],
       "seg-break-transformation-009-expected.txt": [
+       "283611ac4bc3387770fb1e0fe24c6a177d389ba3",
+       []
+      ],
+      "seg-break-transformation-009.tentative-expected.txt": [
        "283611ac4bc3387770fb1e0fe24c6a177d389ba3",
        []
       ]
@@ -217203,10 +217273,6 @@
       "0d6db5399118372da9ca783eeb2551e435ea85d7",
       []
      ],
-     "window-tests-chooser.js": [
-      "bb9e0bf128c7885ae2b3c32ceb98f28947460209",
-      []
-     ],
      "window-tests-enumeration.js": [
       "6e60910251fc59012d28f3c9a42adac7b7cb6d7a",
       []
@@ -217993,7 +218059,7 @@
      []
     ],
     "forced-colors-mode-18-ref.html": [
-     "a1701e3fdac842ea26c8f291b23f1febdb305d11",
+     "dd069c1874d9af71b44720785968105631546358",
      []
     ],
     "forced-colors-mode-19-ref.html": [
@@ -218009,7 +218075,7 @@
      []
     ],
     "forced-colors-mode-26-ref.html": [
-     "39caee40b52aca059a9a65ffde754788228ff9dc",
+     "617d425e0aeac4370ad2a8ff42c05fb8a1be1853",
      []
     ],
     "forced-colors-mode-28-ref.html": [
@@ -218037,7 +218103,7 @@
      []
     ],
     "forced-colors-mode-35-ref.html": [
-     "ba38e484b5591c28d2493362f2b3e1355fc8f0e4",
+     "2b397e92f2c9f5c12ab0ec2fbb79f2b8cb2d4b35",
      []
     ],
     "forced-colors-mode-36-ref.html": [
@@ -226737,6 +226803,10 @@
         "95e2347121e26ec7cc7d080caf9db6ff253231c6",
         []
        ],
+       "fieldset-border-radius-with-alpha-ref.html": [
+        "577482a328b47b72b78ddc22abef02e12836a378",
+        []
+       ],
        "fieldset-containing-block-ref.html": [
         "ccb755b347cbf926163e7dfaaa37c590942ca6c9",
         []
@@ -233329,7 +233399,7 @@
      []
     ],
     "web-nfc.idl": [
-     "14df65c6cecc75a438f1ac9f476d3e8a136566e7",
+     "bdf0324d96d692c17bbf10b0974ace38faf33318",
      []
     ],
     "web-otp.idl": [
@@ -235180,7 +235250,7 @@
     },
     "utils": {
      "peerconnection.js": [
-      "817095e981f7724ba4d8a9f1cec26d2b4b7e3b4d",
+      "1b9670d34631dced4e03e334292aed00786237fb",
       []
      ],
      "sources.js": [
@@ -240565,11 +240635,11 @@
    },
    "serial": {
     "idlharness.https.any-expected.txt": [
-     "6db775ca238a4c51758ae9dc152334690424b005",
+     "6389f9ba3a6b3f8fa7ea946c41f9dc436e9a4cf2",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "bf15faac24d2faefc8fe8addec7749c195fde7ad",
+     "8f66297e1e734e803e91a1d14938cbf98e74c8e1",
      []
     ],
     "resources": {
@@ -245193,7 +245263,7 @@
        []
       ],
       "safari-technology-preview.rb": [
-       "115dd1b8f210b639a69a8f3cfa21f4edf7579243",
+       "3f9a3679080344df29824872522a19d523cecc87",
        []
       ],
       "system_info.yml": [
@@ -251663,7 +251733,7 @@
        []
       ],
       "testdriver-extra.js": [
-       "9c0c69af3a3f278e8053b0a9907cd1dd7cae9dbc",
+       "9a8b40e0a94d264ef92ddea30dec05cfae37a0b1",
        []
       ],
       "testdriver-vendor.js": [
@@ -253584,14 +253654,6 @@
      "32c24570db165422a60a18b767c828dab10c5b9c",
      []
     ],
-    "NDEFReader-document-hidden-manual.https-expected.txt": [
-     "e2f23777367848e025ae4ed06324985debadf654",
-     []
-    ],
-    "NDEFWriter-document-hidden-manual.https-expected.txt": [
-     "d700bd80786fdd166235c2d78311b7f641f09d26",
-     []
-    ],
     "OWNERS": [
      "2a0e82019549591b88878ca70fc6baf616d34c29",
      []
@@ -253602,7 +253664,7 @@
     ],
     "resources": {
      "nfc-helpers.js": [
-      "13cbe49370e9a7245755c9c69be63117f4440d33",
+      "0b26d09c96aa8f29ef6d5646c187af0a2a5100a8",
       []
      ],
      "support-iframe.html": [
@@ -253955,7 +254017,7 @@
      []
     ],
     "helpers.js": [
-     "620feebd2999ac71fe06d73e7b0cda4ec5d855fe",
+     "6d6d438ab81da54e5389061d162ff7051728d30c",
      []
     ],
     "resources": {
@@ -294462,8 +294524,22 @@
        {}
       ]
      ],
+     "overflow-clip-scroll-size.html": [
+      "1f2c2236a412251a9c02b84d3fade4c2df8d0527",
+      [
+       null,
+       {}
+      ]
+     ],
      "overflow-codependent-scrollbars.html": [
       "eb0e4f5ea2ed9a97c0931c2c53de5e62e72ba1dd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-empty-child-box.html": [
+      "880e0d36848a5261163f0c07d4cafb2f4df0a278",
       [
        null,
        {}
@@ -301029,119 +301105,119 @@
         {}
        ]
       ],
-      "seg-break-transformation-000.html": [
+      "seg-break-transformation-000.tentative.html": [
        "cb7b0f30b566320c1022f61fde44bc09695badb1",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-001.html": [
+      "seg-break-transformation-001.tentative.html": [
        "1640878a00bd128dce6f55b76bcba8c852398b07",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-002.html": [
+      "seg-break-transformation-002.tentative.html": [
        "de51bf6f81e2c5ed0347c4ff1527131ab508cf65",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-003.html": [
+      "seg-break-transformation-003.tentative.html": [
        "15b98b69176f689cf28f944f4b6e78fb0485f761",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-004.html": [
+      "seg-break-transformation-004.tentative.html": [
        "e7a12b1337808032135eeacfbf76fc9930f272f7",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-005.html": [
+      "seg-break-transformation-005.tentative.html": [
        "92f91c3bf83734137c9e441ddd9865773faed99e",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-006.html": [
+      "seg-break-transformation-006.tentative.html": [
        "c4fed83d3d0cab5925e76dcf793dd1853d639fe3",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-007.html": [
+      "seg-break-transformation-007.tentative.html": [
        "4f4f4ab7a4c5b4ed028d15b3bbdcddf6dde354e7",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-008.html": [
+      "seg-break-transformation-008.tentative.html": [
        "6d04366bb6a85766fd9f8a089c7fcec1a17530f6",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-009.html": [
+      "seg-break-transformation-009.tentative.html": [
        "c7a79cecac463a88d149d03e15f14dbd8f042e12",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-010.html": [
+      "seg-break-transformation-010.tentative.html": [
        "43b4218df3bb9968f8e175e799d86cb40adb3639",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-011.html": [
+      "seg-break-transformation-011.tentative.html": [
        "d88a8efd34122972faf9275f7bb04821cde9afa1",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-012.html": [
+      "seg-break-transformation-012.tentative.html": [
        "2c8b186c3b97c2c129dbec543bd200d21b2cfe87",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-014.html": [
+      "seg-break-transformation-014.tentative.html": [
        "93dc18a8c9775d2c3d448fbef9213afa4fec4cd2",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-015.html": [
+      "seg-break-transformation-015.tentative.html": [
        "095fcd0dd92388603de0856bf19bc361964f759b",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-016.html": [
+      "seg-break-transformation-016.tentative.html": [
        "2cb36a5b1e8fc28c5ba42a3f8b45645fc45b8eb0",
        [
         null,
         {}
        ]
       ],
-      "seg-break-transformation-017.html": [
+      "seg-break-transformation-017.tentative.html": [
        "52b7ce1f6ab15ac1833067cdf957b1e4c6b4af21",
        [
         null,
@@ -338188,29 +338264,12 @@
       }
      ]
     ],
-    "font_access-chooser.tentative.https.window.js": [
-     "047521a7f7ab86ddddeb8f95ee711757f81bccf4",
+    "font_access-chooser.tentative.manual.https.html": [
+     "8f623daa0b86c1af6141fee0cf8a8783559f2b16",
      [
-      "font-access/font_access-chooser.tentative.https.window.html",
+      null,
       {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/testdriver.js"
-        ],
-        [
-         "script",
-         "/resources/testdriver-vendor.js"
-        ],
-        [
-         "script",
-         "resources/test-expectations.js"
-        ],
-        [
-         "script",
-         "resources/window-tests-chooser.js"
-        ]
-       ]
+       "testdriver": true
       }
      ]
     ],
@@ -338244,13 +338303,6 @@
    "forced-colors-mode": {
     "forced-colors-mode-03.html": [
      "e7bb021217ce4a868a4bdfbaf194f7374885fc14",
-     [
-      null,
-      {}
-     ]
-    ],
-    "forced-colors-mode-04.html": [
-     "42b4efdba71bd959b5db159c1c448a27231b977e",
      [
       null,
       {}
@@ -338298,8 +338350,15 @@
       {}
      ]
     ],
-    "forced-colors-mode-32.html": [
-     "bd3595bf3bf33d5c65210c2f155a2431ef976e44",
+    "forced-colors-mode-40.html": [
+     "07316bda24610f87d0735a4835f865d176396d0d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "forced-colors-mode-41.html": [
+     "ddb747d08186ede841356867657d8e3941b008a8",
      [
       null,
       {}
@@ -338835,7 +338894,7 @@
    },
    "hr-time": {
     "basic.any.js": [
-     "364dd81a3448188bd76f6ff410807bfcca93177d",
+     "4cd6e42dfc2274ac04ab46fb2f12d30ca150865b",
      [
       "hr-time/basic.any.html",
       {}
@@ -378235,6 +378294,15 @@
        }
       ]
      ],
+     "click-multiple.html": [
+      "ed834c557112fade1d6d7ff69e8d3598dd6d4589",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "click.html": [
       "37721ad9ef3df10f8cdc1da74c27a2259d4601f6",
       [
@@ -382355,13 +382423,6 @@
       {}
      ]
     ],
-    "MediaRecorder-no-sink.https.html": [
-     "7f5ff934fad7ccb47b742bd4cb8546e3a745b483",
-     [
-      null,
-      {}
-     ]
-    ],
     "MediaRecorder-pause-resume.html": [
      "39f98cc85a17d14c65b274f3925497b8c85d92cc",
      [
@@ -382369,8 +382430,17 @@
       {}
      ]
     ],
+    "MediaRecorder-peerconnection-no-sink.https.html": [
+     "3d96df5e4f05f1ed5b85f2f8b945d70f22725f3a",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "MediaRecorder-peerconnection.https.html": [
-     "88e9da78a7a55af1e99a2a483e962ac19fe0ff76",
+     "b47fbe2debaf5a93ec803aaff9e8ddcb801f6987",
      [
       null,
       {
@@ -382405,7 +382475,7 @@
     ],
     "passthrough": {
      "MediaRecorder-passthrough.https.html": [
-      "655b7a1192378d8ee7766c801c1818c3f9d595a9",
+      "b75797583949514f4b5eb9ffed2d362ed0406b49",
       [
        null,
        {}
@@ -404236,6 +404306,13 @@
        {}
       ]
      ],
+     "at-scroll-timeline-multi-pass.tentative.html": [
+      "14b35b3f6033f0577999de110c1df72905ade475",
+      [
+       null,
+       {}
+      ]
+     ],
      "at-scroll-timeline-offset-invalidation.tentative.html": [
       "5a560ad004cf292b9e1061a55b6cd1e286e42c4d",
       [
@@ -405833,7 +405910,7 @@
       ]
      ],
      "claim-worker-fetch.https.html": [
-      "c55b965be6e923ae40b4d6db2df745fa772c5bba",
+      "389d001f31e2e9791198029c5e9877de5395e234",
       [
        null,
        {}
@@ -425757,14 +425834,14 @@
      ]
     ],
     "NDEFReader_scan.https.html": [
-     "46f2871f3dc9a4c4bd74923d05b6b90477ddb0a8",
+     "b551af0150f068b0794047cdfb08c862ac3bbb4b",
      [
       null,
       {}
      ]
     ],
     "NDEFReader_scan_iframe.https.html": [
-     "9bdb07136821211214e7d2d838f92da3f1955bc4",
+     "8803c25fb0a54fe13b23eb455e6da09c422aa3d4",
      [
       null,
       {}
@@ -427768,6 +427845,16 @@
       }
      ]
     ],
+    "createcredential-resident-key.https.html": [
+     "d64ec14c00d38e49eaa91142b55f47c2e336670d",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "createcredential-timeout.https.html": [
      "fc35a6e72f0a76a4ff410df71b346109cc215681",
      [
@@ -427910,18 +427997,70 @@
     ]
    },
    "webcodecs": {
-    "audio-decoder.html": [
-     "e6bc81d35cba86a63d68cb0635e10e3c3d627cfe",
+    "audio-decoder.any.js": [
+     "70110a7822ea0fb374b08a8fd5f3811a6164c3ea",
      [
-      null,
-      {}
+      "webcodecs/audio-decoder.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audio-decoder.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
      ]
     ],
-    "video-decoder.html": [
-     "ff48625dc8c2a8718895831e6dd0c82b9c17d7c2",
+    "video-decoder.any.js": [
+     "e667a5642e76a6bb58cd608ebf2c1428c70b208a",
      [
-      null,
-      {}
+      "webcodecs/video-decoder.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
      ]
     ],
     "video-encoder.html": [
@@ -427931,18 +428070,78 @@
       {}
      ]
     ],
-    "video-frame-serialization.html": [
-     "8c111488e7c959a8844583ae2117f9abb8ffd8a1",
+    "video-frame-serialization.any.js": [
+     "524f94374f417ae08798a2d1eeafbc012c028a41",
      [
-      null,
-      {}
+      "webcodecs/video-frame-serialization.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/common/media.js"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-frame-serialization.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/common/media.js"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
      ]
     ],
-    "video-frame.html": [
-     "de39603b1530c980e754e1b311c060159251d312",
+    "video-frame.any.js": [
+     "9eb6699c06ae541b7e2e3911a913b29a7f5d83cf",
      [
-      null,
-      {}
+      "webcodecs/video-frame.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-frame.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ]
+       ]
+      }
      ]
     ],
     "video-track-reader.html": [
