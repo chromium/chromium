@@ -159,14 +159,7 @@ public class PaymentRequestTestBridge {
         }
 
         @Override
-        public void onAppListReady(@Nullable List<EditableOption> apps, PaymentItem total) {
-            if (apps == null) {
-                nativeSetAppDescriptions(
-                        mSetAppDescriptionsPtr, new String[0], new String[0], new String[0]);
-                nativeResolvePaymentRequestObserverCallback(mOnAppListReadyPtr);
-                return;
-            }
-
+        public void onAppListReady(List<EditableOption> apps, PaymentItem total) {
             String[] appLabels = new String[apps.size()];
             String[] appSublabels = new String[apps.size()];
             String[] appTotals = new String[apps.size()];

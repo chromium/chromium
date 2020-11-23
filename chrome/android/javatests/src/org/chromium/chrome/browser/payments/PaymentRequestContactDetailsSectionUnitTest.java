@@ -233,7 +233,7 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
-        Assert.assertEquals(null, items);
+        Assert.assertEquals(0, items.size());
         Assert.assertEquals(
                 SectionInformation.NO_SELECTION, mContactDetailsSection.getSelectedItemIndex());
 
@@ -308,7 +308,7 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
-        Assert.assertEquals(null, items);
+        Assert.assertEquals(0, items.size());
         Assert.assertEquals(
                 SectionInformation.NO_SELECTION, mContactDetailsSection.getSelectedItemIndex());
 

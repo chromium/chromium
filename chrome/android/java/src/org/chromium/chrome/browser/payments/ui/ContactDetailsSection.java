@@ -29,8 +29,7 @@ import java.util.List;
 public class ContactDetailsSection extends SectionInformation {
     private final Context mContext;
     private final ContactEditor mContactEditor;
-
-    private List<AutofillProfile> mProfiles;
+    private final List<AutofillProfile> mProfiles;
 
     /**
      * Builds a Contact section from a list of AutofillProfile.
@@ -70,21 +69,18 @@ public class ContactDetailsSection extends SectionInformation {
                 createAutofillContactFromProfile(editedAddress.getProfile());
         if (null == updatedContact) return;
 
-        if (mItems != null) {
-            for (int i = 0; i < mItems.size(); i++) {
-                AutofillContact existingContact = (AutofillContact) mItems.get(i);
-                if (existingContact.getProfile().getGUID().equals(
-                            editedAddress.getProfile().getGUID())) {
-                    // We need to replace |existingContact| with |updatedContact|.
-                    mItems.remove(i);
-                    mItems.add(i, updatedContact);
-                    return;
-                }
+        for (int i = 0; i < mItems.size(); i++) {
+            AutofillContact existingContact = (AutofillContact) mItems.get(i);
+            if (existingContact.getProfile().getGUID().equals(
+                        editedAddress.getProfile().getGUID())) {
+                // We need to replace |existingContact| with |updatedContact|.
+                mItems.remove(i);
+                mItems.add(i, updatedContact);
+                return;
             }
         }
         // The contact didn't exist. Add the new address to |mItems| to the end of the list, in
         // anticipation of the contacts section refresh.
-        if (mItems == null) mItems = new ArrayList<>();
         mItems.add(updatedContact);
 
         // The selection is not updated.
