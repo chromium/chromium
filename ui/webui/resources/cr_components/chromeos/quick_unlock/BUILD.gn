@@ -83,8 +83,6 @@ js_library("setup_pin_keyboard.m") {
   extra_deps = [ ":setup_pin_keyboard_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":modulize",
