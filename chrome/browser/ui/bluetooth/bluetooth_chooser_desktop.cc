@@ -6,30 +6,36 @@
 
 #include "base/check.h"
 #include "chrome/browser/ui/bluetooth/bluetooth_chooser_controller.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 
 BluetoothChooserDesktop::BluetoothChooserDesktop(
-    BluetoothChooserController* bluetooth_chooser_controller,
-    base::OnceClosure&& close_closure)
-    : bluetooth_chooser_controller_(bluetooth_chooser_controller),
-      close_closure_(std::move(close_closure)) {
-  DCHECK(bluetooth_chooser_controller_);
+    content::RenderFrameHost* frame,
+    const content::BluetoothChooser::EventHandler& event_handler) {
+  auto controller =
+      std::make_unique<BluetoothChooserController>(frame, event_handler);
+  bluetooth_chooser_controller_ = controller->GetWeakPtr();
+  close_closure_ =
+      chrome::ShowDeviceChooserDialog(frame, std::move(controller));
 }
 
 BluetoothChooserDesktop::~BluetoothChooserDesktop() {
   // This satisfies the WebContentsDelegate::RunBluetoothChooser() requirement
   // that the EventHandler can be destroyed any time after the BluetoothChooser
   // instance.
-  bluetooth_chooser_controller_->ResetEventHandler();
+  if (bluetooth_chooser_controller_)
+    bluetooth_chooser_controller_->ResetEventHandler();
   if (close_closure_)
     std::move(close_closure_).Run();
 }
 
 void BluetoothChooserDesktop::SetAdapterPresence(AdapterPresence presence) {
-  bluetooth_chooser_controller_->OnAdapterPresenceChanged(presence);
+  if (bluetooth_chooser_controller_)
+    bluetooth_chooser_controller_->OnAdapterPresenceChanged(presence);
 }
 
 void BluetoothChooserDesktop::ShowDiscoveryState(DiscoveryState state) {
-  bluetooth_chooser_controller_->OnDiscoveryStateChanged(state);
+  if (bluetooth_chooser_controller_)
+    bluetooth_chooser_controller_->OnDiscoveryStateChanged(state);
 }
 
 void BluetoothChooserDesktop::AddOrUpdateDevice(
@@ -39,7 +45,9 @@ void BluetoothChooserDesktop::AddOrUpdateDevice(
     bool is_gatt_connected,
     bool is_paired,
     int signal_strength_level) {
-  bluetooth_chooser_controller_->AddOrUpdateDevice(
-      device_id, should_update_name, device_name, is_gatt_connected, is_paired,
-      signal_strength_level);
+  if (bluetooth_chooser_controller_) {
+    bluetooth_chooser_controller_->AddOrUpdateDevice(
+        device_id, should_update_name, device_name, is_gatt_connected,
+        is_paired, signal_strength_level);
+  }
 }

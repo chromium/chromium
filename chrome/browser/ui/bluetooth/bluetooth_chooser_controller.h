@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
@@ -69,6 +70,9 @@ class BluetoothChooserController : public ChooserController {
   // any more.
   void ResetEventHandler();
 
+  // Get a weak pointer to this controller.
+  base::WeakPtr<BluetoothChooserController> GetWeakPtr();
+
  private:
   struct BluetoothDeviceInfo {
     std::string id;
@@ -88,6 +92,8 @@ class BluetoothChooserController : public ChooserController {
 
   content::BluetoothChooser::EventHandler event_handler_;
   base::string16 status_text_;
+
+  base::WeakPtrFactory<BluetoothChooserController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothChooserController);
 };
