@@ -60,9 +60,6 @@ constexpr char kPerformSafetyCheck[] = "performSafetyCheck";
 constexpr char kGetParentRanDisplayString[] = "getSafetyCheckRanDisplayString";
 constexpr char kNewState[] = "newState";
 constexpr char kDisplayString[] = "displayString";
-constexpr char kPasswordsCompromised[] = "passwordsCompromised";
-constexpr char kExtensionsReenabledByUser[] = "extensionsReenabledByUser";
-constexpr char kExtensionsReenabledByAdmin[] = "extensionsReenabledByAdmin";
 
 // Converts the VersionUpdater::Status to the UpdateStatus enum to be passed
 // to the safety check frontend. Note: if the VersionUpdater::Status gets
@@ -506,9 +503,6 @@ void SafetyCheckHandler::OnPasswordsCheckResult(PasswordsStatus status,
                                                 Total total) {
   base::DictionaryValue event;
   event.SetIntKey(kNewState, static_cast<int>(status));
-  if (status == PasswordsStatus::kCompromisedExist) {
-    event.SetIntKey(kPasswordsCompromised, compromised.value());
-  }
   event.SetStringKey(kDisplayString,
                      GetStringForPasswords(status, compromised, done, total));
   FireWebUIListener(kPasswordsEvent, event);
@@ -527,14 +521,6 @@ void SafetyCheckHandler::OnExtensionsCheckResult(
     ReenabledAdmin reenabled_admin) {
   base::DictionaryValue event;
   event.SetIntKey(kNewState, static_cast<int>(status));
-  if (status == ExtensionsStatus::kBlocklistedReenabledAllByUser ||
-      status == ExtensionsStatus::kBlocklistedReenabledSomeByUser) {
-    event.SetIntKey(kExtensionsReenabledByUser, reenabled_user.value());
-  }
-  if (status == ExtensionsStatus::kBlocklistedReenabledAllByAdmin ||
-      status == ExtensionsStatus::kBlocklistedReenabledSomeByUser) {
-    event.SetIntKey(kExtensionsReenabledByAdmin, reenabled_admin.value());
-  }
   event.SetStringKey(kDisplayString,
                      GetStringForExtensions(status, Blocklisted(blocklisted),
                                             reenabled_user, reenabled_admin));
