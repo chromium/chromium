@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Chromeలో Google స్మార్ట్‌లను పొందండి</translation>
 <translation id="1147322039136785890">ఇప్పుడు దీనిని <ph name="SUPERVISED_USER_NAME" /> ఉపయోగించవచ్చు</translation>
 <translation id="1147991416141538220">యాక్సెస్‌ను అడగడానికి, ఈ పరికరం యొక్క నిర్వాహకులను సంప్రదించండి.</translation>
+<translation id="1148063863818152153">మీ పరికర EID</translation>
 <translation id="1149401351239820326">గడువు ముగింపు నెల</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" />ను స్కాన్ చేస్తోంది</translation>
 <translation id="1150490752229770117">ఈ <ph name="DEVICE_TYPE" />కు ఇదే చివరి ఆటోమేటిక్ సాఫ్ట్‌వేర్ మరియు భద్రతాపరమైన అప్‌డేట్. భవిష్యత్తు అప్‌డేట్‌లను పొందడానికి, సరికొత్త మోడల్‌కు అప్‌గ్రేడ్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -314,6 +315,7 @@
 <translation id="1343865611738742294">USB పరికరాలను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి. USB పరికరాన్ని తీసివేసిన తర్వాత, దానిని Linux గుర్తుంచుకోదు.</translation>
 <translation id="1346630054604077329">నిర్ధారించి, రీస్టార్ట్ చేయి</translation>
 <translation id="1347256498747320987">అప్‌డేట్‌లు &amp; యాప్‌లను ఇన్‌స్టాల్ చేయండి. కొనసాగించడం ద్వారా, ఈ పరికరం Google, మీ క్యారియర్ మరియు మీ పరికర తయారీదారు నుండి అప్‌డేట్‌లు మరియు యాప్‌లను ఆటోమేటిక్‌గా కూడా డౌన్‌లోడ్ మరియు ఇన్‌స్టాల్ చేయవచ్చని మీరు అంగీకరిస్తున్నారు, బహుశా సెల్యులార్ డేటా ఉపయోగించబడవచ్చు. ఈ యాప్‌లలో కొన్ని యాప్‌లో కొనుగోళ్లను అందించవచ్చు. <ph name="BEGIN_LINK1" />మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Linux స్టోరేజ్</translation>
 <translation id="1347975661240122359">బ్యాటరీ <ph name="BATTERY_LEVEL" />% ఉన్నప్పుడు అప్‌డేట్ ప్రారంభమవుతుంది.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">PPDని కనుగొనడం సాధ్యం కాదు. మీ Chromebook ఇంటర్నెట్‌కు కనెక్ట్ అయ్యి ఉందని నిర్ధారించుకుని, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
@@ -555,6 +557,7 @@
 <translation id="1608668830839595724">ఎంపిక చేసిన అంశాల కోసం మరిన్ని చర్యలు</translation>
 <translation id="161042844686301425">నీలి ఆకుపచ్చ</translation>
 <translation id="1611432201750675208">మీ పరికరం లాక్ చేయబడింది</translation>
+<translation id="1612019740169791082">మీ కంటైనర్, డిస్క్ పరిమాణ మార్పులను సపోర్ట్ చేయడానికి కాన్ఫిగర్ చేయబడలేదు. Linux కోసం రిజర్వ్ చేయబడిన స్పేస్‌ను సర్దుబాటు చేయడానికి, బ్యాకప్ చేసి, కొత్త కంటైనర్‌లో రీస్టోర్ చేయండి.</translation>
 <translation id="1614511179807650956">మీరు మీకు అనుమతించిన మొబైల్ డేటాను పూర్తిగా ఉపయోగించి ఉండవచ్చు. మరింత డేటాను కొనుగోలు చేయడానికి <ph name="NAME" /> యాక్టివేషన్ పోర్టల్‌ను సందర్శించండి</translation>
 <translation id="161460670679785907">మీ ఫోన్‌ను గుర్తించడం సాధ్యపడలేదు</translation>
 <translation id="1616206807336925449">ఈ పొడిగింపుకు ప్రత్యేక అనుమతులు ఏవీ అవసరం లేదు.</translation>
@@ -689,6 +692,7 @@
 <translation id="175772926354468439">థీమ్‌ను ప్రారంభించు</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Chrome వెబ్ స్టోర్‌లో చూడండి</translation>
+<translation id="1761845175367251960"><ph name="NAME" /> యొక్క ఖాతాలు</translation>
 <translation id="176193854664720708">వేలిముద్ర సెన్సార్ పవర్ బటన్‌లో ఉంది. ఏదైనా వేలితో మెల్లిగా దానిని తాకండి.</translation>
 <translation id="1763046204212875858">అప్లికేషన్ షార్ట్‌కట్‌లను సృష్టించు</translation>
 <translation id="1763808908432309942">కొత్త ట్యాబ్‌లో తెరవబడుతుంది</translation>
@@ -898,6 +902,7 @@
 <translation id="1999115740519098545">ప్రారంభించిన తరువాత</translation>
 <translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
 <translation id="2002109485265116295">నిజ-సమయం</translation>
+<translation id="200217416291116199">అప్‌గ్రేడ్ పూర్తి కాని సందర్భంలో, ఫైల్‌లను బ్యాకప్ చేయడం అనేది సిఫార్సు చేయబడుతుంది. అప్‌గ్రేడ్ ప్రారంభించడం వలన Linux షట్ డౌన్ అవుతుంది. కొనసాగడానికి ముందు దయచేసి తెరిచి ఉన్న ఫైల్‌లను సేవ్ చేయండి.</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' డేటాను యాక్టివేట్ చేయడానికి, ముందుగా ఒక Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ చేయండి</translation>
 <translation id="2005199804247617997">ఇతర ప్రొఫైల్‌లు</translation>
 <translation id="2006638907958895361">లింక్‌ను <ph name="APP" />లో తెరువు</translation>
@@ -1609,6 +1614,7 @@
 <translation id="2807517655263062534">మీరు డౌన్‌లోడ్ చేసిన ఫైల్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="2809586584051668049">ఇంకా మరో <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">మీరు ఎక్స్‌టెన్షన్‌ను గుర్తించకపోతే, లేదా మీ బ్రౌజర్ ఊహించిన విధంగా పని చేయకపోతే, మీరు ఇక్కడ ఆపివేయవచ్చు లేదా ఎక్స్‌టెన్షన్‌లను అనుకూలీకరించవచ్చు.</translation>
+<translation id="2811205483104563968">ఖాతాలు</translation>
 <translation id="2812049959647166806">Thunderboltలో మద్దతు లేదు</translation>
 <translation id="2812989263793994277">ఏ చిత్రాలనూ చూపించవద్దు</translation>
 <translation id="2813094189969465044">తల్లిదండ్రుల నియంత్రణలు</translation>
@@ -1647,6 +1653,7 @@
 <translation id="2858138569776157458">టాప్ సైట్‌లు</translation>
 <translation id="2861301611394761800">సిస్టమ్ అప్‌డేట్ పూర్తయ్యింది. దయచేసి సిస్టమ్‌ని పునఃప్రారంభించండి.</translation>
 <translation id="2861941300086904918">స్థానిక‌ క్లయింట్ భద్రతా మేనేజ‌ర్‌</translation>
+<translation id="2862815659905780618">Linux డెవలప్‌మెంట్ ఎన్విరాన్మెంట్‌ను తీసివేయండి</translation>
 <translation id="2864601841139725659">మీ ప్రొఫైల్ చిత్రాన్ని సెట్ చేయండి</translation>
 <translation id="2865919525181940183">ప్రస్తుతం స్క్రీన్‌పై ఉన్న ప్రోగ్రామ్‌ల స్క్రీన్‌షాట్</translation>
 <translation id="286674810810214575">పవర్ మూలాలను తనిఖీ చేస్తోంది...</translation>
@@ -1760,6 +1767,7 @@
 <translation id="2989123969927553766">మౌస్ స్క్రోల్ యాక్సిలరేషన్</translation>
 <translation id="2989474696604907455">జోడించబడలేదు</translation>
 <translation id="2989786307324390836">DER-ఎన్‌కోడ్ చేసిన బైనరీ, ఒక సర్టిఫికెట్</translation>
+<translation id="2990313168615879645">Google ఖాతాను జోడించు</translation>
 <translation id="2992931425024192067">మొత్తం నోటిఫికేషన్ కంటెంట్‌ను చూపు</translation>
 <translation id="2993517869960930405">యాప్‌ సమాచారం</translation>
 <translation id="2996286169319737844">మీ సమకాలీకరణ రహస్య పదబంధంతో డేటా ఎన్‌క్రిప్ట్ చేయబడింది. Google Payకి చెందిన చెల్లింపు పద్ధతులు మరియు చిరునామాలు ఇందులో ఉండవు.</translation>
@@ -2371,6 +2379,7 @@
 <translation id="3706463572498736864">ఒక షీట్‌కు పేజీల సంఖ్య</translation>
 <translation id="370649949373421643">Wi-fiని ప్రారంభించు</translation>
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
+<translation id="3707163604290651814">ప్రస్తుతం <ph name="NAME" />గా సైన్ ఇన్ చేయబడి ఉన్నారు</translation>
 <translation id="3709244229496787112">డౌన్‌లోడ్ పూర్తి కావడానికి ముందే బ్రౌజర్ షట్‌డౌన్ చేయబడింది.</translation>
 <translation id="3711931198657368127">అతికించి <ph name="URL" />కు వెళ్ళండి</translation>
 <translation id="3711945201266135623">ప్రింట్ సర్వర్‌లో <ph name="NUM_PRINTERS" /> ప్రింటర్‌లు కనుగొనబడ్డాయి</translation>
@@ -2877,6 +2886,7 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ప్రత్యక్షంగా)</translation>
 <translation id="4310139701823742692">ఫైల్ తప్పు ఫార్మాట్‌లో ఉంది. PPD ఫైల్‌ని తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="431076611119798497">&amp;వివరాలు</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Google ఖాతా}other{<ph name="EXTRA_ACCOUNTS" /> Google ఖాతాలు}}</translation>
 <translation id="4312866146174492540">బ్లాక్ చేయి (డిఫాల్ట్)</translation>
 <translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
 <translation id="4316850752623536204">డెవలపర్ వెబ్‌సైట్</translation>
@@ -3256,6 +3266,7 @@
 <translation id="4764368918650455114">పరికరాలు రెండూ అన్‌లాక్ చేయబడి ఉన్నాయని, ఒకదానికొకటి దగ్గరగా ఉన్నాయని, బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి. మీరు Chromebookతో షేర్ చేస్తుంటే, దానిలో సమీప షేరింగ్ ఫీచర్ ఆన్‌లో ఉందని నిర్ధారించుకోండి (సమయాన్ని ఎంచుకోవడం ద్వారా స్టేటస్ ప్రాంతాన్ని తెరిచి, ఆపై సమీప షేరింగ్‌ను ఎంచుకోండి). <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">మీ ఫోన్‌లో ఉన్న వచనాన్ని మీ Chromebookలో చూపడానికి Android సందేశాలుని అనుమతిస్తుంది</translation>
 <translation id="4768332406694066911">మిమ్మల్ని గుర్తించే ఈ సంస్థల నుండి మీకు ప్రమాణపత్రాలు ఉన్నాయి</translation>
+<translation id="4773112038801431077">Linuxను అప్‌గ్రేడ్ చేయండి</translation>
 <translation id="477647109558161443">డెస్క్‌టాప్ షార్ట్‌కట్‍ను క్రియేట్ చేయండి</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> కోసం పాస్‌వర్డ్</translation>
 <translation id="4777825441726637019">Play స్టోర్</translation>
@@ -3749,6 +3760,7 @@
 <translation id="5368720394188453070">మీ ఫోన్ లాక్ చేయబడింది. దానిని తెరవడానికి, అన్‌లాక్ చేయండి.</translation>
 <translation id="5368779022775404937"><ph name="REALM" />కు సైన్ ఇన్ చేయండి</translation>
 <translation id="5369491905435686894">మౌస్ యాక్సిలరేషన్‌ను ప్రారంభించండి</translation>
+<translation id="5369694795837229225">Linux డెవలప్‌మెంట్ ఎన్విరాన్మెంట్‌ను సెటప్ చేయండి</translation>
 <translation id="5370819323174483825">&amp;మళ్లీ లోడ్ చేయి</translation>
 <translation id="5372529912055771682">సరఫరా చేయబడిన నమోదు మోడ్‌ను, ఆపరేటింగ్ సిస్టమ్ యొక్క ఈ వెర్షన్ మద్దతివ్వదు. మీరు తాజా వెర్షన్‌ను అమలు చేస్తున్నారని దయచేసి నిర్ధారించుకుని, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="5372579129492968947">ఎక్స్‌టెన్ష‌న్‌‍‌ పిన్‌ను తీసివేయండి</translation>
@@ -4473,6 +4485,8 @@
 <translation id="6212168817037875041">ప్రదర్శనను ఆఫ్ చేయండి</translation>
 <translation id="6212752530110374741">లింక్‌ను ఇమెయిల్ చేయి</translation>
 <translation id="6213230117190778270">స్వీకరించు</translation>
+<translation id="6215620815501168899">EID, QR కోడ్ పాప్‌అప్‌ను మూసివేయండి</translation>
+<translation id="6216601812881225442">పరిమాణం మార్చబడటానికి మీ కంటైనర్ సపోర్ట్ చేయదు. Linuxకు ముందుగానే కేటాయించిన స్పేస్‌ను సర్దుబాటు చేయడానికి, బ్యాకప్ చేసి, ఆపై కొత్త కంటైనర్‌లో రీస్టోర్ చేయండి.</translation>
 <translation id="6216696360484424239">ఆటోమేటిక్‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ఆఫ్‌లైన్‌లో ఉంది. ఇంటర్నెట్‌కు కనెక్ట్ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="6220413761270491930">ఎక్స్‌టెన్షన్‌ను లోడ్ చేయడంలో ఎర్రర్</translation>
@@ -4865,6 +4879,7 @@
 <translation id="6680442031740878064">అందుబాటులో ఉంది: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">రేట్</translation>
 <translation id="6681668084120808868">ఫోటోను తీయి</translation>
+<translation id="6683948477137300040">పరికర EID, QR కోడ్ పాప్‌అప్‌ను చూపండి</translation>
 <translation id="6684827949542560880">తాజా అప్‌డేట్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="668599234725812620">Google Playని తెరువు</translation>
 <translation id="6686490380836145850">కుడివైపు ట్యాబ్‌లను మూసివేయి</translation>
@@ -5100,6 +5115,7 @@
 <translation id="6955535239952325894">మేనేజ్ అవుతోన్న బ్రౌజర్‌లలో ఈ సెట్టింగ్ డిజేబుల్ చేయబడింది.</translation>
 <translation id="6957044667612803194">ఈ సెక్యూరిటీ కీ, పిన్‌లకు మద్దతు ఇవ్వడం లేదు</translation>
 <translation id="6957231940976260713">సేవ పేరు</translation>
+<translation id="6960507406838246615">Linux అప్‌డేట్ అవసరం</translation>
 <translation id="696103774840402661">ఈ <ph name="DEVICE_TYPE" />లో యూజర్‌లందరికీ సంబంధించిన అన్ని ఫైల్‌లు, లోకల్ డేటా శాశ్వతంగా తొలగించబడ్డాయి.</translation>
 <translation id="6964390816189577014">వీరుడు</translation>
 <translation id="6964760285928603117">గుంపు నుండి తీసివేయి</translation>
@@ -5119,6 +5135,7 @@
 <translation id="697312151395002334">పాప్-అప్‌లను పంపడానికి, అలాగే మళ్లింపులను ఉపయోగించడానికి అనుమతించబడింది</translation>
 <translation id="6973611239564315524">Debian 10 (Buster)కు అప్‌గ్రేడ్ అందుబాటులో ఉంది</translation>
 <translation id="6974609594866392343">ఆఫ్‌లైన్ డెమో మోడ్</translation>
+<translation id="697508444536771064">Linuxను షట్ డౌన్ చేయండి</translation>
 <translation id="6977381486153291903">ఫర్మ్‌వేర్ పునర్విమర్శ</translation>
 <translation id="6977877318519394148">Rosettaను ఇన్‌స్టాల్ చేయి</translation>
 <translation id="6978121630131642226">శోధన ఇంజిన్‌లు</translation>
@@ -5519,6 +5536,7 @@
 <translation id="7443806024147773267">మీ Google ఖాతాలో ఎప్పుడు సైన్ ఇన్ చేసినా, మీ పాస్‌వర్డ్‌లను యాక్సెస్ చేయండి</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" />ను నిలిపివేయి</translation>
 <translation id="7448430327655618736">యాప్‌లను ఆటోమేటిక్‌గా ఇన్‌స్టాల్ చేస్తుంది</translation>
+<translation id="7448538354405258275">మీకు సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయం చేయడానికి, కస్టమర్ సర్వీస్ ప్రతినిధి EID నంబర్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="7449752890690775568">పాస్‌వర్డ్‌ను తీసివేయాలా?</translation>
 <translation id="7450761244949417357">ఇప్పుడు <ph name="ALTERNATIVE_BROWSER_NAME" />లో తెరుస్తోంది</translation>
 <translation id="7453008956351770337">ఈ ప్రింటర్‌ను ఎంచుకోవడం ద్వారా, మీరు మీ ప్రింటర్‌ని యాక్సెస్ చేయడానికి క్రింది ఎక్సటెన్షన్‌కు అనుమతి ఇస్తున్నారు:</translation>
@@ -6044,6 +6062,7 @@
 <translation id="8032244173881942855">ట్యాబ్‌ను ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="8033827949643255796">ఎంచుకోబడ్డాయి</translation>
 <translation id="8033958968890501070">సమయం ముగిసింది</translation>
+<translation id="8036049989879571495">Linux డెవలప్‌మెంట్ ఎన్విరాన్మెంట్ (బీటా)ను సెటప్ చేయండి</translation>
 <translation id="8037117027592400564">సంశ్లేషణ ప్రసంగాన్ని ఉపయోగించి మాట్లాడిన మొత్తం వచనాన్ని చదవడం</translation>
 <translation id="8037357227543935929">అడగాలి (డిఫాల్ట్)</translation>
 <translation id="803771048473350947">ఫైల్</translation>
@@ -6970,6 +6989,7 @@
 <translation id="909108997331068008"><ph name="EXISTING_USER" /> ప్రొఫైల్, ఇప్పటికే <ph name="NEW_USER" />కు సైన్ ఇన్ చేయబడి ఉంది</translation>
 <translation id="9094033019050270033">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయి</translation>
 <translation id="9094038138851891550">వినియోగదారు పేరు చెల్లదు</translation>
+<translation id="9094859731829297286">మీరు ఖచ్చితంగా Linux కోసం ఒక స్థిర పరిమాణం గల డిస్క్‌ను రిజర్వ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="9094982973264386462">తీసివేయి</translation>
 <translation id="9095253524804455615">తీసివేయి</translation>
 <translation id="909554839118732438">అజ్ఞాత విండోలన్నింటినీ మూసివేయండి</translation>
@@ -7068,7 +7088,7 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" జోడించబడింది</translation>
 <translation id="9215742531438648683">Google Play స్టోర్‌ను అన్ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="9218430445555521422">ఆటోమేటిక్ ఆప్షన్‌లా సెట్ చేయండి</translation>
-<translation id="9219103736887031265">చిత్రాలు</translation>
+<translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="9220525904950070496">ఖాతాను తీసివేయండి</translation>
 <translation id="9220820413868316583">వేలిని తీసివేసి, మళ్లీ పెట్టండి.</translation>
 <translation id="923467487918828349">అన్నీ చూపు</translation>

@@ -491,6 +491,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4587589328781138893">Webguneak</translation>
 <translation id="4594952190837476234">Konexiorik gabe erabiltzeko orri hau <ph name="CREATION_TIME" /> datan sortu zen. Ondorioz, baliteke sareko bertsioarekin bat ez etortzea.</translation>
 <translation id="4605958867780575332">Kendu da elementua: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Gorde orriak gerorako eta jaso abisu bat</translation>
 <translation id="4616150815774728855">Ireki <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Erabili pasahitza</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pasahitz dago arriskuan}other{# pasahitz daude arriskuan}}</translation>
@@ -973,6 +974,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Itzuli geroago istorio berririk dagoen ikusteko</translation>
 <translation id="7786595606756654269">Google-ren Laguntzailea eginbideari esker, errazagoa izango da ahotsa erabiliz Interneten bilaketak egitea eta irekita dituzun webguneekin interakzioan aritzea. Eginbidearekin erabiltzen dituzun webguneen URLak eta edukiak jasoko ditu Google-ren Laguntzailea eginbideak.</translation>
+<translation id="7790349552933995572">Hasierako pantaila</translation>
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="7798392620021911922">Leheneratu egin dira <ph name="TAB_COUNT" /> fitxa</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>

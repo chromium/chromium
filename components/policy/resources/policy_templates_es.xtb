@@ -73,9 +73,6 @@
 <translation id="1082802595100075771">Permitir a los usuarios elegir usar un servicio de Google anónimo para proporcionar descripciones automáticas para las imágenes no etiquetadas</translation>
 <translation id="1087437665304381368">Esta política permite controlar únicamente el modo desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las opciones para desarrolladores de Android, debes asignar un valor a la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">La lista de políticas de Chrome Enterprise se traslada a otra URL. Modifica tus marcadores para que incluyan la URL actualizada: <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1093082332347834239">Si se habilita esta opción, el host de asistencia remota se ejecutará en un proceso con permisos de <ph name="UIACCESS_PERMISSION_NAME" />. Esto permitirá que los usuarios remotos interactúen con ventanas a las que se puede acceder con permisos de administrador en el ordenador del usuario local.
-
-          Si esta opción no se configura o se inhabilita, el host de asistencia remota se ejecutará en el contexto del usuario y los usuarios remotos no podrán interactuar con las ventanas que requieren permisos de administrador en el ordenador.</translation>
 <translation id="1095209545735032039">Bloquear la API Serial en estos sitios web</translation>
 <translation id="1096105751829466145">Proveedor de búsquedas predeterminadas</translation>
 <translation id="1099282607296956954">Habilitar el aislamiento de todos los sitios web</translation>
@@ -217,6 +214,7 @@
 <translation id="1393485621820363363">Impresoras de dispositivos de empresa habilitadas</translation>
 <translation id="1397855852561539316">URL de sugerencia del proveedor de búsquedas predeterminadas</translation>
 <translation id="1413936351612032792">Proporcionar información sobre el uso de aplicaciones de Linux</translation>
+<translation id="1418387035898607074">Saltar comprobaciones de Navegación segura para las descargas de archivos desde fuentes de confianza</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados utilicen Crostini</translation>
 <translation id="1425551776320718592">Impide que los usuarios de este dispositivo utilicen la instalación de fuente desconocida adb sin forzar un Powerwash, lo cual puede dejar el dispositivo en un estado de seguridad vulnerable</translation>
 <translation id="1426170570389588560">Define el periodo, en número de días, durante el que se almacenarán los metadatos de los trabajos de impresión</translation>
@@ -443,9 +441,15 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si se le asigna el valor "Falso", los usuarios no podrán añadir, quitar ni modificar marcadores. Sin embargo, podrán usar los marcadores existentes.</translation>
 <translation id="1715151459541210849">Habilita la función de accesibilidad de dictado</translation>
 <translation id="172374442286684480">Permitir que todos los sitios establezcan datos locales</translation>
+<translation id="1729169799290004131">Si se le asigna un valor a esta política, se especifica el porcentaje de brillo de la pantalla y se desactivan las funciones de brillo automático. El brillo inicial de la pantalla se ajusta al del valor de la política, pero los usuarios pueden cambiarlo.
+
+      Si no se configura esta política, las funciones de brillo automático y los controles de pantalla del usuario no se ven afectados.
+
+      Nota: Los valores que se asignen a esta política deben ser porcentajes de 0 a 100.</translation>
 <translation id="1736269219679256369">Permitir que se continúe desde la página de advertencia de SSL</translation>
 <translation id="174765717426930019">Permitir que todas las ventanas emergentes abiertas con <ph name="BLANK_PAGE_NAME" /> como objetivo interactúen con la página que ha solicitado abrir la ventana emergente a no ser que esa página haya rechazado explícitamente dicha interacción </translation>
 <translation id="1750315445671978749">Bloquear todas las descargas</translation>
+<translation id="1755310913456007816">Usar la configuración de comprobación de revocación online actual</translation>
 <translation id="1760951637494635692">Permitir la API Serial en estos sitios web</translation>
 <translation id="1765512315997108908">Controla qué impresoras de la política <ph name="DEVICE_PRINTERS_POLICY_NAME" /> están disponibles para los usuarios.
 
@@ -496,6 +500,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1844972978764975668">Permitir que consultas ocasionales a un servidor de Google obtengan una marca de tiempo precisa</translation>
 <translation id="1845405905602899692">Configuración de kiosco</translation>
 <translation id="1845429996559814839">Restringir el modo de impresión con PIN</translation>
+<translation id="1846545322805269573">Los usuarios no pueden personalizar el fondo de la página Nueva pestaña</translation>
 <translation id="1847960418907100918">Especifica los parámetros utilizados al hacer búsquedas instantáneas con POST. Se compone de pares de nombre/valor separados por comas. Si un valor es un parámetro de plantilla, como {searchTerms} en el ejemplo anterior, se sustituirá con datos de términos de búsqueda reales.
 
           Esta política es opcional. Si no se establece, la solicitud de búsqueda instantánea se enviará mediante el método GET.
@@ -559,6 +564,37 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1971991630422430420">Si se habilita esta política, se usará la transición rápida cuando el punto de acceso inalámbrico lo permita. Este ajuste se aplicará a todos los usuarios e interfaces del dispositivo.
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se usará la transición rápida.</translation>
+<translation id="197744850608781984">Esta política controla la estrategia de gestión de la batería cuando el usuario está inactivo.
+
+      Hay 4 acciones:
+
+      * La pantalla se atenúa si el usuario permanece inactivo durante el tiempo especificado en <ph name="SCREEN_DIM_FIELD_NAME" />.
+
+      * La pantalla se apaga si el usuario permanece inactivo durante el tiempo especificado en <ph name="SCREEN_OFF_FIELD_NAME" />.
+
+      * Aparece un cuadro de diálogo de advertencia si el usuario permanece inactivo durante el tiempo especificado en <ph name="IDLE_WARNING_FIELD_NAME" />. El mensaje avisa al usuario de que se va a habilitar el modo de inactividad y solo se muestra si el modo de inactividad implica cerrar la sesión o apagar el dispositivo.
+
+      * Se realiza la acción especificada en <ph name="IDLE_ACTION_FIELD_NAME" /> si el usuario permanece inactivo durante el tiempo especificado en Idle.
+
+      En cada una de las acciones anteriores, el retraso debe especificarse en milisegundos y el valor asignado debe ser superior a cero para activar la acción correspondiente. Si se le asigna el valor cero al retraso, <ph name="PRODUCT_OS_NAME" /> no realizará la acción correspondiente.
+
+      En cada uno de los retrasos anteriores, se utiliza un valor predeterminado si no se establece el tiempo transcurrido.
+
+      Los valores de <ph name="SCREEN_DIM_FIELD_NAME" /> deben ser inferiores o iguales a los de <ph name="SCREEN_OFF_FIELD_NAME" />. Los valores de <ph name="SCREEN_OFF_FIELD_NAME" /> y <ph name="IDLE_WARNING_FIELD_NAME" /> deben ser inferiores o iguales a los de Idle.
+
+      La política <ph name="IDLE_ACTION_FIELD_NAME" /> puede realizar una de estas 4 acciones:
+
+      * <ph name="IDLE_ACTION_ENUM_SUSPEND" />
+
+      * <ph name="IDLE_ACTION_ENUM_LOGOUT" />
+
+      * <ph name="IDLE_ACTION_ENUM_SHUTDOWN" />
+
+      * <ph name="IDLE_ACTION_ENUM_DO_NOTHING" />
+
+      Si no se establece <ph name="IDLE_ACTION_FIELD_NAME" />, se utiliza <ph name="IDLE_ACTION_ENUM_SUSPEND" />.
+
+      Nota: Existen opciones independientes para la conexión a la red eléctrica y la batería.</translation>
 <translation id="1988345404999458987">Proporciona la configuración de los servidores de impresión disponibles.
 
       Esta política permite enviar archivos JSON de configuración de servidores de impresión externos a dispositivos con <ph name="PRODUCT_OS_NAME" />.
@@ -623,9 +659,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2040479044912658454">Modo de rasterización de impresión</translation>
 <translation id="2043749682619281558">Habilita el resaltado del cursor en la pantalla de inicio de sesión</translation>
 <translation id="2043770014371753404">Impresoras de empresa inhabilitadas</translation>
-<translation id="2050629715135525072">Controla la capacidad de los usuarios conectados a un host de acceso remoto de transferir archivos entre el cliente y el host. No se aplica a las conexiones de asistencia remota, ya que no admiten la transferencia de archivos.
-
-          Si se inhabilita esta opción, no se permitirá la transferencia de archivos. Si se habilita esta opción o no se configura, se permitirá la transferencia de archivos.</translation>
 <translation id="2057317273526988987">Permitir el acceso a una lista de URL</translation>
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
 <translation id="2069350366303315077">Si se habilita la política, <ph name="PRODUCT_NAME" /> usará sesiones de invitado e impedirá inicios de sesión de perfiles. Las sesiones de invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que las ventanas están en modo de incógnito.
@@ -641,6 +674,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="209586405398070749">Canal estable</translation>
 <translation id="2098658257603918882">Habilitar informes de uso y de datos sobre fallos</translation>
 <translation id="2104418465060359056">Recoger información sobre extensiones y complementos</translation>
+<translation id="2106166591774188922">Permitir que los usuarios de SAML cambien sus contraseñas de SAML dentro de la sesión en chrome://password-change</translation>
 <translation id="2106627642643925514">Anula el modo predeterminado de impresión con PIN Si este modo no está disponible, se ignorará esta política.</translation>
 <translation id="2107563874993284076">Si se habilita esta política, se permitirá que los usuarios usen sistemas de archivos compartidos en red para <ph name="PRODUCT_NAME" />. Si se inhabilita, los usuarios no podrán usar esta función.</translation>
 <translation id="2107601598727098402">
@@ -1121,13 +1155,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2801065672151277034">Ajustes de gestión de certificados</translation>
 <translation id="2801155097555584385">Define un porcentaje personalizado de inicio de carga de la batería</translation>
 <translation id="2805707493867224476">Permitir que todos los sitios muestren ventanas emergentes</translation>
-<translation id="2808013382476173118">Habilita el uso de servidores STUN cuando los clientes remotos intentan establecer conexión con este ordenador.
-
-      Si se habilita esta opción, los clientes remotos podrán detectar estos ordenadores y establecer conexión con ellos aunque haya un cortafuegos que los separe.
-
-      Si se inhabilita esta opción y el cortafuegos filtra las conexiones UDP salientes, este ordenador solo permitirá conexiones de ordenadores cliente que se encuentren en la red local.
-
-      Si no se establece esta política, se habilitará la opción.</translation>
 <translation id="2813281962735757923">Esta política controla los intervalos de tiempo durante los cuales el dispositivo <ph name="PRODUCT_OS_NAME" /> no tiene permiso para buscar actualizaciones automáticamente.
       Si a esta política se le asigna una lista de intervalos de tiempo que no esté vacía:
       Los dispositivos no podrán buscar actualizaciones automáticamente durante los intervalos especificados. Por motivos de seguridad, los dispositivos que deban restaurarse, o cuya versión del sistema operativo sea anterior a <ph name="PRODUCT_OS_NAME" />, no se verán afectados por esta política. Esta política no bloqueará las comprobaciones de actualizaciones solicitadas por los usuarios o administradores.
@@ -1233,6 +1260,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2957513448235202597">Tipo de cuenta para la autenticación <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Enviar siempre los puntos de acceso Wi‑Fi al servidor mientras se detecta la zona horaria</translation>
 <translation id="2959898425599642200">Reglas de omisión de proxy</translation>
+<translation id="2960013482187484833">Utilizar la última impresora que has usado como opción predeterminada en la vista previa de impresión</translation>
 <translation id="2960128438010718932">La programación de lanzamiento progresivo para aplicar una nueva actualización</translation>
 <translation id="2960691910306063964">Habilitar o inhabilitar la autenticación sin PIN para host de acceso remoto</translation>
 <translation id="2964373560810620158">Evitar que los usuarios usen el navegador <ph name="LACROS_NAME" /></translation>
@@ -1330,6 +1358,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3072847235228302527">Establecer los Términos del Servicio para una cuenta de dispositivo local</translation>
 <translation id="3086995894968271156">Configura Cast Receiver en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Carga la batería de los dispositivos que están conectados principalmente a una fuente de alimentación externa.</translation>
+<translation id="3092059499596000593">Utilizar la impresora predeterminada del sistema como opción predeterminada en la vista previa de impresión</translation>
 <translation id="309416443108680956">Especifica qué ocurre cuando un usuario que se autentica mediante un token de seguridad (por ejemplo, con una tarjeta inteligente) quita ese token durante una sesión. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: no ocurre nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sesión finaliza y se cierra la sesión del usuario. Si no se define esta política, se utiliza <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> de forma predeterminada.</translation>
 <translation id="3096595567015595053">Lista de complementos habilitados</translation>
 <translation id="3101501961102569744">Seleccionar la forma de especificar la configuración del servidor proxy</translation>
@@ -1383,6 +1412,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3219421230122020860">Modo de incógnito disponible</translation>
 <translation id="3220624000494482595">Si la aplicación de kiosco es una aplicación para Android, no tendrá control sobre la versión de <ph name="PRODUCT_OS_NAME" />, incluso si se asigna el valor <ph name="TRUE" /> a esta política.</translation>
 <translation id="322359555555487980">Determinar la disponibilidad de variaciones en <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3231617925177241750">Si se habilita la política y se establecen <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantiene activado el cambio de alimentación en picos (en caso de ser compatible con el dispositivo). La política de gestión del cambio de alimentación en picos es una política de ahorro de energía que minimiza el uso de corriente alterna durante las horas en las que más energía se utiliza del día. Para ejecutar el modo de cambio de alimentación en picos, se puede configurar una hora de inicio y de finalización para cada día de la semana. Siempre y cuando la batería se mantenga por encima del umbral especificado, el sistema se ejecuta desde la batería durante esas horas (aunque esté conectada la corriente alterna). Después del tiempo especificado, el sistema funciona con corriente alterna, pero no carga la batería. El sistema volverá a funcionar con normalidad usando la corriente alterna y cargando la batería después de la hora de inicio especificada.
+
+      Si se inhabilita esta política, el cambio de alimentación en picos queda desactivado.
+
+      Si no se establece, el cambio de alimentación en picos está desactivado en un principio. Los usuarios no pueden cambiar esta opción.</translation>
 <translation id="3231837273069128027">Si se define esta política, se configura la disponibilidad y el comportamiento de las actualizaciones de firmware de <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Especifica ajustes individuales en las propiedades archivo JSON:
@@ -1732,9 +1766,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se inhabilita la política o no se establece, los dispositivos registrados no enviarán estadísticas.</translation>
 <translation id="3736879847913515635">Habilitar Añadir persona en el administrador de usuarios</translation>
 <translation id="3750220015372671395">Bloquear la generación de claves en estos sitios web</translation>
-<translation id="375266612405883748">Permite restringir el intervalo de puertos UDP utilizado por el host de acceso remoto en este ordenador.
-
-      Si no se asigna ningún valor a esta política o se le asigna una cadena vacía, el host de acceso remoto podrá utilizar cualquier puerto disponible, a menos que la política <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> esté inhabilitada, en cuyo caso el host de acceso remoto utilizará puertos UDP en el intervalo de 12.400 a 12.409.</translation>
 <translation id="3755237588083934849">Si se define esta política, determinará la frecuencia con la que se envían informes del estado del dispositivo (en milisegundos). El valor mínimo es 60 segundos.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 3 horas.</translation>
@@ -1759,6 +1790,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se inhabilita esta política o no se le asigna ningún valor, <ph name="PRODUCT_OS_NAME" /> permitirá a los usuarios apagar el dispositivo.</translation>
 <translation id="3765260570442823273">Duración del mensaje que advierte al usuario de que se cerrará la sesión porque se encuentra inactivo</translation>
 <translation id="377044054160169374">Aplicar intervención de experiencia abusiva</translation>
+<translation id="3778689139323007309">Realizar comprobaciones de revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados localmente</translation>
 <translation id="3780152581321609624">Incluir un puerto no estándar en SPN de Kerberos</translation>
 <translation id="3788662722837364290">Configuración de la administración de energía cuando el usuario está inactivo</translation>
 <translation id="3790085888761753785">Si este ajuste está habilitado, los usuarios pueden iniciar sesión en su cuenta con Smart Lock. Es más permisivo que el funcionamiento habitual de Smart Lock, que solo permite a los usuarios desbloquear la pantalla.
@@ -2062,11 +2094,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no le asignas ningún valor, el clic automático se inhabilitará al inicio, pero los usuarios podrán habilitarlo en cualquier momento.</translation>
-<translation id="4214536984333857724">Si se habilita esta opción, las solicitudes de autenticación gnubby se enviarán a una conexión de host remota mediante un proxy.
-
-          Ten en cuenta que esta función necesita componentes adicionales que solo están disponibles en el entorno de red de Google para funcionar correctamente.
-
-          Si se inhabilita esta opción, las solicitudes de autenticación gnubby no se enviarán mediante un proxy.</translation>
 <translation id="4224610387358583899">Retrasos de bloqueo de pantalla</translation>
 <translation id="4225260426043444650">Esta opción permite que los usuarios usen el navegador <ph name="LACROS_NAME" />.
 
@@ -2239,9 +2266,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Para <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
       Para <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
 <translation id="4578265298946081589">No reiniciar cuando el usuario cierre sesión.</translation>
-<translation id="4578912515887794133">Si esta opción está habilitada, el host de acceso remoto compara el nombre del usuario local (al que está asociado el host) con el nombre de la cuenta de Google registrado como el propietario del host (es decir, "juanmartinez" si el host pertenece a la cuenta de Google juanmartinez@example.com).  El host de acceso remoto no se iniciará si el nombre del propietario del host es diferente del nombre del usuario local al que el host está asociado.  La política RemoteAccessHostMatchUsername debe utilizarse junto con la política RemoteAccessHostDomain para establecer que la cuenta de Google del propietario del host esté asociada a un dominio específico (es decir, "example.com").
-
-          Si se inhabilita esta opción o no se le asigna ningún valor, el host de acceso remoto puede asociarse a cualquier usuario local.</translation>
 <translation id="4587365491100112056">Si se establece esta política, se especificará en horas el tiempo de vida en caché de los datos de autenticación. La caché contiene datos sobre los dominios de confianza del dominio del equipo (dominios afiliados). Almacenar datos de autenticación en caché ayuda a acelerar el inicio de sesión. No se almacena en caché ningún dato específico del usuario ni ningún dato de dominios no afiliados.
 
       Si se asigna el valor "0" a esta política, se desactivará el almacenamiento de datos de autenticación en caché. Los datos específicos del dominio se obtendrán en cada inicio de sesión, por lo que desactivar el almacenamiento de datos de autenticación en caché puede ralentizar notablemente el inicio de sesión de los usuarios.
@@ -2384,15 +2408,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="487460824085252184">Migrar automáticamente sin solicitar el consentimiento de los usuarios.</translation>
 <translation id="4874982543810021567">Bloquear WebUSB en estos sitios web</translation>
 <translation id="4876805738539874299">Versión máxima de SSL habilitada</translation>
-<translation id="487928067861956387">Permite configurar los nombres de dominio del host obligatorios que se aplicarán a los hosts de acceso remoto e impide que los usuarios los modifiquen.
-
-          Si se habilita esta opción y se le asignan uno o varios dominios, los hosts solo se podrán compartir con cuentas registradas en uno de los nombres de dominio especificados.
-
-          Si se inhabilita esta opción, no se establece o se le asigna una lista vacía, los hosts se podrán compartir con cualquier cuenta.
-
-          Esta opción anulará <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (si está presente).
-
-          Consulta también <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Habilita una página para cambiar la contraseña dentro de la sesión para usuarios de SAML</translation>
 <translation id="4892647988357350237">De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor <ph name="STANDARD_TOS_DIALOG" /> o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
 
@@ -2657,15 +2672,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       "Versión" puede hacer referencia a una versión exacta, como "61.0.3163.120", o al prefijo de una versión, como "61.0".  </translation>
 <translation id="5247006254130721952">Bloquear descargas peligrosas</translation>
-<translation id="5249303875508803168">Permite configurar los nombres de dominio de cliente obligatorios que se aplicarán a los clientes de acceso remoto e impide que los usuarios los modifiquen.
-
-          Si se habilita esta opción y se le asignan uno o varios dominios, solo se podrán conectar al host los clientes de uno de los dominios especificados.
-
-          Si se inhabilita esta opción, no se establece o se le asigna una lista vacía, se aplicará la política predeterminada para el tipo de conexión. Para la asistencia remota, permite que los clientes de cualquier dominio puedan conectarse al host. En el caso del acceso remoto en cualquier momento, solo puede conectarse el propietario del host.
-
-          Esta opción anulará <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> (si está presente).
-
-          Consulta también <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Los usuarios pueden añadir cuentas de Kerberos</translation>
 <translation id="5252995168844634755">Si se le asigna el valor True a esta política, se activará el escritorio unificado, lo que permitirá que las aplicaciones ocupen varias pantallas. Los usuarios pueden desactivar el escritorio unificado para pantallas individuales.
 
@@ -2777,6 +2783,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
           Si se establece el valor "true" o no se configura la política, el usuario podrá crear y administrar usuarios supervisados.</translation>
 <translation id="5369937289900051171">Solo impresión en color</translation>
 <translation id="5370279767682621504">Habilitar la compatibilidad con HTTP/0.9 en puertos no utilizados de forma predeterminada</translation>
+<translation id="5371152055157582429">Los usuarios pueden personalizar el fondo de la página Nueva pestaña</translation>
 <translation id="5377606826822211923">Controlar el uso de aplicaciones Android de fuentes que no son de confianza para el usuario</translation>
 <translation id="5377668121137111316">Si se le asigna el valor "true" a esta política, el teclado en pantalla permanece activado. Si se le asigna el valor "false", el teclado en pantalla permanece desactivado.
 
@@ -2802,11 +2809,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="5390083518957894426">Habilita la reautenticación online en la pantalla de bloqueo para usuarios de SAML</translation>
 <translation id="5391388690191341203">Cuenta local del dispositivo para el inicio de sesión automático</translation>
 <translation id="5393009997533871906">Solo se muestran a los usuarios las impresoras incluidas en la lista de permitidos.</translation>
-<translation id="5395271912574071439">Permite activar el modo de cortina en los hosts de acceso remoto durante una conexión.
-
-          Si se habilita esta opción, los dispositivos físicos de entrada y salida del host se inhabilitan durante la conexión remota.
-
-          Si se inhabilita esta opción o no se configura, tanto los usuarios locales como los remotos pueden interactuar con el host cuando se comparte.</translation>
 <translation id="5401696449591951427">Habilitar <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">Establece los diseños de teclado que se permiten en la pantalla de inicio de sesión de <ph name="PRODUCT_OS_NAME" />.
 
@@ -3025,6 +3027,14 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5728154254076636808">Habilitar la creación de copias de itinerancia de los datos del perfil de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5732972008943405952">Importar los datos autocompletados del navegador predeterminado en la primera ejecución</translation>
+<translation id="5733040281451845496">Si se habilita esta política, los retrasos de administración de energía y los límites de duración de sesión no comienzan hasta después de la primera actividad inicial del usuario en una sesión.
+
+      Si se inhabilita esta política o no se establece, los retrasos de administración de energía y el límite de tiempo comienzan en cuanto empieza la sesión.</translation>
+<translation id="5738766588683307797">Si la política <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> está inhabilitada y se establece la política <ph name="USER_ACTIVITY_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" />, se especifica el porcentaje de ajuste del tiempo de espera de inactividad de la pantalla cuando se observe la actividad del usuario con la pantalla atenuada o poco después de que esta se haya desactivado. Si se ajusta el retraso de atenuación, se ajustan los retrasos de apagado, bloqueo e inactividad de la pantalla para mantener las mismas distancias del retraso de atenuación de pantalla que tenía la configuración original.
+
+      Si no se establece esta política, se usará el factor de escala predeterminado.
+
+      Nota: El factor de escala debe ser igual o superior a 100 %.</translation>
 <translation id="574098933844699859">Especifica si la información del sistema (p. ej., la versión de Chrome OS o el número de serie del dispositivo) aparecerá o se ocultará siempre en la pantalla de inicio de sesión.
 
       Si se asigna el valor "True" a esta política, se forzará que aparezca la información del sistema.
@@ -3435,9 +3445,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="6401669939808766804">Cerrar la sesión del usuario</translation>
 <translation id="640244877779556713">Habilitar sugerencias de emojis</translation>
 <translation id="6407093060083181305">Configurar lista de bloqueados de instalación de extensiones</translation>
-<translation id="6408233796253901198">Si se asigna un valor a esta política, el host de acceso remoto utilizará esta URL para validar los tokens de autenticación de los clientes de acceso remoto y para aceptar las conexiones. Se debe utilizar junto con RemoteAccessHostTokenUrl.
-
-          Esta función está inhabilitada si está vacía o no se le asigna ningún valor.</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="6422575351619065453">En modo kiosco, permite controlar si se muestra el menú de accesibilidad flotante.
 
@@ -3445,6 +3452,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si se inhabilita esta política o no se establece, el menú de accesibilidad flotante no se mostrará nunca.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
+<translation id="6424486395812679373">Realizar comprobaciones de Navegación segura en todos los archivos descargados</translation>
 <translation id="6438364096042399634">Si se asigna un valor a esta política, se definirá la lista de dispositivos USB que los usuarios pueden desvincular de su controlador de kernel para utilizarse en la API chrome.usb directamente en una aplicación web. Las entradas son pares de identificador de producto e identificador de proveedor del USB que permiten identificar hardware específico.
 
       Si no se le asigna ningún valor, la lista de dispositivos USB que se pueden desvincular estará vacía.
@@ -3531,6 +3539,9 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="6553143066970470539">Porcentaje de brillo de la pantalla</translation>
 <translation id="6558362593755624474">Establecer esta política permite especificar la clave de licencia de <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara y al micrófono</translation>
+<translation id="6559221564468029245">Si se habilita la política o no se establece, no se considerará que el usuario está inactivo mientras se reproduzca audio. Esto impide que se alcance el tiempo de espera de inactividad y que se entre en modo de inactividad. Sin embargo, se llevarán a cabo la atenuación de pantalla, la desconexión de pantalla y el bloqueo de pantalla tras los tiempos de espera configurados, a pesar de la actividad del audio.
+
+      Si se inhabilita la política, la actividad de audio no impedirá que se considere al usuario como inactivo.</translation>
 <translation id="6559475864956112261">Esta política está obsoleta. Se debe usar la política <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
 
        Si se habilita esta política, se permite especificar el servidor proxy que debe usar Chrome y se evita que los usuarios cambien los ajustes del proxy. Chrome y las aplicaciones ARC ignorarán todas las opciones relacionadas con el proxy especificadas en la línea de comandos. Esta política solo tiene validez si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -3949,6 +3960,9 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7072208053150563108">Frecuencia de cambio de contraseña de dispositivo</translation>
 <translation id="7072567600438630966">Permite habilitar Mi teléfono.</translation>
 <translation id="7079519252486108041">Bloquear pop-ups en estos sitios</translation>
+<translation id="7081784525008938771">Si se habilita la política o no se establece, no se considerará que el usuario está inactivo mientras se reproduzca vídeo. Esto impide que se alcancen el retraso de inactividad, el retraso de atenuación de pantalla y el retraso de bloqueo de pantalla y que se lleven a cabo las acciones correspondientes.
+
+      Si se inhabilita la política, la actividad de vídeo no impedirá que se considere al usuario como inactivo.</translation>
 <translation id="7086720321892395256">Controla las políticas de usuarios y dispositivos para la función de pantalla de privacidad.</translation>
 <translation id="7091842872805965910">Habilita la función de introducir PINs automáticamente en las pantallas de inicio de sesión y bloqueo.</translation>
 <translation id="7093294902558672021">Envía información sobre los ventiladores del dispositivo.
@@ -4075,9 +4089,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si se inhabilita esta política o no se le asigna ningún valor, se ignorará la política del KDC en las plataformas admitidas y solo se respetará la política <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       En <ph name="MS_WIN_NAME" />, la política del KDC se respeta siempre.</translation>
-<translation id="7273823081800296768">Si esta opción está habilita o no configurada, los usuarios podrán sincronizar los clientes y los hosts en el momento de la conexión, lo que elimina la necesidad de introducir siempre un PIN.
-
-          Si no se habilita esta opción, esta función no estará disponible.</translation>
 <translation id="7274077256421167535">Habilita la potencia compartida por USB</translation>
 <translation id="7275334191706090484">Marcadores administrados</translation>
 <translation id="7278854311116092134">Nombres de hosts de mensajes nativos que se deben excluir de la lista de bloqueados</translation>
@@ -4182,6 +4193,11 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="747275827471712187">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en estos sitios web</translation>
+<translation id="7476447711788742702">Si se le asigna un valor a esta política, se especifica la acción que realiza <ph name="PRODUCT_OS_NAME" /> cuando el usuario cierra la tapa del dispositivo.
+
+      Si no se le asigna ningún valor, la acción será la suspensión.
+
+      Nota: Si la acción es la suspensión, <ph name="PRODUCT_OS_NAME" /> se puede configurar por separado para bloquear o no la pantalla antes de entrar en modo de suspensión.</translation>
 <translation id="7476621944304431784">Si se habilita esta opción, los usuarios podrán sincronizar las configuraciones de la red Wi‑Fi en sus dispositivos <ph name="PRODUCT_OS_NAME" /> y en un teléfono Android conectado. Para poder sincronizar las configuraciones de la red Wi‑Fi, los usuarios deben aceptar explícitamente esta función completando un proceso de configuración.
 
       Si se inhabilita esta opción, los usuarios no podrán sincronizar las configuraciones de la red Wi‑Fi.
@@ -4209,9 +4225,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Esta política está obsoleta. Usa la política <ph name="PRINTERS_POLICY_NAME" /> en su lugar.
       </translation>
-<translation id="7504632989711326175">Si se asigna un valor a esta política, el host utilizará un certificado de cliente con el CN de emisor especificado para autenticarse en RemoteAccessHostTokenValidationUrl. Si se le asigna el valor "*", se utilizará cualquier certificado de cliente disponible.
-
-          Esta función está inhabilitada si está vacía o no se le asigna ningún valor.</translation>
 <translation id="7506745375479451616">Esta política controla el comando que se utilizará para abrir las URL al cambiar de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" />. A esta política se le puede asignar la ruta de un archivo ejecutable o el valor <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automáticamente la ubicación de <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, <ph name="IE_PRODUCT_NAME" /> detectará automáticamente la ruta ejecutable de <ph name="PRODUCT_NAME" /> al iniciar <ph name="PRODUCT_NAME" /> desde Internet Explorer.
@@ -4489,6 +4502,11 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7891884447851425349">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />, se especificará la URL del buscador usada durante una búsqueda predeterminada. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario.
 
       Puedes especificar la URL de la Búsqueda de Google introduciendo lo siguiente: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7894185046683379696">Si se establece la política, permite especificar el tiempo (en milisegundos) que debe transcurrir sin que el usuario realice ninguna acción antes de que la pantalla se bloquee (con conexión a la red eléctrica o batería). Los valores deben ser inferiores al retraso de inactividad indicado en <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
+
+      Cuando se le asigna el valor cero, <ph name="PRODUCT_OS_NAME" /> no bloquea la pantalla cuando el usuario pasa a estar inactivo. Si no se establece, se utiliza un valor de tiempo predeterminado.
+
+      Recomendación: Bloquea la pantalla en modo de inactividad activando el bloqueo de pantalla en el modo de suspensión y configurando <ph name="PRODUCT_OS_NAME" /> para que realice la suspensión después del periodo de inactividad indicado. Utiliza esta política únicamente si el bloqueo de la pantalla debería producirse mucho antes que la suspensión, o cuando no quieras que se produzca la suspensión en modo de inactividad.</translation>
 <translation id="7895553628261067384">Acceso remoto</translation>
 <translation id="7902040092815978832">Muestra el teclado numérico para introducir la contraseña</translation>
 <translation id="7904177352786629708">Si se asigna el valor "Enabled" a esta política, se omitirá la consulta de CNAME. El nombre del servidor se usará tal como se haya introducido al generar el SPN de Kerberos.
@@ -4607,6 +4625,9 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
           Si se habilita la política, la lista de cuentas que defina la política se añade a la configuración de las cuentas de Kerberos.
 
           Si no se asigna ningún valor a esta política o se inhabilita, no se añadirá ninguna cuenta a la configuración de las cuentas de Kerberos y se eliminarán todas las cuentas que se hayan añadido con esta política. Si la política "Los usuarios pueden añadir cuentas de Kerberos" está habilitada, los usuarios podrán añadir cuentas manualmente.</translation>
+<translation id="8078297389450285582">Si se habilita la política o no se establece, se activa el modelo de atenuación inteligente y se puede alargar el tiempo que pasa hasta que la pantalla se atenúe. Si retrasa el tiempo, se ajustan los retrasos de apagado de pantalla, bloqueo de pantalla e inactividad para mantener las mismas distancias del retraso de atenuación de pantalla que tenía la configuración original.
+
+      Si se inhabilita la política, el modelo de atenuación inteligente no influirá en la atenuación de la pantalla.</translation>
 <translation id="8099880303030573137">Retraso de inactividad cuando el dispositivo funciona con la batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8101937907822293485">Habilita el envío anónimo de informes de uso y de datos sobre fallos de <ph name="PRODUCT_NAME" /> a Google e impide que los usuarios modifiquen esta opción.
@@ -4740,6 +4761,11 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="8274603902181597201">Borrar los eCryptfs del directorio principal del usuario y empezar con un nuevo directorio principal cifrado con ext4.</translation>
 <translation id="8284296539558710573">Solicitudes de autenticación HTTP de origen cruzado</translation>
+<translation id="8284527236880877730">Si se inhabilita la política <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> y se establece <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" />, se especifica el porcentaje del retraso de atenuación de pantalla cuando el dispositivo esté en el modo de presentación. Si se ajusta el retraso de atenuación de pantalla, se ajustan los retrasos de apagado de pantalla, bloqueo de pantalla e inactividad para mantener las mismas distancias del retraso de atenuación de pantalla que tenía la configuración original.
+
+      Si no se establece esta política, se usará el factor de escala predeterminado.
+
+      Nota: El factor de escala debe ser igual o superior a 100 %.</translation>
 <translation id="8285435910062771358">Lupa de pantalla completa habilitada</translation>
 <translation id="8288199156259560552">Habilitar los servicios de ubicación de Google para aplicaciones de Android</translation>
 <translation id="8290875622178450531">Habilita la función de accesibilidad de dictado.
@@ -4809,13 +4835,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8371178326720637170">Permite que las extensiones gestionadas usen la API Enterprise Hardware Platform</translation>
 <translation id="8375817202037102567">Bloquear el acceso de escritura a archivos y directorios en estos sitios web</translation>
 <translation id="8379317372795444261">Se permite la autenticación <ph name="BASIC_AUTH" /> en conexiones HTTP</translation>
-<translation id="8380490658357556620">Permite habilitar el uso de servidores de retransmisión cuando los clientes remotos intentan conectarse a este ordenador.
-
-          Si se habilita esta opción, los clientes remotos podrán utilizar servidores de retransmisión para conectarse a este ordenador cuando no haya disponible una conexión directa (por ejemplo, debido a restricciones del cortafuegos).
-
-          Ten en cuenta que si la política <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> está inhabilitada, se ignorará.
-
-          Si no se asigna ningún valor a esta política, se habilitará la opción.</translation>
 <translation id="838056554726401140">Lista de URL que especifica a qué URL se aplicará <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Esta política no afecta a los valores abiertos automáticamente por los usuarios.
 
       Si se le asigna un valor a esta política, los archivos se abrirán automáticamente solo si la URL está incluida en la lista y el tipo de archivo aparece en <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si no se cumple alguna de las dos condiciones, la política no abrirá automáticamente el archivo descargado.
@@ -4983,9 +5002,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si se asigna el valor "true" a esta política, las pestañas que hayan estado en segundo plano durante un mínimo de 5 minutos podrían inmovilizarse. Inmovilizar las pestañas reduce el consumo de CPU, batería y memoria. <ph name="PRODUCT_NAME" /> usa métodos heurísticos para evitar inmovilizar pestañas que realicen funciones útiles en segundo plano, como mostrar notificaciones, reproducir sonidos o emitir vídeos en streaming. Los desarrolladores web pueden inhabilitar la inmovilización en sus sitios web (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si se asigna el valor "false" a esta política, no se inmovilizará ninguna pestaña.</translation>
-<translation id="8622378389102774881">Si se asigna un valor a esta política, el host de acceso remoto necesitará la autenticación de los clientes para obtener un token de autenticación de esta URL y poder conectarse. Debe utilizarse junto con RemoteAccessHostTokenValidationUrl.
-
-          Esta función está inhabilitada si está vacía o no se le asigna ningún valor.</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">La lista de aplicaciones para tomar notas que están permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8649763579836720255">Los dispositivos Chrome OS pueden utilizar la confirmación remota (acceso verificado) para obtener un certificado emitido por la autoridad de certificación de Chrome OS que afirme que el dispositivo puede reproducir contenido protegido. Este proceso implica el envío de información de aprobación del hardware a la autoridad de certificación de Chrome OS que identifica el dispositivo de forma única.
@@ -5080,9 +5096,19 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Nota: Consulta una lista de variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="8777369558049831576">Permite mostrar la casilla Siempre abierto en el cuadro de diálogo de un protocolo externo.</translation>
+<translation id="8786409859071107656">Si se habilita esta política, se activa la política de gestión de energía compartida por USB.
+
+      Algunos dispositivos tienen un puerto USB específico marcado con un icono de rayo o de batería para cargar dispositivos usando la batería del sistema. Esta política afecta al comportamiento de carga de este puerto cuando el sistema está en modo de suspensión o apagado, pero no afecta a los otros puertos USB ni al comportamiento de carga mientras el sistema está activo. En este caso, el puerto USB siempre suministra energía.
+
+      Cuando está en modo de suspensión, se suministra energía al puerto USB cuando el dispositivo está conectado al cargador de pared o el nivel de carga de la batería es superior al 50 %. Cuando está apagado, se suministra energía al puerto USB cuando el dispositivo está enchufado al cargador de pared.
+
+      Si se inhabilita esta política, no se suministra energía.
+
+      Si no se le asigna ningún valor a esta política, implica que está activada y los usuarios no pueden desactivarla.</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8800453707696044281">Define un porcentaje personalizado de la parada de carga de la batería</translation>
 <translation id="8801680448782904838">Informar al usuario de que es necesario o recomendable reiniciar el navegador o el dispositivo</translation>
+<translation id="8816671955985738552">No permitir cambios de contraseña de SAML dentro de la sesión en chrome://password-change</translation>
 <translation id="8817960019535659860">Evitar que los usuarios canjeen ofertas a través del registro de Chrome OS</translation>
 <translation id="8818173863808665831">Informa de la ubicación geográfica del dispositivo.
 

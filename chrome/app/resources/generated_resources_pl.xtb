@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Inteligentne rozwiązania Google w Chrome</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> może teraz odebrać urządzenie</translation>
 <translation id="1147991416141538220">Aby uzyskać dostęp, skontaktuj się z administratorem tego urządzenia.</translation>
+<translation id="1148063863818152153">Numer EID urządzenia</translation>
 <translation id="1149401351239820326">Miesiąc utraty ważności</translation>
 <translation id="1149725087019908252">Skanuję plik <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">To jest ostatnia automatyczna aktualizacja oprogramowania i zabezpieczeń, którą otrzymuje to urządzenie (<ph name="DEVICE_TYPE" />). Aby otrzymywać aktualizacje w przyszłości, przejdź na nowszy model. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -316,6 +317,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1343865611738742294">Przyznaj aplikacjom na Linuksa dostęp do urządzeń USB. Linux nie będzie pamiętać urządzenia USB po jego odłączeniu.</translation>
 <translation id="1346630054604077329">Potwierdź i uruchom ponownie</translation>
 <translation id="1347256498747320987">Instalowanie aktualizacji i aplikacji. Przechodząc dalej, zgadzasz się, że urządzenie może też automatycznie pobierać i instalować aktualizacje oraz aplikacje od Google, Twojego operatora i producenta urządzenia oraz że może się to odbywać z użyciem komórkowej transmisji danych. Niektóre z tych aplikacji mogą oferować zakupy w aplikacji. <ph name="BEGIN_LINK1" />Więcej informacji<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Pamięć – Linux</translation>
 <translation id="1347975661240122359">Aktualizacja się uruchomi, gdy bateria naładuje się do <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Nie można znaleźć pliku PPD. Upewnij się, że Chromebook jest podłączony do internetu, i spróbuj ponownie.</translation>
@@ -557,6 +559,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1608668830839595724">Więcej czynności dla wybranych elementów</translation>
 <translation id="161042844686301425">Cyjan</translation>
 <translation id="1611432201750675208">Urządzenie jest zablokowane</translation>
+<translation id="1612019740169791082">Konfiguracja kontenera nie pozwala na zmiany rozmiaru dysku. Aby zmienić ilość miejsca zarezerwowanego dla Linuksa, utwórz kopię zapasową i przywróć ją w nowym kontenerze.</translation>
 <translation id="1614511179807650956">Możliwe, że masz już wykorzystany limit mobilnej transmisji danych. Odwiedź portal aktywacji <ph name="NAME" />, by kupić dodatkowy pakiet danych.</translation>
 <translation id="161460670679785907">Nie można wykryć telefonu</translation>
 <translation id="1616206807336925449">To rozszerzenie nie wymaga specjalnych uprawnień.</translation>
@@ -691,6 +694,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="175772926354468439">Włącz motyw</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Wyświetl w Chrome Web Store</translation>
+<translation id="1761845175367251960">Konta użytkownika <ph name="NAME" /></translation>
 <translation id="176193854664720708">Czytnik linii papilarnych znajduje się na przycisku zasilania. Przyłóż do niego dowolny palec.</translation>
 <translation id="1763046204212875858">Utwórz skróty do aplikacji</translation>
 <translation id="1763808908432309942">Otworzy się na nowej karcie</translation>
@@ -896,6 +900,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1999115740519098545">Po uruchomieniu</translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
 <translation id="2002109485265116295">W czasie rzeczywistym</translation>
+<translation id="200217416291116199">Warto utworzyć kopię zapasową plików, by nie utracić danych, jeśli nie uda się przeprowadzić uaktualnienia. Rozpoczęcie uaktualnienia spowoduje wyłączenie Linuksa. Zanim przejdziesz dalej, zapisz otwarte pliki.</translation>
 <translation id="2003130567827682533">Aby włączyć usługę transmisji danych „<ph name="NAME" />”, najpierw połącz się z siecią Wi-Fi</translation>
 <translation id="2005199804247617997">Inne profile</translation>
 <translation id="2006638907958895361">Otwórz link w aplikacji <ph name="APP" /></translation>
@@ -1607,6 +1612,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2807517655263062534">Tutaj wyświetlają się pobrane pliki</translation>
 <translation id="2809586584051668049">i jeszcze <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Jeśli nie rozpoznajesz jakiegoś rozszerzenia lub przeglądarka nie działa w oczekiwany sposób, tutaj możesz wyłączyć lub dostosować rozszerzenia.</translation>
+<translation id="2811205483104563968">Konta</translation>
 <translation id="2812049959647166806">Standard Thunderbolt nie jest obsługiwany</translation>
 <translation id="2812989263793994277">Nie pokazuj żadnych grafik</translation>
 <translation id="2813094189969465044">Kontrola rodzicielska</translation>
@@ -1645,6 +1651,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2858138569776157458">Popularne</translation>
 <translation id="2861301611394761800">Aktualizacja systemu zakończona. Uruchom system ponownie.</translation>
 <translation id="2861941300086904918">Menedżer zabezpieczeń klienta rodzimego</translation>
+<translation id="2862815659905780618">Usuń środowisko programistyczne Linuksa</translation>
 <translation id="2864601841139725659">Ustawianie zdjęcia profilowego</translation>
 <translation id="2865919525181940183">Zrzut ekranu z widocznymi na nim teraz programami</translation>
 <translation id="286674810810214575">Sprawdzam źródła zasilania...</translation>
@@ -1758,6 +1765,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2989123969927553766">Przyspieszenie przewijania myszą</translation>
 <translation id="2989474696604907455">niepodłączone</translation>
 <translation id="2989786307324390836">Plik binarny z kodowaniem DER, jeden certyfikat</translation>
+<translation id="2990313168615879645">Dodaj konto Google</translation>
 <translation id="2992931425024192067">Pokazuj wszystkie powiadomienia</translation>
 <translation id="2993517869960930405">Informacje o aplikacji</translation>
 <translation id="2996286169319737844">Dane są szyfrowane Twoim hasłem synchronizacji. Nie obejmuje to form płatności ani adresów w Google Pay.</translation>
@@ -2369,6 +2377,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3706463572498736864">Strony na arkusz</translation>
 <translation id="370649949373421643">Włącz Wi-Fi</translation>
 <translation id="370665806235115550">Ładuję...</translation>
+<translation id="3707163604290651814">W tej chwili używasz konta <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Przeglądarka została zamknięta przed zakończeniem pobierania.</translation>
 <translation id="3711931198657368127">&amp;Wklej i otwórz <ph name="URL" /></translation>
 <translation id="3711945201266135623">Wykryto drukarki (<ph name="NUM_PRINTERS" />) na serwerze druku</translation>
@@ -2875,6 +2884,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (aktywne <ph name="NUM_KILOBYTES_LIVE" /> KB)</translation>
 <translation id="4310139701823742692">Plik ma niewłaściwy format. Sprawdź plik PPD i spróbuj ponownie.</translation>
 <translation id="431076611119798497">&amp;Szczegóły</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 konto Google}few{<ph name="EXTRA_ACCOUNTS" /> konta Google}many{<ph name="EXTRA_ACCOUNTS" /> kont Google}other{<ph name="EXTRA_ACCOUNTS" /> konta Google}}</translation>
 <translation id="4312866146174492540">Blokuj (domyślnie)</translation>
 <translation id="4314815835985389558">Zarządzanie synchronizacją</translation>
 <translation id="4316850752623536204">Witryna dewelopera</translation>
@@ -3254,6 +3264,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4764368918650455114">Dopilnuj, by obydwa urządzenia były odblokowane, znajdowały się blisko siebie i miały włączony Bluetooth. Jeśli chcesz coś udostępnić Chromebookowi, upewnij się, że ma włączone Udostępnianie w pobliżu (kliknij godzinę, by otworzyć pasek stanu, a potem wybierz Udostępnianie w pobliżu). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Zezwala Wiadomościom na Androida przesyłać SMS-y z telefonu na Chromebooka</translation>
 <translation id="4768332406694066911">Masz certyfikaty od tych organizacji potwierdzające Twoją tożsamość</translation>
+<translation id="4773112038801431077">Uaktualnij Linuksa</translation>
 <translation id="477647109558161443">Utwórz skrót na pulpicie</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Sklep Play</translation>
@@ -3747,6 +3758,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5368720394188453070">Twój telefon jest zablokowany. Aby uzyskać do niego dostęp, odblokuj go.</translation>
 <translation id="5368779022775404937">Zaloguj się na <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Włącz przyspieszenie myszy</translation>
+<translation id="5369694795837229225">Skonfiguruj środowisko programistyczne Linuksa</translation>
 <translation id="5370819323174483825">&amp;Odśwież</translation>
 <translation id="5372529912055771682">Ta wersja systemu operacyjnego nie obsługuje podanego trybu rejestrowania. Upewnij się, że używasz najnowszej wersji i spróbuj ponownie.</translation>
 <translation id="5372579129492968947">Odepnij rozszerzenie</translation>
@@ -4471,6 +4483,8 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6212168817037875041">Wyłącz ekran</translation>
 <translation id="6212752530110374741">Prześlij link e-mailem</translation>
 <translation id="6213230117190778270">Odbierz</translation>
+<translation id="6215620815501168899">Zamknij wyskakujące okienko z numerem EID urządzenia i kodem QR</translation>
+<translation id="6216601812881225442">Kontener nie obsługuje zmiany rozmiaru. Aby zmienić ilość miejsca wstępnie przydzielonego dla Linuksa, utwórz kopię zapasową i przywróć ją w nowym kontenerze.</translation>
 <translation id="6216696360484424239">Logowanie automatyczne</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> jest offline. Połącz się z internetem i spróbuj ponownie.</translation>
 <translation id="6220413761270491930">Błąd podczas ładowania rozszerzenia</translation>
@@ -4863,6 +4877,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6680442031740878064">Dostępne: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Szybkość</translation>
 <translation id="6681668084120808868">Zrób zdjęcie</translation>
+<translation id="6683948477137300040">Pokaż wyskakujące okienko z numerem EID urządzenia i kodem QR</translation>
 <translation id="6684827949542560880">Pobieram najnowszą aktualizację</translation>
 <translation id="668599234725812620">Otwórz Google Play</translation>
 <translation id="6686490380836145850">Zamknij karty po prawej</translation>
@@ -5098,6 +5113,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6955535239952325894">To ustawienie jest wyłączone w zarządzanych przeglądarkach</translation>
 <translation id="6957044667612803194">Ten klucz bezpieczeństwa nie obsługuje kodów PIN</translation>
 <translation id="6957231940976260713">Nazwa usługi</translation>
+<translation id="6960507406838246615">Wymagana aktualizacja Linuksa</translation>
 <translation id="696103774840402661">Wszystkie pliki i dane lokalne wszystkich użytkowników na tym urządzeniu <ph name="DEVICE_TYPE" /> zostały trwale usunięte.</translation>
 <translation id="6964390816189577014">Bohater</translation>
 <translation id="6964760285928603117">Usuń z grupy</translation>
@@ -5117,6 +5133,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="697312151395002334">Zezwolono na wysyłanie wyskakujących okienek i używanie przekierowań</translation>
 <translation id="6973611239564315524">Dostępne jest uaktualnienie do Debiana 10 (Buster)</translation>
 <translation id="6974609594866392343">Tryb demo offline</translation>
+<translation id="697508444536771064">Wyłącz Linuksa</translation>
 <translation id="6977381486153291903">Wersja oprogramowania</translation>
 <translation id="6977877318519394148">Zainstaluj Rosettę</translation>
 <translation id="6978121630131642226">Wyszukiwarki</translation>
@@ -5517,6 +5534,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7443806024147773267">Miej dostęp do swoich haseł zawsze wtedy, gdy zalogujesz się na swoje konto Google</translation>
 <translation id="7444983668544353857">Wyłącz – <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Automatyczne instalowanie aplikacji</translation>
+<translation id="7448538354405258275">Pracownik obsługi klienta może użyć numeru EID do aktywowania usługi.</translation>
 <translation id="7449752890690775568">Usunąć hasło?</translation>
 <translation id="7450761244949417357">Otwieram w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7453008956351770337">Wybierając tę drukarkę, zezwalasz na dostęp do niej temu rozszerzeniu:</translation>
@@ -6046,6 +6064,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8032244173881942855">Nie udało się przesłać karty.</translation>
 <translation id="8033827949643255796">wybrano</translation>
 <translation id="8033958968890501070">Przekroczono limit czasu</translation>
+<translation id="8036049989879571495">Skonfiguruj środowisko programistyczne Linuksa (beta)</translation>
 <translation id="8037117027592400564">Odczyt całego tekstu mówionego przez syntezator mowy</translation>
 <translation id="8037357227543935929">Pytaj (domyślnie)</translation>
 <translation id="803771048473350947">Plik</translation>
@@ -6974,6 +6993,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="909108997331068008">Profil użytkownika <ph name="EXISTING_USER" /> jest już zalogowany na koncie <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>
 <translation id="9094038138851891550">Nazwa użytkownika jest nieprawidłowa.</translation>
+<translation id="9094859731829297286">Czy na pewno chcesz zarezerwować dysk o stałym rozmiarze dla Linuksa?</translation>
 <translation id="9094982973264386462">Usuń</translation>
 <translation id="9095253524804455615">Usuń</translation>
 <translation id="909554839118732438">Zamknij tryb incognito</translation>

@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Eines intel·ligents a Chrome</translation>
 <translation id="1147322039136785890">Ara és el torn de: <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Per demanar accés, contacta amb l'administrador d'aquest dispositiu.</translation>
+<translation id="1148063863818152153">L'EID del teu dispositiu</translation>
 <translation id="1149401351239820326">Mes de caducitat</translation>
 <translation id="1149725087019908252">S'està analitzant <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">Aquesta actualització de programari i seguretat és l'última que rebràs per a aquest <ph name="DEVICE_TYPE" />. Per obtenir actualitzacions en el futur, canvia el dispositiu per un model més nou. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -314,6 +315,7 @@
 <translation id="1343865611738742294">Concedeix permís a les aplicacions de Linux per accedir als dispositius USB. Linux no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="1346630054604077329">Confirma i reinicia</translation>
 <translation id="1347256498747320987">Instal·la actualitzacions i aplicacions. En continuar, acceptes que aquest dispositiu també pugui baixar i instal·lar automàticament actualitzacions i aplicacions de Google, de l'operador de telefonia mòbil i del fabricant del dispositiu, i que és possible que ho faci utilitzant dades mòbils. Pot ser que algunes d'aquestes aplicacions ofereixin compres des de l'aplicació. <ph name="BEGIN_LINK1" />Més informació<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Emmagatzematge de Linux</translation>
 <translation id="1347975661240122359">L'actualització començarà quan hi hagi un <ph name="BATTERY_LEVEL" />% de bateria.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">No hem trobat el fitxer PPD. Comprova que Chromebook estigui en línia i torna-ho a provar.</translation>
@@ -555,6 +557,7 @@
 <translation id="1608668830839595724">Més accions per als elements seleccionats</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">El dispositiu està bloquejat</translation>
+<translation id="1612019740169791082">La configuració del contenidor no admet canvis de mida del disc. Per ajustar la quantitat d'espai que es reserva per a Linux, crea una còpia de seguretat i, a continuació, fes la restauració en un contenidor nou.</translation>
 <translation id="1614511179807650956">És possible que hagis esgotat la quantitat assignada de dades mòbils. Visita el portal d'activació <ph name="NAME" /> per comprar més dades.</translation>
 <translation id="161460670679785907">No es pot detectar el telèfon</translation>
 <translation id="1616206807336925449">Aquesta extensió no requereix cap permís especial.</translation>
@@ -689,6 +692,7 @@
 <translation id="175772926354468439">Activa el tema</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Mostra a Chrome Web Store</translation>
+<translation id="1761845175367251960">Comptes de: <ph name="NAME" /></translation>
 <translation id="176193854664720708">El sensor d'empremtes digitals és al botó d'engegada. Toca'l lleugerament amb un dit.</translation>
 <translation id="1763046204212875858">Creació de dreceres a aplicacions</translation>
 <translation id="1763808908432309942">S'obre en una pestanya nova</translation>
@@ -898,6 +902,7 @@
 <translation id="1999115740519098545">A l'inici</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
 <translation id="2002109485265116295">En temps real</translation>
+<translation id="200217416291116199">Es recomana fer una còpia de seguretat dels fitxers per si de cas l'actualització no es pot completar. En iniciar l'actualització, Linux s'apagarà. Desa els fitxers oberts abans de continuar.</translation>
 <translation id="2003130567827682533">Per activar les dades del servei <ph name="NAME" />, primer connecta't a una xarxa Wi‑Fi</translation>
 <translation id="2005199804247617997">Altres perfils</translation>
 <translation id="2006638907958895361">Obre l'enllaç a <ph name="APP" /></translation>
@@ -1608,6 +1613,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2807517655263062534">Aquí es mostren els fitxers baixats</translation>
 <translation id="2809586584051668049">i <ph name="NUMBER_ADDITIONAL_DISABLED" /> més</translation>
 <translation id="2810390687497823527">Si no reconeixes una extensió o si el navegador no funciona de la manera esperada, pots desactivar o personalitzar les extensions aquí.</translation>
+<translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Els connectors Thunderbolt no s'admeten</translation>
 <translation id="2812989263793994277">No mostris cap imatge</translation>
 <translation id="2813094189969465044">Controls parentals</translation>
@@ -1646,6 +1652,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2858138569776157458">Llocs populars</translation>
 <translation id="2861301611394761800">Actualització del sistema completada. Reinicieu el sistema.</translation>
 <translation id="2861941300086904918">Administrador de seguretat de Native Client</translation>
+<translation id="2862815659905780618">Suprimeix l'entorn de desenvolupament de Linux</translation>
 <translation id="2864601841139725659">Estableix la teva foto de perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla de programes que hi ha en pantalla en aquests moments</translation>
 <translation id="286674810810214575">S'estan comprovant les fonts d'alimentació...</translation>
@@ -1759,6 +1766,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2989123969927553766">Acceleració de desplaçament del ratolí</translation>
 <translation id="2989474696604907455">no connectat</translation>
 <translation id="2989786307324390836">Binari codificat amb DER, certificat únic</translation>
+<translation id="2990313168615879645">Afegeix un Compte de Google</translation>
 <translation id="2992931425024192067">Mostra tot el contingut de les notificacions</translation>
 <translation id="2993517869960930405">Informació de l'aplicació</translation>
 <translation id="2996286169319737844">Les dades estan encriptades amb la teva frase de contrasenya de sincronització. No inclouen les formes de pagament ni les adreces de Google Pay.</translation>
@@ -2370,6 +2378,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3706463572498736864">Pàgines per full</translation>
 <translation id="370649949373421643">Activa la Wi-Fi</translation>
 <translation id="370665806235115550">S'està carregant...</translation>
+<translation id="3707163604290651814">Has iniciat la sessió com a <ph name="NAME" /></translation>
 <translation id="3709244229496787112">S'ha tancat el navegador abans que la baixada es completés.</translation>
 <translation id="3711931198657368127">Engan&amp;xa i ves a <ph name="URL" /></translation>
 <translation id="3711945201266135623">S'han trobat <ph name="NUM_PRINTERS" /> impressores al servidor d'impressió</translation>
@@ -2875,6 +2884,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K actius)</translation>
 <translation id="4310139701823742692">El format del fitxer PPD és incorrecte. Revisa'l i torna-ho a provar.</translation>
 <translation id="431076611119798497">&amp;Detalls</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Compte de Google}other{<ph name="EXTRA_ACCOUNTS" /> Comptes de Google}}</translation>
 <translation id="4312866146174492540">Bloqueja (opció predeterminada)</translation>
 <translation id="4314815835985389558">Gestiona la sincronització</translation>
 <translation id="4316850752623536204">Lloc web per a desenvolupadors</translation>
@@ -3254,6 +3264,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4764368918650455114">Comprova que els dos dispositius estiguin desbloquejats, l'un a prop de l'altre i amb el Bluetooth activat. Si vols compartir fitxers amb un Chromebook, comprova que tingui la funció Compartició Nearby activada (obre l'àrea d'estat seleccionant l'hora i, a continuació, selecciona Compartició Nearby). <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Permet que Missatges Android retransmeti els missatges de text del telèfon al teu Chromebook</translation>
 <translation id="4768332406694066911">Tens certificats d'aquestes organitzacions que t'identifiquen</translation>
+<translation id="4773112038801431077">Actualitza Linux</translation>
 <translation id="477647109558161443">Crea una drecera de l'escriptori</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3748,6 +3759,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5368720394188453070">El telèfon està bloquejat. Desbloquegeu-lo per accedir-hi.</translation>
 <translation id="5368779022775404937">Inicia la sessió a <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Activa l'acceleració del ratolí</translation>
+<translation id="5369694795837229225">Configura un entorn de desenvolupament de Linux</translation>
 <translation id="5370819323174483825">&amp;Tornar a carregar</translation>
 <translation id="5372529912055771682">El mode d'inscripció proporcionat no és compatible amb aquesta versió del sistema operatiu. Assegureu-vos que estigueu executant la darrera versió i torneu-ho a provar.</translation>
 <translation id="5372579129492968947">Deixa de fixar l'extensió</translation>
@@ -4473,6 +4485,8 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6212168817037875041">Desactiva la pantalla</translation>
 <translation id="6212752530110374741">Envia l'enllaç per correu electrònic</translation>
 <translation id="6213230117190778270">Rep</translation>
+<translation id="6215620815501168899">Tanca la finestra emergent amb el codi QR i amb l'EID</translation>
+<translation id="6216601812881225442">El teu contenidor no admet el canvi de mida. Per ajustar la quantitat d'espai que s'assigna prèviament a Linux, crea una còpia de seguretat i, a continuació, fes la restauració en un contenidor nou.</translation>
 <translation id="6216696360484424239">Inicia la sessió automàticament</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> no té connexió. Connecta't a Internet i torna-ho a provar.</translation>
 <translation id="6220413761270491930">Error en carregar l'extensió</translation>
@@ -4865,6 +4879,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocitat</translation>
 <translation id="6681668084120808868">Fes una foto</translation>
+<translation id="6683948477137300040">Mostra la finestra emergent amb el codi QR i amb l'EID del dispositiu</translation>
 <translation id="6684827949542560880">S'està baixant l'actualització més recent</translation>
 <translation id="668599234725812620">Obre Google Play</translation>
 <translation id="6686490380836145850">Tanca les pestanyes de la dreta</translation>
@@ -5100,6 +5115,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6955535239952325894">Aquesta opció de configuració està desactivada als navegadors gestionats</translation>
 <translation id="6957044667612803194">Aquesta clau de seguretat no admet codis PIN</translation>
 <translation id="6957231940976260713">Nom del servei</translation>
+<translation id="6960507406838246615">Cal actualitzar Linux</translation>
 <translation id="696103774840402661">Tots els fitxers i totes les dades locals de tots els usuaris d'aquest dispositiu <ph name="DEVICE_TYPE" /> s'han suprimit permanentment.</translation>
 <translation id="6964390816189577014">Heroi</translation>
 <translation id="6964760285928603117">Suprimeix del grup</translation>
@@ -5119,6 +5135,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="697312151395002334">Amb permís per enviar finestres emergents i utilitzar redireccions</translation>
 <translation id="6973611239564315524">Hi ha disponible una actualització a Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">Mode de demostració sense connexió</translation>
+<translation id="697508444536771064">Apaga Linux</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
 <translation id="6977877318519394148">Instal·la Rosetta</translation>
 <translation id="6978121630131642226">Motors de cerca</translation>
@@ -5519,6 +5536,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7443806024147773267">Accedeix a les contrasenyes sempre que tinguis la sessió iniciada al Compte de Google</translation>
 <translation id="7444983668544353857">Desactiva <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instal·lar aplicacions automàticament.</translation>
+<translation id="7448538354405258275">El representant d'un servei d'atenció al client pot utilitzar el número de l'EID per ajudar-te a activar el servei.</translation>
 <translation id="7449752890690775568">Vols suprimir la contrasenya?</translation>
 <translation id="7450761244949417357">S'està obrint a <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7453008956351770337">En seleccionar aquesta impressora, doneu permís a l'extensió següent per accedir a la vostra impressora:</translation>
@@ -6048,6 +6066,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8032244173881942855">No es pot emetre la pestanya.</translation>
 <translation id="8033827949643255796">seleccionats</translation>
 <translation id="8033958968890501070">Temps d'espera esgotat</translation>
+<translation id="8036049989879571495">Configura un entorn de desenvolupament de Linux (versió beta)</translation>
 <translation id="8037117027592400564">Llegeix tot el text en veu alta mitjançant una síntesi de veu</translation>
 <translation id="8037357227543935929">Pregunta (opció predeterminada)</translation>
 <translation id="803771048473350947">Fitxer</translation>
@@ -6974,6 +6993,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="909108997331068008">El perfil <ph name="EXISTING_USER" /> ja s'ha utilitzat per iniciar la sessió a <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>
 <translation id="9094038138851891550">El nom d'usuari no és vàlid</translation>
+<translation id="9094859731829297286">Confirmes que vols reservar un disc de mida fixa per a Linux?</translation>
 <translation id="9094982973264386462">Suprimeix</translation>
 <translation id="9095253524804455615">Suprimeix</translation>
 <translation id="909554839118732438">Tanca les finestres d'incògnit</translation>

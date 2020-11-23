@@ -85,7 +85,7 @@
 <translation id="1091767800771861448">按下 ESCAPE 鍵可略過 (僅限非官方版本)。</translation>
 <translation id="1093457606523402488">可偵測到的網路：</translation>
 <translation id="1094607894174825014">在以下裝置上要求的讀取或寫入作業使用了無效的偏移：「<ph name="DEVICE_NAME" />」。</translation>
-<translation id="1095761715416917775">請確認你可以隨時存取同步處理的資料</translation>
+<translation id="1095761715416917775">確保你可以隨時存取同步處理的資料</translation>
 <translation id="109647177154844434">解除安裝 Parallels Desktop 時，系統將刪除 Windows 映像檔，包含其應用程式、設定和資料。確定要繼續嗎？</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{1 個連結}other{# 個連結}}</translation>
 <translation id="1097658378307015415">請在登入前以訪客身分進入，啟用網路 <ph name="NETWORK_ID" /></translation>
@@ -432,6 +432,7 @@
 <translation id="1475502736924165259">您儲存的這些憑證不屬於任何其他類別</translation>
 <translation id="1476088332184200792">複製到你的裝置</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。</translation>
 <translation id="1478340334823509079">詳細資料：<ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">未啟用安裝功能</translation>
 <translation id="1481537595330271162">調整磁碟大小時發生錯誤</translation>
@@ -2029,6 +2030,7 @@
 <translation id="3320630259304269485">安全瀏覽功能 (可防範不安全的網站) 和其他安全性設定</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{這項資料含有敏感內容或危險內容。請移除這類內容，然後再試一次。}=1{這個檔案含有敏感內容或危險內容。請移除這類內容，然後再試一次。}other{這些檔案含有敏感內容或危險內容。請移除這類內容，然後再試一次。}}</translation>
 <translation id="3323521181261657960">恭喜！你的裝置使用時間增加了</translation>
+<translation id="3325804108816646710">正在尋找可用的設定檔…</translation>
 <translation id="3325910708063135066">已關閉 Mac 系統偏好設定中的攝影機和麥克風</translation>
 <translation id="3327050066667856415">Chromebook 的設計可確保安全性。你的裝置會自動防範惡意軟體，無須安裝額外軟體。</translation>
 <translation id="3328489342742826322">還原備份內容時，系統將會刪除 Linux 檔案資料夾中的現有 Linux 應用程式和資料。</translation>
@@ -2096,6 +2098,7 @@
 <translation id="3412265149091626468">跳至所選範圍</translation>
 <translation id="3413122095806433232">CA 發行者：<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">空間大小：</translation>
+<translation id="3414966631182382431">你的<ph name="BEGIN_LINK" />瀏覽器是由 <ph name="MANAGER" /> 管理<ph name="END_LINK" /></translation>
 <translation id="3416468988018290825">一律顯示完整網址</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3417836307470882032">24 小時制</translation>
@@ -3169,6 +3172,7 @@
 <translation id="4651484272688821107">無法使用示範模式的資源載入線上元件。</translation>
 <translation id="4652935475563630866">必須重新啟動 Parallels Desktop，攝影機設定的變更才會生效。請重新啟動 Parallels Desktop 以繼續操作。</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
+<translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="465878909996028221">瀏覽器重新導向僅支援 http、https 和 file 通訊協定。</translation>
 <translation id="4659077111144409915">主要帳戶</translation>
 <translation id="4659126640776004816">當你登入 Google 帳戶時，系統會啟用這項功能。</translation>
@@ -3829,6 +3833,7 @@
 <translation id="5470735824776589490">你必須先重新啟動裝置，才能透過 Powerwash 重設裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">你好！這是文字轉語音的語音。</translation>
 <translation id="5472627187093107397">儲存這個網站的密碼</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 碼必須包含至少一個字元}other{PIN 碼必須包含至少 # 個字元}}</translation>
 <translation id="5473333559083690127">再次輸入新的 PIN 碼</translation>
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
@@ -4367,6 +4372,7 @@
 <translation id="6087960857463881712">好看的臉蛋</translation>
 <translation id="6091761513005122595">已成功共用掛接的裝置。</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
+<translation id="6095541101974653012">系統已將你登出帳戶。</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">最大化開啟</translation>
 <translation id="6096326118418049043">X.500 姓名</translation>
@@ -4700,6 +4706,7 @@
 <translation id="6474884162850599008">取消連結 Google 雲端硬碟帳戶</translation>
 <translation id="6475697075626596525">「<ph name="APP_NAME" />」要求分享畫面內容，請選擇你要分享的內容。</translation>
 <translation id="6478248366783946499">要保留不安全的檔案嗎？</translation>
+<translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6483485061007832714">開啟下載檔案</translation>
 <translation id="6483805311199035658">正在開啟「<ph name="FILE" />」...</translation>
 <translation id="6488384360522318064">選取語言</translation>
@@ -4888,6 +4895,7 @@
 <translation id="671928215901716392">鎖定螢幕</translation>
 <translation id="6721678857435001674">查看安全金鑰的製造商和型號</translation>
 <translation id="6721972322305477112">檔案(&amp;F)</translation>
+<translation id="672208878794563299">這個網站下次會再詢問你。</translation>
 <translation id="672213144943476270">以訪客身分瀏覽之前，請先取消鎖定您的個人資料。</translation>
 <translation id="6723661294526996303">匯入書籤和設定...</translation>
 <translation id="6723839937902243910">電源</translation>
@@ -6284,6 +6292,7 @@
 <translation id="8317671367883557781">新增網路連線</translation>
 <translation id="8319414634934645341">擴充金鑰使用方法</translation>
 <translation id="8320459152843401447">您的整個畫面</translation>
+<translation id="8321837372750396788">這部 <ph name="DEVICE_TYPE" /> 將由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8322814362483282060">系統已封鎖這個網頁存取你的麥克風。</translation>
 <translation id="8323167517179506834">輸入網址</translation>
 <translation id="8324784016256120271">網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務</translation>
@@ -6591,6 +6600,7 @@
 <translation id="8698269656364382265">如要返回上一個畫面，請從左側向右側滑動。</translation>
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
+<translation id="8702825062053163569">系統已鎖定你的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="8703346390800944767">略過廣告</translation>
 <translation id="8705331520020532516">序號</translation>
 <translation id="8705580154597116082">可透過手機使用 Wi-Fi</translation>
@@ -6734,7 +6744,7 @@
 <translation id="8830796635868321089">無法以目前的 Proxy 設定啟動更新檢查，請調整 <ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="8831140208248705279">將你的 <ph name="DEVICE_TYPE" /> 與 Android 手機搭配使用，可發揮更大效益。只要連結這兩個裝置，你就能透過電腦收發簡訊、分享網際網路連線，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">網路設定由 <ph name="USER_EMAIL" /> 控制。</translation>
-<translation id="8835786707922974220">請確認你可以隨時存取已儲存的密碼</translation>
+<translation id="8835786707922974220">確保你可以隨時存取已儲存的密碼</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="883911313571074303">為圖片加註</translation>

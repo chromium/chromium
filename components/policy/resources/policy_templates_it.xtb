@@ -73,9 +73,6 @@
 <translation id="1082802595100075771">Consenti agli utenti di scegliere un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="1087437665304381368">Questa norma consente di controllare esclusivamente la modalità sviluppatore di <ph name="PRODUCT_OS_NAME" />. Se vuoi impedire l'accesso alle Opzioni sviluppatore Android, devi impostare la norma <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">L'elenco dei criteri di Chrome Enterprise è in fase di trasferimento. Aggiorna i tuoi preferiti con l'URL <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1093082332347834239">Se l'impostazione viene attivata, l'host per l'assistenza remota viene eseguito in un processo con le autorizzazioni <ph name="UIACCESS_PERMISSION_NAME" />. In questo modo gli utenti remoti possono interagire con finestre con privilegi più elevati sul desktop dell'utente locale.
-
-          Se l'impostazione viene disattivata o non configurata, l'host dell'assistenza remota viene eseguito nel contesto dell'utente e gli utenti remoti non possono interagire con finestre con privilegi più elevati sul desktop.</translation>
 <translation id="1095209545735032039">Blocca l'API Serial su questi siti</translation>
 <translation id="1096105751829466145">Provider di ricerca predefinito</translation>
 <translation id="1099282607296956954">Attiva isolamento sito per ogni sito</translation>
@@ -604,9 +601,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2040479044912658454">Modalità rasterizzazione stampa</translation>
 <translation id="2043749682619281558">Attiva l'evidenziazione del cursore sulla schermata di accesso</translation>
 <translation id="2043770014371753404">Stampanti aziendali disattivate</translation>
-<translation id="2050629715135525072">Controlla la capacità di un utente connesso a un host di accesso remoto di trasferire file dal client all'host e viceversa. Questa norma non si applica alle connessioni di assistenza remota, le quali non supportano il trasferimento di file.
-
-          Se questa impostazione è disattivata, il trasferimento di file non sarà concesso. Se questa impostazione è attivata o non configurata, il trasferimento di file sarà concesso.</translation>
 <translation id="2057317273526988987">Consenti l'accesso a un elenco di URL</translation>
 <translation id="2061810934846663491">Configura i nomi di dominio richiesti per gli host di accesso remoto</translation>
 <translation id="2069350366303315077">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> applica le sessioni Ospite e impedisce gli accessi ai profili. Gli accessi Ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità di navigazione in incognito.
@@ -1103,13 +1097,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 <translation id="2801065672151277034">Impostazioni di gestione dei certificati</translation>
 <translation id="2801155097555584385">Imposta il valore personalizzato espresso in percentuale raggiunto il quale la batteria avvia la ricarica</translation>
 <translation id="2805707493867224476">Consenti la visualizzazione di popup in tutti i siti</translation>
-<translation id="2808013382476173118">Consente di attivare l'utilizzo di server STUN quando i client remoti tentano di stabilire una connessione con questo computer.
-
-          Se questa impostazione viene attivata, i client remoti possono rilevare questo computer e collegarsi a esso anche se sono separati da un firewall.
-
-          Se questa impostazione viene disattivata e le connessioni UDP in uscita vengono filtrate dal firewall, questo computer consentirà soltanto connessioni da computer client all'interno della rete locale.
-
-          Se questa norma non viene impostata l'impostazione verrà attivata.</translation>
 <translation id="2813281962735757923">Questa norma consente di regolare gli intervalli di tempo durante i quali al dispositivo <ph name="PRODUCT_OS_NAME" /> non è consentito verificare automaticamente la disponibilità di aggiornamenti.
       Quando questa norma è impostata su un elenco valido di intervalli di tempo:
       Ai dispositivi non sarà consentito verificare automaticamente la disponibilità di aggiornamenti durante gli intervalli di tempo specificati. A causa di possibili problemi di sicurezza, questa norma non avrà conseguenze sui dispositivi che richiedono il rollback o dispongono di una versione inferiore alla versione minima di <ph name="PRODUCT_OS_NAME" />. Inoltre, questa norma non impedirà le verifiche degli aggiornamenti richieste dagli utenti o dagli amministratori.
@@ -1711,9 +1698,6 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano le statistiche.</translation>
 <translation id="3736879847913515635">Attiva la funzione Aggiungi persona in Gestione utenti</translation>
 <translation id="3750220015372671395">Blocca la generazione di chiavi su questi siti</translation>
-<translation id="375266612405883748">Limita l'intervallo di porte UDP utilizzate dall'host di accesso remoto in questo computer.
-
-          Se questa norma non è impostata o se viene impostata una stringa vuota, l'host di accesso remoto potrà utilizzare qualsiasi porta, a meno che la norma <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> sia disattivata; in questo caso l'host di accesso remoto utilizzerà le porte UDP nell'intervallo 12400-12409.</translation>
 <translation id="3755237588083934849">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei caricamenti dello stato del dispositivo. Il valore minimo consentito è 60 secondi.
 
       Se il criterio non viene configurato, viene applicato l'intervallo predefinito di 3 ore.</translation>
@@ -2041,11 +2025,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
-<translation id="4214536984333857724">Se questa impostazione viene attivata, le richieste di autenticazione Gnubby verranno trasferite al proxy tramite una connessione host remota.
-
-          Tieni presente che per il corretto comportamento di questa funzionalità sono necessari componenti aggiuntivi non disponibili al di fuori dell'ambiente della rete Google.
-
-          Se questa impostazione viene disattivata, le richieste di autenticazione Gnubby non verranno trasferite al proxy.</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
 <translation id="4225260426043444650">Questa impostazione consente agli utenti di usare il browser <ph name="LACROS_NAME" />.
 
@@ -2218,9 +2197,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
       Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</translation>
 <translation id="4578265298946081589">Non riavviare all'uscita dell'utente.</translation>
-<translation id="4578912515887794133">Se questa impostazione viene attivata, l'host di accesso remoto confronta il nome dell'utente locale (a cui è associato l'host) con il nome dell'Account Google registrato come proprietario dell'host (ad es. "mariorossi" se l'host è di proprietà dell'Account Google "mariorossi@example.com").  L'host di accesso remoto non viene avviato se il nome del proprietario dell'host non coincide con quello dell'utente locale a cui è associato l'host.  La norma RemoteAccessHostMatchUsername deve essere utilizzata insieme a RemoteAccessHostDomain per far sì che l'Account Google del proprietario dell'host sia associato a un dominio specifico (ad es. "example.com").
-
-          Se questa impostazione viene disattivata o non viene impostata, l'host di accesso remoto può essere associato a qualsiasi utente locale.</translation>
 <translation id="4587365491100112056">La configurazione del criterio consente di specificare la durata in ore dei dati di autenticazione nella cache. La cache include dati relativi alle aree di autenticazione ritenute attendibili dall'area di autenticazione della macchina (aree di autenticazione delle affiliate). Pertanto, la memorizzazione nella cache dei dati di autenticazione consente di velocizzare l'accesso. I dati specifici degli utenti e quelli per le aree di autenticazione non delle affiliate non vengono memorizzati nella cache.
 
       Se il criterio viene impostato su 0, la memorizzazione nella cache dei dati di autenticazione viene disattivata. I dati specifici dell'area di autenticazione vengono recuperati a ogni accesso, quindi la relativa memorizzazione nella cache può rallentare in modo significativo l'accesso degli utenti.
@@ -2365,15 +2341,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="487460824085252184">Esegui automaticamente la migrazione senza chiedere il consenso dell'utente</translation>
 <translation id="4874982543810021567">Blocca WebUSB su questi siti</translation>
 <translation id="4876805738539874299">Versione SSL massima abilitata</translation>
-<translation id="487928067861956387">Consente di configurare i nomi di dominio dell'host che verranno imposti sugli host di accesso remoto e impedisce agli utenti di modificarli.
-
-          Se questa impostazione viene attivata e configurata su uno o più domini, gli host possono essere condivisi solo utilizzando gli account registrati su uno dei nomi di dominio specificati.
-
-          Se questa impostazione viene disattivata, non viene configurata o viene impostato un elenco vuoto, gli host possono essere condivisi utilizzando qualsiasi account.
-
-          Questa impostazione sostituirà <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se presente.
-
-          Vedi anche <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Attiva una pagina per la modifica della password all'interno della sessione per gli utenti SAML</translation>
 <translation id="4892647988357350237">Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questo criterio viene impostato su <ph name="STANDARD_TOS_DIALOG" /> o se non viene configurato, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
 
@@ -2634,15 +2601,6 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 
       Per "versione" si intende sia una versione esatta, ad esempio "61.0.3163.120", sia un prefisso di versione, ad esempio "61.0".  </translation>
 <translation id="5247006254130721952">Blocca download pericolosi</translation>
-<translation id="5249303875508803168">Consente di configurare i nomi di dominio client richiesti che verranno imposti ai client di accesso remoto e impedisce agli utenti di modificarli.
-
-          Se questa impostazione viene attivata e configurata su uno o più domini, solo i client di uno dei domini specificati potranno connettersi all'host.
-
-          Se questa impostazione viene disattivata, non viene configurata o viene impostato un elenco vuoto, viene applicato il criterio predefinito per il tipo di connessione. Per l'assistenza remota, l'impostazione consente ai client di qualsiasi dominio di connettersi all'host; per l'accesso remoto in qualsiasi momento, può connettersi solo il proprietario dell'host.
-
-          Questa impostazione sostituirà <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, se presente.
-
-          Vedi anche <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Gli utenti possono aggiungere account Kerberos</translation>
 <translation id="5252995168844634755">Se il criterio viene impostato su True, viene attivata la modalità Desktop unificato, che consente di visualizzare le applicazioni su più schermi. Gli utenti possono disattivare questa modalità per singoli schermi.
 
@@ -2779,11 +2737,6 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5390083518957894426">Consenti la riautenticazione online nella schermata di blocco per gli utenti SAML</translation>
 <translation id="5391388690191341203">Account locale del dispositivo per l'accesso automatico</translation>
 <translation id="5393009997533871906">Agli utenti vengono mostrate soltanto le stampanti indicate nella lista consentita</translation>
-<translation id="5395271912574071439">Consente di attivare la separazione degli host di accesso remoto durante una connessione.
-
-Se questa impostazione viene attivata, i dispositivi di input e output fisici degli host verranno disattivati durante una connessione remota.
-
-Se questa impostazione viene disattivata o non viene impostata, sia gli utenti locali che remoti potranno interagire con l'host quando viene condiviso.</translation>
 <translation id="5401696449591951427">Attiva <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">Consente di configurare i layout da tastiera consentiti nella schermata di accesso di <ph name="PRODUCT_OS_NAME" />.
 
@@ -3411,9 +3364,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6401669939808766804">Disconnetti l'utente</translation>
 <translation id="640244877779556713">Attiva suggerimento di emoji</translation>
 <translation id="6407093060083181305">Configura la lista bloccata di installazione delle estensioni</translation>
-<translation id="6408233796253901198">Se questo criterio è impostato, l'host di accesso remoto utilizzerà questo URL per convalidare i token di autenticazione dai client di accesso remoto allo scopo di accettare connessioni. Deve essere usato insieme a RemoteAccessHostTokenUrl.
-
-          Questa funzionalità viene disattivata se il criterio è vuoto o non impostato.</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6422575351619065453">In modalità kiosk, consente di controllare se visualizzare o meno il menu Accessibilità mobile.
 
@@ -4051,9 +4001,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio viene impostato su Disattivato o se non viene configurato, il criterio KDC viene ignorato sulle piattaforme supportate e viene rispettato solo il criterio <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       Su <ph name="MS_WIN_NAME" />, il criterio KDC viene sempre rispettato.</translation>
-<translation id="7273823081800296768">Se questa impostazione viene attivata o non viene configurata, gli utenti possono decidere di accoppiare client e host in fase di connessione, evitando di dover inserire un codice PIN ogni volta.
-
-Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</translation>
 <translation id="7274077256421167535">Attiva la condivisione dell'alimentazione USB</translation>
 <translation id="7275334191706090484">Preferiti gestiti</translation>
 <translation id="7278854311116092134">Nomi degli host di messaggi nativi da escludere dalla lista bloccata</translation>
@@ -4182,9 +4129,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_POLICY_NAME" />.
       </translation>
-<translation id="7504632989711326175">Se questo criterio è impostato, l'host utilizzerà un certificato client con il nome comune dell'emittente indicato per eseguire l'autenticazione su RemoteAccessHostTokenValidationUrl. Imposta il criterio su "*" per utilizzare qualsiasi certificato client disponibile.
-
-          Questa funzionalità viene disattivata se il criterio è vuoto o non impostato.</translation>
 <translation id="7506745375479451616">Questo criterio consente di stabilire il comando da usare per aprire gli URL in <ph name="PRODUCT_NAME" /> anziché in <ph name="IE_PRODUCT_NAME" />. Per questo criterio è possibile impostare un percorso file eseguibile o un valore <ph name="PRODUCT_NAME_PLACEHOLDER" /> per rilevare automaticamente la posizione di <ph name="PRODUCT_NAME" />.
 
       Se il criterio non viene impostato, <ph name="IE_PRODUCT_NAME" /> rileva automaticamente il percorso eseguibile di <ph name="PRODUCT_NAME" /> all'avvio di <ph name="PRODUCT_NAME" /> da Internet Explorer.
@@ -4781,13 +4725,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8371178326720637170">Consente alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="8375817202037102567">Blocca l'accesso di scrittura di file e directory su questi siti</translation>
 <translation id="8379317372795444261">L'autenticazione <ph name="BASIC_AUTH" /> è consentita per le connessioni HTTP</translation>
-<translation id="8380490658357556620">Attiva l'utilizzo dei relay server quando i client remoti tentano di stabilire una connessione con il computer.
-
-          Se questa impostazione viene attivata, i client remoti possono utilizzare relay server per collegarsi al computer quando non è disponibile una connessione diretta (ad es. a causa di limitazioni del firewall).
-
-          Tieni presente che questa norma viene ignorata, se <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> viene disattivata.
-
-          Se questa norma non è impostata, l'impostazione viene attivata.</translation>
 <translation id="838056554726401140">Elenco di URL che specifica a quali URL è applicato <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Questo criterio non influisce sui valori di apertura automatica impostati dagli utenti.
 
       Se il criterio è impostato, i file saranno aperti automaticamente dal criterio se l'URL fa parte di questo insieme e il tipo di file è elencato in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se una delle condizioni è falsa, il criterio non aprirà automaticamente i download.
@@ -4951,9 +4888,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene impostato su true, le schede che sono in secondo piano da almeno cinque minuti potrebbero essere bloccate. Il blocco delle schede riduce l'utilizzo di CPU, batteria e memoria. <ph name="PRODUCT_NAME" /> usa l'euristica per evitare di bloccare le schede in secondo piano che hanno una funzione utile (ad esempio visualizzare notifiche, riprodurre audio, riprodurre video in streaming). Gli sviluppatori web possono anche disattivare il blocco nei loro siti (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
-<translation id="8622378389102774881">Se questo criterio viene impostato, l'host di accesso remoto richiederà che i client che eseguono l'autenticazione ottengano un token di autenticazione da questo URL perché la connessione avvenga. Deve essere utilizzato insieme a RemoteAccessHostTokenValidationUrl.
-
-          Questa funzionalità viene disattivata se il criterio è vuoto o non impostato.</translation>
 <translation id="8631434304112909927">fino alla versione <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">L'elenco delle app per scrivere note consentite nella schermata di blocco di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8649763579836720255">I dispositivi Chrome OS possono utilizzare un'attestazione remota (Accesso verificato) per ottenere un certificato emesso dalla CA di Chrome OS in cui si afferma che il dispositivo è idoneo a riprodurre contenuti protetti. Questo processo comporta l'invio alla CA di Chrome OS di informazioni di approvazione dell'hardware che identificano in modo univoco il dispositivo.

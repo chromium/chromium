@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">မည်သည့် ကွန်ရက်မျှ မရနိုင်ပါ</translation>
 <translation id="3249513730522716925">ဝင်းဒိုး <ph name="WINDOW_TITLE" /> ကို 'မြင်ကွင်း <ph name="ACTIVE_DESK" />' မှ 'မြင်ကွင်း <ph name="TARGET_DESK" />' သို့ ရွှေ့ထားသည်</translation>
 <translation id="3255483164551725916">သင်ဘာလုပ်နိုင်သလဲ။</translation>
+<translation id="3269597722229482060">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>
 <translation id="3289674678944039601">ကြားခံကိရိယာမှတစ်ဆင့် အားသွင်းနေသည်</translation>
 <translation id="3290356915286466215">မလုံခြုံပါ</translation>
 <translation id="3294437725009624529">ဧည့်သည်</translation>
@@ -340,6 +341,7 @@
 <translation id="4212472694152630271">ပင်နံပါတ်သို့ပြောင်းရန်</translation>
 <translation id="4215497585250573029">VPN ဆက်တင်များ</translation>
 <translation id="4217571870635786043">အသံထွက်၍ ဖတ်ပေးခြင်း</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />၊ ထည့်သွင်းထားသည့် အက်ပ်၊ ခဏရပ်ထားသည်</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">မျက်နှာပြင် လျှပ်တပြက်ပုံ</translation>
 <translation id="425364040945105958">ဆင်းကတ်မရှိပါ</translation>
@@ -761,6 +763,7 @@
 <translation id="8142699993796781067">ကိုယ်ပိုင်ကွန်ရက်</translation>
 <translation id="8152092012181020186">ပိတ်ရန် Ctrl + W နှိပ်ပါ။</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ဤဆက်တင်ကို သင့်စီမံခန့်ခွဲသူက စီမံသည်။</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> အတွက် အချက်အလက်ဒိုင်ယာလော့ခ် ဖွင့်ပါ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> အသုံးပြုခြင်း</translation>
 <translation id="8170567869359129153">မိုဘိုင်းကွန်ရက်။ <ph name="SIGNAL_STRENGTH" /> ၏ လိုင်းဆွဲအား</translation>
 <translation id="8192202700944119416">အကြောင်းကြားချက်များကို ဝှက်ထားသည်။</translation>
@@ -826,6 +829,7 @@
 <translation id="8755498163081687682">သင်၏အထောက်အထားကို အတည်ပြုပါ- သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
 <translation id="875593634123171288">VPN ဆက်တင်များကို ပြရန်</translation>
 <translation id="8759408218731716181">အများအပြား လက်မှတ်ထိုး ဝင်မှုကို သတ်မှတ် မပေးနိုင်</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />၊ ထည့်သွင်းထားသည့် အက်ပ်၊ ပိတ်ထားသည်</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> သို့ ချိတ်ဆက်ရန်</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />။ <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ကြိုးမဲ့</translation>

@@ -185,6 +185,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2718395828230677721">Gece Işığı</translation>
 <translation id="2727175239389218057">Yanıtla</translation>
 <translation id="2727977024730340865">Düşük güçlü bir şarj cihazına takıldı. Şarj durumu güvenilir olmayabilir.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="2792498699870441125">Alt+Arama</translation>
 <translation id="2819276065543622893">Şimdi çıkış yapacaksınız.</translation>
 <translation id="28232023175184696">İnternete bağlanamıyor. Tekrar denemek için tıklayın.</translation>
@@ -565,6 +566,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6297287540776456956">Alan seçmek için ekran kalemini kullanın</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> dönme ayarı <ph name="ROTATION" /> olarak değiştirildi</translation>
 <translation id="6315170314923504164">Ses</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" />, <ph name="MANAGER" /> tarafından yönetilen bir oturumdur</translation>
 <translation id="6376931439017688372">Bluetooth açık</translation>
 <translation id="6381109794406942707">Cihazın kilidini açmak için PIN'inizi girin.</translation>
 <translation id="639644700271529076">CAPS LOCK kapalı</translation>

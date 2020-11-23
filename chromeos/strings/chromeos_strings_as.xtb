@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">HTTPSৰ অতি বেছি বিলম্বতা</translation>
 <translation id="1413240736185167732">বিফল হৈছে - ফিল্টাৰ বিফল হৈছে</translation>
 <translation id="1468664791493211953">অ'ফাৰসমূহ</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে তথা আপোনাৰ কাৰ্যকলাপো নিৰীক্ষণ কৰিব পাৰে।</translation>
 <translation id="1478594628797167447">স্কেনাৰ</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" />এ এই ব্যৱহাৰকাৰীগৰাকীক পৰিচালনা কৰে আৰু হয়তো দূৰৰ পৰা ছেটিং পৰিচালনা কৰে আৰু ব্যৱহাৰকাৰীৰ কাৰ্যকলাপ নিৰীক্ষণ কৰে।</translation>
 <translation id="150962533380566081">অমান্য PUK।</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড)</translation>
 <translation id="1641857168437328880">নথি ফীডাৰ (এফাল থকা)</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1662989795263954667">বন্ধ হৈছে - চিয়াঁহী শেষ হৈছে</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">স্কেন কৰি ইয়াত ছেভ কৰক</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
 <translation id="4548483925627140043">ছিগনেল পোৱা নগ’ল</translation>
+<translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh বেটাৰী</translation>
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="4646949265910132906">সুৰক্ষিত ৱাই-ফাই সংযোগ</translation>
@@ -138,8 +142,10 @@
 <translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
 <translation id="6768237774506518020">DNSৰ সমাধান বিফল হোৱাৰ হাৰ উচ্চ</translation>
 <translation id="6839141349259399400">স্কেনাৰৰ সৈতে সংযোগ কৰিব পৰা নাই নেকি?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="714876143603641390">LAN সংযোগ</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>

@@ -185,6 +185,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2718395828230677721">Modo noturno</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a um carregador de baixa potência. O carregamento da bateria pode não ser confiável.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
 <translation id="2819276065543622893">Você sairá agora.</translation>
 <translation id="28232023175184696">Não é possível se conectar à Internet. Clique para tentar novamente.</translation>
@@ -565,6 +566,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6297287540776456956">Use a stylus para selecionar uma região</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> foi substituída por <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voz</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerenciada por <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth ativado</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo, digite o PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK está desativado</translation>

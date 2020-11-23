@@ -369,6 +369,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2354430244986887761">La función Navegación segura de Google <ph name="BEGIN_LINK" />encontró aplicaciones dañinas<ph name="END_LINK" /> recientemente en <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Es posible que los atacantes puedan ver las imágenes que ves en este sitio web y que las modifiquen para engañarte.</translation>
 <translation id="2356070529366658676">Preguntar</translation>
+<translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> gestiona tu dispositivo y <ph name="ACCOUNT_MANAGER" /> gestiona tu cuenta.</translation>
 <translation id="2359629602545592467">Varias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360873523816792727">Para utilizar las tarjetas en todos tus dispositivos, activa la sincronización.</translation>
@@ -548,6 +549,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3145945101586104090">Error al decodificar respuesta</translation>
 <translation id="3150653042067488994">Error de servidor temporal</translation>
 <translation id="3154506275960390542">Es posible que un formulario de esta página no se envíe de forma segura. Otros usuarios pueden ver los datos que envías mientras estén en circulación y un atacante podría modificar lo que recibe el servidor.</translation>
+<translation id="315504272643575312"><ph name="MANAGER" /> gestiona tu cuenta.</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3162559335345991374">La red Wi-Fi que estás utilizando puede requerir que accedas a su página de inicio de sesión.</translation>
 <translation id="3167968892399408617">Las páginas que aparezcan en las pestañas de incógnito no se guardarán en el historial del navegador, en el almacén de cookies ni en el historial de búsquedas una vez que hayas cerrado todas tus pestañas de incógnito. Se mantendrán los archivos que descargues o los marcadores que crees.</translation>
@@ -1929,6 +1931,7 @@ Más información:
 <translation id="8680536109547170164"><ph name="QUERY" />, respuesta: <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">No ha sido posible cargar la página web <ph name="PAGE" /> porque:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002"><ph name="MANAGER" /> gestiona tu dispositivo y tu cuenta.</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Páginas por conjunto</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
@@ -1944,6 +1947,7 @@ Más información:
 <translation id="8728672262656704056">Has iniciado una sesión de incógnito</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8731544501227493793">Botón Gestionar contraseñas, pulsa Intro para ver y gestionar tus contraseñas desde la configuración de Chrome</translation>
+<translation id="8734529307927223492"><ph name="MANAGER" /> gestiona tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para abrir una ventana de incógnito para navegar de forma privada</translation>
 <translation id="8738058698779197622">Para establecer una conexión segura, tu reloj debe estar correctamente configurado. Esto se debe a que los certificados utilizados por los sitios web para identificarse son solo válidos durante períodos específicos de tiempo. Dado que la hora de tu dispositivo no es correcta, Chromium no puede verificar estos certificados.</translation>
 <translation id="8740359287975076522">No se ha podido encontrar la &lt;abbr id="dnsDefinition"&gt;dirección DNS&lt;/abbr&gt; de la página <ph name="HOST_NAME" />. Se está diagnosticando el problema.</translation>
@@ -2033,6 +2037,7 @@ Más información:
 <translation id="9101630580131696064">Bandeja 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> utiliza normalmente el cifrado para proteger tu información. Cuando Chromium intentó establecer conexión con <ph name="SITE" />, el sitio web devolvió unas credenciales inusuales e incorrectas. Esto puede ocurrir si un atacante intenta suplantar la identidad de <ph name="SITE" /> o si una pantalla de inicio de sesión Wi-Fi interrumpe la conexión. Tu información sigue estando protegida, ya que Chromium detuvo la conexión antes de que se intercambiaran datos.</translation>
 <translation id="9106062320799175032">Añade una dirección de facturación</translation>
+<translation id="9107467864910557787"><ph name="MANAGER" /> gestiona el navegador</translation>
 <translation id="9114524666733003316">Confirmando tarjeta...</translation>
 <translation id="9114581008513152754">Este navegador no lo administra ninguna empresa ni organización. Es posible que se administre la actividad de este dispositivo fuera de Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Subido</translation>

@@ -491,6 +491,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4587589328781138893">Sivustot</translation>
 <translation id="4594952190837476234">Offline-sivu vastaa tilannetta <ph name="CREATION_TIME" /> ja saattaa poiketa nykyisestä verkkoversiosta.</translation>
 <translation id="4605958867780575332">Kohde poistettiin: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Tallenna sivuja myöhemmin luettavaksi, saat muistutuksen</translation>
 <translation id="4616150815774728855">Avaa <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Käytä salasanaa</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 vaarantunut salasana}other{# vaarantunutta salasanaa}}</translation>
@@ -973,6 +974,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muu}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muuta}}</translation>
 <translation id="7778840695157240389">Katso mahdolliset uudet tarinat myöhemmin</translation>
 <translation id="7786595606756654269">Google Assistantin avulla voit hakea verkosta ja käyttää avoinna olevia sivuja sujuvammin äänikomennoilla. Google Assistant saa tiedot niiden sivustojen URL-osoitteista ja sisällöstä, joita käytät sen kautta.</translation>
+<translation id="7790349552933995572">Aloitusnäyttö</translation>
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> välilehteä palautettu</translation>
 <translation id="780301667611848630">Ei kiitos</translation>

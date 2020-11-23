@@ -73,9 +73,6 @@
 <translation id="1082802595100075771">Izinkan pengguna memilih menggunakan layanan Google anonim untuk memberikan deskripsi otomatis untuk gambar tanpa label</translation>
 <translation id="1087437665304381368">Kebijakan ini hanya mengontrol mode developer<ph name="PRODUCT_OS_NAME" />. Jika ingin mencegah akses ke Opsi Developer Android, Anda perlu menetapkan kebijakan <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">Daftar kebijakan Chrome Enterprise berpindah! Update bookmark ke <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1093082332347834239">Jika setelan ini diaktifkan, host bantuan jarak jauh akan dijalankan dalam proses dengan izin <ph name="UIACCESS_PERMISSION_NAME" />.  Hal ini akan memungkinkan pengguna jarak jauh untuk berinteraksi dengan jendela yang berada jauh di desktop pengguna lokal.
-
-          Jika setelan ini dinonaktifkan atau tidak dikonfigurasi, host bantuan jarak jauh akan dijalankan dalam konteks pengguna dan pengguna jarak jauh tidak dapat berinteraksi dengan jendela yang berada jauh di desktop.</translation>
 <translation id="1095209545735032039">Memblokir Serial API di situs ini</translation>
 <translation id="1096105751829466145">Penyedia penelusuran default</translation>
 <translation id="1099282607296956954">Aktifkan Isolasi Situs untuk setiap situs</translation>
@@ -662,9 +659,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2040479044912658454">Mode Rasterisasi Cetak</translation>
 <translation id="2043749682619281558">Mengaktifkan sorotan kursor di layar login</translation>
 <translation id="2043770014371753404">Menonaktifkan printer perusahaan</translation>
-<translation id="2050629715135525072">Mengontrol kemampuan pengguna yang terhubung ke host akses jarak jauh untuk mentransfer file antara klien dan host. Kebijakan ini tidak berlaku untuk sambungan bantuan jarak jauh, yang tidak mendukung transfer file.
-
-          Jika setelan ini dinonaktifkan, transfer file tidak akan diizinkan. Jika setelan ini diaktifkan atau tidak disetel, transfer file akan diizinkan.</translation>
 <translation id="2057317273526988987">Izinkan akses ke daftar URL</translation>
 <translation id="2061810934846663491">Mengonfigurasi nama domain wajib untuk host akses jarak jauh</translation>
 <translation id="2069350366303315077">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan menerapkan sesi tamu dan mencegah login profil. Login tamu adalah profil <ph name="PRODUCT_NAME" /> saat semua jendela berada dalam mode Samaran.
@@ -1161,13 +1155,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2801065672151277034">Setelan pengelolaan sertifikat</translation>
 <translation id="2801155097555584385">Menetapkan nilai awal pengisian daya baterai kustom dalam persen</translation>
 <translation id="2805707493867224476">Izinkan semua situs menampilkan pop-up</translation>
-<translation id="2808013382476173118">Memungkinkan penggunaan server STUN saat klien jarak jauh mencoba untuk membuat koneksi ke komputer ini.
-
-          Jika setelan ini diaktifkan, klien jarak jauh dapat menemukan dan tersambung ke komputer ini meskipun terpisah oleh firewall.
-
-          Jika setelan ini dinonaktifkan dan koneksi UDP yang keluar disaring oleh firewall, komputer ini hanya akan mengizinkan koneksi dari komputer klien dalam jaringan lokal.
-
-          Jika kebijakan ini dibiarkan tidak disetel, setelan tersebut akan diaktifkan.</translation>
 <translation id="2813281962735757923">Kebijakan ini mengontrol rentang waktu kapan perangkat <ph name="PRODUCT_OS_NAME" /> tidak diizinkan untuk memeriksa update secara otomatis.
       Jika kebijakan ini ditetapkan ke sebuah daftar tidak kosong yang memuat interval waktu:
       Perangkat tidak akan dapat memeriksa ketersediaan update secara otomatis selama interval waktu yang ditentukan. Perangkat yang memerlukan rollback atau menjalankan <ph name="PRODUCT_OS_NAME" /> versi di bawah minimum tidak akan terpengaruh oleh kebijakan ini karena potensi masalah keamanan. Selain itu, kebijakan ini tidak akan memblokir pemeriksaan update yang diminta oleh pengguna atau administrator.
@@ -1425,7 +1412,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3219421230122020860">Mode samaran tersedia</translation>
 <translation id="3220624000494482595">Jika aplikasi kios adalah aplikasi Android, aplikasi tersebut tidak akan memiliki kontrol terhadap versi <ph name="PRODUCT_OS_NAME" />, meski kebijakan ini disetel ke <ph name="TRUE" />.</translation>
 <translation id="322359555555487980">Menentukan ketersediaan variasi di <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="3231617925177241750">Menyetel kebijakan ke Aktif serta menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> dan <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> akan mengaktifkan pengaktifan daya baterai, jika didukung di perangkat. Kebijakan manajemen pengaktifan daya baterai adalah kebijakan penghematan daya yang meminimalkan penggunaan arus listrik AC selama waktu penggunaan puncak. Untuk setiap hari kerja, Anda dapat menyetel waktu mulai dan waktu akhir untuk menjalankan sistem dalam mode pengaktifan daya baterai. Selama baterai tetap berada di atas nilai minimum yang ditentukan, sistem akan berjalan menggunakan daya baterai (meski arus listrik AC terhubung) selama waktu tersebut. Setelah waktu akhir yang ditentukan, sistem akan berjalan menggunakan arus listrik AC (jika terhubung), tetapi tidak akan mengisi daya baterai. Sistem akan berfungsi kembali secara normal menggunakan arus listrik AC dan mengisi ulang daya baterai setelah waktu mulai yang ditentukan.
+<translation id="3231617925177241750">Menyetel kebijakan ke Aktif serta menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> dan <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> akan terus memicu pengaktifan daya baterai, jika didukung di perangkat. Kebijakan manajemen pengaktifan daya baterai adalah kebijakan penghematan daya yang meminimalkan penggunaan arus listrik AC selama waktu penggunaan puncak. Untuk setiap hari kerja, Anda dapat menyetel waktu mulai dan waktu akhir untuk menjalankan sistem dalam mode pengaktifan daya baterai. Selama baterai tetap berada di atas nilai minimum yang ditentukan, sistem akan berjalan menggunakan daya baterai (meski arus listrik AC terhubung) selama waktu tersebut. Setelah waktu akhir yang ditentukan, sistem akan berjalan menggunakan arus listrik AC (jika terhubung), tetapi tidak akan mengisi daya baterai. Sistem akan berfungsi kembali secara normal menggunakan arus listrik AC dan mengisi ulang daya baterai setelah waktu mulai yang ditentukan.
 
       Jika kebijakan disetel ke Nonaktif, pengaktifan daya baterai akan tetap nonaktif.
 
@@ -1778,9 +1765,6 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik.</translation>
 <translation id="3736879847913515635">Mengaktifkan penambahan orang di pengelola pengguna</translation>
 <translation id="3750220015372671395">Blokir pembuatan kunci di situs ini</translation>
-<translation id="375266612405883748">Membatasi rentang port UDP yang digunakan oleh host akses jarak jauh di komputer ini.
-
-          Jika kebijakan ini tidak ditetapkan, atau ditetapkan ke string kosong, host akses jarak jauh akan diizinkan menggunakan port apa pun yang tersedia, kecuali jika kebijakan <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> dinonaktifkan, yang dalam hal ini host akses jarak jauh akan menggunakan port UDP dalam rentang 12400-12409.</translation>
 <translation id="3755237588083934849">Menyetel kebijakan akan menentukan frekuensi pengiriman upload status perangkat, dalam milidetik. Batas minimum yang diizinkan adalah 60 detik.
 
       Jika tidak disetel, interval default 3 jam akan berlaku.</translation>
@@ -2110,11 +2094,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
           Jika Anda menetapkan kebijakan ini, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, klik otomatis mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="4214536984333857724">Jika setelan ini diaktifkan, permintaan autentikasi gnubby akan dijadikan proxy di seluruh koneksi host jarak jauh.
-
-          Perlu diperhatikan bahwa fitur ini memerlukan komponen tambahan yang tidak tersedia di luar lingkungan jaringan Google agar dapat berfungsi sebagaimana mestinya.
-
-          Jika setelan ini dinonaktifkan, permintaan autentikasi gnubby tidak akan dijadikan proxy.</translation>
 <translation id="4224610387358583899">Penundaan kunci layar</translation>
 <translation id="4225260426043444650">Setelan ini memungkinkan pengguna menggunakan browser <ph name="LACROS_NAME" />.
 
@@ -2287,9 +2266,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Untuk <ph name="PRODUCT_NAME" />, Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
       Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
 <translation id="4578265298946081589">Jangan reboot saat pengguna logout.</translation>
-<translation id="4578912515887794133">Jika setelan ini diaktifkan, maka host akses jarak jauh akan membandingkan nama pengguna lokal (yang dikaitkan dengan host) dengan nama akun Google yang terdaftar sebagai pemilik host (misalnya, "johan" jika host adalah milik akun Google "johan@example.com").  Host akses jarak jauh tidak akan dimulai jika nama pemilik host berbeda dengan nama pengguna lokal yang dikaitkan dengan host tersebut.  Kebijakan RemoteAccessHostMatchUsername harus digunakan bersama RemoteAccessHostDomain untuk menegaskan bahwa akun Google pemilik host dikaitkan dengan domain tertentu (misalnya "example.com").
-
-          Jika setelan ini dinonaktifkan atau tidak ditetapkan, host akses jarak jauh dapat dikaitkan dengan pengguna lokal mana pun.</translation>
 <translation id="4587365491100112056">Menyetel kebijakan akan menentukan masa berlaku cache data autentikasi dalam hitungan jam. Cache memiliki data tentang realm yang dipercaya oleh realm perangkat (realm terafiliasi). Oleh karena itu, penyimpanan data autentikasi ke cache akan membantu mempercepat login. Data khusus pengguna dan data untuk realm yang tidak terafiliasi tidak akan di-cache.
 
       Menyetel kebijakan ke 0 akan menonaktifkan penyimpanan data autentikasi ke cache. Data khusus realm diambil setiap login sehingga menonaktifkan penyimpanan data autentikasi ke cache dapat memperlambat login pengguna secara signifikan.
@@ -2434,15 +2410,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="487460824085252184">Migrasi otomatis, jangan tanya persetujuan pengguna.</translation>
 <translation id="4874982543810021567">Blokir WebUSB di situs ini</translation>
 <translation id="4876805738539874299">Versi SSL maksimum diaktifkan</translation>
-<translation id="487928067861956387">Mengonfigurasi nama domain host wajib yang akan diberlakukan pada host akses jarak jauh dan mencegah pengguna mengubahnya.
-
-          Jika setelan ini diaktifkan dan disetel ke satu atau beberapa domain, host hanya dapat dibagikan menggunakan akun yang terdaftar pada salah satu nama domain yang telah ditentukan.
-
-          Jika setelan ini dinonaktifkan, tidak disetel, atau disetel ke daftar kosong, host dapat dibagikan menggunakan akun apa pun.
-
-          Setelan ini akan menggantikan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, jika ada.
-
-          Lihat juga <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Mengaktifkan halaman untuk pengubahan sandi dalam-sesi bagi pengguna SAML</translation>
 <translation id="4892647988357350237">Secara default, Persyaratan Layanan akan ditampilkan saat CCT pertama kali dijalankan. Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, dialog Persyaratan Layanan tidak akan muncul saat pengalaman pertama kali dijalankan atau dijalankan untuk selanjutnya. Jika kebijakan ini disetel ke <ph name="STANDARD_TOS_DIALOG" /> atau tidak disetel, dialog Persyaratan Layanan akan muncul saat pengalaman pertama kali dijalankan. Peringatan lainnya:
 
@@ -2701,15 +2668,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       "Versi" di sini bisa merupakan versi yang tepat seperti '61.0.3163.120' atau awalan versi, seperti '61.0'  </translation>
 <translation id="5247006254130721952">Blokir download berbahaya</translation>
-<translation id="5249303875508803168">Mengonfigurasi nama domain klien wajib yang akan diberlakukan pada klien akses jarak jauh dan mencegah pengguna mengubahnya.
-
-          Jika setelan ini diaktifkan dan disetel ke satu atau beberapa domain, hanya klien dari salah satu domain yang telah ditentukan yang dapat terhubung ke host.
-
-          Jika setelan ini dinonaktifkan, tidak disetel, atau disetel ke daftar kosong, kebijakan default untuk jenis koneksi akan berlaku. Untuk bantuan jarak jauh, setelan ini memungkinkan klien dari domain mana pun terhubung ke host; untuk akses jarak jauh kapan saja, hanya pemilik host yang dapat terhubung.
-
-          Setelan ini akan menggantikan <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, jika ada.
-
-          Lihat juga <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Pengguna dapat menambahkan akun Kerberos</translation>
 <translation id="5252995168844634755">Jika kebijakan ditetapkan ke Benar (True), Desktop Terpadu akan diaktifkan, yang memungkinkan aplikasi ditampilkan di beberapa layar. Pengguna dapat menonaktifkan Desktop Terpadu untuk tampilan individu.
 
@@ -2847,11 +2805,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5390083518957894426">Mengaktifkan autentikasi ulang online di layar kunci untuk pengguna SAML</translation>
 <translation id="5391388690191341203">Akun lokal perangkat untuk login otomatis</translation>
 <translation id="5393009997533871906">Hanya printer yang tercantum dalam daftar yang diizinkan yang ditampilkan kepada pengguna</translation>
-<translation id="5395271912574071439">Mengaktifkan pemberian tirai hosting akses jarak jauh saat sambungan berlangsung.
-
-          Jika setelan ini diaktifkan, perangkat keluaran dan masukan fisik hosting akan dinonaktifkan saat sambungan jarak jauh berlangsung.
-
-          Jika setelan ini dinonaktifkan atau tidak disetel, baik pengguna lokal maupun pengguna jarak jauh dapat berinteraksi dengan hosting ketika sedang dibagikan.</translation>
 <translation id="5401696449591951427">Mengaktifkan <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">Mengonfigurasi tata letak keyboard yang diizinkan di layar login <ph name="PRODUCT_OS_NAME" />.
 
@@ -3487,9 +3440,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="6401669939808766804">Keluarkan pengguna</translation>
 <translation id="640244877779556713">Mengaktifkan Saran Emoji</translation>
 <translation id="6407093060083181305">Mengonfigurasi daftar penginstalan ekstensi yang tidak diizinkan</translation>
-<translation id="6408233796253901198">Jika kebijakan ini disetel, host akses jarak jauh akan menggunakan URL ini untuk memvalidasi token autentikasi dari klien akses jarak jauh, agar dapat menerima sambungan. Harus digunakan bersama RemoteAccessHostTokenUrl.
-
-          Jika kebijakan tidak disetel atau disetel ke kosong, fitur ini akan dinonaktifkan.</translation>
 <translation id="6417265370957905582">Asisten Google</translation>
 <translation id="6422575351619065453">Dalam mode kios, kebijakan akan mengontrol apakah menu aksesibilitas mengambang akan ditampilkan.
 
@@ -4132,9 +4082,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, kebijakan KDC akan diabaikan di platform yang didukung dan hanya <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> yang akan dipatuhi.
 
       Di <ph name="MS_WIN_NAME" />, kebijakan KDC selalu dipatuhi.</translation>
-<translation id="7273823081800296768">Jika setelan diaktifkan atau dikonfigurasikan, pengguna dapat memilih untuk menyandingkan klien dan host pada waktu tersambung, menghilangkan keharusan untuk memasukkan PIN setiap waktu.
-
-          Jika setelan ini dinonaktifkan, fitur ini tidak akan tersedia.</translation>
 <translation id="7274077256421167535">Mengaktifkan berbagi daya USB</translation>
 <translation id="7275334191706090484">Bookmark yang Terkelola</translation>
 <translation id="7278854311116092134">Nama hosting pesan native untuk dikeluarkan dari daftar yang tidak diizinkan</translation>
@@ -4269,9 +4216,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_POLICY_NAME" />.
       </translation>
-<translation id="7504632989711326175">Jika kebijakan ini disetel, host akan menggunakan sertifikat klien dengan CN penerbit yang diberikan untuk mengautentikasi ke RemoteAccessHostTokenValidationUrl. Setel ke "*" untuk menggunakan sertifikat klien mana pun yang tersedia.
-
-          Jika kebijakan tidak disetel atau disetel ke kosong, fitur ini akan dinonaktifkan.</translation>
 <translation id="7506745375479451616">Kebijakan ini mengontrol perintah yang akan digunakan untuk membuka URL di <ph name="PRODUCT_NAME" /> saat beralih dari <ph name="IE_PRODUCT_NAME" />. Kebijakan ini dapat disetel ke jalur file yang dapat dijalankan atau <ph name="PRODUCT_NAME_PLACEHOLDER" /> untuk otomatis mendeteksi lokasi dari <ph name="PRODUCT_NAME" />.
 
       Tidak menyetel kebijakan berarti <ph name="IE_PRODUCT_NAME" /> otomatis mendeteksi jalur yang dapat dijalankan milik <ph name="PRODUCT_NAME" /> saat meluncurkan <ph name="PRODUCT_NAME" /> dari Internet Explorer.
@@ -4666,7 +4610,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
           Jika kebijakan ini diaktifkan, daftar akun yang ditentukan oleh kebijakan akan ditambahkan ke setelan Akun Kerberos.
 
           Jika kebijakan ini dinonaktifkan atau tidak ditetapkan, tidak ada akun yang akan ditambahkan ke setelan Akun Kerberos dan semua akun yang sebelumnya ditambahkan dengan kebijakan ini akan dihapus. Pengguna masih dapat menambahkan akun secara manual jika kebijakan 'Pengguna dapat menambahkan akun Kerberos' diaktifkan.</translation>
-<translation id="8078297389450285582">Jika kebijakan disetel ke Aktif atau tidak disetel, model redup smart akan diaktifkan dan dapat memperpanjang waktu hingga layar diredupkan. Jika model menunda waktu peredupan, penundaan penonaktifan layar, penguncian layar, dan tidak ada aktivitas akan disesuaikan untuk mempertahankan jarak waktu yang sama dari penundaan peredupan layar seperti yang disetel sebelumnya.
+<translation id="8078297389450285582">Jika kebijakan disetel ke Aktif atau tidak disetel, model redup smart akan diaktifkan dan dapat memperpanjang waktu hingga layar diredupkan. Jika model tersebut menunda waktu peredupan, penundaan penonaktifan layar, penguncian layar, dan tidak ada aktivitas akan disesuaikan untuk mempertahankan jarak waktu yang sama dari penundaan peredupan layar seperti yang disetel sebelumnya.
 
       Jika kebijakan disetel ke Nonaktif, model redup smart tidak akan memengaruhi peredupan layar.</translation>
 <translation id="8099880303030573137">Menunda waktu menganggur saat menggunakan daya baterai</translation>
@@ -4876,13 +4820,6 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8371178326720637170">Memungkinkan ekstensi terkelola untuk menggunakan Enterprise Hardware Platform API</translation>
 <translation id="8375817202037102567">Blokir akses tulis ke file dan direktori di situs ini</translation>
 <translation id="8379317372795444261">Autentikasi <ph name="BASIC_AUTH" /> diizinkan di koneksi HTTP</translation>
-<translation id="8380490658357556620">Memungkinkan penggunaan server relai saat klien jarak jauh mencoba membuat koneksi ke komputer ini.
-
-          Jika setelan ini diaktifkan, klien jarak jauh dapat menggunakan server relai untuk tersambung ke komputer ini saat koneksi langsung tidak tersedia (misalnya karena pembatasan firewall).
-
-          Perhatikan bahwa jika kebijakan <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> dinonaktifkan, kebijakan ini akan diabaikan.
-
-          Jika kebijakan ini tidak ditetapkan, setelan tersebut akan diaktifkan.</translation>
 <translation id="838056554726401140">Daftar URL yang menentukan URL tempat <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> akan diterapkan. Kebijakan ini tidak berdampak pada nilai yang terbuka otomatis yang ditetapkan oleh pengguna.
 
       Jika kebijakan ini ditetapkan, file hanya akan otomatis terbuka oleh kebijakan jika URL merupakan bagian dari daftar ini dan jenis file tercantum di <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Jika salah satu kondisinya ditetapkan ke salah (false), hasil download tidak akan dibuka otomatis oleh kebijakan.
@@ -5046,9 +4983,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan ini ditetapkan ke true, tab yang telah berjalan di latar belakang selama setidaknya 5 menit dapat dibekukan. Pembekuan tab mengurangi penggunaan CPU, baterai, dan memori. <ph name="PRODUCT_NAME" /> menggunakan heuristik untuk menghindari pembekuan tab yang sedang aktif di latar belakang (misalnya, menampilkan notifikasi, memutar suara, streaming video). Developer web juga dapat memilih untuk tidak membekukan situsnya (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Jika kebijakan ditetapkan ke false, tidak ada tab yang akan dibekukan.</translation>
-<translation id="8622378389102774881">Jika kebijakan ini disetel, host akses jarak jauh akan mewajibkan autentikasi klien untuk memperoleh token autentikasi dari URL ini agar dapat tersambung. Harus digunakan bersama RemoteAccessHostTokenValidationUrl.
-
-          Jika kebijakan tidak disetel atau disetel ke kosong, fitur ini akan dinonaktifkan.</translation>
 <translation id="8631434304112909927">sampai versi <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Daftar aplikasi pencatat yang diizinkan di layar kunci <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8649763579836720255">Perangkat Chrome OS dapat menggunakan atestasi jarak jauh (Akses Terverifikasi) untuk mendapatkan sertifikat yang diberikan oleh Chrome OS CA yang menyatakan bahwa perangkat tersebut memenuhi syarat untuk memutar konten yang dilindungi. Proses ini mencakup pengiriman informasi dukungan hardware ke Chrome OS CA yang mengidentifikasi perangkat tersebut secara unik.

@@ -238,6 +238,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3236488194889173876">Ez dago sare mugikor erabilgarririk</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> leihoa <ph name="ACTIVE_DESK" /> lan-eremutik <ph name="TARGET_DESK" /> lan-eremura eraman da</translation>
 <translation id="3255483164551725916">Zer egin dezakezu?</translation>
+<translation id="3269597722229482060">Egin klik eskuineko botoiarekin</translation>
 <translation id="3289674678944039601">Egokigailu bidez kargatzen</translation>
 <translation id="3290356915286466215">Babestu gabe</translation>
 <translation id="3294437725009624529">Gonbidatua</translation>
@@ -341,6 +342,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4212472694152630271">Aldatu PIN kodera</translation>
 <translation id="4215497585250573029">VPN ezarpenak</translation>
 <translation id="4217571870635786043">Diktaketa</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, instalatutako eta pausatutako aplikazioa</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="425364040945105958">Ez dago SIM txartelik</translation>
@@ -762,6 +764,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8142699993796781067">Sare pribatua</translation>
 <translation id="8152092012181020186">Ixteko, sakatu Ktrl + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Administratzaileak kudeatzen du ezarpen hau.</translation>
+<translation id="8155628902202578800">Ireki <ph name="USER_EMAIL_ADDRESS" /> erabiltzailearen informazio-leihoa</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> erabiltzen</translation>
 <translation id="8170567869359129153">Sare mugikorra. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="8192202700944119416">Jakinarazpenak ezkutatuta daude.</translation>
@@ -827,6 +830,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8755498163081687682">Egiaztatu zure nortasuna: <ph name="ORIGIN_NAME" /> webguneak zeu zarela berretsi nahi du</translation>
 <translation id="875593634123171288">Erakutsi VPN ezarpenak</translation>
 <translation id="8759408218731716181">Ezin da saio-hasiera anitza konfiguratu</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, instalatutako eta blokeatutako aplikazioa</translation>
 <translation id="8785070478575117577">Konektatu <ph name="NETWORK_NAME" /> sarera</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi konexioa</translation>

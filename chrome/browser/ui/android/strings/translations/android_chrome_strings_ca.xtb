@@ -119,7 +119,7 @@
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
 <translation id="1883903952484604915">Els meus fitxers</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
-<translation id="1918175104945982129">La IU de consentiment de la cerca per veu de l'Assistent ocupa la meitat inferior de la pantalla</translation>
+<translation id="1918175104945982129">La IU de consentiment de la cerca per veu de l'Assistent s'ha obert a mitja alçada</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
 <translation id="1922362554271624559">Idiomes suggerits</translation>
 <translation id="1925021887439448749">Introdueix l'adreça web personalitzada</translation>
@@ -446,7 +446,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4248098802131000011">Protegeix les contrasenyes contra les violacions de les dades i contra altres problemes de seguretat</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Llicències de programari lliure</translation>
-<translation id="4263656433980196874">La IU de consentiment de la cerca per veu de l'Assistent ocupa tota la pantalla</translation>
+<translation id="4263656433980196874">La IU de consentiment de la cerca per veu de l'Assistent s'ha obert a alçada completa</translation>
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
 <translation id="4298388696830689168">Llocs web enllaçats</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -491,6 +491,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4587589328781138893">Llocs web</translation>
 <translation id="4594952190837476234">Aquesta pàgina sense connexió és del dia <ph name="CREATION_TIME" /> i pot ser diferent de la versió en línia.</translation>
 <translation id="4605958867780575332">S'ha suprimit l'element: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Desa pàgines per a més tard i rep un recordatori</translation>
 <translation id="4616150815774728855">Obre <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Fes servir la contrasenya</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasenya en perill}other{# contrasenyes en perill}}</translation>
@@ -830,7 +831,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">S'ha esgotat el temps definit al temporitzador per a <ph name="FQDN" />. Es tornarà a iniciar demà.</translation>
 <translation id="6738867403308150051">S'està baixant...</translation>
-<translation id="6767294960381293877">La llista de dispositius amb què es compartirà una pestanya ocupa la meitat inferior de la pantalla.</translation>
+<translation id="6767294960381293877">La llista de dispositius amb què es compartirà una pestanya s'ha obert a mitja alçada.</translation>
 <translation id="6783942555455976443">Desa aquesta pàgina per a més tard i rep un recordatori</translation>
 <translation id="6811034713472274749">Ja es pot veure la pàgina</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -973,6 +974,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}}</translation>
 <translation id="7778840695157240389">Torna més tard per veure històries noves</translation>
 <translation id="7786595606756654269">L'Assistent de Google ofereix una millor experiència de veu per fer cerques al web i interaccionar amb els llocs web que tens oberts. L'Assistent de Google rebrà l'URL i el contingut dels llocs web en què el facis servir.</translation>
+<translation id="7790349552933995572">Pantalla d'inici</translation>
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="7798392620021911922">S'han restaurat <ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="780301667611848630">No, gràcies</translation>

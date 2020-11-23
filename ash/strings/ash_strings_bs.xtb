@@ -238,6 +238,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3236488194889173876">Nije dostupna mobilna mreža</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> je premješten s radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Šta sve možete uraditi?</translation>
+<translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289674678944039601">Punjenje putem adaptera</translation>
 <translation id="3290356915286466215">Nije osigurano</translation>
 <translation id="3294437725009624529">Gost</translation>
@@ -340,6 +341,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4212472694152630271">Prebaci na PIN</translation>
 <translation id="4215497585250573029">Postavke za VPN</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, instalirana aplikacija, pauzirana</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
 <translation id="425364040945105958">Nema SIM kartice</translation>
@@ -761,6 +763,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8142699993796781067">Privatna mreža</translation>
 <translation id="8152092012181020186">Pritisnite Ctrl + W da zatvorite.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ovom postavkom upravlja vaš administrator.</translation>
+<translation id="8155628902202578800">Otvorite dijalog za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Koristite <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Mobilna mreža. Jačina signala od <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Obavještenje su sakrivena.</translation>
@@ -826,6 +829,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8755498163081687682">Potvrdite identitet: <ph name="ORIGIN_NAME" /> želi potvrditi vaš identitet</translation>
 <translation id="875593634123171288">Prikaži postavke VPN mreže</translation>
 <translation id="8759408218731716181">Nije moguće postaviti višestruku prijavu</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, instalirana aplikacija, blokirana</translation>
 <translation id="8785070478575117577">Povezivanje na mrežu <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">WiFi</translation>

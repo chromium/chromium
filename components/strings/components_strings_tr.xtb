@@ -366,6 +366,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2354430244986887761">Google Güvenli Tarama son zamanlarda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />zararlı uygulamalar buldu<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Saldırganlar bu sitede baktığınız resimleri görebilir ve bu resimler üzerinde değişiklik yaparak sizi kandırabilirler.</translation>
 <translation id="2356070529366658676">Sor</translation>
+<translation id="2357481397660644965">Cihazınız <ph name="DEVICE_MANAGER" /> tarafından, hesabınız ise <ph name="ACCOUNT_MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="2359629602545592467">Birden fazla</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2360873523816792727">Kartlarınızı tüm cihazlarınızda kullanmak için senkronizasyonu etkinleştirin.</translation>
@@ -543,6 +544,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3145945101586104090">Yanıtın kodu çözülemedi</translation>
 <translation id="3150653042067488994">Geçici sunucu hatası</translation>
 <translation id="3154506275960390542">Bu sayfada güvenli şekilde gönderilemeyecek bir form bulunmaktadır. Gönderdiğiniz veriler, aktarım sırasında başkaları tarafından görüntülenebilir veya bir saldırgan tarafından sunucunun alacağı verileri değiştirmek amacıyla kullanılabilir.</translation>
+<translation id="315504272643575312">Hesabınız <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3162559335345991374">Kullandığınız Kablosuz ağ, giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="3167968892399408617">Gizli sekmelerde görüntülediğiniz sayfalar, açık olan tüm gizli sekmeler kapatıldıktan sonra tarayıcınızın geçmişinden, çerez deposundan veya arama geçmişinden silinecektir. İndirdiğiniz dosyalar veya oluşturduğunuz yer işaretleri kalacaktır.</translation>
@@ -1921,6 +1923,7 @@ Ek ayrıntılar:
 <translation id="8680536109547170164"><ph name="QUERY" />, yanıt, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> adresindeki web sayfası şu nedenle yüklenemedi:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Cihazınız ve hesabınız <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="8688672835843460752">Kullanılabilir</translation>
 <translation id="868922510921656628">Grup başına sayfa</translation>
 <translation id="869891660844655955">Son kullanma tarihi</translation>
@@ -1936,6 +1939,7 @@ Ek ayrıntılar:
 <translation id="8728672262656704056">Gizli moda geçtiniz</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8731544501227493793">Şifreleri yönet düğmesi, Chrome ayarlarında şifrelerinizi görüp yönetmek için Enter'a basın</translation>
+<translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> cihazınız <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yeni bir Gizli pencere açıp gizli olarak göz atmak için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="8738058698779197622">Güvenli bir bağlantı kurmak için saatinizin doğru ayarlanmış olması gerekir. Bunun sebebi, web sitelerinin kendilerini tanımlamak için kullandıkları sertifikaların sadece belli süreler için geçerli olmasıdır. Cihazınızın saati yanlış olduğundan, Chromium bu sertifikaları doğrulayamaz.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> ana makinesinin &lt;abbr id="dnsDefinition"&gt;DNS adresi&lt;/abbr&gt; bulunamadı. Sorun teşhis ediliyor.</translation>
@@ -2025,6 +2029,7 @@ Ek ayrıntılar:
 <translation id="9101630580131696064">Tepsi 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> normalde bilgilerinizi korumak için şifreleme kullanmaktadır. Chromium bu sefer <ph name="SITE" /> sitesine bağlanmayı denediğinde, web sitesi sıra dışı ve yanlış kimlik bilgileri döndürdü. Bir saldırgan <ph name="SITE" /> gibi davranmaya çalışıyor olabilir ya da bir Kablosuz oturum açma ekranı bağlantıyı kesmiştir. Chromium herhangi bir veri alışverişinden önce bağlantıyı durdurduğu için bilgileriniz hâlâ güvendedir.</translation>
 <translation id="9106062320799175032">Fatura Adresi Ekleyin</translation>
+<translation id="9107467864910557787">Tarayıcınız <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="9114524666733003316">Kart onaylanıyor...</translation>
 <translation id="9114581008513152754">Bu tarayıcı bir şirket veya başka bir kuruluş tarafından yönetilmemektedir. Bu cihazdaki etkinlikler Chrome dışında yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Yüklendi</translation>

@@ -73,9 +73,6 @@
 <translation id="1082802595100075771">讓使用者選擇使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
 <translation id="1087437665304381368">這項政策只能控管 <ph name="PRODUCT_OS_NAME" />開發人員模式。如要禁止他人存取 Android 開發人員選項，則必須設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="1087707496788636333">Chrome Enterprise 政策清單的網址已變更！請將你的書籤更新為 <ph name="POLICY_DOCUMENTATION_URL" />。</translation>
-<translation id="1093082332347834239">如果啟用這項設定，選端協助主機會在具備 <ph name="UIACCESS_PERMISSION_NAME" /> 的處理程序中執行，讓遠端使用者在本機使用者桌面上操控權限較高的視窗。
-
-          如果停用或未指定這項設定，遠端協助主機則會在使用者的作業環境中執行，遠端使用者將無法在桌面上操控權限較高的視窗。</translation>
 <translation id="1095209545735032039">封鎖這些網站上的 Serial API</translation>
 <translation id="1096105751829466145">預設搜尋引擎</translation>
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
@@ -215,6 +212,7 @@
 <translation id="1393485621820363363">已啟用企業裝置印表機</translation>
 <translation id="1397855852561539316">預設搜尋引擎建議網址</translation>
 <translation id="1413936351612032792">回報 Linux 應用程式使用情形資訊</translation>
+<translation id="1418387035898607074">針對從信任的來源下載的檔案略過安全瀏覽檢查</translation>
 <translation id="142346659686073702">允許無關聯的使用者使用 Crostini</translation>
 <translation id="1425551776320718592">禁止這部裝置的使用者採用 ADB 側載，且不強制執行 Powerwash (這可能會讓裝置處於不安全的狀態)</translation>
 <translation id="1426170570389588560">設定儲存列印工作中繼資料的時間範圍 (以天為單位)</translation>
@@ -424,9 +422,15 @@
       如果將這項政策設為 False，使用者無法新增、移除或修改書籤，但仍可以使用現有書籤。</translation>
 <translation id="1715151459541210849">啟用語音輸入無障礙功能</translation>
 <translation id="172374442286684480">允許所有網站設定本機資料</translation>
+<translation id="1729169799290004131">你可以透過這項政策指定螢幕亮度百分比，並關閉自動調整亮度功能。初始螢幕亮度會依政策設定值調整，但使用者可進行變更。
+
+      如果不設定這項政策，使用者螢幕控制項和自動調整亮度功能皆不會受到影響。
+
+      注意：政策設定值應指定為 0 至 100 之間的百分比值。</translation>
 <translation id="1736269219679256369">允許忽略 SSL 警告網頁，繼續前往原本指定的頁面</translation>
 <translation id="174765717426930019">除非要求開啟彈出式視窗的網頁明確拒絕與該彈出式視窗互動，否則一律允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動 </translation>
 <translation id="1750315445671978749">封鎖所有下載作業</translation>
+<translation id="1755310913456007816">採用現有的線上撤銷檢查設定</translation>
 <translation id="1760951637494635692">允許這些網站上的 Serial API</translation>
 <translation id="1765512315997108908">根據 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策控管可供使用的印表機。
 
@@ -474,6 +478,7 @@
 <translation id="1844972978764975668">允許向 Google 伺服器傳送查詢，以擷取準確的時間戳記</translation>
 <translation id="1845405905602899692">資訊站設定</translation>
 <translation id="1845429996559814839">限制 PIN 碼列印模式</translation>
+<translation id="1846545322805269573">使用者無法自訂新分頁的背景</translation>
 <translation id="1847960418907100918">指定使用 POST 執行互動智慧搜尋時所用的參數，其包含以逗號分隔的名稱/數值配對。如果數值為範本參數 (例如上例中的 {searchTerms})，系統將會以實際的搜尋字詞資料替代這個數值。
 
           這項政策是選擇性的，如果未設定，系統將使用 GET 方法傳送互動智慧搜尋要求。
@@ -538,6 +543,37 @@
 <translation id="1971991630422430420">如果將這項政策設為啟用，當無線存取點支援「快速轉換」時，系統會使用「快速轉換」。這項設定會套用至裝置上的所有使用者和介面。
 
       如果將這項政策設為停用或不設定，則系統不會使用「快速轉換」。</translation>
+<translation id="197744850608781984">你可以透過這項政策控管使用者處於閒置狀態時的電源管理策略。
+
+      相關動作有 4 種：
+
+      * 如果使用者閒置時間達到 <ph name="SCREEN_DIM_FIELD_NAME" /> 指定的時間長度，螢幕會調暗。
+
+      * 如果使用者閒置時間達到 <ph name="SCREEN_OFF_FIELD_NAME" /> 指定的時間長度，螢幕會關閉。
+
+      * 如果使用者閒置時間達到 <ph name="IDLE_WARNING_FIELD_NAME" /> 指定的時間長度，畫面上會顯示警告對話方塊，告知系統即將採取閒置因應動作，但這類警告僅適用於閒置因應動作設為登出或關機的情況。
+
+      * 如果使用者閒置時間達到「閒置狀態」指定的時間長度，系統會採取 <ph name="IDLE_ACTION_FIELD_NAME" /> 指定的動作。
+
+      指定上述各項動作的延遲時間時，應以毫秒為單位，且指定值必須大於 0，系統才會觸發相應動作。如果將延遲時間設為零，則 <ph name="PRODUCT_OS_NAME" />不會採取相應動作。
+
+      如未設定上述各項動作的延遲時間，系統將使用預設值。
+
+      <ph name="SCREEN_DIM_FIELD_NAME" /> 的值必須小於或等於 <ph name="SCREEN_OFF_FIELD_NAME" />。<ph name="SCREEN_OFF_FIELD_NAME" /> 和 <ph name="IDLE_WARNING_FIELD_NAME" /> 必須小於或等於「閒置狀態」的值。
+
+      <ph name="IDLE_ACTION_FIELD_NAME" /> 可以是下列 4 種動作的任一種：
+
+      * <ph name="IDLE_ACTION_ENUM_SUSPEND" />
+
+      * <ph name="IDLE_ACTION_ENUM_LOGOUT" />
+
+      * <ph name="IDLE_ACTION_ENUM_SHUTDOWN" />
+
+      * <ph name="IDLE_ACTION_ENUM_DO_NOTHING" />
+
+      如未設定 <ph name="IDLE_ACTION_FIELD_NAME" />，系統會採取「<ph name="IDLE_ACTION_ENUM_SUSPEND" />」動作。
+
+      注意：AC 電源和電池的設定各自獨立。</translation>
 <translation id="1988345404999458987">為可用的列印伺服器提供設定。
 
       這項政策可讓你使用 JSON 檔案為 <ph name="PRODUCT_OS_NAME" />裝置提供外部列印伺服器設定。
@@ -589,9 +625,6 @@
 <translation id="2040479044912658454">列印光柵化模式</translation>
 <translation id="2043749682619281558">在登入畫面上啟用游標醒目顯示功能</translation>
 <translation id="2043770014371753404">停用的企業印表機</translation>
-<translation id="2050629715135525072">控管使用者在連線到遠端存取主機後，是否能在用戶端和主機之間傳輸檔案。這項政策不適用於遠端協助連線，這類連線並不支援檔案傳輸。
-
-          如果停用這項政策，使用者將無法傳輸檔案。如果啟用或不設定這項政策，使用者將可以傳輸檔案。</translation>
 <translation id="2057317273526988987">允許存取網址清單</translation>
 <translation id="2061810934846663491">為遠端存取主機設定必要的網域名稱</translation>
 <translation id="2069350366303315077">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會強制執行訪客工作階段，並禁止使用者登入設定檔。訪客可以登入 <ph name="PRODUCT_NAME" /> 設定檔，登入後，視窗會以無痕模式開啟。
@@ -607,6 +640,7 @@
 <translation id="209586405398070749">穩定版</translation>
 <translation id="2098658257603918882">啟用使用量和當機相關資料的報告功能</translation>
 <translation id="2104418465060359056">回報擴充功能和外掛程式資訊</translation>
+<translation id="2106166591774188922">允許 SAML 使用者在工作階段中透過 chrome://password-change 變更 SAML 密碼</translation>
 <translation id="2106627642643925514">覆寫預設的 PIN 碼列印模式。如果設定的模式不適用，系統會忽略這項政策。</translation>
 <translation id="2107563874993284076">如果將這項政策設為啟用，使用者將可在 <ph name="PRODUCT_NAME" />使用網路檔案共用功能。如果設為停用，使用者就無法使用這項功能</translation>
 <translation id="2107601598727098402">
@@ -1083,13 +1117,6 @@
 <translation id="2801065672151277034">憑證管理設定</translation>
 <translation id="2801155097555584385">自訂電池開始充電值 (以百分比表示)</translation>
 <translation id="2805707493867224476">允許所有網站顯示彈出式視窗</translation>
-<translation id="2808013382476173118">在遠端用戶端嘗試與這台電腦建立連線時，啟用 STUN 伺服器。
-
-          如果啟用這項設定，那麼即使遠端用戶端被防火牆隔開，也能偵測到這台電腦並建立連線。
-
-          如果停用這項設定，且防火牆會篩出外傳 UDP 連線，則這台電腦只會自動允許來自區域網路用戶端電腦的連線。
-
-          如果未設定這項政策，系統會啟用這項設定。</translation>
 <translation id="2813281962735757923">這項政策可控管針對 <ph name="PRODUCT_OS_NAME" /> 裝置封鎖自動檢查更新的時間範圍。將這項政策設為非空白的時間間隔清單時：在指定的時間間隔內，裝置將無法自動檢查更新。如果裝置需要復原至先前的版本，或是目前的 <ph name="PRODUCT_OS_NAME" /> 版本低於最低需求，則不受這項政策影響，以免發生潛在的安全性問題。此外，這項政策不會封鎖由使用者或系統管理員要求的更新檢查。若不設定這項政策，或政策中不包含時間間隔時：這項政策將不會封鎖任何自動更新檢查，但自動更新檢查仍可能遭到其他政策封鎖。只有在設為自動啟動資訊站的 Chrome 裝置上，這項功能才會啟用。其他裝置將不會受到這項政策限制。</translation>
 <translation id="2818074121667686266">如果將這項政策設為啟用或不設定，系統會詢問使用者是否要存取音訊擷取裝置 (如果網址已列在 AudioCaptureAllowedUrls 的許可清單內，系統不會提示使用者)。
 
@@ -1191,6 +1218,7 @@
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> 驗證模式的帳戶類型</translation>
 <translation id="2959469725686993410">解析時區時一律將 Wi-Fi 存取點傳送至伺服器</translation>
 <translation id="2959898425599642200">Proxy 略過規則</translation>
+<translation id="2960013482187484833">將最近使用的印表機設為列印預覽中的預設選項</translation>
 <translation id="2960128438010718932">分階段套用更新的時程</translation>
 <translation id="2960691910306063964">針對遠端存取主機啟用或停用無 PIN 碼驗證機制</translation>
 <translation id="2964373560810620158">禁止使用者使用 <ph name="LACROS_NAME" /> 瀏覽器</translation>
@@ -1288,6 +1316,7 @@
 <translation id="3072847235228302527">為裝置本機帳戶設定《服務條款》</translation>
 <translation id="3086995894968271156">設定「<ph name="PRODUCT_NAME" />」的 Cast 接收器</translation>
 <translation id="3091832372132789233">對主要連線至外部電源的裝置進行充電。</translation>
+<translation id="3092059499596000593">將系統預設印表機設為列印預覽的預設選項</translation>
 <translation id="309416443108680956">指定當透過安全性權杖 (例如智慧型卡片) 驗證的使用者在工作階段中將該權杖移除時，系統要執行的動作。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不執行任何動作。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：鎖定螢幕，直到使用者再次驗證為止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：結束工作階段，並將使用者登出。如果不設定這項政策，系統會預設為 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">啟用的外掛程式清單</translation>
 <translation id="3101501961102569744">選擇如何指定 Proxy 伺服器設定</translation>
@@ -1340,6 +1369,11 @@
 <translation id="3219421230122020860">可使用無痕模式</translation>
 <translation id="3220624000494482595">如果資訊站應用程式是 Android 應用程式，即使將這項政策設為 <ph name="TRUE" />，仍無法控制 <ph name="PRODUCT_OS_NAME" />版本。</translation>
 <translation id="322359555555487980">指定變化版本在 <ph name="PRODUCT_OS_NAME" />上的可用性</translation>
+<translation id="3231617925177241750">如果將這項政策設為啟用，同時設定 <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> 和 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />，電源尖峰轉移功能將保持在開啟狀態，前提是裝置提供相關支援。尖峰轉移電源管理政策是一項節電政策，能夠在用電尖峰時段將交流電的使用量降到最低。你可以針對每個平日，個別設定「電源尖峰轉移」模式的開始和結束時間。在這些時間範圍內，只要電池電量高於指定閾值，即使裝置已連接到交流電源，系統仍會使用電池供電。到達指定的結束時間後，如果裝置已連接到交流電源，系統將改用交流電源，但不會為電池充電。到達指定的充電開始時間後，如果裝置已連接到交流電源，系統一樣會使用交流電源運作，並為電池充電。
+
+          如果將這項政策設為停用，電源尖峰轉移功能將保持在關閉狀態。
+
+      如果不設定這項政策，電源尖峰轉移功能會預設為關閉。使用者無法變更這項設定。</translation>
 <translation id="3231837273069128027">你可以透過這項政策來設定 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新的可用性和行為。
 
       指定 JSON 屬性中的個別設定：
@@ -1680,9 +1714,6 @@
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報這類統計資料。</translation>
 <translation id="3736879847913515635">允許在使用者管理工具中新增使用者</translation>
 <translation id="3750220015372671395">禁止在這些網站上使用金鑰產生功能</translation>
-<translation id="375266612405883748">限制這台電腦的遠端存取主機所使用的 UDP 通訊埠範圍。
-
-          如果不設定這項政策或設為空值，遠端存取主機就能使用任何可用的通訊埠；但如果 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 政策設為停用，遠端存取主機將使用 12400-12409 範圍內的 UDP 通訊埠。</translation>
 <translation id="3755237588083934849">你可以透過這項政策，決定裝置狀態上傳內容的傳送頻率 (以毫秒為單位)，下限值是 60 秒。
 
       如果未設定，系統會套用 3 小時的預設間隔。</translation>
@@ -1707,6 +1738,7 @@
       如果將這項政策設為停用或不設定，<ph name="PRODUCT_OS_NAME" />會允許使用者關閉裝置。</translation>
 <translation id="3765260570442823273">閒置登出時間警告訊息</translation>
 <translation id="377044054160169374">強制干預濫用行為</translation>
+<translation id="3778689139323007309">針對成功通過驗證並由本機裝載 CA 憑證所簽署的伺服器，執行撤銷檢查</translation>
 <translation id="3780152581321609624">Kerberos SPN 包含非標準通訊埠</translation>
 <translation id="3788662722837364290">使用者進入閒置狀態時的電源管理設定</translation>
 <translation id="3790085888761753785">如果啟用這項設定，使用者將可透過 Smart Lock 登入帳戶。一般 Smart Lock 只能讓使用者解鎖螢幕畫面，相較之下這項設定提供了更高的權限。
@@ -2008,11 +2040,6 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果不設定這項政策，系統預設會停用自動點擊功能，但使用者隨時可以啟用這項功能。</translation>
-<translation id="4214536984333857724">如果啟用這項設定，系統將透過遠端主機連線以 Proxy 處理 gnubby 驗證要求。
-
-          請注意，這項功能需要額外元件才能正常運作；這些元件只能在 Google 網路環境內取得。
-
-          如果停用這項設定，系統就不會以 Proxy 處理 gnubby 驗證要求。</translation>
 <translation id="4224610387358583899">螢幕鎖定延遲</translation>
 <translation id="4225260426043444650">你可以透過這項設定，允許使用者使用 <ph name="LACROS_NAME" /> 瀏覽器。
 
@@ -2187,9 +2214,6 @@
       如果是 <ph name="PRODUCT_NAME" />，只有在已透過 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊裝置的情況下，這項政策才會生效。
       如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
 <translation id="4578265298946081589">不要在使用者登出時重新啟動。</translation>
-<translation id="4578912515887794133">如果啟用這項設定，遠端存取主機會比對與主機相關聯的本機使用者名稱，以及註冊為主機擁有者的 Google 帳戶名稱 (例如，如果 Google 帳戶「johndoe@example.com」是主機的擁有者，則帳戶名稱為「johndoe」)。如果主機擁有者的名稱與主機相關聯的本機使用者名稱不同，系統將不會啟動遠端存取主機。RemoteAccessHostMatchUsername 政策應搭配 RemoteAccessHostDomain 政策使用，以強制將主機擁有者的 Google 帳戶與特定網域 (例如「example.com」) 建立關聯。
-
-          如果停用這項政策或不設定，則遠端存取主機可以與任何本機使用者建立關聯。</translation>
 <translation id="4587365491100112056">你可以透過這項政策，指定驗證資料快取的效期 (以小時為單位)。該快取包含本機運作範圍 (關聯運作範圍) 所信任的運作範圍相關資料。因此，驗證資料快取有助於加快登入作業。系統不會快取使用者專屬資料和非關聯運作範圍的資料。
 
       如果將這項政策設為 0，系統會關閉驗證資料快取功能。這樣一來，每次登入作業都必須擷取運作範圍專屬資料，因此關閉驗證資料快取功能可能會大幅減慢使用者登入速度。
@@ -2331,15 +2355,6 @@
 <translation id="487460824085252184">自動遷移，不要求使用者同意。</translation>
 <translation id="4874982543810021567">在這些網站上封鎖 WebUSB</translation>
 <translation id="4876805738539874299">已啟用 SSL 最高版本</translation>
-<translation id="487928067861956387">這會設定遠端存取主機必須使用的主機網域名稱，同時防止使用者變更這些名稱。
-
-          如果啟用這項設定並設為一個以上的網域，則須透過以任一指定網域名稱註冊的帳戶才能共用主機。
-
-          如果停用這項設定、不設定或設為空白清單，則可透過任何帳戶共用主機。
-
-          這項設定會覆寫 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> 設定 (如有設定的話)。
-
-          另請參閱 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="4887274746092315609">為 SAML 使用者啟用可在工作階段中變更密碼的頁面</translation>
 <translation id="4892647988357350237">根據預設，系統會在第一次執行 CCT 時顯示《服務條款》。如果將這項政策設為 <ph name="SKIP_TOS_DIALOG" />，系統不會在第一次或後續執行 CCT 時顯示《服務條款》對話方塊。如果將這項政策設為 <ph name="STANDARD_TOS_DIALOG" />或不設定，系統會在第一次執行 CCT 時顯示《服務條款》對話方塊。其他注意事項包含：
 
@@ -2601,15 +2616,6 @@
 
       此處的「版本」可以指確切版本 (例如「61.0.3163.120」)，也可以指版本前置字元 (例如「61.0」)。  </translation>
 <translation id="5247006254130721952">封鎖危險下載作業</translation>
-<translation id="5249303875508803168">這會設定遠端存取用戶端必須使用的用戶端網域名稱，同時防止使用者變更這些名稱。
-
-          如果啟用這項設定並設為一個以上的網域，只有任一指定網域中的用戶端才能連線到主機。
-
-          如果停用這項設定、不設定或設為空白清單，則系統會套用連線類型的預設政策。如果啟用這項政策，當使用者執行遠端協助時，系統會允許任何網域中的用戶端連線到主機；使用者執行遠端存取時，則只有主機擁有者可以連線到主機。
-
-          這項設定會覆寫 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> 設定 (如有設定的話)。
-
-          另請參閱 <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="5249453807420671499">使用者可以新增 Kerberos 帳戶</translation>
 <translation id="5252995168844634755">如果將這項政策設為 True，系統會啟用整合桌面，這個功能可讓應用程式在多個螢幕上展開畫面。使用者可停用個別螢幕的整合桌面。
 
@@ -2721,6 +2727,7 @@
           如果設為 True 或不予設定，這位使用者即可建立並管理受監督的使用者。</translation>
 <translation id="5369937289900051171">僅限彩色列印</translation>
 <translation id="5370279767682621504">在非預設通訊埠啟用 HTTP/0.9 支援功能</translation>
+<translation id="5371152055157582429">使用者可以自訂新分頁的背景</translation>
 <translation id="5377606826822211923">控管使用者是否可使用來源不受信任的 Android 應用程式</translation>
 <translation id="5377668121137111316">將這項政策設為 True 時，系統會讓螢幕小鍵盤保持在啟用狀態。將這項政策設為 False 時，系統會讓螢幕小鍵盤保持在停用狀態。
 
@@ -2746,11 +2753,6 @@
 <translation id="5390083518957894426">在螢幕鎖定畫面上啟用 SAML 使用者的線上重新驗證功能</translation>
 <translation id="5391388690191341203">用於自動登入的裝置本機帳戶</translation>
 <translation id="5393009997533871906">僅對使用者顯示許可清單中的印表機</translation>
-<translation id="5395271912574071439">連線狀態下啟用遠端存取主機遮幕。
-
-          如果你啟用這項設定，在遠端連線進行時，兩台主機的實體輸入與輸出裝置均會停用。
-
-          如果這個選項設定為停用或並未做任何設定，則在共用主機時，本機與遠端使用者皆可操作主機。</translation>
 <translation id="5401696449591951427">啟用 <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">設定 <ph name="PRODUCT_OS_NAME" /> 登入畫面可使用的鍵盤配置。
 
@@ -2965,6 +2967,14 @@
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5728154254076636808">允許建立 <ph name="PRODUCT_NAME" /> 設定檔資料的漫遊複本</translation>
 <translation id="5732972008943405952">首次執行時從預設瀏覽器匯入自動填入表單資料</translation>
+<translation id="5733040281451845496">如果將這項政策設為啟用，系統會等到電源管理工作階段中出現第一項使用者活動後，才開始套用延遲時間和工作階段長度限制。
+
+      如果將這項政策設為停用或不設定，系統會在電源管理工作階段一開始便套用延遲時間設定和時間限制。</translation>
+<translation id="5738766588683307797">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 設定為停用，當系統在螢幕調暗期間或螢幕關閉後不久偵測到使用者活動時，將根據 <ph name="USER_ACTIVITY_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 所設百分比延長螢幕調暗延遲時間。一旦延長螢幕調暗延遲時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。
+
+      如果不設定這項政策，系統會使用預設的延長比例係數。
+
+      注意：延長比例係數必須為 100% 以上的值。</translation>
 <translation id="574098933844699859">指定是否一律要在登入畫面上顯示或隱藏系統資訊 (例如 Chrome 作業系統版本、裝置序號)。
 
       如果將這項政策設為 True，登入畫面會強制顯示系統資訊。
@@ -3368,9 +3378,6 @@
 <translation id="6401669939808766804">登出使用者</translation>
 <translation id="640244877779556713">啟用表情符號建議功能</translation>
 <translation id="6407093060083181305">設定擴充功能安裝封鎖清單</translation>
-<translation id="6408233796253901198">如果設定這項政策，遠端存取主機會使用這個網址，驗證遠端存取用戶端提供的驗證憑證，據此決定是否要接受連線。這項政策必須搭配 RemoteAccessHostTokenUrl 使用。
-
-          如果設為空白或不設定，系統會停用這項功能。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6422575351619065453">這項政策可控管是否在 Kiosk 模式中顯示浮動式無障礙選單。
 
@@ -3378,6 +3385,7 @@
 
       如果將這項政策設為停用或不予設定，系統一律不會顯示浮動式無障礙選單。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
+<translation id="6424486395812679373">對所有下載檔案執行安全瀏覽檢查</translation>
 <translation id="6438364096042399634">你可以透過這項政策來定義 USB 裝置清單，使用者可以從核心驅動程式中卸除這份清單中的 USB 裝置，並且直接透過 chrome.usb API 在網頁應用程式中使用。輸入項目為可識別特定硬體的 USB 供應商 ID 和產品 ID 組合。
 
       如果未設定，卸除式 USB 裝置的清單會空白。
@@ -3463,6 +3471,9 @@
 <translation id="6553143066970470539">螢幕亮度百分比</translation>
 <translation id="6558362593755624474">你可以透過這項政策，指定這部裝置的 <ph name="PLUGIN_VM_NAME" /> 授權金鑰。</translation>
 <translation id="6559057113164934677">不允許任何網站使用攝影機和麥克風</translation>
+<translation id="6559221564468029245">如果將這項政策設為啟用或不設定，系統在音訊播放期間不會將使用者狀態視為閒置。這麼做可防止系統因達到閒置逾時限制，而採取閒置因應動作。不過，即使有音訊活動，系統在達到螢幕調暗、螢幕關閉和螢幕鎖定的逾時限制後，仍會觸發這些動作。
+
+      如果將這項政策設為停用，即使有音訊活動，系統仍會將使用者狀態視為閒置。</translation>
 <translation id="6559475864956112261">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
        如果將這項政策設為啟用，就可指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。Chrome 和 ARC 應用程式會忽略所有從指令列所指定的 Proxy 相關選項。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定時，這項政策才會生效。
@@ -3882,6 +3893,9 @@
 <translation id="7072208053150563108">裝置密碼變更頻率</translation>
 <translation id="7072567600438630966">允許啟用 Phone Hub 功能。</translation>
 <translation id="7079519252486108041">封鎖這些網站的彈出式視窗</translation>
+<translation id="7081784525008938771">如果將這項政策設為啟用或不設定，系統在視訊播放期間不會將使用者狀態視為閒置。這麼做可防止系統因達到閒置延遲時間、螢幕調暗延遲時間、螢幕關閉延遲時間和螢幕鎖定延遲時間限制，而採取相應動作。
+
+          如果將這項政策設為停用，即使有視訊活動，系統仍會將使用者狀態視為閒置。</translation>
 <translation id="7086720321892395256">控管隱私保護畫面功能的使用者和裝置政策。</translation>
 <translation id="7091842872805965910">在登入畫面和鎖定畫面上啟用 PIN 碼自動提交功能。</translation>
 <translation id="7093294902558672021">回報裝置的風扇資訊。
@@ -4007,9 +4021,6 @@
       如果將這項政策設為停用或不設定，支援平台會忽略 KDC 政策，只遵循 <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> 政策。
 
       <ph name="MS_WIN_NAME" /> 一律遵循 KDC 政策。</translation>
-<translation id="7273823081800296768">不論這項政策處於啟用或未設定的狀態，使用者都可以選擇讓用戶端與主機在連線時自動配對，不需要每次都輸入 PIN。
-
-          如果你停用這項設定，使用者就無法使用這項功能。</translation>
 <translation id="7274077256421167535">啟用 USB 電力共享功能</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
 <translation id="7278854311116092134">要從封鎖清單中排除的內建訊息傳遞主機名稱</translation>
@@ -4112,6 +4123,11 @@
 
       如果不設定，系統會套用 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />，但使用者可以變更這項設定。</translation>
 <translation id="747275827471712187">將這些網站上的 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為</translation>
+<translation id="7476447711788742702">你可以透過這項政策指定當使用者闔上裝置前蓋時，<ph name="PRODUCT_OS_NAME" />要採取的動作。
+
+      如果不設定這項政策，系統會採取「暫停」動作。
+
+      注意：如果指定動作為「暫停」，你可以另行設定 <ph name="PRODUCT_OS_NAME" />在暫停前是否要鎖定螢幕。</translation>
 <translation id="7476621944304431784">如果啟用這項設定，使用者將可在搭載 <ph name="PRODUCT_OS_NAME" />的裝置和已連結的 Android 手機上，將 Wi-Fi 網路設定保持同步。在同步 Wi-Fi 網路設定之前，使用者必須先完成設定流程以明確啟用這項功能。
 
       如果停用這項設定，使用者就無法同步 Wi-Fi 網路設定。
@@ -4138,9 +4154,6 @@
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_POLICY_NAME" />。
       </translation>
-<translation id="7504632989711326175">如果設定這項政策，主機會使用用戶端憑證和指定核發機構一般名稱 (CN) 來驗證 RemoteAccessHostTokenValidationUrl 的連線。如果設為「*」，則可使用任何可用的用戶端憑證。
-
-          如果設為空白或不設定，系統會停用這項功能。</translation>
 <translation id="7506745375479451616">這項政策可控管從 <ph name="IE_PRODUCT_NAME" /> 切換到 Chrome 時，在 <ph name="PRODUCT_NAME" /> 中開啟網址時使用的指令。你可以將這項政策設為執行檔路徑，或是設為 <ph name="PRODUCT_NAME_PLACEHOLDER" />，讓系統自動偵測 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果未設定這項政策，從 Internet Explorer 啟動 <ph name="PRODUCT_NAME" /> 時，<ph name="IE_PRODUCT_NAME" /> 會自動偵測 <ph name="PRODUCT_NAME" /> 自己的可執行路徑。
@@ -4411,6 +4424,11 @@
 <translation id="7891884447851425349">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 政策來指定在進行預設搜尋時所使用的搜尋引擎網址。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />，系統會在查詢中將其替換為使用者的搜尋字詞。
 
       你可以將 Google 的搜尋網址指定為：<ph name="GOOGLE_SEARCH_URL" />。</translation>
+<translation id="7894185046683379696">你可以透過這項政策指定 AC 電源或電池供電時的閒置時間長度 (以毫秒為單位)；如果使用者在這段時間內沒有任何動作，系統將鎖定螢幕。設定值必須小於 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> 指定的閒置延遲時間長度。
+
+      如果設定值為零，<ph name="PRODUCT_OS_NAME" />不會在使用者處於閒置狀態時鎖定螢幕。如果不設定這項政策，系統會使用預設時間長度。
+
+      建議做法：如要針對閒置狀態鎖定螢幕，可以啟用在暫停狀態下鎖定螢幕的功能，然後讓 <ph name="PRODUCT_OS_NAME" />在閒置延遲時間過後進入暫停狀態。這項政策僅限用於兩種情況：螢幕鎖定觸發時間比暫停觸發時間早很多，或是你完全不想針對閒置狀態啟用暫停功能。</translation>
 <translation id="7895553628261067384">遠端存取</translation>
 <translation id="7902040092815978832">在輸入密碼時顯示數字鍵盤</translation>
 <translation id="7904177352786629708">如果將這項政策設為啟用，系統會略過 CNAME 查詢。系統產生 Kerberos SPN 時會使用先前輸入的伺服器名稱。
@@ -4524,6 +4542,9 @@
           如果啟用這項政策，系統會將這項政策定義的帳戶清單加入 Kerberos 帳戶設定。
 
           如果停用或不設定這項政策，系統不會將任何帳戶加入 Kerberos 帳戶設定，並會移除先前透過這項政策新增的所有帳戶。如果啟用「使用者可以新增 Kerberos 帳戶」政策，則使用者仍可以手動新增帳戶。</translation>
+<translation id="8078297389450285582">如果將這項政策設為啟用或不設定，系統會開啟智慧調光模式，並可延後螢幕調暗時間。一旦延後螢幕調暗時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。
+
+      如果將這項政策設為停用，智慧調光模式並不會影響螢幕調暗設定。</translation>
 <translation id="8099880303030573137">在電池供電環境下執行時的閒置延遲時間</translation>
 <translation id="8101381354936029836">政策不可部分完成的群組：</translation>
 <translation id="8101937907822293485">允許向 Google 匿名回報 <ph name="PRODUCT_NAME" /> 的使用狀況和當機相關資料，並禁止使用者變更這項設定。
@@ -4659,6 +4680,11 @@
       如果不設定，網站可要求存取序列埠，但使用者可以變更這項設定。</translation>
 <translation id="8274603902181597201">清除使用者的 eCryptfs 主目錄，改用全新的 Ext4 加密主目錄。</translation>
 <translation id="8284296539558710573">跨來源 HTTP 驗證提示</translation>
+<translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 設定為停用，當裝置播放簡報時，系統將根據 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 所設百分比延長螢幕調暗延遲時間。一旦延長螢幕調暗延遲時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。
+
+      如果不設定這項政策，系統會使用預設的延長比例係數。
+
+      注意：延長比例係數必須為 100% 以上的值。</translation>
 <translation id="8285435910062771358">已啟用全螢幕放大鏡</translation>
 <translation id="8288199156259560552">啟用 Android Google 定位服務</translation>
 <translation id="8290875622178450531">啟用語音輸入無障礙功能。
@@ -4728,13 +4754,6 @@
 <translation id="8371178326720637170">啟用受管理擴充功能以使用 Enterprise Hardware Platform API</translation>
 <translation id="8375817202037102567">禁止這些網站對檔案和目錄的寫入權限</translation>
 <translation id="8379317372795444261">允許透過 HTTP 連線使用<ph name="BASIC_AUTH" />驗證</translation>
-<translation id="8380490658357556620">這項政策會在遠端用戶端嘗試與這台電腦建立連線時，允許用戶端使用轉送伺服器。
-
-          如果啟用這項設定，遠端用戶端即可在無法直接連線時 (例如受到防火牆限制的情況)，使用轉送伺服器與這台電腦建立連線。
-
-          請注意，如果 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 政策設為停用，系統就會忽略這項政策。
-
-          如果不設定這項政策，系統就會啟用這項政策。</translation>
 <translation id="838056554726401140">指定要套用 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 的網址清單。這項政策不會影響使用者設定的自動開啟值。
 
       如果設定這項政策，只有當網址列在這份清單中，且檔案類型列在 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 中時，系統才會依照政策自動開啟檔案。如果未達成其中一項條件，系統就不會依照政策自動開啟下載的內容。
@@ -4897,9 +4916,6 @@
       如果將這項政策設為 True，系統可能會凍結在背景執行 5 分鐘以上的分頁。凍結分頁可降低 CPU、電力和記憶體的使用量。<ph name="PRODUCT_NAME" /> 會根據經驗法則判斷，不會凍結在背景執行實用作業 (例如顯示通知、播放音效、串流播放影片) 的分頁。網站開發人員也可以將自己的網站設為禁止凍結 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果將這項政策設為 False，系統將不會凍結任何分頁。</translation>
-<translation id="8622378389102774881">如果設定這項政策，遠端存取主機會要求用戶端透過此網址取得驗證憑證，驗證通過後才能建立連線。這項政策必須搭配 RemoteAccessHostTokenValidationUrl 使用。
-
-          如果設為空白或不設定，系統會停用這項功能。</translation>
 <translation id="8631434304112909927">到第 <ph name="UNTIL_VERSION" /> 版為止</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上允許的筆記應用程式清單</translation>
 <translation id="8649763579836720255">當 Chrome 作業系統 CA 判斷裝置可播放受保護內容，Chrome 作業系統裝置可以使用遠端證明 (已驗證存取權) 取得其所發出的憑證。在此過程中，系統會傳送硬體簽署資訊到識別裝置的 Chrome 作業系統 CA。
@@ -4993,9 +5009,19 @@
 
       注意：如要查看可使用的變數清單，請前往 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。</translation>
 <translation id="8777369558049831576">在外部通訊協定對話方塊中顯示「一律開啟」核取方塊。</translation>
+<translation id="8786409859071107656">如果將這項政策設為啟用，系統會啟用 USB 電力共享電源管理政策。
+
+      某些裝置會在特定的 USB 連接埠上標示閃電符號或電池圖示，代表可透過系統電池為裝置充電。當系統處於休眠狀態和關機模式時，這項政策會影響這個連接埠的充電行為。這項政策並不會影響其他 USB 連接埠，以及系統處於啟用狀態下的充電行為 (USB 連接埠一律會供應電力)。
+
+      在休眠狀態下，如果裝置已連接插座式充電器或電池電量高於 50%，USB 連接埠會供應電力。在關機狀態下，如果裝置已連接插座式充電器，USB 連接埠會供應電力。
+
+      如果將這項政策設為停用，則 USB 連接埠不會供應任何電力。
+
+      如果不設定這項政策，系統會將政策預設為啟用，且使用者無法予以停用。</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8800453707696044281">自訂電池停止充電值 (以百分比表示)</translation>
 <translation id="8801680448782904838">透過通知建議或要求使用者重新啟動瀏覽器或裝置</translation>
+<translation id="8816671955985738552">禁止在工作階段中透過 chrome://password-change 變更 SAML 密碼</translation>
 <translation id="8817960019535659860">禁止使用者透過 Chrome 作業系統註冊機制兌換優惠</translation>
 <translation id="8818173863808665831">回報裝置的地理位置。
 

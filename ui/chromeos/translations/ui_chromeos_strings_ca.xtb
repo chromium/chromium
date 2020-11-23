@@ -92,6 +92,7 @@
 <translation id="2163152940313951844">Caràcter no vàlid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2198315389084035571">Xinès simplificat</translation>
 <translation id="2208158072373999562">Fitxer zip</translation>
+<translation id="2208919847696382164">Instal·la per a Linux</translation>
 <translation id="2225536596944493418">Confirmes que vols suprimir <ph name="NUMBER_OF_ITEMS" /> elements?</translation>
 <translation id="2230062665678605299">No es pot crear la carpeta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">S'ha mogut.</translation>
@@ -128,6 +129,7 @@
 <translation id="2664412712123763093">Ubicació del fitxer</translation>
 <translation id="2672394958563893062">S'ha produït un error. Feu clic per reiniciar des del principi.</translation>
 <translation id="2676946222714718093">En reproducció</translation>
+<translation id="2718540689505416944">Instal·la l'aplicació per a Linux</translation>
 <translation id="2735623501230989521">Dona permís a Parallels Desktop per accedir als fitxers de la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="2771816809568414714">Formatge</translation>
 <translation id="2781645665747935084">Belga</translation>

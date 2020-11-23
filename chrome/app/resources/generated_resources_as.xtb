@@ -433,6 +433,7 @@
 <translation id="1475502736924165259">আপোনাৰ ফাইলত অন্য শিতানত অন্তর্ভুক্ত নোহোৱা প্ৰমাণপত্ৰ আছে</translation>
 <translation id="1476088332184200792">আপোনাৰ ডিভাইচটোলৈ প্ৰতিলিপি কৰক</translation>
 <translation id="1476607407192946488">&amp;ভাষাৰ ছেটিং</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" />ৰ বাবে আপুনি নিজৰ স্মাৰ্ট কাৰ্ডখন ভৰাই ৰখাৰ আৱশ্যক।</translation>
 <translation id="1478340334823509079">সবিশেষ: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ইনষ্টল কৰাৰ সুবিধাটো সক্ষম কৰা হোৱা নাই</translation>
 <translation id="1481537595330271162">ডিস্কৰ আকাৰ সলনি কৰাত আসোঁৱাহ হৈছে</translation>
@@ -2028,6 +2029,7 @@
 <translation id="3320630259304269485">সুৰক্ষিত ব্ৰাউজিং (বিপজ্জনক ছাইটসমূহৰ পৰা সুৰক্ষা) আৰু অন্য সুৰক্ষা সম্পর্কীয় ছেটিংসমূহ</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{এই ডেটাখিনিত সংবেদনশীল অথবা বিপজ্জনক সমল আছে। এই সমলখিনি আঁতৰাওক আৰু পুনৰ চেষ্টা কৰক।}=1{এই ফাইলটোত সংবেদনশীল অথবা বিপজ্জনক সমল আছে। এই সমলখিনি আঁতৰাওক আৰু পুনৰ চেষ্টা কৰক।}one{এই ফাইলসমূহত সংবেদনশীল অথবা বিপজ্জনক সমল আছে। এই সমলখিনি আঁতৰাওক আৰু পুনৰ চেষ্টা কৰক।}other{এই ফাইলসমূহত সংবেদনশীল অথবা বিপজ্জনক সমল আছে। এই সমলখিনি আঁতৰাওক আৰু পুনৰ চেষ্টা কৰক।}}</translation>
 <translation id="3323521181261657960">ব’নাছ! আপুনি আৰু বেছি স্ক্ৰীণ টাইম পাইছে</translation>
+<translation id="3325804108816646710">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে...</translation>
 <translation id="3325910708063135066">Mac ছিষ্টেম অগ্ৰাধিকাৰত কেমেৰা আৰু মাইক্ৰ’ফ’ন অফ কৰা আছে</translation>
 <translation id="3327050066667856415">Chromebook সুৰক্ষাৰ বাবে ডিজাইন কৰা হয়। আপোনাৰ ডিভাইচটো মালৱেৰৰ পৰা স্বয়ংক্ৰিয়ভাৱে সুৰক্ষিত হয় – কোনো অতিৰিক্ত ছফ্টৱেৰৰ আৱশ্যক নহয়।</translation>
 <translation id="3328489342742826322">বেকআপৰ পৰা পুনঃস্থাপন কৰিলে আপোনাৰ Linux ফাইলবোৰৰ ফ’ল্ডাৰত ইতিমধ্যে থকা Linux এপ্লিকেশ্বনটো মচি পেলাব।</translation>
@@ -2095,6 +2097,7 @@
 <translation id="3412265149091626468">বাছনিলৈ যাওক</translation>
 <translation id="3413122095806433232">চিএ ব্যৱহাৰকাৰী: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">আকাৰ:</translation>
+<translation id="3414966631182382431"><ph name="MANAGER" />এ আপোনাৰ <ph name="BEGIN_LINK" />ব্ৰাউজাৰটো পৰিচালনা কৰে<ph name="END_LINK" /></translation>
 <translation id="3416468988018290825">সদায় সম্পূর্ণ URLসমূহ দেখুৱাওক</translation>
 <translation id="3417835166382867856">সন্ধানৰ টেব</translation>
 <translation id="3417836307470882032">২৪ ঘণ্টীয়া ঘড়ী ব্যৱহাৰ কৰক</translation>
@@ -3165,6 +3168,7 @@
 <translation id="4651484272688821107">ডেম’ ম’ডৰ সংসাধনৰ সৈতে অনলাইন কম্প’নেণ্ট ল’ড কৰিব পৰা নগ’ল৷</translation>
 <translation id="4652935475563630866">কেমেৰাৰ ছেটিঙত কৰা সালসলনিৰ বাবে Parallels Desktop পুনৰ লঞ্চ কৰাৰ আৱশ্যক। আগবাঢ়িবলৈ Parallels Desktop পুনৰ লঞ্চ কৰক।</translation>
 <translation id="4653405415038586100">Linux কনফিগাৰ কৰোঁতে আসোঁৱাহ হৈছে</translation>
+<translation id="4657914796247705218">TrackPointৰ গতিবেগ</translation>
 <translation id="465878909996028221">ব্ৰাউজাৰ পুনৰ্নিৰ্দেশৰ বাবে কেৱল http, https আৰু ফাইলৰ প্ৰট'কলসমূহহে সমৰ্থিত।</translation>
 <translation id="4659077111144409915">প্ৰাথমিক একাউণ্ট</translation>
 <translation id="4659126640776004816">আপুনি Google একাউণ্টত ছাইন ইন কৰিলে এই সুবিধাটো অন কৰা হয়।</translation>
@@ -3825,6 +3829,7 @@
 <translation id="5470735824776589490">পাৱাৰৱাশ্বৰ জৰিয়তে আপোনাৰ ডিভাইচটো ৰিছেট কৰিব পৰাৰ পূর্বে এবাৰ ৰিষ্টার্ট কৰাৰ আৱশ্যক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">নমস্কাৰ! মই আপোনাৰ পাঠৰপৰা কথনৰ ভইচ।</translation>
 <translation id="5472627187093107397">এই ছাইটটোৰ বাবে পাছৱর্ডসমূহ ছেভ কৰক</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{পিনত অতি কমেও এটা বৰ্ণ থাকিবই লাগিব}one{পিনত অতি কমেও # টা বৰ্ণ থাকিবই লাগিব}other{পিনত অতি কমেও # টা বৰ্ণ থাকিবই লাগিব}}</translation>
 <translation id="5473333559083690127">আপোনাৰ নতুন পিনটো আকৌ দিয়ক</translation>
 <translation id="5481273127572794904">স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ অনুমতি নাই</translation>
 <translation id="5481941284378890518">নিকটৱৰ্তী প্ৰিণ্টাৰ যোগ কৰক</translation>
@@ -4361,6 +4366,7 @@
 <translation id="6087960857463881712">অনন্য মুখমণ্ডল</translation>
 <translation id="6091761513005122595">শ্বেয়াৰ সফলভাৱে মাউণ্ট কৰা হ’ল।</translation>
 <translation id="6093888419484831006">আপডে'ট বাতিল কৰি থকা হৈছে...</translation>
+<translation id="6095541101974653012">আপোনাক লগ আউট কৰোৱা হৈছে।</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">বিস্তাৰিত আকাৰত খোলক</translation>
 <translation id="6096326118418049043">X.500 নাম</translation>
@@ -4692,6 +4698,7 @@
 <translation id="6474884162850599008">Google Drive একাউণ্ট সংযোগৰ পৰা আঁতৰাওক</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" />এ আপোনাৰ স্ক্ৰীণৰ সমলসমূহ শ্বেয়াৰ কৰিব খোজে। আপুনি কি শ্বেয়াৰ কৰিব খোজে সেয়া বাছনি কৰক।</translation>
 <translation id="6478248366783946499">বিপজ্জনক ফাইলটো ৰাখিবনে?</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
 <translation id="6483485061007832714">ডাউনল’ড কৰা ফাইল খোলক</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> খুলি থকা হৈছে...</translation>
 <translation id="6488384360522318064">ভাষা বাছনি কৰক</translation>
@@ -4878,6 +4885,7 @@
 <translation id="671928215901716392">লক স্ক্ৰীণ</translation>
 <translation id="6721678857435001674">আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবিৰ মেক আৰু ম’ডেল চাওক</translation>
 <translation id="6721972322305477112">&amp;ফাইল</translation>
+<translation id="672208878794563299">এই ছাইটটোৱে পৰৱৰ্তী সময়ত পুনৰ সুধিব।</translation>
 <translation id="672213144943476270">অতিথি হিচাপে ব্ৰাউজ কৰা আৰম্ভ কৰাৰ আগতে অনুগ্ৰহ কৰি আপোনাৰ প্ৰ'ফাইল আনলক কৰক।</translation>
 <translation id="6723661294526996303">বুকমাৰ্ক আৰু ছেটিংসমূহ আমদানি কৰক...</translation>
 <translation id="6723839937902243910">পাৱাৰ</translation>
@@ -6271,6 +6279,7 @@
 <translation id="8317671367883557781">নেটৱর্ক সংযোগ যোগ কৰক</translation>
 <translation id="8319414634934645341">বিস্তাৰিত চাবিৰ ব্যৱহাৰ</translation>
 <translation id="8320459152843401447">আপোনাৰ সম্পূর্ণ স্ক্ৰীণ</translation>
+<translation id="8321837372750396788">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰিব।</translation>
 <translation id="8322814362483282060">এই পৃষ্ঠাটোৰ আপোনাৰ মাইক্ৰফ’নৰ এক্সেছ অৱৰোধ কৰি ৰখা হৈছিল।</translation>
 <translation id="8323167517179506834">URL টাইপ কৰক</translation>
 <translation id="8324784016256120271">আপুনি বিভিন্ন ছাইটসমূহত কৰা ব্ৰাউজিঙৰ কার্যকলাপ চাবলৈ ছাইটসমূহে কুকিসমূহ ব্যৱহাৰ কৰিব পাৰে, যেনে, বিজ্ঞাপন ব্যক্তিগতকৃত কৰিবলৈ</translation>
@@ -6577,6 +6586,7 @@
 <translation id="8698269656364382265">পূৰ্বৱৰ্তী স্ক্রীনখনলৈ উভতি যাবলৈ বাওঁফালৰ পৰা ছোৱাইপ কৰক।</translation>
 <translation id="869884720829132584">এপ্লিকেশ্বনৰ মেনু</translation>
 <translation id="869891660844655955">ম্যাদ উকলাৰ তাৰিখ</translation>
+<translation id="8702825062053163569">আপোনাৰ <ph name="DEVICE_TYPE" /> লক কৰা হৈছে।</translation>
 <translation id="8703346390800944767">বিজ্ঞাপন এৰি যাওক</translation>
 <translation id="8705331520020532516">ক্ৰমিক নম্বৰ</translation>
 <translation id="8705580154597116082">ফ’নৰ মাধ্যমেৰে ৱাই-ফাই উপলব্ধ</translation>

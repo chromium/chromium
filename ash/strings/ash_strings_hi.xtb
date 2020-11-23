@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">कोई मोबाइल नेटवर्क उपलब्ध नहीं</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> को डेस्क <ph name="ACTIVE_DESK" /> से डेस्क <ph name="TARGET_DESK" /> पर सेट कर दिया गया है</translation>
 <translation id="3255483164551725916">तुम क्या-क्या कर सकती हो?</translation>
+<translation id="3269597722229482060">दायां क्लिक करें</translation>
 <translation id="3289674678944039601">अडैप्टर से चार्ज हो रहा है</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3294437725009624529">अतिथि</translation>
@@ -341,6 +342,7 @@
 <translation id="4212472694152630271">पिन पर स्विच करें</translation>
 <translation id="4215497585250573029">वीपीएन की सेटिंग</translation>
 <translation id="4217571870635786043">लिखवाना</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल किया गया ऐप्लिकेशन, कुछ देर के लिए रोका गया</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="425364040945105958">कोई सिम कार्ड नहीं लगाया गया है</translation>
@@ -762,6 +764,7 @@
 <translation id="8142699993796781067">निजी नेटवर्क</translation>
 <translation id="8152092012181020186">बंद करने के लिए Ctrl + W दबाएं.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> इस सेटिंग को आपका एडमिन प्रबंधित करता है.</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> के लिए, जानकारी वाला डायलॉग खोलें.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> का इस्तेमाल किया जा रहा है</translation>
 <translation id="8170567869359129153">मोबाइल नेटवर्क. सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">सूचनाएं छिपी हुई हैं.</translation>
@@ -827,6 +830,7 @@
 <translation id="8755498163081687682">अपनी पहचान की पुष्टि करें: <ph name="ORIGIN_NAME" /> आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="875593634123171288">VPN सेटिंग दिखाएं</translation>
 <translation id="8759408218731716181">एक से ज़्यादा साइन-इन सेट अप नहीं किया जा सका</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, इंस्टॉल किया गया ऐप्लिकेशन, ब्लॉक किया गया</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> से कनेक्ट करें</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">वाई-फ़ाई </translation>

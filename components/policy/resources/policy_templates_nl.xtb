@@ -73,9 +73,6 @@
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
 <translation id="1087707496788636333">De Chrome Enterprise-beleidslijst wordt verplaatst. Update je bookmarks naar <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1093082332347834239">Als de instelling is ingeschakeld, wordt de host voor ondersteuning op afstand uitgevoerd in een proces met <ph name="UIACCESS_PERMISSION_NAME" />-rechten. Zodoende kan een externe gebruiker de vensters met een verhoogde bevoegdheid op de desktop van de lokale gebruiker gebruiken.
-
-          Als deze instelling is uitgeschakeld of niet geconfigureerd, wordt de host voor ondersteuning op afstand uitgevoerd in de context van de gebruiker en kan de externe gebruiker geen vensters met een verhoogde bevoegdheid op de desktop gebruiken.</translation>
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Site-isolatie inschakelen voor elke site</translation>
@@ -640,9 +637,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="2040479044912658454">Modus voor afdrukrastering</translation>
 <translation id="2043749682619281558">De cursormarkering op het inlogscherm inschakelen</translation>
 <translation id="2043770014371753404">Bedrijfsprinters uitgeschakeld</translation>
-<translation id="2050629715135525072">Regelt de mogelijkheid van een gebruiker die is verbonden met een host voor externe toegang om bestanden over te zetten tussen de client en de host. Dit is niet van toepassing op verbindingen voor hulp op afstand, die geen bestandsoverdracht ondersteunen.
-
-          Als deze instelling is uitgeschakeld, is bestandsoverdracht niet toegestaan. Als deze instelling is ingeschakeld of niet is ingesteld, is bestandsoverdracht toegestaan.</translation>
 <translation id="2057317273526988987">Toegang verlenen aan een lijst met URL's</translation>
 <translation id="2061810934846663491">De vereiste domeinnamen configureren voor hosts voor externe toegang</translation>
 <translation id="2069350366303315077">Als je dit beleid inschakelt, dwingt <ph name="PRODUCT_NAME" /> gastsessies af en wordt voorkomen dat gebruikers inloggen bij profielen. Gastlogins zijn <ph name="PRODUCT_NAME" />-profielen waarbij alle vensters in de incognitomodus zijn.
@@ -1134,13 +1128,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 <translation id="2801065672151277034">Instellingen voor certificaatbeheer</translation>
 <translation id="2801155097555584385">Een custom startpunt voor batterijoplading opgeven in procenten</translation>
 <translation id="2805707493867224476">Alle sites toestaan pop-ups weer te geven</translation>
-<translation id="2808013382476173118">Maakt het gebruik van STUN-servers mogelijk wanneer externe clients verbinding proberen te maken met dit apparaat.
-
-          Als deze instelling is ingeschakeld, kunnen externe clients deze apparaten zien en hiermee verbinding maken, zelfs als ze worden gescheiden door een firewall.
-
-          Als deze instelling is uitgeschakeld en uitgaande UDP-verbindingen worden gefilterd door de firewall, staat dit apparaat alleen verbindingen toe met clientapparaten binnen het lokale netwerk.
-
-          Als dit beleid niet wordt ingesteld, wordt de instelling ingeschakeld.</translation>
 <translation id="2813281962735757923">Met dit beleid wordt bepaald in welke perioden het <ph name="PRODUCT_OS_NAME" />-apparaat geen toestemming heeft om automatisch op updates te controleren.
       Wanneer dit beleid is ingesteld op een niet-lege lijst met perioden geldt het volgende:
       Apparaten kunnen tijdens de opgegeven perioden niet automatisch controleren op updates. Apparaten die een rollback vereisen of die een lagere versie dan de minimum <ph name="PRODUCT_OS_NAME" />-versie gebruiken, worden niet beïnvloed door dit beleid vanwege mogelijke beveiligingsproblemen. Bovendien blokkeert dit beleid geen updatecontroles die door gebruikers of beheerders worden aangevraagd.
@@ -1745,9 +1732,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Als je het beleid uitschakelt of niet instelt, rapporteren ingeschreven apparaten de statistieken niet.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' inschakelen in gebruikersbeheer</translation>
 <translation id="3750220015372671395">Het genereren van sleutels op deze sites blokkeren</translation>
-<translation id="375266612405883748">Hiermee wordt het UDP-poortbereik beperkt dat wordt gebruikt door de host voor externe toegang op dit apparaat.
-
-          Als dit beleid niet is ingesteld, of als het is ingesteld op een lege reeks, heeft de host voor externe toegang toestemming om elke beschikbare poort te gebruiken, tenzij het beleid <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> is uitgeschakeld. In dat geval gebruikt de host voor externe toegang UDP-poorten binnen het bereik 12400-12409.</translation>
 <translation id="3755237588083934849">Met dit beleid bepaal je hoe vaak (in milliseconden) apparaatstatusuploads moeten worden gestuurd. Het toegestane minimum is 60 seconden.
 
       Als dit beleid niet is ingesteld, wordt het standaardinterval van 3 uur toegepast.</translation>
@@ -2076,11 +2060,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, is de functie voor automatisch klikken in eerste instantie uitgeschakeld, maar kan de gebruiker deze op elk gewenst moment inschakelen.</translation>
-<translation id="4214536984333857724">Als je deze instelling inschakelt, worden gnubby-verificatieverzoeken gestuurd via een proxy met een externe hostverbinding.
-
-          Houd er rekening mee dat voor een correcte werking van deze functie extra componenten vereist zijn die niet beschikbaar zijn buiten de Google-netwerkomgeving.
-
-          Als je deze instelling uitschakelt, worden gnubby-verificatieverzoeken niet via een proxy gestuurd.</translation>
 <translation id="4224610387358583899">Drempels voor schermvergrendeling</translation>
 <translation id="4225260426043444650">Met deze instelling kunnen gebruikers de <ph name="LACROS_NAME" />-browser gebruiken.
 
@@ -2253,9 +2232,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
       Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid altijd van kracht.</translation>
 <translation id="4578265298946081589">Niet opnieuw opstarten na uitloggen gebruiker.</translation>
-<translation id="4578912515887794133">Als deze instelling is ingeschakeld, vergelijkt de host voor externe toegang de naam van de lokale gebruiker (waaraan de host is gekoppeld) met de naam van het Google-account dat is geregistreerd als eigenaar van de host (bijvoorbeeld 'jansmits' als de host eigendom is van het Google-account jansmits@voorbeeld.nl).  De host voor externe toegang wordt niet gestart als de naam van de hosteigenaar anders is dan de naam van de lokale gebruiker waaraan de host is gekoppeld.  Het beleid RemoteAccessHostMatchUsername moet samen met het beleid RemoteAccessHostDomain worden gebruikt om ook te zorgen dat het Google-account van de hosteigenaar aan een specifiek domein wordt gekoppeld (zoals 'voorbeeld.nl').
-
-          Als deze instelling is uitgeschakeld of niet ingesteld, kan de host voor externe toegang aan elke lokale gebruiker worden gekoppeld.</translation>
 <translation id="4587365491100112056">Als je het beleid instelt, geef je aan hoeveel uur verificatiegegevens in het cachegeheugen worden bewaard. Het cachegeheugen bevat gegevens over realms die door de machine realm worden vertrouwd (aangesloten realms). Verificatiegegevens worden opgeslagen in het cachegeheugen zodat je sneller kunt inloggen. Er worden geen gebruikersspecifieke gegevens en geen gegevens voor niet-aangesloten realms in het cachegeheugen opgeslagen.
 
       Als je het beleid instelt op 0, wordt de opslag van verificatiegegevens in het cachegeheugen uitgeschakeld. Realmspecifieke gegevens worden elke keer opgehaald als de gebruiker inlogt. Als verificatiegegevens niet meer in het cachegeheugen worden opgeslagen, kan het inlogproces voor gebruikers aanzienlijk worden vertraagd.
@@ -2398,15 +2374,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="487460824085252184">Automatisch migreren, niet om toestemming van de gebruiker vragen.</translation>
 <translation id="4874982543810021567">WebUSB blokkeren op deze sites</translation>
 <translation id="4876805738539874299">Maximale SSL-versie ingeschakeld</translation>
-<translation id="487928067861956387">Hiermee configureer je de vereiste domeinnamen die worden opgelegd aan hosts voor externe toegang en voorkom je dat gebruikers deze wijzigen.
-
-          Als je deze instelling inschakelt en instelt op een of meer domeinen, kunnen hosts alleen worden gedeeld met accounts die zijn geregistreerd op een van de gespecificeerde domeinnamen.
-
-          Als je deze instelling uitschakelt, niet instelt of instelt op een lege lijst, kunnen hosts worden gedeeld via elk account.
-
-          Deze instelling heeft voorrang op <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (indien aanwezig).
-
-          Zie ook <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Schakelt een pagina in voor wachtwoordwijziging tijdens een sessie voor SAML-gebruikers</translation>
 <translation id="4892647988357350237">De servicevoorwaarden worden standaard weergegeven als CCT voor het eerst wordt uitgevoerd. Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, wordt het dialoogvenster met servicevoorwaarden niet weergegeven tijdens de eerste uitvoering of de daaropvolgende uitvoeringen. Als je dit beleid instelt op <ph name="STANDARD_TOS_DIALOG" /> of niet instelt, wordt het dialoogvenster met servicevoorwaarden weergegeven tijdens de eerste uitvoering. De andere belangrijke aspecten zijn:
 
@@ -2668,15 +2635,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       'Versie' kan in dit geval een exacte versie zijn (zoals '61.0.3163.120') of een versievoorvoegsel (zoals '61.0').  </translation>
 <translation id="5247006254130721952">Gevaarlijke downloads blokkeren</translation>
-<translation id="5249303875508803168">Hiermee configureer je de vereiste client-domeinnamen die worden opgelegd aan clients voor externe toegang en voorkom je dat gebruikers deze wijzigen.
-
-          Als je deze instelling inschakelt en instelt op een of meer domeinen, kunnen uitsluitend clients van een van de gespecificeerde domeinen verbinding maken met de host.
-
-          Als je deze instelling uitschakelt, niet instelt of instelt op een lege lijst, wordt het standaardbeleid voor het verbindingstype toegepast. In het geval van externe assistentie kunnen clients van elk domein verbinding maken met de host. In het geval van externe toegang op elk gewenst moment kan alleen de eigenaar van de host verbinding maken.
-
-          Deze instelling heeft voorrang op <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> (indien aanwezig).
-
-          Zie ook <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Gebruikers kunnen Kerberos-accounts toevoegen</translation>
 <translation id="5252995168844634755">Als je het beleid instelt op 'True', wordt 'Geïntegreerde desktop' ingeschakeld, waarmee apps kunnen worden weergegeven over meerdere schermen. Gebruikers kunnen 'Geïntegreerde desktop' uitschakelen voor afzonderlijke schermen.
 
@@ -2814,11 +2772,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5390083518957894426">Schakelt online opnieuw verifiëren op vergrendelscherm in voor SAML-gebruikers</translation>
 <translation id="5391388690191341203">Lokaal account op apparaat voor automatisch inloggen</translation>
 <translation id="5393009997533871906">Alleen printers op de toelatingslijst worden weergegeven aan gebruikers</translation>
-<translation id="5395271912574071439">Schakelt afscherming van hosts voor externe toegang in terwijl een verbinding tot stand wordt gebracht.
-
-          Als deze instelling is ingeschakeld, worden de fysieke invoer- en uitvoerapparaten van hosts uitgeschakeld terwijl een externe verbinding tot stand wordt gebracht.
-
-          Als deze instelling is uitgeschakeld of niet is ingesteld, kunnen zowel lokale als externe gebruikers met de host communiceren terwijl deze wordt gedeeld.</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> inschakelen</translation>
 <translation id="5405289061476885481">Hiermee configureer je welke toetsenbordindelingen zijn toegestaan voor het inlogscherm van <ph name="PRODUCT_OS_NAME" />.
 
@@ -3451,9 +3404,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6401669939808766804">De gebruiker uitloggen</translation>
 <translation id="640244877779556713">Suggestie voor emoji's inschakelen</translation>
 <translation id="6407093060083181305">Blokkeringslijst voor installatie van extensies configureren</translation>
-<translation id="6408233796253901198">Als dit beleid is ingesteld, gebruikt de host voor externe toegang deze URL om verificatietokens van clients voor externe toegang te valideren om zo connecties te accepteren. Moet samen met RemoteAccessHostTokenUrl worden gebruikt.
-
-          De functie is uitgeschakeld als deze leeg of niet ingesteld is.</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6422575351619065453">In de kioskmodus beheert dit of het zwevende toegankelijkheidsmenu wordt weergegeven.
 
@@ -4096,9 +4046,6 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je het beleid uitschakelt of niet instelt, wordt het KDC-beleid genegeerd op ondersteunde platforms en wordt alleen <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> gerespecteerd.
 
       Op <ph name="MS_WIN_NAME" /> wordt het KDC-beleid altijd gerespecteerd.</translation>
-<translation id="7273823081800296768">Als deze instelling is ingeschakeld of niet is geconfigureerd, kunnen gebruikers clients en hosts aanmelden op het moment dat verbinding wordt gemaakt, zodat er niet elke keer een pincode hoeft te worden opgegeven.
-
-          Als deze instelling is uitgeschakeld, is deze functie niet beschikbaar.</translation>
 <translation id="7274077256421167535">Energie delen via USB inschakelen</translation>
 <translation id="7275334191706090484">Beheerde bookmarks</translation>
 <translation id="7278854311116092134">Namen van de hosts voor systeemeigen berichten die moeten worden vrijgesteld van de blokkeringslijst</translation>
@@ -4236,9 +4183,6 @@ Als je ervoor kiest het volgende te gebruiken:
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTERS_POLICY_NAME" />.
       </translation>
-<translation id="7504632989711326175">Als dit beleid is ingesteld, gebruikt de host een clientcertificaat met het CN van de opgegeven verstrekker voor verificatie voor RemoteAccessHostTokenValidationUrl. Stel dit in op '*' om een willekeurig beschikbaar clientcertificaat te gebruiken.
-
-          De functie is uitgeschakeld als deze leeg of niet ingesteld is.</translation>
 <translation id="7506745375479451616">Met dit beleid wordt bepaald welke opdracht wordt gebruikt om URL's te openen in <ph name="PRODUCT_NAME" /> bij overschakeling vanuit <ph name="IE_PRODUCT_NAME" />. Dit beleid kan worden ingesteld op een pad naar een uitvoerbaar bestand of op <ph name="PRODUCT_NAME_PLACEHOLDER" /> om de locatie van <ph name="PRODUCT_NAME" /> automatisch te detecteren.
 
       Als je het beleid niet instelt, detecteert <ph name="IE_PRODUCT_NAME" /> het eigen pad van <ph name="PRODUCT_NAME" /> naar een uitvoerbaar bestand als <ph name="PRODUCT_NAME" /> wordt gestart vanuit Internet Explorer.
@@ -4848,13 +4792,6 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 <translation id="8371178326720637170">Hiermee kunnen beheerde extensies de Enterprise Hardware Platform-API gebruiken</translation>
 <translation id="8375817202037102567">Schrijftoegang tot bestanden en directory's voor deze sites blokkeren</translation>
 <translation id="8379317372795444261"><ph name="BASIC_AUTH" />-verificatie is toegestaan voor HTTP-verbindingen</translation>
-<translation id="8380490658357556620">Hiermee wordt het gebruik van relayservers ingeschakeld wanneer externe clients proberen een verbinding met dit apparaat tot stand te brengen.
-
-          Als deze instelling is ingeschakeld, kunnen externe clients relayservers gebruiken om verbinding met dit apparaat te maken wanneer er geen rechtstreekse verbinding beschikbaar is (bijvoorbeeld wegens beperkingen van de firewall).
-
-          Als het beleid <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> is uitgeschakeld, wordt het dit beleid genegeerd.
-
-          Als dit beleid niet is ingesteld, wordt de instelling ingeschakeld.</translation>
 <translation id="838056554726401140">Lijst met URL's waarin wordt aangegeven op welke URL's <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> van toepassing is. Dit beleid is niet van invloed op waarden voor automatisch openen die zijn ingesteld door gebruikers.
 
       Als dit beleid is ingesteld, worden bestanden alleen geopend op basis van het beleid als de URL onderdeel is van deze set en het bestandstype wordt vermeld in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Als een van de voorwaarden False is, wordt de download niet automatisch geopend op basis van het beleid.
@@ -5018,9 +4955,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als het beleid is ingesteld op 'True', kunnen tabbladen die minimaal vijf minuten op de achtergrond actief zijn worden vastgezet. Het vastzetten van tabbladen verlaagt het CPU-, batterij- en geheugengebruik. <ph name="PRODUCT_NAME" /> gebruikt bepaalde methoden om te voorkomen dat tabbladen worden vastgezet die nuttig werk op de achtergrond leveren (zoals meldingen weergeven, geluid afspelen en video streamen). Webontwikkelaars kunnen daarnaast hun toestemming intrekken voor het vastzetten van hun site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
-<translation id="8622378389102774881">Als dit beleid is ingesteld, moet de host voor externe toegang clients verifiëren om een verificatietoken van deze URL te verkrijgen en zo verbinding te kunnen maken. Moet samen met RemoteAccessHostTokenValidationUrl worden gebruikt.
-
-          De functie is uitgeschakeld als deze leeg of niet ingesteld is.</translation>
 <translation id="8631434304112909927">tot versie <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">De lijst met notitie-apps die zijn toegestaan op het <ph name="PRODUCT_OS_NAME" />-vergrendelscherm</translation>
 <translation id="8649763579836720255">Chrome OS-apparaten kunnen externe bevestiging (geverifieerde toegang) gebruiken om een certificaat door Chrome OS te laten uitgeven waarin het apparaat uniek wordt geïdentificeerd en geschikt bevonden voor beschermde content.

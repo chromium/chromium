@@ -139,6 +139,7 @@
 <translation id="114721135501989771">ມີ Google ອັດສະລິຍະໃນ Chrome</translation>
 <translation id="1147322039136785890">ດຽວນີ້ມັນເປັນຜຽນຂອງ <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">ເພື່ອຂໍສິດເຂົ້າເຖິງ, ກະລຸນາຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້.</translation>
+<translation id="1148063863818152153">EID ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1149401351239820326">ເດືອນ​ໝົດອາຍຸ</translation>
 <translation id="1149725087019908252">ກຳລັງສະແກນ <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">ນີ້ແມ່ນການອັບເດດຊອບແວ ແລະ ຄວາມປອດໄພອັດຕະໂນມັດສຸດທ້າຍສຳລັບ <ph name="DEVICE_TYPE" /> ນີ້. ເພື່ອຮັບການອັບເດດໃນອະນາຄົດ, ກະລຸນາອັບເກຣດເປັນຮຸ່ນໃໝ່ກວ່າ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -314,6 +315,7 @@
 <translation id="1343865611738742294">ອະນຸຍາດໃຫ້ແອັບ Linux ເຂົ້າເຖິງອຸປະກອນ USB. Linux ຈະບໍ່ຈື່ອຸປະກອນ USB ຫຼັງຈາກທີ່ລຶບມັນອອກແລ້ວ.</translation>
 <translation id="1346630054604077329">ຢືນຢັນ ແລະ ຣີສະຕາດ</translation>
 <translation id="1347256498747320987">ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບ. ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານເຫັນດີວ່າອຸປະກອນນີ້ອາດຈະດາວໂຫຼດ ແລະ ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບໂດຍອັດຕະໂນມັດຈາກ Google, ຜູ້ໃຫ້ບໍລິການຂອງທ່ານ ແລະ ຜູ້ຜະລິດອຸປະກອນຂອງທ່ານໄດ້ເຊັ່ນກັນ, ໂດຍເປັນໄປໄດ້ວ່າອາດຈະໃຊ້ຂໍ້ມູນມືຖື. ບາງແອັບເຫຼົ່ານີ້ອາດມີການຊື້ໃນແອັບ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">ບ່ອນຈັດເກັບຂໍ້ມູນ Linux</translation>
 <translation id="1347975661240122359">ການອັບເດດຈະເລີ່ມຕົ້ນເມື່ອແບັດເຕີຣີຮອດ <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">ບໍ່ສາມາດຊອກເຫັນ PPD. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າ Chromebook ຂອງທ່ານອອນລາຍຢູ່ ແລະ ລອງອີກຄັ້ງ.</translation>
@@ -553,6 +555,7 @@
 <translation id="1608668830839595724">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບລາຍການທີ່ເລືອກ</translation>
 <translation id="161042844686301425">ສີຟ້າຂຽວ</translation>
 <translation id="1611432201750675208">ອຸປະກອນຂອງທ່ານລັອກຢູ່</translation>
+<translation id="1612019740169791082">ກ່ອງບັນຈຸຂອງທ່ານບໍ່ໄດ້ຖືກຕັ້ງຄ່າໃຫ້ຮອງຮັບການປັບຂະໜາດດິສກ໌. ເພື່ອປັບປະລິມານພື້ນທີ່ທີ່ສະຫງວນໄວ້ໃຫ້ Linux, ກະລຸນາສຳຮອງຂໍ້ມູນໄວ້ ແລະ ຈາກນັ້ນກູ້ຄືນໃສ່ກ່ອງບັນຈຸໃໝ່.</translation>
 <translation id="1614511179807650956">ທ່ານອາດໃຊ້ແພັກເກດອິນເຕີເນັດມືຖືຂອງທ່ານໝົດແລ້ວ. ກະລຸນາເຂົ້າຫາໜ້າເວັບການເປີດນຳໃຊ້ <ph name="NAME" /> ເພື່ອຊື້ອິນເຕີເນັດເພີ່ມເຕີມ</translation>
 <translation id="161460670679785907">ບໍ່ສາມາດກວດພົບໂທລະສັບຂອງທ່ານໄດ້</translation>
 <translation id="1616206807336925449">ສ່ວນ​ຂະ​ຫຍາຍ​ນີ້​ບໍ່​ຕ້ອງ​ການ​ໃຫ້​ມີ​ການ​ອະ​ນຸ​ຍາດ​ພິ​ເສດ​ອັນ​ໃດ.</translation>
@@ -687,6 +690,7 @@
 <translation id="175772926354468439">ເປີດໃຊ້ງານເທມ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">ເບິ່ງໃນ Chrome Web Store</translation>
+<translation id="1761845175367251960">ບັນຊີຂອງ <ph name="NAME" /></translation>
 <translation id="176193854664720708">ເຊັນເຊີລາຍນິ້ວມືຢູ່ໃນປຸ່ມປິດເປີດເຄື່ອງ. ກະລຸນາແຕະມັນເບົາໆດ້ວຍນິ້ວມືໃດໆກໍໄດ້.</translation>
 <translation id="1763046204212875858">ສ້າງ​ທາງ​ລັດ​ແອັບພລິເຄຊັນ</translation>
 <translation id="1763808908432309942">ເປີດໃນແຖບໃໝ່</translation>
@@ -896,6 +900,7 @@
 <translation id="1999115740519098545">ຢູ່ໃນຕອນເລີ່ມຕົ້ນ</translation>
 <translation id="2000419248597011803">ສົ່ງບາງຄຸກກີ້ ແລະ ການຊອກຫາຈາກແຖບທີ່ຢູ່ ແລະ ກ່ອງຊອກຫາໄປໃຫ້ໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="2002109485265116295">ເວລາຈິງ</translation>
+<translation id="200217416291116199">ຂໍແນະນຳໃຫ້ສຳຮອງຂໍ້ມູນໄຟລ໌ໄວ້ໃນກໍລະນີທີ່ການອັບເກຣດບໍ່ສຳເລັດ. ການເລີ່ມການອັບເກຣດຈະເຮັດໃຫ້ Linux ປິດເຄື່ອງ. ກະລຸນາບັນທຶກໄຟລ໌ທີ່ເປີດກ່ອນທີ່ຈະດຳເນີນຕໍ່.</translation>
 <translation id="2003130567827682533">ເພື່ອເປີດນຳໃຊ້ອິນເຕີເນັດ '<ph name="NAME" />', ກ່ອນອື່ນໃຫ້ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ Wi-Fi</translation>
 <translation id="2005199804247617997">ໂປຣໄຟລ໌ອື່ນໆ</translation>
 <translation id="2006638907958895361">ເປີດລິ້ງໃນ <ph name="APP" /></translation>
@@ -1607,6 +1612,7 @@
 <translation id="2807517655263062534">ໄຟລ໌ທີ່ທ່ານດາວໂຫຼດປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="2809586584051668049">ແລະ <ph name="NUMBER_ADDITIONAL_DISABLED" /> ເພີ່ມອີກ</translation>
 <translation id="2810390687497823527">ຖ້າທ່ານບໍ່ຮູ້ຈັກສ່ວນຂະຫຍາຍໃດໜຶ່ງ ຫຼື ຖ້າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານບໍ່ເຮັດວຽກຕາມທີ່ຄາດໄວ້, ທ່ານສາມາດປິດ ຫຼື ປັບແຕ່ງສ່ວນຂະຫຍາຍໄດ້ຢູ່ບ່ອນນີ້.</translation>
+<translation id="2811205483104563968">ບັນຊີ</translation>
 <translation id="2812049959647166806">ບໍ່ຮອງຮັບ Thunderbolt</translation>
 <translation id="2812989263793994277">ຢ່າສະແດງຮູບໃດອີກ</translation>
 <translation id="2813094189969465044">ການຄວບຄຸມສຳລັບພໍ່ແມ່</translation>
@@ -1645,6 +1651,7 @@
 <translation id="2858138569776157458">ເວັບໄຊຍອດນິຍົມ</translation>
 <translation id="2861301611394761800">ອັບເດດລະບົບສໍາເລັດ. ກະລຸນາປິດເປີດລະບົບຄືນໃໝ່.</translation>
 <translation id="2861941300086904918">ຕົວຈັດການຄວາມປອດໄພລູກຂ່າຍເດີມ</translation>
+<translation id="2862815659905780618">ລຶບສະພາບແວດລ້ອມການພັດທະນາ Linux ອອກ</translation>
 <translation id="2864601841139725659">ຕັ້ງຄ່າຮູບໂປຣໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="2865919525181940183">ພາບໜ້າຈໍຂອງໂປຣແກຣມທີ່ປັດຈຸບັນຢູ່ໃນໜ້າຈໍ</translation>
 <translation id="286674810810214575">ກຳລັງກວດແຫຼ່ງພະລັງງານ...</translation>
@@ -1758,6 +1765,7 @@
 <translation id="2989123969927553766">ການເລັ່ງຄວາມໄວການເລື່ອນເມົ້າ</translation>
 <translation id="2989474696604907455">ບໍ່ໄດ້ຄັດຕິດ</translation>
 <translation id="2989786307324390836">DER-ສອງດ້ານໃສ່ລະຫັດແລ້ວ, ໃບຢັ້ງຢືນດ່ຽວ</translation>
+<translation id="2990313168615879645">ເພີ່ມບັນຊີ Google</translation>
 <translation id="2992931425024192067">ສະແດງເນື້ອຫາການແຈ້ງເຕືອນທັງໝົດ</translation>
 <translation id="2993517869960930405">ຂໍ້​ມູນ​ແອັບ</translation>
 <translation id="2996286169319737844">ເຂົ້າລະຫັດຂໍ້ມູນໂດຍໃຊ້ລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນຂອງທ່ານ. ນີ້ບໍ່ຮວມເອົາວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay.</translation>
@@ -2369,6 +2377,7 @@
 <translation id="3706463572498736864">ໜ້າຕໍ່ແຜ່ນ</translation>
 <translation id="370649949373421643">ເປີດໃຊ້ງານ Wi​-Fi</translation>
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
+<translation id="3707163604290651814">ໃນປັດຈຸບັນເຂົ້າສູ່ລະບົບເປັນ <ph name="NAME" /></translation>
 <translation id="3709244229496787112">ບຣາວ​ເຊີໄດ້​ປິດ​ລົງ​ກ່ອນ​ທີ່​ຈະ​ດາວ​ໂຫລດ​ໄດ້​ສໍາ​ເລັດ​.</translation>
 <translation id="3711931198657368127">ວາງໃສ່ ແລະ ໄປຫາ <ph name="URL" /></translation>
 <translation id="3711945201266135623">ພົບເຄື່ອງພິມ <ph name="NUM_PRINTERS" /> ເຄື່ອງຈາກເຊີບເວີການພິມ</translation>
@@ -2875,6 +2884,7 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ສົດ)</translation>
 <translation id="4310139701823742692">ໄຟລ໌ມີຮູບແບບບໍ່ຖືກຕ້ອງ. ກະລຸນາກວດເບິ່ງໄຟລ໌ PPD ແລະ ລອງອີກຄັ້ງ.</translation>
 <translation id="431076611119798497">ລາຍ​ລະ​ອຽດ</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{ບັນຊີ Google 1 ບັນຊີ}other{ບັນຊີ Google <ph name="EXTRA_ACCOUNTS" /> ບັນຊີ}}</translation>
 <translation id="4312866146174492540">ບລັອກ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4314815835985389558">ຈັດການການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="4316850752623536204">ເວັບ​ໄຊ​ທ​໌ຜູ້ພັດ​ທະ​ນາ​</translation>
@@ -3254,6 +3264,7 @@
 <translation id="4764368918650455114">ກະລຸນາກວດສອບວ່າອຸປະກອນທັງສອງປົດລັອກແລ້ວ, ຢູ່ໃກ້ກັນ ແລະ ເປີດ Bluetooth. ຖ້າທ່ານກຳລັງແບ່ງປັນກັບ Chromebook, ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າມັນໄດ້ເປີດການແບ່ງປັນໃກ້ຄຽງແລ້ວ (ເປີດພື້ນທີ່ສະຖານະໂດຍການເລືອກເວລາ, ຈາກນັ້ນເລືອກການແບ່ງປັນໃກ້ຄຽງ). <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">ອະນຸຍາດໃຫ້ Android Messages ສົ່ງຕໍ່ຂໍ້ຄວາມຈາກໂທລະສັບຂອງທ່ານໄປໃສ່ Chromebook ທ່ານ</translation>
 <translation id="4768332406694066911">ທ່ານມີໃບຢັ້ງຢືນຈາກ​ໜ່ວຍ​ງານເຫຼົ່ານີ້ທີ່ລະບຸຕົວຕົນຂອງທ່ານ</translation>
+<translation id="4773112038801431077">ອັບເກຣດ Linux</translation>
 <translation id="477647109558161443">ສ້າງທາງລັດເດັສທັອບ</translation>
 <translation id="4776917500594043016">ລະ​ຫັດ​ຜ່ານ​ສໍາ​ລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3747,6 +3758,7 @@
 <translation id="5368720394188453070">ໂທ​ລະ​ສັບ​ຂອງ​ທ່ານ​ຖືກ​ລັອກ. ປົດ​ລັອກ​ມັນ​ເພື່ອ​ປ້ອນ​ເຂົ້າ.</translation>
 <translation id="5368779022775404937">ເຂົ້າສູ່ລະບົບ <ph name="REALM" /></translation>
 <translation id="5369491905435686894">ເປີດນຳໃຊ້ການເລັ່ງຄວາມໄວເມົ້າ</translation>
+<translation id="5369694795837229225">ຕັ້ງຄ່າສະພາບແວດລ້ອມການພັດທະນາ Linux</translation>
 <translation id="5370819323174483825">ໂຫຼດໃໝ່</translation>
 <translation id="5372529912055771682">ໂໝດການລົງທະບຽນທີ່ຈັດໃຫ້ບໍ່ຮອງຮັບໂດຍລະບົບໃຊ້ງານລຸ້ນນີ້. ເບິ່ງໃຫ້ແນ່ໃຈວ່າ ທ່ານກໍາລັງແລ່ນລຸ້ນໃໝ່ສຸດ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="5372579129492968947">ຖອນປັກໝຸດສ່ວນຂະຫຍາຍ</translation>
@@ -4470,6 +4482,8 @@
 <translation id="6212168817037875041">ປິດໜ້າຈໍ</translation>
 <translation id="6212752530110374741">ອີເມວລິ້ງ</translation>
 <translation id="6213230117190778270">ຮັບ</translation>
+<translation id="6215620815501168899">ປິດປັອບອັບ EID ແລະ ລະຫັດ QR</translation>
+<translation id="6216601812881225442">ກ່ອງບັນຈຸຂອງທ່ານບໍ່ຮອງຮັບການປັບຂະໜາດ. ເພື່ອປັບປະລິມານພື້ນທີ່ຫວ່າງທີ່ຈັດສັນລ່ວງໜ້າໃຫ້ Linux, ກະລຸນາສຳຮອງຂໍ້ມູນໄວ້ ແລະ ຈາກນັ້ນກູ້ຄືນໃສ່ກ່ອງບັນຈຸໃໝ່.</translation>
 <translation id="6216696360484424239">ເຂົ້າສູ່ລະບົບອັດຕະໂນມັດ</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ອອບລາຍຢູ່. ກະລຸນາເຊື່ອມຕໍ່ອິນເຕີເນັດ ແລ້ວລອງໃໝ່.</translation>
 <translation id="6220413761270491930">ການໂຫຼດສ່ວນຂະຫຍາຍຜິດ​ພາດ</translation>
@@ -4862,6 +4876,7 @@
 <translation id="6680442031740878064">ມີໃຫ້: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ໃຫ້ຄະແນນ</translation>
 <translation id="6681668084120808868">ຖ່າຍຮູບ</translation>
+<translation id="6683948477137300040">ສະແດງປັອບອັບ EID ອຸປະກອນ ແລະ ລະຫັດ QR</translation>
 <translation id="6684827949542560880">ກຳລັງດາວໂຫຼດການອັບເດດຫຼ້າສຸດ</translation>
 <translation id="668599234725812620">ເປີດ Google Play</translation>
 <translation id="6686490380836145850">ປິດແຖບໄປທາງຂວາ</translation>
@@ -5097,6 +5112,7 @@
 <translation id="6955535239952325894">ການຕັ້ງຄ່ານີ້ຖືກປິດການນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບທີ່ມີການຈັດການ</translation>
 <translation id="6957044667612803194">ກະແຈຄວາມປອດໄພນີ້ບໍ່ຮອງຮັບ PIN</translation>
 <translation id="6957231940976260713">ຊື່ການບໍລິການ</translation>
+<translation id="6960507406838246615">ຈຳເປັນຕ້ອງອັບເດດ Linux</translation>
 <translation id="696103774840402661">ໄຟລ໌ ແລະ ຂໍ້ມູນໃນເຄື່ອງທັງໝົດສຳລັບຜູ້ໃຊ້ທັງໝົດໃນ <ph name="DEVICE_TYPE" /> ໄດ້ຖືກລຶບຖາວອນແລ້ວ.</translation>
 <translation id="6964390816189577014">ພະເອກ</translation>
 <translation id="6964760285928603117">ລຶບອອກຈາກກຸ່ມ</translation>
@@ -5116,6 +5132,7 @@
 <translation id="697312151395002334">ໄດ້ຮັບອະນຸຍາດໃຫ້ສົ່ງປັອບອັບ ແລະ ໃຊ້ການປ່ຽນເສັ້ນທາງ</translation>
 <translation id="6973611239564315524">ມີການອັບເກຣດເປັນ Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">ໂໝດສາທິດແບບອອບລາຍ</translation>
+<translation id="697508444536771064">ປິດເຄື່ອງ Linux</translation>
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
 <translation id="6977877318519394148">ຕິດຕັ້ງ Rosetta</translation>
 <translation id="6978121630131642226">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
@@ -5516,6 +5533,7 @@
 <translation id="7443806024147773267">ເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານໄດ້ທຸກເມື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="7444983668544353857">ປິດໃຊ້ງານ <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">ຕິດຕັ້ງແອັບໂດຍອັດຕະໂນມັດ</translation>
+<translation id="7448538354405258275">ຕົວແທນຝ່າຍບໍລິການລູກຄ້າສາມາດໃຊ້ໝາຍເລກ EID ເພື່ອຊ່ວຍທ່ານເປີດໃຊ້ບໍລິການໄດ້.</translation>
 <translation id="7449752890690775568">ລຶບລະຫັດຜ່ານອອກບໍ?</translation>
 <translation id="7450761244949417357">ກຳລັງເປີດໃນ <ph name="ALTERNATIVE_BROWSER_NAME" /> ຕອນນີ້</translation>
 <translation id="7453008956351770337">ໂດຍການເລືອກເຄື່ອງພິມນີ້, ທ່ານກຳລັງໃຫ້ການອະນຸຍາດເຂົ້າເຖິງເຄື່ອງພິມຂອງທ່ານແກ່ສ່ວນຂະຫຍາຍຕໍ່ໄປນີ້:</translation>
@@ -6043,6 +6061,7 @@
 <translation id="8032244173881942855">ບໍ່ສາມາດສົ່ງສັນຍານແຖບໄດ້.</translation>
 <translation id="8033827949643255796">ເລືອກແລ້ວ</translation>
 <translation id="8033958968890501070">ໝົດເວລາ</translation>
+<translation id="8036049989879571495">ຕັ້ງຄ່າສະພາບແວດລ້ອມການພັດທະນາ Linux (ເບຕ້າ)</translation>
 <translation id="8037117027592400564">ອ່ານຂໍ້ຄວາມທັງໝົດທີ່ໄດ້ເວົ້າໃນລະຫວ່າງການໃຊ້ຄໍາເວົ້າທີ່ຊິງໂຄຣໄນແລ້ວ</translation>
 <translation id="8037357227543935929">ຖາມ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="803771048473350947">ໄຟລ໌</translation>
@@ -6969,6 +6988,7 @@
 <translation id="909108997331068008">ໂປຣໄຟລ໌ຂອງ <ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບ <ph name="NEW_USER" /> ຢູ່ແລ້ວ</translation>
 <translation id="9094033019050270033">ອັບ​ເດດ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="9094038138851891550">ຊື່ຜູ້ໃຊ້ບໍ່ຖືກຕ້ອງ</translation>
+<translation id="9094859731829297286">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການຈອງດິສຂະໜາດຄົງທີ່ສຳລັບ Linux?</translation>
 <translation id="9094982973264386462">ລຶບອອກ</translation>
 <translation id="9095253524804455615">ລຶບອອກ</translation>
 <translation id="909554839118732438">ປິດໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>

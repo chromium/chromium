@@ -5597,7 +5597,7 @@
 <translation id="7556033326131260574">Smart Lock 无法验证您的帐号，您需要输入密码才能进入。</translation>
 <translation id="7556242789364317684">抱歉，“<ph name="SHORT_PRODUCT_NAME" />”无法恢复您的设置。要更正此错误，“<ph name="SHORT_PRODUCT_NAME" />”必须使用 Powerwash 重置您的设备。</translation>
 <translation id="7557194624273628371">Linux 端口转发</translation>
-<translation id="7559269329306630685">系统会仅在您的 <ph name="DEVICE_TYPE" /> 上妥善存储您的指纹数据，绝不会外泄。</translation>
+<translation id="7559269329306630685">您的指纹数据会安全存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7559719679815339381">请稍候…自助服务终端应用正在更新。请不要拔下 U 盘。</translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="756445078718366910">打开浏览器窗口</translation>
@@ -7108,7 +7108,7 @@
 <translation id="971774202801778802">书签网址</translation>
 <translation id="973473557718930265">退出</translation>
 <translation id="975893173032473675">要翻译成的语言</translation>
-<translation id="976499800099896273">系统会显示用于撤消自动更正的对话框，以便将“<ph name="TYPED_WORD" />”更正为“<ph name="CORRECTED_WORD" />”。若要访问此对话框，请按向上键；若要忽略，请按 Esc 键。</translation>
+<translation id="976499800099896273">系统会显示用于撤消自动更正的对话框，以便撤销将“<ph name="TYPED_WORD" />”更正为“<ph name="CORRECTED_WORD" />”的操作。若要访问此对话框，请按向上键；若要忽略，请按 Esc 键。</translation>
 <translation id="978146274692397928">初始标点符号用全角</translation>
 <translation id="97905529126098460">此窗口将在取消安装完成后关闭。</translation>
 <translation id="980731642137034229">操作菜单按钮</translation>

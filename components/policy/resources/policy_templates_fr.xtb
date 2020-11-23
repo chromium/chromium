@@ -73,9 +73,6 @@
 <translation id="1082802595100075771">Laisser les utilisateurs choisir s'ils veulent employer un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
 <translation id="1087437665304381368">Cette règle permet de ne contrôler que le mode développeur <ph name="PRODUCT_OS_NAME" />. Si vous voulez bloquer l'accès aux options pour les développeurs Android, vous devez définir la règle <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">La liste des règles Chrome Enterprise a changé d'adresse ! Pensez à mettre à jour vos favoris. Le lien correct est le suivant : <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1093082332347834239">Si ce paramètre est activé, l'hôte d'assistance à distance est exécuté dans un processus avec des autorisations <ph name="UIACCESS_PERMISSION_NAME" />. Cela permet aux utilisateurs distants d'interagir avec des fenêtres élevées sur le bureau de l'utilisateur local.
-
-          Si ce paramètre est désactivé ou non configuré, l'hôte d'assistance à distance est exécuté dans le contexte de l'utilisateur et les utilisateurs distants ne peuvent pas interagir avec des fenêtres élevées sur le Bureau.</translation>
 <translation id="1095209545735032039">Bloquer l'API Serial sur ces sites</translation>
 <translation id="1096105751829466145">Moteur de recherche par défaut</translation>
 <translation id="1099282607296956954">Activer l'isolation des sites pour tous les sites</translation>
@@ -625,9 +622,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2040479044912658454">Mode de rastérisation pour l'impression</translation>
 <translation id="2043749682619281558">Activer la mise en surbrillance du curseur sur l'écran de connexion</translation>
 <translation id="2043770014371753404">Imprimantes d'entreprise désactivées</translation>
-<translation id="2050629715135525072">Vérifie la possibilité pour un utilisateur connecté à un hôte distant de transférer des fichiers entre le client et l'hôte. Cette règle ne s'applique pas aux connexions d'assistance à distance, qui ne sont pas compatibles avec le transfert de fichiers.
-
-          Si ce paramètre est désactivé, le transfert de fichiers est interdit. Si ce paramètre est activé ou s'il n'est pas configuré, le transfert de fichiers est autorisé.</translation>
 <translation id="2057317273526988987">Autoriser l'accès à une liste d'URL</translation>
 <translation id="2061810934846663491">Configurer les noms de domaines requis pour les hôtes d'accès à distance</translation>
 <translation id="2069350366303315077">Si cette règle est activée, <ph name="PRODUCT_NAME" /> force l'ouverture des sessions Invité et empêche les connexions de profils. Les connexions en mode Invité sont des profils <ph name="PRODUCT_NAME" /> où les fenêtres s'ouvrent en mode navigation privée.
@@ -1122,13 +1116,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2801065672151277034">Paramètres de gestion des certificats</translation>
 <translation id="2801155097555584385">Personnaliser le pourcentage auquel la batterie doit commencer à être rechargée</translation>
 <translation id="2805707493867224476">Autoriser tous les sites à afficher des fenêtres pop-up</translation>
-<translation id="2808013382476173118">Permet l'utilisation de serveurs STUN lorsque les clients distants tentent d'établir une connexion avec ce poste.
-
-          Si ce paramètre est activé, les clients distants peuvent détecter ce poste et s'y connecter même s'ils en sont séparés par un pare-feu.
-
-          Si ce paramètre est désactivé et si les connexions UDP sortantes sont filtrées par le pare-feu, ce poste autorise uniquement les connexions émanant des postes clients au sein du réseau local.
-
-          Si cette règle n'est pas configurée, le paramètre est activé.</translation>
 <translation id="2813281962735757923">Cette règle permet de définir les périodes durant lesquelles l'appareil <ph name="PRODUCT_OS_NAME" /> n'est pas autorisé à rechercher automatiquement des mises à jour.
       Si des périodes sont définies lors de la configuration de cette règle :
       Aucune recherche automatique de mises à jour n'est effectuée pendant ces périodes. Les appareils nécessitant un rollback ou équipés d'une version antérieure à <ph name="PRODUCT_OS_NAME" /> ne sont pas concernés par cette règle en raison de problèmes de sécurité potentiels. Sachez également que cette règle n'empêche pas l'utilisateur ni l'administrateur de procéder à une recherche de mises à jour.
@@ -1727,9 +1714,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés ne fournissent pas ces statistiques.</translation>
 <translation id="3736879847913515635">Autoriser l'ajout de personnes dans le gestionnaire d'utilisateurs</translation>
 <translation id="3750220015372671395">Bloquer la génération de clé sur ces sites</translation>
-<translation id="375266612405883748">Limite la plage de ports UDP utilisés par l'hôte d'accès à distance sur ce poste.
-
-          Si cette règle n'est pas configurée ou si elle est définie sur une chaîne vide, l'hôte d'accès à distance est autorisé à utiliser n'importe quel port disponible, sauf si la règle <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> est désactivée. Dans ce cas, l'hôte d'accès à distance utilise les ports UDP 12400 à 12409.</translation>
 <translation id="3755237588083934849">Permet de spécifier la fréquence d'envoi (en millisecondes) des informations sur l'état de l'appareil. La fréquence minimale autorisée est de 60 secondes.
 
       Si cette règle n'est pas configurée, la valeur par défaut (trois heures) est appliquée.</translation>
@@ -2057,11 +2041,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si elle n'est pas définie, le clic automatique est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="4214536984333857724">Si ce paramètre est activé, les requêtes d'authentification gnubby sont envoyées par un proxy via une connexion hôte à distance.
-
-          Notez que cette fonctionnalité nécessite des composants supplémentaires qui ne sont pas disponibles en dehors de l'environnement réseau de Google pour fonctionner correctement.
-
-          Si ce paramètre est désactivé, les requêtes d'authentification gnubby ne sont pas envoyées par un proxy.</translation>
 <translation id="4224610387358583899">Délais de verrouillage de l'écran</translation>
 <translation id="4225260426043444650">Ce paramètre permet aux utilisateurs d'avoir recours au navigateur <ph name="LACROS_NAME" />.
 
@@ -2234,9 +2213,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Concernant <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
       Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4578265298946081589">Ne pas redémarrer en cas de déconnexion de l'utilisateur.</translation>
-<translation id="4578912515887794133">Si ce paramètre est activé, l'hôte d'accès à distance compare le nom de l'utilisateur local (auquel l'hôte est associé) au nom du compte Google enregistré en tant que propriétaire de l'hôte (par exemple, "pierredupont" si l'hôte appartient au compte Google pierredupont@example.com).  L'hôte d'accès à distance ne démarre pas si le nom du propriétaire de l'hôte diffère du nom de l'utilisateur local auquel l'hôte est associé.  La règle RemoteAccessHostMatchUsername doit être utilisée avec la règle RemoteAccessHostDomain pour faire également en sorte que le compte Google du propriétaire de l'hôte soit associé à un domaine spécifique (soit example.com).
-
-          Si ce paramètre est désactivé ou n'est pas configuré, l'hôte d'accès à distance peut être associé à n'importe quel utilisateur local.</translation>
 <translation id="4587365491100112056">Cette règle permet de spécifier la durée de mise en cache des données d'authentification, en heures. Le cache contient des données sur les domaines approuvés par le domaine de la machine (domaines affiliés). La mise en cache des données d'authentification permet donc d'accélérer la connexion. Les données spécifiques à l'utilisateur et celles relatives à des domaines non affiliés ne sont pas mises en cache.
 
       Si cette règle est définie sur 0, la mise en cache des données d'authentification est désactivée. Les données spécifiques à un domaine étant récupérées à chaque connexion, la désactivation de la mise en cache des données d'authentification peut considérablement ralentir la connexion des utilisateurs.
@@ -2379,15 +2355,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="487460824085252184">Effectuer automatiquement la migration, sans demander l'autorisation de l'utilisateur.</translation>
 <translation id="4874982543810021567">Bloquer WebUSB sur ces sites</translation>
 <translation id="4876805738539874299">Version SSL maximale activée</translation>
-<translation id="487928067861956387">Permet de configurer les noms de domaines obligatoires de l'hôte qui seront imposés aux hôtes d'accès à distance et d'empêcher les utilisateurs de les modifier.
-
-          Si ce paramètre est activé et défini sur un ou plusieurs domaines, les hôtes ne peuvent être partagés qu'à l'aide des comptes enregistrés sur les noms de domaines spécifiés.
-
-          Si ce paramètre est désactivé, qu'il n'est pas défini ou qu'aucun domaine ne figure dans la liste, les hôtes peuvent être partagés via n'importe quel compte.
-
-          Ce paramètre ignore la règle <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, le cas échéant.
-
-          Voir également la règle <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Affiche une page permettant aux utilisateurs SAML de changer de mot de passe en cours de session</translation>
 <translation id="4892647988357350237">Par défaut, les conditions d'utilisation sont affichées la première fois que des onglets personnalisés Chrome sont exécutés. Si cette règle est définie sur <ph name="SKIP_TOS_DIALOG" />, la boîte de dialogue des conditions d'utilisation ne s'affiche ni à la première exécution, ni lors des suivantes. Si cette règle est définie sur <ph name="STANDARD_TOS_DIALOG" /> ou qu'elle n'est pas configurée, la boîte de dialogue des conditions d'utilisation s'affiche à la première exécution. Notez également les points suivants :
 
@@ -2648,15 +2615,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 
       Dans le cas présent, le terme "version" peut désigner une version exacte telle que "61.0.3163.120" ou le préfixe d'une version tel que "61.0".  </translation>
 <translation id="5247006254130721952">Bloquer les téléchargements dangereux</translation>
-<translation id="5249303875508803168">Permet de configurer les noms de domaines obligatoires du client qui sont imposés aux clients d'accès à distance et d'empêcher les utilisateurs de les modifier.
-
-          Si ce paramètre est activé et défini sur un ou plusieurs domaines, seuls les clients de l'un des domaines indiqués peuvent se connecter à l'hôte.
-
-          Si ce paramètre est désactivé, qu'il n'est pas défini ou qu'aucun domaine ne figure dans la liste, la règle par défaut pour le type de connexion concerné est appliquée. Dans le cadre d'une assistance à distance, cela permet aux clients de n'importe quel domaine de se connecter à l'hôte. Concernant l'accès à distance à tout moment, seul le propriétaire de l'hôte peut se connecter.
-
-          Ce paramètre ignore la règle <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, le cas échéant.
-
-          Voir également la règle <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Les utilisateurs peuvent ajouter des comptes Kerberos</translation>
 <translation id="5252995168844634755">Si cette règle est définie sur "True", le mode bureau unifié est activé, ce qui permet aux applications de couvrir plusieurs écrans. En cas d'écrans individuels, les utilisateurs peuvent désactiver ce mode.
 
@@ -2793,11 +2751,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 <translation id="5390083518957894426">Permettre la réauthentification en ligne sur l'écran de verrouillage des utilisateurs via SAML</translation>
 <translation id="5391388690191341203">Compte local de l'appareil avec connexion automatique</translation>
 <translation id="5393009997533871906">Seules les imprimantes figurant dans la liste d'autorisation sont proposées aux utilisateurs</translation>
-<translation id="5395271912574071439">Active la protection des hôtes d'accès à distance lorsqu'une connexion est en cours.
-
-          En cas d'activation de ce paramètre, les appareils d'entrée et de sortie physiques des hôtes sont désactivés tant qu'une connexion est en cours.
-
-          En cas de désactivation ou de non-configuration de ce paramètre, l'utilisateur local ainsi que l'utilisateur à distance peuvent interagir avec l'hôte tant que ce celui-ci est partagé.</translation>
 <translation id="5401696449591951427">Activer <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">Détermine les dispositions de clavier autorisées sur l'écran de connexion <ph name="PRODUCT_OS_NAME" />.
 
@@ -3423,9 +3376,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6401669939808766804">Déconnecter l'utilisateur</translation>
 <translation id="640244877779556713">Activer la suggestion d'emoji</translation>
 <translation id="6407093060083181305">Configurer la liste de blocage concernant l'installation des extensions</translation>
-<translation id="6408233796253901198">Si cette règle est définie, l'hôte d'accès à distance utilise cette URL pour valider les jetons d'authentification provenant des clients d'accès à distance afin d'accepter les connexions. Elle doit être utilisée avec la règle RemoteAccessHostTokenUrl.
-
-          Cette fonctionnalité est désactivée si la règle est vide ou n'est pas configurée.</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6422575351619065453">En mode Kiosque, cette règle permet de déterminer si le menu d'accessibilité flottant est affiché.
 
@@ -4056,9 +4006,6 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
       Si cette règle est désactivée, la règle KDC est ignorée sur les plates-formes compatibles, et seule la règle <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> est respectée.
 
       Sous <ph name="MS_WIN_NAME" />, la règle KDC est toujours respectée.</translation>
-<translation id="7273823081800296768">Si ce paramètre est activé ou qu'il n'est pas configuré, les utilisateurs peuvent alors choisir d'associer les clients et les hôtes au moment de la connexion, ce qui permet d'éliminer la nécessité de saisir systématiquement un code d'accès.
-
-          S'il est désactivé, cette fonctionnalité est alors indisponible.</translation>
 <translation id="7274077256421167535">Activer le partage d'alimentation USB</translation>
 <translation id="7275334191706090484">Favoris gérés</translation>
 <translation id="7278854311116092134">Noms des hôtes de messagerie native à exclure de la liste de blocage</translation>
@@ -4191,9 +4138,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 
       Cette règle étant obsolète, veuillez utiliser la règle <ph name="PRINTERS_POLICY_NAME" /> à la place.
       </translation>
-<translation id="7504632989711326175">Si cette règle est définie, l'hôte utilise un certificat client avec le nom commun de l'émetteur pour s'identifier auprès de RemoteAccessHostTokenValidationUrl. Définissez-la sur "*" pour utiliser tout certificat client disponible.
-
-          Cette fonctionnalité est désactivée si la règle est vide ou n'est pas configurée.</translation>
 <translation id="7506745375479451616">Permet de spécifier la commande à utiliser pour ouvrir les URL dans <ph name="PRODUCT_NAME" /> lors du changement de navigateur depuis <ph name="IE_PRODUCT_NAME" />. Cette règle peut être définie sur le chemin d'accès à un fichier exécutable ou sur <ph name="PRODUCT_NAME_PLACEHOLDER" /> pour détecter automatiquement l'emplacement d'installation de <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée, <ph name="IE_PRODUCT_NAME" /> détecte automatiquement le chemin d'accès au fichier exécutable de <ph name="PRODUCT_NAME" /> lors du lancement de <ph name="PRODUCT_NAME" /> depuis Internet Explorer.
@@ -4794,13 +4738,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8371178326720637170">Autorise les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="8375817202037102567">Bloquer l'accès en écriture aux fichiers et répertoires pour ces sites</translation>
 <translation id="8379317372795444261">Authentification <ph name="BASIC_AUTH" /> autorisée sur les connexions HTTP</translation>
-<translation id="8380490658357556620">Permet l'utilisation de serveurs relais lorsque les clients distants tentent d'établir une connexion avec ce poste.
-
-          Si ce paramètre est activé, les clients distants peuvent utiliser des serveurs relais pour se connecter à ce poste lorsque aucune connexion directe n'est disponible (par exemple, en raison de restrictions du pare-feu).
-
-          Notez que si la règle <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> est désactivée, cette règle est ignorée.
-
-          Si cette règle n'est pas configurée, le paramètre est activé.</translation>
 <translation id="838056554726401140">Liste d'URL indiquant les URL pour lesquelles la règle <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> s'applique. Cette règle n'a aucune incidence sur les valeurs définies par les utilisateurs pour l'ouverture automatique.
 
       Si cette règle est définie, les fichiers seront ouverts automatiquement à condition que la règle s'applique à l'URL et que le type de fichier figure dans <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si l'une des deux conditions est fausse, le fichier téléchargé ne s'ouvrira pas automatiquement suivant cette règle.
@@ -4964,9 +4901,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle est définie sur "True", les onglets en arrière-plan depuis au moins cinq minutes peuvent être figés. En figeant ces onglets, vous sollicitez moins le processeur, la batterie et la mémoire. <ph name="PRODUCT_NAME" /> utilise des heuristiques pour ne pas figer les onglets qui exécutent une tâche utile en arrière-plan (par exemple, l'affichage de notifications, la lecture audio d'un contenu, la diffusion d'une vidéo en streaming). Notez que les développeurs Web peuvent également choisir de ne pas figer les pages de leur site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si cette règle est définie sur "False", aucun onglet n'est figé.</translation>
-<translation id="8622378389102774881">Si cette règle est définie, l'hôte d'accès à distance exigera des clients qui s'authentifient qu'ils obtiennent un jeton d'authentification à partir de cette URL pour se connecter. Elle doit être utilisée avec la règle RemoteAccessHostTokenValidationUrl.
-
-          Cette fonctionnalité est désactivée si la règle est vide ou n'est pas configurée.</translation>
 <translation id="8631434304112909927">jusqu'à la version <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Liste des applications de prise de notes autorisées sur l'écran de verrouillage de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8649763579836720255">Il est possible d'utiliser l'attestation à distance (accès vérifié) pour les appareils Chrome OS afin d'obtenir un certificat délivré par Chrome OS CA qui atteste que vous pouvez lire du contenu protégé sur cet appareil. Ce processus implique l'envoi d'informations relatives au matériel à Chrome OS CA qui permettent d'identifier l'appareil de façon unique.

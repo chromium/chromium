@@ -73,9 +73,6 @@
 <translation id="1082802595100075771">Zulassen, dass Nutzer einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder zu erhalten</translation>
 <translation id="1087437665304381368">Mit dieser Richtlinie wird nur der <ph name="PRODUCT_OS_NAME" />-Entwicklermodus gesteuert. Wenn Sie den Zugriff auf Android-Entwickleroptionen verhindern möchten, müssen Sie die Richtlinie "<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />" konfigurieren.</translation>
 <translation id="1087707496788636333">Die Adresse der Chrome Enterprise-Richtlinienliste wird geändert. Bitte ändern Sie sie in Ihren Lesezeichen zu <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1093082332347834239">Ist diese Einstellung aktiviert, läuft der Host für Remote-Unterstützung in einem Prozess mit <ph name="UIACCESS_PERMISSION_NAME" />-Berechtigungen. So kann der Remote-Nutzer mit geöffneten Fenstern auf dem lokalen Desktop arbeiten.
-
-          Ist diese Einstellung deaktiviert oder nicht konfiguriert, läuft der Host für Remote-Unterstützung nur im Nutzerbereich. Remote-Nutzer können nicht mit geöffneten Fenstern auf dem Desktop arbeiten.</translation>
 <translation id="1095209545735032039">Serial API auf diesen Websites blockieren</translation>
 <translation id="1096105751829466145">Standardsuchmaschine</translation>
 <translation id="1099282607296956954">Website-Isolierung für jede Website aktivieren</translation>
@@ -593,9 +590,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="2040479044912658454">Rasterdruckmodus</translation>
 <translation id="2043749682619281558">Hiermit wird die Funktion "Mauscursor hervorheben" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="2043770014371753404">Deaktivierte Unternehmensdrucker</translation>
-<translation id="2050629715135525072">Damit wird gesteuert, ob ein Nutzer, der mit einem Host für den Remotezugriff verbunden ist, Dateien zwischen Client und Host übertragen kann. Verbindungen zur Remoteunterstützung sind hiervon ausgenommen, da sie keine Dateiübertragung unterstützen.
-
-          Wenn diese Einstellung deaktiviert ist, können keine Dateien übertragen werden. Ist die Einstellung aktiviert oder nicht konfiguriert, ist eine Dateiübertragung möglich.</translation>
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
 <translation id="2061810934846663491">Erforderliche Domainnamen für Remotezugriff-Hosts konfigurieren</translation>
 <translation id="2069350366303315077">Wenn die Richtlinie aktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> Gastsitzungen und verhindert die Anmeldung über Nutzerprofile. Gastsitzungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen die Fenster im Inkognitomodus ausgeführt werden.
@@ -1086,13 +1080,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2801065672151277034">Zertifikatverwaltungseinstellungen</translation>
 <translation id="2801155097555584385">Den Akkuladestand (%) für benutzerdefiniertes Starten des Ladevorgangs festlegen</translation>
 <translation id="2805707493867224476">Anzeige von Pop-ups für alle Websites zulassen</translation>
-<translation id="2808013382476173118">Aktiviert den Einsatz von STUN-Servern, wenn Remote-Clients versuchen, eine Verbindung zu diesem Computer herzustellen
-
-          Wenn diese Einstellung aktiviert wird, können Remote-Clients diesen Computer finden und eine Verbindung herstellen, selbst wenn er sich hinter einer Firewall befindet.
-
-          Falls die Einstellung deaktiviert ist und ausgehende UDP-Verbindungen von der Firewall gefiltert werden, erlaubt dieser Computer nur Verbindungen von Clientcomputern im lokalen Netzwerk.
-
-          Wenn diese Richtlinie nicht konfiguriert ist, wird die Einstellung aktiviert.</translation>
 <translation id="2813281962735757923">Über diese Richtlinie wird der Zeitraum festgelegt, in dem das <ph name="PRODUCT_OS_NAME" />-Gerät nicht automatisch nach Updates suchen darf.
       Folgendes passiert, wenn diese Richtlinie auf eine nicht leere Liste von Zeiträumen festgelegt wird:
       Geräte können während der festgelegten Zeiträume nicht automatisch nach Updates suchen. Auf Geräten, für die ein Rollback erforderlich ist oder die eine Version von <ph name="PRODUCT_OS_NAME" /> ausführen, die unter der Mindestversion liegt, hat diese Richtlinie aufgrund potenzieller Sicherheitsprobleme keine Auswirkungen. Außerdem blockiert diese Richtlinie keine Prüfungen auf Updates, die von Nutzern oder Administratoren angefordert werden.
@@ -1697,9 +1684,6 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
       Ist sie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Statistiken.</translation>
 <translation id="3736879847913515635">"Person hinzufügen" im Nutzermanager aktivieren</translation>
 <translation id="3750220015372671395">Schlüsselgenerierung auf diesen Websites blockieren</translation>
-<translation id="375266612405883748">Schränkt den vom Host für den Remotezugriff verwendeten UDP-Portbereich auf diesem Computer ein.
-
-          Wenn diese Richtlinie nicht konfiguriert oder auf eine leere Zeichenfolge festgelegt wird, kann der Host für den Remotezugriff alle verfügbaren Ports nutzen. Falls die Richtlinie "<ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />" deaktiviert ist, verwendet der Host für den Remotezugriff jedoch nur die UDP-Ports im Bereich 12400–12409.</translation>
 <translation id="3755237588083934849">Die Konfiguration der Richtlinie legt fest, wie oft Uploads mit dem Gerätestatus vorgenommen werden (in Millisekunden). Die geringste zulässige Häufigkeit beträgt 60 Sekunden.
 
       Wenn die Richtlinie nicht konfiguriert ist, betragen die Intervalle standardmäßig 3 Stunden.</translation>
@@ -2026,11 +2010,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist "Automatisch klicken" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="4214536984333857724">Wenn diese Einstellung aktiviert ist, werden Anfragen zur Gnubby-Authentifizierung bei einer Remote-Host-Verbindung über einen Proxy weitergeleitet.
-
-          Damit diese Funktion richtig funktioniert, sind zusätzliche Komponenten erforderlich, die außerhalb der Netzwerkumgebung von Google nicht verfügbar sind.
-
-          Ist diese Einstellung deaktiviert, wird für Anfragen zur Gnubby-Authentifizierung kein Proxy verwendet.</translation>
 <translation id="4224610387358583899">Verzögerungen für die Bildschirmsperre</translation>
 <translation id="4225260426043444650">Diese Einstellung ermöglicht es Nutzern, den <ph name="LACROS_NAME" />-Browser zu verwenden.
 
@@ -2203,9 +2182,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Sie wird für <ph name="PRODUCT_NAME" /> nur angewendet, wenn das Gerät mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
       Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="4578265298946081589">Nach Nutzerabmeldung nicht neu starten.</translation>
-<translation id="4578912515887794133">Wenn diese Einstellung aktiviert ist, vergleicht der Host für den Remotezugriff den Namen des mit dem Host verknüpften lokalen Nutzers mit dem Namen des Google-Kontos, das als Hosteigentümer registriert ist (z. B. "maxmustermann", wenn der Hosteigentümer das Google-Konto "maxmustermann@example.com" ist).  Der Host für den Remotezugriff wird nicht gestartet, wenn der Name des Hosteigentümers vom Namen des mit dem Host verknüpften lokalen Nutzers abweicht.  Die Richtlinie "RemoteAccessHostMatchUsername" sollte in Kombination mit "RemoteAccessHostDomain" verwendet werden, wenn Sie erzwingen möchten, dass das Google-Konto des Hosteigentümers mit einer bestimmten Domain (z. B. "example.com") verknüpft ist.
-
-          Ist diese Einstellung deaktiviert oder nicht konfiguriert, kann der Host für den Remotezugriff mit jedem lokalen Nutzer verknüpft sein.</translation>
 <translation id="4587365491100112056">Wenn die Richtlinie konfiguriert ist, wird die Cachelebensdauer für Authentifizierungsdaten in Stunden festgelegt. Im Cache befinden sich Daten zu Bereichen, die der Computer als vertrauenswürdig einstuft, d. h. verwandte Bereiche. Das Speichern von Authentifizierungsdaten im Cache beschleunigt die Anmeldung. Im Cache werden keine nutzerspezifischen Daten und auch keine Daten zu nicht verwandten Bereichen gespeichert.
 
       Wenn die Richtlinie auf „0“ gesetzt ist, wird die Speicherung der Authentifizierungsdaten deaktiviert. Bereichsspezifische Daten werden bei jeder Anmeldung abgerufen, daher kann ein Ausschalten der Speicherung von Authentifizierungsdaten die Nutzeranmeldung erheblich verlangsamen.
@@ -2348,15 +2324,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="487460824085252184">Automatisch migrieren, ohne die Zustimmung des Nutzers einzuholen</translation>
 <translation id="4874982543810021567">WebUSB auf diesen Websites blockieren</translation>
 <translation id="4876805738539874299">SSL-Höchstversion aktiviert</translation>
-<translation id="487928067861956387">Konfiguriert die erforderlichen Domainnamen der Hosts für den Remotezugriff und verhindert, dass diese von Nutzern geändert werden können.
-
-          Wenn diese Einstellung aktiviert und für eine oder mehrere Domains konfiguriert ist, können Hosts nur über Konten gemeinsam genutzt werden, die unter einem der angegebenen Domainnamen registriert sind.
-
-          Ist sie deaktiviert oder nicht konfiguriert oder ist eine leere Liste festgelegt, können Hosts über alle Konten gemeinsam genutzt werden.
-
-          Sofern vorhanden, wird <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> mit dieser Einstellung überschrieben.
-
-          Siehe auch <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Erlaubt SAML-Nutzern das Ändern des Passworts während einer Sitzung</translation>
 <translation id="4892647988357350237">Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten noch bei weiteren Ausführungen angezeigt. Wenn die Richtlinie auf <ph name="STANDARD_TOS_DIALOG" /> gesetzt oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
 
@@ -2620,15 +2587,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 
       Mit "Version" ist entweder eine exakte Versionsangabe wie "61.0.3163.120" oder ein Versionspräfix wie "61.0" gemeint.  </translation>
 <translation id="5247006254130721952">Gefährliche Downloads blockieren</translation>
-<translation id="5249303875508803168">Konfiguriert die erforderlichen Domainnamen der Clients für den Remotezugriff und verhindert, dass diese von Nutzern geändert werden können.
-
-          Wenn diese Einstellung aktiviert und für eine oder mehrere Domains konfiguriert ist, können nur Clients aus einer der angegebenen Domains eine Verbindung zum Host herstellen.
-
-          Ist sie deaktiviert oder nicht konfiguriert oder ist eine leere Liste festgelegt, wird die Standardrichtlinie für den Verbindungstyp angewendet. Zu Zwecken der Remote-Unterstützung können Clients aus jeder beliebigen Domain eine Verbindung zum Host herstellen, bei einem stetigen Remotezugriff kann nur der Hosteigentümer eine Verbindung herstellen.
-
-          Sofern vorhanden, wird <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> mit dieser Einstellung überschrieben.
-
-          Siehe auch <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Nutzer können Kerberos-Konten hinzufügen</translation>
 <translation id="5252995168844634755">Wenn die Richtlinie auf "True" gesetzt ist, wird Unified Desktop aktiviert. So können sich Apps über mehrere Bildschirme erstrecken. Nutzer können Unified Desktop für einzelne Displays deaktivieren.
 
@@ -2765,11 +2723,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="5390083518957894426">Aktiviert für SAML-Nutzer die erneute Online-Authentifizierung auf dem Sperrbildschirm.</translation>
 <translation id="5391388690191341203">Lokales Gerätekonto für die Anmeldung</translation>
 <translation id="5393009997533871906">Nur Drucker in der Zulassungsliste werden Nutzern angezeigt</translation>
-<translation id="5395271912574071439">Aktiviert die Zugangsbeschränkung für Remotezugriff-Hosts bei bestehender Verbindung
-
-          Wenn diese Einstellung aktiviert ist, werden die physischen Ein- und Ausgabegeräte des Hosts bei bestehender Remote-Verbindung deaktiviert.
-
-          Wenn diese Einstellung deaktiviert oder nicht festgelegt ist, können lokale und Remote-Nutzer mit dem Host interagieren, sofern dieser freigegeben ist.</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> aktivieren</translation>
 <translation id="5405289061476885481">Konfiguriert, welche Tastaturlayouts auf der <ph name="PRODUCT_OS_NAME" />-Anmeldeseite erlaubt sind.
 
@@ -3396,9 +3349,6 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
 <translation id="6407093060083181305">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
-<translation id="6408233796253901198">Wenn diese Richtlinie festgelegt ist, verwendet der Host für den Remotezugriff diese URL zur Validierung von Authentifizierungstokens von Clients für den Remotezugriff, um Verbindungen zu akzeptieren. Die Richtlinie muss in Verbindung mit "RemoteAccessHostTokenUrl" verwendet werden.
-
-          Diese Funktion wird deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6422575351619065453">Im Kioskmodus legt diese Einstellung fest, ob das unverankerte Menü für Bedienungshilfen angezeigt wird.
 
@@ -4036,9 +3986,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird die KDC-Richtlinie auf unterstützten Plattformen ignoriert und nur die Richtlinie "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" berücksichtigt.
 
       Unter <ph name="MS_WIN_NAME" /> wird die KDC-Richtlinie immer umgesetzt.</translation>
-<translation id="7273823081800296768">Wenn diese Einstellung aktiviert oder nicht konfiguriert ist, kann der Nutzer beim Herstellen der Verbindung Clients und Hosts koppeln. Dadurch braucht nicht jedes Mal eine PIN eingegeben zu werden.
-
-          Bei Deaktivierung dieser Einstellung ist diese Funktion nicht verfügbar.</translation>
 <translation id="7274077256421167535">Gemeinsame Stromversorgung per USB aktivieren</translation>
 <translation id="7275334191706090484">Verwaltete Lesezeichen</translation>
 <translation id="7278854311116092134">Namen der Hosts für natives Messaging, die von der Sperrliste ausgenommen werden sollen</translation>
@@ -4167,9 +4114,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="PRINTERS_POLICY_NAME" />".
       </translation>
-<translation id="7504632989711326175">Wenn diese Richtlinie festgelegt ist, verwendet der Host ein Clientzertifikat mit dem angegebenen Aussteller-CN zur Authentifizierung bei "RemoteAccessHostTokenValidationUrl". Verwenden Sie "*", um ein beliebiges verfügbares Clientzertifikat zu nutzen.
-
-          Diese Funktion wird deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
 <translation id="7506745375479451616">Mit dieser Richtlinie wird der Befehl konfiguriert, mit dem URLs in <ph name="PRODUCT_NAME" /> geöffnet werden, wenn von <ph name="IE_PRODUCT_NAME" /> dorthin gewechselt wird. Diese Richtlinie kann mit einem Pfad zur ausführbaren Datei oder <ph name="PRODUCT_NAME_PLACEHOLDER" /> konfiguriert werden, damit das Verzeichnis von <ph name="PRODUCT_NAME" /> automatisch erkannt wird.
 
       Ist die Richtlinie nicht konfiguriert, erkennt <ph name="IE_PRODUCT_NAME" /> den Pfad zur ausführbaren Datei von <ph name="PRODUCT_NAME" /> automatisch, wenn <ph name="PRODUCT_NAME" /> über Internet Explorer geöffnet wird.
@@ -4761,13 +4705,6 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8371178326720637170">Ermöglicht verwalteten Erweiterungen, die Enterprise Hardware Platform API zu verwenden</translation>
 <translation id="8375817202037102567">Schreibzugriff auf Dateien und Verzeichnisse auf diesen Websites blockieren</translation>
 <translation id="8379317372795444261"><ph name="BASIC_AUTH" />-Authentifizierung ist bei HTTP-Verbindungen zulässig</translation>
-<translation id="8380490658357556620">Ermöglicht den Einsatz von Relayservern, wenn Remote-Clients versuchen, eine Verbindung zu diesem Computer herzustellen.
-
-          Ist diese Einstellung aktiviert, können Remote-Clients über Relayserver eine Verbindung zu diesem Computer herstellen, sofern keine direkte Verbindung verfügbar ist, zum Beispiel aufgrund von Firewallbeschränkungen.
-
-          Diese Richtlinie wird ignoriert, falls die Richtlinie "<ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />" deaktiviert ist.
-
-          Wenn diese Richtlinie nicht konfiguriert ist, wird die Einstellung aktiviert.</translation>
 <translation id="838056554726401140">Eine Liste von URLs, die angibt, auf welche URLs "<ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />" angewendet wird. Diese Richtlinie hat keine Auswirkung auf automatisch geöffnete Werte, die vom Nutzer festgelegt sind.
 
       Wenn Sie diese Richtlinie konfigurieren, werden Dateien nur automatisch von ihr geöffnet, wenn die URL Teil dieses Satzes ist und der Dateityp in "<ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />" aufgelistet ist. Wenn eine der Bedingungen auf "false" gesetzt ist, wird der Download nicht automatisch von der Richtlinie geöffnet.
@@ -4931,9 +4868,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Wenn sie auf "true" gesetzt ist, können diese Tabs deaktiviert werden. Durch die Deaktivierung von Tabs werden CPU, Akku und Arbeitsspeicher entlastet. Bei <ph name="PRODUCT_NAME" /> wird eine Heuristik genutzt, um Tabs zu erkennen, die zwar im Hintergrund ausgeführt werden, jedoch aktiviert bleiben sollten, weil auf ihnen beispielsweise Benachrichtigungen angezeigt, Ton wiedergegeben oder Videos gestreamt werden. Webentwickler können die Deaktivierung ihrer Website auch unterbinden (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Wenn die Richtlinie auf "false" gesetzt ist, werden Tabs nicht deaktiviert.</translation>
-<translation id="8622378389102774881">Wenn diese Richtlinie konfiguriert ist, verlangt der Host für den Remotezugriff von Clients, die sich authentifizieren, ein Authentifizierungstoken von dieser URL, damit eine Verbindung aufgebaut werden kann. Diese Richtlinie muss in Verbindung mit "RemoteAccessHostTokenValidationUrl" verwendet werden.
-
-          Diese Funktion wird deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
 <translation id="8631434304112909927">Bis Version <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Die Liste der Notizen-Apps, die auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> zulässig sind</translation>
 <translation id="8649763579836720255">Chrome OS-Geräte können mithilfe einer Remote-Bescheinigung für überprüften Zugriff ein von der Chrome OS-Zertifizierungsstelle herausgegebenes Zertifikat erhalten, das die Berechtigung des Geräts für die Wiedergabe geschützter Medien nachweist. Bei diesem Vorgang werden Informationen zur Bestätigung der Hardware an die Chrome OS-Zertifizierungsstelle gesendet, anhand derer das Gerät eindeutig identifiziert werden kann.

@@ -73,9 +73,6 @@
 <translation id="1082802595100075771">允许用户选择使用匿名 Google 服务为无标签图片提供自动说明</translation>
 <translation id="1087437665304381368">此政策仅用于控制 <ph name="PRODUCT_OS_NAME" />开发者模式。如果您想阻止对 Android 开发者选项的访问，则需设置 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="1087707496788636333">Chrome 企业版政策列表迁址了！请更新您的书签以改用 <ph name="POLICY_DOCUMENTATION_URL" />。</translation>
-<translation id="1093082332347834239">启用此设置后，远程协助主机会在具有 <ph name="UIACCESS_PERMISSION_NAME" /> 权限的进程中运行。这样，远程用户就可以在本地用户桌面上操控提权后的窗口。
-
-          如果停用或未配置此设置，远程协助主机则会在用户的环境中运行，而远程用户将无法在桌面上操控提权后的窗口。</translation>
 <translation id="1095209545735032039">禁止在这些网站上使用 Serial API</translation>
 <translation id="1096105751829466145">默认搜索服务提供商</translation>
 <translation id="1099282607296956954">为所有网站启用网站隔离功能</translation>
@@ -593,9 +590,6 @@
 <translation id="2040479044912658454">打印光栅化模式</translation>
 <translation id="2043749682619281558">在登录屏幕上启用“光标突出显示”</translation>
 <translation id="2043770014371753404">已停用企业打印机</translation>
-<translation id="2050629715135525072">控制用户能否连接到远程访问主机以在客户端和主机之间传输文件。此设置不适用于远程协助连接，因为远程协助连接不支持文件传输。
-
-          如果停用了此设置，系统将禁止进行文件传输。如果启用了或未设定此设置，系统将允许进行文件传输。</translation>
 <translation id="2057317273526988987">允许访问指定的一系列网址</translation>
 <translation id="2061810934846663491">为远程访问主机配置所需的域名</translation>
 <translation id="2069350366303315077">如果此政策已启用，<ph name="PRODUCT_NAME" /> 会强制启动访客会话并禁止登录个人资料。访客身份是一类特殊的 <ph name="PRODUCT_NAME" /> 个人资料；使用此类个人资料打开的窗口均会处于无痕模式。
@@ -1086,13 +1080,6 @@
 <translation id="2801065672151277034">证书管理设置</translation>
 <translation id="2801155097555584385">设定电池充电自定义开始充电值（以百分比表示）</translation>
 <translation id="2805707493867224476">允许所有网站显示弹出式窗口</translation>
-<translation id="2808013382476173118">当远程客户端尝试与此机器建立连接时，允许使用STUN服务器。
-
-          此政策处于启用状态时，即使远程客户端被防火墙隔离，也依然能够发现并连接到此机器。
-
-          此政策处于停用状态并且出站UDP连接会被防火墙阻止时，此机器将只允许通过本地网络内的客户端机器建立连接。
-
-          如果此政策未设置，系统将启用此政策。</translation>
 <translation id="2813281962735757923">此政策用于控制不允许 <ph name="PRODUCT_OS_NAME" />设备在哪些时间范围内自动检查是否有更新。
       当此政策设为非空的时间范围列表时：
       相应设备将无法在指定的时间范围内自动检查是否有更新。由于存在潜在的安全问题，需要回滚的设备和低于最低 <ph name="PRODUCT_OS_NAME" />版本的设备都不会受到此政策的影响。另外，此政策不会阻止由用户或管理员请求的更新检查。
@@ -1688,9 +1675,6 @@
       如果此政策已停用或未设置，已注册的设备将不会报告这些统计信息。</translation>
 <translation id="3736879847913515635">允许通过用户管理器添加用户</translation>
 <translation id="3750220015372671395">禁止在这些网站上使用密钥生成功能</translation>
-<translation id="375266612405883748">限制远程访问主机在此计算机上使用的 UDP 端口范围。
-
-          如果此政策未设置或设为空字符串，则远程访问主机可以使用任意可用端口，除非政策 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 处于停用状态（在这种情况下，远程访问主机将使用 12400-12409 范围内的 UDP 端口）。</translation>
 <translation id="3755237588083934849">通过设置此政策，您可决定设备状态上传内容的发送频率（以毫秒为单位）。所允许的最低频率为 60 秒。
 
       如果此政策未设置，系统会应用默认时间间隔（3 小时）。</translation>
@@ -2018,11 +2002,6 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“自动点击”最初会处于停用状态，但用户可以随时启用该功能。</translation>
-<translation id="4214536984333857724">如果您启用了此设置，系统将会通过远程主机连接经由代理来处理 gnubby 身份验证请求。
-
-          请注意，此功能需要依靠仅在 Google 网络环境内可用的其他组件才能正常运行。
-
-          如果您停用了此设置，系统将不会经由代理来处理 gnubby 身份验证请求。</translation>
 <translation id="4224610387358583899">屏幕锁定延迟时间</translation>
 <translation id="4225260426043444650">此设置允许用户使用 <ph name="LACROS_NAME" /> 浏览器。
 
@@ -2195,9 +2174,6 @@
       对于 <ph name="PRODUCT_NAME" />，仅当已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后，此政策才有效。
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="4578265298946081589">不要在用户退出后重新启动。</translation>
-<translation id="4578912515887794133">如果此设置处于启用状态，远程访问主机会对比本地用户（与主机关联的用户）的名称和注册为主机所有者的 Google 帐号的名称（例如，如果主机归 Google 帐号“johndoe@example.com”所有，Google 帐号的名称就是“johndoe”）。如果两者不同，远程访问主机将不会启动。RemoteAccessHostMatchUsername 政策应与 RemoteAccessHostDomain 一起使用，以便一并强制将主机所有者的 Google 帐号与特定网域（在上述示例中，网域为“example.com”）相关联。
-
-          如果停用或不指定此设置，远程访问主机可以与任何本地用户关联。</translation>
 <translation id="4587365491100112056">通过设置此政策，您可以指定身份验证数据缓存期限（以小时为单位）。此缓存包含与机器领域所信任的领域（关联领域）相关的数据。因此，身份验证数据缓存有助于加快登录速度。系统不会缓存用户专属数据以及非关联领域的数据。
 
       如果此政策设为 0，系统会关闭身份验证数据缓存。每当用户登录时，系统都会提取领域专属的数据，因此关闭身份验证数据缓存可能会显著降低用户的登录速度。
@@ -2340,15 +2316,6 @@
 <translation id="487460824085252184">自动迁移，不询问用户是否同意。</translation>
 <translation id="4874982543810021567">禁止这些网站使用 WebUSB</translation>
 <translation id="4876805738539874299">启用最高 SSL 版本</translation>
-<translation id="487928067861956387">配置主机域名要求以限制可接受远程访问的主机，并禁止用户更改此设置。
-
-          如果您启用了此设置并将其设为一个或多个域名，仅当使用在这些指定域名注册的帐号时，主机才会接受远程访问。
-
-          如果您停用了此设置、未配置此设置或将其设为一个空列表，无论使用什么帐号，主机都会接受远程访问。
-
-          此设置会覆盖 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />（若已设置）。
-
-          另请参阅 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="4887274746092315609">启用一个页面，以便 SAML 用户在会话期间更改密码</translation>
 <translation id="4892647988357350237">默认情况下，当 CCT 首次运行时，系统会显示《服务条款》。如果此政策设为 <ph name="SKIP_TOS_DIALOG" />，在首次运行体验或后续运行期间，《服务条款》对话框将不会出现。如果此政策设为 <ph name="STANDARD_TOS_DIALOG" /> 或未设置，在首次运行体验期间，《服务条款》对话框将会出现。其他注意事项：
 
@@ -2606,15 +2573,6 @@
 
       此处的“Version”既可以是确切版本（如“61.0.3163.120”），也可以是版本前缀（如“61.0”）。  </translation>
 <translation id="5247006254130721952">拦截有危险的下载内容</translation>
-<translation id="5249303875508803168">配置客户端域名要求以限制可进行远程访问的客户端，并禁止用户更改此设置。
-
-          如果您启用了此设置并将其设为一个或多个域名，只有来自这些指定域名的客户端才能连接到主机。
-
-          如果您停用了此设置、未配置此设置或将其设为一个空列表，系统会采用相应连接类型的默认政策。对于远程协助，来自任何域名的客户端都可连接到主机；对于无时间限制的远程访问，只有主机所有者可以连接到主机。
-
-          此设置会覆盖 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />（若已设置）。
-
-          另请参阅 <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="5249453807420671499">用户可以添加 Kerberos 帐号</translation>
 <translation id="5252995168844634755">如果此政策设为 True，系统会开启“统一桌面”功能，使应用能够跨多个显示屏进行显示。用户可为单个显示屏关闭“统一桌面”功能。
 
@@ -2751,11 +2709,6 @@
 <translation id="5390083518957894426">启用在锁定屏幕上在线重新验证 SAML 用户的身份</translation>
 <translation id="5391388690191341203">用于自动登录的设备本地帐号</translation>
 <translation id="5393009997533871906">仅向用户显示许可名单中的打印机</translation>
-<translation id="5395271912574071439">在进行连接时启用远程访问主机的屏蔽设置。
-
-          如果启用了此设置，那么在进行远程连接时，就会禁用主机的物理输入和输出设备。
-
-          如果停用或未设定此设置，那么当主机处于共享状态时，本地和远程用户都可以与主机互动。</translation>
 <translation id="5401696449591951427">启用 <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">配置允许在 <ph name="PRODUCT_OS_NAME" />登录屏幕上使用哪些键盘布局。
 
@@ -3204,7 +3157,7 @@
 
       网址格式应采用 https://www.chromium.org/administrators/url-blacklist-filter-format 中规定的格式。不过，判定给定主机名的证书是否有效与架构、端口或路径皆无关，因此 <ph name="PRODUCT_NAME" /> 只会考虑相应网址的主机名部分。采用通配符的主机名不受支持。</translation>
 <translation id="6111936128861357925">允许用户玩恐龙复活节彩蛋游戏</translation>
-<translation id="6123052603197028610">不允许向 Google 服务器发送查询以检索时间戳</translation>
+<translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
@@ -3377,9 +3330,6 @@
 <translation id="6401669939808766804">使用户退出</translation>
 <translation id="640244877779556713">启用表情符号建议</translation>
 <translation id="6407093060083181305">配置扩展程序安装屏蔽名单</translation>
-<translation id="6408233796253901198">如果您设置了此政策，远程访问主机会使用此网址验证来自远程访问客户端的身份验证令牌，以便确定是否接受连接。此政策必须与 RemoteAccessHostTokenUrl 结合使用。
-
-          如果您未设置此政策或将它留空，系统会停用此功能。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6422575351619065453">在自助服务终端模式中，用于控制是否显示悬浮无障碍功能菜单。
 
@@ -4014,9 +3964,6 @@
       如果此政策已停用或未设置，那么在支持的平台上，只会遵循 <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> 政策，KDC 政策会被忽略。
 
       在 <ph name="MS_WIN_NAME" /> 上，始终都会遵循 KDC 政策。</translation>
-<translation id="7273823081800296768">无论这项政策处于启用还是未配置状态，用户都可以选择让客户端和主机在连接时自动配对，无需每次都输入 PIN。
-
-          如果停用此设置，则无法使用该功能。</translation>
 <translation id="7274077256421167535">启用 USB 电源共享</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
 <translation id="7278854311116092134">要从屏蔽名单中排除的本地消息传递主机名</translation>
@@ -4145,9 +4092,6 @@
 
       此政策已被弃用，请改用 <ph name="PRINTERS_POLICY_NAME" />。
       </translation>
-<translation id="7504632989711326175">如果您设置了此政策，主机会使用带有指定颁发者 CN 的客户端证书向 RemoteAccessHostTokenValidationUrl 验证身份。将此政策设为“*”意味着允许使用任何可用的客户端证书。
-
-          如果您未设置此政策或将它留空，系统会停用此功能。</translation>
 <translation id="7506745375479451616">此政策旨在控制从 <ph name="IE_PRODUCT_NAME" /> 切换至 <ph name="PRODUCT_NAME" /> 时应使用哪个命令打开网址。此政策可设为一个可执行文件路径，也可设为 <ph name="PRODUCT_NAME_PLACEHOLDER" /> 以自动检测 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果您不设置此政策，当从 Internet Explorer 中启动 <ph name="PRODUCT_NAME" /> 时，<ph name="IE_PRODUCT_NAME" /> 将会自动检测 <ph name="PRODUCT_NAME" /> 自有的可执行文件路径。
@@ -4739,13 +4683,6 @@
 <translation id="8371178326720637170">允许托管扩展程序使用 Enterprise Hardware Platform API</translation>
 <translation id="8375817202037102567">禁止在这些网站上向文件和目录写入内容</translation>
 <translation id="8379317372795444261">允许通过 HTTP 连接进行<ph name="BASIC_AUTH" />身份验证</translation>
-<translation id="8380490658357556620">当远程客户端尝试与此计算机建立连接时，允许使用中继服务器。
-
-          此设置处于启用状态时，如果远程客户端无法直接连接到此计算机（例如：因为受防火墙限制），则可通过中继服务器来建立连接。
-
-          请注意，政策 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 处于停用状态时，系统将忽略此政策。
-
-          如果未设置此政策，系统将启用此设置。</translation>
 <translation id="838056554726401140">以列表形式指定 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 会应用于哪些网址。此政策对用户设定的自动打开值没有任何影响。
 
       如果您设置了此政策，那么仅当网址包含在此列表中且文件类型已列在 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 中时，相应文件才会依照此政策自动打开。如果不符合上述任一条件，下载内容便不会依照此政策自动打开。
@@ -4909,9 +4846,6 @@
       如果此政策设为 true，系统可能会冻结已在后台运行至少 5 分钟的标签页。冻结标签页可以降低 CPU、电池和内存使用量。<ph name="PRODUCT_NAME" /> 会使用试探法来避免冻结在后台执行有用工作（例如显示通知、播放声音、流式传输视频）的标签页。网络开发者也可选择停用用于冻结网站标签页的功能 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果此政策设为 false，系统将不会冻结任何标签页。</translation>
-<translation id="8622378389102774881">如果您设置了此政策，远程访问主机将要求身份验证客户端从该网址获取身份验证令牌，以便建立连接。此政策必须与 RemoteAccessHostTokenValidationUrl 结合使用。
-
-          如果您未设置此政策或将它留空，系统会停用此功能。</translation>
 <translation id="8631434304112909927">到版本 <ph name="UNTIL_VERSION" /> 为止</translation>
 <translation id="8631437968147930597">可在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中显示的笔记应用的列表。</translation>
 <translation id="8649763579836720255">Chrome 操作系统设备可使用远程凭证（经验证的访问凭证）来获取由 Chrome OS CA 颁发的证书，以证明该设备符合播放受保护内容的条件。此过程涉及向 Chrome OS CA 发送用于唯一标识设备的硬件背书信息。

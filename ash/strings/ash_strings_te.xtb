@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">మొబైల్ నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="3249513730522716925">"<ph name="WINDOW_TITLE" />" విండో అన్నది "<ph name="ACTIVE_DESK" />" డెస్క్ నుండి "<ph name="TARGET_DESK" />" డెస్క్‌కు తరలించబడింది</translation>
 <translation id="3255483164551725916">నువ్వు ఏమి చేయగలవు?</translation>
+<translation id="3269597722229482060">కుడి క్లిక్</translation>
 <translation id="3289674678944039601">అడాప్టర్ ద్వారా ఛార్జ్ అవుతోంది</translation>
 <translation id="3290356915286466215">అసురక్షితమైనది</translation>
 <translation id="3294437725009624529">అతిథి</translation>
@@ -341,6 +342,7 @@
 <translation id="4212472694152630271">పిన్‌కి స్విచ్ చేయి</translation>
 <translation id="4215497585250573029">VPN సెట్టింగ్‌లు</translation>
 <translation id="4217571870635786043">డిక్టేషన్</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, ఇన్‌స్టాల్ చేయబడిన యాప్, పాజ్ చేయబడింది</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="425364040945105958">SIM లేదు</translation>
@@ -762,6 +764,7 @@
 <translation id="8142699993796781067">ప్రైవే. నెట్‌వర్క్</translation>
 <translation id="8152092012181020186">మూసివేయడానికి Ctrl + W నొక్కండి.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> కోసం సమాచార డైలాగ్‌ను తెరువు</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ని ఉపయోగిస్తోంది</translation>
 <translation id="8170567869359129153">మొబైల్ నెట్‌వర్క్. సిగ్నల్ సామర్థ్యం - <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">నోటిఫికేషన్‌లు దాచబడ్డాయి.</translation>
@@ -827,6 +830,7 @@
 <translation id="8755498163081687682">మీ గుర్తింపును వెరిఫై చేయండి: <ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
 <translation id="875593634123171288">VPN సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="8759408218731716181">బహుళ సైన్-ఇన్‌ను సెటప్ చేయలేరు</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, ఇన్‌స్టాల్ చేయబడిన యాప్, బ్లాక్ చేయబడింది</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />కు కనెక్ట్ చేయండి</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

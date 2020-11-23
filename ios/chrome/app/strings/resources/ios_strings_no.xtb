@@ -424,6 +424,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versjon <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5690398455483874150">{count,plural, =1{Viser nå 1 Chrome-vindu}other{Viser nå {count} Chrome-vinduer}}</translation>
 <translation id="5706552126692816153">Aktiv for én dag siden</translation>
 <translation id="5711039611392265845">Se <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="5724941645893276623">For å surfe privat på nettet, legg til en ny fane</translation>

@@ -432,6 +432,7 @@
 <translation id="1475502736924165259">Dosyanızda diğer kategorilerin hiçbirine uymayan sertifikalar var</translation>
 <translation id="1476088332184200792">Cihazıma Kopyala</translation>
 <translation id="1476607407192946488">&amp;Dil Ayarları</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.</translation>
 <translation id="1478340334823509079">Ayrıntılar: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Yükleme etkin değil</translation>
 <translation id="1481537595330271162">Disk yeniden boyutlandırılırken hata oluştu</translation>
@@ -2030,6 +2031,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3320630259304269485">Güvenli Tarama (tehlikeli sitelere karşı koruma) ve diğer güvenlik ayarları</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Bu veriler, hassas veya tehlikeli içeriğe sahip. Bu içeriği kaldırıp tekrar deneyin.}=1{Bu dosya, hassas veya tehlikeli içeriğe sahip. Bu içeriği kaldırıp tekrar deneyin.}other{Bu dosyalar, hassas veya tehlikeli içeriğe sahip. Bu içeriği kaldırıp tekrar deneyin.}}</translation>
 <translation id="3323521181261657960">Bonus! Ekran süreniz arttı</translation>
+<translation id="3325804108816646710">Mevcut profiller aranıyor...</translation>
 <translation id="3325910708063135066">Kamera ve mikrofon, Mac Sistem Tercihleri'nde kapatıldı</translation>
 <translation id="3327050066667856415">Chromebook'lar güvenlik için tasarlanmıştır. Cihazınız kötü amaçlı yazılımlara karşı otomatik olarak korunur. Bunun için başka yazılım gerekmez.</translation>
 <translation id="3328489342742826322">Yedekten yapılan geri yükleme işlemi, Linux dosyalarınızın bulunduğu klasördeki mevcut Linux uygulamalarının ve verilerinin silinmesine neden olacaktır.</translation>
@@ -2097,6 +2099,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3412265149091626468">Seçim'e Atla</translation>
 <translation id="3413122095806433232">CA Verenler: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Boyut:</translation>
+<translation id="3414966631182382431"><ph name="BEGIN_LINK" />Tarayıcınız<ph name="END_LINK" /> <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="3416468988018290825">Her zaman URL'leri tam olarak göster</translation>
 <translation id="3417835166382867856">Sekme ara</translation>
 <translation id="3417836307470882032">Askeri saat gösterme biçimi</translation>
@@ -3171,6 +3174,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4651484272688821107">Demo modu kaynakları olan online bileşen yüklenemedi.</translation>
 <translation id="4652935475563630866">Kamera ayarında yapılan değişiklik, Parallels Desktop'ın yeniden başlatılmasını gerektirir. Devam etmek için Parallels Desktop'ı yeniden başlatın.</translation>
 <translation id="4653405415038586100">Linux yapılandırılırken hata oluştu</translation>
+<translation id="4657914796247705218">TrackPoint hızı</translation>
 <translation id="465878909996028221">Yalnızca http, https ve dosya protokolleri tarayıcı yönlendirmeleri için desteklenir.</translation>
 <translation id="4659077111144409915">Birincil hesap</translation>
 <translation id="4659126640776004816">Google Hesabınızda oturum açtığınızda bu özellik devreye girer.</translation>
@@ -3831,6 +3835,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5470735824776589490">Cihazınızın Powerwash ile sıfırlanabilmesi için yeniden başlatılması gerekir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Merhaba! Ben sizin metin okuma sesinizim.</translation>
 <translation id="5472627187093107397">Bu site için şifreleri kaydet</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN en az bir karakter olmalıdır}other{PIN en az # karakter olmalıdır}}</translation>
 <translation id="5473333559083690127">Yeni PIN'i tekrar girin</translation>
 <translation id="5481273127572794904">Birden fazla dosyayı otomatik olarak indirmesine izin verilmeyen siteler</translation>
 <translation id="5481941284378890518">Yakınlardaki Yazıcıları Ekle</translation>
@@ -4370,6 +4375,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6087960857463881712">Çok beğenen</translation>
 <translation id="6091761513005122595">Paylaşım başarıyla eklendi.</translation>
 <translation id="6093888419484831006">Güncelleme iptal ediliyor...</translation>
+<translation id="6095541101974653012">Çıkış yaptınız.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Ekranı kaplayacak şekilde aç</translation>
 <translation id="6096326118418049043">X.500 Adı</translation>
@@ -4703,6 +4709,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6474884162850599008">Google Drive hesabının bağlantısını kes</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" />, ekranınızın içeriğini paylaşmak istiyor. Neleri paylaşmak istediğinizi seçin.</translation>
 <translation id="6478248366783946499">Tehlikeli dosya tutulsun mu?</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="6483485061007832714">İndirilen dosyayı aç</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> açılıyor...</translation>
 <translation id="6488384360522318064">Dil seçin</translation>
@@ -4891,6 +4898,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="671928215901716392">Kilit ekranı</translation>
 <translation id="6721678857435001674">Güvenlik Anahtarınızın markasını ve modelini görme</translation>
 <translation id="6721972322305477112">&amp;Dosya</translation>
+<translation id="672208878794563299">Bu site bir dahaki sefer tekrar soracak.</translation>
 <translation id="672213144943476270">Lütfen misafir olarak göz atmadan önce profilinizin kilidini açın.</translation>
 <translation id="6723661294526996303">Yer işaretlerini ve ayarları içe aktar...</translation>
 <translation id="6723839937902243910">Güç</translation>
@@ -6287,6 +6295,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8317671367883557781">Ağ bağlantısı ekle</translation>
 <translation id="8319414634934645341">Uzatılmış Anahtar Kullanımı</translation>
 <translation id="8320459152843401447">Ekranınızın Tamamı</translation>
+<translation id="8321837372750396788">Bu <ph name="DEVICE_TYPE" /> cihaz, <ph name="MANAGER" /> tarafından yönetilecek.</translation>
 <translation id="8322814362483282060">Bu sayfanın mikrofonunuza erişimi engellenmiştir.</translation>
 <translation id="8323167517179506834">URL yaz</translation>
 <translation id="8324784016256120271">Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerez kullanabilir</translation>
@@ -6594,6 +6603,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8698269656364382265">Önceki ekrana dönmek için sol kenardan kaydırın.</translation>
 <translation id="869884720829132584">Uygulamalar menüsü</translation>
 <translation id="869891660844655955">Son kullanma tarihi</translation>
+<translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> cihazınız kilitlendi.</translation>
 <translation id="8703346390800944767">Reklamı Atla</translation>
 <translation id="8705331520020532516">Seri Numarası</translation>
 <translation id="8705580154597116082">Kablosuz bağlantı telefon üzerinden kullanılabilir</translation>

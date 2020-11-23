@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">ເວັບໄຊ</translation>
 <translation id="4594952190837476234">ໜ້າອອບລາຍນີ້ມາຈາກ <ph name="CREATION_TIME" /> ແລະ ອາດຈະແຕກຕ່າງຈາກເວີຊັນອອນລາຍ.</translation>
 <translation id="4605958867780575332">ລຶບລາຍການແລ້ວ: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">ບັນທຶກໜ້າສຳລັບພາຍຫຼັງ ແລະ ຮັບການແຈ້ງເຕືອນ</translation>
 <translation id="4616150815774728855">ເປີດ <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">ໃຊ້ລະຫັດຜ່ານ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ # ລາຍການ}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ວິທີການຈ່າຍເງິນ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ວິທີການຈ່າຍເງິນ}}</translation>
 <translation id="7778840695157240389">ກວດເບິ່ງເລື່ອງລາວໃໝ່ໃນພາຍຫຼັງ</translation>
 <translation id="7786595606756654269">ຜູ້ຊ່ວຍ Google ໃຫ້ປະສົບການສຽງທີ່ດີກວ່າສຳລັບການຊອກຫາເວັບ ແລະ ໂຕ້ຕອບກັບເວັບໄຊທີ່ທ່ານເປີດ. ຜູ້ຊ່ວຍ Google ຈະໄດ້ຮັບ URL ແລະ ເນື້ອຫາຂອງເວັບໄຊທີ່ທ່ານໃຊ້ກັບມັນ.</translation>
+<translation id="7790349552933995572">ໜ້າຈໍຫຼັກ</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
 <translation id="7798392620021911922">ກູ້ <ph name="TAB_COUNT" /> ແຖບຄືນແລ້ວ</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>

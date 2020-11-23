@@ -238,6 +238,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3236488194889173876">Der er ingen tilgængelige mobilnetværk</translation>
 <translation id="3249513730522716925">Vindue <ph name="WINDOW_TITLE" /> blev flyttet fra Skrivebord <ph name="ACTIVE_DESK" /> til Skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Hvad kan du gøre?</translation>
+<translation id="3269597722229482060">Højreklik</translation>
 <translation id="3289674678944039601">Oplader via adapter</translation>
 <translation id="3290356915286466215">Ikke beskyttet</translation>
 <translation id="3294437725009624529">Gæst</translation>
@@ -340,6 +341,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4212472694152630271">Skift til pinkode</translation>
 <translation id="4215497585250573029">VPN-indstillinger</translation>
 <translation id="4217571870635786043">Diktering</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, installeret app, sat på pause</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Intet SIM-kort</translation>
@@ -762,6 +764,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8142699993796781067">Privat netværk</translation>
 <translation id="8152092012181020186">Tryk på Ctrl+W for at lukke.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Denne indstilling administreres af din administrator.</translation>
+<translation id="8155628902202578800">Åbn dialogboks med oplysninger om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruger <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Mobilnetværk. Signalstyrke: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Notifikationer er skjult.</translation>
@@ -827,6 +830,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8755498163081687682">Bekræft din identitet: <ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="875593634123171288">Vis VPN-indstillinger</translation>
 <translation id="8759408218731716181">Samlet login fra flere konti kan ikke konfigureres</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, installeret app, blokeret</translation>
 <translation id="8785070478575117577">Opret forbindelse til <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

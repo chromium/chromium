@@ -424,6 +424,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5659593005791499971">Adreça electrònica</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versió <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5690398455483874150">{count,plural, =1{Es mostra 1 finestra de Chrome}other{Es mostren {count} finestres de Chrome}}</translation>
 <translation id="5706552126692816153">Actiu fa 1 dia</translation>
 <translation id="5711039611392265845">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització i serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Per navegar pel web de manera privada, obre una pestanya nova</translation>

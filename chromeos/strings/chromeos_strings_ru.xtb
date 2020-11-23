@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">очень большое время ожидания HTTPS</translation>
 <translation id="1413240736185167732">Сбой: ошибка в работе фильтра</translation>
 <translation id="1468664791493211953">Предложения</translation>
+<translation id="1476467821656042872">Этим устройством управляет <ph name="MANAGER" />. Ваши действия могут отслеживаться.</translation>
 <translation id="1478594628797167447">Сканер</translation>
+<translation id="1499900233129743732">Этим аккаунтом управляет <ph name="MANAGER" />. Администратор может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="150962533380566081">Неверный PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (потоков: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Автоподатчик документов (односторонний)</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Место сохранения</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
 <translation id="4548483925627140043">Отсутствует сигнал Wi-Fi.</translation>
+<translation id="455835558791489930">Батарея <ph name="CHARGE_VALUE" /> мА·ч</translation>
 <translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
 <translation id="4627232916386272576">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, напечатано страниц: <ph name="PRINTED_PAGE_NUMBER" /> из <ph name="TOTAL_PAGE_NUMBER" />. Чтобы отменить задание печати, нажмите клавишу "Ввод".</translation>
 <translation id="4646949265910132906">Защищенное подключение к Wi-Fi</translation>
@@ -138,8 +142,10 @@
 <translation id="6766275201586212568">невыполненные преобразования DNS</translation>
 <translation id="6768237774506518020">большое число невыполненных преобразований DNS</translation>
 <translation id="6839141349259399400">Не удается подключиться к сканерам?</translation>
+<translation id="7028979494427204405">Этим устройством управляет <ph name="MANAGER" />. Администратору доступна информация обо всех действиях пользователя, в том числе о посещенных веб-страницах, а также адрес электронной почты и пароли.</translation>
 <translation id="714876143603641390">Подключение к локальной сети</translation>
 <translation id="7162487448488904999">Галерея</translation>
+<translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тип файла</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>

@@ -238,6 +238,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3236488194889173876">Nicio rețea mobilă disponibilă</translation>
 <translation id="3249513730522716925">Fereastra <ph name="WINDOW_TITLE" /> a fost mutată de pe desktopul <ph name="ACTIVE_DESK" /> pe desktopul <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
+<translation id="3269597722229482060">Clic dreapta</translation>
 <translation id="3289674678944039601">Se încarcă prin adaptor</translation>
 <translation id="3290356915286466215">Nesecurizată</translation>
 <translation id="3294437725009624529">Invitat</translation>
@@ -340,6 +341,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4212472694152630271">Comută la PIN</translation>
 <translation id="4215497585250573029">Setări VPN</translation>
 <translation id="4217571870635786043">Dictare</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, aplicație instalată, în pauză</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="425364040945105958">Niciun card SIM</translation>
@@ -761,6 +763,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8142699993796781067">Rețea privată</translation>
 <translation id="8152092012181020186">Apasă Ctrl + W pentru a închide.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Această setare este gestionată de administrator.</translation>
+<translation id="8155628902202578800">Deschide fereastra de dialog cu informații pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Se folosește <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Rețea mobilă. Puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Notificările sunt ascunse.</translation>
@@ -826,6 +829,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8755498163081687682">Confirmă-ți identitatea: <ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="875593634123171288">Afișează setările VPN</translation>
 <translation id="8759408218731716181">Nu se poate configura conectarea multiplă</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, aplicație instalată, blocată</translation>
 <translation id="8785070478575117577">Conectează-te la <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

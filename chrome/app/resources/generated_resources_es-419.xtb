@@ -432,6 +432,7 @@
 <translation id="1475502736924165259">Tienes certificados archivados que no coinciden con ninguna de las demás categorías</translation>
 <translation id="1476088332184200792">Copiar a tu dispositivo</translation>
 <translation id="1476607407192946488">&amp;Configuración de idiomas</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.</translation>
 <translation id="1478340334823509079">Detalles: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">La instalación no está habilitada</translation>
 <translation id="1481537595330271162">Se produjo un error al cambiar el tamaño del disco</translation>
@@ -2027,6 +2028,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3320630259304269485">Navegación segura (protección contra sitios peligrosos) y otras opciones de configuración de seguridad</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Estos datos incluyen contenido sensible o peligroso. Quita el contenido correspondiente y vuelve a intentarlo.}=1{Este archivo incluye contenido sensible o peligroso. Quita el contenido correspondiente y vuelve a intentarlo.}other{Estos archivos incluyen contenido sensible o peligroso. Quita el contenido correspondiente y vuelve a intentarlo.}}</translation>
 <translation id="3323521181261657960">Bonus: Disfruta de más tiempo de uso</translation>
+<translation id="3325804108816646710">Buscando perfiles disponibles…</translation>
 <translation id="3325910708063135066">La cámara y el micrófono están desactivados en las Preferencias del Sistema de Mac</translation>
 <translation id="3327050066667856415">Las Chromebooks están diseñadas para ser seguras. Tu dispositivo cuenta con una protección automática contra software malicioso, por lo que no necesitas una protección adicional.</translation>
 <translation id="3328489342742826322">Si implementas una copia de seguridad, se borrarán los datos y apps de Linux existentes en tu carpeta de archivos de Linux.</translation>
@@ -2094,6 +2096,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3412265149091626468">Saltar a selección</translation>
 <translation id="3413122095806433232">Emisores de certificados: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Tamaño:</translation>
+<translation id="3414966631182382431"><ph name="MANAGER" /> <ph name="BEGIN_LINK" />administra tu navegador<ph name="END_LINK" /></translation>
 <translation id="3416468988018290825">Mostrar siempre las URL completas</translation>
 <translation id="3417835166382867856">Buscar pestañas</translation>
 <translation id="3417836307470882032">Formato de 24 horas</translation>
@@ -3168,6 +3171,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4651484272688821107">No se pudo cargar el componente en línea con los recursos del modo de demostración.</translation>
 <translation id="4652935475563630866">Es necesario que reinicies Parallels Desktop para aplicar los cambios en la configuración de la cámara. Para continuar, reinicia Parallels Desktop.</translation>
 <translation id="4653405415038586100">Se produjo un error al configurar Linux</translation>
+<translation id="4657914796247705218">Velocidad de TrackPoint</translation>
 <translation id="465878909996028221">Solo se admiten los protocolos http, https y de archivo para las redirecciones a navegadores.</translation>
 <translation id="4659077111144409915">Cuenta principal</translation>
 <translation id="4659126640776004816">Esta función se activa cuando accedes a tu Cuenta de Google.</translation>
@@ -3828,6 +3832,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5470735824776589490">Debes reiniciar tu dispositivo para poder restablecerlo con Powerwash. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hola, soy la voz que leerá tus textos.</translation>
 <translation id="5472627187093107397">Guardar contraseñas para este sitio</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN debe tener al menos un carácter}other{El PIN debe tener al menos # caracteres}}</translation>
 <translation id="5473333559083690127">Vuelve a ingresar el PIN nuevo</translation>
 <translation id="5481273127572794904">No puede descargar múltiples archivos de forma automática</translation>
 <translation id="5481941284378890518">Agregar impresoras cercanas</translation>
@@ -4366,6 +4371,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6087960857463881712">Cara increíble</translation>
 <translation id="6091761513005122595">Se activó correctamente el recurso compartido.</translation>
 <translation id="6093888419484831006">Cancelando actualización…</translation>
+<translation id="6095541101974653012">Saliste de tu cuenta.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Abrir de forma maximizada</translation>
 <translation id="6096326118418049043">Nombre X 500</translation>
@@ -4699,6 +4705,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6474884162850599008">Desconectar la cuenta de Google Drive</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> desea compartir el contenido de tu pantalla. Elige lo que deseas compartir.</translation>
 <translation id="6478248366783946499">¿Deseas conservar el archivo peligroso?</translation>
+<translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Abrir el archivo descargado</translation>
 <translation id="6483805311199035658">Abriendo <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">Seleccionar idioma</translation>
@@ -4887,6 +4894,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="671928215901716392">Bloquear pantalla</translation>
 <translation id="6721678857435001674">Ver la marca y el modelo de tu llave de seguridad</translation>
 <translation id="6721972322305477112">&amp;Archivo</translation>
+<translation id="672208878794563299">Este sitio solicitará acceso la próxima vez.</translation>
 <translation id="672213144943476270">Desbloquea tu perfil antes de navegar como invitado.</translation>
 <translation id="6723661294526996303">Importar favoritos y configuración...</translation>
 <translation id="6723839937902243910">Alimentación</translation>
@@ -6284,6 +6292,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8317671367883557781">Agregar conexión de red</translation>
 <translation id="8319414634934645341">Uso extendido de la clave</translation>
 <translation id="8320459152843401447">Tu pantalla completa</translation>
+<translation id="8321837372750396788"><ph name="MANAGER" /> administrará este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8322814362483282060">Esta página no tiene permiso para acceder al micrófono.</translation>
 <translation id="8323167517179506834">Ingresar URL</translation>
 <translation id="8324784016256120271">Los sitios pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
@@ -6591,6 +6600,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8698269656364382265">Si quieres regresar a la pantalla anterior, desliza el dedo desde el lado izquierdo.</translation>
 <translation id="869884720829132584">Menú Aplicaciones</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
+<translation id="8702825062053163569">Se bloqueó tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8703346390800944767">Omitir anuncio</translation>
 <translation id="8705331520020532516">Número de serie</translation>
 <translation id="8705580154597116082">Wi-Fi disponible mediante el teléfono</translation>

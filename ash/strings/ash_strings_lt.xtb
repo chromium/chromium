@@ -238,6 +238,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3236488194889173876">Nėra jokių pasiekiamų mobiliojo ryšio tinklų</translation>
 <translation id="3249513730522716925">Langas „<ph name="WINDOW_TITLE" />“ perkeltas iš darbalaukio „<ph name="ACTIVE_DESK" />“ į darbalaukį „<ph name="TARGET_DESK" />“</translation>
 <translation id="3255483164551725916">„What can you do?“ (Ką gali atlikti?)</translation>
+<translation id="3269597722229482060">Spustelėti dešiniuoju klavišu</translation>
 <translation id="3289674678944039601">Įkraunama naudojant adapterį</translation>
 <translation id="3290356915286466215">Neapsaugota</translation>
 <translation id="3294437725009624529">Svečias</translation>
@@ -340,6 +341,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4212472694152630271">Perjungti į PIN kodą</translation>
 <translation id="4215497585250573029">VPN nustatymai</translation>
 <translation id="4217571870635786043">Diktavimas</translation>
+<translation id="4221957499226645091">„<ph name="APP_NAME" />“, įdiegta programa, pristabdyta</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="425364040945105958">Nėra SIM kortelės</translation>
@@ -761,6 +763,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8142699993796781067">Privatus tinklas</translation>
 <translation id="8152092012181020186">Paspauskite „Ctrl“ + W, kad uždarytumėte.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Šį nustatymą tvarko jūsų administratorius.</translation>
+<translation id="8155628902202578800">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> informacijos dialogo langą</translation>
 <translation id="8167567890448493835">Naudojama: <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Mobiliojo ryšio tinklas. Signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Pranešimai yra paslėpti.</translation>
@@ -826,6 +829,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8755498163081687682">Patvirtinkite savo tapatybę: <ph name="ORIGIN_NAME" /> norėtų patvirtinti, kad tai jūs</translation>
 <translation id="875593634123171288">Rodyti VPN nustatymus</translation>
 <translation id="8759408218731716181">Negalima nustatyti kelių paskyrų</translation>
+<translation id="878215960996152260">„<ph name="APP_NAME" />“, įdiegta programa, užblokuota</translation>
 <translation id="8785070478575117577">Prisijungti prie „<ph name="NETWORK_NAME" />“</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">WI-Fi</translation>

@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Få Googles smarte funksjoner i Chrome</translation>
 <translation id="1147322039136785890">Nå kan du gi enheten til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">For å be om tilgang, kontakt administratoren for denne enheten.</translation>
+<translation id="1148063863818152153">EID-nummeret til enheten din</translation>
 <translation id="1149401351239820326">Utløpsmåned</translation>
 <translation id="1149725087019908252">Skanner <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">Dette er den siste automatiske programvare- og sikkerhetsoppdateringen for denne <ph name="DEVICE_TYPE" />-enheten. For å få fremtidige oppdateringer, oppgrader til en nyere modell. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -314,6 +315,7 @@
 <translation id="1343865611738742294">Gi Linux-apper tilgang til USB-enheter. Linux husker ikke USB-enheter etter at de er fjernet.</translation>
 <translation id="1346630054604077329">Bekreft og start på nytt</translation>
 <translation id="1347256498747320987">Installer oppdateringer og apper. Hvis du fortsetter, godtar du at denne enheten også kan laste ned og installere oppdateringer automatisk fra Google, operatøren din og produsenten av enheten. Dette bruker muligens mobildata. Noen av disse appene kan inneholde kjøp i app-funksjonalitet. <ph name="BEGIN_LINK1" />Finn ut mer<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Linux-lagringsplass</translation>
 <translation id="1347975661240122359">Oppdateringen starter når batteriet når <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Finner ikke PPD. Sjekk at Chromebooken din er på nettet, og prøv på nytt.</translation>
@@ -552,6 +554,7 @@
 <translation id="1608668830839595724">Flere handlinger for de valgte elementene</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Enheten er låst</translation>
+<translation id="1612019740169791082">Beholderen er ikke konfigurert med støtte for endring av diskstørrelse. For å justere mengden plass som er reservert for Linux, sikkerhetskopiér disken og gjenopprett den i en ny beholder.</translation>
 <translation id="1614511179807650956">Du kan ha brukt opp mobildatakvoten din. Gå til aktiveringsportalen for <ph name="NAME" /> for å kjøpe mer data.</translation>
 <translation id="161460670679785907">Finner ikke telefonen din</translation>
 <translation id="1616206807336925449">Denne utvidelsen krever ingen spesielle tillatelser.</translation>
@@ -686,6 +689,7 @@
 <translation id="175772926354468439">Aktiver temaet</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Se i Chrome Nettmarked</translation>
+<translation id="1761845175367251960">Kontoene til <ph name="NAME" /></translation>
 <translation id="176193854664720708">Fingeravtrykkssensoren er i av/på-knappen. Trykk på den forsiktig.</translation>
 <translation id="1763046204212875858">Opprett snarveier</translation>
 <translation id="1763808908432309942">Åpner en ny fane</translation>
@@ -895,6 +899,7 @@
 <translation id="1999115740519098545">Ved oppstart</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
 <translation id="2002109485265116295">Sanntid</translation>
+<translation id="200217416291116199">Det anbefales å sikkerhetskopiere filer, i tilfelle oppgraderingen ikke kan fullføres. Når oppgraderingen påbegynnes, blir Linux avsluttet. Lagre åpne filer før du fortsetter.</translation>
 <translation id="2003130567827682533">For å aktivere «<ph name="NAME" />»-dataene må du først koble til et Wi-Fi-nettverk</translation>
 <translation id="2005199804247617997">Andre profiler</translation>
 <translation id="2006638907958895361">Åpne linken i <ph name="APP" /></translation>
@@ -1606,6 +1611,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2807517655263062534">Filer du laster ned, vises her</translation>
 <translation id="2809586584051668049">og <ph name="NUMBER_ADDITIONAL_DISABLED" /> til</translation>
 <translation id="2810390687497823527">Hvis det er utvidelser du ikke kjenner igjen, eller hvis nettleseren ikke fungerer som forventet, kan du slå av eller tilpasse utvidelser her.</translation>
+<translation id="2811205483104563968">Kontoer</translation>
 <translation id="2812049959647166806">Thunderbolt støttes ikke</translation>
 <translation id="2812989263793994277">Ikke vis bilder</translation>
 <translation id="2813094189969465044">Foreldrekontroll</translation>
@@ -1644,6 +1650,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2858138569776157458">Populært</translation>
 <translation id="2861301611394761800">Systemoppdateringen er fullført. Start på nytt.</translation>
 <translation id="2861941300086904918">Sikkerhetsadministrator for Native Client</translation>
+<translation id="2862815659905780618">Fjern Linux-utviklingsmiljø</translation>
 <translation id="2864601841139725659">Angi profilbildet ditt</translation>
 <translation id="2865919525181940183">Skjermdump av programmene som er på skjermen</translation>
 <translation id="286674810810214575">Sjekker strømkilder …</translation>
@@ -1757,6 +1764,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2989123969927553766">Rulleakselerasjon for musen</translation>
 <translation id="2989474696604907455">ikke tilkoblet</translation>
 <translation id="2989786307324390836">DER-kodet binært, enkelt sertifikat</translation>
+<translation id="2990313168615879645">Legg til Google-konto</translation>
 <translation id="2992931425024192067">Vis alt innhold i varsler</translation>
 <translation id="2993517869960930405">Appinformasjon</translation>
 <translation id="2996286169319737844">Data er kryptert med passordfrasen din for synkronisering. Dette inkluderer ikke betalingsmåter og adresser fra Google Pay.</translation>
@@ -2368,6 +2376,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3706463572498736864">Sider per ark</translation>
 <translation id="370649949373421643">Aktiver Wi-Fi</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
+<translation id="3707163604290651814">For øyeblikket logget på som <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Nettleseren ble lukket før nedlastingen var ferdig.</translation>
 <translation id="3711931198657368127">Lim inn og gå til <ph name="URL" /></translation>
 <translation id="3711945201266135623">Fant <ph name="NUM_PRINTERS" /> skrivere på utskriftstjeneren</translation>
@@ -2872,6 +2881,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB ubrukt)</translation>
 <translation id="4310139701823742692">Filen har feil format. Sjekk PPD-filen og prøv på nytt.</translation>
 <translation id="431076611119798497">&amp;Detaljer</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Google-konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-kontoer}}</translation>
 <translation id="4312866146174492540">Blokkér (standard)</translation>
 <translation id="4314815835985389558">Administrer synkronisering</translation>
 <translation id="4316850752623536204">Utviklernettsted</translation>
@@ -3251,6 +3261,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4764368918650455114">Kontrollér at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. Hvis du deler med en Chromebook, må du sørge for at den har nærdeling påslått (åpne statusfeltet ved å velge tidspunktet, og velg deretter Nærdeling). <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Tillater at Android Messages videresender tekstmeldinger fra telefonen din til Chromebook</translation>
 <translation id="4768332406694066911">Du har sertifikater som identifiserer deg, fra disse organisasjonene</translation>
+<translation id="4773112038801431077">Oppgrader Linux</translation>
 <translation id="477647109558161443">Opprett en snarvei på skrivebordet</translation>
 <translation id="4776917500594043016">Passord for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Butikk</translation>
@@ -3744,6 +3755,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5368720394188453070">Telefonen er låst. Lås den opp for å få tilgang.</translation>
 <translation id="5368779022775404937">Logg på <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Slå på museakselerasjon</translation>
+<translation id="5369694795837229225">Konfigurer Linux-utviklingsmiljø</translation>
 <translation id="5370819323174483825">&amp;Last inn på nytt</translation>
 <translation id="5372529912055771682">Denne versjonen av operativsystemet støtter ikke registreringsmodusen som ble angitt. Kontroller at du kjører den nyeste versjonen, og prøv på nytt.</translation>
 <translation id="5372579129492968947">Løsne utvidelsen</translation>
@@ -4468,6 +4480,8 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6212168817037875041">Slå av skjermen</translation>
 <translation id="6212752530110374741">Send linken på e-post</translation>
 <translation id="6213230117190778270">Motta</translation>
+<translation id="6215620815501168899">Lukk forgrunnsvindu med EID-nummer og QR-kode</translation>
+<translation id="6216601812881225442">Beholderen støtter ikke størrelsesendringer. For å justere mengden plass som er forhåndsallokert til Linux, sikkerhetskopiér disken og gjenopprett den deretter i en ny beholder.</translation>
 <translation id="6216696360484424239">Logg på automatisk</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> er uten nett. Koble til Internett og prøv på nytt.</translation>
 <translation id="6220413761270491930">Det oppsto en feil under innlastingen av utvidelsen</translation>
@@ -4860,6 +4874,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6680442031740878064">Tilgjengelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
 <translation id="6681668084120808868">Ta et bilde</translation>
+<translation id="6683948477137300040">Vis forgrunnsvindu med enhetens EID-nummer og QR-kode</translation>
 <translation id="6684827949542560880">Laster ned den nyeste oppdateringen</translation>
 <translation id="668599234725812620">Åpne Google Play</translation>
 <translation id="6686490380836145850">Lukk fanene til høyre</translation>
@@ -5095,6 +5110,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6955535239952325894">Denne innstillingen er slått av for administrerte nettlesere</translation>
 <translation id="6957044667612803194">Denne sikkerhetsnøkkelen støtter ikke PIN-koder</translation>
 <translation id="6957231940976260713">Tjenestenavn</translation>
+<translation id="6960507406838246615">Linux-oppdatering kreves</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brukerne på denne <ph name="DEVICE_TYPE" />-enheten er slettet permanent.</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppen</translation>
@@ -5114,6 +5130,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="697312151395002334">Nettsteder som har lov til å sende forgrunnsvinduer og bruke viderekoblinger</translation>
 <translation id="6973611239564315524">En oppgradering for Debian 10 (Buster) er tilgjengelig</translation>
 <translation id="6974609594866392343">Demomodus uten nett</translation>
+<translation id="697508444536771064">Avslutt Linux</translation>
 <translation id="6977381486153291903">Fastvareversjon</translation>
 <translation id="6977877318519394148">Installer Rosetta</translation>
 <translation id="6978121630131642226">Søkemotorer</translation>
@@ -5514,6 +5531,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7443806024147773267">Få tilgang til passordene dine når du er logget på Google-kontoen</translation>
 <translation id="7444983668544353857">Slå av <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">installere apper automatisk</translation>
+<translation id="7448538354405258275">En kundeservicerepresentant kan bruke EID-nummeret til å hjelpe deg med å aktivere tjenesten.</translation>
 <translation id="7449752890690775568">Vil du fjerne passordet?</translation>
 <translation id="7450761244949417357">Åpnes i <ph name="ALTERNATIVE_BROWSER_NAME" /> nå</translation>
 <translation id="7453008956351770337">Ved å velge denne skriveren gir du følgende utvidelse tillatelse til å bruke skriveren din:</translation>
@@ -6043,6 +6061,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8032244173881942855">Fanen kunne ikke castes.</translation>
 <translation id="8033827949643255796">valgt</translation>
 <translation id="8033958968890501070">Tidsavbrudd</translation>
+<translation id="8036049989879571495">Konfigurer Linux-utviklingsmiljø (beta)</translation>
 <translation id="8037117027592400564">lese hele teksten med syntetisert tale</translation>
 <translation id="8037357227543935929">Spør (standard)</translation>
 <translation id="803771048473350947">Fil</translation>
@@ -6969,6 +6988,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="909108997331068008">Profilen til <ph name="EXISTING_USER" /> er allerede logget på <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Oppdater passordet</translation>
 <translation id="9094038138851891550">Ugyldig brukernavn</translation>
+<translation id="9094859731829297286">Er du sikker på at du vil reservere en disk med fast størrelse for Linux?</translation>
 <translation id="9094982973264386462">Fjern</translation>
 <translation id="9095253524804455615">Fjern</translation>
 <translation id="909554839118732438">Lukk alle inkognitovinduer</translation>

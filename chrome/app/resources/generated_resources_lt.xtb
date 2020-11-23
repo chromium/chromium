@@ -139,6 +139,7 @@
 <translation id="114721135501989771">„Google“ išm. funkc. „Chrome“</translation>
 <translation id="1147322039136785890">Dabar <ph name="SUPERVISED_USER_NAME" /> eilė</translation>
 <translation id="1147991416141538220">Norėdami paprašyti prieigos, susisiekite su šio įrenginio administratoriumi.</translation>
+<translation id="1148063863818152153">Įrenginio EID</translation>
 <translation id="1149401351239820326">Galiojimo laiko pabaigos mėnuo</translation>
 <translation id="1149725087019908252">Nuskaitomas failas „<ph name="FILE_NAME" />“</translation>
 <translation id="1150490752229770117">Tai yra paskutinis automatinis programinės įrangos ir saugos naujinys, skirtas „<ph name="DEVICE_TYPE" />“. Kad gautumėte būsimus naujinius, įsigykite naujesnį modelį. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -317,6 +318,7 @@
 <translation id="1343865611738742294">„Linux“ programoms suteikiamas leidimas pasiekti USB įrenginius. Pašalinto USB įrenginio „Linux“ neprisimins.</translation>
 <translation id="1346630054604077329">Patvirtinti ir paleisti iš naujo</translation>
 <translation id="1347256498747320987">Įdiekite naujinius ir programas. Tęsdami sutinkate, kad šis įrenginys taip pat gali automatiškai atsisiųsti ir įdiegti naujinius bei programas iš „Google“, operatoriaus ir įrenginio gamintojo (gali būti naudojami mobiliojo ryšio duomenys). Kai kurios programos gali siūlyti įsigyti pirkinių programoje. <ph name="BEGIN_LINK1" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">„Linux“ saugykla</translation>
 <translation id="1347975661240122359">Atnaujinimo procesas prasidės, kai akumuliatoriaus įkrovos lygis bus <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353686479385938207">„<ph name="PROVIDER_NAME" />“: „<ph name="NETWORK_NAME" />“</translation>
 <translation id="1353980523955420967">Nepavyko rasti PPD. Įsitikinkite, kad „Chromebook“ prijungtas, ir bandykite dar kartą.</translation>
@@ -558,6 +560,7 @@
 <translation id="1608668830839595724">Daugiau veiksmų, skirtų pasirinktiems elementams</translation>
 <translation id="161042844686301425">Žydra</translation>
 <translation id="1611432201750675208">Įrenginys užrakintas</translation>
+<translation id="1612019740169791082">Sudėtinis rodinys nesukonfigūruotas palaikyti disko dydžio keitimą. Jei norite koreguoti, kiek vietos priskiriama „Linux“, sukurkite atsarginę kopiją ir atkurkite naujame sudėtiniame rodinyje.</translation>
 <translation id="1614511179807650956">Gali būti, kad pasiekėte mobiliojo ryšio duomenų apribojimą. Apsilankykite „<ph name="NAME" />“ suaktyvinimo portale, kad įsigytumėte daugiau duomenų</translation>
 <translation id="161460670679785907">Nepavyko aptikti telefono</translation>
 <translation id="1616206807336925449">Šiam plėtiniui nereikalingi jokie specialūs leidimai.</translation>
@@ -692,6 +695,7 @@
 <translation id="175772926354468439">Įgalinti temą</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Žr. „Chrome“ internetinėje parduotuvėje</translation>
+<translation id="1761845175367251960"><ph name="NAME" /> paskyros</translation>
 <translation id="176193854664720708">Piršto antspaudo jutiklis yra maitinimo mygtuko viduje. Lengvai jį palieskite bet kuriuo pirštu.</translation>
 <translation id="1763046204212875858">Kurti programos sparčiuosius mygtukus</translation>
 <translation id="1763808908432309942">Atidaromas naujame skirtuke</translation>
@@ -901,6 +905,7 @@
 <translation id="1999115740519098545">Paleidžiant</translation>
 <translation id="2000419248597011803">Numatytajam paieškos varikliui siunčiami kai kurie slapukai ir į adreso juostą bei paieškos laukelį įvestos paieškos</translation>
 <translation id="2002109485265116295">Realusis laikas</translation>
+<translation id="200217416291116199">Rekomenduojama sukurti atsarginę failų kopiją, jei naujovinimo nepavyktų užbaigti. Pradėjus naujovinti, „Linux“ bus išjungta. Prieš tęsdami išsaugokite atidarytus failus.</translation>
 <translation id="2003130567827682533">Norėdami suaktyvinti „<ph name="NAME" />“ duomenis, pirmiausia prisijunkite prie „Wi-Fi“ tinklo</translation>
 <translation id="2005199804247617997">Kiti profiliai</translation>
 <translation id="2006638907958895361">Atidaryti nuorodą programoje „<ph name="APP" />“</translation>
@@ -1612,6 +1617,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2807517655263062534">Atsisiųsti failai rodomi čia</translation>
 <translation id="2809586584051668049">ir dar <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Jei neatpažįstate plėtinio arba jei jūsų naršyklė neveikia, kaip numatyta, galite išjungti arba tinkinti plėtinius čia.</translation>
+<translation id="2811205483104563968">Paskyros</translation>
 <translation id="2812049959647166806">„Thunderbolt“ nepalaikoma</translation>
 <translation id="2812989263793994277">Nerodyti jokių vaizdų</translation>
 <translation id="2813094189969465044">Tėvų kontrolė</translation>
@@ -1650,6 +1656,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2858138569776157458">Popul. svet.</translation>
 <translation id="2861301611394761800">Sistema atnaujinta. Paleiskite ją iš naujo.</translation>
 <translation id="2861941300086904918">„Native Client“ saugos valdytojas</translation>
+<translation id="2862815659905780618">Pašalinti „Linux“ kūrimo aplinką</translation>
 <translation id="2864601841139725659">Profilio nuotraukos nustatymas</translation>
 <translation id="2865919525181940183">Šiuo metu ekrane rodomų programų ekrano kopija</translation>
 <translation id="286674810810214575">Tikrinami maitinimo šaltiniai...</translation>
@@ -1763,6 +1770,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2989123969927553766">Slinkimo pele spartinimas</translation>
 <translation id="2989474696604907455">neprijungtas</translation>
 <translation id="2989786307324390836">DER užkoduotas dvejetainis, vienas sertifikatas</translation>
+<translation id="2990313168615879645">Pridėti „Google“ paskyrą</translation>
 <translation id="2992931425024192067">Rodyti visą pranešimo turinį</translation>
 <translation id="2993517869960930405">Programos informacija</translation>
 <translation id="2996286169319737844">Duomenys užšifruoti naudojant sinchronizavimo slaptafrazę. Neįtraukiami mokėjimo metodai ir adresai iš „Google Pay“.</translation>
@@ -2374,6 +2382,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3706463572498736864">Puslapių skaičiuoklėje</translation>
 <translation id="370649949373421643">Įgalinti „Wi-Fi“</translation>
 <translation id="370665806235115550">Įkeliama...</translation>
+<translation id="3707163604290651814">Šiuo metu prisijungta kaip <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Naršyklė buvo išjungta nebaigus atsisiųsti.</translation>
 <translation id="3711931198657368127">Įk&amp;lijuoti ir apsilankyti adresu <ph name="URL" /></translation>
 <translation id="3711945201266135623">Rasta spausdintuvų iš spausdinimo serverio: <ph name="NUM_PRINTERS" /></translation>
@@ -2880,6 +2889,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB tiesiogiai)</translation>
 <translation id="4310139701823742692">Failas netinkamo formato. Patikrinkite PPD failą ir bandykite dar kartą.</translation>
 <translation id="431076611119798497">Išsami informacija</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{Viena „Google“ paskyra}one{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyra}few{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyros}many{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyros}other{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyrų}}</translation>
 <translation id="4312866146174492540">Užblokuoti (numatytoji parinktis)</translation>
 <translation id="4314815835985389558">Sinchronizavimo tvarkymas</translation>
 <translation id="4316850752623536204">Kūrėjo svetainė</translation>
@@ -3259,6 +3269,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4764368918650455114">Įsitikinkite, kad abu įrenginiai yra atrakinti, vienas šalia kito ir juose įjungtas „Bluetooth“ ryšys. Bendrindami su „Chromebook“ įsitikinkite, kad jame įjungta Bendrinimo netoliese funkcija (pasirinkdami laiką atidarykite būsenos sritį, tada pasirinkite „Bendrinimas netoliese“). <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Leidžiama „Android Messages“ perduoti tekstus iš telefono į „Chromebook“</translation>
 <translation id="4768332406694066911">Turite jus identifikuojančius sertifikatus iš šių organizacijų</translation>
+<translation id="4773112038801431077">„Linux“ naujovinimas</translation>
 <translation id="477647109558161443">Sukurti darbalaukio šaukinį</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> slaptažodis</translation>
 <translation id="4777825441726637019">„Play“ parduotuvė</translation>
@@ -3752,6 +3763,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5368720394188453070">Telefonas užrakintas. Norėdami įeiti, atrakinkite jį.</translation>
 <translation id="5368779022775404937">Prisijunkite prie <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Įgalinti pelės spartinimą</translation>
+<translation id="5369694795837229225">Nustatyti „Linux“ kūrimo aplinką</translation>
 <translation id="5370819323174483825">&amp;Įkelti iš naujo</translation>
 <translation id="5372529912055771682">Ši operacinė sistema nepalaiko teikiamo registracijos režimo. Įsitikinkite, kad naudojate naujausią versiją ir bandykite dar kartą.</translation>
 <translation id="5372579129492968947">Atsegti plėtinį</translation>
@@ -4477,6 +4489,8 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6212168817037875041">Išjungti ekraną</translation>
 <translation id="6212752530110374741">Siųsti nuorodą el. paštu</translation>
 <translation id="6213230117190778270">Gauti</translation>
+<translation id="6215620815501168899">Uždaryti EID ir QR kodo iššokantįjį langą</translation>
+<translation id="6216601812881225442">Negalima pakeisti sudėtinio rodinio dydžio. Jei norite koreguoti, kiek vietos iš anksto priskiriama „Linux“, sukurkite atsarginę kopiją ir atkurkite naujame sudėtiniame rodinyje.</translation>
 <translation id="6216696360484424239">Automatiškai prisijungti</translation>
 <translation id="6218058416316985984">„<ph name="DEVICE_TYPE" />“ įrenginyje neįjungtas internetas. Prisijunkite prie interneto ir bandykite dar kartą.</translation>
 <translation id="6220413761270491930">Klaida įkeliant plėtinį</translation>
@@ -4869,6 +4883,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6680442031740878064">Pasiekiama: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Sparta</translation>
 <translation id="6681668084120808868">Fotografuoti</translation>
+<translation id="6683948477137300040">Rodyti įrenginio EID ir QR kodo iššokantįjį langą</translation>
 <translation id="6684827949542560880">Atsisiunčiamas naujausias naujinys</translation>
 <translation id="668599234725812620">Atidaryti „Google Play“</translation>
 <translation id="6686490380836145850">Uždaryti dešinėje esančius skirtukus</translation>
@@ -5104,6 +5119,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6955535239952325894">Šis nustatymas išjungtas tvarkomose naršyklėse</translation>
 <translation id="6957044667612803194">Šis saugos raktas nepalaiko PIN kodų</translation>
 <translation id="6957231940976260713">Paslaugos pavadinimas</translation>
+<translation id="6960507406838246615">Reikia atnaujinti „Linux“</translation>
 <translation id="696103774840402661">Visam laikui ištrinti visų naudotojų bet kurie failai ir vietiniai duomenys, esantys šiame įrenginyje (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6964390816189577014">Herojus</translation>
 <translation id="6964760285928603117">Pašalinti iš grupės</translation>
@@ -5123,6 +5139,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="697312151395002334">Leidžiama siųsti iššokančiuosius langus ir naudoti peradresavimus</translation>
 <translation id="6973611239564315524">Galima naujovinti į „Debian 10 (Buster)“</translation>
 <translation id="6974609594866392343">Demonstracinis režimas neprisijungus</translation>
+<translation id="697508444536771064">Stabdyti „Linux“</translation>
 <translation id="6977381486153291903">Programinės aparatinės įrangos taisymas</translation>
 <translation id="6977877318519394148">Įdiegti „Rosetta“</translation>
 <translation id="6978121630131642226">Paieškos sistemos</translation>
@@ -5523,6 +5540,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7443806024147773267">Pasiekite slaptažodžius, kai esate prisijungę prie „Google“ paskyros</translation>
 <translation id="7444983668544353857">Neleisti <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Automatiškai įdiekite programas</translation>
+<translation id="7448538354405258275">Klientų aptarnavimo komandos atstovas, naudodamas EID numerį, gali padėti suaktyvinti paslaugą.</translation>
 <translation id="7449752890690775568">Pašalinti slaptažodį?</translation>
 <translation id="7450761244949417357">Dabar atidaroma naršyklėje „<ph name="ALTERNATIVE_BROWSER_NAME" />“</translation>
 <translation id="7453008956351770337">Pasirinkdami šį spausdintuvą suteikiate nurodytam plėtiniui leidimą pasiekti savo spausdintuvą:</translation>
@@ -6052,6 +6070,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8032244173881942855">Nepavyko perduoti skirtuko.</translation>
 <translation id="8033827949643255796">pasirinkta</translation>
 <translation id="8033958968890501070">Skirtojo laiko pabaiga</translation>
+<translation id="8036049989879571495">„Linux“ kūrimo aplinkos (beta versijos) nustatymas</translation>
 <translation id="8037117027592400564">Skaityti visą tekstą sintezuota kalba</translation>
 <translation id="8037357227543935929">Klausti (numatytoji parinktis)</translation>
 <translation id="803771048473350947">Failas</translation>
@@ -6981,6 +7000,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="909108997331068008"><ph name="EXISTING_USER" /> profilis jau prijungtas prie <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Atnaujinti slaptažodį</translation>
 <translation id="9094038138851891550">Netinkamas naudotojo vardas</translation>
+<translation id="9094859731829297286">Ar tikrai norite „Linux“ rezervuoti fiksuoto dydžio vietą diske?</translation>
 <translation id="9094982973264386462">Pašalinti</translation>
 <translation id="9095253524804455615">Pašalinti</translation>
 <translation id="909554839118732438">Uždaryti inkognito langus</translation>

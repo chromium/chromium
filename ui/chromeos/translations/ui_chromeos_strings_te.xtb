@@ -92,6 +92,7 @@
 <translation id="2163152940313951844">చెల్లని అక్షరం: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2198315389084035571">సరళీకృత చైనీస్</translation>
 <translation id="2208158072373999562">జిప్ ఆర్కైవ్</translation>
+<translation id="2208919847696382164">Linuxతో ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను సృష్టించడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">తరలించబడింది.</translation>
@@ -128,6 +129,7 @@
 <translation id="2664412712123763093">ఫైల్ లొకేషన్</translation>
 <translation id="2672394958563893062">ఎర్ర‌ర్ ఏర్ప‌డింది. మొదటి నుండి పునఃప్రారంభించడానికి క్లిక్ చేయండి.</translation>
 <translation id="2676946222714718093">ఇందులో ప్లే అవుతోంది</translation>
+<translation id="2718540689505416944">Linuxతో యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ఫోల్డర్‌లోని ఫైల్స్‌ను యాక్సెస్ చేయడానికి Parallels Desktopకు అనుమతిని ఇవ్వండి</translation>
 <translation id="2771816809568414714">జున్ను</translation>
 <translation id="2781645665747935084">బెల్జియన్</translation>
@@ -634,7 +636,7 @@
 <translation id="9148058034647219655">నిష్క్రమించు</translation>
 <translation id="9154418932169119429">ఈ చిత్రం ఆఫ్‌లైన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="9213073329713032541">ఇన్‌స్టాలేషన్ విజయవంతంగా ప్రారంభించబడింది.</translation>
-<translation id="9219103736887031265">చిత్రాలు</translation>
+<translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="9219908252191632183">లూనార్</translation>
 <translation id="939736085109172342">క్రొత్త  ఫోల్డర్</translation>
 <translation id="942954117721265519">ఈ డైరెక్టరీలో చిత్రాలు లేవు.</translation>

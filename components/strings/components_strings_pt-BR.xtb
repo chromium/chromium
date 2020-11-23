@@ -365,6 +365,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2354430244986887761">Recentemente, o recurso "Navegação segura" do Google <ph name="BEGIN_LINK" />encontrou apps prejudiciais<ph name="END_LINK" /> em <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">É possível que invasores consigam ver as imagens que você está olhando nesse site e as modifiquem para enganar você.</translation>
 <translation id="2356070529366658676">Perguntar</translation>
+<translation id="2357481397660644965">Seu dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />, e sua conta é gerenciada por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360873523816792727">Para usar seus cartões em todos os dispositivos, ative a sincronização.</translation>
@@ -542,6 +543,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3145945101586104090">Falha ao decodificar resposta</translation>
 <translation id="3150653042067488994">Erro temporário do servidor</translation>
 <translation id="3154506275960390542">Essa página inclui um formulário que pode não ser enviado de forma segura. Os dados que você envia podem ser vistos por outras pessoas enquanto elas navegam ou ser modificados por um invasor para alterar o que o servidor recebe.</translation>
+<translation id="315504272643575312">Sua conta é gerenciada por <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3162559335345991374">O Wi-Fi que você está usando pode exigir a visita a uma página de login.</translation>
 <translation id="3167968892399408617">Quando você está no modo invisível, as páginas que você visita não aparecem no seu histórico de navegação e de pesquisa, nem armazenam arquivos "cookies". Mas os downloads e os favoritos continuam funcionando normalmente.</translation>
@@ -1919,6 +1921,7 @@ Mais detalhes:
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página da Web no endereço <ph name="PAGE" /> porque:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">Seu dispositivo e sua conta são gerenciados por <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="868922510921656628">Páginas por grupo</translation>
 <translation id="869891660844655955">Validade</translation>
@@ -1934,6 +1937,7 @@ Mais detalhes:
 <translation id="8728672262656704056">Você está navegando sem deixar rastros</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8731544501227493793">Botão "Gerenciar senhas". Pressione "Enter" para ver e gerenciar suas senhas nas configurações do Chrome</translation>
+<translation id="8734529307927223492">Seu <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para abrir uma nova janela anônima e navegar com privacidade</translation>
 <translation id="8738058698779197622">Para estabelecer uma conexão segura, o relógio precisa ser ajustado corretamente. Isso ocorre porque os certificados que os websites usam para se identificar são válidos apenas por períodos específicos. Como o relógio do seu dispositivo está incorreto, o Chromium não pode verificar esses certificados.</translation>
 <translation id="8740359287975076522">Não foi possível encontrar o &lt;abbr id="dnsDefinition"&gt;endereço DNS&lt;/abbr&gt; de <ph name="HOST_NAME" />. Diagnosticando o problema.</translation>
@@ -2024,6 +2028,7 @@ Mais detalhes:
 <translation id="9103872766612412690">O site <ph name="SITE" /> geralmente usa criptografia para proteger suas informações. Quando o Chromium tentou se conectar a <ph name="SITE" /> dessa vez, o website retornou credenciais
 incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser <ph name="SITE" /> ou quando uma tela de login por Wi-Fi interrompeu a conexão. Suas informações ainda estão protegidas, porque o Chromium interrompeu a conexão antes que os dados fossem trocados.</translation>
 <translation id="9106062320799175032">Adicione um Endereço de Faturamento</translation>
+<translation id="9107467864910557787">Seu navegador é gerenciado por <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Confirmando cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerenciado por uma empresa ou outra organização. A atividade deste dispositivo pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Enviado</translation>
