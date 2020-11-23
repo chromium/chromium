@@ -1454,9 +1454,7 @@ void NavigationRequest::BeginNavigation() {
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
-      // TODO(nasko): Convert this to CHECK once it is confirmed that it does
-      // not happen in reality.
-      base::debug::DumpWithoutCrashing();
+      CHECK(false);
     }
 
     ReadyToCommitNavigation(false /* is_error */);
@@ -2401,9 +2399,7 @@ void NavigationRequest::OnResponseStarted(
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
-      // TODO(nasko): Convert this to CHECK once it is confirmed that it does
-      // not happen in reality.
-      base::debug::DumpWithoutCrashing();
+      CHECK(false);
     }
   } else {
     render_frame_host_ = nullptr;
@@ -2663,9 +2659,7 @@ void NavigationRequest::OnRequestFailedInternal(
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
-      // TODO(nasko): Convert this to CHECK once it is confirmed that it does
-      // not happen in reality.
-      base::debug::DumpWithoutCrashing();
+      CHECK(false);
     }
   }
 
