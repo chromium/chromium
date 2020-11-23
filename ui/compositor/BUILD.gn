@@ -116,6 +116,8 @@ component("compositor") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "test/animation_throughput_reporter_test_base.cc",
+    "test/animation_throughput_reporter_test_base.h",
     "test/direct_layer_tree_frame_sink.cc",
     "test/direct_layer_tree_frame_sink.h",
     "test/draw_waiter_for_test.cc",

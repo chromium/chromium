@@ -6,73 +6,20 @@
 
 #include <memory>
 
-#include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "cc/metrics/frame_sequence_metrics.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/test/test_compositor_host.h"
-#include "ui/compositor/test/test_context_factories.h"
+#include "ui/compositor/test/animation_throughput_reporter_test_base.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
-class AnimationThroughputReporterTest : public testing::Test {
- public:
-  AnimationThroughputReporterTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
-  AnimationThroughputReporterTest(const AnimationThroughputReporterTest&) =
-      delete;
-  AnimationThroughputReporterTest& operator=(
-      const AnimationThroughputReporterTest&) = delete;
-  ~AnimationThroughputReporterTest() override = default;
-
-  // testing::Test:
-  void SetUp() override {
-    context_factories_ = std::make_unique<TestContextFactories>(false);
-
-    const gfx::Rect bounds(100, 100);
-    host_.reset(TestCompositorHost::Create(
-        bounds, context_factories_->GetContextFactory()));
-    host_->Show();
-
-    compositor()->SetRootLayer(&root_);
-
-    frame_generation_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(50), this,
-        &AnimationThroughputReporterTest::GenerateOneFrame);
-  }
-
-  void TearDown() override {
-    frame_generation_timer_.Stop();
-    host_.reset();
-    context_factories_.reset();
-  }
-
-  void GenerateOneFrame() { compositor()->ScheduleFullRedraw(); }
-
-  Compositor* compositor() { return host_->GetCompositor(); }
-  Layer* root_layer() { return &root_; }
-
- private:
-  base::test::TaskEnvironment task_environment_;
-
-  std::unique_ptr<TestContextFactories> context_factories_;
-  std::unique_ptr<TestCompositorHost> host_;
-  Layer root_;
-
-  // A timer to generate continuous compositor frames to trigger throughput
-  // data being transferred back.
-  base::RepeatingTimer frame_generation_timer_;
-};
+using AnimationThroughputReporterTest = AnimationThroughputReporterTestBase;
 
 // Tests animation throughput collection with implicit animation scenario.
 TEST_F(AnimationThroughputReporterTest, ImplicitAnimation) {
@@ -90,9 +37,11 @@ TEST_F(AnimationThroughputReporterTest, ImplicitAnimation) {
                       }));
 
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
+    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
     layer.SetOpacity(1.0f);
   }
+  // The animation starts in next frame (16ms) and ends 48 ms later.
+  Advance(base::TimeDelta::FromMilliseconds(64));
   run_loop.Run();
 }
 
@@ -112,13 +61,13 @@ TEST_F(AnimationThroughputReporterTest, ImplicitAnimationLateAttach) {
                       }));
 
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
+    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
     layer.SetOpacity(1.0f);
   }
 
   // Attach to root after animation setup.
   root_layer()->Add(&layer);
-
+  Advance(base::TimeDelta::FromMilliseconds(64));
   run_loop.Run();
 }
 
@@ -140,8 +89,9 @@ TEST_F(AnimationThroughputReporterTest, ExplicitAnimation) {
 
     animator->ScheduleAnimation(
         new LayerAnimationSequence(LayerAnimationElement::CreateOpacityElement(
-            1.0f, base::TimeDelta::FromMilliseconds(50))));
+            1.0f, base::TimeDelta::FromMilliseconds(48))));
   }
+  Advance(base::TimeDelta::FromMilliseconds(64));
   run_loop.Run();
 }
 
@@ -153,7 +103,7 @@ TEST_F(AnimationThroughputReporterTest, PersistedAnimation) {
 
   // Set a persisted animator to |layer|.
   LayerAnimator* animator =
-      new LayerAnimator(base::TimeDelta::FromMilliseconds(50));
+      new LayerAnimator(base::TimeDelta::FromMilliseconds(48));
   layer->SetAnimator(animator);
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
@@ -166,11 +116,13 @@ TEST_F(AnimationThroughputReporterTest, PersistedAnimation) {
 
   // Report data for animation of opacity goes to 1.
   layer->SetOpacity(1.0f);
+  Advance(base::TimeDelta::FromMilliseconds(64));
   run_loop->Run();
 
   // Report data for animation of opacity goes to 0.5.
   run_loop = std::make_unique<base::RunLoop>();
   layer->SetOpacity(0.5f);
+  Advance(base::TimeDelta::FromMilliseconds(64));
   run_loop->Run();
 }
 
@@ -189,7 +141,7 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
                       }));
 
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
+    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
     layer->SetOpacity(1.0f);
   }
 
@@ -197,11 +149,7 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
   layer.reset();
 
   // Wait a bit to ensure that report does not happen.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(100));
-  run_loop.Run();
+  Advance(base::TimeDelta::FromMilliseconds(100));
 }
 
 // Tests animation throughput not reported when detached from timeline.
@@ -219,7 +167,7 @@ TEST_F(AnimationThroughputReporterTest, NoReportOnDetach) {
                       }));
 
     ScopedLayerAnimationSettings settings(animator);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
+    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
     layer->SetOpacity(1.0f);
   }
 
@@ -228,11 +176,7 @@ TEST_F(AnimationThroughputReporterTest, NoReportOnDetach) {
   root_layer()->Add(layer.get());
 
   // Wait a bit to ensure that report does not happen.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(100));
-  run_loop.Run();
+  Advance(base::TimeDelta::FromMilliseconds(100));
 }
 
 // Tests animation throughput not reported and no leak when animation is stopped
@@ -260,11 +204,7 @@ TEST_F(AnimationThroughputReporterTest, EndDetachedNoReportNoLeak) {
   animator->StopAnimating();
 
   // Wait a bit to ensure that report does not happen.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(100));
-  run_loop.Run();
+  Advance(base::TimeDelta::FromMilliseconds(100));
 
   // AnimationTracker in |reporter| should not leak in asan.
 }
@@ -305,10 +245,11 @@ TEST_F(AnimationThroughputReporterTest, ReportForAnimateToNewTarget) {
     ScopedLayerAnimationSettings settings(animator);
     settings.SetPreemptionStrategy(
         LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
+    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
     layer->SetOpacity(1.0f);
     layer->SetBounds(gfx::Rect(0, 0, 5, 6));
   }
+  Advance(base::TimeDelta::FromMilliseconds(64));
   run_loop.Run();
 }
 
