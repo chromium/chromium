@@ -70,17 +70,10 @@ void SpinningMutex::LockSlow() {
   }
 }
 
-#elif defined(OS_WIN)
+#else
 
 void SpinningMutex::LockSlow() {
   ::AcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
-}
-
-#elif defined(OS_APPLE)
-
-void SpinningMutex::LockSlow() {
-  int retval = pthread_mutex_lock(&lock_);
-  PA_DCHECK(retval == 0);
 }
 
 #endif
