@@ -26,8 +26,8 @@ public class ChromePaymentResponseHelper
     private final PaymentApp mSelectedPaymentApp;
     private final PaymentOptions mPaymentOptions;
     private final boolean mSkipToGpay;
+    private final PaymentResponse mPaymentResponse;
     private AutofillAddress mSelectedShippingAddress;
-    private PaymentResponse mPaymentResponse;
     private PaymentResponseResultCallback mResultCallback;
     private boolean mIsWaitingForShippingNormalization;
     private boolean mIsWaitingForPaymentsDetails = true;
