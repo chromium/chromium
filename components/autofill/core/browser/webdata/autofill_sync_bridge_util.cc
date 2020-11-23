@@ -373,6 +373,9 @@ AutofillProfile ProfileFromSpecifics(
 
   profile.GenerateServerProfileIdentifier();
 
+  // Call the finalization routine to parse the structure of the name and the
+  // address into their components.
+  profile.FinalizeAfterImport();
   return profile;
 }
 

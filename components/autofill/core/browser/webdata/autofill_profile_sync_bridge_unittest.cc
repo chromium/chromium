@@ -183,6 +183,7 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfo(ADDRESS_HOME_PREMISE_NAME, ASCIIToUTF16("Premise"));
   profile.set_language_code("en");
   profile.SetClientValidityFromBitfieldValue(kValidityStateBitfield);
+  profile.FinalizeAfterImport();
   return profile;
 }
 
@@ -415,6 +416,7 @@ TEST_P(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Added) {
 
   AutofillProfile local(kGuidA, kHttpsOrigin);
   local.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Jane"));
+  local.FinalizeAfterImport();
   AutofillProfileChange change(AutofillProfileChange::ADD, kGuidA, &local);
 
   EXPECT_CALL(
@@ -560,9 +562,11 @@ TEST_P(AutofillProfileSyncBridgeTest, GetAllDataForDebugging) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpsOrigin);
   local1.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("1 1st st"));
+  local1.FinalizeAfterImport();
   AutofillProfile local2 = AutofillProfile(kGuidB, kHttpsOrigin);
   local2.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Tom"));
   local2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("2 2nd st"));
+  local2.FinalizeAfterImport();
   AddAutofillProfilesToTable({local1, local2});
 
   EXPECT_THAT(GetAllLocalData(), UnorderedElementsAre(local1, local2));
@@ -572,9 +576,11 @@ TEST_P(AutofillProfileSyncBridgeTest, GetData) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpsOrigin);
   local1.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("1 1st st"));
+  local1.FinalizeAfterImport();
   AutofillProfile local2 = AutofillProfile(kGuidB, kHttpsOrigin);
   local2.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Tom"));
   local2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("2 2nd st"));
+  local2.FinalizeAfterImport();
   AddAutofillProfilesToTable({local1, local2});
 
   std::vector<AutofillProfile> data;
@@ -595,10 +601,11 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpOrigin);
   local1.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("1 1st st"));
-
+  local1.FinalizeAfterImport();
   AutofillProfile local2 = AutofillProfile(kGuidB, std::string());
   local2.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Tom"));
   local2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("2 2nd st"));
+  local2.FinalizeAfterImport();
 
   AddAutofillProfilesToTable({local1, local2});
 
@@ -688,6 +695,7 @@ TEST_P(AutofillProfileSyncBridgeTest, ProfileMigration) {
 // the server.
 TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToServer) {
   AutofillProfile local = ConstructCompleteProfile();
+  local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // This complete profile is fully uploaded to sync.
@@ -762,6 +770,7 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_NonSimilarProfiles) {
   local.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
   local.SetRawInfo(NAME_MIDDLE, ASCIIToUTF16("K."));
   local.SetRawInfo(NAME_LAST, ASCIIToUTF16("Doe"));
+  local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile are not similar as the names are different (all other
@@ -937,6 +946,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_LocalOriginPreserved) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("650234567"));
+  local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   AutofillProfile remote_profile = AutofillProfile(kGuidB, kHttpOrigin);
@@ -964,6 +974,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 TEST_P(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_LocalExistingOriginPreserved) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
+  local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // Remote data does not have an origin value.
@@ -980,6 +991,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
   // Expect the local autofill profile to still have an origin after sync.
   AutofillProfile merged(local);
   merged.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
+  merged.FinalizeAfterImport();
 
   EXPECT_THAT(GetAllLocalData(), ElementsAre(merged));
 }
@@ -991,6 +1003,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_LocalMissingOriginPreserved) {
   AutofillProfile local = AutofillProfile(kGuidA, std::string());
   local.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
+  local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // Create a Sync profile identical to |local|, except with no origin set.
@@ -1010,6 +1023,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 
 TEST_P(AutofillProfileSyncBridgeTest, ApplySyncChanges) {
   AutofillProfile local = AutofillProfile(kGuidA, kHttpsOrigin);
+  local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   StartSyncing({});
@@ -1310,6 +1324,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
   // Expect local autofill profile to still have the validity state after.
   AutofillProfile merged(local);
   merged.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
+  merged.FinalizeAfterImport();
 
   // No update to sync, the local validity bitfield should stay untouched.
   EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(0);
@@ -1324,6 +1339,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
   // Local autofill profile has an empty full name.
   AutofillProfile local(kGuidA, kHttpsOrigin);
   local.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
+  local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // Remote data does not have a full name value.

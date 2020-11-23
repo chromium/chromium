@@ -259,9 +259,6 @@ AutofillProfile::AutofillProfile(const AutofillProfile& profile)
       company_(this),
       phone_number_(this) {
   operator=(profile);
-  // In case the profile is converted from a legacy profile or a wallet profile
-  // with structured names, try to finalize it.
-  FinalizeAfterImport();
 }
 
 AutofillProfile::~AutofillProfile() = default;

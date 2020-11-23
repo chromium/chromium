@@ -374,7 +374,7 @@ class PaymentsClientTest : public testing::Test {
     profile.SetInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16(zip), "en-US");
     profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16(phone_number),
                     "en-US");
-
+    profile.FinalizeAfterImport();
     return profile;
   }
 };

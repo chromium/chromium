@@ -885,6 +885,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                       base::WideToUTF16(L"861088828000"));
   profile1.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY),
                    base::WideToUTF16(L"India"), "en-US");
+  profile1.FinalizeAfterImport();
   profiles.push_back(profile1);
 
   AutofillProfile profile2;
@@ -894,11 +895,13 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                                         L"\u8def1915\u53f7"));
   profile2.SetRawInfo(NAME_LAST, base::WideToUTF16(L"aguantó"));
   profile2.SetRawInfo(ADDRESS_HOME_ZIP, base::WideToUTF16(L"HOME 94043"));
+  profile2.FinalizeAfterImport();
   profiles.push_back(profile2);
 
   AutofillProfile profile3;
   profile3.SetRawInfo(EMAIL_ADDRESS, base::WideToUTF16(L"sue@example.com"));
   profile3.SetRawInfo(COMPANY_NAME, base::WideToUTF16(L"Company X"));
+  profile3.FinalizeAfterImport();
   profiles.push_back(profile3);
 
   AutofillProfile profile4;
@@ -917,6 +920,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                         L"\u0905\u092a\u094b\u0932\u094b "
                         L"\u091f\u093e\u092f\u0930\u094d\u0938 "
                         L"\u0906\u0926\u093f"));
+  profile4.FinalizeAfterImport();
   profiles.push_back(profile4);
 
   AutofillProfile profile5;
@@ -928,6 +932,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                       base::WideToUTF16(L"111111111111110000GOOGLE"));
   profile5.SetRawInfo(EMAIL_ADDRESS, base::WideToUTF16(L"page@000000.com"));
   profile5.SetRawInfo(COMPANY_NAME, base::WideToUTF16(L"Google"));
+  profile5.FinalizeAfterImport();
   profiles.push_back(profile5);
 
   AutofillProfile profile6;
@@ -944,6 +949,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                         L"\u064a \u0639\u0645\u0631 "
                         L"\u0627\u0644\u0628\u0634\u064a\u0631"));
   profile6.SetRawInfo(ADDRESS_HOME_ZIP, base::WideToUTF16(L"HOME 94043"));
+  profile6.FinalizeAfterImport();
   profiles.push_back(profile6);
 
   AutofillProfile profile7;
@@ -960,6 +966,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                       base::WideToUTF16(L"15466784565"));
   profile7.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY),
                    base::WideToUTF16(L"United States"), "en-US");
+  profile7.FinalizeAfterImport();
   profiles.push_back(profile7);
 
   personal_data_->SetProfiles(&profiles);
