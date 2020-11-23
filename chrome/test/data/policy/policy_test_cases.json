@@ -344,7 +344,6 @@
 
   "PrinterTypeDenyList": {
     "os": ["win", "linux", "mac", "chromeos"],
-    "test_policy": { "PrinterTypeDenyList": ["privet", "extension"] },
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrinterTypeDenyList": [ "value1" ]},
@@ -3738,7 +3737,6 @@
 
   "ScrollToTextFragmentEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
-    "test_policy": { "ScrollToTextFragmentEnabled": true },
     "policy_pref_mapping_tests": [
       {
         "policies": { "ScrollToTextFragmentEnabled": true },
@@ -3778,7 +3776,6 @@
 
   "GloballyScopeHTTPAuthCacheEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
-    "test_policy": { "GloballyScopeHTTPAuthCacheEnabled": true },
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3811,7 +3808,6 @@
 
   "DNSInterceptionChecksEnabled": {
     "os": ["chromeos", "linux", "mac", "win"],
-    "test_policy": { "DNSInterceptionChecksEnabled": false },
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3829,7 +3825,6 @@
 
   "IntranetRedirectBehavior": {
     "os": ["chromeos", "linux", "mac", "win"],
-    "test_policy": { "IntranetRedirectBehavior": 0 },
     "policy_pref_mapping_tests": [
       {
         "policies": { "IntranetRedirectBehavior": 0 },
@@ -5223,7 +5218,6 @@
 
   "AmbientAuthenticationInPrivateModesEnabled":{
     "os": ["win", "linux", "mac", "chromeos", "android"],
-    "test_policy":{"AmbientAuthenticationInPrivateModesEnabled": true},
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -5440,7 +5434,6 @@
 
   "ClickToCallEnabled" : {
     "os": ["win", "linux", "mac", "chromeos"],
-    "test_policy": { "ClickToCallEnabled": false },
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -5473,7 +5466,6 @@
 
   "SuggestedContentEnabled": {
     "os": ["chromeos"],
-    "test_policy": {"SuggestedContentEnabled": false },
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -6434,7 +6426,6 @@
 
   "DeviceCrostiniArcAdbSideloadingAllowed": {
     "os": ["chromeos"],
-    "test_policy": { "DeviceCrostiniArcAdbSideloadingAllowed": 2 },
     "policy_pref_mapping_tests": []
   },
 

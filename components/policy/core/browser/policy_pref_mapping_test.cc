@@ -233,10 +233,6 @@ class PolicyTestCase {
       }
     }
 
-    const base::Value* test_policy = test_case.FindDictKey("test_policy");
-    if (test_policy)
-      test_policy_ = test_policy->CreateDeepCopy();
-
     const base::Value* policy_pref_mapping_tests =
         test_case.FindListKey("policy_pref_mapping_tests");
     if (policy_pref_mapping_tests) {
@@ -285,8 +281,6 @@ class PolicyTestCase {
     return IsOsSupported();
   }
 
-  const base::Value* test_policy() const { return test_policy_.get(); }
-
   const std::vector<std::unique_ptr<PolicyPrefMappingTest>>&
   policy_pref_mapping_test() const {
     return policy_pref_mapping_test_;
@@ -297,7 +291,6 @@ class PolicyTestCase {
   bool is_official_only_;
   bool can_be_recommended_;
   std::vector<std::string> supported_os_;
-  std::unique_ptr<base::Value> test_policy_;
   std::vector<std::unique_ptr<PolicyPrefMappingTest>> policy_pref_mapping_test_;
 };
 
@@ -395,7 +388,7 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
 
     // This can only be a warning as many policies are not really testable
     // this way and only present as a single line in the file.
-    // Although they could at least contain the "os" and "test_policy" fields.
+    // Although they could at least contain the "os" fields.
     // See http://crbug.com/791125.
     LOG_IF(WARNING, !has_test_case_for_this_os)
         << "Policy " << policy->first
