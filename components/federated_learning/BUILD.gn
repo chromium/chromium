@@ -16,7 +16,10 @@ static_library("federated_learning") {
 
   public_deps = [ "//third_party/protobuf:protobuf_lite" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/prefs:prefs",
+  ]
 }
 
 source_set("unit_tests") {
@@ -30,6 +33,7 @@ source_set("unit_tests") {
     ":federated_learning",
     "//base",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 }

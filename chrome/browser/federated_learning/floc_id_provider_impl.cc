@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -26,12 +27,14 @@ namespace federated_learning {
 namespace {
 
 constexpr size_t kMinHistoryDomainSizeToReportFlocId = 1;
-constexpr base::TimeDelta kFlocScheduledUpdateInterval =
-    base::TimeDelta::FromDays(1);
 constexpr int kQueryHistoryWindowInDays = 7;
 
 // The placeholder sorting-lsh version when the sorting-lsh feature is disabled.
 constexpr uint32_t kSortingLshVersionPlaceholder = 0;
+
+base::TimeDelta GetFlocIdScheduledUpdateInterval() {
+  return features::kFlocIdScheduledUpdateInterval.Get();
+}
 
 }  // namespace
 
@@ -49,6 +52,23 @@ FlocIdProviderImpl::FlocIdProviderImpl(
   history_service->AddObserver(this);
   sync_service_->AddObserver(this);
   g_browser_process->floc_sorting_lsh_clusters_service()->AddObserver(this);
+
+  PrefService* local_state = g_browser_process->local_state();
+  base::Time last_compute_time = FlocId::ReadComputeTimeFromPrefs(local_state);
+
+  if (!last_compute_time.is_null()) {
+    first_floc_computed_ = true;
+
+    base::TimeDelta time_since_last_compute =
+        base::Time::Now() - last_compute_time;
+    if (time_since_last_compute < GetFlocIdScheduledUpdateInterval()) {
+      // Keep using the last floc. Schedule a recompute event when it's
+      // |GetFlocIdScheduledUpdateInterval()| from the last compute time.
+      floc_id_ = FlocId::ReadFromPrefs(local_state);
+      ScheduleFlocComputation(GetFlocIdScheduledUpdateInterval() -
+                              time_since_last_compute);
+    }
+  }
 
   OnStateChanged(sync_service);
 
@@ -98,12 +118,11 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
   LogFlocComputedEvent(trigger, result);
   floc_id_ = result.floc_id;
 
-  // Abandon the scheduled task if any, and schedule a new compute-floc task
-  // that is |kFlocScheduledUpdateInterval| from now.
-  compute_floc_timer_.Start(
-      FROM_HERE, kFlocScheduledUpdateInterval,
-      base::BindOnce(&FlocIdProviderImpl::OnComputeFlocScheduledUpdate,
-                     weak_ptr_factory_.GetWeakPtr()));
+  PrefService* local_state = g_browser_process->local_state();
+  floc_id_.SaveToPrefs(local_state);
+  FlocId::SaveComputeTimeToPrefs(base::Time::Now(), local_state);
+
+  ScheduleFlocComputation(GetFlocIdScheduledUpdateInterval());
 }
 
 void FlocIdProviderImpl::LogFlocComputedEvent(ComputeFlocTrigger trigger,
@@ -115,7 +134,7 @@ void FlocIdProviderImpl::LogFlocComputedEvent(ComputeFlocTrigger trigger,
   // is likely due to sync just gets enabled but some floc permission settings
   // are disabled. We don't want to mess up with the initial user event
   // messagings (and some sync integration tests would fail otherwise).
-  if (trigger == ComputeFlocTrigger::kBrowserStart && !result.sim_hash_computed)
+  if (trigger == ComputeFlocTrigger::kFirstCompute && !result.sim_hash_computed)
     return;
 
   auto specifics = std::make_unique<sync_pb::UserEventSpecifics>();
@@ -127,7 +146,7 @@ void FlocIdProviderImpl::LogFlocComputedEvent(ComputeFlocTrigger trigger,
 
   sync_pb::UserEventSpecifics_FlocIdComputed_EventTrigger event_trigger;
   switch (trigger) {
-    case ComputeFlocTrigger::kBrowserStart:
+    case ComputeFlocTrigger::kFirstCompute:
       event_trigger =
           sync_pb::UserEventSpecifics_FlocIdComputed_EventTrigger_NEW;
       break;
@@ -168,7 +187,6 @@ void FlocIdProviderImpl::OnURLsDeleted(
   // immediately after the in-progress one finishes, so as to avoid potential
   // data races.
   if (floc_computation_in_progress_) {
-    DCHECK(first_floc_computation_triggered_);
     need_recompute_ = true;
     return;
   }
@@ -192,6 +210,7 @@ void FlocIdProviderImpl::OnURLsDeleted(
   // history-delete.
   LogFlocComputedEvent(ComputeFlocTrigger::kHistoryDelete, ComputeFlocResult());
   floc_id_ = FlocId();
+  floc_id_.SaveToPrefs(g_browser_process->local_state());
 }
 
 void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
@@ -200,7 +219,7 @@ void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
 
   first_sorting_lsh_file_ready_seen_ = true;
 
-  MaybeTriggerFirstFlocComputation();
+  MaybeTriggerImmediateComputation();
 }
 
 void FlocIdProviderImpl::OnStateChanged(syncer::SyncService* sync_service) {
@@ -212,11 +231,14 @@ void FlocIdProviderImpl::OnStateChanged(syncer::SyncService* sync_service) {
 
   first_sync_history_enabled_seen_ = true;
 
-  MaybeTriggerFirstFlocComputation();
+  MaybeTriggerImmediateComputation();
 }
 
-void FlocIdProviderImpl::MaybeTriggerFirstFlocComputation() {
-  if (first_floc_computation_triggered_)
+void FlocIdProviderImpl::MaybeTriggerImmediateComputation() {
+  // If the floc computation is neither in progress nor scheduled, it means we
+  // want to trigger an immediate computation as soon as when the sync &
+  // sync-history is enabled and sorting-lsh file is loaded.
+  if (floc_computation_in_progress_ || compute_floc_timer_.IsRunning())
     return;
 
   bool sorting_lsh_ready_or_not_required =
@@ -227,7 +249,10 @@ void FlocIdProviderImpl::MaybeTriggerFirstFlocComputation() {
   if (!first_sync_history_enabled_seen_ || !sorting_lsh_ready_or_not_required)
     return;
 
-  ComputeFloc(ComputeFlocTrigger::kBrowserStart);
+  ComputeFlocTrigger trigger = first_floc_computed_
+                                   ? ComputeFlocTrigger::kScheduledUpdate
+                                   : ComputeFlocTrigger::kFirstCompute;
+  ComputeFloc(trigger);
 }
 
 void FlocIdProviderImpl::OnComputeFlocScheduledUpdate() {
@@ -236,14 +261,11 @@ void FlocIdProviderImpl::OnComputeFlocScheduledUpdate() {
 }
 
 void FlocIdProviderImpl::ComputeFloc(ComputeFlocTrigger trigger) {
-  DCHECK(trigger == ComputeFlocTrigger::kBrowserStart ||
-         (trigger == ComputeFlocTrigger::kScheduledUpdate &&
-          first_floc_computation_triggered_));
+  DCHECK_NE(trigger, ComputeFlocTrigger::kHistoryDelete);
 
   DCHECK(!floc_computation_in_progress_);
 
   floc_computation_in_progress_ = true;
-  first_floc_computation_triggered_ = true;
 
   auto compute_floc_completed_callback =
       base::BindOnce(&FlocIdProviderImpl::OnComputeFlocCompleted,
@@ -403,6 +425,13 @@ void FlocIdProviderImpl::DidApplySortingLshPostProcessing(
   std::move(callback).Run(ComputeFlocResult(
       sim_hash, FlocId(final_hash.value(), history_begin_time, history_end_time,
                        version.components().front())));
+}
+
+void FlocIdProviderImpl::ScheduleFlocComputation(base::TimeDelta delay) {
+  compute_floc_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&FlocIdProviderImpl::OnComputeFlocScheduledUpdate,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace federated_learning

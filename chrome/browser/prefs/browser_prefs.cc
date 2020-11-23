@@ -101,6 +101,7 @@
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/pref_names.h"
+#include "components/federated_learning/floc_id.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"
@@ -585,6 +586,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ChromeTracingDelegate::RegisterPrefs(registry);
   component_updater::RegisterPrefs(registry);
   ExternalProtocolHandler::RegisterPrefs(registry);
+  federated_learning::FlocId::RegisterPrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   GpuModeManager::RegisterPrefs(registry);
   signin::IdentityManager::RegisterLocalStatePrefs(registry);

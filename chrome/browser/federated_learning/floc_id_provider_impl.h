@@ -35,24 +35,44 @@ class FlocRemotePermissionService;
 // 4) Supplemental Ad Personalization is enabled.
 // 5) The account type is NOT a child account.
 //
-// When all the prerequisites are met, the floc will be computed by sim-hashing
-// navigation URL domains in the last 7 days; otherwise, an invalid floc will be
-// given. The floc can be further translated or blocked with the SortingLSH
-// post-processing.
+// When all the prerequisites are met, the floc will be computed by:
+// Step 1: sim-hashing navigation URL domains in the last 7 days. This step aims
+// to group together users with similar browsing habit.
+// Step 2: applying the sorting-lsh post processing to the sim-hash value. The
+// sorting-lsh technique groups similar sim-hash values together to ensure the
+// smallest group size / K-anonymity. The mappings / group-size is computed
+// server side in chrome-sync, based on logged sim-hash data, and is pushed to
+// Chrome on a regular basis through the component updater.
 //
-// The floc will be first computed after sync & sync-history are enabled. After
-// each computation, another computation will be scheduled 24 hours later. In
-// the event of history deletion, the floc will be invalidated immediately
-// if the time range of the deletion overlaps with the time range used to
-// compute the existing floc.
+// If some prerequisites are not met, an invalid floc will be given.
+//
+// For the first browser session of a profile, we'll compute the floc after sync
+// & sync-history are enabled and the sorting-lsh file is loaded, and another
+// computation will be scheduled every X days. When the browser shuts down and
+// starts up again, it can remember the last state and can still schedule the
+// computation at X days after the last compute time. If we've missed a
+// scheduled update due to browser not being alive, it'll compute after the next
+// session starts, using sync-history-enabled & sorting-lsh-file-loaded as the
+// first compute triggering condition.
+
+// In the event of history deletion, the floc will be invalidated immediately if
+// the time range of the deletion overlaps with the time range used to compute
+// the existing floc.
 class FlocIdProviderImpl : public FlocIdProvider,
                            public FlocSortingLshClustersService::Observer,
                            public history::HistoryServiceObserver,
                            public syncer::SyncServiceObserver {
  public:
+  // TODO(crbug/1148358): Consider removing this. For event logging, we are not
+  // really interested in the trigger.
   enum class ComputeFlocTrigger {
-    kBrowserStart,
+    // When the first browser session of a profile starts.
+    kFirstCompute,
+
+    // A long period of time has passed since the last computation.
     kScheduledUpdate,
+
+    // History is deleted.
     kHistoryDelete,
   };
 
@@ -110,8 +130,8 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
   // history::HistoryServiceObserver
   //
-  // On history deletion, recompute the floc if the current floc is speculated
-  // to be derived from the deleted history.
+  // On history deletion, we'll either invalidate or keep using the floc. This
+  // will depend on the deletion type and the time range.
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
@@ -121,7 +141,13 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
 
-  void MaybeTriggerFirstFlocComputation();
+  void MaybeComputeOnInitialSetupReady();
+
+  // This function will be called whenever the sync setting has changed or the
+  // sorting-lsh file is loaded. It'll trigger an immediate floc computation if
+  // the floc was never computed before, or if the floc already expired when the
+  // browser session starts.
+  void MaybeTriggerImmediateComputation();
 
   void OnComputeFlocScheduledUpdate();
 
@@ -154,11 +180,17 @@ class FlocIdProviderImpl : public FlocIdProvider,
                                         base::Optional<uint64_t> final_hash,
                                         base::Version version);
 
+  // Abandon any scheduled task, and schedule a new compute-floc task with
+  // |delay|.
+  void ScheduleFlocComputation(base::TimeDelta delay);
+
   // The id to be exposed to the JS API.
   FlocId floc_id_;
 
   bool floc_computation_in_progress_ = false;
-  bool first_floc_computation_triggered_ = false;
+
+  // Whether the floc has ever been computed.
+  bool first_floc_computed_ = false;
 
   // True if history-delete occurs during an in-progress computation. When the
   // in-progress one finishes, we would disregard the result (i.e. no loggings

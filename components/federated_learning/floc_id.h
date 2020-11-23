@@ -8,11 +8,15 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/prefs/prefs_export.h"
 
 #include <stdint.h>
 
 #include <string>
 #include <unordered_set>
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace federated_learning {
 
@@ -49,6 +53,15 @@ class FlocId {
   base::Time history_begin_time() const { return history_begin_time_; }
 
   base::Time history_end_time() const { return history_end_time_; }
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  void SaveToPrefs(PrefService* local_state);
+  static FlocId ReadFromPrefs(PrefService* local_state);
+
+  static void SaveComputeTimeToPrefs(base::Time compute_time,
+                                     PrefService* local_state);
+  static base::Time ReadComputeTimeFromPrefs(PrefService* local_state);
 
  private:
   base::Optional<uint64_t> id_;

@@ -8,6 +8,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/federated_learning/floc_constants.h"
 #include "components/federated_learning/sim_hash.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace federated_learning {
 
@@ -63,6 +65,49 @@ std::string FlocId::ToStringForJsApi() const {
   return base::StrCat({base::NumberToString(id_.value()), ".",
                        base::NumberToString(kChromeFlocIdVersion), ".",
                        base::NumberToString(sorting_lsh_version_)});
+}
+
+// static
+void FlocId::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterUint64Pref(kFlocIdValuePrefKey, 0);
+  registry->RegisterTimePref(kFlocIdHistoryBeginTimePrefKey, base::Time());
+  registry->RegisterTimePref(kFlocIdHistoryEndTimePrefKey, base::Time());
+  registry->RegisterUint64Pref(kFlocIdSortingLshVersionPrefKey, 0);
+  registry->RegisterTimePref(kFlocIdComputeTimePrefKey, base::Time());
+}
+
+void FlocId::SaveToPrefs(PrefService* local_state) {
+  if (!id_.has_value()) {
+    local_state->ClearPref(kFlocIdValuePrefKey);
+    return;
+  }
+
+  local_state->SetUint64(kFlocIdValuePrefKey, id_.value());
+  local_state->SetTime(kFlocIdHistoryBeginTimePrefKey, history_begin_time_);
+  local_state->SetTime(kFlocIdHistoryEndTimePrefKey, history_end_time_);
+  local_state->SetUint64(kFlocIdSortingLshVersionPrefKey, sorting_lsh_version_);
+}
+
+// static
+FlocId FlocId::ReadFromPrefs(PrefService* local_state) {
+  if (!local_state->HasPrefPath(kFlocIdValuePrefKey))
+    return FlocId();
+
+  return FlocId(local_state->GetUint64(kFlocIdValuePrefKey),
+                local_state->GetTime(kFlocIdHistoryBeginTimePrefKey),
+                local_state->GetTime(kFlocIdHistoryEndTimePrefKey),
+                local_state->GetUint64(kFlocIdSortingLshVersionPrefKey));
+}
+
+// static
+void FlocId::SaveComputeTimeToPrefs(base::Time compute_time,
+                                    PrefService* local_state) {
+  local_state->SetTime(kFlocIdComputeTimePrefKey, compute_time);
+}
+
+// static
+base::Time FlocId::ReadComputeTimeFromPrefs(PrefService* local_state) {
+  return local_state->GetTime(kFlocIdComputeTimePrefKey);
 }
 
 }  // namespace federated_learning

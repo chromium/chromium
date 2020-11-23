@@ -13,7 +13,9 @@
 namespace federated_learning {
 
 // KeyedService which computes the floc id regularly, and notifies relevant
-// components about the updated id.
+// components about the updated id. The floc id represents a cohort of people
+// with similar browsing habits. For more context, see the explainer at
+// https://github.com/jkarlin/floc/blob/master/README.md.
 class FlocIdProvider : public KeyedService {
  public:
   // Get the interest cohort. Use |requesting_origin| and first-party
