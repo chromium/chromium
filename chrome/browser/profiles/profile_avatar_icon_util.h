@@ -40,6 +40,9 @@ const int kShortcutIconSizeWin = 48;
 const int kProfileAvatarBadgeSizeWin = kShortcutIconSizeWin / 2;
 #endif  // OS_WIN
 
+// Size of the small identity images for list of profiles to switch to.
+constexpr int kMenuAvatarIconSize = 20;
+
 // Avatar access.
 extern const base::FilePath::CharType kGAIAPictureFileName[];
 extern const base::FilePath::CharType kHighResAvatarFolderName[];

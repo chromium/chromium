@@ -833,7 +833,7 @@ void ProfileMenuViewBase::AddSelectableProfile(
 
   DCHECK(!image_model.IsEmpty());
   gfx::ImageSkia sized_image = SizeImageModel(image_model, GetNativeTheme(),
-                                              kSelectableProfileImageSize);
+                                              profiles::kMenuAvatarIconSize);
 
   views::Button* button = selectable_profiles_container_->AddChildView(
       std::make_unique<HoverButton>(
