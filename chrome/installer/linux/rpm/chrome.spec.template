@@ -138,8 +138,8 @@ if [ "$repo_add_once" = "true" ]; then
     "yum")
       install_yum
       ;;
-    "yast")
-      install_yast
+    "zypp")
+      install_zypp
       ;;
     esac
   done
@@ -216,8 +216,8 @@ fi
 #  "yum")
 #    remove_yum
 #    ;;
-#  "yast")
-#    remove_yast
+#  "zypp")
+#    remove_zypp
 #    ;;
 #  esac
 #done

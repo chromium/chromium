@@ -229,7 +229,7 @@ determine_rpm_package_manager() {
       PACKAGEMANAGERS=(yum)
       ;;
     "SUSE LINUX"|"openSUSE")
-      PACKAGEMANAGERS=(yast)
+      PACKAGEMANAGERS=(zypp)
       ;;
     esac
   fi
@@ -244,7 +244,7 @@ determine_rpm_package_manager() {
   elif [ -f "/etc/system-release" ] && grep -Fq "Amazon Linux" "/etc/system-release"; then
     PACKAGEMANAGERS=(yum)
   elif [ -f "/etc/SuSE-release" ]; then
-    PACKAGEMANAGERS=(yast)
+    PACKAGEMANAGERS=(zypp)
   fi
 }
 
@@ -271,12 +271,10 @@ REPOCONTENT
   fi
 }
 
-install_yast() {
+install_zypp() {
   if [ ! "$REPOCONFIG" ]; then
     return 0
   fi
-
-  # We defer adding the key to later. See comment in the cron job.
 
   # Ideally, we would run: zypper addrepo -t YUM -f \
   # "$REPOCONFIG/$DEFAULT_ARCH" "@@PACKAGE@@"
@@ -303,7 +301,7 @@ verify_install() {
   "yum")
     [ -f "$YUM_REPO_FILE" ]
     ;;
-  "yast")
+  "zypp")
     [ -f "$ZYPPER_REPO_FILE" ]
     ;;
   esac
@@ -323,7 +321,7 @@ update_bad_repo() {
     "yum")
       update_repo_file "$YUM_REPO_FILE"
       ;;
-    "yast")
+    "zypp")
       update_repo_file "$ZYPPER_REPO_FILE"
       ;;
     esac
@@ -374,7 +372,7 @@ update_repo_file() {
 #  rm -f "$YUM_REPO_FILE"
 #}
 #
-#remove_yast() {
+#remove_zypp() {
 #  # Ideally, we would run: zypper removerepo "@@PACKAGE@@"
 #  # but that does not work when zypper is running.
 #  rm -f /etc/zypp/repos.d/@@PACKAGE@@.repo
