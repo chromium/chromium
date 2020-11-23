@@ -98,7 +98,9 @@ class PayloadTrackerTest : public testing::Test {
         location::nearby::connections::mojom::PayloadTransferUpdate::New(
             payload_id, status,
             /*total_bytes=*/kTotalSize, /*bytes_transferred=*/kTotalSize);
-    payload_tracker_->OnStatusUpdate(std::move(payload));
+    payload_tracker_->OnStatusUpdate(
+        std::move(payload),
+        location::nearby::connections::mojom::Medium::kWebRtc);
   }
 
   content::BrowserTaskEnvironment task_environment_;

@@ -52,7 +52,8 @@ PayloadTracker::PayloadTracker(
 
 PayloadTracker::~PayloadTracker() = default;
 
-void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update) {
+void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update,
+                                    base::Optional<Medium> upgraded_medium) {
   auto it = payload_state_.find(update->payload_id);
   if (it == payload_state_.end())
     return;
@@ -61,6 +62,9 @@ void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update) {
   if (!first_update_timestamp_.has_value()) {
     first_update_timestamp_ = base::TimeTicks::Now();
     num_first_update_bytes_ = update->bytes_transferred;
+  }
+  if (upgraded_medium.has_value()) {
+    last_upgraded_medium_ = upgraded_medium;
   }
 
   it->second.amount_transferred = update->bytes_transferred;
@@ -180,10 +184,11 @@ void PayloadTracker::EmitFinalMetrics(
     location::nearby::connections::mojom::PayloadStatus status) const {
   DCHECK_NE(status,
             location::nearby::connections::mojom::PayloadStatus::kInProgress);
+  RecordNearbyShareFinalPayloadStatusForUpgradedMedium(status,
+                                                       last_upgraded_medium_);
   RecordNearbyShareTransferSizeMetric(share_target_.is_incoming,
-                                      share_target_.type, status,
-                                      total_transfer_size_);
-
+                                      share_target_.type, last_upgraded_medium_,
+                                      status, total_transfer_size_);
   RecordNearbyShareTransferNumAttachmentsMetric(num_text_attachments_,
                                                 num_file_attachments_);
 
@@ -193,8 +198,8 @@ void PayloadTracker::EmitFinalMetrics(
       GetTotalTransferred() - num_first_update_bytes_;
   if (first_update_timestamp_ && transferred_bytes_with_offset > 0) {
     RecordNearbyShareTransferRateMetric(
-        share_target_.is_incoming, share_target_.type, status,
-        transferred_bytes_with_offset,
+        share_target_.is_incoming, share_target_.type, last_upgraded_medium_,
+        status, transferred_bytes_with_offset,
         base::TimeTicks::Now() - *first_update_timestamp_);
   }
 }

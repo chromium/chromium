@@ -134,6 +134,10 @@ class NearbyConnectionsManagerImpl
                      ConnectionsCallback callback,
                      NearbyFileHandler::CreateFileResult result);
 
+  // For metrics.
+  base::Optional<Medium> GetUpgradedMedium(
+      const std::string& endpoint_id) const;
+
   NearbyProcessManager* process_manager_;
   Profile* profile_;
   NearbyFileHandler file_handler_;
@@ -155,6 +159,12 @@ class NearbyConnectionsManagerImpl
   base::flat_map<int64_t, PayloadStatusListener*> payload_status_listeners_;
   // A map of payload_id to PayloadPtr.
   base::flat_map<int64_t, PayloadPtr> incoming_payloads_;
+
+  // For metrics. A set of endpoint_ids for which we have requested a bandwidth
+  // upgrade.
+  base::flat_set<std::string> requested_bwu_endpoint_ids_;
+  // For metrics. A map of endpoint_id to current upgraded medium.
+  base::flat_map<std::string, Medium> current_upgraded_mediums_;
 
   ScopedObserver<NearbyProcessManager, NearbyProcessManager::Observer>
       nearby_process_observer_{this};

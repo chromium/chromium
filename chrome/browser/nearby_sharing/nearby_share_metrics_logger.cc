@@ -63,6 +63,16 @@ enum class StartAdvertisingFailureReason {
   kMaxValue = kWifiLanError
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If entries are added, kMaxValue should
+// be updated.
+enum class FinalPayloadStatus {
+  kSuccess = 0,
+  kFailure = 1,
+  kCanceled = 2,
+  kMaxValue = kCanceled
+};
+
 TransferNotCompletedReason TransferMetadataStatusToTransferNotCompletedReason(
     TransferMetadata::Status status) {
   switch (status) {
@@ -129,6 +139,21 @@ NearbyConnectionsStatusToStartAdvertisingFailureReason(
   }
 }
 
+FinalPayloadStatus PayloadStatusToFinalPayloadStatus(
+    location::nearby::connections::mojom::PayloadStatus status) {
+  switch (status) {
+    case location::nearby::connections::mojom::PayloadStatus::kSuccess:
+      return FinalPayloadStatus::kSuccess;
+    case location::nearby::connections::mojom::PayloadStatus::kFailure:
+      return FinalPayloadStatus::kFailure;
+    case location::nearby::connections::mojom::PayloadStatus::kCanceled:
+      return FinalPayloadStatus::kCanceled;
+    case location::nearby::connections::mojom::PayloadStatus::kInProgress:
+      NOTREACHED();
+      return FinalPayloadStatus::kCanceled;
+  }
+}
+
 std::string GetDirectionSubcategoryName(bool is_incoming) {
   return is_incoming ? ".Receive" : ".Send";
 }
@@ -159,6 +184,29 @@ std::string GetPayloadStatusSubcategoryName(
     case location::nearby::connections::mojom::PayloadStatus::kInProgress:
       NOTREACHED();
       return ".Cancelled";
+  }
+}
+
+std::string GetUpgradedMediumSubcategoryName(
+    base::Optional<location::nearby::connections::mojom::Medium>
+        last_upgraded_medium) {
+  if (!last_upgraded_medium) {
+    return ".NoMediumUpgrade";
+  }
+
+  switch (*last_upgraded_medium) {
+    case location::nearby::connections::mojom::Medium::kWebRtc:
+      return ".WebRtcUpgrade";
+    case location::nearby::connections::mojom::Medium::kUnknown:
+    case location::nearby::connections::mojom::Medium::kMdns:
+    case location::nearby::connections::mojom::Medium::kBluetooth:
+    case location::nearby::connections::mojom::Medium::kWifiHotspot:
+    case location::nearby::connections::mojom::Medium::kBle:
+    case location::nearby::connections::mojom::Medium::kWifiLan:
+    case location::nearby::connections::mojom::Medium::kWifiAware:
+    case location::nearby::connections::mojom::Medium::kNfc:
+    case location::nearby::connections::mojom::Medium::kWifiDirect:
+      return ".UnknownMediumUpgrade";
   }
 }
 
@@ -221,6 +269,8 @@ void RecordNearbyShareTransferCompletionStatusMetric(
 void RecordNearbyShareTransferSizeMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
+    base::Optional<location::nearby::connections::mojom::Medium>
+        last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes) {
   DCHECK_NE(status,
@@ -232,12 +282,17 @@ void RecordNearbyShareTransferSizeMetric(
        {std::string(), GetDirectionSubcategoryName(is_incoming)}) {
     for (const std::string& share_target_type_name :
          {std::string(), GetShareTargetTypeSubcategoryName(type)}) {
-      for (const std::string& payload_status_name :
-           {std::string(), GetPayloadStatusSubcategoryName(status)}) {
-        base::UmaHistogramCounts1M(
-            kTransferMetricPrefix + std::string(".TotalSize") + direction_name +
-                share_target_type_name + payload_status_name,
-            kilobytes);
+      for (const std::string& last_upgraded_medium_name :
+           {std::string(),
+            GetUpgradedMediumSubcategoryName(last_upgraded_medium)}) {
+        for (const std::string& payload_status_name :
+             {std::string(), GetPayloadStatusSubcategoryName(status)}) {
+          base::UmaHistogramCounts1M(
+              kTransferMetricPrefix + std::string(".TotalSize") +
+                  direction_name + share_target_type_name +
+                  last_upgraded_medium_name + payload_status_name,
+              kilobytes);
+        }
       }
     }
   }
@@ -246,6 +301,8 @@ void RecordNearbyShareTransferSizeMetric(
 void RecordNearbyShareTransferRateMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
+    base::Optional<location::nearby::connections::mojom::Medium>
+        last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,
     base::TimeDelta time_elapsed) {
@@ -259,12 +316,17 @@ void RecordNearbyShareTransferRateMetric(
        {std::string(), GetDirectionSubcategoryName(is_incoming)}) {
     for (const std::string& share_target_type_name :
          {std::string(), GetShareTargetTypeSubcategoryName(type)}) {
-      for (const std::string& payload_status_name :
-           {std::string(), GetPayloadStatusSubcategoryName(status)}) {
-        base::UmaHistogramCounts100000(
-            kTransferMetricPrefix + std::string(".Rate") + direction_name +
-                share_target_type_name + payload_status_name,
-            kilobytes_per_second);
+      for (const std::string& last_upgraded_medium_name :
+           {std::string(),
+            GetUpgradedMediumSubcategoryName(last_upgraded_medium)}) {
+        for (const std::string& payload_status_name :
+             {std::string(), GetPayloadStatusSubcategoryName(status)}) {
+          base::UmaHistogramCounts100000(
+              kTransferMetricPrefix + std::string(".Rate") + direction_name +
+                  share_target_type_name + last_upgraded_medium_name +
+                  payload_status_name,
+              kilobytes_per_second);
+        }
       }
     }
   }
@@ -301,4 +363,14 @@ void RecordNearbyShareStartAdvertisingResultMetric(
     base::UmaHistogramEnumeration(
         kStartAdvertisingResultFailureReasonMetricPrefix + mode_suffix, reason);
   }
+}
+
+void RecordNearbyShareFinalPayloadStatusForUpgradedMedium(
+    location::nearby::connections::mojom::PayloadStatus status,
+    base::Optional<location::nearby::connections::mojom::Medium> medium) {
+  DCHECK_NE(status,
+            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+  base::UmaHistogramEnumeration("Nearby.Share.Medium.FinalPayloadStatus" +
+                                    GetUpgradedMediumSubcategoryName(medium),
+                                PayloadStatusToFinalPayloadStatus(status));
 }

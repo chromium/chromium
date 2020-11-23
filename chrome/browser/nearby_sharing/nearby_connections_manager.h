@@ -56,12 +56,17 @@ class NearbyConnectionsManager {
   // outgoing).
   class PayloadStatusListener {
    public:
+    using Medium = location::nearby::connections::mojom::Medium;
     using PayloadTransferUpdatePtr =
         location::nearby::connections::mojom::PayloadTransferUpdatePtr;
 
     virtual ~PayloadStatusListener() = default;
 
-    virtual void OnStatusUpdate(PayloadTransferUpdatePtr update) = 0;
+    // Note: |upgraded_medium| is passed in for use in metrics, and it is
+    // base::nullopt if the bandwidth has not upgraded yet or if the upgrade
+    // status is not known.
+    virtual void OnStatusUpdate(PayloadTransferUpdatePtr update,
+                                base::Optional<Medium> upgraded_medium) = 0;
   };
 
   // Converts the status to a logging-friendly string.

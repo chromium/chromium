@@ -84,6 +84,7 @@ using Status = location::nearby::connections::mojom::Status;
 using DiscoveredEndpointInfo =
     location::nearby::connections::mojom::DiscoveredEndpointInfo;
 using ConnectionInfo = location::nearby::connections::mojom::ConnectionInfo;
+using Medium = location::nearby::connections::mojom::Medium;
 using MediumSelection = location::nearby::connections::mojom::MediumSelection;
 using PayloadContent = location::nearby::connections::mojom::PayloadContent;
 using PayloadStatus = location::nearby::connections::mojom::PayloadStatus;
@@ -123,7 +124,8 @@ class MockPayloadStatusListener
  public:
   MOCK_METHOD(void,
               OnStatusUpdate,
-              (PayloadTransferUpdatePtr update),
+              (PayloadTransferUpdatePtr update,
+               base::Optional<Medium> upgraded_medium),
               (override));
 };
 
@@ -920,12 +922,13 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectSendPayload) {
   auto expected_update = PayloadTransferUpdate::New(
       kPayloadId, PayloadStatus::kInProgress, kTotalSize, kBytesTransferred);
   base::RunLoop payload_run_loop;
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_))
-      .WillOnce(
-          [&](MockPayloadStatusListener::PayloadTransferUpdatePtr update) {
-            EXPECT_EQ(expected_update, update);
-            payload_run_loop.Quit();
-          });
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
+      .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
+                    base::Optional<Medium> upgraded_medium) {
+        EXPECT_EQ(expected_update, update);
+        EXPECT_EQ(base::nullopt, upgraded_medium);
+        payload_run_loop.Quit();
+      });
 
   payload_listener_remote->OnPayloadTransferUpdate(kRemoteEndpointId,
                                                    expected_update.Clone());
@@ -959,15 +962,16 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectCancelPayload) {
       });
 
   base::RunLoop payload_run_loop;
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_))
-      .WillOnce(
-          [&](MockPayloadStatusListener::PayloadTransferUpdatePtr update) {
-            EXPECT_EQ(kPayloadId, update->payload_id);
-            EXPECT_EQ(PayloadStatus::kCanceled, update->status);
-            EXPECT_EQ(0u, update->total_bytes);
-            EXPECT_EQ(0u, update->bytes_transferred);
-            payload_run_loop.Quit();
-          });
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
+      .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
+                    base::Optional<Medium> upgraded_medium) {
+        EXPECT_EQ(kPayloadId, update->payload_id);
+        EXPECT_EQ(PayloadStatus::kCanceled, update->status);
+        EXPECT_EQ(0u, update->total_bytes);
+        EXPECT_EQ(0u, update->bytes_transferred);
+        EXPECT_EQ(base::nullopt, upgraded_medium);
+        payload_run_loop.Quit();
+      });
 
   nearby_connections_manager_.Cancel(kPayloadId);
   payload_run_loop.Run();
@@ -1063,12 +1067,13 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingPayloadStatusListener) {
   auto expected_update = PayloadTransferUpdate::New(
       kPayloadId, PayloadStatus::kInProgress, kTotalSize, kBytesTransferred);
   base::RunLoop payload_run_loop;
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_))
-      .WillOnce(
-          [&](MockPayloadStatusListener::PayloadTransferUpdatePtr update) {
-            EXPECT_EQ(expected_update, update);
-            payload_run_loop.Quit();
-          });
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
+      .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
+                    base::Optional<Medium> upgraded_medium) {
+        EXPECT_EQ(expected_update, update);
+        EXPECT_EQ(base::nullopt, upgraded_medium);
+        payload_run_loop.Quit();
+      });
 
   payload_listener_remote->OnPayloadTransferUpdate(kRemoteEndpointId,
                                                    expected_update.Clone());
@@ -1076,7 +1081,7 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingPayloadStatusListener) {
 
   // After success status.
   base::RunLoop payload_run_loop_2;
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_))
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&payload_run_loop_2]() { payload_run_loop_2.Quit(); });
 
   payload_listener_remote->OnPayloadTransferUpdate(
@@ -1091,7 +1096,8 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingPayloadStatusListener) {
       kRemoteEndpointId,
       PayloadTransferUpdate::New(kPayloadId, PayloadStatus::kSuccess,
                                  kTotalSize, /*bytes_transferred=*/kTotalSize));
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_)).Times(0);
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
+      .Times(0);
 
   payload_listener_remote->OnPayloadTransferUpdate(
       kRemoteEndpointId,
@@ -1165,7 +1171,7 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingBytesPayload) {
                                    BytesPayload::New(expected_payload))));
 
   base::RunLoop payload_run_loop;
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_))
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&payload_run_loop]() { payload_run_loop.Quit(); });
 
   payload_listener_remote->OnPayloadTransferUpdate(
@@ -1208,7 +1214,7 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingFilePayload) {
                    PayloadContent::NewFile(FilePayload::New(std::move(file)))));
 
   base::RunLoop payload_run_loop;
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_))
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&payload_run_loop]() { payload_run_loop.Quit(); });
 
   payload_listener_remote->OnPayloadTransferUpdate(
@@ -1255,7 +1261,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ClearIncomingPayloads) {
                    PayloadContent::NewFile(FilePayload::New(std::move(file)))));
 
   base::RunLoop payload_run_loop;
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_))
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&payload_run_loop]() { payload_run_loop.Quit(); });
 
   payload_listener_remote->OnPayloadTransferUpdate(

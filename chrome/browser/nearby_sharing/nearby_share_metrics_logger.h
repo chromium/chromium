@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
 
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
@@ -17,15 +18,18 @@ void RecordNearbyShareTransferCompletionStatusMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
     TransferMetadata::Status status);
-
 void RecordNearbyShareTransferSizeMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
+    base::Optional<location::nearby::connections::mojom::Medium>
+        last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes);
 void RecordNearbyShareTransferRateMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
+    base::Optional<location::nearby::connections::mojom::Medium>
+        last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,
     base::TimeDelta time_elapsed);
@@ -34,5 +38,8 @@ void RecordNearbyShareTransferNumAttachmentsMetric(size_t num_text_attachments,
 void RecordNearbyShareStartAdvertisingResultMetric(
     bool is_high_visibility,
     location::nearby::connections::mojom::Status status);
+void RecordNearbyShareFinalPayloadStatusForUpgradedMedium(
+    location::nearby::connections::mojom::PayloadStatus status,
+    base::Optional<location::nearby::connections::mojom::Medium> medium);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_

@@ -844,7 +844,8 @@ class NearbySharingServiceImplTest : public testing::Test {
             info.payload_id,
             location::nearby::connections::mojom::PayloadStatus::kSuccess,
             /*total_bytes=*/strlen(kTextPayload),
-            /*bytes_transferred=*/strlen(kTextPayload)));
+            /*bytes_transferred=*/strlen(kTextPayload)),
+        /*upgraded_medium=*/base::nullopt);
     success_run_loop.Run();
   }
 
@@ -2527,7 +2528,8 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
             id, location::nearby::connections::mojom::PayloadStatus::kSuccess,
             /*total_bytes=*/kPayloadSize,
             /*bytes_transferred=*/kPayloadSize);
-    listener->OnStatusUpdate(std::move(payload));
+    listener->OnStatusUpdate(std::move(payload),
+                             /*upgraded_medium=*/base::nullopt);
     run_loop_progress.Run();
 
     task_environment_.FastForwardBy(kMinProgressUpdateFrequency);
@@ -2566,7 +2568,8 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
           location::nearby::connections::mojom::PayloadStatus::kSuccess,
           /*total_bytes=*/kPayloadSize,
           /*bytes_transferred=*/kPayloadSize);
-  listener->OnStatusUpdate(std::move(payload));
+  listener->OnStatusUpdate(std::move(payload),
+                           /*upgraded_medium=*/base::nullopt);
   run_loop_success.Run();
 
   EXPECT_FALSE(
@@ -2645,7 +2648,8 @@ TEST_F(NearbySharingServiceImplTest,
             id, location::nearby::connections::mojom::PayloadStatus::kSuccess,
             /*total_bytes=*/kPayloadSize,
             /*bytes_transferred=*/kPayloadSize);
-    listener->OnStatusUpdate(std::move(payload));
+    listener->OnStatusUpdate(std::move(payload),
+                             /*upgraded_medium=*/base::nullopt);
     run_loop_progress.Run();
 
     task_environment_.FastForwardBy(kMinProgressUpdateFrequency);
@@ -2676,7 +2680,8 @@ TEST_F(NearbySharingServiceImplTest,
           location::nearby::connections::mojom::PayloadStatus::kSuccess,
           /*total_bytes=*/kPayloadSize,
           /*bytes_transferred=*/kPayloadSize);
-  listener->OnStatusUpdate(std::move(payload));
+  listener->OnStatusUpdate(std::move(payload),
+                           /*upgraded_medium=*/base::nullopt);
   run_loop_success.Run();
 
   EXPECT_FALSE(
@@ -2749,7 +2754,8 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadFailed) {
           location::nearby::connections::mojom::PayloadStatus::kFailure,
           /*total_bytes=*/kPayloadSize,
           /*bytes_transferred=*/kPayloadSize);
-  listener->OnStatusUpdate(std::move(payload));
+  listener->OnStatusUpdate(std::move(payload),
+                           /*upgraded_medium=*/base::nullopt);
   run_loop_failure.Run();
 
   EXPECT_FALSE(
@@ -2822,7 +2828,8 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadCancelled) {
           location::nearby::connections::mojom::PayloadStatus::kCanceled,
           /*total_bytes=*/kPayloadSize,
           /*bytes_transferred=*/kPayloadSize);
-  listener->OnStatusUpdate(std::move(payload));
+  listener->OnStatusUpdate(std::move(payload),
+                           /*upgraded_medium=*/base::nullopt);
   run_loop_failure.Run();
 
   EXPECT_FALSE(
