@@ -47,8 +47,12 @@ class PredictionService : public PredictionServiceBase {
     return pending_requests_;
   }
 
+  void recalculate_service_url_every_time_for_testing() {
+    recalculate_service_url_every_time = true;
+  }
+
  private:
-  static const GURL GetPredictionServiceUrl();
+  static const GURL GetPredictionServiceUrl(bool recalculate_for_testing);
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();
   std::unique_ptr<GetSuggestionsRequest> GetPredictionRequestProto(
       const PredictionRequestFeatures& entity);
@@ -67,6 +71,7 @@ class PredictionService : public PredictionServiceBase {
   PendingRequestsMap pending_requests_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   GURL prediction_service_url_override_;
+  bool recalculate_service_url_every_time = false;
 
   base::WeakPtrFactory<PredictionService> weak_factory_{this};
 };

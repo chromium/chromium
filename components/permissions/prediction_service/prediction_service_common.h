@@ -11,7 +11,7 @@ namespace permissions {
 
 // TODO(andypaicu): when available, replace with actual URL.
 constexpr char kDefaultPredictionServiceUrl[] =
-    "https://webpermissionpredictions.googleapis.com/v1/GetPredictions";
+    "https://webpermissionpredictions.googleapis.com/v1:generatePredictions";
 
 // A command line switch to override the default service url.
 constexpr char kDefaultPredictionServiceUrlSwitchKey[] =

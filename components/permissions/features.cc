@@ -32,6 +32,12 @@ const base::Feature kOneTimeGeolocationPermission{
 const base::Feature kPermissionChip{"PermissionChip",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, use the value of the `service_url` FeatureParam as the url
+// for the Web Permission Predictions Service.
+const base::Feature kPermissionPredictionServiceUseUrlOverride{
+    "kPermissionPredictionServiceUseUrlOverride",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 namespace feature_params {
 
@@ -39,5 +45,10 @@ const base::FeatureParam<bool> kOkButtonBehavesAsAllowAlways(
     &permissions::features::kOneTimeGeolocationPermission,
     "OkButtonBehavesAsAllowAlways",
     true);
-}
+
+const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
+    &permissions::features::kPermissionPredictionServiceUseUrlOverride,
+    "service_url", ""};
+
+}  // namespace feature_params
 }  // namespace permissions
