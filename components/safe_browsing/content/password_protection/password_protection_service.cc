@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/password_protection/password_protection_request.h"
+#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/features.h"
@@ -59,7 +60,7 @@ PasswordProtectionService::PasswordProtectionService(
     HistoryService* history_service)
     : database_manager_(database_manager),
       url_loader_factory_(url_loader_factory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(CurrentlyOnThread(ThreadID::UI));
   if (history_service)
     history_service_observation_.Observe(history_service);
 
@@ -92,7 +93,7 @@ void PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
     const GURL& password_form_action,
     const GURL& password_form_frame_url,
     const std::string& hosted_domain) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(CurrentlyOnThread(ThreadID::UI));
   LoginReputationClientRequest::TriggerType trigger_type =
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE;
   ReusedPasswordAccountType reused_password_account_type =
@@ -121,7 +122,7 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials,
     bool password_field_exists) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(CurrentlyOnThread(ThreadID::UI));
   LoginReputationClientRequest::TriggerType trigger_type =
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT;
   ReusedPasswordAccountType reused_password_account_type =
@@ -225,7 +226,7 @@ void PasswordProtectionService::StartRequest(
         matching_reused_credentials,
     LoginReputationClientRequest::TriggerType trigger_type,
     bool password_field_exists) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(CurrentlyOnThread(ThreadID::UI));
   scoped_refptr<PasswordProtectionRequest> request(
       new PasswordProtectionRequest(
           web_contents, main_frame_url, password_form_action,
@@ -249,7 +250,7 @@ void PasswordProtectionService::RequestFinished(
     PasswordProtectionRequest* request,
     RequestOutcome outcome,
     std::unique_ptr<LoginReputationClientResponse> response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(CurrentlyOnThread(ThreadID::UI));
   DCHECK(request);
 
   if (response) {
@@ -329,7 +330,7 @@ void PasswordProtectionService::RequestFinished(
 }
 
 void PasswordProtectionService::CancelPendingRequests() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(CurrentlyOnThread(ThreadID::UI));
   for (auto it = pending_requests_.begin(); it != pending_requests_.end();) {
     PasswordProtectionRequest* request = it->get();
     // These are the requests for whom we're still waiting for verdicts.
