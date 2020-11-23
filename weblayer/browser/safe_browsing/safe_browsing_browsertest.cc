@@ -25,6 +25,7 @@
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"
+#include "weblayer/public/navigation_observer.h"
 #include "weblayer/public/profile.h"
 #include "weblayer/public/tab.h"
 #include "weblayer/shell/browser/shell.h"
@@ -35,6 +36,38 @@
 namespace weblayer {
 
 namespace {
+
+// Observer customized for safe browsing navigation failures.
+class SafeBrowsingErrorNavigationObserver : public NavigationObserver {
+ public:
+  SafeBrowsingErrorNavigationObserver(const GURL& url, Shell* shell)
+      : url_(url), tab_(shell->tab()) {
+    tab_->GetNavigationController()->AddObserver(this);
+  }
+
+  ~SafeBrowsingErrorNavigationObserver() override {
+    tab_->GetNavigationController()->RemoveObserver(this);
+  }
+
+  void NavigationFailed(Navigation* navigation) override {
+    if (navigation->GetURL() != url_)
+      return;
+
+    EXPECT_EQ(navigation->GetLoadError(),
+              Navigation::LoadError::kSafeBrowsingError);
+    run_loop_.Quit();
+  }
+
+  // Begins waiting for a Navigation within |shell_| and to |url_| to fail. In
+  // the failure callback verifies that the navigation failed with a safe
+  // browsing error.
+  void WaitForNavigationFailureWithSafeBrowsingError() { run_loop_.Run(); }
+
+ private:
+  const GURL url_;
+  Tab* tab_;
+  base::RunLoop run_loop_;
+};
 
 void RunCallbackOnIOThread(
     std::unique_ptr<safe_browsing::SafeBrowsingApiHandler::URLCheckCallbackMeta>
@@ -67,6 +100,8 @@ class FakeSafeBrowsingApiHandler
                       const safe_browsing::SBThreatType& threat_type) {
     restrictions_[url] = threat_type;
   }
+
+  void ClearRestrictions() { restrictions_.clear(); }
 
  private:
   safe_browsing::SBThreatType GetSafeBrowsingRestriction(const GURL& url) {
@@ -208,6 +243,25 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, ShowsInterstitial_Malware) {
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, ShowsInterstitial_Phishing) {
   NavigateWithThreatType(safe_browsing::SB_THREAT_TYPE_URL_PHISHING, true);
+}
+
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, CheckNavigationErrorType) {
+  auto threat_types = {
+      safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+      safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
+      safe_browsing::SB_THREAT_TYPE_URL_UNWANTED,
+      safe_browsing::SB_THREAT_TYPE_BILLING,
+  };
+
+  for (auto threat_type : threat_types) {
+    SafeBrowsingErrorNavigationObserver observer(url_, shell());
+
+    fake_handler_->ClearRestrictions();
+    fake_handler_->AddRestriction(url_, threat_type);
+    shell()->tab()->GetNavigationController()->Navigate(url_);
+
+    observer.WaitForNavigationFailureWithSafeBrowsingError();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, ShowsInterstitial_Unwanted) {

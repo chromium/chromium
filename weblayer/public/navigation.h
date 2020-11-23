@@ -82,7 +82,8 @@ class Navigation {
     kHttpServerError = 2,    // Server responded with 5xx status code.
     kSSLError = 3,           // Certificate error.
     kConnectivityError = 4,  // Problem connecting to server.
-    kOtherError = 5,         // An error not listed above occurred.
+    kOtherError = 5,         // An error not listed above or below occurred.
+    kSafeBrowsingError = 6,  // Safe browsing error.
   };
 
   // Return information about the error, if any, that was encountered while
