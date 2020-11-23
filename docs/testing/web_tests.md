@@ -53,8 +53,6 @@ strip ./xcodebuild/{Debug,Release}/content_shell.app/Contents/MacOS/content_shel
 
 ### Running the Tests
 
-TODO: mention `testing/xvfb.py`
-
 The test runner script is in `third_party/blink/tools/run_web_tests.py`.
 
 To specify which build directory to use (e.g. out/Default, out/Release,
@@ -72,7 +70,9 @@ third_party/blink/tools/run_web_tests.py -t android --android
 ```
 
 *** promo
-Windows users need to use `third_party/blink/tools/run_web_tests.bat` instead.
+* Windows users need to use `third_party/blink/tools/run_web_tests.bat` instead.
+* Linux users should not use `testing/xvfb.py`; `run_web_tests.py` manages Xvfb
+  itself.
 ***
 
 Tests marked as `[ Skip ]` in
