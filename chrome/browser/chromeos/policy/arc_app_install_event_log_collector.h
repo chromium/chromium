@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_APP_INSTALL_EVENT_LOG_COLLECTOR_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_APP_INSTALL_EVENT_LOG_COLLECTOR_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_ARC_APP_INSTALL_EVENT_LOG_COLLECTOR_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_ARC_APP_INSTALL_EVENT_LOG_COLLECTOR_H_
 
 #include <stdint.h>
 
@@ -12,13 +12,11 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/chromeos/policy/install_event_log_collector_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/mojom/policy.mojom-forward.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 
 class Profile;
 
@@ -28,11 +26,9 @@ class AppInstallReportLogEvent;
 namespace policy {
 
 // Listens for and logs events related to app push-installs.
-class AppInstallEventLogCollector
-    : public chromeos::PowerManagerClient::Observer,
-      public arc::ArcPolicyBridge::Observer,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public ArcAppListPrefs::Observer {
+class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
+                                       public arc::ArcPolicyBridge::Observer,
+                                       public ArcAppListPrefs::Observer {
  public:
   // The delegate that events are forwarded to for inclusion in the log.
   class Delegate {
@@ -58,26 +54,21 @@ class AppInstallEventLogCollector
   };
 
   // Delegate must outlive |this|.
-  AppInstallEventLogCollector(Delegate* delegate,
-                              Profile* profile,
-                              const std::set<std::string>& pending_packages);
-  ~AppInstallEventLogCollector() override;
+  ArcAppInstallEventLogCollector(Delegate* delegate,
+                                 Profile* profile,
+                                 const std::set<std::string>& pending_packages);
+  ~ArcAppInstallEventLogCollector() override;
+  ArcAppInstallEventLogCollector(const ArcAppInstallEventLogCollector&) =
+      delete;
+  ArcAppInstallEventLogCollector& operator=(
+      const ArcAppInstallEventLogCollector&) = delete;
 
   // Called whenever the list of pending app-install requests changes.
   void OnPendingPackagesChanged(const std::set<std::string>& pending_packages);
 
-  // Called in case of login and pending apps.
-  void AddLoginEvent();
-
-  // Called in case of logout and pending apps.
-  void AddLogoutEvent();
-
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(const base::TimeDelta& sleep_duration) override;
-
-  // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // arc::ArcPolicyBridge::Observer:
   void OnCloudDpsRequested(base::Time time,
@@ -99,19 +90,19 @@ class AppInstallEventLogCollector
   void OnInstallationFinished(const std::string& package_name,
                               bool success) override;
 
+ protected:
+  // Overrides to handle events from InstallEventLogCollectorBase.
+  void OnLoginInternal() override;
+  void OnLogoutInternal() override;
+  void OnConnectionStateChanged(network::mojom::ConnectionType type) override;
+
  private:
   Delegate* const delegate_;
-  Profile* const profile_;
-
-  // Whether the device is currently online.
-  bool online_ = false;
 
   // Set of apps whose push-install is currently pending.
   std::set<std::string> pending_packages_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppInstallEventLogCollector);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_APP_INSTALL_EVENT_LOG_COLLECTOR_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_ARC_APP_INSTALL_EVENT_LOG_COLLECTOR_H_

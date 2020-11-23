@@ -9,23 +9,16 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/extension_install_event_log_collector.h"
+#include "chrome/browser/chromeos/policy/install_event_logger_base.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/common/extension_id.h"
 
 class Profile;
 
-namespace enterprise_management {
-class ExtensionInstallReportLogEvent;
-}
-
 namespace policy {
-
-// TODO(crbug/1073436): Refactor out common methods of this class and
-// AppInstallEventLogger to new class.
 
 // Ensure that events related to extension installation process are logged. It
 // observes the kInstallForceList pref and keeps track of the forced extensions
@@ -33,7 +26,11 @@ namespace policy {
 // instantiated to collect detailed logs of the extension installation process
 // whenever there is at least one pending installation request.
 class ExtensionInstallEventLogger
-    : public ExtensionInstallEventLogCollector::Delegate {
+    : public InstallEventLoggerBase<
+          enterprise_management::ExtensionInstallReportLogEvent,
+          enterprise_management::ExtensionInstallReportLogEvent::EventType,
+          extensions::ExtensionId>,
+      public ExtensionInstallEventLogCollector::Delegate {
  public:
   // The delegate that events are forwarded to for inclusion in the log.
   class Delegate {
@@ -71,9 +68,6 @@ class ExtensionInstallEventLogger
       const extensions::ExtensionId& extension_id) override;
   bool IsExtensionPending(const extensions::ExtensionId& extension_id) override;
 
-  // Set stateful partition path for unit tests.
-  void SetStatefulPathForTesting(const base::FilePath& path);
-
  private:
   // Loads list of force-installed extensions if available.
   void OnForcedExtensionsPrefChanged();
@@ -90,18 +84,11 @@ class ExtensionInstallEventLogger
   void SetInstallPendingPref(
       const std::set<extensions::ExtensionId>& extensions);
 
-  // Adds information about total and free disk space to |event|, then adds
-  // |event| to the log for every extension in |extensions|.
-  void AddForSetOfExtensionsWithDiskSpaceInfo(
+  // Override for InstallEventLoggerBase::AddForSetOfApps.
+  void AddForSetOfApps(
       const std::set<extensions::ExtensionId>& extensions,
       std::unique_ptr<enterprise_management::ExtensionInstallReportLogEvent>
-          event);
-
-  // Adds |event| to the log for every extension in |extensions|.
-  void AddForSetOfExtensions(
-      const std::set<extensions::ExtensionId>& extensions,
-      std::unique_ptr<enterprise_management::ExtensionInstallReportLogEvent>
-          event);
+          event) override;
 
   // The set of forced installed extensions updated from the forced list policy.
   std::set<extensions::ExtensionId> extensions_;
@@ -112,9 +99,6 @@ class ExtensionInstallEventLogger
 
   // The delegate that events are forwarded to for inclusion in the log.
   Delegate* const delegate_;
-
-  // The profile whose extension install requests to log.
-  Profile* const profile_;
 
   extensions::ExtensionRegistry* registry_;
 
@@ -127,16 +111,13 @@ class ExtensionInstallEventLogger
   // extensions.
   bool initial_ = true;
 
-  // Path for stateful partition.
-  base::FilePath stateful_path_;
-
-  // The |ExtensionInstallEventLogCollector| that collects detailed logs of the
-  // extension install process. Non-|nullptr| whenever there are one or more
-  // pending extension install requests.
+  // The |ArcAppInstallEventLogCollector| that collects detailed logs of the
+  // push-install process. Non-|nullptr| whenever there are one or more pending
+  // app push-install requests.
   std::unique_ptr<ExtensionInstallEventLogCollector> log_collector_;
 
-  // Weak factory used to reference |this| from background tasks.
-  base::WeakPtrFactory<ExtensionInstallEventLogger> weak_factory_{this};
+  // Path for stateful partition.
+  base::FilePath stateful_path_;
 };
 
 }  // namespace policy

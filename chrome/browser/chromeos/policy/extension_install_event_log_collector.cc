@@ -36,21 +36,6 @@ std::unique_ptr<em::ExtensionInstallReportLogEvent> CreateSessionChangeEvent(
   return event;
 }
 
-bool GetOnlineState() {
-  chromeos::NetworkStateHandler::NetworkStateList network_state_list;
-  chromeos::NetworkHandler::Get()
-      ->network_state_handler()
-      ->GetNetworkListByType(
-          chromeos::NetworkTypePattern::Default(), true /* configured_only */,
-          false /* visible_only */, 0 /* limit */, &network_state_list);
-  for (const chromeos::NetworkState* network_state : network_state_list) {
-    if (network_state->connection_state() == shill::kStateOnline) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Helper method to convert InstallStageTracker::FailureReason to the failure
 // reason proto.
 em::ExtensionInstallReportLogEvent_FailureReason ConvertFailureReasonToProto(
@@ -507,12 +492,9 @@ ExtensionInstallEventLogCollector::ExtensionInstallEventLogCollector(
     extensions::ExtensionRegistry* registry,
     Delegate* delegate,
     Profile* profile)
-    : registry_(registry),
-      delegate_(delegate),
-      profile_(profile),
-      online_(GetOnlineState()) {
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
-  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
+    : InstallEventLogCollectorBase(profile),
+      registry_(registry),
+      delegate_(delegate) {
   registry_observer_.Add(registry_);
   stage_tracker_observer_.Add(extensions::InstallStageTracker::Get(profile_));
 }
@@ -522,14 +504,7 @@ ExtensionInstallEventLogCollector::~ExtensionInstallEventLogCollector() {
   content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
 }
 
-void ExtensionInstallEventLogCollector::AddLoginEvent() {
-  // Don't log in case session is restarted or recovered from crash.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kLoginUser) ||
-      profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
-    return;
-  }
-  online_ = GetOnlineState();
+void ExtensionInstallEventLogCollector::OnLoginInternal() {
   std::unique_ptr<em::ExtensionInstallReportLogEvent> event =
       CreateSessionChangeEvent(em::ExtensionInstallReportLogEvent::LOGIN);
   if (chromeos::ProfileHelper::Get()->GetUserByProfile(profile_)) {
@@ -542,11 +517,7 @@ void ExtensionInstallEventLogCollector::AddLoginEvent() {
   delegate_->AddForAllExtensions(std::move(event));
 }
 
-void ExtensionInstallEventLogCollector::AddLogoutEvent() {
-  // Don't log in case session is restared.
-  if (g_browser_process->local_state()->GetBoolean(prefs::kWasRestarted))
-    return;
-
+void ExtensionInstallEventLogCollector::OnLogoutInternal() {
   delegate_->AddForAllExtensions(
       CreateSessionChangeEvent(em::ExtensionInstallReportLogEvent::LOGOUT));
 }
@@ -563,13 +534,8 @@ void ExtensionInstallEventLogCollector::SuspendDone(
       CreateSessionChangeEvent(em::ExtensionInstallReportLogEvent::RESUME));
 }
 
-void ExtensionInstallEventLogCollector::OnConnectionChanged(
+void ExtensionInstallEventLogCollector::OnConnectionStateChanged(
     network::mojom::ConnectionType type) {
-  const bool currently_online = GetOnlineState();
-  if (currently_online == online_)
-    return;
-  online_ = currently_online;
-
   std::unique_ptr<em::ExtensionInstallReportLogEvent> event =
       std::make_unique<em::ExtensionInstallReportLogEvent>();
   event->set_event_type(

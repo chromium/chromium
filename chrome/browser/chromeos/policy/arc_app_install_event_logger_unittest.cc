@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/app_install_event_logger.h"
+#include "chrome/browser/chromeos/policy/arc_app_install_event_logger.h"
 
 #include <stdint.h>
 
@@ -127,7 +127,7 @@ int64_t GetCurrentTimestamp() {
 }
 
 class MockAppInstallEventLoggerDelegate
-    : public AppInstallEventLogger::Delegate {
+    : public ArcAppInstallEventLogger::Delegate {
  public:
   MockAppInstallEventLoggerDelegate() = default;
 
@@ -202,7 +202,7 @@ class AppInstallEventLoggerTest : public testing::Test {
     RunAndVerifyAdd(
         [&]() {
           logger_ =
-              std::make_unique<AppInstallEventLogger>(&delegate_, &profile_);
+              std::make_unique<ArcAppInstallEventLogger>(&delegate_, &profile_);
         },
         {});
     event_.set_event_type(em::AppInstallReportLogEvent::SUCCESS);
@@ -215,8 +215,9 @@ class AppInstallEventLoggerTest : public testing::Test {
       event_.clear_android_id();
     }
     EXPECT_CALL(delegate_, GetAndroidId_(_))
-        .WillOnce(WithArgs<0>(Invoke(
-            [=](AppInstallEventLogger::Delegate::AndroidIdCallback* callback) {
+        .WillOnce(WithArgs<0>(
+            Invoke([=](ArcAppInstallEventLogger::Delegate::AndroidIdCallback*
+                           callback) {
               std::move(*callback).Run(android_id, kAndroidId);
             })));
   }
@@ -229,7 +230,7 @@ class AppInstallEventLoggerTest : public testing::Test {
 
   em::AppInstallReportLogEvent event_;
 
-  std::unique_ptr<AppInstallEventLogger> logger_;
+  std::unique_ptr<ArcAppInstallEventLogger> logger_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AppInstallEventLoggerTest);
@@ -243,7 +244,7 @@ TEST_F(AppInstallEventLoggerTest, Clear) {
   list.AppendString("test");
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
-  AppInstallEventLogger::Clear(&profile_);
+  ArcAppInstallEventLogger::Clear(&profile_);
   EXPECT_TRUE(profile_.GetPrefs()
                   ->FindPreference(arc::prefs::kArcPushInstallAppsRequested)
                   ->IsDefaultValue());

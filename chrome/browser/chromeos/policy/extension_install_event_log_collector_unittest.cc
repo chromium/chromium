@@ -264,7 +264,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginLogout) {
 
   EXPECT_EQ(0, delegate()->add_for_all_count());
 
-  collector->AddLoginEvent();
+  collector->OnLogin();
   EXPECT_EQ(1, delegate()->add_for_all_count());
   EXPECT_EQ(em::ExtensionInstallReportLogEvent::SESSION_STATE_CHANGE,
             delegate()->last_event().event_type());
@@ -293,7 +293,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginTypes) {
   {
     ExtensionInstallEventLogCollector collector(registry(), delegate(),
                                                 profile());
-    collector.AddLoginEvent();
+    collector.OnLogin();
     EXPECT_EQ(1, delegate()->add_for_all_count());
     EXPECT_EQ(em::ExtensionInstallReportLogEvent::SESSION_STATE_CHANGE,
               delegate()->last_event().event_type());
@@ -312,7 +312,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginTypes) {
                                                 profile());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kLoginUser);
-    collector.AddLoginEvent();
+    collector.OnLogin();
     EXPECT_EQ(1, delegate()->add_for_all_count());
   }
 
@@ -321,7 +321,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginTypes) {
     ExtensionInstallEventLogCollector collector(registry(), delegate(),
                                                 profile());
     g_browser_process->local_state()->SetBoolean(prefs::kWasRestarted, true);
-    collector.AddLogoutEvent();
+    collector.OnLogout();
     EXPECT_EQ(1, delegate()->add_for_all_count());
   }
 
@@ -380,7 +380,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, ConnectivityChanges) {
 
   EXPECT_EQ(0, delegate()->add_for_all_count());
 
-  collector->AddLoginEvent();
+  collector->OnLogin();
   EXPECT_EQ(1, delegate()->add_for_all_count());
   EXPECT_EQ(em::ExtensionInstallReportLogEvent::SESSION_STATE_CHANGE,
             delegate()->last_event().event_type());

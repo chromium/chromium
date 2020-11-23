@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/app_install_event_log_collector.h"
+#include "chrome/browser/chromeos/policy/arc_app_install_event_log_collector.h"
 
 #include <vector>
 
@@ -43,7 +43,7 @@ constexpr char kPackageName[] = "com.example.app";
 constexpr char kPackageName2[] = "com.example.app2";
 
 class FakeAppInstallEventLogCollectorDelegate
-    : public AppInstallEventLogCollector::Delegate {
+    : public ArcAppInstallEventLogCollector::Delegate {
  public:
   FakeAppInstallEventLogCollectorDelegate() = default;
   ~FakeAppInstallEventLogCollectorDelegate() override = default;
@@ -63,7 +63,7 @@ class FakeAppInstallEventLogCollectorDelegate
     const em::AppInstallReportLogEvent event;
   };
 
-  // AppInstallEventLogCollector::Delegate:
+  // ArcAppInstallEventLogCollector::Delegate:
   void AddForAllPackages(
       std::unique_ptr<em::AppInstallReportLogEvent> event) override {
     ++add_for_all_count_;
@@ -103,10 +103,10 @@ int64_t TimeToTimestamp(base::Time time) {
 
 }  // namespace
 
-class AppInstallEventLogCollectorTest : public testing::Test {
+class ArcAppInstallEventLogCollectorTest : public testing::Test {
  protected:
-  AppInstallEventLogCollectorTest() = default;
-  ~AppInstallEventLogCollectorTest() override = default;
+  ArcAppInstallEventLogCollectorTest() = default;
+  ~ArcAppInstallEventLogCollectorTest() override = default;
 
   void SetUp() override {
     RegisterLocalState(pref_service_.registry());
@@ -182,30 +182,30 @@ class AppInstallEventLogCollectorTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   ArcAppTest arc_app_test_;
 
-  DISALLOW_COPY_AND_ASSIGN(AppInstallEventLogCollectorTest);
+  DISALLOW_COPY_AND_ASSIGN(ArcAppInstallEventLogCollectorTest);
 };
 
 // Test the case when collector is created and destroyed inside the one user
 // session. In this case no event is generated. This happens for example when
 // all apps are installed in context of the same user session.
-TEST_F(AppInstallEventLogCollectorTest, NoEventsByDefault) {
-  std::unique_ptr<AppInstallEventLogCollector> collector =
-      std::make_unique<AppInstallEventLogCollector>(delegate(), profile(),
-                                                    packages_);
+TEST_F(ArcAppInstallEventLogCollectorTest, NoEventsByDefault) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
   collector.reset();
 
   EXPECT_EQ(0, delegate()->add_count());
   EXPECT_EQ(0, delegate()->add_for_all_count());
 }
 
-TEST_F(AppInstallEventLogCollectorTest, LoginLogout) {
-  std::unique_ptr<AppInstallEventLogCollector> collector =
-      std::make_unique<AppInstallEventLogCollector>(delegate(), profile(),
-                                                    packages_);
+TEST_F(ArcAppInstallEventLogCollectorTest, LoginLogout) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
 
   EXPECT_EQ(0, delegate()->add_for_all_count());
 
-  collector->AddLoginEvent();
+  collector->OnLogin();
   EXPECT_EQ(1, delegate()->add_for_all_count());
   EXPECT_EQ(em::AppInstallReportLogEvent::SESSION_STATE_CHANGE,
             delegate()->last_event().event_type());
@@ -214,7 +214,7 @@ TEST_F(AppInstallEventLogCollectorTest, LoginLogout) {
   EXPECT_TRUE(delegate()->last_event().has_online());
   EXPECT_FALSE(delegate()->last_event().online());
 
-  collector->AddLogoutEvent();
+  collector->OnLogout();
   EXPECT_EQ(2, delegate()->add_for_all_count());
   EXPECT_EQ(em::AppInstallReportLogEvent::SESSION_STATE_CHANGE,
             delegate()->last_event().event_type());
@@ -228,10 +228,10 @@ TEST_F(AppInstallEventLogCollectorTest, LoginLogout) {
   EXPECT_EQ(0, delegate()->add_count());
 }
 
-TEST_F(AppInstallEventLogCollectorTest, LoginTypes) {
+TEST_F(ArcAppInstallEventLogCollectorTest, LoginTypes) {
   {
-    AppInstallEventLogCollector collector(delegate(), profile(), packages_);
-    collector.AddLoginEvent();
+    ArcAppInstallEventLogCollector collector(delegate(), profile(), packages_);
+    collector.OnLogin();
     EXPECT_EQ(1, delegate()->add_for_all_count());
     EXPECT_EQ(em::AppInstallReportLogEvent::SESSION_STATE_CHANGE,
               delegate()->last_event().event_type());
@@ -243,28 +243,28 @@ TEST_F(AppInstallEventLogCollectorTest, LoginTypes) {
 
   {
     // Check login after restart. No log is expected.
-    AppInstallEventLogCollector collector(delegate(), profile(), packages_);
+    ArcAppInstallEventLogCollector collector(delegate(), profile(), packages_);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kLoginUser);
-    collector.AddLoginEvent();
+    collector.OnLogin();
     EXPECT_EQ(1, delegate()->add_for_all_count());
   }
 
   {
     // Check logout on restart. No log is expected.
-    AppInstallEventLogCollector collector(delegate(), profile(), packages_);
+    ArcAppInstallEventLogCollector collector(delegate(), profile(), packages_);
     g_browser_process->local_state()->SetBoolean(prefs::kWasRestarted, true);
-    collector.AddLogoutEvent();
+    collector.OnLogout();
     EXPECT_EQ(1, delegate()->add_for_all_count());
   }
 
   EXPECT_EQ(0, delegate()->add_count());
 }
 
-TEST_F(AppInstallEventLogCollectorTest, SuspendResume) {
-  std::unique_ptr<AppInstallEventLogCollector> collector =
-      std::make_unique<AppInstallEventLogCollector>(delegate(), profile(),
-                                                    packages_);
+TEST_F(ArcAppInstallEventLogCollectorTest, SuspendResume) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
 
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
@@ -292,16 +292,16 @@ TEST_F(AppInstallEventLogCollectorTest, SuspendResume) {
 // from WiFi. Verify that a connectivity change event is recorded. Then, connect
 // to WiFi with a pending captive portal. Verify that no event is recorded.
 // Then, pass the captive portal. Verify that a connectivity change is recorded.
-TEST_F(AppInstallEventLogCollectorTest, ConnectivityChanges) {
+TEST_F(ArcAppInstallEventLogCollectorTest, ConnectivityChanges) {
   SetNetworkState(nullptr, kEthernetServicePath, shill::kStateOnline);
 
-  std::unique_ptr<AppInstallEventLogCollector> collector =
-      std::make_unique<AppInstallEventLogCollector>(delegate(), profile(),
-                                                    packages_);
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
 
   EXPECT_EQ(0, delegate()->add_for_all_count());
 
-  collector->AddLoginEvent();
+  collector->OnLogin();
   EXPECT_EQ(1, delegate()->add_for_all_count());
   EXPECT_EQ(em::AppInstallReportLogEvent::SESSION_STATE_CHANGE,
             delegate()->last_event().event_type());
@@ -338,10 +338,10 @@ TEST_F(AppInstallEventLogCollectorTest, ConnectivityChanges) {
 }
 
 // Validates sequence of CloudDPS events.
-TEST_F(AppInstallEventLogCollectorTest, CloudDPSEvent) {
-  std::unique_ptr<AppInstallEventLogCollector> collector =
-      std::make_unique<AppInstallEventLogCollector>(delegate(), profile(),
-                                                    packages_);
+TEST_F(ArcAppInstallEventLogCollectorTest, CloudDPSEvent) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
 
   base::Time time = base::Time::Now();
   collector->OnCloudDpsRequested(time, {kPackageName, kPackageName2});
@@ -386,12 +386,12 @@ TEST_F(AppInstallEventLogCollectorTest, CloudDPSEvent) {
             delegate()->last_request().event.clouddps_response());
 }
 
-TEST_F(AppInstallEventLogCollectorTest, InstallPackages) {
+TEST_F(ArcAppInstallEventLogCollectorTest, InstallPackages) {
   arc::mojom::AppHost* const app_host = app_prefs();
 
-  std::unique_ptr<AppInstallEventLogCollector> collector =
-      std::make_unique<AppInstallEventLogCollector>(delegate(), profile(),
-                                                    packages_);
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
 
   app_host->OnInstallationStarted(kPackageName);
   ASSERT_EQ(1, delegate()->add_count());

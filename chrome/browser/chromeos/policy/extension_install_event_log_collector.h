@@ -13,13 +13,12 @@
 
 #include "base/logging.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/chromeos/policy/install_event_log_collector_base.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 
 class Profile;
 
@@ -28,12 +27,9 @@ class ExtensionInstallReportLogEvent;
 }
 namespace policy {
 
-// TODO(crbug/1073436): Refactor out common methods of this class and
-// AppInstallEventLogCollector to new class.
 // Listens for and logs events related to extension installation process.
 class ExtensionInstallEventLogCollector
-    : public chromeos::PowerManagerClient::Observer,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver,
+    : public InstallEventLogCollectorBase,
       public extensions::ExtensionRegistryObserver,
       public extensions::InstallStageTracker::Observer {
  public:
@@ -76,18 +72,9 @@ class ExtensionInstallEventLogCollector
                                     Profile* profile);
   ~ExtensionInstallEventLogCollector() override;
 
-  // Called in case of login when there are pending extensions.
-  void AddLoginEvent();
-
-  // Called in case of logout when there are pending extensions.
-  void AddLogoutEvent();
-
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(const base::TimeDelta& sleep_duration) override;
-
-  // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // ExtensionRegistryObserver overrides
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -119,13 +106,15 @@ class ExtensionInstallEventLogCollector
   // successfully.
   void AddSuccessEvent(const extensions::Extension* extension);
 
+ protected:
+  // Overrides to handle events from InstallEventLogCollectorBase.
+  void OnLoginInternal() override;
+  void OnLogoutInternal() override;
+  void OnConnectionStateChanged(network::mojom::ConnectionType type) override;
+
  private:
   extensions::ExtensionRegistry* registry_;
   Delegate* const delegate_;
-  Profile* const profile_;
-
-  // Whether the device is currently online.
-  bool online_ = false;
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>

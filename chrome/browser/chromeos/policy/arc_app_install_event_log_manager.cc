@@ -45,7 +45,7 @@ ArcAppInstallEventLogManager::ArcAppInstallEventLogManager(
                      GetLogFilePath(*profile)),
       base::BindOnce(&ArcAppInstallEventLogManager::AppLogUpload::OnLogInit,
                      app_log_upload_->log_weak_factory_.GetWeakPtr()));
-  logger_ = std::make_unique<AppInstallEventLogger>(this, profile);
+  logger_ = std::make_unique<ArcAppInstallEventLogger>(this, profile);
 }
 
 ArcAppInstallEventLogManager::~ArcAppInstallEventLogManager() {
@@ -62,7 +62,7 @@ ArcAppInstallEventLogManager::~ArcAppInstallEventLogManager() {
 void ArcAppInstallEventLogManager::Clear(
     LogTaskRunnerWrapper* log_task_runner_wrapper,
     Profile* profile) {
-  AppInstallEventLogger::Clear(profile);
+  ArcAppInstallEventLogger::Clear(profile);
   log_task_runner_wrapper->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(base::GetDeleteFileCallback(), GetLogFilePath(*profile)));
@@ -83,7 +83,7 @@ void ArcAppInstallEventLogManager::Add(
 }
 
 void ArcAppInstallEventLogManager::GetAndroidId(
-    AppInstallEventLogger::Delegate::AndroidIdCallback callback) const {
+    ArcAppInstallEventLogger::Delegate::AndroidIdCallback callback) const {
   arc::GetAndroidId(std::move(callback));
 }
 

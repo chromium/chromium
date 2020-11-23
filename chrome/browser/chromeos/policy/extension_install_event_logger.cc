@@ -20,55 +20,12 @@
 namespace em = enterprise_management;
 
 namespace policy {
-namespace {
-
-// Return all elements that are members of |first| but not |second|.
-std::set<extensions::ExtensionId> GetDifference(
-    const std::set<extensions::ExtensionId>& first,
-    const std::set<extensions::ExtensionId>& second) {
-  std::set<extensions::ExtensionId> difference;
-  std::set_difference(first.begin(), first.end(), second.begin(), second.end(),
-                      std::inserter(difference, difference.end()));
-  return difference;
-}
-
-std::unique_ptr<em::ExtensionInstallReportLogEvent> AddDiskSpaceInfoToEvent(
-    std::unique_ptr<em::ExtensionInstallReportLogEvent> event,
-    const base::FilePath& stateful_path) {
-  const int64_t stateful_total =
-      base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
-  if (stateful_total >= 0)
-    event->set_stateful_total(stateful_total);
-  const int64_t stateful_free =
-      base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
-  if (stateful_free >= 0)
-    event->set_stateful_free(stateful_free);
-  return event;
-}
-
-void EnsureTimestampSet(em::ExtensionInstallReportLogEvent* event) {
-  if (!event->has_timestamp()) {
-    event->set_timestamp(
-        (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds());
-  }
-}
-
-std::unique_ptr<em::ExtensionInstallReportLogEvent> CreateEvent(
-    em::ExtensionInstallReportLogEvent::EventType type) {
-  auto event = std::make_unique<em::ExtensionInstallReportLogEvent>();
-  EnsureTimestampSet(event.get());
-  event->set_event_type(type);
-  return event;
-}
-
-}  // namespace
-
 ExtensionInstallEventLogger::ExtensionInstallEventLogger(
     Delegate* delegate,
     Profile* profile,
     extensions::ExtensionRegistry* registry)
-    : delegate_(delegate),
-      profile_(profile),
+    : InstallEventLoggerBase(profile),
+      delegate_(delegate),
       registry_(registry),
       pref_service_(profile->GetPrefs()) {
   pref_change_registrar_.Init(pref_service_);
@@ -83,26 +40,21 @@ ExtensionInstallEventLogger::ExtensionInstallEventLogger(
 
 ExtensionInstallEventLogger::~ExtensionInstallEventLogger() {
   if (log_collector_)
-    log_collector_->AddLogoutEvent();
+    log_collector_->OnLogout();
   pref_change_registrar_.RemoveAll();
 }
 
 void ExtensionInstallEventLogger::AddForAllExtensions(
     std::unique_ptr<em::ExtensionInstallReportLogEvent> event) {
   EnsureTimestampSet(event.get());
-  AddForSetOfExtensions(pending_extensions_, std::move(event));
+  AddForSetOfApps(pending_extensions_, std::move(event));
 }
 
 void ExtensionInstallEventLogger::Add(
     const extensions::ExtensionId& extension_id,
     bool gather_disk_space_info,
     std::unique_ptr<em::ExtensionInstallReportLogEvent> event) {
-  EnsureTimestampSet(event.get());
-  if (gather_disk_space_info) {
-    AddForSetOfExtensionsWithDiskSpaceInfo({extension_id}, std::move(event));
-  } else {
-    AddForSetOfExtensions({extension_id}, std::move(event));
-  }
+  AddEvent(extension_id, gather_disk_space_info, event);
 }
 
 void ExtensionInstallEventLogger::OnForcedExtensionsPrefChanged() {
@@ -122,12 +74,12 @@ void ExtensionInstallEventLogger::OnForcedExtensionsPrefChanged() {
       GetDifference(previous_pending, current_requested);
 
   if (!added.empty()) {
-    AddForSetOfExtensionsWithDiskSpaceInfo(
+    AddForSetOfAppsWithDiskSpaceInfo(
         added, CreateEvent(em::ExtensionInstallReportLogEvent::POLICY_REQUEST));
   }
   if (!removed.empty()) {
-    AddForSetOfExtensions(
-        removed, CreateEvent(em::ExtensionInstallReportLogEvent::CANCELED));
+    AddForSetOfApps(removed,
+                    CreateEvent(em::ExtensionInstallReportLogEvent::CANCELED));
   }
   std::set<extensions::ExtensionId> current_pending = GetDifference(
       current_requested, GetDifference(extensions_, previous_pending));
@@ -137,7 +89,7 @@ void ExtensionInstallEventLogger::OnForcedExtensionsPrefChanged() {
   if (!pending_extensions_.empty()) {
     UpdateCollector();
     if (initial_) {
-      log_collector_->AddLoginEvent();
+      log_collector_->OnLogin();
       initial_ = false;
     }
     log_collector_->OnExtensionsRequested(added);
@@ -157,11 +109,6 @@ bool ExtensionInstallEventLogger::IsExtensionPending(
   return pending_extensions_.find(extension_id) != pending_extensions_.end();
 }
 
-void ExtensionInstallEventLogger::SetStatefulPathForTesting(
-    const base::FilePath& path) {
-  stateful_path_ = path;
-}
-
 void ExtensionInstallEventLogger::UpdateCollector() {
   if (pending_extensions_.empty()) {
     StopCollector();
@@ -177,18 +124,7 @@ void ExtensionInstallEventLogger::StopCollector() {
   log_collector_.reset();
 }
 
-void ExtensionInstallEventLogger::AddForSetOfExtensionsWithDiskSpaceInfo(
-    const std::set<extensions::ExtensionId>& extensions,
-    std::unique_ptr<em::ExtensionInstallReportLogEvent> event) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&AddDiskSpaceInfoToEvent, std::move(event),
-                     stateful_path_),
-      base::BindOnce(&ExtensionInstallEventLogger::AddForSetOfExtensions,
-                     weak_factory_.GetWeakPtr(), extensions));
-}
-
-void ExtensionInstallEventLogger::AddForSetOfExtensions(
+void ExtensionInstallEventLogger::AddForSetOfApps(
     const std::set<extensions::ExtensionId>& extensions,
     std::unique_ptr<em::ExtensionInstallReportLogEvent> event) {
   delegate_->Add(extensions, *event);

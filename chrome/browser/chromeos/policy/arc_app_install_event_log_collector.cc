@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/app_install_event_log_collector.h"
+#include "chrome/browser/chromeos/policy/arc_app_install_event_log_collector.h"
 
 #include "base/command_line.h"
 #include "base/time/time.h"
@@ -34,21 +34,6 @@ std::unique_ptr<em::AppInstallReportLogEvent> CreateSessionChangeEvent(
   return event;
 }
 
-bool GetOnlineState() {
-  chromeos::NetworkStateHandler::NetworkStateList network_state_list;
-  chromeos::NetworkHandler::Get()
-      ->network_state_handler()
-      ->GetNetworkListByType(
-          chromeos::NetworkTypePattern::Default(), true /* configured_only */,
-          false /* visible_only */, 0 /* limit */, &network_state_list);
-  for (const chromeos::NetworkState* network_state : network_state_list) {
-    if (network_state->connection_state() == shill::kStateOnline) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void SetTimestampFromTime(em::AppInstallReportLogEvent* event,
                           base::Time time) {
   event->set_timestamp((time - base::Time::UnixEpoch()).InMicroseconds());
@@ -56,16 +41,13 @@ void SetTimestampFromTime(em::AppInstallReportLogEvent* event,
 
 }  // namespace
 
-AppInstallEventLogCollector::AppInstallEventLogCollector(
+ArcAppInstallEventLogCollector::ArcAppInstallEventLogCollector(
     Delegate* delegate,
     Profile* profile,
     const std::set<std::string>& pending_packages)
-    : delegate_(delegate),
-      profile_(profile),
-      online_(GetOnlineState()),
+    : InstallEventLogCollectorBase(profile),
+      delegate_(delegate),
       pending_packages_(pending_packages) {
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
-  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
   // Might not be available in unit test.
   arc::ArcPolicyBridge* const policy_bridge =
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
@@ -78,13 +60,11 @@ AppInstallEventLogCollector::AppInstallEventLogCollector(
   }
 }
 
-AppInstallEventLogCollector::~AppInstallEventLogCollector() {
+ArcAppInstallEventLogCollector::~ArcAppInstallEventLogCollector() {
   ArcAppListPrefs* const app_prefs = ArcAppListPrefs::Get(profile_);
   if (app_prefs) {
     app_prefs->RemoveObserver(this);
   }
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
   arc::ArcPolicyBridge* const policy_bridge =
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
   if (policy_bridge) {
@@ -92,54 +72,37 @@ AppInstallEventLogCollector::~AppInstallEventLogCollector() {
   }
 }
 
-void AppInstallEventLogCollector::OnPendingPackagesChanged(
+void ArcAppInstallEventLogCollector::OnPendingPackagesChanged(
     const std::set<std::string>& pending_packages) {
   pending_packages_ = pending_packages;
 }
 
-void AppInstallEventLogCollector::AddLoginEvent() {
-  // Don't log in case session is restared or recovered from crash.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kLoginUser) ||
-      profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
-    return;
-  }
-
+void ArcAppInstallEventLogCollector::OnLoginInternal() {
   std::unique_ptr<em::AppInstallReportLogEvent> event =
       CreateSessionChangeEvent(em::AppInstallReportLogEvent::LOGIN);
   event->set_online(online_);
   delegate_->AddForAllPackages(std::move(event));
 }
 
-void AppInstallEventLogCollector::AddLogoutEvent() {
-  // Don't log in case session is restared.
-  if (g_browser_process->local_state()->GetBoolean(prefs::kWasRestarted))
-    return;
-
+void ArcAppInstallEventLogCollector::OnLogoutInternal() {
   delegate_->AddForAllPackages(
       CreateSessionChangeEvent(em::AppInstallReportLogEvent::LOGOUT));
 }
 
-void AppInstallEventLogCollector::SuspendImminent(
+void ArcAppInstallEventLogCollector::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
   delegate_->AddForAllPackages(
       CreateSessionChangeEvent(em::AppInstallReportLogEvent::SUSPEND));
 }
 
-void AppInstallEventLogCollector::SuspendDone(
+void ArcAppInstallEventLogCollector::SuspendDone(
     const base::TimeDelta& sleep_duration) {
   delegate_->AddForAllPackages(
       CreateSessionChangeEvent(em::AppInstallReportLogEvent::RESUME));
 }
 
-void AppInstallEventLogCollector::OnConnectionChanged(
+void ArcAppInstallEventLogCollector::OnConnectionStateChanged(
     network::mojom::ConnectionType type) {
-  const bool currently_online = GetOnlineState();
-  if (currently_online == online_) {
-    return;
-  }
-  online_ = currently_online;
-
   std::unique_ptr<em::AppInstallReportLogEvent> event =
       std::make_unique<em::AppInstallReportLogEvent>();
   event->set_event_type(em::AppInstallReportLogEvent::CONNECTIVITY_CHANGE);
@@ -147,7 +110,7 @@ void AppInstallEventLogCollector::OnConnectionChanged(
   delegate_->AddForAllPackages(std::move(event));
 }
 
-void AppInstallEventLogCollector::OnCloudDpsRequested(
+void ArcAppInstallEventLogCollector::OnCloudDpsRequested(
     base::Time time,
     const std::set<std::string>& package_names) {
   for (const std::string& package_name : package_names) {
@@ -159,7 +122,7 @@ void AppInstallEventLogCollector::OnCloudDpsRequested(
   }
 }
 
-void AppInstallEventLogCollector::OnCloudDpsSucceeded(
+void ArcAppInstallEventLogCollector::OnCloudDpsSucceeded(
     base::Time time,
     const std::set<std::string>& package_names) {
   for (const std::string& package_name : package_names) {
@@ -172,7 +135,7 @@ void AppInstallEventLogCollector::OnCloudDpsSucceeded(
   }
 }
 
-void AppInstallEventLogCollector::OnCloudDpsFailed(
+void ArcAppInstallEventLogCollector::OnCloudDpsFailed(
     base::Time time,
     const std::string& package_name,
     arc::mojom::InstallErrorReason reason) {
@@ -184,7 +147,7 @@ void AppInstallEventLogCollector::OnCloudDpsFailed(
                  std::move(event));
 }
 
-void AppInstallEventLogCollector::OnReportDirectInstall(
+void ArcAppInstallEventLogCollector::OnReportDirectInstall(
     base::Time time,
     const std::set<std::string>& package_names) {
   for (const std::string& package_name : package_names) {
@@ -196,7 +159,7 @@ void AppInstallEventLogCollector::OnReportDirectInstall(
   }
 }
 
-void AppInstallEventLogCollector::OnReportForceInstallMainLoopFailed(
+void ArcAppInstallEventLogCollector::OnReportForceInstallMainLoopFailed(
     base::Time time,
     const std::set<std::string>& package_names) {
   for (const std::string& package_name : package_names) {
@@ -209,7 +172,7 @@ void AppInstallEventLogCollector::OnReportForceInstallMainLoopFailed(
   }
 }
 
-void AppInstallEventLogCollector::OnInstallationStarted(
+void ArcAppInstallEventLogCollector::OnInstallationStarted(
     const std::string& package_name) {
   if (!pending_packages_.count(package_name)) {
     return;
@@ -221,7 +184,7 @@ void AppInstallEventLogCollector::OnInstallationStarted(
                  std::move(event));
 }
 
-void AppInstallEventLogCollector::OnInstallationFinished(
+void ArcAppInstallEventLogCollector::OnInstallationFinished(
     const std::string& package_name,
     bool success) {
   if (!pending_packages_.count(package_name)) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_APP_INSTALL_EVENT_LOGGER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_APP_INSTALL_EVENT_LOGGER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_ARC_APP_INSTALL_EVENT_LOGGER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_ARC_APP_INSTALL_EVENT_LOGGER_H_
 
 #include <memory>
 #include <set>
@@ -13,17 +13,15 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
-#include "chrome/browser/chromeos/policy/app_install_event_log_collector.h"
+#include "chrome/browser/chromeos/policy/arc_app_install_event_log_collector.h"
+#include "chrome/browser/chromeos/policy/install_event_logger_base.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 class Profile;
 
 namespace base {
 class Value;
-}
-
-namespace enterprise_management {
-class AppInstallReportLogEvent;
 }
 
 namespace user_prefs {
@@ -44,12 +42,17 @@ struct PolicyNamespace;
 // * When an app is removed from the push-install list in policy, the end of its
 //   push-install process is logged.
 //
-// Additionally, an |AppInstallEventLogCollector| is instantiated to collect
+// Additionally, an |ArcAppInstallEventLogCollector| is instantiated to collect
 // detailed logs of the push-install process whenever there is at least one
 // pending push-install request.
-class AppInstallEventLogger : public AppInstallEventLogCollector::Delegate,
-                              public policy::PolicyService::Observer,
-                              public arc::ArcPolicyBridge::Observer {
+class ArcAppInstallEventLogger
+    : public InstallEventLoggerBase<
+          enterprise_management::AppInstallReportLogEvent,
+          enterprise_management::AppInstallReportLogEvent::EventType,
+          std::string>,
+      public ArcAppInstallEventLogCollector::Delegate,
+      public policy::PolicyService::Observer,
+      public arc::ArcPolicyBridge::Observer {
  public:
   // The delegate that events are forwarded to for inclusion in the log.
   class Delegate {
@@ -69,18 +72,22 @@ class AppInstallEventLogger : public AppInstallEventLogCollector::Delegate,
   };
 
   // Delegate must outlive |this|.
-  AppInstallEventLogger(Delegate* delegate, Profile* profile);
-  ~AppInstallEventLogger() override;
+  ArcAppInstallEventLogger(Delegate* delegate, Profile* profile);
+  ~ArcAppInstallEventLogger() override;
+
+  ArcAppInstallEventLogger& operator=(const ArcAppInstallEventLogger&) = delete;
+  ArcAppInstallEventLogger(const ArcAppInstallEventLogger&) = delete;
 
   // Registers the prefs used to keep track of push-installs that have been
   // requested and not yet completed.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Clears all data related to app-install event log collection for |profile|.
-  // Must not be called while an |AppInstallEventLogger| exists for |profile|.
+  // Must not be called while an |ArcAppInstallEventLogger| exists for
+  // |profile|.
   static void Clear(Profile* profile);
 
-  // AppInstallEventLogCollector::Delegate:
+  // ArcAppInstallEventLogCollector::Delegate:
   void AddForAllPackages(
       std::unique_ptr<enterprise_management::AppInstallReportLogEvent> event)
       override;
@@ -98,9 +105,6 @@ class AppInstallEventLogger : public AppInstallEventLogCollector::Delegate,
   void OnPolicySent(const std::string& policy) override;
   void OnComplianceReportReceived(
       const base::Value* compliance_report) override;
-
-  // Set stateful partition path for unit tests.
-  void SetStatefulPathForTesting(const base::FilePath& path);
 
  private:
   // Loads a list of packages from a pref.
@@ -123,16 +127,11 @@ class AppInstallEventLogger : public AppInstallEventLogCollector::Delegate,
   // and updates the |log_collector_|.
   void EvaluatePolicy(const policy::PolicyMap& policy, bool initial);
 
-  // Adds information about total and free disk space to |event|, then adds
-  // |event| to the log for every app in |packages|.
-  void AddForSetOfPackagesWithDiskSpaceInfo(
+  // Override for InstallEventLoggerBase::AddForSetOfApps.
+  void AddForSetOfApps(
       const std::set<std::string>& packages,
-      std::unique_ptr<enterprise_management::AppInstallReportLogEvent> event);
-
-  // Adds |event| to the log for every app in |packages|.
-  void AddForSetOfPackages(
-      const std::set<std::string>& packages,
-      std::unique_ptr<enterprise_management::AppInstallReportLogEvent> event);
+      std::unique_ptr<enterprise_management::AppInstallReportLogEvent> event)
+      override;
 
   void OnGetAndroidId(
       const std::set<std::string>& packages,
@@ -143,30 +142,22 @@ class AppInstallEventLogger : public AppInstallEventLogCollector::Delegate,
   // The delegate that events are forwarded to for inclusion in the log.
   Delegate* const delegate_;
 
-  // The profile whose app push-install requests to log.
-  Profile* const profile_;
-
   // Whether |this| has set itself up as observer of other classes and needs to
   // remove itself as observer in the destructor.
   bool observing_ = false;
 
-  // Path for stateful partition.
-  base::FilePath stateful_path_;
-
   // The app push-install requests that were most recently sent to CloudDPC.
   std::set<std::string> requested_in_arc_;
 
-  // The |AppInstallEventLogCollector| that collects detailed logs of the
+  // The |ArcAppInstallEventLogCollector| that collects detailed logs of the
   // push-install process. Non-|nullptr| whenever there are one or more pending
   // app push-install requests.
-  std::unique_ptr<AppInstallEventLogCollector> log_collector_;
+  std::unique_ptr<ArcAppInstallEventLogCollector> log_collector_;
 
   // Weak factory used to reference |this| from background tasks.
-  base::WeakPtrFactory<AppInstallEventLogger> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppInstallEventLogger);
+  base::WeakPtrFactory<ArcAppInstallEventLogger> weak_factory_{this};
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_APP_INSTALL_EVENT_LOGGER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_ARC_APP_INSTALL_EVENT_LOGGER_H_

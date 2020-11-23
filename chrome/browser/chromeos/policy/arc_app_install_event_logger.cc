@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/app_install_event_logger.h"
+#include "chrome/browser/chromeos/policy/arc_app_install_event_logger.h"
 
 #include <stdint.h>
 
@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -20,9 +19,9 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
+#include "chrome/browser/chromeos/policy/install_event_logger_base.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/disks/disk.h"
 #include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -55,56 +54,14 @@ std::set<std::string> GetRequestedPackagesFromPolicy(
       arc_policy->GetString());
 }
 
-// Return all elements that are members of |first| but not |second|.
-std::set<std::string> GetDifference(const std::set<std::string>& first,
-                                    const std::set<std::string>& second) {
-  std::set<std::string> difference;
-  std::set_difference(first.begin(), first.end(), second.begin(), second.end(),
-                      std::inserter(difference, difference.end()));
-  return difference;
-}
-
-std::unique_ptr<em::AppInstallReportLogEvent> AddDiskSpaceInfoToEvent(
-    std::unique_ptr<em::AppInstallReportLogEvent> event,
-    const base::FilePath& stateful_path) {
-  const int64_t stateful_total =
-      base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
-  if (stateful_total >= 0) {
-    event->set_stateful_total(stateful_total);
-  }
-  const int64_t stateful_free =
-      base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
-  if (stateful_free >= 0) {
-    event->set_stateful_free(stateful_free);
-  }
-  return event;
-}
-
-void EnsureTimestampSet(em::AppInstallReportLogEvent* event) {
-  if (!event->has_timestamp()) {
-    event->set_timestamp(
-        (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds());
-  }
-}
-
-std::unique_ptr<em::AppInstallReportLogEvent> CreateEvent(
-    em::AppInstallReportLogEvent::EventType type) {
-  std::unique_ptr<em::AppInstallReportLogEvent> event =
-      std::make_unique<em::AppInstallReportLogEvent>();
-  EnsureTimestampSet(event.get());
-  event->set_event_type(type);
-  return event;
-}
-
 }  // namespace
 
-AppInstallEventLogger::AppInstallEventLogger(Delegate* delegate,
-                                             Profile* profile)
-    : delegate_(delegate), profile_(profile) {
+ArcAppInstallEventLogger::ArcAppInstallEventLogger(Delegate* delegate,
+                                                   Profile* profile)
+    : InstallEventLoggerBase(profile), delegate_(delegate) {
   if (!arc::IsArcAllowedForProfile(profile_)) {
-    AddForSetOfPackages(
-        GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending),
-        CreateEvent(em::AppInstallReportLogEvent::CANCELED));
+    AddForSetOfApps(GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending),
+                    CreateEvent(em::AppInstallReportLogEvent::CANCELED));
     Clear(profile_);
     return;
   }
@@ -120,13 +77,11 @@ AppInstallEventLogger::AppInstallEventLogger(Delegate* delegate,
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
   bridge->AddObserver(this);
   policy_service->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
-
-  stateful_path_ = chromeos::disks::GetStatefulPartitionPath();
 }
 
-AppInstallEventLogger::~AppInstallEventLogger() {
+ArcAppInstallEventLogger::~ArcAppInstallEventLogger() {
   if (log_collector_) {
-    log_collector_->AddLogoutEvent();
+    log_collector_->OnLogout();
   }
   if (observing_) {
     arc::ArcPolicyBridge::GetForBrowserContext(profile_)->RemoveObserver(this);
@@ -136,50 +91,45 @@ AppInstallEventLogger::~AppInstallEventLogger() {
 }
 
 // static
-void AppInstallEventLogger::RegisterProfilePrefs(
+void ArcAppInstallEventLogger::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(arc::prefs::kArcPushInstallAppsRequested);
   registry->RegisterListPref(arc::prefs::kArcPushInstallAppsPending);
 }
 
 // static
-void AppInstallEventLogger::Clear(Profile* profile) {
+void ArcAppInstallEventLogger::Clear(Profile* profile) {
   profile->GetPrefs()->ClearPref(arc::prefs::kArcPushInstallAppsRequested);
   profile->GetPrefs()->ClearPref(arc::prefs::kArcPushInstallAppsPending);
 }
 
-void AppInstallEventLogger::AddForAllPackages(
+void ArcAppInstallEventLogger::AddForAllPackages(
     std::unique_ptr<em::AppInstallReportLogEvent> event) {
   EnsureTimestampSet(event.get());
-  AddForSetOfPackages(
-      GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending),
-      std::move(event));
+  AddForSetOfApps(GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending),
+                  std::move(event));
 }
 
-void AppInstallEventLogger::Add(
+void ArcAppInstallEventLogger::Add(
     const std::string& package,
     bool gather_disk_space_info,
     std::unique_ptr<em::AppInstallReportLogEvent> event) {
-  EnsureTimestampSet(event.get());
-  if (gather_disk_space_info) {
-    AddForSetOfPackagesWithDiskSpaceInfo({package}, std::move(event));
-  } else {
-    AddForSetOfPackages({package}, std::move(event));
-  }
+  AddEvent(package, gather_disk_space_info, event);
 }
 
-void AppInstallEventLogger::OnPolicyUpdated(const policy::PolicyNamespace& ns,
-                                            const policy::PolicyMap& previous,
-                                            const policy::PolicyMap& current) {
+void ArcAppInstallEventLogger::OnPolicyUpdated(
+    const policy::PolicyNamespace& ns,
+    const policy::PolicyMap& previous,
+    const policy::PolicyMap& current) {
   EvaluatePolicy(current, false /* initial */);
 }
 
-void AppInstallEventLogger::OnPolicySent(const std::string& policy) {
+void ArcAppInstallEventLogger::OnPolicySent(const std::string& policy) {
   requested_in_arc_ =
       arc::policy_util::GetRequestedPackagesFromArcPolicy(policy);
 }
 
-void AppInstallEventLogger::OnComplianceReportReceived(
+void ArcAppInstallEventLogger::OnComplianceReportReceived(
     const base::Value* compliance_report) {
   const base::Value* const details = compliance_report->FindKeyOfType(
       "nonComplianceDetails", base::Value::Type::LIST);
@@ -208,7 +158,7 @@ void AppInstallEventLogger::OnComplianceReportReceived(
       previous_pending, GetDifference(requested_in_arc_, pending_in_arc));
   const std::set<std::string> removed =
       GetDifference(previous_pending, current_pending);
-  AddForSetOfPackagesWithDiskSpaceInfo(
+  AddForSetOfAppsWithDiskSpaceInfo(
       removed, CreateEvent(em::AppInstallReportLogEvent::SUCCESS));
 
   if (removed.empty()) {
@@ -224,12 +174,7 @@ void AppInstallEventLogger::OnComplianceReportReceived(
   }
 }
 
-void AppInstallEventLogger::SetStatefulPathForTesting(
-    const base::FilePath& path) {
-  stateful_path_ = path;
-}
-
-std::set<std::string> AppInstallEventLogger::GetPackagesFromPref(
+std::set<std::string> ArcAppInstallEventLogger::GetPackagesFromPref(
     const std::string& pref_name) const {
   std::set<std::string> packages;
   for (const auto& package :
@@ -242,8 +187,8 @@ std::set<std::string> AppInstallEventLogger::GetPackagesFromPref(
   return packages;
 }
 
-void AppInstallEventLogger::SetPref(const std::string& pref_name,
-                                    const std::set<std::string>& packages) {
+void ArcAppInstallEventLogger::SetPref(const std::string& pref_name,
+                                       const std::set<std::string>& packages) {
   base::Value value(base::Value::Type::LIST);
   for (const std::string& package : packages) {
     value.Append(package);
@@ -251,22 +196,22 @@ void AppInstallEventLogger::SetPref(const std::string& pref_name,
   profile_->GetPrefs()->Set(pref_name, value);
 }
 
-void AppInstallEventLogger::UpdateCollector(
+void ArcAppInstallEventLogger::UpdateCollector(
     const std::set<std::string>& pending) {
   if (!log_collector_) {
-    log_collector_ =
-        std::make_unique<AppInstallEventLogCollector>(this, profile_, pending);
+    log_collector_ = std::make_unique<ArcAppInstallEventLogCollector>(
+        this, profile_, pending);
   } else {
     log_collector_->OnPendingPackagesChanged(pending);
   }
 }
 
-void AppInstallEventLogger::StopCollector() {
+void ArcAppInstallEventLogger::StopCollector() {
   log_collector_.reset();
 }
 
-void AppInstallEventLogger::EvaluatePolicy(const policy::PolicyMap& policy,
-                                           bool initial) {
+void ArcAppInstallEventLogger::EvaluatePolicy(const policy::PolicyMap& policy,
+                                              bool initial) {
   const std::set<std::string> previous_requested =
       GetPackagesFromPref(arc::prefs::kArcPushInstallAppsRequested);
   const std::set<std::string> previous_pending =
@@ -279,10 +224,9 @@ void AppInstallEventLogger::EvaluatePolicy(const policy::PolicyMap& policy,
       GetDifference(current_requested, previous_requested);
   const std::set<std::string> removed =
       GetDifference(previous_pending, current_requested);
-  AddForSetOfPackagesWithDiskSpaceInfo(
+  AddForSetOfAppsWithDiskSpaceInfo(
       added, CreateEvent(em::AppInstallReportLogEvent::SERVER_REQUEST));
-  AddForSetOfPackages(removed,
-                      CreateEvent(em::AppInstallReportLogEvent::CANCELED));
+  AddForSetOfApps(removed, CreateEvent(em::AppInstallReportLogEvent::CANCELED));
 
   const std::set<std::string> current_pending = GetDifference(
       current_requested, GetDifference(previous_requested, previous_pending));
@@ -292,33 +236,22 @@ void AppInstallEventLogger::EvaluatePolicy(const policy::PolicyMap& policy,
   if (!current_pending.empty()) {
     UpdateCollector(current_pending);
     if (initial) {
-      log_collector_->AddLoginEvent();
+      log_collector_->OnLogin();
     }
   } else {
     StopCollector();
   }
 }
 
-void AppInstallEventLogger::AddForSetOfPackagesWithDiskSpaceInfo(
+void ArcAppInstallEventLogger::AddForSetOfApps(
     const std::set<std::string>& packages,
     std::unique_ptr<em::AppInstallReportLogEvent> event) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&AddDiskSpaceInfoToEvent, std::move(event),
-                     stateful_path_),
-      base::BindOnce(&AppInstallEventLogger::AddForSetOfPackages,
-                     weak_factory_.GetWeakPtr(), packages));
+  delegate_->GetAndroidId(
+      base::BindOnce(&ArcAppInstallEventLogger::OnGetAndroidId,
+                     weak_factory_.GetWeakPtr(), packages, std::move(event)));
 }
 
-void AppInstallEventLogger::AddForSetOfPackages(
-    const std::set<std::string>& packages,
-    std::unique_ptr<em::AppInstallReportLogEvent> event) {
-  delegate_->GetAndroidId(base::BindOnce(&AppInstallEventLogger::OnGetAndroidId,
-                                         weak_factory_.GetWeakPtr(), packages,
-                                         std::move(event)));
-}
-
-void AppInstallEventLogger::OnGetAndroidId(
+void ArcAppInstallEventLogger::OnGetAndroidId(
     const std::set<std::string>& packages,
     std::unique_ptr<em::AppInstallReportLogEvent> event,
     bool ok,

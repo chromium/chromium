@@ -9,9 +9,9 @@
 #include <set>
 #include <string>
 
-#include "chrome/browser/chromeos/policy/app_install_event_logger.h"
 #include "chrome/browser/chromeos/policy/arc_app_install_event_log.h"
 #include "chrome/browser/chromeos/policy/arc_app_install_event_log_uploader.h"
+#include "chrome/browser/chromeos/policy/arc_app_install_event_logger.h"
 #include "chrome/browser/chromeos/policy/install_event_log_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -19,11 +19,12 @@ class Profile;
 
 namespace policy {
 // Owns an |ArcAppInstallEventLog| for log storage and an
-// |AppInstallEventLogger| for log collection. The |ArcAppInstallEventUploader|
-// is passed to the constructor and must outlive |this|.
+// |ArcAppInstallEventLogger| for log collection. The
+// |ArcAppInstallEventUploader| is passed to the constructor and must outlive
+// |this|.
 class ArcAppInstallEventLogManager
     : public InstallEventLogManagerBase,
-      public AppInstallEventLogger::Delegate,
+      public ArcAppInstallEventLogger::Delegate,
       public ArcAppInstallEventLogUploader::Delegate {
  public:
   // All accesses to the |profile|'s app push-install event log file must use
@@ -46,12 +47,12 @@ class ArcAppInstallEventLogManager
   static void Clear(LogTaskRunnerWrapper* log_task_runner_wrapper,
                     Profile* profile);
 
-  // AppInstallEventLogger::Delegate:
+  // ArcAppInstallEventLogger::Delegate:
   void Add(
       const std::set<std::string>& packages,
       const enterprise_management::AppInstallReportLogEvent& event) override;
   void GetAndroidId(
-      AppInstallEventLogger::Delegate::AndroidIdCallback) const override;
+      ArcAppInstallEventLogger::Delegate::AndroidIdCallback) const override;
 
   // ArcAppInstallEventLogUploader::Delegate:
   void SerializeForUpload(
@@ -106,7 +107,7 @@ class ArcAppInstallEventLogManager
   std::unique_ptr<AppLogUpload> app_log_upload_;
 
   // Collects log events and passes them to |this|.
-  std::unique_ptr<AppInstallEventLogger> logger_;
+  std::unique_ptr<ArcAppInstallEventLogger> logger_;
 };
 
 }  // namespace policy
