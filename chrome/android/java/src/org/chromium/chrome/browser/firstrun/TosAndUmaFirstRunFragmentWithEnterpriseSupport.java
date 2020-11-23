@@ -110,6 +110,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
             setTosAndUmaVisible(false);
         } else if (mSkipTosDialogPolicyListener.get()) {
             // Skip the FRE if we know dialog is disabled by policy.
+            setTosAndUmaVisible(false);
             exitCctFirstRun();
         }
     }

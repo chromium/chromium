@@ -157,6 +157,7 @@ public class LightweightFirstRunActivity
                 mLoadingView.showLoadingUI();
                 setTosComponentVisibility(false);
             } else if (mSkipTosDialogPolicyListener.get()) {
+                setTosComponentVisibility(false);
                 skipTosByPolicy();
             }
         }
