@@ -70,6 +70,9 @@ TEST(WebRtcVideoFrameAdapterTest, ToI420DownScale) {
 }
 
 TEST(WebRtcVideoFrameAdapterTest, ToI420DownScaleGmb) {
+  base::test::ScopedFeatureList scoped_feautre_list;
+  scoped_feautre_list.InitAndDisableFeature(
+      blink::features::kWebRtcLibvpxEncodeNV12);
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
@@ -89,9 +92,11 @@ TEST(WebRtcVideoFrameAdapterTest, ToI420DownScaleGmb) {
 
   // The I420 frame should have the same size as the natural size
   auto i420_frame = gmb_frame_adapter->ToI420();
+  ASSERT_TRUE(i420_frame);
   EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
   EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
   auto* get_i420_frame = gmb_frame_adapter->GetI420();
+  ASSERT_TRUE(get_i420_frame);
   EXPECT_EQ(get_i420_frame->width(), kNaturalSize.width());
   EXPECT_EQ(get_i420_frame->height(), kNaturalSize.height());
 }
