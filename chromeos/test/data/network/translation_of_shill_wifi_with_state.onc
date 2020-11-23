@@ -2,6 +2,8 @@
   "Connectable": true,
   "GUID": "{64c4f86b-cf6a-4e4a-8eff-456def}",
   "Name": "OpenWrt",
+  "IPAddressConfigType":"DHCP",
+  "NameServersConfigType":"DHCP",
   "Priority": 1,
   "Type": "WiFi",
   "WiFi": {

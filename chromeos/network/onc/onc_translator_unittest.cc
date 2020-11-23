@@ -153,7 +153,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("shill_cellular_with_state.json",
                        "translation_of_shill_cellular_with_state.onc"),
         std::make_pair("shill_output_third_party_vpn.json",
-                       "third_party_vpn.onc"),
+                       "translation_of_shill_output_third_party_vpn.onc"),
         std::make_pair(
             "shill_wifi_eap_ttls_with_password_variable.json",
             "translation_of_shill_wifi_eap_ttls_with_password_variable.onc"),

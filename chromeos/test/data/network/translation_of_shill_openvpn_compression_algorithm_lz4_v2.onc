@@ -2,6 +2,8 @@
     "GUID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
     "Name": "my vpn",
     "Type": "VPN",
+    "IPAddressConfigType":"DHCP",
+    "NameServersConfigType":"DHCP",
     "VPN": {
         "AutoConnect": true,
         "Host": "vpn.my.domain.com",

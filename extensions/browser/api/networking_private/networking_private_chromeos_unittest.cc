@@ -1093,8 +1093,10 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
                    .Build())
           .Set("ConnectionState", "Connected")
           .Set("GUID", "cellular_guid")
+          .Set("IPAddressConfigType", "DHCP")
           .Set("Metered", true)
           .Set("Name", "cellular")
+          .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
           .Set("Type", "Cellular")
           .Build();
@@ -1153,8 +1155,10 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
                    .Build())
           .Set("ConnectionState", "Connected")
           .Set("GUID", "cellular_guid")
+          .Set("IPAddressConfigType", "DHCP")
           .Set("Metered", true)
           .Set("Name", "cellular")
+          .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
           .Set("Type", "Cellular")
           .Build();

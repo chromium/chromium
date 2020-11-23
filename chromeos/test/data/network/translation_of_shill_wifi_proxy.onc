@@ -1,5 +1,7 @@
 {
+  "IPAddressConfigType":"DHCP",
   "Name": "",
+  "NameServersConfigType":"DHCP",
   "ProxySettings": {
     "Type": "Manual",
     "Manual": {

@@ -1244,12 +1244,12 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     result->saved_ip_config = GetIPConfig(saved_ip_config);
 
   // Managed properties
-  result->ip_address_config_type =
-      GetManagedString(properties, ::onc::network_config::kIPAddressConfigType);
+  result->ip_address_config_type = GetRequiredManagedString(
+      properties, ::onc::network_config::kIPAddressConfigType);
   result->metered =
       GetManagedBoolean(properties, ::onc::network_config::kMetered);
   result->name = GetManagedString(properties, ::onc::network_config::kName);
-  result->name_servers_config_type = GetManagedString(
+  result->name_servers_config_type = GetRequiredManagedString(
       properties, ::onc::network_config::kNameServersConfigType);
   result->priority =
       GetManagedInt32(properties, ::onc::network_config::kPriority);

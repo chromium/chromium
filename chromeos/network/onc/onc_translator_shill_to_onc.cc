@@ -167,6 +167,13 @@ class ShillToONCTranslator {
   // entry from |shill_dictionary_| to |onc_object_| if it exists.
   void CopyProperty(const OncFieldSignature* field_signature);
 
+  // Applies defaults to fields according to |onc_signature_|.
+  void SetDefaultsAccordingToSignature();
+
+  // Applies defaults to fields according to |value_signature|.
+  void SetDefaultsAccordingToSignature(
+      const OncValueSignature* value_signature);
+
   // If existent, translates the entry at |shill_property_name| in
   // |shill_dictionary_| using |table|. It is an error if no matching table
   // entry is found. Writes the result as entry at |onc_field_name| in
@@ -224,6 +231,9 @@ ShillToONCTranslator::CreateTranslatedONCObject() {
   } else {
     CopyPropertiesAccordingToSignature();
   }
+
+  SetDefaultsAccordingToSignature();
+
   return base::DictionaryValue::From(std::move(onc_object_));
 }
 
@@ -839,6 +849,27 @@ void ShillToONCTranslator::CopyProperty(
   }
 
   onc_object_->SetKey(field_signature->onc_field_name, shill_value->Clone());
+}
+
+void ShillToONCTranslator::SetDefaultsAccordingToSignature() {
+  SetDefaultsAccordingToSignature(onc_signature_);
+}
+
+void ShillToONCTranslator::SetDefaultsAccordingToSignature(
+    const OncValueSignature* value_signature) {
+  if (value_signature->base_signature)
+    SetDefaultsAccordingToSignature(value_signature->base_signature);
+  if (!value_signature->fields)
+    return;
+  for (const OncFieldSignature* field_signature = value_signature->fields;
+       field_signature->onc_field_name != nullptr; ++field_signature) {
+    if (!field_signature->default_value_setter)
+      continue;
+    if (onc_object_->FindKey(field_signature->onc_field_name))
+      continue;
+    onc_object_->SetKey(field_signature->onc_field_name,
+                        field_signature->default_value_setter());
+  }
 }
 
 void ShillToONCTranslator::TranslateWithTableAndSet(

@@ -717,6 +717,8 @@
       connectable: false,
       guid: guid,
       name: OncMojo.createManagedString(name),
+      ipAddressConfigType: OncMojo.createManagedString('DHCP'),
+      nameServersConfigType: OncMojo.createManagedString('DHCP'),
       portalState: mojom.PortalState.kUnknown,
     };
     switch (type) {

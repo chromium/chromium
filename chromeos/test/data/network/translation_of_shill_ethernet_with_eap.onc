@@ -11,6 +11,8 @@
     }
   },
   "GUID":"guid",
+  "IPAddressConfigType":"DHCP",
   "Name":"",
+  "NameServersConfigType":"DHCP",
   "Type":"Ethernet"
 }

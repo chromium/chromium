@@ -163,11 +163,8 @@ Polymer({
     }
 
     // Update the 'automatic' property.
-    if (properties.ipAddressConfigType) {
-      const ipConfigType =
-          OncMojo.getActiveValue(properties.ipAddressConfigType);
-      this.automatic_ = ipConfigType !== 'Static';
-    }
+    const ipConfigType = OncMojo.getActiveValue(properties.ipAddressConfigType);
+    this.automatic_ = ipConfigType !== 'Static';
 
     if (properties.ipConfigs || properties.staticIpConfig) {
       // Update the 'ipConfig' property.

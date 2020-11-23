@@ -52,5 +52,7 @@
     },
     "Scanning": false
   },
+  "IPAddressConfigType":"DHCP",
+  "NameServersConfigType":"DHCP",
   "Source":"Device"
 }
