@@ -235,14 +235,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InputMethod.Commit.Type2" enum="IMECommitType2"
     expires_after="M95">
+  <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>
     The suggestion accuracy type which the user chooses to commit.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.CommitLength" units="units" expires_after="M95">
+<histogram name="InputMethod.CommitLength" units="characters"
+    expires_after="M95">
+  <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>The number of characters committed with composition text.</summary>
 </histogram>
 
@@ -329,7 +334,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.ID2" enum="InputMethodID2" expires_after="M95">
+  <owner>tranbaoduy@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>
     The breakdown of input method usage by input method IDs. Recorded when the
     user presses keys on physical or on-screen keyboard.
@@ -338,8 +345,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InputMethod.ImeMenu.ActivationChanged"
     enum="BooleanActivation" expires_after="M95">
+  <owner>dvallet@chromium.org</owner>
   <owner>azurewei@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>
     Whether the opt-in IME menu in the shelf has been activated.
   </summary>
@@ -347,8 +356,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InputMethod.ImeMenu.EmojiHandwritingVoiceButton"
     enum="ImeMenuButtonType" expires_after="M95">
+  <owner>dvallet@chromium.org</owner>
   <owner>azurewei@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>
     The number of times users click emoji, handwriting or voice button in opt-in
     IME menu.
@@ -357,7 +368,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InputMethod.ImeSwitch" enum="IMESwitchType"
     expires_after="M95">
+  <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>The trigger type of input method switches by user.</summary>
 </histogram>
 
@@ -388,6 +401,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2019-12-30">
   <owner>googleo@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>
     The time taken to activate a new IME via IME Mojo service in the IME
     extension. It's from when the IME extension sends out an request to activate
@@ -437,7 +451,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InputMethod.PkCommit.Type" enum="IMECommitType2"
     expires_after="M95">
+  <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>
     The suggestion accuracy type which the user chooses to commit for physical
     keyboard autocorrect.
