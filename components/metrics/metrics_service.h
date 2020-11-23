@@ -96,7 +96,7 @@ class MetricsService : public base::HistogramFlattener {
 
   // Returns the client ID for this client, or the empty string if metrics
   // recording is not currently running.
-  std::string GetClientId();
+  std::string GetClientId() const;
 
   // Returns the install date of the application, in seconds since the epoch.
   int64_t GetInstallDate();

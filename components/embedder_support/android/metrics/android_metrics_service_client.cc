@@ -141,6 +141,8 @@ bool IsSamplesCounterEnabled() {
       base::kPersistentHistogramsFeature, "prev_run_metrics_count_only", false);
 }
 
+// TODO(crbug.com/1152072): Unify this implementation with the one in
+// ChromeMetricsServiceClient.
 std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     PrefService* pref_service,
     bool metrics_reporting_enabled) {
@@ -185,6 +187,15 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
         active_path,
         metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ACTIVE_FILE,
         metrics::FileMetricsProvider::ASSOCIATE_CURRENT_RUN));
+  } else {
+    // When metrics reporting is not enabled, any existing files should be
+    // deleted in order to preserve user privacy.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(base::GetDeletePathRecursivelyCallback(),
+                       std::move(browser_metrics_upload_dir)));
   }
 
   return file_metrics_provider;
@@ -240,6 +251,7 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
   MaybeStartMetrics();
 }
 
+// TODO:(crbug.com/1148351) Make the initialization consistent with Chrome.
 void AndroidMetricsServiceClient::MaybeStartMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Treat the debugging flag the same as user consent because the user set it,
@@ -248,14 +260,18 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
   bool user_consent_or_flag = user_consent_ || IsMetricsReportingForceEnabled();
   if (IsConsentDetermined()) {
     if (app_consent_ && user_consent_or_flag) {
-      CreateMetricsService(metrics_state_manager_.get(), this, pref_service_);
+      metrics_service_ = std::make_unique<MetricsService>(
+          metrics_state_manager_.get(), this, pref_service_);
+      // Make GetSampleBucketValue() work properly.
+      metrics_state_manager_->ForceClientIdCreation();
+      is_client_id_forced_ = true;
+      RegisterMetricsProvidersAndInitState();
       // Register for notifications so we can detect when the user or app are
       // interacting with the embedder. We use these as signals to wake up the
       // MetricsService.
       RegisterForNotifications();
-      metrics_state_manager_->ForceClientIdCreation();
       OnMetricsStart();
-      is_in_sample_ = IsInSample();
+
       if (IsReportingEnabled()) {
         // We assume the embedder has no shutdown sequence, so there's no need
         // for a matching Stop() call.
@@ -270,12 +286,7 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
   }
 }
 
-void AndroidMetricsServiceClient::CreateMetricsService(
-    MetricsStateManager* state_manager,
-    AndroidMetricsServiceClient* client,
-    PrefService* prefs) {
-  metrics_service_ =
-      std::make_unique<MetricsService>(state_manager, client, prefs);
+void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::SubprocessMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
@@ -285,10 +296,8 @@ void AndroidMetricsServiceClient::CreateMetricsService(
       std::make_unique<CPUMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ScreenInfoMetricsProvider>());
-  if (client->IsPersistentHistogramsEnabled()) {
-    metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
-        pref_service_, metrics_state_manager_->IsMetricsReportingEnabled()));
-  }
+  metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
+      pref_service_, metrics_state_manager_->IsMetricsReportingEnabled()));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<CallStackProfileMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
@@ -407,7 +416,7 @@ bool AndroidMetricsServiceClient::IsReportingEnabled() const {
   if (!app_consent_)
     return false;
   return IsMetricsReportingForceEnabled() ||
-         (EnabledStateProvider::IsReportingEnabled() && is_in_sample_);
+         (EnabledStateProvider::IsReportingEnabled() && IsInSample());
 }
 
 MetricsService* AndroidMetricsServiceClient::GetMetricsService() {
@@ -541,11 +550,12 @@ void AndroidMetricsServiceClient::SetOnFinalMetricsCollectedListenerForTesting(
   on_final_metrics_collected_listener_ = std::move(listener);
 }
 
-int AndroidMetricsServiceClient::GetSampleBucketValue() {
+int AndroidMetricsServiceClient::GetSampleBucketValue() const {
+  DCHECK(is_client_id_forced_);
   return UintToPerMille(base::PersistentHash(metrics_service_->GetClientId()));
 }
 
-bool AndroidMetricsServiceClient::IsInSample() {
+bool AndroidMetricsServiceClient::IsInSample() const {
   // Called in MaybeStartMetrics(), after |metrics_service_| is created.
   // NOTE IsInSample and IsInPackageNameSample deliberately use the same hash to
   // guarantee we never exceed 10% of total, opted-in clients for PackageNames.
@@ -571,10 +581,6 @@ bool AndroidMetricsServiceClient::IsInPackageNameSample() {
 
 void AndroidMetricsServiceClient::RegisterAdditionalMetricsProviders(
     MetricsService* service) {}
-
-bool AndroidMetricsServiceClient::IsPersistentHistogramsEnabled() {
-  return false;
-}
 
 std::string AndroidMetricsServiceClient::GetAppPackageName() {
   if (IsInPackageNameSample() && CanRecordPackageNameForAppType())

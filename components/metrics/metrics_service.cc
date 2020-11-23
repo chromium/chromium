@@ -296,7 +296,7 @@ void MetricsService::DisableReporting() {
   reporting_service_.DisableReporting();
 }
 
-std::string MetricsService::GetClientId() {
+std::string MetricsService::GetClientId() const {
   return state_manager_->client_id();
 }
 
