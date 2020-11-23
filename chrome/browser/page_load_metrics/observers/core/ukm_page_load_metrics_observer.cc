@@ -475,6 +475,23 @@ void UkmPageLoadMetricsObserver::RecordNavigationTimingMetrics() {
   builder.Record(ukm::UkmRecorder::Get());
 }
 
+void UkmPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (is_portal_)
+    return;
+
+  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate()))
+    return;
+
+  DCHECK(timing.paint_timing->first_contentful_paint.has_value());
+
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  builder.SetPaintTiming_NavigationToFirstContentfulPaint(
+      timing.paint_timing->first_contentful_paint.value().InMilliseconds());
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
@@ -515,10 +532,9 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetPaintTiming_NavigationToFirstPaint(
         timing.paint_timing->first_paint.value().InMilliseconds());
   }
-  if (timing.paint_timing->first_contentful_paint) {
-    builder.SetPaintTiming_NavigationToFirstContentfulPaint(
-        timing.paint_timing->first_contentful_paint.value().InMilliseconds());
-  }
+
+  // FCP is reported in OnFirstContentfulPaintInPage.
+
   if (timing.paint_timing->first_meaningful_paint) {
     builder.SetExperimental_PaintTiming_NavigationToFirstMeaningfulPaint(
         timing.paint_timing->first_meaningful_paint.value().InMilliseconds());

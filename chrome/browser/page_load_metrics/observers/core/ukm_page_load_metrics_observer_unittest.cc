@@ -1809,6 +1809,36 @@ TEST_F(UkmPageLoadMetricsObserverTest, NoLargestContentfulPaint) {
   TestNoLCP(LargestContentState::kNotFound);
 }
 
+TEST_F(UkmPageLoadMetricsObserverTest, FCPHiddenWhileFlushing) {
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  // Simulate hiding the tab.
+  web_contents()->WasHidden();
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.parse_timing->parse_start = base::TimeDelta();
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->first_contentful_paint =
+      tester()->GetDelegateForCommittedLoad().GetFirstBackgroundTime();
+  PopulateRequiredTimingFields(&timing);
+
+  // Simulate FCP at the same time as the hide (but reported after).
+  tester()->SimulateTimingUpdate(timing);
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  // Check that we reported the FCP UKM.
+  for (const auto& kv : merged_entries) {
+    EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
+        kv.second.get(),
+        PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName));
+  }
+}
+
 class TestOfflinePreviewsUkmPageLoadMetricsObserver
     : public UkmPageLoadMetricsObserver {
  public:

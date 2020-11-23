@@ -108,6 +108,9 @@ class UkmPageLoadMetricsObserver
 
   void DidActivatePortal(base::TimeTicks activation_time) override;
 
+  void OnFirstContentfulPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
   // Whether the current page load is an Offline Preview. Must be called from
   // OnCommit. Virtual for testing.
   virtual bool IsOfflinePreview(content::WebContents* web_contents) const;
