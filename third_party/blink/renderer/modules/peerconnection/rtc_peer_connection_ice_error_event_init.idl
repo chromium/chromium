@@ -10,5 +10,5 @@ dictionary RTCPeerConnectionIceErrorEventInit : EventInit {
   DOMString hostCandidate;
   DOMString url;
   required unsigned short errorCode;
-  USVString statusText;
+  USVString errorText;
 };

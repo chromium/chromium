@@ -57,8 +57,8 @@ RTCPeerConnectionIceErrorEvent::RTCPeerConnectionIceErrorEvent(
     host_candidate_ = initializer->hostCandidate();
   if (initializer->hasUrl())
     url_ = initializer->url();
-  if (initializer->hasStatusText())
-    error_text_ = initializer->statusText();
+  if (initializer->hasErrorText())
+    error_text_ = initializer->errorText();
 }
 
 RTCPeerConnectionIceErrorEvent::~RTCPeerConnectionIceErrorEvent() = default;
