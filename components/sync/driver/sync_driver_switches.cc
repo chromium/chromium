@@ -67,6 +67,13 @@ const base::Feature kDecoupleSyncFromAndroidMasterSync{
 const base::Feature kFollowTrustedVaultKeyRotation{
     "FollowTrustedVaultKeyRotation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Specifies how long requests to vault service shouldn't be retried after
+// encountering transient error.
+const base::FeatureParam<base::TimeDelta>
+    kTrustedVaultServiceThrottlingDuration{
+        &kFollowTrustedVaultKeyRotation,
+        "TrustedVaultServiceThrottlingDuration", base::TimeDelta::FromDays(1)};
+
 // Sync requires policies to be loaded before starting.
 const base::Feature kSyncRequiresPoliciesLoaded{
     "SyncRequiresPoliciesLoaded", base::FEATURE_DISABLED_BY_DEFAULT};

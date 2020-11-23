@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/sync/driver/sync_driver_switches.h"
@@ -30,6 +31,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
+using testing::Mock;
 using testing::Ne;
 using testing::NotNull;
 
@@ -92,6 +94,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
     backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
         file_path_, std::move(delegate), std::move(connection));
+    backend_->SetClockForTesting(&clock_);
+    clock_.SetNow(base::Time::Now());
   }
 
   ~StandaloneTrustedVaultBackendTest() override = default;
@@ -101,6 +105,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   void TearDown() override { OSCryptMocker::TearDown(); }
 
   MockTrustedVaultConnection* connection() { return connection_; }
+
+  base::SimpleTestClock* clock() { return &clock_; }
 
   StandaloneTrustedVaultBackend* backend() { return backend_.get(); }
 
@@ -157,6 +163,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   const base::FilePath file_path_;
   testing::NiceMock<MockDelegate>* delegate_;
   testing::NiceMock<MockTrustedVaultConnection>* connection_;
+  base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 };
 
@@ -337,6 +344,107 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
               Eq(serialized_public_device_key));
 }
 
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldThrottleAndUnthrottleDeviceRegistration) {
+  CoreAccountInfo account_info;
+  account_info.gaia = "user";
+
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 0;
+
+  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      device_registration_callback;
+  ON_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _))
+      .WillByDefault(
+          [&](const CoreAccountInfo&, const std::vector<uint8_t>&, int,
+              const SecureBoxPublicKey&,
+              TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                  callback) {
+            device_registration_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  clock()->SetNow(base::Time::Now());
+
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _));
+  // Setting the primary account will trigger device registration.
+  backend()->SetPrimaryAccount(account_info);
+  ASSERT_FALSE(device_registration_callback.is_null());
+  Mock::VerifyAndClearExpectations(connection());
+
+  // Mimic transient failure.
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRequestStatus::kOtherError);
+
+  // Following request should be throttled.
+  device_registration_callback =
+      TrustedVaultConnection::RegisterAuthenticationFactorCallback();
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _))
+      .Times(0);
+  // Reset and set primary account to trigger device registration attempt.
+  backend()->SetPrimaryAccount(base::nullopt);
+  backend()->SetPrimaryAccount(account_info);
+  EXPECT_TRUE(device_registration_callback.is_null());
+  Mock::VerifyAndClearExpectations(connection());
+
+  // Advance time to pass the throttling duration and trigger another attempt.
+  clock()->Advance(switches::kTrustedVaultServiceThrottlingDuration.Get());
+
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _));
+  // Reset and set primary account to trigger device registration attempt.
+  backend()->SetPrimaryAccount(base::nullopt);
+  backend()->SetPrimaryAccount(account_info);
+  EXPECT_FALSE(device_registration_callback.is_null());
+}
+
+// System time can be changed to the past and if this situation not handled,
+// requests could be throttled for unreasonable amount of time.
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldUnthrottleDeviceRegistrationWhenTimeSetToPast) {
+  CoreAccountInfo account_info;
+  account_info.gaia = "user";
+
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 0;
+
+  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      device_registration_callback;
+  ON_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _))
+      .WillByDefault(
+          [&](const CoreAccountInfo&, const std::vector<uint8_t>&, int,
+              const SecureBoxPublicKey&,
+              TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                  callback) {
+            device_registration_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  clock()->SetNow(base::Time::Now());
+
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _));
+  // Setting the primary account will trigger device registration.
+  backend()->SetPrimaryAccount(account_info);
+  ASSERT_FALSE(device_registration_callback.is_null());
+  Mock::VerifyAndClearExpectations(connection());
+
+  // Mimic transient failure.
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRequestStatus::kOtherError);
+
+  // Mimic system set to the past.
+  clock()->Advance(base::TimeDelta::FromSeconds(-1));
+
+  device_registration_callback =
+      TrustedVaultConnection::RegisterAuthenticationFactorCallback();
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _));
+  // Reset and set primary account to trigger device registration attempt.
+  backend()->SetPrimaryAccount(base::nullopt);
+  backend()->SetPrimaryAccount(account_info);
+  EXPECT_FALSE(device_registration_callback.is_null());
+}
+
 // Unless keys marked as stale, FetchKeys() should be completed immediately,
 // without keys download attempt.
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
@@ -408,6 +516,59 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadKeys) {
   std::move(download_keys_callback)
       .Run(TrustedVaultRequestStatus::kSuccess, kNewVaultKeys,
            kNewLastKeyVersion);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldThrottleAndUntrottleKeysDownloading) {
+  CoreAccountInfo account_info;
+  account_info.gaia = "user";
+
+  const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 0;
+
+  std::vector<uint8_t> private_device_key_material =
+      StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
+                                          kInitialLastKeyVersion, account_info);
+  EXPECT_TRUE(backend()->MarkKeysAsStale(account_info));
+  backend()->SetPrimaryAccount(account_info);
+
+  TrustedVaultConnection::DownloadKeysCallback download_keys_callback;
+  ON_CALL(*connection(), DownloadKeys(_, _, _, _, _))
+      .WillByDefault(
+          [&](const CoreAccountInfo&, const std::vector<uint8_t>&, int,
+              std::unique_ptr<SecureBoxKeyPair> key_pair,
+              TrustedVaultConnection::DownloadKeysCallback callback) {
+            download_keys_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  clock()->SetNow(base::Time::Now());
+  EXPECT_CALL(*connection(), DownloadKeys(_, _, _, _, _));
+
+  // FetchKeys() should trigger keys downloading.
+  backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
+  ASSERT_FALSE(download_keys_callback.is_null());
+  Mock::VerifyAndClearExpectations(connection());
+
+  // Mimic transient failure.
+  std::move(download_keys_callback)
+      .Run(TrustedVaultRequestStatus::kOtherError,
+           /*keys=*/std::vector<std::vector<uint8_t>>(),
+           /*last_key_version=*/0);
+
+  download_keys_callback = TrustedVaultConnection::DownloadKeysCallback();
+  EXPECT_CALL(*connection(), DownloadKeys(_, _, _, _, _)).Times(0);
+  // Following request should be throttled.
+  backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
+  EXPECT_TRUE(download_keys_callback.is_null());
+  Mock::VerifyAndClearExpectations(connection());
+
+  // Advance time to pass the throttling duration and trigger another attempt.
+  clock()->Advance(switches::kTrustedVaultServiceThrottlingDuration.Get());
+
+  EXPECT_CALL(*connection(), DownloadKeys(_, _, _, _, _));
+  backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
+  EXPECT_FALSE(download_keys_callback.is_null());
 }
 
 }  // namespace

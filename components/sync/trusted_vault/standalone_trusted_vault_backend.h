@@ -19,6 +19,10 @@
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace syncer {
 
 // Provides interfaces to store/remove keys to/from file storage.
@@ -100,6 +104,8 @@ class StandaloneTrustedVaultBackend
 
   void SetRecoverabilityDegradedForTesting();
 
+  void SetClockForTesting(base::Clock* clock);
+
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
 
@@ -127,6 +133,16 @@ class StandaloneTrustedVaultBackend
 
   void FulfillOngoingFetchKeys();
 
+  // Returns true if the last failed request time imply that upcoming requests
+  // should be throttled now (certain amount of time should pass since the last
+  // failed request). Handles the situation, when last failed request time is
+  // set to the future.
+  bool AreConnectionRequestsThrottled(const std::string& gaia_id);
+
+  // Records request failure time, that will be used to determine whether new
+  // requests should be throttled.
+  void RecordFailedConnectionRequestForThrottling(const std::string& gaia_id);
+
   const base::FilePath file_path_;
 
   const std::unique_ptr<Delegate> delegate_;
@@ -152,6 +168,10 @@ class StandaloneTrustedVaultBackend
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request> ongoing_connection_request_;
+
+  // Used to determine current time, set to base::DefaultClock in prod and can
+  // be overridden in tests.
+  base::Clock* clock_;
 
   bool is_recoverability_degraded_for_testing_ = false;
 };

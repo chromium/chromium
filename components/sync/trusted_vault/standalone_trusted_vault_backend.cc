@@ -12,7 +12,12 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "components/os_crypt/os_crypt.h"
+#include "components/sync/base/time.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/trusted_vault/securebox.h"
 
 namespace syncer {
@@ -53,7 +58,8 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     std::unique_ptr<TrustedVaultConnection> connection)
     : file_path_(file_path),
       delegate_(std::move(delegate)),
-      connection_(std::move(connection)) {}
+      connection_(std::move(connection)),
+      clock_(base::DefaultClock::GetInstance()) {}
 
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
@@ -81,7 +87,8 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   if (!connection_ || !primary_account_.has_value() ||
       primary_account_->gaia != account_info.gaia || !per_user_vault ||
       !per_user_vault->keys_are_stale() ||
-      !per_user_vault->local_device_registration_info().device_registered()) {
+      !per_user_vault->local_device_registration_info().device_registered() ||
+      AreConnectionRequestsThrottled(account_info.gaia)) {
     // Keys download attempt is not needed or not possible.
     FulfillOngoingFetchKeys();
     return;
@@ -115,7 +122,6 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     return;
   }
 
-  // TODO(crbug.com/1094326): add throttling mechanism.
   std::string last_key = per_user_vault->vault_key()
                              .at(per_user_vault->vault_key_size() - 1)
                              .key_material();
@@ -227,8 +233,14 @@ void StandaloneTrustedVaultBackend::SetRecoverabilityDegradedForTesting() {
   delegate_->NotifyRecoverabilityDegradedChanged();
 }
 
+void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
+}
+
 void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     const std::string& gaia_id) {
+  // TODO(crbug.com/1102340): in case of transient failure this function is
+  // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
     // Feature disabled.
     return;
@@ -247,7 +259,9 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     // Device is already registered.
     return;
   }
-  // TODO(crbug.com/1102340): add throttling mechanism.
+  if (AreConnectionRequestsThrottled(gaia_id)) {
+    return;
+  }
 
   std::unique_ptr<SecureBoxKeyPair> key_pair;
   if (per_user_vault->has_local_device_registration_info()) {
@@ -318,9 +332,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       per_user_vault->set_keys_are_stale(true);
       return;
     case TrustedVaultRequestStatus::kOtherError:
-      // TODO(crbug.com/1102340): prevent future queries until browser restart?
-      // TODO(crbug.com/1102340): introduce throttling mechanism across browser
-      // restarts?
+      RecordFailedConnectionRequestForThrottling(gaia_id);
       return;
   }
 }
@@ -361,9 +373,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       break;
     }
     case TrustedVaultRequestStatus::kOtherError:
-      // TODO(crbug.com/1102340): prevent future queries until browser restart?
-      // TODO(crbug.com/1102340): introduce throttling mechanism across browser
-      // restarts?
+      RecordFailedConnectionRequestForThrottling(gaia_id);
       break;
   }
   // Regardless of the |status| ongoing fetch keys request should be fulfilled.
@@ -396,6 +406,40 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys() {
   std::move(ongoing_fetch_keys_callback_).Run(vault_keys);
   ongoing_fetch_keys_callback_.Reset();
   ongoing_fetch_keys_gaia_id_.reset();
+}
+
+bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottled(
+    const std::string& gaia_id) {
+  DCHECK(clock_);
+
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
+  if (!per_user_vault) {
+    return false;
+  }
+
+  const base::Time current_time = clock_->Now();
+  base::Time last_failed_request_time = ProtoTimeToTime(
+      per_user_vault->last_failed_request_millis_since_unix_epoch());
+
+  // Fix |last_failed_request_time| if it's set to the future.
+  if (last_failed_request_time > current_time) {
+    // Immediately unthrottle, but don't write new state to the file.
+    last_failed_request_time = base::Time();
+  }
+
+  return last_failed_request_time +
+             switches::kTrustedVaultServiceThrottlingDuration.Get() >
+         current_time;
+}
+
+void StandaloneTrustedVaultBackend::RecordFailedConnectionRequestForThrottling(
+    const std::string& gaia_id) {
+  DCHECK(clock_);
+  DCHECK(FindUserVault(gaia_id));
+
+  FindUserVault(gaia_id)->set_last_failed_request_millis_since_unix_epoch(
+      TimeToProtoTime(clock_->Now()));
+  WriteToDisk(data_, file_path_);
 }
 
 sync_pb::LocalTrustedVaultPerUser* StandaloneTrustedVaultBackend::FindUserVault(

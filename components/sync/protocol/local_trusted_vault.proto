@@ -40,6 +40,11 @@ message LocalTrustedVaultPerUser {
 
   // Device key and corresponding registration metadata.
   optional LocalDeviceRegistrationInfo local_device_registration_info = 5;
+
+  // The time (in milliseconds since UNIX epoch) at which last unsuccessful (due
+  // to transient errors) request was sent to the vault service. Used for
+  // throttling requests to the server.
+  optional int64 last_failed_request_millis_since_unix_epoch = 6;
 }
 
 message LocalTrustedVault {
