@@ -276,8 +276,8 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
   AttestationFlow::CertificateCallback callback =
       base::BindOnce(&AttestationFlowTest::QuitRunLoopCertificateCallback,
                      base::Unretained(this),
-                     base::Bind(&MockObserver::MockCertificateCallback,
-                                base::Unretained(&observer)));
+                     base::BindOnce(&MockObserver::MockCertificateCallback,
+                                    base::Unretained(&observer)));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
   AttestationFlow flow(std::move(proxy_interface));
@@ -318,8 +318,8 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
   AttestationFlow::CertificateCallback callback =
       base::BindOnce(&AttestationFlowTest::QuitRunLoopCertificateCallback,
                      base::Unretained(this),
-                     base::Bind(&MockObserver::MockCertificateCallback,
-                                base::Unretained(&observer)));
+                     base::BindOnce(&MockObserver::MockCertificateCallback,
+                                    base::Unretained(&observer)));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
   AttestationFlow flow(std::move(proxy_interface));
@@ -353,8 +353,8 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
   AttestationFlow::CertificateCallback callback =
       base::BindOnce(&AttestationFlowTest::QuitRunLoopCertificateCallback,
                      base::Unretained(this),
-                     base::Bind(&MockObserver::MockCertificateCallback,
-                                base::Unretained(&observer)));
+                     base::BindOnce(&MockObserver::MockCertificateCallback,
+                                    base::Unretained(&observer)));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
   AttestationFlow flow(std::move(proxy_interface));

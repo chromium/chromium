@@ -370,7 +370,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/web_applications/',
   '^chrome/browser/win/',
   '^chrome/test/chromedriver/server/http_handler.cc',
-  '^chromeos/attestation/',
   '^chromeos/components/',
   '^components/drive/',
   '^components/search_engines/',

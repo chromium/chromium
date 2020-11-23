@@ -45,7 +45,8 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) ServerProxy {
 // and the Chrome OS Privacy CA server.  Sample usage:
 //
 //    AttestationFlow flow(std::move(my_server_proxy));
-//    AttestationFlow::CertificateCallback callback = base::Bind(&MyCallback);
+//    AttestationFlow::CertificateCallback callback =
+//        base::BindOnce(&MyCallback);
 //    flow.GetCertificate(ENTERPRISE_USER_CERTIFICATE, false, callback);
 //
 // This class is not thread safe.
