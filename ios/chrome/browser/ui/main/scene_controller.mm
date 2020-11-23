@@ -982,7 +982,17 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 // Opens an url from a link in the settings UI.
 - (void)closeSettingsUIAndOpenURL:(OpenNewTabCommand*)command {
-  [self openUrlFromSettings:command];
+  DCHECK([command fromChrome]);
+  UrlLoadParams params = UrlLoadParams::InNewTab([command URL]);
+  params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  ProceduralBlock completion = ^{
+    [self dismissModalsAndOpenSelectedTabInMode:ApplicationModeForTabOpening::
+                                                    NORMAL
+                              withUrlLoadParams:params
+                                 dismissOmnibox:YES
+                                     completion:nil];
+  };
+  [self closeSettingsAnimated:YES completion:completion];
 }
 
 - (void)closeSettingsUI {
@@ -1424,22 +1434,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
-}
-
-#pragma mark - ApplicationCommandsHelpers
-
-- (void)openUrlFromSettings:(OpenNewTabCommand*)command {
-  DCHECK([command fromChrome]);
-  UrlLoadParams params = UrlLoadParams::InNewTab([command URL]);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
-  ProceduralBlock completion = ^{
-    [self dismissModalsAndOpenSelectedTabInMode:ApplicationModeForTabOpening::
-                                                    NORMAL
-                              withUrlLoadParams:params
-                                 dismissOmnibox:YES
-                                     completion:nil];
-  };
-  [self closeSettingsAnimated:YES completion:completion];
 }
 
 #pragma mark - UserFeedbackDataSource
