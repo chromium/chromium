@@ -2194,6 +2194,9 @@ extern const char kDisableCancelAllTouchesDescription[];
 extern const char kDisableCryptAuthV1DeviceSyncName[];
 extern const char kDisableCryptAuthV1DeviceSyncDescription[];
 
+extern const char kDisableIdleSocketsCloseOnMemoryPressureName[];
+extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
+
 extern const char kDisableExplicitDmaFencesName[];
 extern const char kDisableExplicitDmaFencesDescription[];
 
