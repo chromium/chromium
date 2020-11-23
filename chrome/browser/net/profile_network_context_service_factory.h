@@ -12,7 +12,7 @@
 class KeyedService;
 class ProfileNetworkContextService;
 
-namespace contenet {
+namespace content {
 class BrowserContext;
 }
 
@@ -39,6 +39,7 @@ class ProfileNetworkContextServiceFactory
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileNetworkContextServiceFactory);
 };

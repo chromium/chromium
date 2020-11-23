@@ -223,7 +223,7 @@ class Profile : public content::BrowserContext {
   // the creation time of the profile object instance.
   virtual base::Time GetCreationTime() const = 0;
 
-  // Typesafe upcast.
+  // Typesafe downcast.
   virtual TestingProfile* AsTestingProfile();
 
   // Returns sequenced task runner where browser context dependent I/O
@@ -472,16 +472,6 @@ class Profile : public content::BrowserContext {
   // ignored for in-memory profiles.
   virtual bool ShouldRestoreOldSessionCookies() const;
   virtual bool ShouldPersistSessionCookies() const;
-
-  // Configures NetworkContextParams and CertVerifierCreationParams for the
-  // specified isolated app (or for the profile itself, if |relative_path| is
-  // empty).
-  virtual void ConfigureNetworkContextParams(
-      bool in_memory,
-      const base::FilePath& relative_partition_path,
-      network::mojom::NetworkContextParams* network_context_params,
-      network::mojom::CertVerifierCreationParams*
-          cert_verifier_creation_params);
 
   // Stop sending accessibility events until ResumeAccessibilityEvents().
   // Calls to Pause nest; no events will be sent until the number of

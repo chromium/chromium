@@ -11,8 +11,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
-#include "chrome/browser/net/profile_network_context_service.h"
-#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -446,17 +444,6 @@ bool Profile::ShouldRestoreOldSessionCookies() const {
 
 bool Profile::ShouldPersistSessionCookies() const {
   return false;
-}
-
-void Profile::ConfigureNetworkContextParams(
-    bool in_memory,
-    const base::FilePath& relative_partition_path,
-    network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
-  ProfileNetworkContextServiceFactory::GetForContext(this)
-      ->ConfigureNetworkContextParams(in_memory, relative_partition_path,
-                                      network_context_params,
-                                      cert_verifier_creation_params);
 }
 
 bool Profile::IsNewProfile() const {

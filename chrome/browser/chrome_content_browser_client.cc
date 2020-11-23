@@ -4889,10 +4889,17 @@ void ChromeContentBrowserClient::ConfigureNetworkContextParams(
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
     network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  profile->ConfigureNetworkContextParams(in_memory, relative_partition_path,
-                                         network_context_params,
-                                         cert_verifier_creation_params);
+  ProfileNetworkContextService* service =
+      ProfileNetworkContextServiceFactory::GetForContext(context);
+  if (service) {
+    service->ConfigureNetworkContextParams(in_memory, relative_partition_path,
+                                           network_context_params,
+                                           cert_verifier_creation_params);
+  } else {
+    // Set default params.
+    network_context_params->user_agent = GetUserAgent();
+    network_context_params->accept_language = GetApplicationLocale();
+  }
 }
 
 std::vector<base::FilePath>

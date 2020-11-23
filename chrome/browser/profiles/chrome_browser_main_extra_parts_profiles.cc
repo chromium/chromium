@@ -47,6 +47,7 @@
 #include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_keyed_service_factory.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences_factory.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -351,6 +352,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   predictors::PredictorDatabaseFactory::GetInstance();
   prerender::PrerenderLinkManagerFactory::GetInstance();
   prerender::PrerenderManagerFactory::GetInstance();
+  ProfileNetworkContextServiceFactory::GetInstance();
   ProfileSyncServiceFactory::GetInstance();
 #if !defined(OS_ANDROID)
   ProfileThemeUpdateServiceFactory::GetInstance();

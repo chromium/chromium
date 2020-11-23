@@ -47,3 +47,7 @@ ProfileNetworkContextServiceFactory::GetBrowserContextToUse(
   // Create separate service for incognito profiles.
   return context;
 }
+
+bool ProfileNetworkContextServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}

@@ -371,12 +371,6 @@ class TestingProfile : public Profile {
   bool IsNewProfile() const override;
   void SetExitType(ExitType exit_type) override {}
   ExitType GetLastSessionExitType() const override;
-  void ConfigureNetworkContextParams(
-      bool in_memory,
-      const base::FilePath& relative_partition_path,
-      network::mojom::NetworkContextParams* network_context_params,
-      network::mojom::CertVerifierCreationParams* cert_verifier_creation_params)
-      override;
 
 #if defined(OS_CHROMEOS)
   void ChangeAppLocale(const std::string&, AppLocaleChangedVia) override;
