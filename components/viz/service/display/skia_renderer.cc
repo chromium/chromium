@@ -2305,9 +2305,10 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
     SkMatrix mask_to_quad_matrix = SkMatrix::MakeRectToRect(
         mask_rect, gfx::RectToSkRect(quad->rect), SkMatrix::kFill_ScaleToFit);
 
-    rpdq_params.mask_shader =
-        mask_image->makeShader(SkTileMode::kClamp, SkTileMode::kClamp,
-                               &mask_to_quad_matrix, kLow_SkFilterQuality);
+    rpdq_params.mask_shader = mask_image->makeShader(
+        SkTileMode::kClamp, SkTileMode::kClamp,
+        SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone),
+        &mask_to_quad_matrix);
   }
 
   const cc::FilterOperations* filters = FiltersForPass(quad->render_pass_id);
