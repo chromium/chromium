@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
@@ -734,6 +735,12 @@ bool MenuItemView::ShouldShowNewBadge() const {
   static const bool feature_enabled =
       base::FeatureList::IsEnabled(features::kEnableNewBadgeOnMenuItems);
   return feature_enabled && is_new_;
+}
+
+bool MenuItemView::IsTraversableByKeyboard() const {
+  bool ignore_enabled = ui::AXPlatformNode::GetAccessibilityMode().has_mode(
+      ui::AXMode::kNativeAPIs);
+  return GetVisible() && (ignore_enabled || GetEnabled());
 }
 
 MenuItemView::MenuItemView(MenuItemView* parent,

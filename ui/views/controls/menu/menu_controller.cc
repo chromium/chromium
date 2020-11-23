@@ -2720,7 +2720,7 @@ MenuItemView* MenuController::FindNextSelectableMenuItem(
     if (index == stop_index && !include_all_items)
       return nullptr;
     MenuItemView* child = parent->GetSubmenu()->GetMenuItemAt(index);
-    if (child->GetVisible() && child->GetEnabled())
+    if (child->IsTraversableByKeyboard())
       return child;
   } while (index != stop_index);
   return nullptr;

@@ -363,6 +363,10 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Takes into account whether the badging feature is enabled.
   bool ShouldShowNewBadge() const;
 
+  // Returns whether keyboard navigation through the menu should stop on this
+  // item.
+  bool IsTraversableByKeyboard() const;
+
  protected:
   // Creates a MenuItemView. This is used by the various AddXXX methods.
   MenuItemView(MenuItemView* parent, int command, Type type);
