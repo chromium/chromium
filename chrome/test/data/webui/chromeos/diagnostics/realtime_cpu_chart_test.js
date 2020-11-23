@@ -125,7 +125,7 @@ export function realtimeCpuChartTestSuite() {
 
       // Correct number of yAxis ticks drawn.
       assertEquals(
-          3,
+          5,
           realtimeCpuChartElement.shadowRoot
               .querySelectorAll('#gridLines>g.tick')
               .length);

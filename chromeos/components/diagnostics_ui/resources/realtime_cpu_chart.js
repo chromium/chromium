@@ -51,6 +51,12 @@ Polymer({
    */
   currentFrame_: 0,
 
+  /**
+   * Y-Values where we should mark ticks for the y-axis on the left.
+   * @private {!Array<number>}
+   */
+  yAxisTicks_: [0, 25, 50, 75, 100],
+
   properties: {
     /** @type {number} */
     user: {
@@ -203,7 +209,8 @@ Polymer({
     chartGroup.select('#gridLines')
         .call(
             d3.axisLeft(/** @type {!d3.LinearScale} */ (this.yAxisScaleFn_))
-                .ticks(3)                     // Number of y-axis ticks
+                .tickValues(this.yAxisTicks_)
+                .tickFormat((y) => this.getPercentageLabel_(y))
                 .tickSize(-this.graphWidth_)  // Extend the ticks into the
                                               // entire graph as gridlines.
         );
