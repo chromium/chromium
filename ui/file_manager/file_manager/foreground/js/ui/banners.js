@@ -319,6 +319,7 @@ class Banners extends cr.EventTarget {
     more.href = str('GOOGLE_DRIVE_OVERVIEW_URL');
     more.tabIndex = 0;
     more.id = 'drive-welcome-link';
+    more.rel = 'opener';
     more.target = '_blank';
 
     this.previousDirWasOnDrive_ = false;
@@ -386,6 +387,7 @@ class Banners extends cr.EventTarget {
 
         const link = this.document_.createElement('a');
         link.href = str('GOOGLE_DRIVE_BUY_STORAGE_URL');
+        link.rel = 'opener';
         link.target = '_blank';
         const buyMore = this.document_.createElement('cr-button');
         buyMore.className = 'banner-button text-button';
@@ -415,6 +417,7 @@ class Banners extends cr.EventTarget {
 
         const link = this.document_.createElement('a');
         link.href = str('GOOGLE_DRIVE_BUY_STORAGE_URL');
+        link.rel = 'opener';
         link.target = '_blank';
         const button = this.document_.createElement('button');
         button.className = 'imitate-paper-button';
@@ -839,6 +842,7 @@ class Banners extends cr.EventTarget {
     const learnMore =
         create(panel, 'a', 'learn-more plain-link', str('DRIVE_LEARN_MORE'));
     learnMore.href = str('GOOGLE_DRIVE_ERROR_HELP_URL');
+    learnMore.rel = 'opener';
     learnMore.target = '_blank';
   }
 
