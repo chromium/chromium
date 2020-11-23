@@ -645,7 +645,6 @@ class SamlTest : public OobeBaseTest {
     sign_enterprise_challenge_request.set_username("");
     sign_enterprise_challenge_request.set_key_label(
         attestation::kEnterpriseMachineKey);
-    sign_enterprise_challenge_request.set_domain("google.com");
     sign_enterprise_challenge_request.set_device_id("device_id");
     AttestationClient::Get()
         ->GetTestInterface()

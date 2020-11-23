@@ -44,7 +44,6 @@ namespace attestation {
 namespace {
 
 constexpr char kTestUserEmail[] = "test@google.com";
-constexpr char kTestUserDomain[] = "google.com";
 constexpr char kTestUserGaiaId[] = "test_gaia_id";
 constexpr char kEmptyKeyName[] = "";
 constexpr char kNonDefaultKeyName[] = "key_name_123";
@@ -516,7 +515,7 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyNotRegisteredSuccess) {
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_key_label(key_name);
-  expected_request.set_domain(kTestUserDomain);
+  expected_request.set_domain(std::string());
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   AttestationClient::Get()
       ->GetTestInterface()
@@ -537,7 +536,7 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_key_label(GetDefaultKeyName(key_type));
   expected_request.set_key_name_for_spkac(key_name);
-  expected_request.set_domain(kTestUserDomain);
+  expected_request.set_domain(std::string());
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   AttestationClient::Get()
       ->GetTestInterface()

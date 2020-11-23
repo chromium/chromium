@@ -279,7 +279,7 @@ std::string TpmChallengeKeySubtleImpl::GetEmail() const {
 
   switch (key_type_) {
     case KEY_DEVICE:
-      return InstallAttributes::Get()->GetDomain();
+      return std::string();
     case KEY_USER:
       return GetAccountId().GetUserEmail();
   }

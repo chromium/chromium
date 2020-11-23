@@ -167,7 +167,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // Returns true if remote attestation is allowed and the setting is managed.
   bool IsRemoteAttestationEnabledForUser() const;
 
-  // Returns the enterprise domain the device is enrolled to or user email.
+  // Returns the user email (for user key) or an empty string (for machine key).
   std::string GetEmail() const;
   AttestationCertificateProfile GetCertificateProfile() const;
   // Returns the User* associated with |profile_|. May return nullptr (if there
