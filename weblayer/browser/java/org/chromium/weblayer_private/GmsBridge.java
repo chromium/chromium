@@ -72,6 +72,10 @@ public abstract class GmsBridge {
         // We don't have this specialized service here.
     }
 
+    public void initializeBuiltInPaymentApps() {
+        // We don't have this specialized service here.
+    }
+
     // Overriding implementations may call "callback" asynchronously. For simplicity (and not
     // because of any technical limitation) we require that "queryMetricsSetting" and "callback"
     // both get called on WebLayer's UI thread.
