@@ -3734,7 +3734,8 @@ class DesksMockTimeTest : public AshTestBase {
   ~DesksMockTimeTest() override = default;
 };
 
-TEST_F(DesksMockTimeTest, DeskTraversalNonTouchpadMetrics) {
+// TODO(crbug.com/1151856) flaky test
+TEST_F(DesksMockTimeTest, DISABLED_DeskTraversalNonTouchpadMetrics) {
   NewDesk();
   NewDesk();
   NewDesk();
