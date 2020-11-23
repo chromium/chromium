@@ -545,8 +545,8 @@ void SharedContextState::MarkContextLost(error::ContextLostReason reason) {
   }
 }
 
-bool SharedContextState::IsCurrent(gl::GLSurface* surface) {
-  if (!GrContextIsGL())
+bool SharedContextState::IsCurrent(gl::GLSurface* surface, bool needs_gl) {
+  if (!GrContextIsGL() && !needs_gl)
     return true;
   if (context_lost())
     return false;

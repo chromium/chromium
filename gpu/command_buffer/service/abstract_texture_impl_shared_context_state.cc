@@ -67,7 +67,7 @@ AbstractTextureImplOnSharedContext::~AbstractTextureImplOnSharedContext() {
   if (!shared_context_state_) {
     have_context = false;
   } else {
-    if (!shared_context_state_->IsCurrent(nullptr)) {
+    if (!shared_context_state_->IsCurrent(nullptr, /*needs_gl=*/true)) {
       scoped_make_current.emplace(shared_context_state_->context(),
                                   shared_context_state_->surface());
       have_context = scoped_make_current->IsContextCurrent();

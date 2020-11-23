@@ -106,7 +106,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool MakeCurrent(gl::GLSurface* surface, bool needs_gl = false);
   void ReleaseCurrent(gl::GLSurface* surface);
   void MarkContextLost(error::ContextLostReason reason = error::kUnknown);
-  bool IsCurrent(gl::GLSurface* surface);
+  bool IsCurrent(gl::GLSurface* surface, bool needs_gl = false);
 
   void PurgeMemory(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);

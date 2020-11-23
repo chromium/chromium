@@ -38,7 +38,8 @@ namespace {
 std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrent(
     SharedContextState* context_state) {
   std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
-  bool needs_make_current = !context_state->IsCurrent(nullptr);
+  bool needs_make_current =
+      !context_state->IsCurrent(nullptr, /*needs_gl=*/true);
   if (needs_make_current) {
     scoped_make_current = std::make_unique<ui::ScopedMakeCurrent>(
         context_state->context(), context_state->surface());
