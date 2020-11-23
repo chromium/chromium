@@ -46,6 +46,7 @@
 #include "components/no_state_prefetch/common/prerender_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -1652,6 +1653,16 @@ TEST_F(PrerenderTest, PrerenderContentsIncrementsByteCount) {
   prerender_contents->AddNetworkBytes(12);
   EXPECT_TRUE(observer.network_bytes_changed());
   EXPECT_EQ(12, prerender_contents->network_bytes());
+}
+
+TEST_F(PrerenderTest, NoPrerenderInSingleProcess) {
+  GURL url("http://www.google.com/");
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  ASSERT_TRUE(command_line != nullptr);
+  command_line->AppendSwitch(switches::kSingleProcess);
+  EXPECT_FALSE(AddSimplePrerender(url));
+  histogram_tester().ExpectUniqueSample("Prerender.FinalStatus",
+                                        FINAL_STATUS_SINGLE_PROCESS, 1);
 }
 
 }  // namespace prerender

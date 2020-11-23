@@ -74,6 +74,7 @@ const char* kFinalStatusNames[] = {
     "GWS Holdback",
     "Unknown",
     "Navigation Predictor Holdback",
+    "Single Process Mode",
     "Max",
 };
 static_assert(base::size(kFinalStatusNames) == FINAL_STATUS_MAX + 1,

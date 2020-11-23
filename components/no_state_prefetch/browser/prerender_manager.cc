@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -49,6 +50,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_headers.h"
@@ -491,6 +493,13 @@ PrerenderManager::AddPrerenderWithPreconnectFallback(
     SessionStorageNamespace* session_storage_namespace) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line && command_line->HasSwitch(switches::kSingleProcess)) {
+    SkipPrerenderContentsAndMaybePreconnect(url_arg, origin,
+                                            FINAL_STATUS_SINGLE_PROCESS);
+    return nullptr;
+  }
+
   // Disallow prerendering on low end devices.
   if (IsLowEndDevice()) {
     SkipPrerenderContentsAndMaybePreconnect(url_arg, origin,
@@ -925,7 +934,7 @@ void PrerenderManager::SkipPrerenderContentsAndMaybePreconnect(
   }
 
   static_assert(
-      FINAL_STATUS_MAX == FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK + 1,
+      FINAL_STATUS_MAX == FINAL_STATUS_SINGLE_PROCESS + 1,
       "Consider whether a failed prerender should fallback to preconnect");
 }
 
