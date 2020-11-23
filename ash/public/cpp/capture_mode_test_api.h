@@ -58,6 +58,10 @@ class ASH_EXPORT CaptureModeTestApi {
   // only be called before recording starts, otherwise it has no effect.
   void SetAudioRecordingEnabled(bool enabled);
 
+  // Flushes the recording service pipe synchronously. Can only be called while
+  // recording is in progress.
+  void FlushRecordingServiceForTesting();
+
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or
   // image capture otherwise.
