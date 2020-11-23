@@ -646,7 +646,7 @@ bool SampleBufferTransformer::TransformSampleBuffer(
       CMSampleBufferGetFormatDescription(source_sample_buffer);
   FourCharCode source_pixel_format =
       CMFormatDescriptionGetMediaSubType(source_format_description);
-  DCHECK(source_pixel_format == kPixelFormatMjpeg);
+  CHECK_EQ(source_pixel_format, kPixelFormatMjpeg);
   CMVideoDimensions source_dimensions =
       CMVideoFormatDescriptionGetDimensions(source_format_description);
 
