@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
@@ -28,27 +28,26 @@ namespace policy {
 
 namespace dlp {
 
-const char kClipboardRestriction[] = "CLIPBOARD";
-const char kScreenshotRestriction[] = "SCREENSHOT";
-const char kPrintingRestriction[] = "PRINTING";
-const char kPrivacyScreenRestriction[] = "PRIVACY_SCREEN";
-const char kScreenShareRestriction[] = "SCREEN_SHARE";
+constexpr char kClipboardRestriction[] = "CLIPBOARD";
+constexpr char kScreenshotRestriction[] = "SCREENSHOT";
+constexpr char kPrintingRestriction[] = "PRINTING";
+constexpr char kPrivacyScreenRestriction[] = "PRIVACY_SCREEN";
+constexpr char kScreenShareRestriction[] = "SCREEN_SHARE";
 
-const char kArc[] = "ARC";
-const char kCrostini[] = "CROSTINI";
-const char kPluginVm[] = "PLUGIN_VM";
+constexpr char kArc[] = "ARC";
+constexpr char kCrostini[] = "CROSTINI";
+constexpr char kPluginVm[] = "PLUGIN_VM";
 
-const char kAllowLevel[] = "ALLOW";
-const char kBlockLevel[] = "BLOCK";
+constexpr char kAllowLevel[] = "ALLOW";
+constexpr char kBlockLevel[] = "BLOCK";
 
 }  // namespace dlp
 
 namespace {
 
 DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
-  static const base::NoDestructor<
-      std::map<std::string, DlpRulesManager::Restriction>>
-      kRestrictionsMap(
+  static constexpr auto kRestrictionsMap =
+      base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Restriction>(
           {{dlp::kClipboardRestriction,
             DlpRulesManager::Restriction::kClipboard},
            {dlp::kScreenshotRestriction,
@@ -59,40 +58,42 @@ DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
            {dlp::kScreenShareRestriction,
             DlpRulesManager::Restriction::kScreenShare}});
 
-  auto it = kRestrictionsMap->find(restriction);
-  return (it == kRestrictionsMap->end())
+  auto* it = kRestrictionsMap.find(restriction);
+  return (it == kRestrictionsMap.end())
              ? DlpRulesManager::Restriction::kUnknownRestriction
              : it->second;
 }
 
 DlpRulesManager::Level GetLevelMapping(const std::string& level) {
-  static const base::NoDestructor<std::map<std::string, DlpRulesManager::Level>>
-      kLevelsMap({{dlp::kAllowLevel, DlpRulesManager::Level::kAllow},
-                  {dlp::kBlockLevel, DlpRulesManager::Level::kBlock}});
-  auto it = kLevelsMap->find(level);
-  return (it == kLevelsMap->end()) ? DlpRulesManager::Level::kNotSet
-                                   : it->second;
+  static constexpr auto kLevelsMap =
+      base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Level>(
+          {{dlp::kAllowLevel, DlpRulesManager::Level::kAllow},
+           {dlp::kBlockLevel, DlpRulesManager::Level::kBlock}});
+  auto* it = kLevelsMap.find(level);
+  return (it == kLevelsMap.end()) ? DlpRulesManager::Level::kNotSet
+                                  : it->second;
 }
 
 DlpRulesManager::Component GetComponentMapping(const std::string& component) {
-  static const base::NoDestructor<
-      std::map<std::string, DlpRulesManager::Component>>
-      kComponentsMap({{dlp::kArc, DlpRulesManager::Component::kArc},
-                      {dlp::kCrostini, DlpRulesManager::Component::kCrostini},
-                      {dlp::kPluginVm, DlpRulesManager::Component::kPluginVm}});
+  static constexpr auto kComponentsMap =
+      base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Component>(
+          {{dlp::kArc, DlpRulesManager::Component::kArc},
+           {dlp::kCrostini, DlpRulesManager::Component::kCrostini},
+           {dlp::kPluginVm, DlpRulesManager::Component::kPluginVm}});
 
-  auto it = kComponentsMap->find(component);
-  return (it == kComponentsMap->end())
+  auto* it = kComponentsMap.find(component);
+  return (it == kComponentsMap.end())
              ? DlpRulesManager::Component::kUnknownComponent
              : it->second;
 }
 
 uint8_t GetPriorityMapping(const DlpRulesManager::Level level) {
-  static const base::NoDestructor<std::map<DlpRulesManager::Level, uint8_t>>
-      kPrioritiesMap({{DlpRulesManager::Level::kNotSet, 0},
-                      {DlpRulesManager::Level::kBlock, 1},
-                      {DlpRulesManager::Level::kAllow, 2}});
-  return kPrioritiesMap->at(level);
+  static constexpr auto kPrioritiesMap =
+      base::MakeFixedFlatMap<DlpRulesManager::Level, uint8_t>(
+          {{DlpRulesManager::Level::kNotSet, 0},
+           {DlpRulesManager::Level::kBlock, 1},
+           {DlpRulesManager::Level::kAllow, 2}});
+  return kPrioritiesMap.at(level);
 }
 
 DlpRulesManager::Level GetMaxLevel(const DlpRulesManager::Level& level_1,

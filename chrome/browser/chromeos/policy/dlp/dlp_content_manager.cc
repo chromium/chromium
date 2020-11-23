@@ -227,20 +227,22 @@ DlpContentRestrictionSet DlpContentManager::GetRestrictionSetForURL(
     return set;
   DlpRulesManager* dlp_rules_manager = DlpRulesManager::Get();
 
-  static const base::NoDestructor<std::vector<
-      std::pair<DlpRulesManager::Restriction, DlpContentRestriction>>>
-      kRestrictionsList({{DlpRulesManager::Restriction::kScreenshot,
-                          DlpContentRestriction::kScreenshot},
-                         {DlpRulesManager::Restriction::kScreenshot,
-                          DlpContentRestriction::kVideoCapture},
-                         {DlpRulesManager::Restriction::kPrivacyScreen,
-                          DlpContentRestriction::kPrivacyScreen},
-                         {DlpRulesManager::Restriction::kPrinting,
-                          DlpContentRestriction::kPrint},
-                         {DlpRulesManager::Restriction::kScreenShare,
-                          DlpContentRestriction::kScreenShare}});
+  const size_t kRestrictionsCount = 5;
+  static constexpr std::array<
+      std::pair<DlpRulesManager::Restriction, DlpContentRestriction>,
+      kRestrictionsCount>
+      kRestrictionsArray = {{{DlpRulesManager::Restriction::kScreenshot,
+                              DlpContentRestriction::kScreenshot},
+                             {DlpRulesManager::Restriction::kScreenshot,
+                              DlpContentRestriction::kVideoCapture},
+                             {DlpRulesManager::Restriction::kPrivacyScreen,
+                              DlpContentRestriction::kPrivacyScreen},
+                             {DlpRulesManager::Restriction::kPrinting,
+                              DlpContentRestriction::kPrint},
+                             {DlpRulesManager::Restriction::kScreenShare,
+                              DlpContentRestriction::kScreenShare}}};
 
-  for (const auto& restriction : *kRestrictionsList) {
+  for (const auto& restriction : kRestrictionsArray) {
     if (dlp_rules_manager->IsRestricted(url, restriction.first) ==
         DlpRulesManager::Level::kBlock) {
       set.SetRestriction(restriction.second);
