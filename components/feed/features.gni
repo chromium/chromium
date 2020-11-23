@@ -21,6 +21,10 @@ declare_args() {
 
   # Whether to include Feed V2 as a DFM in ChromeModern builds.
   dfmify_feed_v2_modern = false
+
+  # Set to "true" or "false" to override whether Feed uses
+  # doubledown. Provided for use with pinpoint.
+  override_use_doubledown_feed = "use_default"
 }
 
 if (is_android && android_channel != "default") {
