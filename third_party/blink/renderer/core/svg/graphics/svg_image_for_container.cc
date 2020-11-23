@@ -19,12 +19,6 @@
 
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 
-#include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkImage.h"
-
 namespace blink {
 
 IntSize SVGImageForContainer::Size() const {
@@ -34,9 +28,7 @@ IntSize SVGImageForContainer::Size() const {
 }
 
 FloatSize SVGImageForContainer::SizeAsFloat(RespectImageOrientationEnum) const {
-  FloatSize scaled_container_size(container_size_);
-  scaled_container_size.Scale(zoom_);
-  return scaled_container_size;
+  return container_size_.ScaledBy(zoom_);
 }
 
 void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
@@ -46,8 +38,8 @@ void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
                                 RespectImageOrientationEnum,
                                 ImageClampingMode,
                                 ImageDecodingMode) {
-  image_->DrawForContainer(canvas, flags, container_size_, zoom_, dst_rect,
-                           src_rect, url_);
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
+  image_->DrawForContainer(draw_info, canvas, flags, dst_rect, src_rect);
 }
 
 void SVGImageForContainer::DrawPattern(GraphicsContext& context,
@@ -58,21 +50,21 @@ void SVGImageForContainer::DrawPattern(GraphicsContext& context,
                                        const FloatRect& dst_rect,
                                        const FloatSize& repeat_spacing,
                                        RespectImageOrientationEnum) {
-  image_->DrawPatternForContainer(context, container_size_, zoom_, src_rect,
-                                  scale, phase, op, dst_rect, repeat_spacing,
-                                  url_);
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
+  image_->DrawPatternForContainer(draw_info, context, src_rect, scale, phase,
+                                  op, dst_rect, repeat_spacing);
 }
 
 bool SVGImageForContainer::ApplyShader(cc::PaintFlags& flags,
                                        const SkMatrix& local_matrix) {
-  return image_->ApplyShaderForContainer(container_size_, zoom_, url_, flags,
-                                         local_matrix);
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
+  return image_->ApplyShaderForContainer(draw_info, flags, local_matrix);
 }
 
 PaintImage SVGImageForContainer::PaintImageForCurrentFrame() {
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
   auto builder = CreatePaintImageBuilder();
-  image_->PopulatePaintRecordForCurrentFrameForContainer(builder, Size(), zoom_,
-                                                         url_);
+  image_->PopulatePaintRecordForCurrentFrameForContainer(draw_info, builder);
   return builder.TakePaintImage();
 }
 

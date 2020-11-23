@@ -372,8 +372,13 @@ FloatSize SVGImage::ConcreteObjectSize(
   return default_object_size;
 }
 
+SVGImage::DrawInfo::DrawInfo(const FloatSize& container_size,
+                             float zoom,
+                             const KURL& url)
+    : container_size_(container_size), zoom_(zoom), url_(url) {}
+
 template <typename Func>
-void SVGImage::ForContainer(const FloatSize& container_size, Func&& func) {
+void SVGImage::ForContainer(const DrawInfo& draw_info, Func&& func) {
   if (!page_)
     return;
 
@@ -381,6 +386,7 @@ void SVGImage::ForContainer(const FloatSize& container_size, Func&& func) {
   // re-laying out the image.
   ImageObserverDisabler image_observer_disabler(this);
 
+  FloatSize container_size = draw_info.ContainerSize();
   LayoutSize rounded_container_size = RoundedLayoutSize(container_size);
 
   if (LayoutSVGRoot* layout_root = LayoutRoot())
@@ -390,42 +396,39 @@ void SVGImage::ForContainer(const FloatSize& container_size, Func&& func) {
                  rounded_container_size.Height() / container_size.Height()));
 }
 
-void SVGImage::DrawForContainer(cc::PaintCanvas* canvas,
+void SVGImage::DrawForContainer(const DrawInfo& draw_info,
+                                cc::PaintCanvas* canvas,
                                 const PaintFlags& flags,
-                                const FloatSize& container_size,
-                                float zoom,
                                 const FloatRect& dst_rect,
-                                const FloatRect& src_rect,
-                                const KURL& url) {
-  ForContainer(container_size, [&](const FloatSize& residual_scale) {
+                                const FloatRect& src_rect) {
+  ForContainer(draw_info, [&](const FloatSize& residual_scale) {
     FloatRect scaled_src = src_rect;
-    scaled_src.Scale(1 / zoom);
+    scaled_src.Scale(1 / draw_info.Zoom());
 
     // Compensate for the container size rounding by adjusting the source rect.
     FloatSize adjusted_src_size = scaled_src.Size();
     adjusted_src_size.Scale(residual_scale.Width(), residual_scale.Height());
     scaled_src.SetSize(adjusted_src_size);
 
-    DrawInternal(canvas, flags, dst_rect, scaled_src, url);
+    DrawInternal(draw_info, canvas, flags, dst_rect, scaled_src);
   });
 }
 
 PaintImage SVGImage::PaintImageForCurrentFrame() {
+  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL());
   auto builder = CreatePaintImageBuilder();
-  PopulatePaintRecordForCurrentFrameForContainer(builder, Size(), 1, NullURL());
+  PopulatePaintRecordForCurrentFrameForContainer(draw_info, builder);
   return builder.TakePaintImage();
 }
 
-void SVGImage::DrawPatternForContainer(GraphicsContext& context,
-                                       const FloatSize container_size,
-                                       float zoom,
+void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
+                                       GraphicsContext& context,
                                        const FloatRect& src_rect,
                                        const FloatSize& tile_scale,
                                        const FloatPoint& phase,
                                        SkBlendMode composite_op,
                                        const FloatRect& dst_rect,
-                                       const FloatSize& repeat_spacing,
-                                       const KURL& url) {
+                                       const FloatSize& repeat_spacing) {
   // Tile adjusted for scaling/stretch.
   FloatRect tile(src_rect);
   tile.Scale(tile_scale.Width(), tile_scale.Height());
@@ -433,6 +436,10 @@ void SVGImage::DrawPatternForContainer(GraphicsContext& context,
   // Expand the tile to account for repeat spacing.
   FloatRect spaced_tile(tile);
   spaced_tile.Expand(FloatSize(repeat_spacing));
+
+  SkMatrix pattern_transform;
+  pattern_transform.setTranslate(phase.X() + spaced_tile.X(),
+                                 phase.Y() + spaced_tile.Y());
 
   PaintRecordBuilder builder(context);
   {
@@ -442,20 +449,14 @@ void SVGImage::DrawPatternForContainer(GraphicsContext& context,
     // spacing area.
     if (tile != spaced_tile)
       builder.Context().Clip(tile);
-    PaintFlags flags;
-    DrawForContainer(builder.Context().Canvas(), flags, container_size, zoom,
-                     tile, src_rect, url);
+    DrawForContainer(draw_info, builder.Context().Canvas(), PaintFlags(), tile,
+                     src_rect);
   }
-  sk_sp<PaintRecord> record = builder.EndRecording();
-
-  SkMatrix pattern_transform;
-  pattern_transform.setTranslate(phase.X() + spaced_tile.X(),
-                                 phase.Y() + spaced_tile.Y());
 
   PaintFlags flags;
-  flags.setShader(
-      PaintShader::MakePaintRecord(record, spaced_tile, SkTileMode::kRepeat,
-                                   SkTileMode::kRepeat, &pattern_transform));
+  flags.setShader(PaintShader::MakePaintRecord(
+      builder.EndRecording(), spaced_tile, SkTileMode::kRepeat,
+      SkTileMode::kRepeat, &pattern_transform));
   // If the shader could not be instantiated (e.g. non-invertible matrix),
   // draw transparent.
   // Note: we can't simply bail, because of arbitrary blend mode.
@@ -470,10 +471,8 @@ void SVGImage::DrawPatternForContainer(GraphicsContext& context,
 }
 
 void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
-    PaintImageBuilder& builder,
-    const IntSize& zoomed_container_size,
-    float zoom,
-    const KURL& url) {
+    const DrawInfo& draw_info,
+    PaintImageBuilder& builder) {
   builder.set_completion_state(
       load_state_ == LoadState::kLoadCompleted
           ? PaintImage::CompletionState::DONE
@@ -481,42 +480,26 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
   if (!page_)
     return;
 
-  const IntRect container_rect(IntPoint(), zoomed_container_size);
-  // Compute a new container size based on the zoomed (and potentially
-  // rounded) size.
-  FloatSize container_size(zoomed_container_size);
-  container_size.Scale(1 / zoom);
-
   PaintRecorder recorder;
-  cc::PaintCanvas* canvas = recorder.beginRecording(container_rect);
-  DrawForContainer(canvas, PaintFlags(), container_size, zoom,
-                   FloatRect(container_rect), FloatRect(container_rect), url);
-  builder.set_paint_record(recorder.finishRecordingAsPicture(), container_rect,
+  const FloatSize size(draw_info.ContainerSize().ScaledBy(draw_info.Zoom()));
+  const IntRect dest_rect(IntPoint(), RoundedIntSize(size));
+  cc::PaintCanvas* canvas = recorder.beginRecording(dest_rect);
+  DrawForContainer(draw_info, canvas, PaintFlags(), FloatRect(dest_rect),
+                   FloatRect(FloatPoint(), size));
+  builder.set_paint_record(recorder.finishRecordingAsPicture(), dest_rect,
                            PaintImage::GetNextContentId());
 }
 
-static bool DrawNeedsLayer(const PaintFlags& flags) {
-  if (SkColorGetA(flags.getColor()) < 255)
-    return true;
-
-  // This is needed to preserve the dark mode filter that
-  // has been set in GraphicsContext.
-  if (flags.getColorFilter())
-    return true;
-
-  return flags.getBlendMode() != SkBlendMode::kSrcOver;
-}
-
-bool SVGImage::ApplyShaderInternal(PaintFlags& flags,
-                                   const SkMatrix& local_matrix,
-                                   const KURL& url) {
+bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
+                                   PaintFlags& flags,
+                                   const SkMatrix& local_matrix) {
   const FloatSize size(ContainerSize());
   if (size.IsEmpty())
     return false;
 
   FloatRect bounds(FloatPoint(), size);
   flags.setShader(PaintShader::MakePaintRecord(
-      PaintRecordForCurrentFrame(url), bounds, SkTileMode::kRepeat,
+      PaintRecordForCurrentFrame(draw_info), bounds, SkTileMode::kRepeat,
       SkTileMode::kRepeat, &local_matrix));
 
   // Animation is normally refreshed in draw() impls, which we don't reach when
@@ -527,22 +510,25 @@ bool SVGImage::ApplyShaderInternal(PaintFlags& flags,
 }
 
 bool SVGImage::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
-  return ApplyShaderInternal(flags, local_matrix, NullURL());
+  // TODO(fs): Passing |intrinsic_size_| even though it shouldn't be used in
+  // this code-path ATM. (It'll read the currently set container size from the
+  // SVG root which is a bit iffy/non-deterministic.)
+  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL());
+  return ApplyShaderInternal(draw_info, flags, local_matrix);
 }
 
-bool SVGImage::ApplyShaderForContainer(const FloatSize& container_size,
-                                       float zoom,
-                                       const KURL& url,
+bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
                                        PaintFlags& flags,
                                        const SkMatrix& local_matrix) {
   bool result = false;
-  ForContainer(container_size, [&](const FloatSize& residual_scale) {
+  ForContainer(draw_info, [&](const FloatSize& residual_scale) {
+    FloatSize zoomed_residual_scale = residual_scale.ScaledBy(draw_info.Zoom());
     // Compensate for the container size rounding.
     auto adjusted_local_matrix = local_matrix;
-    adjusted_local_matrix.preScale(zoom * residual_scale.Width(),
-                                   zoom * residual_scale.Height());
+    adjusted_local_matrix.preScale(zoomed_residual_scale.Width(),
+                                   zoomed_residual_scale.Height());
 
-    result = ApplyShaderInternal(flags, adjusted_local_matrix, url);
+    result = ApplyShaderInternal(draw_info, flags, adjusted_local_matrix);
   });
 
   return result;
@@ -557,10 +543,15 @@ void SVGImage::Draw(cc::PaintCanvas* canvas,
                     ImageDecodingMode) {
   if (!page_)
     return;
-  DrawInternal(canvas, flags, dst_rect, src_rect, NullURL());
+  // TODO(fs): Passing |intrinsic_size_| even though it shouldn't be used in
+  // this code-path ATM. (It'll read the currently set container size from the
+  // SVG root which is a bit iffy/non-deterministic.)
+  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL());
+  DrawInternal(draw_info, canvas, flags, dst_rect, src_rect);
 }
 
-sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(const KURL& url) {
+sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
+    const DrawInfo& draw_info) {
   DCHECK(page_);
   LocalFrameView* view = GetFrame()->View();
   IntSize rounded_container_size = RoundedIntSize(ContainerSize());
@@ -569,7 +560,7 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(const KURL& url) {
 
   // Always call processUrlFragment, even if the url is empty, because
   // there may have been a previous url/fragment that needs to be reset.
-  view->ProcessUrlFragment(url, /*same_document_navigation=*/false);
+  view->ProcessUrlFragment(draw_info.Url(), /*same_document_navigation=*/false);
 
   // If the image was reset, we need to rewind the timeline back to 0. This
   // needs to be done before painting, or else we wouldn't get the correct
@@ -589,11 +580,23 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(const KURL& url) {
   return builder.EndRecording();
 }
 
-void SVGImage::DrawInternal(cc::PaintCanvas* canvas,
+static bool DrawNeedsLayer(const PaintFlags& flags) {
+  if (SkColorGetA(flags.getColor()) < 255)
+    return true;
+
+  // This is needed to preserve the dark mode filter that
+  // has been set in GraphicsContext.
+  if (flags.getColorFilter())
+    return true;
+
+  return flags.getBlendMode() != SkBlendMode::kSrcOver;
+}
+
+void SVGImage::DrawInternal(const DrawInfo& draw_info,
+                            cc::PaintCanvas* canvas,
                             const PaintFlags& flags,
                             const FloatRect& dst_rect,
-                            const FloatRect& src_rect,
-                            const KURL& url) {
+                            const FloatRect& src_rect) {
   {
     PaintCanvasAutoRestore ar(canvas, false);
     if (DrawNeedsLayer(flags)) {
@@ -607,7 +610,7 @@ void SVGImage::DrawInternal(cc::PaintCanvas* canvas,
     canvas->clipRect(EnclosingIntRect(dst_rect));
     canvas->concat(SkMatrix::MakeRectToRect(src_rect, dst_rect,
                                             SkMatrix::kFill_ScaleToFit));
-    canvas->drawPicture(PaintRecordForCurrentFrame(url));
+    canvas->drawPicture(PaintRecordForCurrentFrame(draw_info));
     canvas->restore();
   }
 
