@@ -601,6 +601,11 @@ void DecoderTemplate<Traits>::ContextDestroyed() {
 }
 
 template <typename Traits>
+bool DecoderTemplate<Traits>::HasPendingActivity() const {
+  return pending_request_ || !requests_.IsEmpty();
+}
+
+template <typename Traits>
 void DecoderTemplate<Traits>::Request::Trace(Visitor* visitor) const {
   visitor->Trace(resolver);
 }

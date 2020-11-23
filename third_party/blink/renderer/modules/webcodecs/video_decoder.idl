@@ -13,7 +13,8 @@
 // encoders.
 [
     Exposed=(Window,DedicatedWorker),
-    RuntimeEnabled=WebCodecs
+    RuntimeEnabled=WebCodecs,
+    ActiveScriptWrappable
 ] interface VideoDecoder {
   // |init| includes an |output| callback for emitting VideoFrames and an
   // |error| callback for emitting decode errors.
