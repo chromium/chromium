@@ -449,11 +449,6 @@ export function scanningAppTest() {
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
-          assertEquals(
-              'Scanned files saved!',
-              scanningApp.$$('scan-done-section')
-                  .$$('#title')
-                  .textContent.trim());
 
           // Click the Done button to return to READY state.
           return clickDoneButton();

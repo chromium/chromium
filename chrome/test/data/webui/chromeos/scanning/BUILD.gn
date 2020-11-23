@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
     ":file_type_select_test",
     ":page_size_select_test",
     ":resolution_select_test",
+    ":scan_done_section_test",
     ":scan_preview_test",
     ":scan_to_select_test",
     ":scanner_select_test",
@@ -47,6 +48,11 @@ js_library("page_size_select_test") {
 
 js_library("resolution_select_test") {
   deps = [ "//chromeos/components/scanning/resources:resolution_select" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scan_done_section_test") {
+  deps = [ "//chromeos/components/scanning/resources:scan_done_section" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
