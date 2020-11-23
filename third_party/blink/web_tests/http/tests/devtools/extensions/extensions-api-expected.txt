@@ -19,6 +19,7 @@ RUNNING TEST: extension_testAPI
     }
     languageServices : {
         registerLanguageExtensionPlugin : <function>
+        unregisterLanguageExtensionPlugin : <function>
     }
     network : {
         addRequestHeaders : <function>
