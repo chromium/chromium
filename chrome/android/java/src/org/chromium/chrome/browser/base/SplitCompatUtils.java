@@ -93,13 +93,25 @@ public class SplitCompatUtils {
         return new FragmentFactory() {
             @Override
             public Fragment instantiate(ClassLoader classLoader, String className) {
-                if (!canLoadClass(classLoader, className)) {
-                    for (ClassLoader cl : sInflationClassLoaders) {
-                        if (canLoadClass(cl, className)) {
-                            classLoader = cl;
-                            break;
-                        }
+                if (canLoadClass(classLoader, className)) {
+                    return super.instantiate(classLoader, className);
+                }
+
+                for (ClassLoader cl : sInflationClassLoaders) {
+                    if (canLoadClass(cl, className)) {
+                        return super.instantiate(cl, className);
                     }
+                }
+
+                // TODO(crbug.com/1151456): On startup, fragment classes may be restored which live
+                // in splits, and there's no good way to know which split the class comes from.
+                // Right now, feedv2 is the only split which actually contains any fragments, so it
+                // works to hardcode it. We will need a more general solution for this when other
+                // splits want to use fragments.
+                Context context = ContextUtils.getApplicationContext();
+                if (BundleUtils.isIsolatedSplitInstalled(context, "feedv2")) {
+                    classLoader = BundleUtils.createIsolatedSplitContext(context, "feedv2")
+                                          .getClassLoader();
                 }
                 return super.instantiate(classLoader, className);
             }
