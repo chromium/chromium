@@ -38,7 +38,7 @@ async function initGA(id, clientId, shouldAddFakeHistory, setClientIdCallback) {
     i['GoogleAnalyticsObject'] = r;
     i[r] = i[r] || function(...args) {
       (i[r].q = i[r].q || []).push(args);
-    }, i[r].l = new Date().getTime();
+    }, i[r].l = Date.now();
     const a = s.createElement(o);
     const m = s.getElementsByTagName(o)[0];
     a['async'] = 1;
