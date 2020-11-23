@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -19,6 +23,7 @@
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "content/public/test/browser_test.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -29,8 +34,6 @@ class TwoClientSendTabToSelfSyncTest : public SyncTest {
   ~TwoClientSendTabToSelfSyncTest() override {}
 
  private:
-  base::test::ScopedFeatureList scoped_list_;
-
   DISALLOW_COPY_AND_ASSIGN(TwoClientSendTabToSelfSyncTest);
 };
 
@@ -267,3 +270,62 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
       send_tab_to_self_helper::SendTabToSelfUrlOpenedChecker(service0, kUrl)
           .Wait());
 }
+
+class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
+    : public TwoClientSendTabToSelfSyncTest {
+ public:
+  TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn() {
+    feature_list_.InitAndEnableFeature(
+        send_tab_to_self::kSendTabToSelfWhenSignedIn);
+  }
+  ~TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn() override =
+      default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    TwoClientSendTabToSelfSyncTest::SetUpInProcessBrowserTestFixture();
+    test_signin_client_subscription_ =
+        secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
+  }
+
+ protected:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription test_signin_client_subscription_;
+};
+
+// Non-primary accounts don't exist on ChromeOS.
+#if !defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(
+    TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn,
+    SignedInClientCanReceive) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Set up one client syncing and the other signed-in but not syncing.
+  GetClient(0)->SetupSync();
+  secondary_account_helper::SignInSecondaryAccount(
+      GetProfile(1), &test_url_loader_factory_, "user@g.com");
+  GetClient(1)->AwaitSyncTransportActive();
+
+  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
+      ->GetDeviceInfoTracker()
+      ->ForcePulseForTest();
+  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
+      ->GetDeviceInfoTracker()
+      ->ForcePulseForTest();
+
+  ASSERT_TRUE(send_tab_to_self_helper::SendTabToSelfMultiDeviceActiveChecker(
+                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
+                      ->GetDeviceInfoTracker())
+                  .Wait());
+
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos =
+      DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
+          ->GetDeviceInfoTracker()
+          ->GetAllDeviceInfo();
+  ASSERT_EQ(2u, device_infos.size());
+  EXPECT_TRUE(device_infos[0]->send_tab_to_self_receiving_enabled());
+  EXPECT_TRUE(device_infos[1]->send_tab_to_self_receiving_enabled());
+}
+#endif  // !defined(OS_CHROMEOS)

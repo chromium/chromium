@@ -21,10 +21,10 @@ extern const base::Feature kSendTabToSelfOmniboxSendingAnimation;
 extern const base::Feature kSendTabToSelfWhenSignedIn;
 
 // Returns whether the receiving components of the feature is enabled on this
-// device. This is different from IsReceivingEnabled in SendTabToSelfUtil
-// because it doesn't rely on the SendTabToSelfSyncService to be actively up and
-// ready.
+// device. This doesn't rely on the SendTabToSelfSyncService to be actively up
+// and ready.
 bool IsReceivingEnabledByUserOnThisDevice(PrefService* prefs);
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_FEATURES_H_
