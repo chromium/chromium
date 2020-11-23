@@ -73,7 +73,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private EmptyBottomSheetObserver mSheetObserver;
 
     private String mUrl;
-    private int mCurrentMaxSheetHeight;
+    private int mCurrentMaxViewHeight;
     private boolean mPeeked;
     private boolean mViewed; // Moved up from peek state by user
     private boolean mFullyOpened;
@@ -193,7 +193,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             };
             mBottomSheetController.addObserver(mSheetObserver);
             mSheetContent = new EphemeralTabSheetContent(mContext, this::openInNewTab,
-                    this::onToolbarClick, this::close, getMaxSheetHeight());
+                    this::onToolbarClick, this::close, getMaxViewHeight());
             mMediator.init(mWebContents, mContentView, mSheetContent, profile);
             mLayoutView.addOnLayoutChangeListener(this);
         }
@@ -277,17 +277,18 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
         // It may not be possible to update the content height when the actual height changes
         // due to the current tab not being ready yet. Try it later again when the tab
-        // (hence MaxSheetHeight) becomes valid.
-        int maxSheetHeight = getMaxSheetHeight();
-        if (maxSheetHeight == 0 || mCurrentMaxSheetHeight == maxSheetHeight) return;
-        mSheetContent.updateContentHeight(maxSheetHeight);
-        mCurrentMaxSheetHeight = maxSheetHeight;
+        // (hence MaxViewHeight) becomes valid.
+        int maxViewHeight = getMaxViewHeight();
+        if (maxViewHeight == 0 || mCurrentMaxViewHeight == maxViewHeight) return;
+        mSheetContent.updateContentHeight(maxViewHeight);
+        mCurrentMaxViewHeight = maxViewHeight;
     }
 
-    private int getMaxSheetHeight() {
+    /** @return The maximum base view height for sheet content view. */
+    private int getMaxViewHeight() {
         Tab tab = mTabProvider.get();
         if (tab == null || tab.getView() == null) return 0;
-        return (int) (tab.getView().getHeight() * 0.9f);
+        return tab.getView().getHeight();
     }
 
     /**
