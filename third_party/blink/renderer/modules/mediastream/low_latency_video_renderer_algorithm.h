@@ -64,15 +64,27 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
   }
 
  private:
+  size_t DetermineModeAndNumberOfFramesToRender(
+      double fractional_frames_to_render);
+
+  bool ReduceSteadyStateQueue(size_t number_of_frames_to_render);
+
+  void SelectNextAvailableFrameAndUpdateLastDeadline(
+      base::TimeTicks deadline_min);
+
   scoped_refptr<media::VideoFrame> current_frame_;
 
   // Queue of incoming frames waiting for rendering.
   using VideoFrameQueue = WTF::Deque<scoped_refptr<media::VideoFrame>>;
   VideoFrameQueue frame_queue_;
 
-  // The length of the last deadline interval given to Render(), updated at the
-  // start of Render().
-  base::TimeDelta render_interval_;
+  // Render deadline min for when the last frame was rendered.
+  base::Optional<base::TimeTicks> last_render_deadline_min_;
+
+  // Stores the number of fractional frames that were not rendered as of
+  // |last_render_deadline_min_|. This is needed in case the display refresh
+  // rate is not a multiple of the video stream frame rate.
+  double unrendered_fractional_frames_;
 
   enum class Mode {
     // Render frames at their intended rate.
@@ -87,6 +99,22 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
   // The number of consecutive render frames with a post-decode queue back-up
   // (defined as greater than one frame).
   int consecutive_frames_with_back_up_;
+
+  struct Stats {
+    int total_frames;
+    int dropped_frames;
+    int drained_frames;
+    int render_frame;
+    int no_new_frame_to_render;
+    int accumulated_queue_length;
+    int accumulated_queue_length_count;
+    int enter_drain_mode;
+    int reduce_steady_state;
+    int max_size_drop_queue;
+  };
+  Stats stats_;
+  base::Optional<base::TimeTicks> last_deadline_min_stats_recorded_;
+  void RecordAndResetStats();
 };
 
 }  // namespace blink
