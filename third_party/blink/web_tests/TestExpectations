@@ -1812,8 +1812,6 @@ crbug.com/574283 [ Mac ] virtual/threaded-prefer-compositing/fast/scroll-behavio
 crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-correctness.html [ Skip ]
 crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/mousewheel-scroll-interrupted.html [ Skip ]
 
-
-crbug.com/599670 [ Win ] http/tests/devtools/resource-parameters-ipv6.js [ Pass Failure Crash ]
 crbug.com/472330 fast/borders/border-image-outset-split-inline-vertical-lr.html [ Failure ]
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-lr.html [ Failure ]
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-rl.html [ Failure ]
@@ -6009,6 +6007,10 @@ crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-work
 # Disable flaky tests when scroll unification is enabled
 crbug.com/1130020 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
 crbug.com/1130020 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
+
+# Temporarily disable test to allow devtools-frontend changes
+crbug.com/1140481 http/tests/devtools/resource-parameters-ipv6.js [ Pass Failure Crash ]
+crbug.com/1140481 http/tests/devtools/resource-tree/resource-tree-frame-in-crafted-frame.js [ Pass Failure ]
 
 # Sheriff 2020-11-16
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/debugger-inline-values-frames.js [ Pass Failure Timeout ]
