@@ -118,11 +118,19 @@ void ContentIndex::DidGetIconSizes(
     ScriptPromiseResolver* resolver,
     mojom::blink::ContentDescriptionPtr description,
     const Vector<gfx::Size>& icon_sizes) {
+  ScriptState* script_state = resolver->GetScriptState();
+  ScriptState::Scope scope(script_state);
+
   if (!icon_sizes.IsEmpty() && description->icons.IsEmpty()) {
-    ScriptState* script_state = resolver->GetScriptState();
-    ScriptState::Scope scope(script_state);
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "icons must be provided"));
+    return;
+  }
+
+  if (!registration_->GetExecutionContext()) {
+    // The SW execution context is not valid for some reason. Bail out.
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "Service worker is no longer valid."));
     return;
   }
 
@@ -150,6 +158,13 @@ void ContentIndex::DidGetIcons(ScriptPromiseResolver* resolver,
           script_state->GetIsolate(), "Icon could not be loaded"));
       return;
     }
+  }
+
+  if (!registration_->GetExecutionContext()) {
+    // The SW execution context is not valid for some reason. Bail out.
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "Service worker is no longer valid."));
+    return;
   }
 
   KURL launch_url = registration_->GetExecutionContext()->CompleteURL(
