@@ -77,7 +77,11 @@ public class SyncPromoPreference
     @Override
     public void onAttached() {
         super.onAttached();
+
         mAccountManagerFacade.addObserver(this);
+        IdentityServicesProvider.get()
+                .getSigninManager(Profile.getLastUsedRegularProfile())
+                .addSignInAllowedObserver(this);
         mProfileDataCache.addObserver(this);
         FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
         AndroidSyncSettings.get().registerObserver(this);
@@ -92,7 +96,11 @@ public class SyncPromoPreference
     @Override
     public void onDetached() {
         super.onDetached();
+
         mAccountManagerFacade.removeObserver(this);
+        IdentityServicesProvider.get()
+                .getSigninManager(Profile.getLastUsedRegularProfile())
+                .removeSignInAllowedObserver(this);
         mProfileDataCache.removeObserver(this);
         AndroidSyncSettings.get().unregisterObserver(this);
         ProfileSyncService syncService = ProfileSyncService.get();
