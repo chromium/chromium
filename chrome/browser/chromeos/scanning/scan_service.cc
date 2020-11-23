@@ -116,8 +116,10 @@ void ScanService::GetScannerCapabilities(
     const base::UnguessableToken& scanner_id,
     GetScannerCapabilitiesCallback callback) {
   const std::string scanner_name = GetScannerName(scanner_id);
-  if (scanner_name.empty())
+  if (scanner_name.empty()) {
     std::move(callback).Run(mojo_ipc::ScannerCapabilities::New());
+    return;
+  }
 
   lorgnette_scanner_manager_->GetScannerCapabilities(
       scanner_name,
