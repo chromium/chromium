@@ -81,7 +81,7 @@ by non-browser embedders as well as by Chromium.
     * It queues reports via the `NetworkContext` using a
       `blink::mojom::ReportingServiceProxy` (implemented [in
       `//content/browser/net/`][2]), which can queue Intervention, Deprecation,
-      CSP Violation, and Feature Policy Violation reports.
+      CSP Violation, and Permissions Policy Violation reports.
 
 * The `ChromeNetworkDelegate` [in `//chrome/browser/net/`][3] checks permissions
   for queueing reports and setting/using clients based on whether cookie access
