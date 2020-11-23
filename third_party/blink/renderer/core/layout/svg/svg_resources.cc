@@ -659,13 +659,14 @@ void SVGElementResourceClient::ResourceContentChanged(
   LayoutObject* layout_object = element_->GetLayoutObject();
   if (!layout_object)
     return;
+
+  if (invalidation_mask & SVGResourceClient::kFilterCacheInvalidation)
+    InvalidateFilterData();
+
   if (layout_object->IsSVGResourceContainer()) {
     To<LayoutSVGResourceContainer>(layout_object)->RemoveAllClientsFromCache();
     return;
   }
-
-  if (invalidation_mask & SVGResourceClient::kFilterCacheInvalidation)
-    InvalidateFilterData();
 
   if (invalidation_mask & SVGResourceClient::kPaintInvalidation) {
     // Since LayoutSVGInlineTexts don't have SVGResources (they use their
