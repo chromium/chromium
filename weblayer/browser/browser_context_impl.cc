@@ -13,6 +13,7 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/language_prefs.h"
+#include "components/payments/core/payment_prefs.h"
 #include "components/permissions/permission_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
@@ -272,6 +273,7 @@ void BrowserContextImpl::RegisterPrefs(
   translate::TranslatePrefs::RegisterProfilePrefs(pref_registry);
   blocked_content::SafeBrowsingTriggeredPopupBlocker::RegisterProfilePrefs(
       pref_registry);
+  payments::RegisterProfilePrefs(pref_registry);
   pref_registry->RegisterBooleanPref(
       ::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

@@ -3,6 +3,7 @@ include_rules = [
   "+components/js_injection",
   "+components/omnibox/browser",
   "+components/page_info/android",
+  "+components/payments/core",
   "+components/security_state/core/security_state.h",
   "+third_party/metrics_proto/omnibox_input_type.pb.h",
 ]
