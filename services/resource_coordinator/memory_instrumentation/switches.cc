@@ -7,9 +7,9 @@
 namespace memory_instrumentation {
 namespace switches {
 
-// Enable the tracing service.
-const char kEnableChromeTracingComputation[] =
-    "enable-chrome-tracing-computation";
+// Disable the tracing service graph compuation while writing the trace.
+const char kDisableChromeTracingComputation[] =
+    "disable-chrome-tracing-computation";
 const char kUseMemoryTrackingProtoWriter[] = "use-memory-tracking-proto-writer";
 
 }  // namespace switches

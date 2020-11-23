@@ -619,7 +619,7 @@ bool QueuedRequestDispatcher::AddChromeMemoryDumpToTrace(
     const base::TimeTicks& timestamp) {
   bool is_chrome_tracing_enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableChromeTracingComputation);
+          switches::kDisableChromeTracingComputation);
   if (!is_chrome_tracing_enabled) {
     return tracing_observer->AddChromeDumpToTraceIfEnabled(
         args, pid, &raw_chrome_dump, timestamp);
