@@ -95,13 +95,13 @@ PaymentRequest::PaymentRequest(
       journey_logger_(delegate_->IsOffTheRecord(),
                       ukm::GetSourceIdForWebContentsDocument(web_contents())) {
   receiver_.Bind(std::move(receiver));
-  // OnConnectionTerminated will be called when the Mojo pipe is closed. This
+  // TerminateConnection will be called when the Mojo pipe is closed. This
   // will happen as a result of many renderer-side events (both successful and
   // erroneous in nature).
   // TODO(crbug.com/683636): Investigate using
   // set_connection_error_with_reason_handler with Binding::CloseWithReason.
   receiver_.set_disconnect_handler(base::BindOnce(
-      &PaymentRequest::OnConnectionTerminated, weak_ptr_factory_.GetWeakPtr()));
+      &PaymentRequest::TerminateConnection, weak_ptr_factory_.GetWeakPtr()));
 
   payment_handler_host_ = std::make_unique<PaymentHandlerHost>(
       web_contents(), weak_ptr_factory_.GetWeakPtr());
@@ -118,7 +118,7 @@ void PaymentRequest::Init(
 
   if (is_initialized_) {
     log_.Error(errors::kAttemptedInitializationTwice);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -130,7 +130,7 @@ void PaymentRequest::Init(
   const GURL last_committed_url = delegate_->GetLastCommittedURL();
   if (!blink::network_utils::IsOriginSecure(last_committed_url)) {
     log_.Error(errors::kNotInASecureOrigin);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -155,20 +155,35 @@ void PaymentRequest::Init(
     client_->OnError(
         mojom::PaymentErrorReason::NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL,
         reject_show_error_message_);
-    OnConnectionTerminated();
+    TerminateConnection();
+    return;
+  }
+
+  if (method_data.empty()) {
+    log_.Error(errors::kMethodDataRequired);
+    TerminateConnection();
+    return;
+  }
+
+  if (std::any_of(method_data.begin(), method_data.end(),
+                  [](const auto& datum) {
+                    return !datum || datum->supported_method.empty();
+                  })) {
+    log_.Error(errors::kMethodNameRequired);
+    TerminateConnection();
     return;
   }
 
   std::string error;
   if (!ValidatePaymentDetails(ConvertPaymentDetails(details), &error)) {
     log_.Error(error);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   if (!details->total) {
     log_.Error(errors::kTotalRequired);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -176,7 +191,7 @@ void PaymentRequest::Init(
       content::RenderFrameHost::FromID(initiator_frame_routing_id_);
   if (!initiator_frame) {
     log_.Error(errors::kInvalidInitiatorFrame);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -246,13 +261,13 @@ void PaymentRequest::Init(
 void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotShowWithoutInit);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   if (is_show_called_) {
     log_.Error(errors::kCannotShowTwice);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -271,7 +286,7 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
         JourneyLogger::NOT_SHOWN_REASON_CONCURRENT_REQUESTS);
     client_->OnError(mojom::PaymentErrorReason::ALREADY_SHOWING,
                      errors::kAnotherUiShowing);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -282,7 +297,7 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
     journey_logger_.SetNotShown(JourneyLogger::NOT_SHOWN_REASON_OTHER);
     client_->OnError(mojom::PaymentErrorReason::USER_CANCEL,
                      errors::kCannotShowInBackgroundTab);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -316,13 +331,13 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
 void PaymentRequest::Retry(mojom::PaymentValidationErrorsPtr errors) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotRetryWithoutInit);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotRetryWithoutShow);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -331,7 +346,7 @@ void PaymentRequest::Retry(mojom::PaymentValidationErrorsPtr errors) {
                                                                 &error)) {
     log_.Error(error);
     client_->OnError(mojom::PaymentErrorReason::USER_CANCEL, error);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -346,20 +361,20 @@ void PaymentRequest::Retry(mojom::PaymentValidationErrorsPtr errors) {
 void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotUpdateWithoutInit);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotUpdateWithoutShow);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   std::string error;
   if (!ValidatePaymentDetails(ConvertPaymentDetails(details), &error)) {
     log_.Error(error);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -367,7 +382,7 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
       !PaymentsValidators::IsValidAddressErrorsFormat(
           details->shipping_address_errors, &error)) {
     log_.Error(error);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -409,13 +424,13 @@ void PaymentRequest::OnPaymentDetailsNotUpdated() {
   // be more verbose.
   if (!IsInitialized()) {
     log_.Error(errors::kNotInitialized);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kNotShown);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -430,19 +445,19 @@ void PaymentRequest::OnPaymentDetailsNotUpdated() {
 void PaymentRequest::Abort() {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotAbortWithoutInit);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotAbortWithoutShow);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   // The API user has decided to abort. If a successful abort message is
   // returned to the renderer, the Mojo message pipe is closed, which triggers
-  // PaymentRequest::OnConnectionTerminated, which destroys this object.
+  // PaymentRequest::TerminateConnection, which destroys this object.
   // Otherwise, the abort promise is rejected and the pipe is not closed.
   // The abort is only successful if the payment app wasn't yet invoked.
   // TODO(crbug.com/716546): Add a merchant abort metric
@@ -462,13 +477,13 @@ void PaymentRequest::Abort() {
 void PaymentRequest::Complete(mojom::PaymentComplete result) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotCompleteWithoutInit);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotAbortWithoutShow);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -492,7 +507,7 @@ void PaymentRequest::Complete(mojom::PaymentComplete result) {
     delegate_->GetPrefService()->SetBoolean(kPaymentsFirstTransactionCompleted,
                                             true);
     // When the renderer closes the connection,
-    // PaymentRequest::OnConnectionTerminated will be called.
+    // PaymentRequest::TerminateConnection will be called.
     client_->OnComplete();
     state_->RecordUseStats();
   }
@@ -501,7 +516,7 @@ void PaymentRequest::Complete(mojom::PaymentComplete result) {
 void PaymentRequest::CanMakePayment() {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotCallCanMakePaymentWithoutInit);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -522,7 +537,7 @@ void PaymentRequest::CanMakePayment() {
 void PaymentRequest::HasEnrolledInstrument() {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotCallHasEnrolledInstrumentWithoutInit);
-    OnConnectionTerminated();
+    TerminateConnection();
     return;
   }
 
@@ -621,7 +636,7 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
                          (error_message.empty() ? "" : " " + error_message));
     if (observer_for_testing_)
       observer_for_testing_->OnNotSupportedError();
-    OnConnectionTerminated();
+    TerminateConnection();
   }
 }
 
@@ -814,10 +829,10 @@ void PaymentRequest::RenderFrameDeleted(
   // torn down anyways when RenderFrameHost is destroyed. It's not safe to call
   // UserCancelled() here because it is not re-entrant.
   // TODO(crbug.com/1121841) Make UserCancelled re-entrant.
-  OnConnectionTerminated();
+  TerminateConnection();
 }
 
-void PaymentRequest::OnConnectionTerminated() {
+void PaymentRequest::TerminateConnection() {
   // We are here because of a browser-side error, or likely as a result of the
   // disconnect_handler on |receiver_|, which can mean that the renderer
   // has decided to close the pipe for various reasons (see all uses of

@@ -105,7 +105,7 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   // Called when the user explicitly cancelled the flow. Will send a message
   // to the renderer which will indirectly destroy this object (through
-  // OnConnectionTerminated).
+  // TerminateConnection).
   void UserCancelled();
 
   // Called when the main frame attached to this PaymentRequest is navigating to
@@ -122,7 +122,7 @@ class PaymentRequest : public mojom::PaymentRequest,
   // closure (e.g. there was an error on the renderer side, or payment was
   // successful), this method is called. It is responsible for cleaning up,
   // such as possibly closing the dialog.
-  void OnConnectionTerminated();
+  void TerminateConnection();
 
   // Called when the user clicks on the "Pay" button.
   void Pay();
