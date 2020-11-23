@@ -380,6 +380,7 @@ void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
   if (!IsKeyboardCodeArrow(event->key_code()) ||
       event->type() != ui::ET_KEY_RELEASED || default_view_ == nullptr ||
       is_bubble_closing_) {
+    View::OnKeyEvent(event);
     return;
   }
 
