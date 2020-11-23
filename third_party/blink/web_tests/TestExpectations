@@ -6024,3 +6024,6 @@ crbug.com/1151844 [ Win ] virtual/controls-refresh-hc/fast/forms/color-scheme/me
 crbug.com/1151844 [ Win ] virtual/controls-refresh-hc/fast/forms/color-scheme/file/file-appearance-basic.html [ Failure ]
 crbug.com/1151861 external/wpt/workers/semantics/multiple-workers/003.html [ Timeout Crash ]
 crbug.com/1152088 [ Mac10.13 Debug ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
+crbug.com/1149734 http/tests/devtools/sources/source-frame-toolbar-items.js [ Pass Failure ]
+crbug.com/1149734 http/tests/devtools/sources/debugger-frameworks/frameworks-sourcemap.js [ Pass Failure ]
+crbug.com/1149734 http/tests/devtools/sources/debugger-ui/continue-to-location-markers.js [ Pass Failure ]
