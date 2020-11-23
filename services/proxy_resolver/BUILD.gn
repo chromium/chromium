@@ -30,7 +30,6 @@ source_set("lib") {
     "//base",
     "//gin",
     "//mojo/public/cpp/bindings",
-    "//services/service_manager",
     "//url",
     "//v8",
   ]

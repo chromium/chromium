@@ -4,11 +4,11 @@
 
 #include "chromecast/browser/general_audience_browsing_service.h"
 
+#include "chromecast/browser/system_connector.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 #include "components/safe_search_api/url_checker.h"
-#include "content/public/browser/system_connector.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -57,7 +57,7 @@ net::NetworkTrafficAnnotationTag CreateNetworkTrafficAnnotationTag() {
 GeneralAudienceBrowsingService::GeneralAudienceBrowsingService(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : shared_url_loader_factory_(shared_url_loader_factory) {
-  content::GetSystemConnector()->Connect(
+  GetSystemConnector()->Connect(
       mojom::kChromecastServiceName,
       general_audience_browsing_api_key_subject_remote_
           .BindNewPipeAndPassReceiver());

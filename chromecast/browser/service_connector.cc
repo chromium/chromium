@@ -7,11 +7,11 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
+#include "chromecast/browser/system_connector.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/system_connector.h"
 
 namespace chromecast {
 
@@ -53,8 +53,8 @@ void ServiceConnector::BindReceiver(
     ServiceConnectorClientId client_id,
     mojo::PendingReceiver<mojom::ServiceConnector> receiver) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    base::PostTask(FROM_HERE, content::BrowserThread::UI,
-                   base::BindOnce(&ServiceConnector::BindReceiver, client_id,
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ServiceConnector::BindReceiver, client_id,
                                   std::move(receiver)));
     return;
   }
@@ -74,9 +74,9 @@ void ServiceConnector::Connect(const std::string& service_name,
   // Manager. The browser generally has access unfettered to everything.
   if (client_id == kBrowserProcessClientId) {
     auto interface_name = *receiver.interface_name();
-    content::GetSystemConnector()->BindInterface(
-        service_manager::ServiceFilter::ByName(service_name),
-        interface_name, receiver.PassPipe());
+    GetSystemConnector()->BindInterface(
+        service_manager::ServiceFilter::ByName(service_name), interface_name,
+        receiver.PassPipe());
     return;
   }
 
@@ -92,7 +92,7 @@ void ServiceConnector::Connect(const std::string& service_name,
   }
 
   if (auto r = receiver.As<mojom::MultiroomManager>()) {
-    content::GetSystemConnector()->BindInterface(service_name, std::move(r));
+    GetSystemConnector()->BindInterface(service_name, std::move(r));
     return;
   }
 

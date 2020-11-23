@@ -23,7 +23,6 @@ content_app_deps = [
   "//crypto",
   "//mojo/core/embedder",
   "//ppapi/buildflags",
-  "//services/service_manager/public/mojom",
   "//services/tracing/public/cpp",
   "//ui/base",
   "//ui/gfx",
@@ -94,8 +93,8 @@ source_set("app") {
     "content_main.cc",
     "mojo/mojo_init.cc",
     "mojo/mojo_init.h",
-    "service_manager_environment.cc",
-    "service_manager_environment.h",
+    "mojo_ipc_support.cc",
+    "mojo_ipc_support.h",
   ]
 
   configs += extra_configs

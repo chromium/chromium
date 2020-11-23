@@ -37,6 +37,7 @@ class ViewsDelegate;
 namespace chromecast {
 class CastSystemMemoryPressureEvaluatorAdjuster;
 class ServiceConnector;
+class ServiceManagerContext;
 class WaylandServerController;
 
 #if defined(USE_AURA)
@@ -93,6 +94,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   const content::MainFunctionParams parameters_;  // For running browser tests.
   // Caches a pointer of the CastContentBrowserClient.
   CastContentBrowserClient* const cast_content_browser_client_ = nullptr;
+  std::unique_ptr<ServiceManagerContext> service_manager_context_;
   std::unique_ptr<media::VideoPlaneController> video_plane_controller_;
   std::unique_ptr<media::MediaCapsImpl> media_caps_;
   std::unique_ptr<ServiceConnector> service_connector_;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_APP_SERVICE_MANAGER_ENVIRONMENT_H_
-#define CONTENT_APP_SERVICE_MANAGER_ENVIRONMENT_H_
+#ifndef CONTENT_APP_MOJO_IPC_SUPPORT_H_
+#define CONTENT_APP_MOJO_IPC_SUPPORT_H_
 
 #include <memory>
 
@@ -20,25 +20,22 @@ class ScopedIPCSupport;
 namespace content {
 
 class BrowserProcessSubThread;
-class ServiceManagerContext;
 struct StartupDataImpl;
 
-// Encapsulates the basic state necessary to bring up a working Service Manager
-// instance in the process.
-class CONTENT_EXPORT ServiceManagerEnvironment {
+// Encapsulates the basic state necessary to bring up a working Mojo IPC
+// environment in the browser process.
+class CONTENT_EXPORT MojoIpcSupport {
  public:
-  explicit ServiceManagerEnvironment(
-      std::unique_ptr<BrowserProcessSubThread> io_thread);
-  ~ServiceManagerEnvironment();
+  explicit MojoIpcSupport(std::unique_ptr<BrowserProcessSubThread> io_thread);
+  ~MojoIpcSupport();
 
   BrowserProcessSubThread* io_thread() { return io_thread_.get(); }
 
   // Returns a new StartupDataImpl which captures and/or reflects the partial
-  // state of this ServiceManagerEnvironment. This must be called and the
-  // result passed to BrowserMain if the browser is going to be started within
-  // Service Manager's process.
+  // state of this object. This must be called and the result passed to
+  // BrowserMain if the full browser environment is going to be started.
   //
-  // After this call, the ServiceManagerEnvironment no longer owns the IO
+  // After this call, the MojoIpcSupport object no longer owns the IO
   // thread and |io_thread()| returns null.
   std::unique_ptr<StartupDataImpl> CreateBrowserStartupData();
 
@@ -46,11 +43,10 @@ class CONTENT_EXPORT ServiceManagerEnvironment {
   std::unique_ptr<BrowserProcessSubThread> io_thread_;
   base::Thread mojo_ipc_thread_{"Mojo IPC"};
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
-  std::unique_ptr<ServiceManagerContext> service_manager_context_;
 
-  DISALLOW_COPY_AND_ASSIGN(ServiceManagerEnvironment);
+  DISALLOW_COPY_AND_ASSIGN(MojoIpcSupport);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_APP_SERVICE_MANAGER_ENVIRONMENT_H_
+#endif  // CONTENT_APP_MOJO_IPC_SUPPORT_H_

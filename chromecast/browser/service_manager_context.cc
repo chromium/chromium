@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_manager/service_manager_context.h"
+#include "chromecast/browser/service_manager_context.h"
 
 #include <map>
 #include <memory>
@@ -26,18 +26,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "content/browser/system_connector_impl.h"
-#include "content/common/service_manager/service_manager_connection_impl.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "chromecast/browser/cast_content_browser_client.h"
+#include "chromecast/browser/service_manager_connection.h"
+#include "chromecast/browser/system_connector.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_data.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/gpu_service_registry.h"
 #include "content/public/browser/service_process_host.h"
-#include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/service_manager_connection.h"
 #include "content/public/common/service_names.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,22 +47,21 @@
 #include "services/service_manager/service_manager.h"
 #include "services/service_manager/service_process_host.h"
 #include "services/service_manager/service_process_launcher.h"
-#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
 
-namespace content {
+namespace chromecast {
 
 namespace {
 
 base::LazyInstance<std::unique_ptr<service_manager::Connector>>::Leaky
     g_io_thread_connector = LAZY_INSTANCE_INITIALIZER;
 
-const service_manager::Manifest& GetContentBrowserManifest() {
+const service_manager::Manifest& GetBrowserManifest() {
   static base::NoDestructor<service_manager::Manifest> manifest{
       service_manager::ManifestBuilder()
-          .WithServiceName(mojom::kBrowserServiceName)
-          .WithDisplayName("Content (browser process)")
+          .WithServiceName(content::mojom::kBrowserServiceName)
+          .WithDisplayName("Browser process")
           .WithOptions(service_manager::ManifestOptionsBuilder()
                            .CanConnectToInstancesInAnyGroup(true)
                            .CanConnectToInstancesWithAnyId(true)
@@ -80,29 +73,34 @@ const service_manager::Manifest& GetContentBrowserManifest() {
   return *manifest;
 }
 
-service_manager::Manifest GetContentSystemManifest() {
+service_manager::Manifest GetSystemManifest(
+    shell::CastContentBrowserClient* cast_content_browser_client) {
   // TODO(https://crbug.com/961869): This is a bit of a temporary hack so that
   // we can make the global service instance a singleton. For now we just mirror
   // the per-BrowserContext manifest (formerly also used for the global
   // singleton instance), sans packaged services, since those are only meant to
   // be tied to a BrowserContext. The per-BrowserContext service should go away
   // soon, and then this can be removed.
-  service_manager::Manifest manifest = GetContentBrowserManifest();
-  manifest.Amend(GetContentClient()
-                     ->browser()
-                     ->GetServiceManifestOverlay(mojom::kBrowserServiceName)
-                     .value_or(service_manager::Manifest()));
-  manifest.service_name = mojom::kSystemServiceName;
+  service_manager::Manifest manifest = GetBrowserManifest();
+  manifest.Amend(
+      cast_content_browser_client
+          ->GetServiceManifestOverlay(content::mojom::kBrowserServiceName)
+          .value_or(service_manager::Manifest()));
+  manifest.service_name = content::mojom::kSystemServiceName;
   manifest.packaged_services.clear();
   manifest.options.instance_sharing_policy =
       service_manager::Manifest::InstanceSharingPolicy::kSingleton;
   return manifest;
 }
 
-void DestroyConnectorOnIOThread() { g_io_thread_connector.Get().reset(); }
+void DestroyConnectorOnIOThread() {
+  g_io_thread_connector.Get().reset();
+}
 
 // A ServiceProcessHost implementation which delegates to Content-managed
-// processes via a new UtilityProcessHost.
+// processes, either via a new UtilityProcessHost to launch new service
+// processes, or the existing GpuProcessHost to run service instances in the GPU
+// process.
 class ContentChildServiceProcessHost
     : public service_manager::ServiceProcessHost {
  public:
@@ -117,7 +115,7 @@ class ContentChildServiceProcessHost
       LaunchCallback callback) override {
     // Start a new process for this service.
     mojo::PendingRemote<service_manager::mojom::Service> remote;
-    LaunchUtilityProcessServiceDeprecated(
+    content::LaunchUtilityProcessServiceDeprecated(
         identity.name(), display_name, sandbox_type,
         remote.InitWithNewPipeAndPassReceiver().PassPipe(),
         std::move(callback));
@@ -263,16 +261,14 @@ class ServiceManagerContext::InProcessServiceManagerContext
 
     mojo::Remote<service_manager::mojom::ProcessMetadata> metadata;
     service_manager_->RegisterService(
-        service_manager::Identity(mojom::kSystemServiceName,
+        service_manager::Identity(content::mojom::kSystemServiceName,
                                   service_manager::kSystemInstanceGroup,
                                   base::Token{}, base::Token::CreateRandom()),
         std::move(system_remote), metadata.BindNewPipeAndPassReceiver());
     metadata->SetPID(base::GetCurrentProcId());
   }
 
-  void ShutDownOnServiceManagerThread() {
-    service_manager_.reset();
-  }
+  void ShutDownOnServiceManagerThread() { service_manager_.reset(); }
 
   void StartServicesOnServiceManagerThread(
       std::vector<std::string> service_names) {
@@ -291,25 +287,27 @@ class ServiceManagerContext::InProcessServiceManagerContext
 };
 
 ServiceManagerContext::ServiceManagerContext(
+    shell::CastContentBrowserClient* cast_content_browser_client,
     scoped_refptr<base::SingleThreadTaskRunner>
         service_manager_thread_task_runner)
-    : service_manager_thread_task_runner_(
+    : cast_content_browser_client_(cast_content_browser_client),
+      service_manager_thread_task_runner_(
           std::move(service_manager_thread_task_runner)) {
   // The |service_manager_thread_task_runner_| must have been created before
   // starting the ServiceManager.
   DCHECK(service_manager_thread_task_runner_);
   std::vector<service_manager::Manifest> manifests;
-  manifests.push_back(GetContentBrowserManifest());
-  manifests.push_back(GetContentSystemManifest());
+  manifests.push_back(GetBrowserManifest());
+  manifests.push_back(GetSystemManifest(cast_content_browser_client_));
   for (auto& manifest : manifests) {
     base::Optional<service_manager::Manifest> overlay =
-        GetContentClient()->browser()->GetServiceManifestOverlay(
+        cast_content_browser_client_->GetServiceManifestOverlay(
             manifest.service_name);
     if (overlay)
       manifest.Amend(*overlay);
   }
   for (auto& extra_manifest :
-       GetContentClient()->browser()->GetExtraServiceManifests()) {
+       cast_content_browser_client_->GetExtraServiceManifests()) {
     manifests.emplace_back(std::move(extra_manifest));
   }
   in_process_context_ =
@@ -332,7 +330,7 @@ ServiceManagerContext::ServiceManagerContext(
       base::BindRepeating(&ServiceManagerContext::RunServiceInstance,
                           weak_ptr_factory_.GetWeakPtr()));
   in_process_context_->StartServices(
-      GetContentClient()->browser()->GetStartupServices());
+      cast_content_browser_client_->GetStartupServices());
 }
 
 ServiceManagerContext::~ServiceManagerContext() {
@@ -354,16 +352,16 @@ void ServiceManagerContext::ShutDown() {
 
 // static
 service_manager::Connector* ServiceManagerContext::GetConnectorForIOThread() {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
   return g_io_thread_connector.Get().get();
 }
 
 void ServiceManagerContext::RunServiceInstance(
     const service_manager::Identity& identity,
     mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
-  GetContentClient()->browser()->RunServiceInstance(identity, &receiver);
+  cast_content_browser_client_->RunServiceInstance(identity, &receiver);
   DLOG_IF(ERROR, receiver) << "Unhandled service request for \""
                            << identity.name() << "\"";
 }
 
-}  // namespace content
+}  // namespace chromecast

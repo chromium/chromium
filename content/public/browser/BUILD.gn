@@ -347,7 +347,6 @@ source_set("browser_sources") {
     "supported_delegations.cc",
     "supported_delegations.h",
     "swap_metrics_driver.h",
-    "system_connector.h",
     "touch_selection_controller_client_manager.h",
     "trace_uploader.h",
     "tracing_controller.h",

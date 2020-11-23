@@ -88,7 +88,7 @@
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"  // nogncheck
 #include "content/app/content_main_runner_impl.h"
 #include "content/app/mojo/mojo_init.h"
-#include "content/app/service_manager_environment.h"
+#include "content/app/mojo_ipc_support.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/common/content_paths.h"
 #include "testing/android/native_test/native_browser_test_support.h"
@@ -538,10 +538,10 @@ void BrowserTestBase::SetUp() {
 
   auto discardable_shared_memory_manager =
       std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();
-  auto service_manager_env = std::make_unique<ServiceManagerEnvironment>(
-      BrowserTaskExecutor::CreateIOThread());
+  auto ipc_support =
+      std::make_unique<MojoIpcSupport>(BrowserTaskExecutor::CreateIOThread());
   std::unique_ptr<StartupDataImpl> startup_data =
-      service_manager_env->CreateBrowserStartupData();
+      ipc_support->CreateBrowserStartupData();
 
   // ContentMain would normally call RunProcess() on the delegate and fallback
   // to BrowserMain() if it did not run it (or equivalent) itself. On Android,
@@ -585,7 +585,7 @@ void BrowserTestBase::SetUp() {
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
     // Shutting these down will block the thread.
     ShutDownNetworkService();
-    service_manager_env.reset();
+    ipc_support.reset();
     discardable_shared_memory_manager.reset();
   }
 

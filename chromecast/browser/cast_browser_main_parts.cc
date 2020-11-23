@@ -45,6 +45,8 @@
 #include "chromecast/browser/media/media_caps_impl.h"
 #include "chromecast/browser/metrics/cast_browser_metrics.h"
 #include "chromecast/browser/service_connector.h"
+#include "chromecast/browser/service_manager_connection.h"
+#include "chromecast/browser/service_manager_context.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/base/key_systems_common.h"
@@ -404,6 +406,10 @@ CastBrowserMainParts::CastBrowserMainParts(
   DCHECK(cast_content_browser_client);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   AddDefaultCommandLineSwitches(command_line);
+
+  service_manager_context_ = std::make_unique<ServiceManagerContext>(
+      cast_content_browser_client_, content::GetIOThreadTaskRunner({}));
+  ServiceManagerConnection::GetForProcess()->Start();
 }
 
 CastBrowserMainParts::~CastBrowserMainParts() {
@@ -776,6 +782,8 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
   DeregisterKillOnAlarm();
 #endif  // !defined(OS_FUCHSIA)
 #endif
+
+  service_manager_context_.reset();
 }
 
 void CastBrowserMainParts::PostCreateThreads() {

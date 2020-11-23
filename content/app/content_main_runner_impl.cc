@@ -50,7 +50,7 @@
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/app/mojo/mojo_init.h"
-#include "content/app/service_manager_environment.h"
+#include "content/app/mojo_ipc_support.h"
 #include "content/browser/browser_main.h"
 #include "content/browser/browser_process_sub_thread.h"
 #include "content/browser/browser_thread_impl.h"
@@ -592,11 +592,11 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
 #endif  // defined(OS_MAC)
 
 #if defined(OS_ANDROID)
-  // Now that mojo's core is initialized (by service manager's Main()), we can
-  // enable tracing. Note that only Android builds have the ctor/dtor handlers
-  // set up to use trace events at this point (because AtExitManager is already
-  // set up when the library is loaded). Other platforms enable tracing below,
-  // after the initialization of AtExitManager.
+  // Now that mojo's core is initialized we can enable tracing. Note that only
+  // Android builds have the ctor/dtor handlers set up to use trace events at
+  // this point (because AtExitManager is already set up when the library is
+  // loaded). Other platforms enable tracing below, after the initialization of
+  // AtExitManager.
   tracing::EnableStartupTracingIfNeeded();
 
   TRACE_EVENT0("startup,benchmark,rail", "ContentMainRunnerImpl::Initialize");
@@ -818,7 +818,7 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   if (process_type.empty()) {
     // The sandbox host needs to be initialized before forking a thread to
-    // start the ServiceManager, and after setting up the sandbox and invoking
+    // start IPC support, and after setting up the sandbox and invoking
     // SandboxInitialized().
     InitializeZygoteSandboxForBrowserProcess(
         *base::CommandLine::ForCurrentProcess());
@@ -836,7 +836,7 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   return -1;
 }
 
-int ContentMainRunnerImpl::Run(bool start_service_manager_only) {
+int ContentMainRunnerImpl::Run(bool start_minimal_browser) {
   DCHECK(is_initialized_);
   DCHECK(!is_shutdown_);
   const base::CommandLine& command_line =
@@ -882,21 +882,20 @@ int ContentMainRunnerImpl::Run(bool start_service_manager_only) {
   RegisterMainThreadFactories();
 
   if (process_type.empty())
-    return RunServiceManager(main_params, start_service_manager_only);
+    return RunBrowser(main_params, start_minimal_browser);
 
   return RunOtherNamedProcessTypeMain(process_type, main_params, delegate_);
 }
 
-int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
-                                             bool start_service_manager_only) {
-  TRACE_EVENT_INSTANT0("startup",
-                       "ContentMainRunnerImpl::RunServiceManager (begin)",
+int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
+                                      bool start_minimal_browser) {
+  TRACE_EVENT_INSTANT0("startup", "ContentMainRunnerImpl::RunBrowser(begin)",
                        TRACE_EVENT_SCOPE_THREAD);
   if (is_browser_main_loop_started_)
     return -1;
 
-  bool should_start_service_manager_only = start_service_manager_only;
-  if (!service_manager_environment_) {
+  bool should_start_minimal_browser = start_minimal_browser;
+  if (!mojo_ipc_support_) {
     if (delegate_->ShouldCreateFeatureList()) {
       // This is intentionally leaked since it needs to live for the duration
       // of the process and there's no benefit in cleaning it up at exit.
@@ -957,7 +956,7 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
     SetupCpuAffinityPollingOnce();
 #endif
 
-    if (should_start_service_manager_only)
+    if (should_start_minimal_browser)
       ForceInProcessNetworkService(true);
 
     discardable_shared_memory_manager_ =
@@ -968,8 +967,8 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
     base::PowerMonitor::Initialize(
         std::make_unique<base::PowerMonitorDeviceSource>());
 
-    service_manager_environment_ = std::make_unique<ServiceManagerEnvironment>(
-        BrowserTaskExecutor::CreateIOThread());
+    mojo_ipc_support_ =
+        std::make_unique<MojoIpcSupport>(BrowserTaskExecutor::CreateIOThread());
 
     const base::CommandLine& command_line =
         *base::CommandLine::ForCurrentProcess();
@@ -982,13 +981,12 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
           invitation.ExtractMessagePipe(0));
     }
 
-    download::SetIOTaskRunner(
-        service_manager_environment_->io_thread()->task_runner());
+    download::SetIOTaskRunner(mojo_ipc_support_->io_thread()->task_runner());
 
     InitializeBrowserMemoryInstrumentationClient();
 
 #if defined(OS_ANDROID)
-    if (start_service_manager_only) {
+    if (start_minimal_browser) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&MinimalBrowserStartupComplete));
     }
@@ -998,14 +996,14 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
   // Enable PCScan once we are certain that FeatureList was initialized.
   EnablePCScanForMallocPartitionsIfNeeded();
 
-  if (should_start_service_manager_only) {
-    DVLOG(0) << "Chrome is running in ServiceManager only mode.";
+  if (should_start_minimal_browser) {
+    DVLOG(0) << "Chrome is running in minimal browser mode.";
     return -1;
   }
 
   DVLOG(0) << "Chrome is running in full browser mode.";
   is_browser_main_loop_started_ = true;
-  startup_data_ = service_manager_environment_->CreateBrowserStartupData();
+  startup_data_ = mojo_ipc_support_->CreateBrowserStartupData();
   main_params.startup_data = startup_data_.get();
   return RunBrowserProcessMain(main_params, delegate_);
 }
@@ -1014,7 +1012,7 @@ void ContentMainRunnerImpl::Shutdown() {
   DCHECK(is_initialized_);
   DCHECK(!is_shutdown_);
 
-  service_manager_environment_.reset();
+  mojo_ipc_support_.reset();
 
   if (completed_basic_startup_) {
     const base::CommandLine& command_line =
@@ -1025,7 +1023,6 @@ void ContentMainRunnerImpl::Shutdown() {
     delegate_->ProcessExiting(process_type);
   }
 
-  service_manager_environment_.reset();
   // The BrowserTaskExecutor needs to be destroyed before |exit_manager_|.
   BrowserTaskExecutor::Shutdown();
 

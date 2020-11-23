@@ -43,8 +43,6 @@ public_app_shared_deps = [
   "//base:i18n",
   "//content:export",
   "//content/public/common:common_sources",
-  "//services/service_manager",
-  "//services/service_manager/public/cpp",
 ]
 
 if (is_component_build) {

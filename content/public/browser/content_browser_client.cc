@@ -47,7 +47,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "services/service_manager/public/cpp/manifest.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -716,24 +715,6 @@ bool ContentBrowserClient::IsRendererCodeIntegrityEnabled() {
 }
 
 #endif  // defined(OS_WIN)
-
-void ContentBrowserClient::RunServiceInstance(
-    const service_manager::Identity& identity,
-    mojo::PendingReceiver<service_manager::mojom::Service>* receiver) {}
-
-base::Optional<service_manager::Manifest>
-ContentBrowserClient::GetServiceManifestOverlay(base::StringPiece name) {
-  return base::nullopt;
-}
-
-std::vector<service_manager::Manifest>
-ContentBrowserClient::GetExtraServiceManifests() {
-  return std::vector<service_manager::Manifest>();
-}
-
-std::vector<std::string> ContentBrowserClient::GetStartupServices() {
-  return std::vector<std::string>();
-}
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 ContentBrowserClient::CreateURLLoaderThrottles(

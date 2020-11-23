@@ -36,7 +36,7 @@ class DiscardableSharedMemoryManager;
 namespace content {
 class ContentClient;
 class ContentMainDelegate;
-class ServiceManagerEnvironment;
+class MojoIpcSupport;
 struct ContentMainParams;
 
 class ContentMainRunnerImpl : public ContentMainRunner {
@@ -50,12 +50,12 @@ class ContentMainRunnerImpl : public ContentMainRunner {
 
   // ContentMainRunner:
   int Initialize(const ContentMainParams& params) override;
-  int Run(bool start_service_manager_only) override;
+  int Run(bool start_minimal_browser) override;
   void Shutdown() override;
 
  private:
-  int RunServiceManager(MainFunctionParams& main_function_params,
-                        bool start_service_manager_only);
+  int RunBrowser(MainFunctionParams& main_function_params,
+                 bool start_minimal_browser);
 
   bool is_browser_main_loop_started_ = false;
 
@@ -65,7 +65,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
   std::unique_ptr<StartupDataImpl> startup_data_;
-  std::unique_ptr<ServiceManagerEnvironment> service_manager_environment_;
+  std::unique_ptr<MojoIpcSupport> mojo_ipc_support_;
 
   // True if the runner has been initialized.
   bool is_initialized_ = false;

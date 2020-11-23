@@ -336,13 +336,6 @@ class CONTENT_EXPORT BrowserMainLoop {
       gpu_data_manager_visual_proxy_;
 #endif
 
-  // If provided to the BrowserMainLoop (see StartupDataImpl), this closure
-  // is run during shutdown, prior to IO thread destruction, and should do
-  // whatever work is necessary to tear down the ServiceManager if one is
-  // running. Must be provided if a ServiceManager is initialized and running on
-  // the IO thread.
-  base::OnceClosure service_manager_shutdown_closure_;
-
   // Members initialized in |BrowserThreadsStarted()| --------------------------
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
   std::unique_ptr<MediaKeysListenerManagerImpl> media_keys_listener_manager_;

@@ -125,17 +125,9 @@ class TrustedHeaderClient;
 }  // namespace network
 
 namespace service_manager {
-class Identity;
-struct Manifest;
-class Service;
-
 template <typename...>
 class BinderRegistryWithArgs;
 using BinderRegistry = BinderRegistryWithArgs<>;
-
-namespace mojom {
-class Service;
-}  // namespace mojom
 }  // namespace service_manager
 
 namespace net {
@@ -1086,36 +1078,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void BindHostReceiverForRenderer(
       RenderProcessHost* render_process_host,
       mojo::GenericPendingReceiver receiver) {}
-
-  // Handles a service instance request for a new service instance with identity
-  // |identity|. If the client knows how to run the named service, it should
-  // bind |*receiver| accordingly, in the browser process.
-  //
-  // Note that this runs on the main thread, so if a service may need to start
-  // and run on the IO thread while the main thread is blocking on something,
-  // the service request should instead be handled by
-  // |RunServiceInstanceOnIOThread| below.
-  virtual void RunServiceInstance(
-      const service_manager::Identity& identity,
-      mojo::PendingReceiver<service_manager::mojom::Service>* receiver);
-
-  // Allows the embedder to amend service manifests for existing services.
-  // Specifically, the sets of exposed and required capabilities, interface
-  // filter capabilities (deprecated), packaged services, and preloaded files
-  // will be taken from the returned Manifest and appended to those of the
-  // existing Manifest for the service named |name|.
-  //
-  // If no overlay is provided for the service, this returns |base::nullopt|.
-  virtual base::Optional<service_manager::Manifest> GetServiceManifestOverlay(
-      base::StringPiece name);
-
-  // Allows the embedder to provide extra service manifests to be registered
-  // with the service manager context.
-  virtual std::vector<service_manager::Manifest> GetExtraServiceManifests();
-
-  // Allows the embedder to have a list of services started after the
-  // in-process Service Manager has been initialized.
-  virtual std::vector<std::string> GetStartupServices();
 
   // Allows to override the visibility state of a RenderFrameHost.
   // |visibility_state| should not be null. It will only be set if needed.

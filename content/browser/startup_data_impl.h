@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "content/browser/browser_process_sub_thread.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/startup_data.h"
@@ -22,7 +21,6 @@ struct CONTENT_EXPORT StartupDataImpl : public StartupData {
 
   std::unique_ptr<BrowserProcessSubThread> io_thread;
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support;
-  base::OnceClosure service_manager_shutdown_closure;
 };
 
 }  // namespace content

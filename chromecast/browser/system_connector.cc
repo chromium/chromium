@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/system_connector_impl.h"
+#include "chromecast/browser/system_connector.h"
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace content {
+namespace chromecast {
 
 namespace {
 
@@ -26,13 +26,11 @@ GetConnectorStorage() {
 
 void BindReceiverOnMainThread(
     mojo::PendingReceiver<service_manager::mojom::Connector> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* main_thread_connector = GetSystemConnector();
   DCHECK(main_thread_connector)
       << "GetSystemConnector() called on background thread with no system "
-      << "Connector set on the main thread. If this is a unit test "
-      << "environment, consider calling SetSystemConnectorForTesting in test "
-         "setup.";
+      << "Connector set on the main thread.";
   main_thread_connector->BindConnectorReceiver(std::move(receiver));
 }
 
@@ -40,14 +38,15 @@ void BindReceiverOnMainThread(
 
 service_manager::Connector* GetSystemConnector() {
   auto& storage = GetConnectorStorage();
-  if (!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-      BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+  if (!content::BrowserThread::IsThreadInitialized(
+          content::BrowserThread::UI) ||
+      content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     return storage.GetValuePointer();
   }
 
   if (!storage) {
     mojo::PendingRemote<service_manager::mojom::Connector> remote;
-    GetUIThreadTaskRunner({})->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&BindReceiverOnMainThread,
                                   remote.InitWithNewPipeAndPassReceiver()));
     storage.emplace(std::move(remote));
@@ -66,4 +65,4 @@ void SetSystemConnector(std::unique_ptr<service_manager::Connector> connector) {
   GetConnectorStorage().emplace(std::move(remote));
 }
 
-}  // namespace content
+}  // namespace chromecast

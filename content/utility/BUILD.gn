@@ -49,7 +49,6 @@ source_set("utility") {
     "//services/data_decoder:lib",
     "//services/data_decoder/public/cpp",
     "//services/network:network_service",
-    "//services/service_manager",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/shape_detection:lib",

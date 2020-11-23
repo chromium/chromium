@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_SYSTEM_CONNECTOR_H_
-#define CONTENT_PUBLIC_BROWSER_SYSTEM_CONNECTOR_H_
+#ifndef CHROMECAST_BROWSER_SYSTEM_CONNECTOR_H_
+#define CHROMECAST_BROWSER_SYSTEM_CONNECTOR_H_
 
-#include "content/common/content_export.h"
+#include <memory>
+
 #include "services/service_manager/public/cpp/connector.h"
 
-namespace content {
+namespace chromecast {
 
 // Returns a Connector which can be used to connect to service interfaces from
 // the browser process. May return null in unit testing environments.
-// The system Connector can be overridden for tests using the
-// |SetSystemConnectorForTesting()| below.
 //
 // This function is safe to call from any thread, but the returned pointer is
 // different on each thread and is NEVER safe to retain or pass across threads.
-CONTENT_EXPORT service_manager::Connector* GetSystemConnector();
+service_manager::Connector* GetSystemConnector();
 
-}  // namespace content
+void SetSystemConnector(std::unique_ptr<service_manager::Connector> connector);
 
-#endif  // CONTENT_PUBLIC_BROWSER_SYSTEM_CONNECTOR_H_
+}  // namespace chromecast
+
+#endif  // CHROMECAST_BROWSER_SYSTEM_CONNECTOR_H_

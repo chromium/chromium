@@ -561,8 +561,6 @@ void BrowserMainLoop::Init() {
     // resets it).
     io_thread_ = std::move(startup_data->io_thread);
     mojo_ipc_support_ = std::move(startup_data->mojo_ipc_support);
-    service_manager_shutdown_closure_ =
-        std::move(startup_data->service_manager_shutdown_closure);
   }
 
   parts_ = GetContentClient()->browser()->CreateBrowserMainParts(parameters_);
@@ -1109,9 +1107,6 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
   if (BrowserGpuChannelHostFactory::instance())
     BrowserGpuChannelHostFactory::instance()->CloseChannel();
 
-  // Shutdown the Service Manager and IPC.
-  if (service_manager_shutdown_closure_)
-    std::move(service_manager_shutdown_closure_).Run();
   mojo_ipc_support_.reset();
 
   if (save_file_manager_)
