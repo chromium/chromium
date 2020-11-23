@@ -509,6 +509,7 @@ public class VideoCaptureCamera
     public void getPhotoCapabilitiesAsync(long callbackId) {
         final android.hardware.Camera.Parameters parameters = getCameraParameters(mCamera);
         if (parameters == null) {
+            mCamera = null;
             VideoCaptureJni.get().onGetPhotoCapabilitiesReply(
                     mNativeVideoCaptureDeviceAndroid, VideoCaptureCamera.this, callbackId, null);
             return;
@@ -695,6 +696,7 @@ public class VideoCaptureCamera
             int fillLightMode, boolean hasTorch, boolean torch, double colorTemperature) {
         android.hardware.Camera.Parameters parameters = getCameraParameters(mCamera);
         if (parameters == null) {
+            mCamera = null;
             return;
         }
 
@@ -846,12 +848,14 @@ public class VideoCaptureCamera
         }
         mPreviewParameters = getCameraParameters(mCamera);
         if (mPreviewParameters == null) {
+            mCamera = null;
             notifyTakePhotoError(callbackId);
             return;
         }
 
         android.hardware.Camera.Parameters photoParameters = getCameraParameters(mCamera);
         if (photoParameters == null) {
+            mCamera = null;
             notifyTakePhotoError(callbackId);
             return;
         }
