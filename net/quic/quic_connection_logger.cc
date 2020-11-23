@@ -230,18 +230,6 @@ void QuicConnectionLogger::OnPacketSent(
                              sent_time);
 }
 
-void QuicConnectionLogger::OnPacketSent(
-    const quic::SerializedPacket& serialized_packet,
-    quic::TransmissionType transmission_type,
-    quic::QuicTime sent_time) {
-  OnPacketSent(serialized_packet.packet_number,
-               serialized_packet.encrypted_length,
-               serialized_packet.has_crypto_handshake != quic::NOT_HANDSHAKE,
-               transmission_type, serialized_packet.encryption_level,
-               serialized_packet.retransmittable_frames,
-               serialized_packet.nonretransmittable_frames, sent_time);
-}
-
 void QuicConnectionLogger::OnPacketLoss(
     quic::QuicPacketNumber lost_packet_number,
     quic::EncryptionLevel encryption_level,

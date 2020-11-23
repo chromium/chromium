@@ -563,18 +563,6 @@ void QuicEventLogger::OnPacketSent(
   });
 }
 
-void QuicEventLogger::OnPacketSent(
-    const quic::SerializedPacket& serialized_packet,
-    quic::TransmissionType transmission_type,
-    quic::QuicTime sent_time) {
-  OnPacketSent(serialized_packet.packet_number,
-               serialized_packet.encrypted_length,
-               serialized_packet.has_crypto_handshake != quic::NOT_HANDSHAKE,
-               transmission_type, serialized_packet.encryption_level,
-               serialized_packet.retransmittable_frames,
-               serialized_packet.nonretransmittable_frames, sent_time);
-}
-
 void QuicEventLogger::OnIncomingAck(
     quic::QuicPacketNumber ack_packet_number,
     quic::EncryptionLevel /*ack_decrypted_level*/,
