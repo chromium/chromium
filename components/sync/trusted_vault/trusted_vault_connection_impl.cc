@@ -35,12 +35,22 @@ void AssignBytesToProtoString(base::span<const uint8_t> bytes,
 
 void ProcessRegisterDeviceResponse(
     TrustedVaultConnection::RegisterAuthenticationFactorCallback callback,
-    bool success,
+    TrustedVaultRequest::HttpStatus http_status,
     const std::string& response_body) {
-  // TODO(crbug.com/1113598): distinguish kLocalDataObsolete and kOtherError
-  // (based on http error code?).
-  std::move(callback).Run(success ? TrustedVaultRequestStatus::kSuccess
-                                  : TrustedVaultRequestStatus::kOtherError);
+  TrustedVaultRequestStatus registration_status;
+  switch (http_status) {
+    case TrustedVaultRequest::HttpStatus::kSuccess:
+      registration_status = TrustedVaultRequestStatus::kSuccess;
+      break;
+    case TrustedVaultRequest::HttpStatus::kOtherError:
+      registration_status = TrustedVaultRequestStatus::kOtherError;
+      break;
+    case TrustedVaultRequest::HttpStatus::kBadRequest:
+      // Bad request response indicates that client data is outdated (e.g.
+      // locally available trusted vault key is not the recent one).
+      registration_status = TrustedVaultRequestStatus::kLocalDataObsolete;
+  }
+  std::move(callback).Run(registration_status);
 }
 
 std::vector<uint8_t> ComputeWrappedKey(

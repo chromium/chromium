@@ -227,6 +227,29 @@ TEST_F(TrustedVaultConnectionImplTest,
       RespondToJoinSecurityDomainsRequest(net::HTTP_INTERNAL_SERVER_ERROR));
 }
 
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleFailedJoinSecurityDomainsRequestWithBadRequestStatus) {
+  std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
+  ASSERT_THAT(key_pair, NotNull());
+
+  base::MockCallback<
+      TrustedVaultConnection::RegisterAuthenticationFactorCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RegisterAuthenticationFactor(
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKey,
+          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
+          callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  // In particular, HTTP_BAD_REQUEST indicates that
+  // |last_trusted_vault_key_version| is not actually the last on the server
+  // side.
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kLocalDataObsolete)));
+  EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(net::HTTP_BAD_REQUEST));
+}
+
 TEST_F(
     TrustedVaultConnectionImplTest,
     ShouldHandleAccessTokenFetchingFailureWhenRegisteringAuthenticationFactor) {

@@ -100,7 +100,7 @@ void TrustedVaultRequest::OnAccessTokenFetched(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::Optional<signin::AccessTokenInfo> access_token_info) {
   if (!access_token_info.has_value()) {
-    RunCompletionCallbackAndMaybeDestroySelf(/*success=*/false,
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,
                                              /*response_body=*/std::string());
     return;
   }
@@ -120,12 +120,21 @@ void TrustedVaultRequest::OnURLLoadComplete(
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     http_response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-  if (http_response_code != net::HTTP_OK &&
-      http_response_code != net::HTTP_NO_CONTENT) {
-    RunCompletionCallbackAndMaybeDestroySelf(/*success=*/false, std::string());
+  if (http_response_code == net::HTTP_BAD_REQUEST) {
+    // Bad request can indicate client-side data being obsolete, distinguish it
+    // to allow API users to decide how to handle.
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kBadRequest,
+                                             std::string());
     return;
   }
-  RunCompletionCallbackAndMaybeDestroySelf(/*success=*/true, *response_body);
+  if (http_response_code != net::HTTP_OK &&
+      http_response_code != net::HTTP_NO_CONTENT) {
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,
+                                             std::string());
+    return;
+  }
+  RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kSuccess,
+                                           *response_body);
 }
 
 std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
@@ -158,9 +167,9 @@ std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
 }
 
 void TrustedVaultRequest::RunCompletionCallbackAndMaybeDestroySelf(
-    bool success,
+    HttpStatus status,
     const std::string& response_body) {
-  std::move(completion_callback_).Run(success, response_body);
+  std::move(completion_callback_).Run(status, response_body);
 }
 
 }  // namespace syncer
