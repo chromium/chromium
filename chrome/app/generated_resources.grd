@@ -8046,11 +8046,6 @@ the Bookmarks menu.">
       <message name="IDS_PLUGIN_OUTDATED_PROMPT" desc="Infobar message when an outdated plugin was disabled">
         <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> was blocked because it is out of date
       </message>
-      <message name="IDS_PLUGIN_DEPRECATED_PROMPT" desc="Infobar message when an deprecated plugin was disabled">
-        <ph name="PLUGIN_NAME">
-          $1<ex>Flash</ex>
-        </ph> was blocked because it is deprecated
-      </message>
       <message name="IDS_PLUGIN_ENABLE_TEMPORARILY" desc="Infobar button to run a blocked outdated plugin">
         Run this time
       </message>
