@@ -22,7 +22,6 @@ class AudioFocusWebContentsObserver
 
  private:
   friend class content::WebContentsUserData<AudioFocusWebContentsObserver>;
-  friend class AudioFocusWebContentsObserver;
   friend class AudioFocusWebContentsObserverBrowserTest;
 
   explicit AudioFocusWebContentsObserver(content::WebContents*);
