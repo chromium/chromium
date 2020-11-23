@@ -124,13 +124,6 @@ enum NotificationType {
   // The details are none and the source is the new profile.
   NOTIFICATION_PROFILE_ADDED,
 
-  // Use KeyedServiceShutdownNotifier instead this notification type (you did
-  // read the comment at the top of the file, didn't you?).
-  // Sent before a Profile is destroyed. This notification is sent both for
-  // normal and OTR profiles.
-  // The details are none and the source is a Profile*.
-  NOTIFICATION_PROFILE_DESTROYED,
-
   // Printing ----------------------------------------------------------------
 
   // Notification from PrintJob that an event occurred. It can be that a page

@@ -755,13 +755,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, Notifications) {
 
   // Destroy the off-the-record profile.
   {
-    content::WindowedNotificationObserver profile_destroyed_observer(
-        chrome::NOTIFICATION_PROFILE_DESTROYED,
-        content::Source<Profile>(otr_profile));
-
+    ProfileDestructionWatcher watcher;
+    watcher.Watch(otr_profile);
     if (profile->HasPrimaryOTRProfile()) {
       profile->DestroyOffTheRecordProfile(profile->GetPrimaryOTRProfile());
-      profile_destroyed_observer.Wait();
+      watcher.WaitForDestruction();
     }
 
     EXPECT_FALSE(profile->HasPrimaryOTRProfile());
@@ -769,12 +767,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, Notifications) {
 
   // Destroy the regular profile.
   {
-    content::WindowedNotificationObserver profile_destroyed_observer(
-        chrome::NOTIFICATION_PROFILE_DESTROYED,
-        content::Source<Profile>(profile.get()));
-
+    ProfileDestructionWatcher watcher;
+    watcher.Watch(profile.get());
     profile.reset();
-    profile_destroyed_observer.Wait();
+    watcher.WaitForDestruction();
   }
 
   // Pending tasks related to |profile| could depend on |temp_dir|. We need to

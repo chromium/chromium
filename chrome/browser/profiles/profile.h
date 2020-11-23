@@ -504,9 +504,9 @@ class Profile : public content::BrowserContext {
   // This method is virtual in order to be overridden for tests.
   virtual bool IsNewProfile() const;
 
-  // Send NOTIFICATION_PROFILE_DESTROYED for this Profile, if it has not
-  // already been sent. It is necessary because most Profiles are destroyed by
-  // ProfileDestroyer, but in tests, some are not.
+  // Notify observers of |OnProfileWillBeDestroyed| for this profile, if it has
+  // not already been called. It is necessary because most Profiles are
+  // destroyed by ProfileDestroyer, but in tests, some are not.
   void MaybeSendDestroyedNotification();
 
 #if !defined(OS_ANDROID)

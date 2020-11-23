@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -484,11 +483,6 @@ void Profile::MaybeSendDestroyedNotification() {
 
     for (auto& observer : observers_)
       observer.OnProfileWillBeDestroyed(this);
-
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_PROFILE_DESTROYED,
-        content::Source<Profile>(this),
-        content::NotificationService::NoDetails());
   }
 }
 
