@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">సైట్‌లు</translation>
 <translation id="4594952190837476234">ఈ ఆఫ్‌లైన్ పేజీ <ph name="CREATION_TIME" />కి చెందినది మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
 <translation id="4605958867780575332">ఈ అంశం తీసివేయబడింది: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">తర్వాత కోసం పేజీలను సేవ్ చేసి, ఒక రిమైండర్‌ను పొందండి</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించు</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 చోరీకి గురైన పాస్‌వర్డ్}other{# చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
 <translation id="7786595606756654269">వెబ్‌లో సెర్చ్ చేయడం కోసం, అలాగే మీరు తెరిచిన సైట్‌లతో ఎంగేజ్ అయ్యి ఉండటం కోసం Google Assistant మెరుగైన వాయిస్ అనుభవాన్ని అందిస్తుంది. Google Assistant మీరు దానితో ఉపయోగించే సైట్ల URL, అలాగే కంటెంట్‌లను అందుకుంటుంది.</translation>
+<translation id="7790349552933995572">హోమ్ స్క్రీన్</translation>
 <translation id="7791543448312431591">జోడించు</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ట్యాబ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
@@ -1173,7 +1175,7 @@
 <translation id="9204836675896933765">1 ఫైల్ మిగిలి ఉంది</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">కాల్‌లను చేయడం సాధ్యం కాదు</translation>
-<translation id="9219103736887031265">చిత్రాలు</translation>
+<translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="926205370408745186">డిజిటల్ సంక్షేమం నుండి మీ Chrome కార్యకలాపాన్ని తీసివేస్తుంది</translation>
 <translation id="927968626442779827">Google Chromeలోని లైట్ మోడ్‌ను ఉపయోగించండి</translation>
 <translation id="932327136139879170">హోమ్</translation>

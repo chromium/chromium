@@ -11,7 +11,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
-<translation id="1398634363027580500">HTTPS 延迟非常长</translation>
+<translation id="1398634363027580500">HTTPS 延迟非常高</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1478594628797167447">扫描器</translation>
@@ -148,7 +148,7 @@
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7648838807254605802">HTTPS 延迟较长</translation>
+<translation id="7648838807254605802">HTTPS 延迟较高</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
 <translation id="7805768142964895445">状态</translation>
