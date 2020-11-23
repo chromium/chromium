@@ -286,6 +286,8 @@ name=@@PACKAGE@@
 enabled=1
 autorefresh=1
 baseurl=$REPOCONFIG/$DEFAULT_ARCH
+gpgcheck=1
+gpgkey=https://dl.google.com/linux/linux_signing_key.pub
 type=rpm-md
 keeppackages=0
 REPOCONTENT
