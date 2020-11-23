@@ -19,6 +19,9 @@ TRAILING_WHITESPACE = re.compile('.*?([ \t]+)$')
 # Matches all non-empty strings that contain no whitespaces.
 NO_WHITESPACE = re.compile('[^\s]+$')
 
+SOURCE_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
 # Convert a 'type' to the schema types it may be converted to.
 # The 'dict' type represents structured JSON data, and can be converted
 # to an 'object' or an 'array'.
@@ -628,6 +631,29 @@ class PolicyTemplateChecker(object):
                             container_name='item',
                             identifier=policy.get('name'))
 
+  def _CheckOwners(self, policy):
+    owners = self._CheckContains(policy, 'owners', list)
+    if not owners:
+      return
+
+    for owner in owners:
+      FILE_PREFIX = 'file://'
+      if owner.startswith(FILE_PREFIX):
+        file_path = owner[len(FILE_PREFIX):]
+        full_file_path = os.path.join(SOURCE_DIR, file_path)
+        if not (os.path.exists(full_file_path)):
+          self._Error(
+              'Policy %s lists non-existant owners files, %s, as an owner. '
+              'Please either add the owners file or remove it from this list.' %
+              (policy.get('name'), full_file_path))
+      elif '@' in owner:
+        # TODO(pastarmovj): Validate the email is a committer's.
+        pass
+      else:
+        self._Error('Policy %s has an unexpected owner, %s, all owners should '
+                    'be committer emails or file:// paths' %
+                    (policy.get('name'), owner))
+
   def _CheckPolicy(self, policy, is_in_group, policy_ids, deleted_policy_ids,
                    current_version):
     if not isinstance(policy, dict):
@@ -734,9 +760,7 @@ class PolicyTemplateChecker(object):
       self._AddPolicyID(id, policy_ids, policy, deleted_policy_ids)
 
       # Each policy must have an owner.
-      # TODO(pastarmovj): Verify that each owner is either an OWNERS file or an
-      # email of a committer.
-      self._CheckContains(policy, 'owners', list)
+      self._CheckOwners(policy)
 
       # Each policy must have a tag list.
       self._CheckContains(policy, 'tags', list)

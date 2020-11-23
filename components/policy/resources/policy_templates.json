@@ -3290,7 +3290,7 @@
     },
     {
       'name': 'AutofillAddressEnabled',
-      'owners': ['file://src/components/autofill/OWNERS'],
+      'owners': ['file://components/autofill/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -6158,7 +6158,7 @@
     },
     {
       'name': 'DefaultFileSystemReadGuardSetting',
-      'owners': ['mek@chromium.org', 'file://content/browser/native_file_system/OWNERS'],
+      'owners': ['mek@chromium.org', 'file://content/browser/file_system_access/OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -6192,7 +6192,7 @@
     },
     {
       'name': 'DefaultFileSystemWriteGuardSetting',
-      'owners': ['mek@chromium.org', 'file://content/browser/native_file_system/OWNERS'],
+      'owners': ['mek@chromium.org', 'file://content/browser/file_system_access/OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -6226,7 +6226,7 @@
     },
     {
       'name': 'FileSystemReadAskForUrls',
-      'owners': ['mek@chromium.org', 'file://content/browser/native_file_system/OWNERS'],
+      'owners': ['mek@chromium.org', 'file://content/browser/file_system_access/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6251,7 +6251,7 @@
     },
     {
       'name': 'FileSystemReadBlockedForUrls',
-      'owners': ['mek@chromium.org', 'file://content/browser/native_file_system/OWNERS'],
+      'owners': ['mek@chromium.org', 'file://content/browser/file_system_access/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6276,7 +6276,7 @@
     },
     {
       'name': 'FileSystemWriteAskForUrls',
-      'owners': ['mek@chromium.org', 'file://content/browser/native_file_system/OWNERS'],
+      'owners': ['mek@chromium.org', 'file://content/browser/file_system_access/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6301,7 +6301,7 @@
     },
     {
       'name': 'FileSystemWriteBlockedForUrls',
-      'owners': ['mek@chromium.org', 'file://content/browser/native_file_system/OWNERS'],
+      'owners': ['mek@chromium.org', 'file://content/browser/file_system_access/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8651,7 +8651,7 @@
     },
     {
       'name': 'DisableSSLRecordSplitting',
-      'owners': ['file://src/crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:18-46', 'chrome_os:18-46'],
@@ -8670,7 +8670,7 @@
     },
     {
       'name': 'EnableOnlineRevocationChecks',
-      'owners': ['file://src/net/cert/OWNERS'],
+      'owners': ['file://net/cert/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:19-', 'chrome_os:19-'],
@@ -8690,7 +8690,7 @@
     },
     {
       'name': 'RequireOnlineRevocationChecksForLocalAnchors',
-      'owners': ['file://src/net/cert/OWNERS'],
+      'owners': ['file://net/cert/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:30-', 'chrome.linux:30-', 'chrome.win:30-'],
@@ -8740,7 +8740,7 @@
     },
     {
       'name': 'EnableCommonNameFallbackForLocalAnchors',
-      'owners': ['file://src/net/cert/OWNERS'],
+      'owners': ['file://net/cert/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:58-65', 'chrome_os:58-65', 'android:58-65'],
@@ -8761,7 +8761,7 @@
     },
     {
       'name': 'EnableSymantecLegacyInfrastructure',
-      'owners': ['file://src/net/cert/OWNERS'],
+      'owners': ['file://net/cert/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:66-75', 'chrome_os:66-75', 'android:66-75'],
@@ -10255,7 +10255,7 @@
     },
     {
       'name': 'ManagedGuestSessionPrivacyWarningsEnabled',
-      'owners': ['file: //components/policy/resources/OWNERS', 'ayaelattar@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'ayaelattar@chromium.org'],
       'device_only': True,
       'type': 'main',
       'schema': { 'type': 'boolean' },
@@ -11697,7 +11697,7 @@
     },
     {
       'name': 'AllowWakeLocks',
-      'owners': ['file://src/chrome/browser/chromeos/login/demo_mode/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/login/demo_mode/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:71-'],
@@ -13737,7 +13737,7 @@
     },
     {
       'name': 'EasyUnlockAllowed',
-      'owners': ['file://src/chrome/browser/chromeos/login/easy_unlock/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/login/easy_unlock/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:38-'],
@@ -13906,7 +13906,7 @@
     },
     {
       'name': 'SSLVersionMin',
-      'owners': ['file://src/crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -13952,7 +13952,7 @@
     },
     {
       'name': 'SSLVersionFallbackMin',
-      'owners': ['file://src/crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -13997,7 +13997,7 @@
     },
     {
       'name': 'SSLVersionMax',
-      'owners': ['file://src/crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -14040,7 +14040,7 @@
     },
     {
       'name': 'CertificateTransparencyEnforcementDisabledForUrls',
-      'owners': ['file://src/components/certificate_transparency/OWNERS'],
+      'owners': ['file://components/certificate_transparency/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14067,7 +14067,7 @@
     },
     {
       'name': 'CertificateTransparencyEnforcementDisabledForCas',
-      'owners': ['file://src/components/certificate_transparency/OWNERS'],
+      'owners': ['file://components/certificate_transparency/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14100,7 +14100,7 @@
     },
     {
       'name': 'CertificateTransparencyEnforcementDisabledForLegacyCas',
-      'owners': ['file://src/components/certificate_transparency/OWNERS'],
+      'owners': ['file://components/certificate_transparency/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14127,7 +14127,7 @@
     },
     {
       'name': 'RC4Enabled',
-      'owners': ['file://src/crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS'],
       'type': 'main',
       'schema': {
         'type': 'boolean',
@@ -14152,7 +14152,7 @@
     },
     {
       'name': 'DHEEnabled',
-      'owners': ['file://src/crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS'],
       'type': 'main',
       'schema': {
         'type': 'boolean',
@@ -15381,7 +15381,7 @@
     },
     {
       'name': 'ComponentUpdatesEnabled',
-      'owners': ['file://src/components/update_client/OWNERS'],
+      'owners': ['file://components/update_client/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:54-', 'chrome_os:54-'],
@@ -17731,7 +17731,7 @@
     },
     {
       'name': 'RestrictAccountsToPatterns',
-      'owners': ['bsazonov@chromium.org', 'file://src/components/signin/OWNERS'],
+      'owners': ['bsazonov@chromium.org', 'file://components/signin/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -19565,7 +19565,7 @@
     },
     {
       'name': 'ScreenBrightnessPercent',
-      'owners': ['file://src/chrome/browser/chromeos/login/demo_mode/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/login/demo_mode/OWNERS'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -20059,7 +20059,7 @@
     },
     {
       'name': 'ParentAccessCodeConfig',
-      'owners': ['file://src/chrome/browser/chromeos/child_accounts/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/child_accounts/OWNERS'],
       'type': 'dict',
       'schema': {
         'sensitiveValue': True,
@@ -20224,7 +20224,7 @@
     },
     {
       'name': 'ForceNetworkInProcess',
-      'owners': ['services/network/OWNERS'],
+      'owners': ['file://services/network/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:72-83'],
@@ -21837,7 +21837,7 @@
     },
     {
       'name': 'AudioSandboxEnabled',
-      'owners': ['services/audio/OWNERS'],
+      'owners': ['file://services/audio/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:79-', 'chrome.linux:79-', 'chrome.mac:79-'],
@@ -22554,7 +22554,7 @@
     },
     {
       'name': 'PaymentMethodQueryEnabled',
-      'owners': ['file://components/payments/core/OWNERS'],
+      'owners': ['file://components/payments/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-', 'chrome_os:80-', 'android:80-'],
