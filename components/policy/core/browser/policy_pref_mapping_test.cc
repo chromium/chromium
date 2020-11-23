@@ -238,7 +238,7 @@ class PolicyTestCase {
       test_policy_ = test_policy->CreateDeepCopy();
 
     const base::Value* policy_pref_mapping_tests =
-        test_case.FindListKey("policy_pref_mapping_test");
+        test_case.FindListKey("policy_pref_mapping_tests");
     if (policy_pref_mapping_tests) {
       for (const auto& mapping : policy_pref_mapping_tests->GetList()) {
         if (mapping.is_dict()) {

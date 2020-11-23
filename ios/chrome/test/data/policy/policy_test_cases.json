@@ -27,7 +27,7 @@
   "AutofillAddressEnabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "AutofillAddressEnabled": false },
         "prefs": { "autofill.profile_enabled": {} }
@@ -38,7 +38,7 @@
   "AutofillCreditCardEnabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "AutofillCreditCardEnabled": false },
         "prefs": { "autofill.credit_card_enabled": {} }
@@ -50,7 +50,7 @@
 
   "CloudReportingEnabled": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "CloudReportingEnabled": true },
         "prefs": { "enterprise_reporting.chrome_cloud_reporting": { "local_state": true } }
@@ -60,7 +60,7 @@
 
  "ChromeVariations": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "ChromeVariations": 1
@@ -75,7 +75,7 @@
   "DefaultPopupsSetting": {
     "os": [ "ios" ],
     "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultPopupsSetting": 1 },
         "prefs": { "profile.managed_default_content_settings.popups": {} }
@@ -89,7 +89,7 @@
 
   "DefaultSearchProviderEnabled": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultSearchProviderEnabled": false },
         "prefs": { "default_search_provider_data.template_url_data": {} }
@@ -107,7 +107,7 @@
 
   "DefaultSearchProviderName": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -122,7 +122,7 @@
 
   "DefaultSearchProviderKeyword": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -136,7 +136,7 @@
 
   "DefaultSearchProviderSearchURL": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -150,7 +150,7 @@
 
   "DefaultSearchProviderSuggestURL": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -165,7 +165,7 @@
 
   "DefaultSearchProviderIconURL": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -180,7 +180,7 @@
 
   "DefaultSearchProviderEncodings": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -197,7 +197,7 @@
 
   "DefaultSearchProviderAlternateURLs": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -215,7 +215,7 @@
 
   "DefaultSearchProviderImageURL": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -230,7 +230,7 @@
 
   "DefaultSearchProviderNewTabURL": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -245,7 +245,7 @@
 
   "DefaultSearchProviderSearchURLPostParams": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -260,7 +260,7 @@
 
   "DefaultSearchProviderSuggestURLPostParams": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -275,7 +275,7 @@
 
   "DefaultSearchProviderImageURLPostParams": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "DefaultSearchProviderEnabled": true,
@@ -290,7 +290,7 @@
 
   "DisableSafeBrowsingProceedAnyway": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {"DisableSafeBrowsingProceedAnyway": true},
         "prefs": { "safebrowsing.proceed_anyway_disabled": {}}
@@ -300,7 +300,7 @@
 
   "EditBookmarksEnabled": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "EditBookmarksEnabled": false },
         "prefs": { "bookmarks.editing_enabled": {} }
@@ -310,7 +310,7 @@
 
   "MetricsReportingEnabled": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "MetricsReportingEnabled": false },
         "prefs": { "user_experience_metrics.reporting_enabled": { "local_state": true } }
@@ -321,7 +321,7 @@
   "PasswordManagerEnabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "PasswordManagerEnabled": false },
         "prefs": { "credentials_enable_service": {} }
@@ -332,7 +332,7 @@
   "PopupsAllowedForUrls": {
     "os": [ "ios" ],
     "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "PopupsAllowedForUrls": ["[*.]google.com"]},
         "prefs": { "profile.managed_popups_allowed_for_urls": {} }
@@ -343,7 +343,7 @@
   "PopupsBlockedForUrls": {
     "os": [ "ios" ],
     "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "PopupsBlockedForUrls": ["[*.]google.com"]},
         "prefs": { "profile.managed_popups_blocked_for_urls": {} }
@@ -353,7 +353,7 @@
 
   "PrintingEnabled":{
       "os":["ios"],
-      "policy_pref_mapping_test":[
+      "policy_pref_mapping_tests":[
           {
               "policies":{"PrintingEnabled": true},
               "prefs":{
@@ -376,7 +376,7 @@
   "SafeBrowsingEnabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "SafeBrowsingEnabled": false },
         "prefs": { "safebrowsing.enabled": {} }
@@ -391,7 +391,7 @@
   "SafeBrowsingProtectionLevel": {
     "os": [ "ios" ],
     "can_be_recommended": true,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "SafeBrowsingProtectionLevel": 2 },
         "prefs": {
@@ -405,7 +405,7 @@
   "SavingBrowserHistoryDisabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "SavingBrowserHistoryDisabled": false },
         "prefs": { "history.saving_disabled": {} }
@@ -420,7 +420,7 @@
   "SearchSuggestEnabled": {
 	"os": [ "ios" ],
     "can_be_recommended": true,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "SearchSuggestEnabled": false },
         "prefs": { "search.suggest_enabled": {} }
@@ -431,7 +431,7 @@
   "TranslateEnabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {"TranslateEnabled": false},
         "prefs": { "translate.enabled": {} }
@@ -441,7 +441,7 @@
 
   "URLBlocklist": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {"URLBlocklist": ["google.com"]},
         "prefs": { "policy.url_blacklist": {}}
@@ -451,7 +451,7 @@
 
   "URLAllowlist": {
     "os": [ "ios" ],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": {"URLAllowlist": ["google.com"]},
         "prefs": { "policy.url_whitelist": {}}
