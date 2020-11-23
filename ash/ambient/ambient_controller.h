@@ -18,9 +18,10 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/power/power_status.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -125,6 +126,10 @@ class ASH_EXPORT AmbientController
 
  private:
   friend class AmbientAshTestBase;
+  friend class AmbientControllerTest;
+  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest,
+                           BindsObserversWhenAmbientEnabled);
+  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest, BindsObserversWhenAmbientOn);
 
   // Hide or close Ambient mode UI.
   void DismissUI();
@@ -157,6 +162,7 @@ class ASH_EXPORT AmbientController
   void CloseAllWidgets(bool immediately);
 
   // Invoked when the Ambient mode prefs state changes.
+  void OnEnabledPrefChanged();
   void OnLockScreenInactivityTimeoutPrefChanged();
   void OnLockScreenBackgroundTimeoutPrefChanged();
   void OnPhotoRefreshIntervalPrefChanged();
@@ -178,18 +184,18 @@ class ASH_EXPORT AmbientController
   // Lazily initialized on the first call of |AcquireWakeLock|.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
-  ScopedObserver<AmbientUiModel, AmbientUiModelObserver>
+  base::ScopedObservation<AmbientUiModel, AmbientUiModelObserver>
       ambient_ui_model_observer_{this};
-  ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver>
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       ambient_backend_model_observer_{this};
-  ScopedObserver<SessionControllerImpl, SessionObserver> session_observer_{
-      this};
-  ScopedObserver<PowerStatus, PowerStatus::Observer> power_status_observer_{
-      this};
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      session_observer_{this};
+  base::ScopedObservation<PowerStatus, PowerStatus::Observer>
+      power_status_observer_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
       power_manager_client_observer_{this};
-  ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver>
+  base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observer_{this};
 
   // Observes user profile prefs for ambient.

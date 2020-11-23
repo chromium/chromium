@@ -109,7 +109,7 @@ class AmbientAshTestBase : public AshTestBase {
   void FastForwardToRefreshWeather();
 
   // Advance the task environment timer to ambient mode lock screen delay.
-  void FastForwardToLockScreen();
+  void FastForwardToBackgroundLockScreenTimeout();
   void FastForwardHalfLockScreenDelay();
 
   void SetPowerStateCharging();

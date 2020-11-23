@@ -10,6 +10,7 @@
 
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -39,6 +40,10 @@ class AmbientControllerTest : public AmbientAshTestBase {
   void SetUp() override {
     AmbientAshTestBase::SetUp();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
+  }
+
+  bool IsPrefObserved(const std::string& pref_name) {
+    return ambient_controller()->pref_change_registrar_->IsObserved(pref_name);
   }
 
   bool WidgetsVisible() {
@@ -526,7 +531,7 @@ TEST_F(AmbientControllerTest,
   EXPECT_FALSE(IsLocked());
   EXPECT_TRUE(ambient_controller()->IsShown());
 
-  FastForwardToLockScreen();
+  FastForwardToBackgroundLockScreenTimeout();
   EXPECT_TRUE(IsLocked());
   // Should not disrupt ongoing ambient mode.
   EXPECT_TRUE(ambient_controller()->IsShown());
@@ -583,7 +588,7 @@ TEST_F(AmbientControllerTest,
   FastForwardTiny();
   EXPECT_TRUE(ambient_controller()->IsShown());
 
-  FastForwardToLockScreen();
+  FastForwardToBackgroundLockScreenTimeout();
   EXPECT_FALSE(IsLocked());
 
   // Closes ambient for clean-up.
@@ -603,7 +608,7 @@ TEST_F(AmbientControllerTest, ShouldShowAmbientScreenWhenScreenIsDimmed) {
   FastForwardTiny();
   EXPECT_TRUE(ambient_controller()->IsShown());
 
-  FastForwardToLockScreen();
+  FastForwardToBackgroundLockScreenTimeout();
   EXPECT_FALSE(IsLocked());
 
   // Closes ambient for clean-up.
@@ -648,7 +653,7 @@ TEST_F(AmbientControllerTest,
   FastForwardTiny();
   EXPECT_TRUE(ambient_controller()->IsShown());
 
-  FastForwardToLockScreen();
+  FastForwardToBackgroundLockScreenTimeout();
   EXPECT_TRUE(IsLocked());
 
   // Should dismiss ambient mode screen.
@@ -759,6 +764,72 @@ TEST_F(AmbientControllerTest, ClosesAmbientBeforeSuspend) {
   FastForwardToLockScreenTimeout();
   // Ambient mode should not resume after suspend.
   EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, ObservesPrefsWhenAmbientEnabled) {
+  SetAmbientModeEnabled(false);
+
+  // This pref is always observed.
+  EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
+
+  std::vector<std::string> other_prefs{
+      ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
+      ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
+      ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds};
+
+  for (auto& pref_name : other_prefs)
+    EXPECT_FALSE(IsPrefObserved(pref_name));
+
+  SetAmbientModeEnabled(true);
+
+  EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
+
+  for (auto& pref_name : other_prefs)
+    EXPECT_TRUE(IsPrefObserved(pref_name));
+}
+
+TEST_F(AmbientControllerTest, BindsObserversWhenAmbientEnabled) {
+  auto* ctrl = ambient_controller();
+
+  SetAmbientModeEnabled(false);
+
+  // SessionObserver must always be observing to detect when user pref service
+  // is started.
+  EXPECT_TRUE(ctrl->session_observer_.IsObserving());
+
+  EXPECT_FALSE(ctrl->ambient_ui_model_observer_.IsObserving());
+  EXPECT_FALSE(ctrl->ambient_backend_model_observer_.IsObserving());
+  EXPECT_FALSE(ctrl->power_manager_client_observer_.IsObserving());
+
+  SetAmbientModeEnabled(true);
+
+  // Session observer should still be observing.
+  EXPECT_TRUE(ctrl->session_observer_.IsObserving());
+
+  EXPECT_TRUE(ctrl->ambient_ui_model_observer_.IsObserving());
+  EXPECT_TRUE(ctrl->ambient_backend_model_observer_.IsObserving());
+  EXPECT_TRUE(ctrl->power_manager_client_observer_.IsObserving());
+}
+
+TEST_F(AmbientControllerTest, BindsObserversWhenAmbientOn) {
+  auto* ctrl = ambient_controller();
+
+  LockScreen();
+
+  // Start monitoring user activity on hidden ui.
+  EXPECT_TRUE(ctrl->user_activity_observer_.IsObserving());
+  // Do not monitor power status yet.
+  EXPECT_FALSE(ctrl->power_status_observer_.IsObserving());
+
+  FastForwardToLockScreenTimeout();
+
+  EXPECT_TRUE(ctrl->user_activity_observer_.IsObserving());
+  EXPECT_TRUE(ctrl->power_status_observer_.IsObserving());
+
+  UnlockScreen();
+
+  EXPECT_FALSE(ctrl->user_activity_observer_.IsObserving());
+  EXPECT_FALSE(ctrl->power_status_observer_.IsObserving());
 }
 
 }  // namespace ash

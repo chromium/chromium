@@ -316,7 +316,7 @@ void AmbientAshTestBase::FastForwardTiny() {
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(10));
 }
 
-void AmbientAshTestBase::FastForwardToLockScreen() {
+void AmbientAshTestBase::FastForwardToBackgroundLockScreenTimeout() {
   task_environment()->FastForwardBy(kFastForwardFactor *
                                     ambient_controller()
                                         ->ambient_ui_model()

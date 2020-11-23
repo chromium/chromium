@@ -171,19 +171,9 @@ AmbientController::AmbientController(
     : fingerprint_(std::move(fingerprint)) {
   ambient_backend_controller_ = CreateAmbientBackendController();
 
-  ambient_ui_model_observer_.Add(&ambient_ui_model_);
-  // |SessionController| is initialized before |this| in Shell.
-  session_observer_.Add(Shell::Get()->session_controller());
-
-  auto* power_manager_client = chromeos::PowerManagerClient::Get();
-  DCHECK(power_manager_client);
-  power_manager_client_observer_.Add(power_manager_client);
-
-  ambient_backend_model_observer_.Add(
-      ambient_photo_controller_.ambient_backend_model());
-
-  fingerprint_->AddFingerprintObserver(
-      fingerprint_observer_receiver_.BindNewPipeAndPassRemote());
+  // |SessionController| is initialized before |this| in Shell. Necessary to
+  // bind observer here to monitor |OnActiveUserPrefServiceChanged|.
+  session_observer_.Observe(Shell::Get()->session_controller());
 }
 
 AmbientController::~AmbientController() {
@@ -212,12 +202,11 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       }
       // Observes the |PowerStatus| on the battery charging status change for
       // the current ambient session.
-      if (!power_status_observer_.IsObserving(PowerStatus::Get())) {
-        power_status_observer_.Add(PowerStatus::Get());
-      }
+      if (!power_status_observer_.IsObserving())
+        power_status_observer_.Observe(PowerStatus::Get());
 
-      if (!user_activity_observer_.IsObserving(ui::UserActivityDetector::Get()))
-        user_activity_observer_.Add(ui::UserActivityDetector::Get());
+      if (!user_activity_observer_.IsObserving())
+        user_activity_observer_.Observe(ui::UserActivityDetector::Get());
 
       StartRefreshingImages();
       break;
@@ -253,10 +242,8 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       if (visibility == AmbientUiVisibility::kHidden) {
         if (LockScreen::HasInstance()) {
           // Add observer for user activity.
-          if (!user_activity_observer_.IsObserving(
-                  ui::UserActivityDetector::Get())) {
-            user_activity_observer_.Add(ui::UserActivityDetector::Get());
-          }
+          if (!user_activity_observer_.IsObserving())
+            user_activity_observer_.Observe(ui::UserActivityDetector::Get());
 
           // Start timer to show ambient mode.
           inactivity_timer_.Start(
@@ -267,12 +254,11 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       } else {
         DCHECK(visibility == AmbientUiVisibility::kClosed);
         inactivity_timer_.Stop();
-        if (user_activity_observer_.IsObserving(
-                ui::UserActivityDetector::Get())) {
-          user_activity_observer_.Remove(ui::UserActivityDetector::Get());
-        }
-        if (power_status_observer_.IsObserving(PowerStatus::Get()))
-          power_status_observer_.Remove(PowerStatus::Get());
+        if (user_activity_observer_.IsObserving())
+          user_activity_observer_.RemoveObservation();
+
+        if (power_status_observer_.IsObserving())
+          power_status_observer_.RemoveObservation();
       }
 
       break;
@@ -337,7 +323,6 @@ void AmbientController::OnFirstSessionStarted() {
 
 void AmbientController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  // TODO(b/170510846) make ambient controller handle pref off state better
   if (!AmbientClient::Get()->IsAmbientModeAllowed() ||
       GetPrimaryUserPrefService() != pref_service) {
     return;
@@ -347,26 +332,11 @@ void AmbientController::OnActiveUserPrefServiceChanged(
   pref_change_registrar_->Init(pref_service);
 
   pref_change_registrar_->Add(
-      ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
-      base::BindRepeating(
-          &AmbientController::OnLockScreenInactivityTimeoutPrefChanged,
-          weak_ptr_factory_.GetWeakPtr()));
-
-  pref_change_registrar_->Add(
-      ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
-      base::BindRepeating(
-          &AmbientController::OnLockScreenBackgroundTimeoutPrefChanged,
-          weak_ptr_factory_.GetWeakPtr()));
-
-  pref_change_registrar_->Add(
-      ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
-      base::BindRepeating(&AmbientController::OnPhotoRefreshIntervalPrefChanged,
+      ambient::prefs::kAmbientModeEnabled,
+      base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // Trigger the callbacks manually the first time to init AmbientUiModel.
-  OnLockScreenInactivityTimeoutPrefChanged();
-  OnLockScreenBackgroundTimeoutPrefChanged();
-  OnPhotoRefreshIntervalPrefChanged();
+  OnEnabledPrefChanged();
 }
 
 void AmbientController::OnPowerStatusChanged() {
@@ -538,6 +508,72 @@ void AmbientController::CloseAllWidgets(bool immediately) {
   for (auto* root_window_controller :
        RootWindowController::root_window_controllers()) {
     root_window_controller->CloseAmbientWidget(immediately);
+  }
+}
+
+void AmbientController::OnEnabledPrefChanged() {
+  if (IsAmbientModeEnabled()) {
+    DVLOG(1) << "Ambient mode enabled";
+
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
+        base::BindRepeating(
+            &AmbientController::OnLockScreenInactivityTimeoutPrefChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
+        base::BindRepeating(
+            &AmbientController::OnLockScreenBackgroundTimeoutPrefChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
+        base::BindRepeating(
+            &AmbientController::OnPhotoRefreshIntervalPrefChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+
+    // Trigger the callbacks manually the first time to init AmbientUiModel.
+    OnLockScreenInactivityTimeoutPrefChanged();
+    OnLockScreenBackgroundTimeoutPrefChanged();
+    OnPhotoRefreshIntervalPrefChanged();
+
+    ambient_ui_model_observer_.Observe(&ambient_ui_model_);
+
+    ambient_backend_model_observer_.Observe(
+        ambient_photo_controller_.ambient_backend_model());
+
+    auto* power_manager_client = chromeos::PowerManagerClient::Get();
+    DCHECK(power_manager_client);
+    power_manager_client_observer_.Observe(power_manager_client);
+
+    fingerprint_->AddFingerprintObserver(
+        fingerprint_observer_receiver_.BindNewPipeAndPassRemote());
+
+  } else {
+    DVLOG(1) << "Ambient mode disabled";
+
+    CloseUi();
+
+    for (const auto* pref_name :
+         {ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
+          ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
+          ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds}) {
+      if (pref_change_registrar_->IsObserved(pref_name))
+        pref_change_registrar_->Remove(pref_name);
+    }
+
+    if (ambient_ui_model_observer_.IsObserving())
+      ambient_ui_model_observer_.RemoveObservation();
+
+    if (ambient_backend_model_observer_.IsObserving())
+      ambient_backend_model_observer_.RemoveObservation();
+
+    if (power_manager_client_observer_.IsObserving())
+      power_manager_client_observer_.RemoveObservation();
+
+    if (fingerprint_observer_receiver_.is_bound())
+      fingerprint_observer_receiver_.reset();
   }
 }
 
