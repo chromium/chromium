@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // the "kLoadComplete" event, and the "kFocus" and "kLoadComplete" events are
   // not guaranteed to be sent in the same order every time, neither do we need
   // to enforce such an ordering. However, we do need to ensure that at the
-  // point when the "kFocus" event is sent, the root object is present.
+  // point when the "kFocus" event is sent, the document is fully loaded.
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ui::AXEventGenerator::Event::FOCUS_CHANGED);
@@ -921,15 +921,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
   waiter.WaitForNotification();
 
-  // Check that at least the root of the page has indeed loaded and that it is
-  // focused.
-  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
-  ASSERT_TRUE(document);
-  base::win::ScopedVariant focus;
-  base::win::ScopedVariant childid_self(CHILDID_SELF);
-  ASSERT_HRESULT_SUCCEEDED(document->get_accFocus(focus.Receive()));
-  EXPECT_EQ(VT_I4, focus.type());
-  EXPECT_EQ(CHILDID_SELF, V_I4(focus.ptr()));
+  // Check that the page has indeed loaded.
+  AccessibleChecker document_checker(L"", ROLE_SYSTEM_DOCUMENT, L"");
+  AccessibleChecker paragraph_checker(L"", ROLE_SYSTEM_GROUPING,
+                                      IA2_ROLE_PARAGRAPH, L"");
+  document_checker.AppendExpectedChild(&paragraph_checker);
+  AccessibleChecker text_checker(L"Hello world.", ROLE_SYSTEM_STATICTEXT, L"");
+  paragraph_checker.AppendExpectedChild(&text_checker);
+  document_checker.CheckAccessible(GetRendererAccessible());
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestBusyAccessibilityTree) {
