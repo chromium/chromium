@@ -391,7 +391,7 @@ bool AutoEnrollmentController::IsPrivateSetMembershipEnabled() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (!command_line->HasSwitch(switches::kEnterpriseEnablePrivateSetMembership))
-    return false;  // Disabled by default.
+    return true;  // Enabled by default.
 
   std::string command_line_mode = command_line->GetSwitchValueASCII(
       switches::kEnterpriseEnablePrivateSetMembership);
