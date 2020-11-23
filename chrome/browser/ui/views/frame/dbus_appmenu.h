@@ -12,7 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
@@ -163,8 +163,8 @@ class DbusAppmenu : public AvatarMenuObserver,
 
   std::unique_ptr<AvatarMenu> avatar_menu_;
 
-  ScopedObserver<history::TopSites, history::TopSitesObserver> scoped_observer_{
-      this};
+  base::ScopedObservation<history::TopSites, history::TopSitesObserver>
+      scoped_observation_{this};
 
   // Maps from history item command ID to HistoryItem data.
   std::map<int, std::unique_ptr<HistoryItem>> history_items_;

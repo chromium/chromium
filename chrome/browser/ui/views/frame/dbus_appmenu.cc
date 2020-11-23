@@ -274,7 +274,7 @@ void DbusAppmenu::Initialize(DbusMenu::InitializedCallback callback) {
 
     // Register as TopSitesObserver so that we can update ourselves when the
     // TopSites changes.
-    scoped_observer_.Add(top_sites_.get());
+    scoped_observation_.Observe(top_sites_.get());
   }
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();

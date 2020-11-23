@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -77,10 +77,11 @@ class ImmersiveModeControllerChromeos
   // the top-of-window views are not revealed.
   double visible_fraction_ = 1.0;
 
-  ScopedObserver<FullscreenController, FullscreenObserver> fullscreen_observer_{
-      this};
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      fullscreen_observer_{this};
 
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeos);
 };

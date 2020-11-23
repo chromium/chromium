@@ -13,7 +13,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -185,7 +185,7 @@ class WebUiTabStripOverrideTest : public BaseTest {
 class ImmersiveModeTester : public ImmersiveModeController::Observer {
  public:
   explicit ImmersiveModeTester(Browser* browser) : browser_(browser) {
-    scoped_observer_.Add(GetBrowserView()->immersive_mode_controller());
+    scoped_observation_.Observe(GetBrowserView()->immersive_mode_controller());
   }
   ~ImmersiveModeTester() override = default;
 
@@ -240,7 +240,7 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   }
 
   void OnImmersiveModeControllerDestroyed() override {
-    scoped_observer_.RemoveAll();
+    scoped_observation_.RemoveObservation();
   }
 
   void OnImmersiveFullscreenExited() override {
@@ -250,8 +250,9 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
 
  private:
   Browser* browser_ = nullptr;
-  ScopedObserver<ImmersiveModeController, ImmersiveModeController::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<ImmersiveModeController,
+                          ImmersiveModeController::Observer>
+      scoped_observation_{this};
   bool reveal_started_ = false;
   bool reveal_ended_ = false;
   std::unique_ptr<base::RunLoop> reveal_loop_;

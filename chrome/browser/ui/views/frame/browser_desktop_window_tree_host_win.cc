@@ -217,7 +217,7 @@ BrowserDesktopWindowTreeHostWin::BrowserDesktopWindowTreeHostWin(
       browser_view_(browser_view),
       browser_frame_(browser_frame),
       virtual_desktop_helper_(nullptr) {
-  profile_observer_.Add(
+  profile_observation_.Observe(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 
   // TODO(crbug.com/1051306) Make turning off this policy turn off

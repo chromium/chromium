@@ -65,17 +65,17 @@ void ImmersiveModeControllerChromeos::Init(BrowserView* browser_view) {
   controller_.Init(this, browser_view_->frame(),
                    browser_view_->top_container());
 
-  observed_windows_.Add(browser_view_->GetNativeWindow());
+  window_observation_.Observe(browser_view_->GetNativeWindow());
 }
 
 void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {
   if (controller_.IsEnabled() == enabled)
     return;
 
-  if (!fullscreen_observer_.IsObservingSources()) {
-    fullscreen_observer_.Add(browser_view_->browser()
-                                 ->exclusive_access_manager()
-                                 ->fullscreen_controller());
+  if (!fullscreen_observer_.IsObserving()) {
+    fullscreen_observer_.Observe(browser_view_->browser()
+                                     ->exclusive_access_manager()
+                                     ->fullscreen_controller());
   }
 
   chromeos::ImmersiveFullscreenController::EnableForWidget(
@@ -254,6 +254,7 @@ void ImmersiveModeControllerChromeos::OnWindowPropertyChanged(
 void ImmersiveModeControllerChromeos::OnWindowDestroying(aura::Window* window) {
   // Clean up observers here rather than in the destructor because the owning
   // BrowserView has already destroyed the aura::Window.
-  observed_windows_.Remove(window);
-  DCHECK(!observed_windows_.IsObservingSources());
+  DCHECK(window_observation_.IsObservingSource(window));
+  window_observation_.RemoveObservation();
+  DCHECK(!window_observation_.IsObserving());
 }

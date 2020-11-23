@@ -52,8 +52,9 @@ BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
         GetProfileAttributesStorage().AddObserver(this);
   }
   if (browser_view_->tabstrip()) {
-    DCHECK(!tab_strip_observer_.IsObserving(browser_view_->tabstrip()));
-    tab_strip_observer_.Add(browser_view_->tabstrip());
+    DCHECK(
+        !tab_strip_observation_.IsObservingSource(browser_view_->tabstrip()));
+    tab_strip_observation_.Observe(browser_view_->tabstrip());
   }
 }
 

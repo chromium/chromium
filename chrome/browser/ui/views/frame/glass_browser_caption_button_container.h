@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -38,6 +38,7 @@ class GlassBrowserCaptionButtonContainer : public views::View,
 
   // views::View:
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
@@ -56,7 +57,8 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   Windows10CaptionButton* const restore_button_;
   Windows10CaptionButton* const close_button_;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(

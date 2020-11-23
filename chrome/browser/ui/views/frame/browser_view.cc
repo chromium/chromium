@@ -1197,7 +1197,8 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
       loading_bar_->SetWebContents(nullptr);
     contents_web_view_->SetWebContents(nullptr);
     infobar_container_->ChangeInfoBarManager(nullptr);
-    app_banner_manager_observer_.RemoveAll();
+    if (app_banner_manager_observation_.IsObserving())
+      app_banner_manager_observation_.RemoveObservation();
     UpdateDevToolsForContents(nullptr, true);
   }
 }
@@ -2568,7 +2569,8 @@ views::View* BrowserView::CreateOverlayView() {
 }
 
 void BrowserView::OnWidgetDestroying(views::Widget* widget) {
-  widget_observer_.Remove(widget);
+  DCHECK(widget_observation_.IsObservingSource(widget));
+  widget_observation_.RemoveObservation();
   // Destroy any remaining WebContents early on. Doing so may result in
   // calling back to one of the Views/LayoutManagers or supporting classes of
   // BrowserView. By destroying here we ensure all said classes are valid.
@@ -2843,7 +2845,7 @@ void BrowserView::ViewHierarchyChanged(
 void BrowserView::AddedToWidget() {
   views::ClientView::AddedToWidget();
 
-  widget_observer_.Add(GetWidget());
+  widget_observation_.Observe(GetWidget());
 
   // Stow a pointer to this object onto the window handle so that we can get at
   // it later when all we have is a native view.
@@ -3535,8 +3537,8 @@ bool BrowserView::FindCommandIdForAccelerator(
 
 void BrowserView::ObserveAppBannerManager(
     banners::AppBannerManager* new_manager) {
-  app_banner_manager_observer_.RemoveAll();
-  app_banner_manager_observer_.Add(new_manager);
+  app_banner_manager_observation_.Reset();
+  app_banner_manager_observation_.Observe(new_manager);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

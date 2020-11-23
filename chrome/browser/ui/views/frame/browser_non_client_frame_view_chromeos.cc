@@ -139,7 +139,7 @@ void BrowserNonClientFrameViewChromeOS::Init() {
                                                     : ash::AppType::BROWSER));
 #endif
 
-  window_observer_.Add(GetFrameWindow());
+  window_observation_.Observe(GetFrameWindow());
 
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
@@ -505,7 +505,7 @@ gfx::ImageSkia BrowserNonClientFrameViewChromeOS::GetFaviconForTabIconView() {
 
 void BrowserNonClientFrameViewChromeOS::OnWindowDestroying(
     aura::Window* window) {
-  window_observer_.RemoveAll();
+  window_observation_.RemoveObservation();
 }
 
 void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(

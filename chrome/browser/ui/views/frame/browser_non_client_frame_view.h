@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -198,7 +198,8 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
           base::BindRepeating(&BrowserNonClientFrameView::PaintAsActiveChanged,
                               base::Unretained(this)));
 
-  ScopedObserver<TabStrip, TabStripObserver> tab_strip_observer_{this};
+  base::ScopedObservation<TabStrip, TabStripObserver> tab_strip_observation_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameView);
 };

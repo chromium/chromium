@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -240,10 +240,10 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
     DCHECK(content_area_);
     DCHECK(omnibox_);
 
-    view_observer_.Add(content_area_);
-    view_observer_.Add(omnibox_);
+    view_observations_.AddObservation(content_area_);
+    view_observations_.AddObservation(omnibox_);
 #if defined(OS_WIN)
-    view_observer_.Add(top_container_);
+    view_observations_.AddObservation(top_container_);
 #endif  // defined(OS_WIN)
 
     // Our observed Widget's NativeView may be destroyed before us. We
@@ -308,7 +308,7 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
   }
 
   void OnViewIsDeleting(views::View* observed_view) override {
-    view_observer_.Remove(observed_view);
+    view_observations_.RemoveObservation(observed_view);
     if (observed_view == content_area_)
       content_area_ = nullptr;
     else if (observed_view == omnibox_)
@@ -350,7 +350,8 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
 
   bool pretarget_handler_added_ = false;
 
-  ScopedObserver<views::View, views::ViewObserver> view_observer_{this};
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      view_observations_{this};
 };
 
 class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
@@ -495,8 +496,8 @@ WebUITabStripContainerView::WebUITabStripContainerView(
       web_view_->web_contents());
 
   DCHECK(tab_contents_container);
-  view_observer_.Add(tab_contents_container_);
-  view_observer_.Add(top_container_);
+  view_observations_.AddObservation(tab_contents_container_);
+  view_observations_.AddObservation(top_container_);
 
   TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
       web_view_->GetWebContents()->GetWebUI()->GetController());
@@ -585,7 +586,7 @@ std::unique_ptr<views::View> WebUITabStripContainerView::CreateTabCounter() {
       browser_view_);
 
   tab_counter_ = tab_counter.get();
-  view_observer_.Add(tab_counter_);
+  view_observations_.AddObservation(tab_counter_);
 
   return tab_counter;
 }
@@ -886,7 +887,7 @@ void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {
 }
 
 void WebUITabStripContainerView::OnViewIsDeleting(View* observed_view) {
-  view_observer_.Remove(observed_view);
+  view_observations_.RemoveObservation(observed_view);
 
   if (observed_view == tab_counter_)
     tab_counter_ = nullptr;

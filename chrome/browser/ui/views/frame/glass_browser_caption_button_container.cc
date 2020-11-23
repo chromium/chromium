@@ -102,9 +102,16 @@ void GlassBrowserCaptionButtonContainer::ResetWindowControls() {
 
 void GlassBrowserCaptionButtonContainer::AddedToWidget() {
   views::Widget* const widget = GetWidget();
-  if (!widget_observer_.IsObserving(widget))
-    widget_observer_.Add(widget);
+
+  DCHECK(!widget_observation_.IsObserving());
+  widget_observation_.Observe(widget);
+
   UpdateButtons();
+}
+
+void GlassBrowserCaptionButtonContainer::RemovedFromWidget() {
+  DCHECK(widget_observation_.IsObserving());
+  widget_observation_.RemoveObservation();
 }
 
 void GlassBrowserCaptionButtonContainer::OnWidgetBoundsChanged(
