@@ -18,6 +18,9 @@ class BASE_EXPORT BundleUtils {
   // Returns true if the current build is a bundle.
   static bool IsBundle();
 
+  // Returns true if isolated splits are enabled.
+  static bool IsolatedSplitsEnabled();
+
   // Helper function asking Java to resolve a library path. This is required for
   // resolving a module library made available via SplitCompat, rather than in
   // its eventual fully-installed state.

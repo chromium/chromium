@@ -66,8 +66,12 @@ std::string BundleUtils::ResolveLibraryPath(const std::string& library_name,
 
 // static
 bool BundleUtils::IsBundle() {
-  return Java_BundleUtils_isBundleForNative(
-      base::android::AttachCurrentThread());
+  return Java_BundleUtils_isBundleForNative(AttachCurrentThread());
+}
+
+// static
+bool BundleUtils::IsolatedSplitsEnabled() {
+  return Java_BundleUtils_isolatedSplitsEnabled(AttachCurrentThread());
 }
 
 // static

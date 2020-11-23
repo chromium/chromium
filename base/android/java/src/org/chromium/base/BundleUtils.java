@@ -65,6 +65,11 @@ public final class BundleUtils {
         sIsBundle = isBundle;
     }
 
+    @CalledByNative
+    public static boolean isolatedSplitsEnabled() {
+        return BuildConfig.ISOLATED_SPLITS_ENABLED;
+    }
+
     /**
      * Returns whether splitName is installed. Note, this will return false on Android versions
      * below O, where isolated splits are not supported.
