@@ -38,8 +38,6 @@ component("auth") {
   sources = [
     "auth_attempt_state.cc",
     "auth_attempt_state.h",
-    "auth_attempt_state_resolver.cc",
-    "auth_attempt_state_resolver.h",
     "auth_status_consumer.cc",
     "auth_status_consumer.h",
     "authenticator.cc",
@@ -97,8 +95,6 @@ source_set("test_support") {
   sources = [
     "fake_extended_authenticator.cc",
     "fake_extended_authenticator.h",
-    "mock_auth_attempt_state_resolver.cc",
-    "mock_auth_attempt_state_resolver.h",
     "mock_auth_status_consumer.cc",
     "mock_auth_status_consumer.h",
   ]

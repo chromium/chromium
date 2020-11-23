@@ -16,7 +16,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/login/auth/auth_attempt_state.h"
-#include "chromeos/login/auth/auth_attempt_state_resolver.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/test_attempt_state.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -61,8 +60,7 @@ class AuthStatusConsumer;
 //     Old password ok: RECOVER_MOUNT > CONTINUE > ONLINE_LOGIN
 //
 class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
-    : public Authenticator,
-      public AuthAttemptStateResolver {
+    : public Authenticator {
  public:
   enum AuthState {
     CONTINUE = 0,            // State indeterminate; try again with more info.
@@ -167,14 +165,13 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   // Called after UnmountEx finishes.
   void OnUnmountEx(base::Optional<cryptohome::BaseReply> reply);
 
-  // AuthAttemptStateResolver overrides.
   // Attempts to make a decision and call back |consumer_| based on
   // the state we have gathered at the time of call.  If a decision
   // can't be made, defers until the next time this is called.
   // When a decision is made, will call back to |consumer_| on the UI thread.
   //
   // Must be called on the UI thread.
-  void Resolve() override;
+  void Resolve();
 
   void OnOffTheRecordAuthSuccess();
   void OnPasswordChangeDetected();
