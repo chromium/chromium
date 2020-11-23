@@ -5,6 +5,16 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
+group("elements") {
+  public_deps = [
+    "//ui/file_manager/audio_player/elements:audio_player_module",
+    "//ui/file_manager/audio_player/elements:control_panel_module",
+    "//ui/file_manager/audio_player/elements:repeat_button_module",
+    "//ui/file_manager/audio_player/elements:track_info_panel_module",
+    "//ui/file_manager/audio_player/elements:track_list_module",
+  ]
+}
+
 group("closure_compile") {
   deps = [
     ":closure_compile_internal",
@@ -81,9 +91,9 @@ js_library("control_panel.m") {
     ":repeat_button.m",
     "//third_party/polymer/v3_0/components-chromium/font-roboto:roboto",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/file_manager/file_manager/foreground/elements:files_icon_button.m",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
     "//ui/webui/resources/js:assert.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_icon_button.m",
   ]
   extra_deps = [ ":control_panel_module" ]
 }

@@ -4,10 +4,19 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//tools/polymer/polymer.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
+
+group("elements") {
+  visibility += [ "//ui/file_manager/*" ]
+  public_deps = [
+    "//ui/file_manager/file_manager/foreground/elements:files_icon_button_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_ripple_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple_module",
+  ]
+}
 
 group("closure_compile") {
   testonly = true
@@ -46,8 +55,8 @@ js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   deps = [
     ":files_icon_button.m",
-    ":files_toggle_ripple.m",
     ":files_ripple.m",
+    ":files_toggle_ripple.m",
   ]
 }
 
@@ -87,14 +96,12 @@ polymer_modulizer("files_icon_button") {
 
 js_library("files_icon_button.m") {
   visibility += [ "//ui/file_manager/audio_player/*" ]
-  sources = [
-    "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_icon_button.m.js",
-  ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_icon_button.m.js" ]
   deps = [
+    ":files_toggle_ripple.m",
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    ":files_toggle_ripple.m",
   ]
   extra_deps = [ ":files_icon_button_module" ]
 }
@@ -158,13 +165,12 @@ polymer_modulizer("files_ripple") {
   html_type = "dom-module"
   preserve_url_scheme = true
 
-  auto_imports = [ "ui/webui/resources/html/assert.html|assert,assertInstanceof" ]
+  auto_imports =
+      [ "ui/webui/resources/html/assert.html|assert,assertInstanceof" ]
 }
 
 js_library("files_ripple.m") {
-  sources = [
-    "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_ripple.m.js",
-  ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_ripple.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -204,9 +210,7 @@ polymer_modulizer("files_toggle_ripple") {
 
 js_library("files_toggle_ripple.m") {
   visibility += [ "//ui/file_manager/audio_player/*" ]
-  sources = [
-    "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_toggle_ripple.m.js",
-  ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_toggle_ripple.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
