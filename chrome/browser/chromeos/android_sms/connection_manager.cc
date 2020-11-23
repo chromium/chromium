@@ -66,6 +66,18 @@ ConnectionManager::~ConnectionManager() {
     GetCurrentServiceWorkerContext()->RemoveObserver(this);
 }
 
+void ConnectionManager::StartConnection() {
+  if (!enabled_pwa_url_) {
+    return;
+  }
+  PA_LOG(INFO) << "ConnectionManager::StartConnection(): Establishing "
+               << "connection to PWA at " << *enabled_pwa_url_ << ".";
+  connection_establisher_->EstablishConnection(
+      *enabled_pwa_url_,
+      ConnectionEstablisher::ConnectionMode::kStartConnection,
+      GetCurrentServiceWorkerContext());
+}
+
 void ConnectionManager::OnVersionActivated(int64_t version_id,
                                            const GURL& scope) {
   if (!enabled_pwa_url_ || !scope.EqualsIgnoringRef(*enabled_pwa_url_))
@@ -146,13 +158,8 @@ void ConnectionManager::UpdateConnectionStatus() {
   if (!enabled_pwa_url_)
     return;
 
-  PA_LOG(INFO) << "ConnectionManager::UpdateConnectionStatus(): Establishing "
-               << "connection to PWA at " << *enabled_pwa_url_ << ".";
   GetCurrentServiceWorkerContext()->AddObserver(this);
-  connection_establisher_->EstablishConnection(
-      *enabled_pwa_url_,
-      ConnectionEstablisher::ConnectionMode::kStartConnection,
-      GetCurrentServiceWorkerContext());
+  StartConnection();
 }
 
 base::Optional<GURL> ConnectionManager::GenerateEnabledPwaUrl() {

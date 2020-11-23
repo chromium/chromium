@@ -67,13 +67,18 @@ void AndroidSmsService::Shutdown() {
 }
 
 void AndroidSmsService::OnSessionStateChanged() {
-  // At most one ConnectionManager should be created.
-  if (connection_manager_)
-    return;
-
   // ConnectionManager should not be created for blocked sessions.
-  if (session_manager::SessionManager::Get()->IsUserSessionBlocked())
+  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return;
+  }
+
+  // Start Connection if connection manager already exists.
+  // This ensures that the service worker connects again and
+  // continues to receive messages after unlock.
+  if (connection_manager_) {
+    connection_manager_->StartConnection();
+    return;
+  }
 
   std::unique_ptr<ConnectionEstablisher> connection_establisher;
   connection_establisher = std::make_unique<FcmConnectionEstablisher>(

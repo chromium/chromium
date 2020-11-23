@@ -54,6 +54,9 @@ class ConnectionManager
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
   ~ConnectionManager() override;
 
+  // Sends a start connection message to the service worker.
+  void StartConnection();
+
  private:
   friend class ConnectionManagerTest;
 
