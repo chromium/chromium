@@ -307,14 +307,14 @@ TEST_F(ExtensionsPermissionsTrackerTest, UnsafeForceListChanged) {
 
   dict.RemoveKey(kExtensionId1);
   prefs_->SetManagedPref(pref_names::kInstallForceList,
-                         base::Value::ToUniquePtrValue(std::move(dict)));
+                         base::Value::ToUniquePtrValue(dict.Clone()));
 
   EXPECT_TRUE(testing_local_state_.Get()->GetBoolean(
       prefs::kManagedSessionUseFullLoginWarning));
 
   dict.RemoveKey(kExtensionId2);
   prefs_->SetManagedPref(pref_names::kInstallForceList,
-                         base::Value::ToUniquePtrValue(std::move(dict)));
+                         base::Value::ToUniquePtrValue(dict.Clone()));
 
   EXPECT_FALSE(testing_local_state_.Get()->GetBoolean(
       prefs::kManagedSessionUseFullLoginWarning));
