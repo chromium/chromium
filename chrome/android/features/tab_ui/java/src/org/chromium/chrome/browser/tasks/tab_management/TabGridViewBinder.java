@@ -226,8 +226,8 @@ class TabGridViewBinder {
                             priceCardView.setVisibility(View.GONE);
                         } else {
                             priceCardView.setPriceStrings(
-                                    shoppingPersistedTabData.getPriceDrop().integerPrice,
-                                    shoppingPersistedTabData.getPriceDrop().previousIntegerPrice);
+                                    shoppingPersistedTabData.getPriceDrop().price,
+                                    shoppingPersistedTabData.getPriceDrop().previousPrice);
                             priceCardView.setVisibility(View.VISIBLE);
                         }
                     });

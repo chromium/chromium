@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab.state;
 
-import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -51,6 +50,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
     private static final int MICROS_TO_UNITS = 1000000;
+    private static final long TWO_UNITS = 2 * MICROS_TO_UNITS;
+    private static final long TEN_UNITS = 10 * MICROS_TO_UNITS;
+    private static final int MINIMUM_DROP_PERCENTAGE = 10;
+    private static final long ONE_WEEK_MS = TimeUnit.DAYS.toMillis(7);
 
     @VisibleForTesting
     public static final long NO_TRANSITIONS_OCCURRED = -1;
@@ -69,16 +72,16 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * refers to
      */
     public static class PriceDrop {
-        public final String integerPrice;
-        public final String previousIntegerPrice;
+        public final String price;
+        public final String previousPrice;
 
         /**
-         * @param integerPrice integer representation of the price
-         * @param previousIntegerPrice integer representation of the previous price
+         * @param price {@link String} representation of the price
+         * @param previousPrice {@link String} representation of the previous price
          */
-        public PriceDrop(String integerPrice, String previousIntegerPrice) {
-            this.integerPrice = integerPrice;
-            this.previousIntegerPrice = previousIntegerPrice;
+        public PriceDrop(String price, String previousPrice) {
+            this.price = price;
+            this.previousPrice = previousPrice;
         }
     }
 
@@ -162,7 +165,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 && previousShoppingPersistedTabData.getPriceMicros() != NO_PRICE_KNOWN
                 && priceMicros != previousShoppingPersistedTabData.getPriceMicros()) {
             mPreviousPriceMicros = previousShoppingPersistedTabData.getPriceMicros();
-            mLastPriceChangeTimeMs = SystemClock.uptimeMillis();
+            mLastPriceChangeTimeMs = System.currentTimeMillis();
         } else if (previousShoppingPersistedTabData != null) {
             mPreviousPriceMicros = previousShoppingPersistedTabData.getPreviousPriceMicros();
             mLastPriceChangeTimeMs = previousShoppingPersistedTabData.getLastPriceChangeTimeMs();
@@ -185,6 +188,16 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return mPreviousPriceMicros;
     }
 
+    @VisibleForTesting
+    public void setPriceMicrosForTesting(long priceMicros) {
+        mPriceMicros = priceMicros;
+    }
+
+    @VisibleForTesting
+    public void setPreviousPriceMicrosForTesting(long previousPriceMicros) {
+        mPreviousPriceMicros = previousPriceMicros;
+    }
+
     /**
      * @return {@link PriceDrop} relating to the offer for the {@link ShoppingPersistedTabData}
      * TODO(crbug.com/1145770) Implement getPriceDrop to only return a result if there is
@@ -193,17 +206,48 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * representations to be numeric to make drop comparison easier.
      */
     public PriceDrop getPriceDrop() {
-        // TODO(crbug.com/1146609) only show price drops above certain thresholds
-        if (mPriceMicros != NO_PRICE_KNOWN && mPreviousPriceMicros != NO_PRICE_KNOWN
-                && mPriceMicros < mPreviousPriceMicros) {
-            return new PriceDrop(getIntegerPriceString(mPriceMicros),
-                    getIntegerPriceString(mPreviousPriceMicros));
+        if (mPriceMicros == NO_PRICE_KNOWN || mPreviousPriceMicros == NO_PRICE_KNOWN
+                || !isQualifyingPriceDrop() || isPriceChangeStale()) {
+            return null;
         }
-        return null;
+        String formattedPrice = formatPrice(mPriceMicros);
+        String formattedPreviousPrice = formatPrice(mPreviousPriceMicros);
+        if (formattedPrice.equals(formattedPreviousPrice)) {
+            return null;
+        }
+        return new PriceDrop(formattedPrice, formattedPreviousPrice);
     }
 
-    private static String getIntegerPriceString(long priceMicros) {
-        // TODO(crbug.com/1130068) support all currencies
+    private boolean isPriceChangeStale() {
+        return mLastPriceChangeTimeMs != NO_TRANSITIONS_OCCURRED
+                && System.currentTimeMillis() - mLastPriceChangeTimeMs > ONE_WEEK_MS;
+    }
+
+    private boolean isQualifyingPriceDrop() {
+        if (mPreviousPriceMicros - mPriceMicros < getMinimumDropThresholdAbsolute()) {
+            return false;
+        }
+        if ((100L * mPriceMicros) / mPreviousPriceMicros
+                > (100 - getMinimumDroppedThresholdPercentage())) {
+            return false;
+        }
+        return true;
+    }
+
+    // TODO(crbug.com/1151156) Make parameters finch configurable
+    private static int getMinimumDroppedThresholdPercentage() {
+        return MINIMUM_DROP_PERCENTAGE;
+    }
+
+    private static long getMinimumDropThresholdAbsolute() {
+        return TWO_UNITS;
+    }
+
+    // TODO(crbug.com/1130068) support all currencies
+    private static String formatPrice(long priceMicros) {
+        if (priceMicros < TEN_UNITS) {
+            return String.format(Locale.US, "$%.2f", (100 * priceMicros / MICROS_TO_UNITS) / 100.0);
+        }
         return String.format(Locale.US, "$%d",
                 (int) Math.floor((double) (priceMicros + MICROS_TO_UNITS / 2) / MICROS_TO_UNITS));
     }
@@ -261,5 +305,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     public long getLastPriceChangeTimeMs() {
         return mLastPriceChangeTimeMs;
+    }
+
+    @VisibleForTesting
+    public void setLastPriceChangeTimeMsForTesting(long lastPriceChangeTimeMs) {
+        mLastPriceChangeTimeMs = lastPriceChangeTimeMs;
     }
 }
