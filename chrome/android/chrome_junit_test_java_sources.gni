@@ -206,7 +206,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/signin/ConfirmSyncDataStateMachineTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SignOutDialogFragmentTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninManagerTest.java",
-  "junit/src/org/chromium/chrome/browser/signin/SigninPreferencesManagerTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninPromoUtilTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninUtilsAccountPickerTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninUtilsStartActivityTest.java",

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.services;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import android.support.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +18,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninPreferencesManagerTest {
     @Test
-    @SmallTest
     public void testAccountsChangedPref() {
         SigninPreferencesManager prefsManager = SigninPreferencesManager.getInstance();
         assertFalse("Should never return true before the pref has ever been set.",

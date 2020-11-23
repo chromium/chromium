@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -14,11 +14,7 @@ import java.util.Set;
 
 /**
  * SigninPreferencesManager stores the state of SharedPreferences related to account sign-in.
- *
- * Please use SigninPreferencesManager in org.chromium.chrome.browser.signin.services,
- * the current class will be removed after migration of this class in clank.
  */
-@Deprecated
 public class SigninPreferencesManager {
     private static final SigninPreferencesManager INSTANCE = new SigninPreferencesManager();
 
@@ -47,7 +43,7 @@ public class SigninPreferencesManager {
     /**
      * @return The new account name of the current user. Null if it wasn't renamed.
      */
-    String getNewSignedInAccountName() {
+    public String getNewSignedInAccountName() {
         return mManager.readString(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED, null);
     }
 
@@ -56,14 +52,14 @@ public class SigninPreferencesManager {
      *
      * @param newName the new name to write
      */
-    void setNewSignedInAccountName(@Nullable String newName) {
+    public void setNewSignedInAccountName(@Nullable String newName) {
         mManager.writeString(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED, newName);
     }
 
     /**
      * Clears the new account name of the current user.
      */
-    void clearNewSignedInAccountName() {
+    public void clearNewSignedInAccountName() {
         setNewSignedInAccountName(null);
     }
 
@@ -72,7 +68,7 @@ public class SigninPreferencesManager {
      *
      * @param newIndex the new index to write
      */
-    void setLastAccountChangedEventIndex(int newIndex) {
+    public void setLastAccountChangedEventIndex(int newIndex) {
         mManager.writeInt(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX, newIndex);
     }
 
@@ -80,7 +76,7 @@ public class SigninPreferencesManager {
      * @return the last read index of all the account changed events of the current signed in
      *         account.
      */
-    int getLastAccountChangedEventIndex() {
+    public int getLastAccountChangedEventIndex() {
         return mManager.readInt(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX);
     }
 
@@ -113,14 +109,14 @@ public class SigninPreferencesManager {
      * Returns Chrome major version number when signin promo was last shown, or 0 if version number
      * isn't known.
      */
-    int getSigninPromoLastShownVersion() {
+    public int getSigninPromoLastShownVersion() {
         return mManager.readInt(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION);
     }
 
     /**
      * Sets Chrome major version number when signin promo was last shown.
      */
-    void setSigninPromoLastShownVersion(int majorVersion) {
+    public void setSigninPromoLastShownVersion(int majorVersion) {
         mManager.writeInt(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION, majorVersion);
     }
 
@@ -129,7 +125,7 @@ public class SigninPreferencesManager {
      * or null if promo hasn't been shown yet.
      */
     @Nullable
-    Set<String> getSigninPromoLastAccountNames() {
+    public Set<String> getSigninPromoLastAccountNames() {
         return mManager.readStringSet(
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES, null);
     }
@@ -137,7 +133,7 @@ public class SigninPreferencesManager {
     /**
      * Stores a set of account names on the device when signin promo is shown.
      */
-    void setSigninPromoLastAccountNames(Set<String> accountNames) {
+    public void setSigninPromoLastAccountNames(Set<String> accountNames) {
         mManager.writeStringSet(
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES, accountNames);
     }

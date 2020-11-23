@@ -824,6 +824,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/safety_check/android:java",
     "//chrome/browser/safety_check/android:junit",
     "//chrome/browser/share:java",
+    "//chrome/browser/signin/services/android:junit",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:factory_java",
     "//chrome/browser/tabmodel:java",
