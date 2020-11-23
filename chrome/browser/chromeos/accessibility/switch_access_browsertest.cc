@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/accessibility_controller.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -16,6 +19,12 @@
 #include "extensions/browser/browsertest_util.h"
 
 namespace chromeos {
+
+namespace {
+constexpr char kTestSupportPath[] =
+    "chrome/browser/resources/chromeos/accessibility/switch_access/"
+    "test_support.js";
+}
 
 class SwitchAccessTest : public InProcessBrowserTest {
  public:
@@ -52,75 +61,13 @@ class SwitchAccessTest : public InProcessBrowserTest {
   ~SwitchAccessTest() override = default;
 
   void InjectFocusRingWatcher() {
-    std::string script = R"JS(
-      let focusRingState = {
-        'primary': {
-          'role': '',
-          'name': ''
-        },
-        'preview': {
-          'role': '',
-          'name': ''
-        }
-      };
-      let expectedType = '';
-      let expectedRole = '';
-      let expectedName = '';
-      let successCallback = null;
-      let transcript = [];
-
-      function checkFocusRingState() {
-        if (expectedType != '' &&
-            focusRingState[expectedType].role == expectedRole &&
-            focusRingState[expectedType].name == expectedName) {
-          if (successCallback) {
-            transcript.push(`Success type=${expectedType} ` +
-                            `role=${expectedRole} name=${expectedName}`);
-            successCallback();
-            successCallback = null;
-          }
-        }
-      }
-
-      function waitForFocusRing(type, role, name, callback) {
-        transcript.push(`Waiting for type=${type} role=${role} name=${name}`);
-        expectedType = type;
-        expectedRole = role;
-        expectedName = name;
-        successCallback = callback;
-        checkFocusRingState();
-      }
-
-      FocusRingManager.setObserver((primary, preview) => {
-        if (primary && primary instanceof BackButtonNode) {
-          focusRingState['primary']['role'] = 'back';
-          focusRingState['primary']['name'] = '';
-        } else if (primary && primary.automationNode) {
-          let node = primary.automationNode;
-          focusRingState['primary']['role'] = node.role;
-          focusRingState['primary']['name'] = node.name;
-        } else {
-          focusRingState['primary']['role'] = '';
-          focusRingState['primary']['name'] = '';
-        }
-        if (preview && preview.automationNode) {
-          let node = preview.automationNode;
-          focusRingState['preview']['role'] = node.role;
-          focusRingState['preview']['name'] = node.name;
-        } else {
-          focusRingState['preview']['role'] = '';
-          focusRingState['preview']['name'] = '';
-        }
-        transcript.push(`Focus ring state: ${JSON.stringify(focusRingState)}`);
-        checkFocusRingState();
-      });
-      window.domAutomationController.send('ready');
-
-      setInterval(() => {
-        console.error('Test still running. Transcript so far:\n' +
-                      transcript.join('\n'));
-      }, 5000);
-      )JS";
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath source_dir;
+    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_dir));
+    auto test_support_path = source_dir.AppendASCII(kTestSupportPath);
+    std::string script;
+    ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
+        << test_support_path;
 
     // Wait for the extension to load.
     base::RunLoop loop;

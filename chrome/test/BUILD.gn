@@ -2821,6 +2821,7 @@ if (!is_android) {
         "base/interactive_test_utils_aura.h",
         "base/interactive_test_utils_views.cc",
       ]
+      data += [ "../browser/resources/chromeos/accessibility/switch_access/test_support.js" ]
       if (is_chromeos && !is_official_build) {
         sources += [
           "../browser/chromeos/web_applications/sample_system_web_app_integration_browsertest.cc",
