@@ -24,9 +24,11 @@
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
+#include "components/autofill/core/browser/proto/states.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -251,35 +253,70 @@ bool FillStateSelectControl(const base::string16& value,
                             const std::string& country_code,
                             AddressNormalizer* address_normalizer,
                             std::string* failure_to_fill) {
-  base::string16 full;
-  base::string16 abbreviation;
-  // |abbreviation| will be empty for non-US countries.
-  state_names::GetNameAndAbbreviation(value, &full, &abbreviation);
+  std::vector<base::string16> abbreviations;
+  std::vector<base::string16> full_names;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseAlternativeStateNameMap)) {
+    // Fetch the corresponding entry from AlternativeStateNameMap.
+    base::Optional<StateEntry> state_entry =
+        AlternativeStateNameMap::GetInstance()->GetEntry(
+            AlternativeStateNameMap::CountryCode(country_code),
+            AlternativeStateNameMap::StateName(value));
+    full_names.push_back(value);
+    if (state_entry) {
+      for (const auto& abbr : state_entry->abbreviations())
+        abbreviations.push_back(base::UTF8ToUTF16(abbr));
+      if (state_entry->has_canonical_name())
+        full_names.push_back(base::UTF8ToUTF16(state_entry->canonical_name()));
+      for (const auto& alternative_name : state_entry->alternative_names())
+        full_names.push_back(base::UTF8ToUTF16(alternative_name));
+    }
+  } else {
+    base::string16 full;
+    base::string16 abbreviation;
+    // |abbreviation| will be empty for non-US countries.
+    state_names::GetNameAndAbbreviation(value, &full, &abbreviation);
+
+    if (!full.empty())
+      full_names.push_back(std::move(full));
+
+    if (!abbreviation.empty())
+      abbreviations.push_back(std::move(abbreviation));
+  }
 
   // Try an exact match of the abbreviation first.
-  if (!abbreviation.empty() &&
-      SetSelectControlValue(abbreviation, field, /*best_match_index=*/nullptr,
-                            failure_to_fill)) {
-    return true;
+  for (const auto& abbreviation : abbreviations) {
+    if (!abbreviation.empty() &&
+        SetSelectControlValue(abbreviation, field, /*best_match_index=*/nullptr,
+                              failure_to_fill)) {
+      return true;
+    }
   }
 
   // Try an exact match of the full name.
-  if (!full.empty() &&
-      SetSelectControlValue(full, field, /*best_match_index=*/nullptr,
-                            failure_to_fill)) {
-    return true;
+  for (const auto& full : full_names) {
+    if (!full.empty() &&
+        SetSelectControlValue(full, field, /*best_match_index=*/nullptr,
+                              failure_to_fill)) {
+      return true;
+    }
   }
 
   // Try an inexact match of the full name.
-  if (!full.empty() && SetSelectControlValueSubstringMatch(full, false, field,
-                                                           failure_to_fill)) {
-    return true;
+  for (const auto& full : full_names) {
+    if (!full.empty() && SetSelectControlValueSubstringMatch(full, false, field,
+                                                             failure_to_fill)) {
+      return true;
+    }
   }
 
   // Try an inexact match of the abbreviation name.
-  if (!abbreviation.empty() &&
-      SetSelectControlValueTokenMatch(abbreviation, field, failure_to_fill)) {
-    return true;
+  for (const auto& abbreviation : abbreviations) {
+    if (!abbreviation.empty() &&
+        SetSelectControlValueTokenMatch(abbreviation, field, failure_to_fill)) {
+      return true;
+    }
   }
 
   // Try to match a normalized |value| of the state and the |field| options.
@@ -580,10 +617,17 @@ void FillStreetAddress(const base::string16& value,
 }
 
 // Returns whether the |field| was filled with the state in |value| or its
-// abbreviation. First looks if |value| fits directly in the field, then looks
-// if the abbreviation of |value| fits. Does not fill if neither |value| or its
-// abbreviation are too long for the field.
+// canonical state name or the abbreviation.
+// First looks if |value| fits directly in the field, then looks if the
+// abbreviation of |value| fits in case the
+// |features::kAutofillUseAlternativeStateNameMap| is disabled.
+// If the |features::kAutofillUseAlternativeStateNameMap| is enabled, the
+// canonical state is checked if it fits in the field and at last the
+// abbreviations are tried.
+// Does not fill if neither |value| nor the canonical state name nor its
+// abbreviation fit into the field.
 bool FillStateText(const base::string16& value,
+                   const std::string& country_code,
                    FormFieldData* field,
                    std::string* failure_to_fill) {
   if (field->max_length == 0 || field->max_length >= value.size()) {
@@ -591,6 +635,31 @@ bool FillStateText(const base::string16& value,
     field->value = value;
     return true;
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseAlternativeStateNameMap)) {
+    base::Optional<StateEntry> state =
+        AlternativeStateNameMap::GetInstance()->GetEntry(
+            AlternativeStateNameMap::CountryCode(country_code),
+            AlternativeStateNameMap::StateName(value));
+    if (state) {
+      // Fill with the canonical state name if possible.
+      if (state->has_canonical_name() && !state->canonical_name().empty() &&
+          field->max_length >= state->canonical_name().size()) {
+        field->value = base::UTF8ToUTF16(state->canonical_name());
+        return true;
+      }
+
+      // Fill with the abbreviation if possible.
+      for (const auto& abbr : state->abbreviations()) {
+        if (!abbr.empty() && field->max_length >= abbr.size()) {
+          field->value = base::UTF8ToUTF16(abbr);
+          return true;
+        }
+      }
+    }
+  }
+
   // Fill with the state abbreviation.
   base::string16 abbreviation;
   state_names::GetNameAndAbbreviation(value, nullptr, &abbreviation);
@@ -598,6 +667,7 @@ bool FillStateText(const base::string16& value,
     field->value = base::i18n::ToUpper(abbreviation);
     return true;
   }
+
   if (failure_to_fill)
     *failure_to_fill += "Could not fit raw state nor abbreviation. ";
   return false;
@@ -811,8 +881,12 @@ bool FieldFiller::FillFormField(const AutofillField& field,
     FillCreditCardNumberField(field, value, field_data);
     return true;
   }
-  if (type.GetStorableType() == ADDRESS_HOME_STATE)
-    return FillStateText(value, field_data, failure_to_fill);
+  if (type.GetStorableType() == ADDRESS_HOME_STATE) {
+    // TODO(crbug.com/1147883): Static casts are unsafe
+    const std::string country_code = data_util::GetCountryCodeWithFallback(
+        static_cast<const AutofillProfile&>(data_model), app_locale_);
+    return FillStateText(value, country_code, field_data, failure_to_fill);
+  }
   if (field_data->form_control_type == "text" &&
       (type.GetStorableType() == CREDIT_CARD_EXP_2_DIGIT_YEAR ||
        type.GetStorableType() == CREDIT_CARD_EXP_4_DIGIT_YEAR)) {

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1426,6 +1427,75 @@ TEST_P(AutofillProfileComparatorTest,
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
+}
+
+// Checks for various scenarios for determining mergeability of profiles w.r.t.
+// the state.
+TEST_P(AutofillProfileComparatorTest, CheckStatesMergeability) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      autofill::features::kAutofillUseAlternativeStateNameMap);
+
+  autofill::test::ClearAlternativeStateNameMapForTesting();
+  autofill::test::PopulateAlternativeStateNameMapForTesting();
+
+  AutofillProfile empty = CreateProfileWithAddress("", "", "", "", "", "DE");
+  AutofillProfile p1 = CreateProfileWithAddress("", "", "", "Bayern", "", "DE");
+  AutofillProfile p2 = CreateProfileWithAddress("", "", "", "Random", "", "DE");
+  AutofillProfile p3 =
+      CreateProfileWithAddress("", "", "", "Bayern - BY - Bavaria", "", "DE");
+  AutofillProfile p4 =
+      CreateProfileWithAddress("", "", "", "Bavaria", "", "DE");
+
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(empty, empty));
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, empty));
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, p1));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, p2));
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(p3, p1));
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, p4));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p2, p4));
+}
+
+// Tests that the profiles are merged when they have common states.
+TEST_P(AutofillProfileComparatorTest, MergeProfilesBasedOnState) {
+  base::test::ScopedFeatureList feature;
+  // The feature
+  // |autofill::features::kAutofillEnableSupportForMoreStructureInAddresses| is
+  // disabled since it is incompatible with the feature
+  // |autofill::features::kAutofillUseStateMappingCache|.
+  feature.InitWithFeatures(
+      {autofill::features::kAutofillUseAlternativeStateNameMap},
+      {autofill::features::kAutofillEnableSupportForMoreStructureInAddresses});
+
+  autofill::test::ClearAlternativeStateNameMapForTesting();
+  autofill::test::PopulateAlternativeStateNameMapForTesting();
+  autofill::test::PopulateAlternativeStateNameMapForTesting(
+      "IN", "UP",
+      {{.canonical_name = "Uttar Pradesh",
+        .abbreviations = {"UP"},
+        .alternative_names = {}}});
+
+  AutofillProfile empty = CreateProfileWithAddress("", "", "", "", "", "DE");
+  AutofillProfile p1 = CreateProfileWithAddress("", "", "", "Bayern", "", "DE");
+  AutofillProfile p2 =
+      CreateProfileWithAddress("", "", "", "Bayern - BY - Bavaria", "", "DE");
+
+  Address expected;
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("DE"));
+  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("Bayern"));
+  MergeAddressesAndExpect(empty, p1, expected);
+  MergeAddressesAndExpect(p1, empty, expected);
+  MergeAddressesAndExpect(p1, p2, expected);
+  MergeAddressesAndExpect(p2, p1, expected);
+
+  AutofillProfile p3 =
+      CreateProfileWithAddress("", "", "", "Pradesh", "", "IN");
+  AutofillProfile p4 =
+      CreateProfileWithAddress("", "", "", "Uttar Pradesh", "", "IN");
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("IN"));
+  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("Uttar Pradesh"));
+  MergeAddressesAndExpect(p3, p4, expected);
+  MergeAddressesAndExpect(p4, p3, expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(

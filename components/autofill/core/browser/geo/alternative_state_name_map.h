@@ -85,16 +85,25 @@ class AlternativeStateNameMap {
 
   static AlternativeStateNameMap* GetInstance();
 
+  // Removes |kCharsToStrip| from |text| and returns the normalized text.
+  static StateName NormalizeStateName(const StateName& text);
+
+  // Calls |GetCanonicalStateName()| member method of AlternativeStateNameMap
+  // and returns the canonical state name corresponding to |country_code| and
+  // |state_name| if present.
+  static base::Optional<AlternativeStateNameMap::CanonicalStateName>
+  GetCanonicalStateName(const std::string& country_code,
+                        const base::string16& state_name);
+
   ~AlternativeStateNameMap() = delete;
   AlternativeStateNameMap(const AlternativeStateNameMap&) = delete;
   AlternativeStateNameMap& operator=(const AlternativeStateNameMap&) = delete;
 
-  // Removes |kCharsToStrip| from |text| and returns the normalized text.
-  static StateName NormalizeStateName(const StateName& text);
-
   // Returns the canonical name (StateEntry::canonical_name) from the
   // |localized_state_names_map_| based on
   // (|country_code|, |state_name|).
+  // |is_state_name_normalized| denotes whether the |state_name| has been
+  // normalized or not.
   base::Optional<CanonicalStateName> GetCanonicalStateName(
       const CountryCode& country_code,
       const StateName& state_name,

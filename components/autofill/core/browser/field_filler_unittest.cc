@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -767,7 +768,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
   std::vector<const char*> kOptions = {
-      "Eenie", "Meenie", "Miney", "Mo",
+      "Eenie",
+      "Meenie",
+      "Miney",
+      "Mo",
   };
 
   AutofillField field;
@@ -787,7 +791,10 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlByContents) {
   std::vector<const char*> kOptions = {
-      "Eenie", "Meenie", "Miney", "Mo",
+      "Eenie",
+      "Meenie",
+      "Miney",
+      "Mo",
   };
   AutofillField field;
   test::CreateTestSelectField(kOptions, &field);
@@ -1621,6 +1628,120 @@ TEST_F(AutofillFieldFillerTest,
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, address, &field, /*cvc=*/base::string16());
   EXPECT_EQ(ASCIIToUTF16("(0049) Germany"), field.value);
+}
+
+// Tests that the abbreviated state names are selected correctly.
+TEST_F(AutofillFieldFillerTest, FillSelectAbbreviatedState) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting();
+  std::vector<const char*> kState = {"BA", "BB", "BC", "BY"};
+
+  AutofillField field;
+  test::CreateTestSelectField(kState, &field);
+  field.set_heuristic_type(ADDRESS_HOME_STATE);
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("Bavaria"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("DE"));
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, address, &field, /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16("BY"), field.value);
+}
+
+// Tests that the localized state names are selected correctly.
+TEST_F(AutofillFieldFillerTest, FillSelectLocalizedState) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting();
+  std::vector<const char*> kState = {"Bayern", "Berlin", "Brandenburg",
+                                     "Bremen"};
+
+  AutofillField field;
+  test::CreateTestSelectField(kState, &field);
+  field.set_heuristic_type(ADDRESS_HOME_STATE);
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("Bavaria"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("DE"));
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, address, &field, /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16("Bayern"), field.value);
+}
+
+// Tests that the state names are selected correctly when the state name exists
+// as a substring in the selection options.
+TEST_F(AutofillFieldFillerTest, FillSelectLocalizedStateSubstring) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting();
+  std::vector<const char*> kState = {"Bavaria Has Munich", "Berlin has Berlin"};
+
+  AutofillField field;
+  test::CreateTestSelectField(kState, &field);
+  field.set_heuristic_type(ADDRESS_HOME_STATE);
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("Bavaria"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("DE"));
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, address, &field, /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16("Bavaria Has Munich"), field.value);
+}
+
+// Tests that the state abbreviations are filled in the text field when the
+// field length is limited.
+TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting();
+
+  AutofillField field;
+  test::CreateTestFormField("State", "state", "", "text", &field);
+  field.set_heuristic_type(ADDRESS_HOME_STATE);
+  field.max_length = 4;
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("Bavaria"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("DE"));
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, address, &field, /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16("BY"), field.value);
+}
+
+// Tests that the state names are selected correctly even though the state
+// value saved in the address is not recognized by the StateMappingCache.
+TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting();
+  std::vector<const char*> kState = {"Bavari", "Berlin", "Lower Saxony"};
+
+  AutofillField field;
+  test::CreateTestSelectField(kState, &field);
+  field.set_heuristic_type(ADDRESS_HOME_STATE);
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("Bavari"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("DE"));
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, address, &field, /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16("Bavari"), field.value);
 }
 
 }  // namespace autofill

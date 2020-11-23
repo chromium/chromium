@@ -27,8 +27,6 @@ AlternativeStateNameMap* AlternativeStateNameMap::GetInstance() {
   return g_alternative_state_name_map.get();
 }
 
-AlternativeStateNameMap::AlternativeStateNameMap() = default;
-
 // static
 AlternativeStateNameMap::StateName AlternativeStateNameMap::NormalizeStateName(
     const StateName& text) {
@@ -37,6 +35,18 @@ AlternativeStateNameMap::StateName AlternativeStateNameMap::NormalizeStateName(
                     &normalized_text);
   return StateName(normalized_text);
 }
+
+// static
+base::Optional<AlternativeStateNameMap::CanonicalStateName>
+AlternativeStateNameMap::GetCanonicalStateName(
+    const std::string& country_code,
+    const base::string16& state_name) {
+  return AlternativeStateNameMap::GetInstance()->GetCanonicalStateName(
+      AlternativeStateNameMap::CountryCode(country_code),
+      AlternativeStateNameMap::StateName(state_name));
+}
+
+AlternativeStateNameMap::AlternativeStateNameMap() = default;
 
 base::Optional<AlternativeStateNameMap::CanonicalStateName>
 AlternativeStateNameMap::GetCanonicalStateName(

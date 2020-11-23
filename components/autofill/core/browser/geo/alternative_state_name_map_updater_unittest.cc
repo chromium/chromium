@@ -66,12 +66,10 @@ TEST_F(AlternativeStateNameMapUpdaterTest, EntryAddedToStateMap) {
   AlternativeStateNameMap* alternative_state_name_map =
       AlternativeStateNameMap::GetInstance();
   DCHECK(!alternative_state_name_map->IsLocalisedStateNamesMapEmpty());
-
   for (size_t i = 0; i < test_strings.size(); i++) {
     SCOPED_TRACE(test_strings[i]);
-    EXPECT_EQ(alternative_state_name_map->GetCanonicalStateName(
-                  AlternativeStateNameMap::CountryCode("DE"),
-                  test_strings[i]) != base::nullopt,
+    EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName(
+                  "DE", test_strings[i].value()) != base::nullopt,
               state_data_present[i]);
   }
 }
@@ -93,11 +91,9 @@ TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesData) {
       run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_NE(
-      AlternativeStateNameMap::GetInstance()->GetCanonicalStateName(
-          AlternativeStateNameMap::CountryCode("DE"),
-          AlternativeStateNameMap::StateName(base::ASCIIToUTF16("Bavaria"))),
-      base::nullopt);
+  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName(
+                "DE", base::ASCIIToUTF16("Bavaria")),
+            base::nullopt);
 }
 
 // Tests that there is no insertion in the AlternativeStateNameMap when a

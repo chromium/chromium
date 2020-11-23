@@ -10,6 +10,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/unicodestring.h"
+#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -701,13 +702,48 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
   const AutofillType kState(ADDRESS_HOME_STATE);
   const base::string16& state1 = p1.GetInfo(kState, app_locale_);
   const base::string16& state2 = p2.GetInfo(kState, app_locale_);
-  if (state1.empty()) {
-    address->SetInfo(kState, state2, app_locale_);
-  } else if (state2.empty()) {
-    address->SetInfo(kState, state1, app_locale_);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseAlternativeStateNameMap)) {
+    // Holds information about the state string that is going to be used as the
+    // state value in the merged profile.
+    base::string16 candidate_state = state1;
+
+    // Cases where the |state2| is used as the state value in the merged
+    // profile:
+    //  1. |state1| is empty.
+    //  2. |state2| has the canonical state name present in
+    //       AlternativeStateNameMap and |state1| does not.
+    //  3. |state2.size()| < |state1.size()| and either both or none of them
+    //       have canonical state name present in the AlternativeStateNameMap.
+    if (state1.empty()) {
+      candidate_state = state2;
+    } else if (!state2.empty()) {
+      bool state1_has_canonical_name_present =
+          p1.GetAddress().GetCanonicalizedStateName().has_value();
+      bool state2_has_canonical_name_present =
+          p2.GetAddress().GetCanonicalizedStateName().has_value();
+
+      if ((state2_has_canonical_name_present &&
+           !state1_has_canonical_name_present) ||
+          (state2_has_canonical_name_present ==
+               state1_has_canonical_name_present &&
+           state2.size() < state1.size())) {
+        candidate_state = state2;
+      }
+    }
+
+    address->SetInfo(kState, candidate_state, app_locale_);
   } else {
-    address->SetInfo(kState, (state2.size() < state1.size() ? state2 : state1),
-                     app_locale_);
+    if (state1.empty()) {
+      address->SetInfo(kState, state2, app_locale_);
+    } else if (state2.empty()) {
+      address->SetInfo(kState, state1, app_locale_);
+    } else {
+      address->SetInfo(kState,
+                       (state2.size() < state1.size() ? state2 : state1),
+                       app_locale_);
+    }
   }
 
   AddressRewriter rewriter = AddressRewriter::ForCountryCode(country_code);
@@ -1149,7 +1185,14 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
 
   // State
   // ------
-  // Heuristic: States are mergeable if one is a (possibly empty) bag of words
+  // When |kAutofillUseAlternativeStateNameMap| is disabled: States are
+  // mergeable if one is a (possibly empty) bag of words subset of the other.
+  //
+  // When |kAutofillUseAlternativeStateNameMap| is enabled: The profiles
+  // w.r.t the state are mergeable if their canonical state names in
+  // AlternativeStateNameMap matches.
+  // In case one of the profile does not have a canonical state name present in
+  // the AlternativeStateNameMap, states are mergeable if one is a bag of words
   // subset of the other.
   //
   // TODO(rogerm): If the match is between non-empty zip codes then we can infer
@@ -1157,12 +1200,30 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
   // handles the cases where we have invalid or poorly formed data in one of the
   // state values (like "Select one", or "CA - California").
   const AutofillType kState(ADDRESS_HOME_STATE);
-  const base::string16& state1 =
-      rewriter.Rewrite(NormalizeForComparison(p1.GetInfo(kState, app_locale_)));
-  const base::string16& state2 =
-      rewriter.Rewrite(NormalizeForComparison(p2.GetInfo(kState, app_locale_)));
-  if (CompareTokens(state1, state2) == DIFFERENT_TOKENS) {
-    return false;
+  bool canonical_state_names_match = false;
+  bool use_alternative_state_name_map_enabled = base::FeatureList::IsEnabled(
+      features::kAutofillUseAlternativeStateNameMap);
+  if (use_alternative_state_name_map_enabled) {
+    base::Optional<AlternativeStateNameMap::CanonicalStateName>
+        canonical_name_state1 = p1.GetAddress().GetCanonicalizedStateName();
+    base::Optional<AlternativeStateNameMap::CanonicalStateName>
+        canonical_name_state2 = p2.GetAddress().GetCanonicalizedStateName();
+    if (canonical_name_state1 && canonical_name_state2) {
+      if (canonical_name_state1.value() == canonical_name_state2.value())
+        canonical_state_names_match = true;
+      else
+        return false;
+    }
+  }
+
+  if (!use_alternative_state_name_map_enabled || !canonical_state_names_match) {
+    base::string16 state1 = rewriter.Rewrite(
+        NormalizeForComparison(p1.GetInfo(kState, app_locale_)));
+    base::string16 state2 = rewriter.Rewrite(
+        NormalizeForComparison(p2.GetInfo(kState, app_locale_)));
+    if (CompareTokens(state1, state2) == DIFFERENT_TOKENS) {
+      return false;
+    }
   }
 
   // City

@@ -12,6 +12,7 @@
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 
 namespace autofill {
 
@@ -52,6 +53,11 @@ class Address : public FormGroup {
   // more recently used.
   bool MergeStructuredAddress(const Address& newer,
                               bool newer_was_more_recently_used);
+
+  // Fetches the canonical state name for the current address object if
+  // possible.
+  base::Optional<AlternativeStateNameMap::CanonicalStateName>
+  GetCanonicalizedStateName() const;
 
   // For structured addresses, returns true if |this| is mergeable with |newer|.
   bool IsStructuredAddressMergeable(const Address& newer) const;
