@@ -78,7 +78,8 @@ std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
 std::string InferGuidForLegacyBookmark(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
-  DCHECK(!base::IsValidGUID(originator_client_item_id));
+  DCHECK(
+      !base::GUID::ParseCaseInsensitive(originator_client_item_id).is_valid());
 
   const std::string unique_tag =
       base::StrCat({originator_cache_guid, originator_client_item_id});
@@ -88,7 +89,7 @@ std::string InferGuidForLegacyBookmark(
   static_assert(base::kSHA1Length >= 16, "16 bytes needed to infer GUID");
 
   const std::string guid = ComputeGuidFromBytes(base::make_span(hash));
-  DCHECK(base::IsValidGUIDOutputString(guid));
+  DCHECK(base::GUID::ParseLowercase(guid).is_valid());
   return guid;
 }
 

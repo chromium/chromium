@@ -598,7 +598,7 @@ TEST_F(BookmarkCodecTest, ReassignMissingGUID) {
 
 TEST_F(BookmarkCodecTest, ReassignInvalidGUID) {
   const std::string kInvalidGuid = "0000";
-  ASSERT_FALSE(base::IsValidGUID(kInvalidGuid));
+  ASSERT_FALSE(base::GUID::ParseCaseInsensitive(kInvalidGuid).is_valid());
 
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
 

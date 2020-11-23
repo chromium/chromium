@@ -151,7 +151,8 @@ std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
 std::string InferGuidForLegacyBookmark(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
-  DCHECK(!base::IsValidGUID(originator_client_item_id));
+  DCHECK(
+      !base::GUID::ParseCaseInsensitive(originator_client_item_id).is_valid());
 
   const std::string unique_tag =
       base::StrCat({originator_cache_guid, originator_client_item_id});
@@ -161,7 +162,7 @@ std::string InferGuidForLegacyBookmark(
   static_assert(base::kSHA1Length >= 16, "16 bytes needed to infer GUID");
 
   const std::string guid = ComputeGuidFromBytes(base::make_span(hash));
-  DCHECK(base::IsValidGUIDOutputString(guid));
+  DCHECK(base::GUID::ParseLowercase(guid).is_valid());
   return guid;
 }
 
@@ -395,7 +396,7 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
 bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
                              const std::string& originator_cache_guid,
                              const std::string& originator_client_item_id) {
-  DCHECK(base::IsValidGUIDOutputString(specifics.guid()));
+  DCHECK(base::GUID::ParseLowercase(specifics.guid()).is_valid());
 
   if (originator_client_item_id.empty()) {
     // This could be a future bookmark with a client tag instead of an
@@ -404,7 +405,7 @@ bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
     return true;
   }
 
-  if (base::IsValidGUID(originator_client_item_id)) {
+  if (base::GUID::ParseCaseInsensitive(originator_client_item_id).is_valid()) {
     // Bookmarks created around 2016, between [M44..M52) use an uppercase GUID
     // as originator client item ID, so it needs to be lowercased to adhere to
     // the invariant that GUIDs in specifics are canonicalized.

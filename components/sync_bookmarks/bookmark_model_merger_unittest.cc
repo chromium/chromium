@@ -1528,7 +1528,8 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteUpdateWithInvalidGUID) {
 
   // |originator_client_item_id| cannot itself be duplicated because
   // ModelTypeWorker guarantees otherwise.
-  updates.back().entity.originator_client_item_id = base::GenerateGUID();
+  updates.back().entity.originator_client_item_id =
+      base::GUID::GenerateRandomV4().AsLowercaseString();
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       Merge(std::move(updates), bookmark_model.get());

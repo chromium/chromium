@@ -618,7 +618,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*unique_position=*/kPosition));
 
   // Override the originator client item ID to mimic a mismatch.
-  updates.back().entity.originator_client_item_id = base::GenerateGUID();
+  updates.back().entity.originator_client_item_id =
+      base::GUID::GenerateRandomV4().AsLowercaseString();
 
   base::HistogramTester histogram_tester;
   updates_handler()->Process(updates,
@@ -997,7 +998,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              .ToProto();
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
-  bookmark_specifics->set_guid(base::GenerateGUID());
+  bookmark_specifics->set_guid(
+      base::GUID::GenerateRandomV4().AsLowercaseString());
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
@@ -1045,7 +1047,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              .ToProto();
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
-  bookmark_specifics->set_guid(base::GenerateGUID());
+  bookmark_specifics->set_guid(
+      base::GUID::GenerateRandomV4().AsLowercaseString());
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
@@ -1084,7 +1087,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              .ToProto();
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
-  bookmark_specifics->set_guid(base::GenerateGUID());
+  bookmark_specifics->set_guid(
+      base::GUID::GenerateRandomV4().AsLowercaseString());
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
@@ -1109,7 +1113,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldUpdateSyncIdWhenRecevingAnUpdateForNewlyCreatedLocalNode) {
   const std::string kCacheGuid = "generated_id";
-  const std::string kOriginatorClientItemId = base::GenerateGUID();
+  const std::string kOriginatorClientItemId =
+      base::GUID::GenerateRandomV4().AsLowercaseString();
   const std::string kSyncId = "server_id";
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
@@ -1122,7 +1127,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const sync_pb::UniquePosition unique_position;
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
-  bookmark_specifics->set_guid(base::GenerateGUID());
+  bookmark_specifics->set_guid(
+      base::GUID::GenerateRandomV4().AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title("Title");
   bookmarks::BookmarkNode node(/*id=*/1, base::GUID::GenerateRandomV4(),
                                GURL());
