@@ -3227,8 +3227,7 @@
             "url": "http://localhost/",
             "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
           }
-        },
-        "selector": "#account-picture-indicator"
+        }
       }
     ]
   },
@@ -3242,8 +3241,7 @@
             "url": "http://localhost/",
             "hash": "baddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecaf"
           }
-        },
-        "selector": "#wallpaper-indicator"
+        }
       }
     ]
   },
