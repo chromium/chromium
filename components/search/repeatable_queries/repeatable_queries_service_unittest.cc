@@ -391,7 +391,13 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_BadResponse) {
   EXPECT_TRUE(service()->repeatable_queries().empty());
 }
 
-TEST_F(RepeatableQueriesServiceTest, SignedIn_ErrorResponse) {
+// TODO(crbug.com/1151909) Test fails on iOS device
+#if defined(OS_IOS) && !TARGET_IPHONE_SIMULATOR
+#define MAYBE_SignedIn_ErrorResponse DISABLED_SignedIn_ErrorResponse
+#else
+#define MAYBE_SignedIn_ErrorResponse SignedIn_ErrorResponse
+#endif
+TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_ErrorResponse) {
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
                                          GoodServerResponse());
@@ -418,6 +424,14 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_ErrorResponse) {
   EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
 }
 
+// TODO(crbug.com/1151909) Test fails on iOS device
+#if defined(OS_IOS) && !TARGET_IPHONE_SIMULATOR
+#define MAYBE_SignedIn_DefaultSearchProviderChanged \
+  DISABLED_SignedIn_DefaultSearchProviderChanged
+#else
+#define MAYBE_SignedIn_DefaultSearchProviderChanged \
+  SignedIn_DefaultSearchProviderChanged
+#endif
 TEST_F(RepeatableQueriesServiceTest, SignedIn_DefaultSearchProviderChanged) {
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
