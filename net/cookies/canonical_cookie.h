@@ -145,6 +145,24 @@ class NET_EXPORT CanonicalCookie {
       CookieSourceScheme source_scheme,
       int source_port);
 
+  // Create a CanonicalCookie that is not guaranteed to actually be Canonical
+  // for tests. This factory should NOT be used in production.
+  static CanonicalCookie CreateUnsafeCookieForTesting(
+      const std::string& name,
+      const std::string& value,
+      const std::string& domain,
+      const std::string& path,
+      const base::Time& creation,
+      const base::Time& expiration,
+      const base::Time& last_access,
+      bool secure,
+      bool httponly,
+      CookieSameSite same_site,
+      CookiePriority priority,
+      bool same_party,
+      CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
+      int source_port = url::PORT_UNSPECIFIED);
+
   const std::string& Name() const { return name_; }
   const std::string& Value() const { return value_; }
   // We represent the cookie's host-only-flag as the absence of a leading dot in
