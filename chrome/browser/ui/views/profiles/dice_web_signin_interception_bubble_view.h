@@ -22,20 +22,6 @@ class Profile;
 class DiceWebSigninInterceptionBubbleView
     : public views::BubbleDialogDelegateView {
  public:
-  // User action resulting from the interception bubble.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class SigninInterceptionResult {
-    kAccepted = 0,
-    kDeclined = 1,
-    kIgnored = 2,
-
-    // Used when the bubble was not shown because it's not implemented.
-    kNotDisplayed = 3,
-
-    kMaxValue = kNotDisplayed,
-  };
-
   ~DiceWebSigninInterceptionBubbleView() override;
 
   DiceWebSigninInterceptionBubbleView(
@@ -48,7 +34,7 @@ class DiceWebSigninInterceptionBubbleView
       views::View* anchor_view,
       const DiceWebSigninInterceptor::Delegate::BubbleParameters&
           bubble_parameters,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   // Record metrics about the result of the signin interception.
   static void RecordInterceptionResult(
@@ -66,7 +52,7 @@ class DiceWebSigninInterceptionBubbleView
       views::View* anchor_view,
       const DiceWebSigninInterceptor::Delegate::BubbleParameters&
           bubble_parameters,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   // This bubble has no native buttons. The user accepts or cancels through this
   // method, which is called by the inner web UI.
@@ -74,7 +60,7 @@ class DiceWebSigninInterceptionBubbleView
 
   Profile* profile_;
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
-  base::OnceCallback<void(bool)> callback_;
+  base::OnceCallback<void(SigninInterceptionResult)> callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_

@@ -32,6 +32,11 @@ DiceWebSigninInterceptorFactory::DiceWebSigninInterceptorFactory()
 
 DiceWebSigninInterceptorFactory::~DiceWebSigninInterceptorFactory() = default;
 
+void DiceWebSigninInterceptorFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  DiceWebSigninInterceptor::RegisterProfilePrefs(registry);
+}
+
 KeyedService* DiceWebSigninInterceptorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new DiceWebSigninInterceptor(

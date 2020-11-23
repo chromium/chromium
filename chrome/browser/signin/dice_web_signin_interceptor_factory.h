@@ -28,6 +28,8 @@ class DiceWebSigninInterceptorFactory
   ~DiceWebSigninInterceptorFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
 };

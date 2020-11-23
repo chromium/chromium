@@ -13,8 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using SigninInterceptionType = DiceWebSigninInterceptor::SigninInterceptionType;
-using SigninInterceptionResult =
-    DiceWebSigninInterceptionBubbleView::SigninInterceptionResult;
 
 class DiceWebSigninInterceptionBubbleViewTestBase : public testing::Test {
  public:
