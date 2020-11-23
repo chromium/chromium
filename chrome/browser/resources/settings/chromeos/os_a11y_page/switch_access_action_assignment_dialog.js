@@ -72,12 +72,12 @@ Polymer({
     },
 
     /**
-     * The localized dialog title.
+     * The localized action label.
      * @private {string}
      */
     dialogTitle_: {
       type: String,
-      computed: 'getLabelForAction_(action)',
+      computed: 'getDialogTitleForAction_(action)',
     },
 
     /**
@@ -303,6 +303,17 @@ Polymer({
       case SwitchAccessCommand.PREVIOUS:
         return this.i18n('assignPreviousSwitchLabel');
     }
+  },
+
+  /**
+   * @param {SwitchAccessCommand} action
+   * @return {string}
+   * @private
+   */
+  getDialogTitleForAction_(action) {
+    return this.i18n(
+        'switchAccessActionAssignmentDialogTitle',
+        this.getLabelForAction_(action));
   },
 
   /**

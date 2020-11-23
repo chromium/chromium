@@ -498,6 +498,8 @@ void AccessibilitySection::AddLoadTimeData(
       {"assignSelectSwitchLabel", IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL},
       {"assignNextSwitchLabel", IDS_SETTINGS_ASSIGN_NEXT_SWITCH_LABEL},
       {"assignPreviousSwitchLabel", IDS_SETTINGS_ASSIGN_PREVIOUS_SWITCH_LABEL},
+      {"switchAccessActionAssignmentDialogTitle",
+       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_TITLE},
       {"switchAccessActionAssignmentDialogWarnNotConfirmedPrompt",
        IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_NOT_CONFIRMED_PROMPT},
       {"switchAccessActionAssignmentDialogWarnAlreadyAssignedActionPrompt",
