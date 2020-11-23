@@ -35,12 +35,14 @@ void DriveShareAction::LaunchAction(
     sharesheet::SharesheetController* controller,
     views::View* root_view,
     apps::mojom::IntentPtr intent) {
+  controller_ = controller;
   DCHECK(intent->drive_share_url.has_value());
-  NavigateParams params(controller->GetProfile(),
+  NavigateParams params(controller_->GetProfile(),
                         intent->drive_share_url.value(),
                         ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+  controller_->CloseSharesheet();
 }
 
 void DriveShareAction::OnClosing(sharesheet::SharesheetController* controller) {
