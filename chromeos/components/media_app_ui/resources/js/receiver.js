@@ -317,6 +317,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Note: go/bbsrc/flags.ts processes this, `window.features` variable.
   /** @type{{features: Object<string, boolean>}} */ (window).features = {
     imageAnnotation: loadTimeData.getBoolean('imageAnnotation'),
+    pdfInInk: loadTimeData.getBoolean('pdfInInk'),
     flagsMenu: loadTimeData.getBoolean('flagsMenu'),
     isDevChannel: loadTimeData.getBoolean('isDevChannel'),
   };

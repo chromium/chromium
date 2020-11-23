@@ -435,6 +435,10 @@ const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
 const base::Feature kMediaAppHandlesRaw{"MediaAppHandlesRaw",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether Pdf files loading ink is enabled in the ChromeOS media app.
+const base::Feature kMediaAppPdfInInk{"MediaAppPdfInInk",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a unique URL for each path in CrOS settings.
 // This allows deep linking to individual settings, i.e. in settings search.
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
