@@ -1861,7 +1861,7 @@
     },
     {
       'name': 'RemoteAccessClientFirewallTraversal',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:14-16', 'chrome_os:14-16'],
@@ -1884,7 +1884,7 @@
     },
     {
       'name': 'RemoteAccessHostClientDomain',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-', 'chrome_os:41-'],
@@ -1902,7 +1902,7 @@
     },
     {
       'name': 'RemoteAccessHostClientDomainList',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -1918,19 +1918,17 @@
       'id': 369,
       'caption': '''Configure the required domain names for remote access clients''',
       'tags': [],
-      'desc': '''Configures the required client domain names that will be imposed on remote access clients and prevents users from changing it.
+      'desc': '''Setting the policy specifies the client domain names that are imposed on remote access clients, and users can't change them. Only clients from one of the specified domains can connect to the host.
 
-          If this setting is enabled and set to one or more domains, then only clients from one of the specified domains can connect to the host.
+      Setting the policy to an empty list or leaving it unset applies the default policy for the connection type. For remote assistance, this allows clients from any domain to connect to the host. For anytime remote access, only the host owner can connect.
 
-          If this setting is disabled, not set, or set to an empty list, then the default policy for the connection type is applied. For remote assistance, this allows clients from any domain to connect to the host; for anytime remote access, only the host owner can connect.
+      See also <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME">RemoteAccessHostDomainList</ph>.
 
-          This setting will override <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME">RemoteAccessHostClientDomain</ph>, if present.
-
-          See also <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME">RemoteAccessHostDomainList</ph>.''',
+      Note: This setting overrides <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME">RemoteAccessHostClientDomain</ph>, if present.''',
     },
     {
       'name': 'RemoteAccessHostFirewallTraversal',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:14-', 'chrome_os:41-'],
@@ -1943,17 +1941,13 @@
       'id': 95,
       'caption': '''Enable firewall traversal from remote access host''',
       'tags': [],
-      'desc': '''Enables usage of STUN servers when remote clients are trying to establish a connection to this machine.
+      'desc': '''Setting the policy to Enabled or leaving it unset allows the usage of STUN servers, letting remote clients discover and connect to this machine, even if separated by a firewall.
 
-          If this setting is enabled, then remote clients can discover and connect to this machines even if they are separated by a firewall.
-
-          If this setting is disabled and outgoing UDP connections are filtered by the firewall, then this machine will only allow connections from client machines within the local network.
-
-          If this policy is left not set the setting will be enabled.''',
+      Setting the policy to Disabled when outgoing UDP connections are filtered by the firewall means the machine only allows connections from client machines within the local network.''',
     },
     {
       'name': 'RemoteAccessHostDomain',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-', 'chrome_os:41-'],
@@ -1971,7 +1965,7 @@
     },
     {
       'name': 'RemoteAccessHostDomainList',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -1987,19 +1981,17 @@
       'id': 368,
       'caption': '''Configure the required domain names for remote access hosts''',
       'tags': [],
-      'desc': '''Configures the required host domain names that will be imposed on remote access hosts and prevents users from changing it.
+      'desc': '''Setting the policy specifies the host domain names that are imposed on remote access hosts, and users can't change them. Hosts can be shared only using accounts registered on one of the specified domain names.
 
-          If this setting is enabled and set to one or more domains, then hosts can be shared only using accounts registered on one of the specified domain names.
+      Setting the policy to an empty list or leaving it unset means hosts can be shared using any account.
 
-          If this setting is disabled, not set, or set to an empty list, then hosts can be shared using any account.
+      See also <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME">RemoteAccessHostClientDomainList</ph>.
 
-          This setting will override <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME">RemoteAccessHostDomain</ph>, if present.
-
-          See also <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME">RemoteAccessHostClientDomainList</ph>.''',
+      Note: This setting will override <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME">RemoteAccessHostDomain</ph>, if present.''',
     },
     {
       'name': 'RemoteAccessHostRequireTwoFactor',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:22-22'],
@@ -2022,7 +2014,7 @@
     },
     {
       'name': 'RemoteAccessHostTalkGadgetPrefix',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-75', 'chrome_os:41-75'],
@@ -2048,7 +2040,7 @@
     },
     {
       'name': 'RemoteAccessHostRequireCurtain',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:23-'],
@@ -2061,15 +2053,13 @@
       'id': 157,
       'caption': '''Enable curtaining of remote access hosts''',
       'tags': ['system-security'],
-      'desc': '''Enables curtaining of remote access hosts while a connection is in progress.
+      'desc': '''Setting the policy to Enabled turns off remote access hosts' physical input and output devices during a remote connection.
 
-          If this setting is enabled, then hosts' physical input and output devices are disabled while a remote connection is in progress.
-
-          If this setting is disabled or not set, then both local and remote users can interact with the host when it is being shared.''',
+      Setting the policy to Disabled or leaving it unset lets both local and remote users interact with the host while it's shared.''',
     },
     {
       'name': 'RemoteAccessHostAllowClientPairing',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:30-'],
@@ -2082,13 +2072,13 @@
       'id': 234,
       'caption': '''Enable or disable PIN-less authentication for remote access hosts''',
       'tags': [],
-      'desc': '''If this setting is enabled or not configured, then users can opt to pair clients and hosts at connection time, eliminating the need to enter a PIN every time.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets users pair clients and hosts at connection time, eliminating the need to enter a PIN every time.
 
-          If this setting is disabled, then this feature will not be available.''',
+      Setting the policy to Disabled makes this feature unavailable.''',
     },
     {
       'name': 'RemoteAccessHostAllowGnubbyAuth',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:35-'],
@@ -2102,15 +2092,15 @@
       'id': 257,
       'caption': '''Allow gnubby authentication for remote access hosts''',
       'tags': [],
-      'desc': '''If this setting is enabled, then gnubby authentication requests will be proxied across a remote host connection.
+      'desc': '''Setting the policy to Enabled means gnubby authentication requests will be proxied across a remote host connection.
 
-          Note that this feature requires additional components which are not available outside of the Google network environment in order to work properly.
+      Setting the policy to Disabled or leaving it unset means gnubby authentication requests won't be proxied.
 
-          If this setting is disabled, gnubby authentication requests will not be proxied.''',
+      Note that this feature requires additional components which are not available outside of the Google network environment in order to work properly.''',
     },
     {
       'name': 'RemoteAccessHostAllowRelayedConnection',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:36-', 'chrome_os:86-'],
@@ -2123,17 +2113,13 @@
       'id': 263,
       'caption': '''Enable the use of relay servers by the remote access host''',
       'tags': [],
-      'desc': '''Enables usage of relay servers when remote clients are trying to establish a connection to this machine.
+      'desc': '''If <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is set to Enabled, setting <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME">RemoteAccessHostAllowRelayedConnection</ph>to Enabled or leaving it unset allows the use of remote clients to use relay servers to connect to this machine when a direct connection is not available, for example, because of firewall restrictions.
 
-          If this setting is enabled, then remote clients can use relay servers to connect to this machine when a direct connection is not available (e.g. due to firewall restrictions).
-
-          Note that if the policy <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is disabled, this policy will be ignored.
-
-          If this policy is left not set the setting will be enabled.''',
+      Setting the policy to Disabled doesn't turn remote access off, but only allows connections from the same network (not NAT traversal or relay).''',
     },
     {
       'name': 'RemoteAccessHostUdpPortRange',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:36-', 'chrome_os:41-'],
@@ -2146,13 +2132,15 @@
       'id': 264,
       'caption': '''Restrict the UDP port range used by the remote access host''',
       'tags': [],
-      'desc': '''Restricts the UDP port range used by the remote access host in this machine.
+      'desc': '''Setting the policy restricts the UDP port range used by the remote access host in this machine.
 
-          If this policy is left not set, or if it is set to an empty string, the remote access host will be allowed to use any available port, unless the policy <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is disabled, in which case the remote access host will use UDP ports in the 12400-12409 range.''',
+      Leaving the policy unset or set to an empty string means the remote access host can use any available port.
+
+      Note: If <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is Disabled, the remote access host will use UDP ports in the 12400-12409 range.''',
     },
     {
       'name': 'RemoteAccessHostMatchUsername',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.linux:25-', 'chrome.mac:25-'],
@@ -2165,13 +2153,13 @@
       'id': 285,
       'caption': '''Require that the name of the local user and the remote access host owner match''',
       'tags': [],
-      'desc': '''If this setting is enabled, then the remote access host compares the name of the local user (that the host is associated with) and the name of the Google account registered as the host owner (i.e. "johndoe" if the host is owned by "johndoe@example.com" Google account).  The remote access host will not start if the name of the host owner is different from the name of the local user that the host is associated with.  RemoteAccessHostMatchUsername policy should be used together with RemoteAccessHostDomain to also enforce that the Google account of the host owner is associated with a specific domain (i.e. "example.com").
+      'desc': '''Setting the policy to Enabled has the remote access host compare the name of the local user the host is associated with and the name of the Google Account registered as the host owner ("johndoe," if the host is owned by "johndoe@example.com"). This host won't start if the host owner's name differs from the name of the local user that the host is associated with. To enforce that the owner's Google Account is associated with a specific domain, use the policy with <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME">RemoteAccessHostDomain</ph>.
 
-          If this setting is disabled or not set, then the remote access host can be associated with any local user.''',
+      Setting the policy to Disabled or leaving it unset means the remote access host can be associated with any local user.''',
     },
     {
       'name': 'RemoteAccessHostTokenUrl',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
@@ -2185,13 +2173,15 @@
       'id': 286,
       'caption': '''URL where remote access clients should obtain their authentication token''',
       'tags': ['website-sharing'],
-      'desc': '''If this policy is set, the remote access host will require authenticating clients to obtain an authentication token from this URL in order to connect. Must be used in conjunction with RemoteAccessHostTokenValidationUrl.
+      'desc': '''Setting the policy means the remote access host requires authenticating clients to get an authentication token from this URL to connect.
 
-          This feature is disabled if empty or not set.''',
+      This feature is disabled if empty or not set.
+
+      Note: This policy must be used with <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME">RemoteAccessHostTokenValidationUrl</ph>.''',
     },
     {
       'name': 'RemoteAccessHostTokenValidationUrl',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
@@ -2205,13 +2195,13 @@
       'id': 287,
       'caption': '''URL for validating remote access client authentication token''',
       'tags': ['website-sharing'],
-      'desc': '''If this policy is set, the remote access host will use this URL to validate authentication tokens from remote access clients, in order to accept connections. Must be used in conjunction with RemoteAccessHostTokenUrl.
+      'desc': '''Setting the policy means the remote access host uses this URL to validate authentication tokens from remote access clients to accept connections. This feature is disabled if empty or not set.
 
-          This feature is disabled if empty or not set.''',
+      Note: Use the policy with <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME">RemoteAccessHostTokenUrl</ph>.''',
     },
     {
       'name': 'RemoteAccessHostTokenValidationCertificateIssuer',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
@@ -2225,13 +2215,11 @@
       'id': 288,
       'caption': '''Client certificate for connecting to RemoteAccessHostTokenValidationUrl''',
       'tags': [],
-      'desc': '''If this policy is set, the host will use a client certificate with the given issuer CN to authenticate to RemoteAccessHostTokenValidationUrl. Set it to "*" to use any available client certificate.
-
-          This feature is disabled if empty or not set.''',
+      'desc': '''Setting the policy means the remote access host uses a client certificate with the given issuer CN to authenticate to <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME">RemoteAccessHostTokenValidationUrl</ph>. To use any available client certificate, set it to <ph name="WILDCARD_VALUE">*</ph>. This feature is disabled if empty or not set.''',
     },
     {
       'name': 'RemoteAccessHostDebugOverridePolicies',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:25-47','chrome_os:42-47'],
@@ -2251,7 +2239,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowUiAccessForRemoteAssistance',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:55-'],
@@ -2264,13 +2252,13 @@
       'id': 344,
       'caption': '''Allow remote users to interact with elevated windows in remote assistance sessions''',
       'tags': ['system-security'],
-      'desc': '''If this setting is enabled, the remote assistance host will be run in a process with <ph name="UIACCESS_PERMISSION_NAME">uiAccess</ph> permissions.  This will allow remote users to interact with elevated windows on the local user's desktop.
+      'desc': '''Setting the policy to Enabled means the remote assistance host runs in a process with <ph name="UIACCESS_PERMISSION_NAME">uiAccess</ph> permissions. This lets remote users interact with elevated windows on the local user's desktop.
 
-          If this setting is disabled or not configured, the remote assistance host will run in the user's context and remote users cannot interact with elevated windows on the desktop.''',
+      Setting the policy to Disabled or leaving it unset means the remote assistance host runs in the user's context, and remote users can't interact with elevated windows on the desktop.''',
     },
     {
       'name': 'RemoteAccessHostAllowFileTransfer',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:74-'],
@@ -2283,13 +2271,13 @@
       'id': 534,
       'caption': '''Allow remote access users to transfer files to/from the host''',
       'tags': [],
-      'desc': '''Controls the ability of a user connected to a remote access host to transfer files between the client and the host. This does not apply to remote assistance connections, which do not support file transfer.
+      'desc': '''Setting the policy to Enabled or leaving it unset allows users connected to a remote access host to transfer files between the client and the host. This doesn't apply to remote assistance connections, which don't support file transfer.
 
-          If this setting is disabled, file transfer will not be allowed. If this setting is enabled or not set, file transfer will be allowed.''',
+      Setting the policy to Disabled disallows file transfer.''',
     },
     {
       'name': 'RemoteAccessHostEnableUserInterface',
-      'owners': ['file://remoting/OWNERS'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:88-'],
