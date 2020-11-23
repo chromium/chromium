@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -91,9 +91,9 @@ class ExtensionInstallDialogView
   ExtensionInstallPrompt::DoneCallback done_callback_;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
   base::string16 title_;
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // The scroll view containing all the details for the dialog (including all
   // collapsible/expandable sections).

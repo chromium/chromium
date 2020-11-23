@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -217,8 +218,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   Browser* const browser_;
   ToolbarActionsModel* const model_;
-  ScopedObserver<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      model_observer_;
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      model_observation_{this};
   ExtensionsToolbarButton* const extensions_button_;
   DisplayMode display_mode_;
 

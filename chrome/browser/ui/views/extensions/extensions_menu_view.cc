@@ -67,7 +67,6 @@ ExtensionsMenuView::ExtensionsMenuView(
       extensions_container_(extensions_container),
       allow_pinning_(allow_pinning),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())),
-      toolbar_model_observer_(this),
       cant_access_{nullptr, nullptr,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA_SHORT,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA,
@@ -80,7 +79,7 @@ ExtensionsMenuView::ExtensionsMenuView(
                   IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA_SHORT,
                   IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA,
                   ToolbarActionViewController::PageInteractionStatus::kActive} {
-  toolbar_model_observer_.Add(toolbar_model_);
+  toolbar_model_observation_.Observe(toolbar_model_);
   browser_->tab_strip_model()->AddObserver(this);
   set_margins(gfx::Insets(0));
 

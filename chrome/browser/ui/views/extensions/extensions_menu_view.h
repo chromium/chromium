@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -163,8 +163,8 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   ExtensionsContainer* const extensions_container_;
   bool allow_pinning_;
   ToolbarActionsModel* const toolbar_model_;
-  ScopedObserver<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      toolbar_model_observer_;
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      toolbar_model_observation_{this};
   std::vector<ExtensionsMenuItemView*> extensions_menu_items_;
 
   views::Button* manage_extensions_button_for_testing_ = nullptr;

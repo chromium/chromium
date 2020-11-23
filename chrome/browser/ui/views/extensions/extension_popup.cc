@@ -55,8 +55,8 @@ void ExtensionPopup::ShowPopup(
 
   // This is removed in ExtensionPopup::OnWidgetDestroying(), which is
   // guaranteed to be called before the Widget goes away.  It's not safe to use
-  // a ScopedObserver for this, since the activation client may be deleted
-  // without a call back to this class.
+  // a base::ScopedObservation for this, since the activation client may be
+  // deleted without a call back to this class.
   wm::GetActivationClient(native_view->GetRootWindow())->AddObserver(popup);
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_POPUP_AURA);
@@ -162,7 +162,7 @@ void ExtensionPopup::OnExtensionUnloaded(
     host_.reset();
     // Stop observing the registry immediately to prevent any subsequent
     // notifications, since Widget::Close is asynchronous.
-    extension_registry_observer_.RemoveAll();
+    extension_registry_observation_.RemoveObservation();
 
     GetWidget()->Close();
   }
@@ -220,7 +220,6 @@ ExtensionPopup::ExtensionPopup(
                                arrow,
                                views::BubbleBorder::SMALL_SHADOW),
       host_(std::move(host)),
-      extension_registry_observer_(this),
       show_action_(show_action) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_use_round_corners(false);
@@ -247,7 +246,7 @@ ExtensionPopup::ExtensionPopup(
   content::DevToolsAgentHost::AddObserver(this);
   host_->browser()->tab_strip_model()->AddObserver(this);
 
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(host_->browser_context()));
 
   // If the host had somehow finished loading, then we'd miss the notification

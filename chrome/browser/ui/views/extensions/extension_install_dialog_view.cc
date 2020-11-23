@@ -207,7 +207,7 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
 
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile_);
-  extension_registry_observer_.Add(extension_registry);
+  extension_registry_observation_.Observe(extension_registry);
 
   int buttons = prompt_->GetDialogButtons();
   DCHECK(buttons & ui::DIALOG_BUTTON_CANCEL);
@@ -418,7 +418,8 @@ void ExtensionInstallDialogView::OnShutdown(
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile_);
   DCHECK_EQ(extension_registry, registry);
-  extension_registry_observer_.Remove(extension_registry);
+  DCHECK(extension_registry_observation_.IsObservingSource(extension_registry));
+  extension_registry_observation_.RemoveObservation();
   CloseDialog();
 }
 

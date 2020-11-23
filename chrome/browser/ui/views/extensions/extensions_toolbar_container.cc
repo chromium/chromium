@@ -43,13 +43,12 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
     : ToolbarIconContainerView(/*uses_highlight=*/true),
       browser_(browser),
       model_(ToolbarActionsModel::Get(browser_->profile())),
-      model_observer_(this),
       extensions_button_(new ExtensionsToolbarButton(browser_, this)),
       display_mode_(display_mode) {
   // The container shouldn't show unless / until we have extensions available.
   SetVisible(false);
 
-  model_observer_.Add(model_);
+  model_observation_.Observe(model_);
   // Do not flip the Extensions icon in RTL.
   extensions_button_->SetFlipCanvasOnPaintForRTLUI(false);
 
