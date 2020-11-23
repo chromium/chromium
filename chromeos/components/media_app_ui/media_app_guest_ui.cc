@@ -47,6 +47,7 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
                             kChromeosMediaAppBundleResources[i].value);
   }
 
+  // Note: go/bbsrc/flags.ts processes this.
   delegate->PopulateLoadTimeData(source);
   source->UseStringsJs();
 
