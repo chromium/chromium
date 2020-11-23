@@ -68,27 +68,6 @@ String Navigator::platform() const {
                                      : platform_override;
 }
 
-String Navigator::userAgent() const {
-  // If the frame is already detached it no longer has a meaningful useragent.
-  if (!DomWindow())
-    return String();
-
-  return DomWindow()->GetFrame()->Loader().UserAgent();
-}
-
-UserAgentMetadata Navigator::GetUserAgentMetadata() const {
-  // If the frame is already detached it no longer has a meaningful useragent.
-  if (!DomWindow())
-    return blink::UserAgentMetadata();
-
-  base::Optional<UserAgentMetadata> maybe_ua_metadata =
-      DomWindow()->GetFrame()->Loader().UserAgentMetadata();
-  if (maybe_ua_metadata.has_value())
-    return maybe_ua_metadata.value();
-  else
-    return blink::UserAgentMetadata();
-}
-
 bool Navigator::cookieEnabled() const {
   if (!DomWindow())
     return false;

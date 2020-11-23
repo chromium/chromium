@@ -39,28 +39,14 @@ class CORE_EXPORT WorkerNavigator final : public NavigatorBase,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  WorkerNavigator(const String& user_agent,
-                  const UserAgentMetadata&,
-                  ExecutionContext* execution_context);
+  explicit WorkerNavigator(ExecutionContext*);
   ~WorkerNavigator() override;
-
-  // NavigatorID override
-  String userAgent() const override;
 
   // NavigatorLanguage override
   String GetAcceptLanguages() override;
 
   // AcceptLanguagesWatcher override
   void NotifyUpdate() override;
-
- protected:
-  UserAgentMetadata GetUserAgentMetadata() const override {
-    return ua_metadata_;
-  }
-
- private:
-  String user_agent_;
-  UserAgentMetadata ua_metadata_;
 };
 
 }  // namespace blink

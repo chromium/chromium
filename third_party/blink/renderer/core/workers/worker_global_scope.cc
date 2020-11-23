@@ -204,10 +204,8 @@ WorkerLocation* WorkerGlobalScope::location() const {
 }
 
 WorkerNavigator* WorkerGlobalScope::navigator() const {
-  if (!navigator_) {
-    navigator_ = MakeGarbageCollected<WorkerNavigator>(
-        user_agent_, ua_metadata_, GetExecutionContext());
-  }
+  if (!navigator_)
+    navigator_ = MakeGarbageCollected<WorkerNavigator>(GetExecutionContext());
   return navigator_.Get();
 }
 

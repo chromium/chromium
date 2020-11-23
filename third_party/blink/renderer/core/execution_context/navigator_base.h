@@ -49,6 +49,12 @@ class NavigatorBase : public ScriptWrappable,
   explicit NavigatorBase(ExecutionContext* context)
       : NavigatorLanguage(context), ExecutionContextClient(context) {}
 
+  // NavigatorID override
+  String userAgent() const override {
+    return GetExecutionContext() ? GetExecutionContext()->UserAgent()
+                                 : String();
+  }
+
   void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
     NavigatorLanguage::Trace(visitor);
@@ -59,6 +65,11 @@ class NavigatorBase : public ScriptWrappable,
  protected:
   ExecutionContext* GetUAExecutionContext() const override {
     return GetExecutionContext();
+  }
+
+  UserAgentMetadata GetUserAgentMetadata() const override {
+    return GetExecutionContext() ? GetExecutionContext()->GetUserAgentMetadata()
+                                 : blink::UserAgentMetadata();
   }
 };
 

@@ -46,10 +46,8 @@ class CORE_EXPORT Navigator final : public NavigatorBase,
   String vendorSub() const;
 
   String platform() const override;
-  String userAgent() const override;
 
   String GetAcceptLanguages() override;
-  UserAgentMetadata GetUserAgentMetadata() const override;
   void SetUserAgentMetadataForTesting(UserAgentMetadata);
 
   void Trace(Visitor*) const override;

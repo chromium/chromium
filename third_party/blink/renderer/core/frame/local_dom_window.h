@@ -148,6 +148,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   KURL CompleteURL(const String&) const final;
   void DisableEval(const String& error_message) final;
   String UserAgent() const final;
+  UserAgentMetadata GetUserAgentMetadata() const final;
   HttpsState GetHttpsState() const final;
   ResourceFetcher* Fetcher() const final;
   bool CanExecuteScripts(ReasonForCallingCanExecuteScripts) final;

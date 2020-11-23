@@ -37,6 +37,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink-forward.h"
@@ -186,6 +187,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual KURL CompleteURL(const String& url) const = 0;
   virtual void DisableEval(const String& error_message) = 0;
   virtual String UserAgent() const = 0;
+  virtual UserAgentMetadata GetUserAgentMetadata() const {
+    return UserAgentMetadata();
+  }
 
   virtual HttpsState GetHttpsState() const = 0;
 

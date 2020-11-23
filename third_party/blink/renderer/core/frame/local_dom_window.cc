@@ -295,6 +295,11 @@ String LocalDOMWindow::UserAgent() const {
   return GetFrame() ? GetFrame()->Loader().UserAgent() : String();
 }
 
+UserAgentMetadata LocalDOMWindow::GetUserAgentMetadata() const {
+  return GetFrame()->Loader().UserAgentMetadata().value_or(
+      blink::UserAgentMetadata());
+}
+
 HttpsState LocalDOMWindow::GetHttpsState() const {
   // TODO(https://crbug.com/880986): Implement Document's HTTPS state in more
   // spec-conformant way.
