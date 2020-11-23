@@ -221,6 +221,25 @@ KEYDATA
 
 determine_rpm_package_manager() {
   local RELEASE
+
+  # Modern method using os-release(5)
+  if [ -f "/etc/os-release" ]; then
+    RELEASE=$(. "/etc/os-release"; echo "$ID")
+    case $RELEASE in
+    "fedora"|"rhel"|"centos"|"amzn"|"mageia"|"openmandriva")
+      PACKAGEMANAGERS=(yum)
+      ;;
+    "suse"|"sles"|"sled"|"opensuse"|"opensuse-leap"|"opensuse-tumbleweed")
+      PACKAGEMANAGERS=(zypp)
+      ;;
+    esac
+  fi
+
+  if [ "$PACKAGEMANAGERS" ]; then
+    return
+  fi
+
+  # Fallback method using lsb_release(1)
   LSB_RELEASE="$(which lsb_release 2> /dev/null)"
   if [ -x "$LSB_RELEASE" ]; then
     RELEASE=$(lsb_release -i 2> /dev/null | sed 's/:\t/:/' | cut -d ':' -f 2-)
