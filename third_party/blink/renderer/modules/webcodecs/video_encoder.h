@@ -137,6 +137,7 @@ class MODULES_EXPORT VideoEncoder final
 
   ParsedConfig* ParseConfig(const VideoEncoderConfig*, ExceptionState&);
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&);
+  void CreateAndInitializeEncoderOnEncoderSupportKnown(Request* request);
   std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
       const ParsedConfig& config);
   bool CanReconfigure(ParsedConfig& original_config, ParsedConfig& new_config);

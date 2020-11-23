@@ -53,6 +53,7 @@
 namespace blink {
 
 namespace {
+
 std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options) {
@@ -312,6 +313,49 @@ void VideoEncoder::UpdateEncoderLog(std::string encoder_name,
       encoder_name);
   media_log_->SetProperty<media::MediaLogProperty::kIsPlatformVideoDecoder>(
       is_hw_accelerated);
+}
+
+void VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown(
+    Request* request) {
+  DCHECK(active_config_);
+  DCHECK_EQ(request->type, Request::Type::kConfigure);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  media_encoder_ = CreateMediaVideoEncoder(*active_config_);
+  if (!media_encoder_) {
+    HandleError(
+        "Encoder creation error.",
+        media::Status(media::StatusCode::kEncoderInitializationError,
+                      "Unable to create encoder (most likely unsupported "
+                      "codec/acceleration requirement combination)"));
+    return;
+  }
+
+  auto output_cb = WTF::BindRepeating(
+      &VideoEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(this),
+      // We can't use |active_config_| from |this| because it can change by
+      // the time the callback is executed.
+      WrapCrossThreadPersistent(active_config_.Get()), reset_count_);
+
+  auto done_callback = [](VideoEncoder* self, Request* req,
+                          media::Status status) {
+    if (!self || self->reset_count_ != req->reset_count)
+      return;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    DCHECK(self->active_config_);
+
+    if (!status.is_ok()) {
+      self->HandleError("Encoder initialization error.", status);
+    }
+
+    self->stall_request_processing_ = false;
+    self->ProcessRequests();
+  };
+
+  media_encoder_->Initialize(
+      active_config_->profile, active_config_->options, std::move(output_cb),
+      WTF::Bind(done_callback, WrapCrossThreadWeakPersistent(this),
+                WrapCrossThreadPersistent(request)));
 }
 
 std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
@@ -635,42 +679,24 @@ void VideoEncoder::ProcessConfigure(Request* request) {
   DCHECK(active_config_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  media_encoder_ = CreateMediaVideoEncoder(*active_config_);
-  if (!media_encoder_) {
-    HandleError(
-        "Encoder creation error.",
-        media::Status(media::StatusCode::kEncoderInitializationError,
-                      "Unable to create encoder (most likely unsupported "
-                      "codec/acceleration requirement combination)"));
-    return;
-  }
-
-  auto output_cb = WTF::BindRepeating(
-      &VideoEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(this),
-      // We can't use |active_config_| from |this| because it can change by
-      // the time the callback is executed.
-      WrapCrossThreadPersistent(active_config_.Get()), reset_count_);
-
-  auto done_callback = [](VideoEncoder* self, Request* req,
-                          media::Status status) {
-    if (!self || self->reset_count_ != req->reset_count)
-      return;
-    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-    DCHECK(self->active_config_);
-
-    if (!status.is_ok()) {
-      self->HandleError("Encoder initialization error.", status);
-    }
-
-    self->stall_request_processing_ = false;
-    self->ProcessRequests();
-  };
+  auto* gpu_factories = Platform::Current()->GetGpuFactories();
 
   stall_request_processing_ = true;
-  media_encoder_->Initialize(
-      active_config_->profile, active_config_->options, std::move(output_cb),
-      WTF::Bind(done_callback, WrapCrossThreadWeakPersistent(this),
-                WrapCrossThreadPersistent(request)));
+  bool deny_hardware_encoder =
+      active_config_->acc_pref == AccelerationPreference::kDeny;
+  if (!deny_hardware_encoder && gpu_factories &&
+      gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+    // Delay create the hw encoder until HW encoder support is known, so that
+    // GetVideoEncodeAcceleratorSupportedProfiles() can give a reliable answer.
+    auto on_encoder_support_known_cb = WTF::Bind(
+        &VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown,
+        WrapCrossThreadWeakPersistent(this),
+        WrapCrossThreadPersistent(request));
+    gpu_factories->NotifyEncoderSupportKnown(
+        std::move(on_encoder_support_known_cb));
+  } else {
+    CreateAndInitializeEncoderOnEncoderSupportKnown(request);
+  }
 }
 
 void VideoEncoder::ProcessReconfigure(Request* request) {
