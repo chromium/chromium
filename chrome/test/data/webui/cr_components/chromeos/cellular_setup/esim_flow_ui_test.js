@@ -77,7 +77,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
         eSimPage.selectedESimPageName_ === finalPage.id);
   });
 
-  test('Single eSIM profile flow', async function() {
+  test('Single eSIM profile flow successful install', async function() {
     eSimManagerRemote.addEuiccForTest(1);
 
     const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
@@ -98,6 +98,35 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertTrue(
         eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
         eSimPage.selectedESimPageName_ === finalPage.id);
+    assertFalse(!!finalPage.$$('.error'));
+  });
+
+  test('Single eSIM profile flow unsuccessful install', async function() {
+    eSimManagerRemote.addEuiccForTest(1);
+    const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+    const profileList = await availableEuiccs.euiccs[0].getProfileList();
+    profileList.profiles[0].setProfileInstallResultForTest(
+        chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure);
+
+    const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
+    const finalPage = eSimPage.$$('#finalPage');
+
+    assertTrue(!!profileLoadingPage);
+    assertTrue(!!finalPage);
+
+    // Loading page should be showing.
+    assertTrue(
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.PROFILE_LOADING &&
+        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+
+    await flushAsync();
+
+    // Should go directly to final page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
+        eSimPage.selectedESimPageName_ === finalPage.id);
+    assertTrue(!!finalPage.$$('.error'));
   });
 
   test('Multiple eSIM profiles skip discovery flow', async function() {

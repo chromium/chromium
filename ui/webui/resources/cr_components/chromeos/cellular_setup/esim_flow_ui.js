@@ -16,8 +16,7 @@ cr.define('cellular_setup', function() {
     PROFILE_SEARCH: 'profile-search',
     ACTIVATION_CODE_ENTRY: 'activation-code-entry',
     MULTI_PROFILE_SELECTION: 'multi-profile-selection',
-    SETUP_SUCCESS: 'setup-success',
-    SETUP_FAILURE: 'setup-failure',
+    SETUP_FINISH: 'setup-finish',
   };
 
   /**
@@ -124,10 +123,10 @@ cr.define('cellular_setup', function() {
                 this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
                 break;
               case 1:
-                // TODO(crbug.com/1093185) Install the
-                // profile. Handle error state. Handle
-                // confirmation code if needed.
-                this.state_ = ESimUiState.SETUP_SUCCESS;
+                // Assume installing the profile doesn't require a confirmation
+                // code, send an empty string.
+                profiles[0].installProfile('').then(
+                    this.handleProfileInstallResponse_.bind(this));
                 break;
               default:
                 // TODO(crbug.com/1093185) Populate the profile discovery with
@@ -160,6 +159,19 @@ cr.define('cellular_setup', function() {
       });
     },
 
+    /**
+     * @private
+     * @param {{result: chromeos.cellularSetup.mojom.ProfileInstallResult}}
+     *     response
+     */
+    handleProfileInstallResponse_(response) {
+      // TODO(crbug.com/1093185) Handle
+      // confirmation code if needed.
+      this.showError_ = response.result !==
+          chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess;
+      this.state_ = ESimUiState.SETUP_FINISH;
+    },
+
     /** @private */
     updateSelectedPage_() {
       switch (this.state_) {
@@ -172,7 +184,7 @@ cr.define('cellular_setup', function() {
         case ESimUiState.MULTI_PROFILE_SELECTION:
           this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY;
           break;
-        case ESimUiState.SETUP_SUCCESS:
+        case ESimUiState.SETUP_FINISH:
           this.selectedESimPageName_ = ESimPageName.FINAL;
           break;
         default:
@@ -210,7 +222,7 @@ cr.define('cellular_setup', function() {
             skipDiscovery: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
           };
           break;
-        case ESimUiState.SETUP_SUCCESS:
+        case ESimUiState.SETUP_FINISH:
           buttonState = {
             backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cellularSetup.ButtonState.HIDDEN,
@@ -258,7 +270,7 @@ cr.define('cellular_setup', function() {
         case ESimUiState.ACTIVATION_CODE_ENTRY:
           // TODO(crbug.com/1093185) Install the profile. Handle error state.
           // Handle confirmation code if needed.
-          this.state_ = ESimUiState.SETUP_SUCCESS;
+          this.state_ = ESimUiState.SETUP_FINISH;
           break;
         case ESimUiState.MULTI_PROFILE_SELECTION:
           this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
