@@ -57,6 +57,10 @@ DisplayCompositorMemoryAndTaskController::
 DisplayCompositorMemoryAndTaskController::
     ~DisplayCompositorMemoryAndTaskController() {
   gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
+  // Make sure to destroy the SharedImageInterfaceInProcess before getting rid
+  // of data structures on the gpu thread.
+  shared_image_interface_.reset();
+
   // If we have a |gpu_task_scheduler_|, we must have started initializing
   // a |controller_on_gpu_| on the |gpu_task_scheduler_|.
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -66,7 +70,6 @@ DisplayCompositorMemoryAndTaskController::
                      base::Unretained(this), &event);
   gpu_task_scheduler_->GetTaskSequence()->ScheduleTask(std::move(callback), {});
   event.Wait();
-  shared_image_interface_.reset();
 }
 
 void DisplayCompositorMemoryAndTaskController::InitializeOnGpuSkia(
