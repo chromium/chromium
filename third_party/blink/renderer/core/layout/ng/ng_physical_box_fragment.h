@@ -273,12 +273,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     return *ComputeRareDataAddress()->mathml_paint_info;
   }
 
-  // Temporary while stabilizing PositionForPoint support in
-  // NGPhysicalBoxFragment.
-  static bool SupportsPositionForPoint() {
-    return RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled();
-  }
-
  private:
   static size_t ByteSize(wtf_size_t num_fragment_items,
                          wtf_size_t num_children,

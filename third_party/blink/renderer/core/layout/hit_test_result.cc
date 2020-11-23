@@ -168,7 +168,8 @@ PositionWithAffinity HitTestResult::GetPosition() const {
     return PositionWithAffinity(MostForwardCaretPosition(
         Position(inner_node_, PositionAnchorType::kBeforeChildren)));
   }
-  if (box_fragment_ && NGPhysicalBoxFragment::SupportsPositionForPoint())
+  if (box_fragment_ &&
+      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled())
     return box_fragment_->PositionForPoint(LocalPoint());
   return layout_object->PositionForPoint(LocalPoint());
 }
@@ -184,7 +185,8 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   if (!layout_object)
     return PositionWithAffinity();
   PositionWithAffinity position;
-  if (box_fragment_ && NGPhysicalBoxFragment::SupportsPositionForPoint() &&
+  if (box_fragment_ &&
+      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
       layout_object == GetLayoutObject())
     position = box_fragment_->PositionForPoint(LocalPoint());
   else
@@ -292,7 +294,7 @@ void HitTestResult::SetInnerNode(Node* n) {
     }
   }
 
-  if (NGPhysicalBoxFragment::SupportsPositionForPoint()) {
+  if (RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
     if (const LayoutBox* layout_box = n->GetLayoutBox()) {
       // Fragmentation-aware code will set the correct box fragment on its own,
       // but sometimes we enter legacy layout code when hit-testing, e.g. for

@@ -1077,6 +1077,12 @@
       implied_by: ["LayoutNGBlockFragmentation"],
     },
     {
+      // Full support for PositionForPoint in NGPhysicalFragment. Without this
+      // enabled, we'll typically fall back to legacy code for block children.
+      name: "LayoutNGFullPositionForPoint",
+      implied_by: ["LayoutNGBlockFragmentation", "LayoutNGFragmentTraversal"],
+    },
+    {
       name: "LayoutNGGrid",
     },
     {
