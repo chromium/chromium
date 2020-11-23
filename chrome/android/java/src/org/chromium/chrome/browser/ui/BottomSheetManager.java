@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.ui;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabObserver;
@@ -23,6 +25,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurface.StateObserver;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -60,8 +64,11 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
     /** A tab observer that is only attached to the active tab. */
     private final TabObserver mTabObserver;
 
+    private final CallbackController mCallbackController;
+
     /** The supplier of {@link StartSurface} instance. */
-    private final Supplier<StartSurface> mStartSurfaceSupplier;
+    private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
+    private StateObserver mStartSurfaceStateObserver;
 
     /** A browser controls manager for polling browser controls offsets. */
     private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -119,7 +126,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
             TabObscuringHandler obscuringDelegate,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             Supplier<OverlayPanelManager> overlayManager,
-            Supplier<StartSurface> startSurfaceSupplier) {
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mSheetController = controller;
         mTabProvider = tabProvider;
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
@@ -131,6 +138,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mOverlayPanelManager = overlayManager;
         mStartSurfaceSupplier = startSurfaceSupplier;
+        mCallbackController = new CallbackController();
+        mStartSurfaceSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::addStartSurfaceStateObserver));
 
         mSheetController.addObserver(this);
         mSheetController.setAccssibilityUtil(ChromeAccessibilityUtil.get());
@@ -164,13 +174,15 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
 
             @Override
             public void onActivityTabChanged(Tab tab) {
+                if (mStartSurfaceSupplier.get() != null
+                        && mStartSurfaceSupplier.get().getController().inShowState()) {
+                    return;
+                }
+
                 // Temporarily suppress the sheet if entering a state where there is no activity
                 // tab and the Start surface homepage isn't showing.
                 if (tab == null) {
-                    if (mStartSurfaceSupplier.get() == null
-                            || !mStartSurfaceSupplier.get().getController().isHomePageShowing()) {
-                        mToken = controller.suppressSheet(StateChangeReason.COMPOSITED_UI);
-                    }
+                    mToken = controller.suppressSheet(StateChangeReason.COMPOSITED_UI);
                     return;
                 }
 
@@ -255,6 +267,31 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
             }
         };
         mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
+    }
+
+    private void addStartSurfaceStateObserver(StartSurface startSurface) {
+        mStartSurfaceStateObserver = new StateObserver() {
+            private int mToken;
+            private int mStartSurfaceState;
+            @Override
+            public void onStateChanged(
+                    int startSurfaceState, boolean shouldShowTabSwitcherToolbar) {
+                if (mStartSurfaceState == startSurfaceState) return;
+
+                mStartSurfaceState = startSurfaceState;
+                if (!startSurface.getController().inShowState()
+                        || startSurface.getController().getStartSurfaceState()
+                                == StartSurfaceState.SHOWN_HOMEPAGE
+                        || startSurface.getController().getStartSurfaceState()
+                                == StartSurfaceState.SHOWING_HOMEPAGE) {
+                    mSheetController.unsuppressSheet(mToken);
+                } else {
+                    mToken = mSheetController.suppressSheet(StateChangeReason.COMPOSITED_UI);
+                }
+            }
+        };
+
+        startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
     }
 
     @Override
@@ -348,6 +385,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
 
     @Override
     public void destroy() {
+        mCallbackController.destroy();
         if (mLastActivityTab != null) mLastActivityTab.removeObserver(mTabObserver);
         mTabProvider.removeObserver(mActivityTabObserver);
         mSheetController.removeObserver(this);
@@ -355,5 +393,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
         VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
+        if (mStartSurfaceSupplier.get() != null) {
+            mStartSurfaceSupplier.get().removeStateChangeObserver(mStartSurfaceStateObserver);
+        }
     }
 }

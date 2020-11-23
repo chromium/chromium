@@ -515,4 +515,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     private boolean canBottomSheetSwitchContent() {
         return !mBottomSheet.isSheetOpen();
     }
+
+    @VisibleForTesting
+    boolean hasSuppressionTokensForTesting() {
+        return mSuppressionTokens.hasTokens();
+    }
 }
