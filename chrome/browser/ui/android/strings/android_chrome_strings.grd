@@ -3985,13 +3985,13 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_PREFS_WEB_ASSISTANCE_SECTION_TITLE" desc="Title for the web assistance section">
         Web Assistance
       </message>
-      <message name="IDS_PREFS_AUTOFILL_ASSISTANT_GET_HELP_TITLE" desc="Title for the switch toggling whether Autofill Assistant is enabled. [CHAR-LIMIT=32]">
+      <message name="IDS_PREFS_AUTOFILL_ASSISTANT_GET_HELP_TITLE" desc="Title for the switch toggling whether Autofill Assistant is enabled.">
         Get help with tasks on the web
       </message>
       <message name="IDS_PREFS_AUTOFILL_ASSISTANT_GET_HELP_SUMMARY" desc="Description for the Autofill Assistant toggle.">
         To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information you submit through Assistant
       </message>
-      <message name="IDS_PREFS_AUTOFILL_ASSISTANT_PROACTIVE_HELP_TITLE" desc="Title for the switch toggling whether proactive help is enabled. When turned on, the Assistant will be able to proactively show up (without explicit user prompt) and offer to help. [CHAR-LIMIT=32]">
+      <message name="IDS_PREFS_AUTOFILL_ASSISTANT_PROACTIVE_HELP_TITLE" desc="Title for the switch toggling whether proactive help is enabled. When turned on, the Assistant will be able to proactively show up (without explicit user prompt) and offer to help.">
         Proactive Help
       </message>
       <message name="IDS_PREFS_AUTOFILL_ASSISTANT_PROACTIVE_HELP_SUMMARY" desc="Description for the proactive help toggle. It explains that the Assistant may appear proactively when it detects that it can help the user. ">
