@@ -459,7 +459,9 @@ public class TabPersistentStore extends TabPersister {
         }
 
         // Restore the tabs from the second activity asynchronously.
-        loadNextTab();
+        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
+            restoreTabs(false);
+        });
     }
 
     /**
