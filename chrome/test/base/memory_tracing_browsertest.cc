@@ -116,8 +116,8 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
 };
 
 // TODO(crbug.com/806988): Disabled due to excessive output on lsan bots and
-// timeouts on Mac Test debug bots.
-#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER) || defined(OS_MAC)
+// timeouts on debug bots.
+#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_TestMemoryInfra DISABLED_TestMemoryInfra
 #else
 #define MAYBE_TestMemoryInfra TestMemoryInfra
@@ -135,8 +135,9 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingBrowserTest, MAYBE_TestMemoryInfra) {
       base::trace_event::MemoryDumpLevelOfDetail::DETAILED, &json_events);
 }
 
-// crbug.com/808152: This test is flakily failing on LSAN.
-#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
+// crbug.com/808152: This test is flakily failing on LSAN. This test also
+// flakily fails with timeout on Linux debug.
+#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_TestBackgroundMemoryInfra DISABLED_TestBackgroundMemoryInfra
 #else
 #define MAYBE_TestBackgroundMemoryInfra TestBackgroundMemoryInfra
