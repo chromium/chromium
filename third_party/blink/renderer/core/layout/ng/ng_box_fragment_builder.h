@@ -485,7 +485,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     table_grid_rect_ = table_grid_rect;
   }
 
-  void SetTableColumnGeometry(
+  void SetTableColumnGeometries(
       const NGTableFragmentData::ColumnGeometries& table_column_geometries) {
     table_column_geometries_ = table_column_geometries;
   }

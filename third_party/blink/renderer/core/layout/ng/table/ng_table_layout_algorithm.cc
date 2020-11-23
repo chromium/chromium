@@ -754,7 +754,7 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
     VisitLayoutNGTableColumn(grouped_children.columns, column_locations.size(),
                              &geometry_builder);
     geometry_builder.Sort();
-    container_builder_.SetTableColumnGeometry(
+    container_builder_.SetTableColumnGeometries(
         geometry_builder.column_geometries);
   }
   // Collapsed borders.

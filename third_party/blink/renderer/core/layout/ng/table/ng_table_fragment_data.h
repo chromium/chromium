@@ -41,6 +41,14 @@ class NGTableFragmentData {
   struct CollapsedBordersGeometry {
     Vector<LayoutUnit> columns;  // Column offsets from table grid border.
     Vector<LayoutUnit> rows;     // Row offsets from table grid border.
+
+#if DCHECK_IS_ON()
+    void CheckSameForSimplifiedLayout(
+        const CollapsedBordersGeometry& other) const {
+      DCHECK(columns == other.columns);
+      DCHECK(rows == other.rows);
+    }
+#endif
   };
 };
 

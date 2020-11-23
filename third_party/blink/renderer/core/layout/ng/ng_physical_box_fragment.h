@@ -98,11 +98,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
 
   const NGTableFragmentData::CollapsedBordersGeometry*
   TableCollapsedBordersGeometry() const {
-    auto& table_collapsed_borders_geometry =
-        ComputeRareDataAddress()->table_collapsed_borders_geometry;
-    if (!table_collapsed_borders_geometry)
-      return nullptr;
-    return table_collapsed_borders_geometry.get();
+    return ComputeRareDataAddress()->table_collapsed_borders_geometry.get();
   }
 
   wtf_size_t TableCellColumnIndex() const {

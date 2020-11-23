@@ -782,7 +782,7 @@ void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
     }
   }
   if (paint_info.phase == PaintPhase::kForeground &&
-      box_fragment_.IsTableNGPart() && box_fragment_.IsTable()) {
+      box_fragment_.IsTableNG()) {
     NGTablePainter(box_fragment_)
         .PaintCollapsedBorders(paint_info, paint_offset,
                                VisualRect(paint_offset));
@@ -1027,7 +1027,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
             .PaintBoxDecorationBackground(paint_info, paint_offset,
                                           visual_rect);
       } else {
-        DCHECK(box_fragment_.IsTable());
+        DCHECK(box_fragment_.IsTableNG());
         NGTablePainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
                                           visual_rect);

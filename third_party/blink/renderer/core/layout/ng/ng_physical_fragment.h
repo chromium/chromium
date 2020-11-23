@@ -162,7 +162,9 @@ class CORE_EXPORT NGPhysicalFragment
 
   bool IsTableNGPart() const { return is_table_ng_part_; }
 
-  bool IsTable() const { return IsBox() && layout_object_->IsTable(); }
+  bool IsTableNG() const {
+    return IsTableNGPart() && layout_object_->IsTable();
+  }
 
   bool IsTableNGRow() const {
     return IsTableNGPart() && layout_object_->IsTableRow();

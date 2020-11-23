@@ -924,11 +924,26 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
                .UseBlockEndMarginEdgeForInlineBlockBaseline());
   }
 
-  // TODO(atotic,ikilpatrick): Enable DCHECKs for:
-  //  - TableGridRect()
-  //  - TableColumnGeometries()
-  //  - TableCollapsedBorders()
-  //  - TableCollapsedBordersGeometry()
+  if (IsTableNG()) {
+    DCHECK_EQ(TableGridRect(), other.TableGridRect());
+
+    if (TableColumnGeometries()) {
+      DCHECK(other.TableColumnGeometries());
+      DCHECK(*TableColumnGeometries() == *other.TableColumnGeometries());
+    } else {
+      DCHECK(!other.TableColumnGeometries());
+    }
+
+    DCHECK_EQ(TableCollapsedBorders(), other.TableCollapsedBorders());
+
+    if (TableCollapsedBordersGeometry()) {
+      DCHECK(other.TableCollapsedBordersGeometry());
+      TableCollapsedBordersGeometry()->CheckSameForSimplifiedLayout(
+          *other.TableCollapsedBordersGeometry());
+    } else {
+      DCHECK(!other.TableCollapsedBordersGeometry());
+    }
+  }
 
   if (IsTableNGCell())
     DCHECK_EQ(TableCellColumnIndex(), other.TableCellColumnIndex());

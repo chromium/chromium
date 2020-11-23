@@ -319,6 +319,7 @@ void NGLayoutResult::CheckSameForSimplifiedLayout(
 
   DCHECK(EndMarginStrut() == other.EndMarginStrut());
   DCHECK_EQ(MinimalSpaceShortage(), other.MinimalSpaceShortage());
+  DCHECK_EQ(TableColumnCount(), other.TableColumnCount());
 
   DCHECK_EQ(bitfields_.has_forced_break, other.bitfields_.has_forced_break);
   DCHECK_EQ(bitfields_.is_self_collapsing, other.bitfields_.is_self_collapsing);

@@ -27,10 +27,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     : NGLayoutAlgorithm(params),
       previous_result_(result),
       writing_direction_(Style().GetWritingDirection()) {
-  // Currently this only supports block-flow layout due to the static-position
-  // calculations. If support for other layout types is added this logic will
-  // need to be changed.
-  bool is_block_flow = Node().IsBlockFlow();
+  const bool is_block_flow = Node().IsBlockFlow();
   const NGPhysicalBoxFragment& physical_fragment =
       To<NGPhysicalBoxFragment>(result.PhysicalFragment());
 
@@ -71,8 +68,8 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
       container_builder_.SetLastBaseline(*physical_fragment.LastBaseline());
 
     if (ConstraintSpace().IsTableCell()) {
-      if (physical_fragment.HasCollapsedBorders())
-        container_builder_.SetHasCollapsedBorders(true);
+      container_builder_.SetHasCollapsedBorders(
+          physical_fragment.HasCollapsedBorders());
 
       if (!ConstraintSpace().IsLegacyTableCell()) {
         container_builder_.SetTableCellColumnIndex(
@@ -114,11 +111,28 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     container_builder_.SetCustomLayoutData(result.CustomLayoutData());
   }
 
-  // TODO(atotic,ikilpatrick): Copy across table related data for table,
-  // table-row, table-section.
-  DCHECK(!physical_fragment.IsTable());
-  DCHECK(!physical_fragment.IsTableNGRow());
-  DCHECK(!physical_fragment.IsTableNGSection());
+  if (physical_fragment.IsTableNG()) {
+    container_builder_.SetTableColumnCount(result.TableColumnCount());
+    container_builder_.SetTableGridRect(physical_fragment.TableGridRect());
+
+    container_builder_.SetHasCollapsedBorders(
+        physical_fragment.HasCollapsedBorders());
+
+    if (const auto* table_column_geometries =
+            physical_fragment.TableColumnGeometries())
+      container_builder_.SetTableColumnGeometries(*table_column_geometries);
+
+    if (const auto* table_collapsed_borders =
+            physical_fragment.TableCollapsedBorders())
+      container_builder_.SetTableCollapsedBorders(*table_collapsed_borders);
+
+    if (const auto* table_collapsed_borders_geometry =
+            physical_fragment.TableCollapsedBordersGeometry()) {
+      container_builder_.SetTableCollapsedBordersGeometry(
+          std::make_unique<NGTableFragmentData::CollapsedBordersGeometry>(
+              *table_collapsed_borders_geometry));
+    }
+  }
 
   if (physical_fragment.IsHiddenForPaint())
     container_builder_.SetIsHiddenForPaint(true);
