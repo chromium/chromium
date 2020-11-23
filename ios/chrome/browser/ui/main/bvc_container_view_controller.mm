@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #include <ostream>
 
@@ -39,8 +40,8 @@
 
   // Add the new active view controller.
   [self addChildViewController:bvc];
-  bvc.view.frame = self.view.bounds;
   [self.view addSubview:bvc.view];
+  AddSameConstraints(self.view, bvc.view);
   [bvc didMoveToParentViewController:self];
 
   if (IsThumbStripEnabled()) {
