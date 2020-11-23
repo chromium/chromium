@@ -386,8 +386,8 @@ TEST_F(SyncServiceCryptoTest, ShouldExposePassphraseRequired) {
   VerifyAndClearExpectations();
 
   // Entering the wrong passphrase should be rejected.
-  EXPECT_CALL(reconfigure_cb_, Run(_)).Times(0);
-  EXPECT_CALL(engine_, SetDecryptionPassphrase(_)).Times(0);
+  EXPECT_CALL(reconfigure_cb_, Run).Times(0);
+  EXPECT_CALL(engine_, SetDecryptionPassphrase).Times(0);
   EXPECT_FALSE(crypto_.SetDecryptionPassphrase("wrongpassphrase"));
   EXPECT_TRUE(crypto_.IsPassphraseRequired());
 
@@ -408,7 +408,7 @@ TEST_F(SyncServiceCryptoTest,
   // engine initialization.
   MimicKeyRetrievalByUser();
 
-  EXPECT_CALL(reconfigure_cb_, Run(_)).Times(0);
+  EXPECT_CALL(reconfigure_cb_, Run).Times(0);
   ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
 
   // OnTrustedVaultKeyRequired() called during initialization of the sync
@@ -452,7 +452,7 @@ TEST_F(SyncServiceCryptoTest,
   // engine initialization.
   MimicKeyRetrievalByUser();
 
-  EXPECT_CALL(reconfigure_cb_, Run(_)).Times(0);
+  EXPECT_CALL(reconfigure_cb_, Run).Times(0);
   ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
 
   // Mimic the initialization of the sync engine, without trusted vault keys
@@ -492,8 +492,8 @@ TEST_F(SyncServiceCryptoTest,
 
 TEST_F(SyncServiceCryptoTest,
        ShouldReadNoTrustedVaultKeysFromClientAfterInitialization) {
-  EXPECT_CALL(reconfigure_cb_, Run(_)).Times(0);
-  EXPECT_CALL(engine_, AddTrustedVaultDecryptionKeys(_, _)).Times(0);
+  EXPECT_CALL(reconfigure_cb_, Run).Times(0);
+  EXPECT_CALL(engine_, AddTrustedVaultDecryptionKeys).Times(0);
 
   ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
 
@@ -529,7 +529,7 @@ TEST_F(SyncServiceCryptoTest, ShouldReadInvalidTrustedVaultKeysFromClient) {
   MimicKeyRetrievalByUser();
 
   base::OnceClosure add_keys_cb;
-  ON_CALL(engine_, AddTrustedVaultDecryptionKeys(_, _))
+  ON_CALL(engine_, AddTrustedVaultDecryptionKeys)
       .WillByDefault(
           [&](const std::vector<std::vector<uint8_t>>& keys,
               base::OnceClosure done_cb) { add_keys_cb = std::move(done_cb); });
@@ -601,7 +601,7 @@ TEST_F(SyncServiceCryptoTest, ShouldFollowKeyRotationDueToSecondFetch) {
 
   // The engine replies with OnTrustedVaultKeyAccepted() only if |kRotatedKeys|
   // are provided.
-  ON_CALL(engine_, AddTrustedVaultDecryptionKeys(_, _))
+  ON_CALL(engine_, AddTrustedVaultDecryptionKeys)
       .WillByDefault([&](const std::vector<std::vector<uint8_t>>& keys,
                          base::OnceClosure done_cb) {
         if (keys == kRotatedKeys) {
@@ -655,7 +655,7 @@ TEST_F(SyncServiceCryptoTest, ShouldRefetchTrustedVaultKeysWhenChangeObserved) {
 
   // The engine replies with OnTrustedVaultKeyAccepted() only if |kNewKeys| are
   // provided.
-  ON_CALL(engine_, AddTrustedVaultDecryptionKeys(_, _))
+  ON_CALL(engine_, AddTrustedVaultDecryptionKeys)
       .WillByDefault([&](const std::vector<std::vector<uint8_t>>& keys,
                          base::OnceClosure done_cb) {
         if (keys == kNewKeys) {
@@ -705,7 +705,7 @@ TEST_F(SyncServiceCryptoTest,
 
   // The engine replies with OnTrustedVaultKeyAccepted() only if |kNewKeys| are
   // provided.
-  ON_CALL(engine_, AddTrustedVaultDecryptionKeys(_, _))
+  ON_CALL(engine_, AddTrustedVaultDecryptionKeys)
       .WillByDefault([&](const std::vector<std::vector<uint8_t>>& keys,
                          base::OnceClosure done_cb) {
         if (keys == kNewKeys) {
@@ -753,7 +753,7 @@ TEST_F(
 
   // The engine replies with OnTrustedVaultKeyAccepted() only if |kLatestKeys|
   // are provided.
-  ON_CALL(engine_, AddTrustedVaultDecryptionKeys(_, _))
+  ON_CALL(engine_, AddTrustedVaultDecryptionKeys)
       .WillByDefault([&](const std::vector<std::vector<uint8_t>>& keys,
                          base::OnceClosure done_cb) {
         if (keys == kLatestKeys) {
@@ -916,7 +916,7 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
   ASSERT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
 
   // Mimic a successful key retrieval.
-  ON_CALL(engine_, AddTrustedVaultDecryptionKeys(_, _))
+  ON_CALL(engine_, AddTrustedVaultDecryptionKeys)
       .WillByDefault([&](const std::vector<std::vector<uint8_t>>& keys,
                          base::OnceClosure done_cb) {
         crypto_.OnTrustedVaultKeyAccepted();

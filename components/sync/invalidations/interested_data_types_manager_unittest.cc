@@ -41,7 +41,7 @@ TEST_F(InterestedDataTypesManagerTest, ShouldReturnGivenDataTypes) {
 TEST_F(InterestedDataTypesManagerTest, ShouldNotifyOnChange) {
   testing::NiceMock<MockDataTypesHandler> handler;
   manager_.SetInterestedDataTypesHandler(&handler);
-  EXPECT_CALL(handler, OnInterestedDataTypesChanged(_));
+  EXPECT_CALL(handler, OnInterestedDataTypesChanged);
   manager_.SetInterestedDataTypes(ModelTypeSet(PASSWORDS, AUTOFILL),
                                   base::DoNothing());
   manager_.SetInterestedDataTypesHandler(nullptr);

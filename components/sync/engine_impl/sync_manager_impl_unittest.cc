@@ -170,7 +170,7 @@ class SyncManagerTest : public testing::Test {
     extensions_activity_ = new ExtensionsActivity();
 
     sync_manager_.AddObserver(&manager_observer_);
-    EXPECT_CALL(manager_observer_, OnInitializationComplete(_, _, _))
+    EXPECT_CALL(manager_observer_, OnInitializationComplete)
         .WillOnce(DoAll(SaveArg<0>(&js_backend_),
                         SaveArg<2>(&initialization_succeeded_)));
 
@@ -315,7 +315,7 @@ TEST_F(SyncManagerTestWithMockScheduler, BasicConfiguration) {
 
   ConfigurationParams params;
   EXPECT_CALL(*scheduler(), Start(SyncScheduler::CONFIGURATION_MODE, _));
-  EXPECT_CALL(*scheduler(), ScheduleConfiguration_(_))
+  EXPECT_CALL(*scheduler(), ScheduleConfiguration_)
       .WillOnce(MoveArg<0>(&params));
 
   CallbackCounter ready_task_counter;

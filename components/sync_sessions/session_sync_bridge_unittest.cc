@@ -181,7 +181,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
 
     // Even if we use NiceMock, let's be strict about errors and let tests
     // explicitly list them.
-    EXPECT_CALL(mock_processor_, ReportError(_)).Times(0);
+    EXPECT_CALL(mock_processor_, ReportError).Times(0);
   }
 
   ~SessionSyncBridgeTest() override {}
@@ -338,7 +338,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
 };
 
 TEST_F(SessionSyncBridgeTest, ShouldCallModelReadyToSyncWhenSyncEnabled) {
-  EXPECT_CALL(mock_processor(), ModelReadyToSync(_)).Times(0);
+  EXPECT_CALL(mock_processor(), ModelReadyToSync).Times(0);
   InitializeBridge();
   EXPECT_CALL(mock_processor(), ModelReadyToSync(IsEmptyMetadataBatch()));
   StartSyncing();
@@ -352,7 +352,7 @@ TEST_F(SessionSyncBridgeTest, ShouldDeferLocalEventDueToSessionRestore) {
   const int kTabId2 = 1000003;
 
   // No notifications expected until OnSessionRestoreComplete().
-  EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
 
   AddWindow(kWindowId)->SetIsSessionRestoreInProgress(true);
   // Initial tab should be ignored (not exposed to processor) while session
@@ -374,7 +374,7 @@ TEST_F(SessionSyncBridgeTest, ShouldDeferLocalEventDueToSessionRestore) {
 
   // OnSessionRestoreComplete() should issue three Put() calls, one updating the
   // header and one for each of the two added tabs.
-  EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(3);
+  EXPECT_CALL(mock_processor(), Put).Times(3);
   SessionRestoreComplete();
   EXPECT_THAT(GetAllData(), SizeIs(3));
 }
@@ -928,7 +928,7 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
   // tab, leading to a freed tab entity. However, while there are pending
   // changes to commit, the entity shouldn't be deleted (to prevent history
   // loss).
-  EXPECT_CALL(mock_processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
   CloseTab(kTabId2);
   tab1->Navigate("http://foo2.com/");
   EXPECT_TRUE(real_processor()->HasLocalChangesForTest());
@@ -1070,7 +1070,7 @@ TEST_F(SessionSyncBridgeTest, ShouldDisableSyncAndReenable) {
                   MatchesHeader(kLocalSessionTag, {kWindowId}, {kTabId})));
   ASSERT_THAT(GetAllData(), Not(IsEmpty()));
 
-  EXPECT_CALL(mock_processor(), ModelReadyToSync(_)).Times(0);
+  EXPECT_CALL(mock_processor(), ModelReadyToSync).Times(0);
   real_processor()->OnSyncStopping(syncer::CLEAR_METADATA);
 
   StartSyncing();
@@ -1087,8 +1087,8 @@ TEST_F(SessionSyncBridgeTest, ShouldMergeForeignSession) {
   const int kForeignTabId = 2000002;
   const int kForeignTabNodeId = 2003;
 
-  EXPECT_CALL(mock_processor(), UpdateStorageKey(_, _, _)).Times(0);
-  EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(mock_processor(), UpdateStorageKey).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
   InitializeBridge();
 
   const sync_pb::SessionSpecifics foreign_header =
@@ -1118,8 +1118,8 @@ TEST_F(SessionSyncBridgeTest, ShouldNotExposeForeignHeaderWithoutTabs) {
   const int kForeignWindowId = 2000001;
   const int kForeignTabId = 2000002;
 
-  EXPECT_CALL(mock_processor(), UpdateStorageKey(_, _, _)).Times(0);
-  EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(mock_processor(), UpdateStorageKey).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
   InitializeBridge();
 
   const sync_pb::SessionSpecifics foreign_header =
@@ -1363,7 +1363,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalTab) {
   ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
 
   // Mimic receiving a remote deletion of both entities.
-  EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateTombstone(kLocalSessionTag));
   updates.push_back(CreateTombstone(tab_client_tag1));
@@ -1505,7 +1505,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreLocalSessionDeletionFromUI) {
   StartSyncing();
 
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(0);
-  EXPECT_CALL(mock_processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
 
   bridge()->GetOpenTabsUIDelegate()->DeleteForeignSession(kLocalSessionTag);
 

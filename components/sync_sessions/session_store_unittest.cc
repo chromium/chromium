@@ -238,7 +238,7 @@ TEST_F(SessionStoreOpenTest, ShouldNotUseClientIfCancelled) {
   NiceMock<MockOpenCallback> mock_completion;
   auto caller = std::make_unique<Caller>(mock_completion.Get());
 
-  EXPECT_CALL(mock_completion, Run(_, _, _)).Times(0);
+  EXPECT_CALL(mock_completion, Run).Times(0);
 
   SessionStore::Open(kCacheGuid, mock_sync_sessions_client_.get(),
                      caller->GetCancelableCallback());

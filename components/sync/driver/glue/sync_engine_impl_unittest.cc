@@ -206,7 +206,7 @@ class SyncEngineImplTest : public testing::Test {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
 
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
-    ON_CALL(invalidator_, UpdateInterestedTopics(_, _))
+    ON_CALL(invalidator_, UpdateInterestedTopics)
         .WillByDefault(testing::Return(true));
     auto sync_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -729,7 +729,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   EXPECT_CALL(invalidator_, UpdateInterestedTopics(_, TopicSet()));
   InitializeBackend(/*expect_success=*/true);
 
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics(_, _)).Times(0);
+  EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);
   ConfigureDataTypes();
 }
 

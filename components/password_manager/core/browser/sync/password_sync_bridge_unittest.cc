@@ -260,13 +260,13 @@ class PasswordSyncBridgeTest : public testing::Test {
   PasswordSyncBridgeTest() {
     ON_CALL(mock_password_store_sync_, GetMetadataStore())
         .WillByDefault(testing::Return(&mock_sync_metadata_store_sync_));
-    ON_CALL(mock_password_store_sync_, ReadAllLogins(_))
+    ON_CALL(mock_password_store_sync_, ReadAllLogins)
         .WillByDefault(Invoke(&fake_db_, &FakeDatabase::ReadAllLogins));
-    ON_CALL(mock_password_store_sync_, AddLoginSync(_, _))
+    ON_CALL(mock_password_store_sync_, AddLoginSync)
         .WillByDefault(Invoke(&fake_db_, &FakeDatabase::AddLogin));
-    ON_CALL(mock_password_store_sync_, UpdateLoginSync(_, _))
+    ON_CALL(mock_password_store_sync_, UpdateLoginSync)
         .WillByDefault(Invoke(&fake_db_, &FakeDatabase::UpdateLogin));
-    ON_CALL(mock_password_store_sync_, RemoveLoginByPrimaryKeySync(_))
+    ON_CALL(mock_password_store_sync_, RemoveLoginByPrimaryKeySync)
         .WillByDefault(Invoke(&fake_db_, &FakeDatabase::RemoveLogin));
 
     bridge_ = std::make_unique<PasswordSyncBridge>(
@@ -277,20 +277,20 @@ class PasswordSyncBridgeTest : public testing::Test {
     // about changes in the password store. The bridge notifies the
     // PasswordStoreSync about the new changes even if they are initiated by the
     // bridge itself.
-    ON_CALL(mock_password_store_sync_, NotifyLoginsChanged(_))
+    ON_CALL(mock_password_store_sync_, NotifyLoginsChanged)
         .WillByDefault(
             Invoke(bridge(), &PasswordSyncBridge::ActOnPasswordStoreChanges));
 
     ON_CALL(mock_sync_metadata_store_sync_, GetAllSyncMetadata())
         .WillByDefault(
             []() { return std::make_unique<syncer::MetadataBatch>(); });
-    ON_CALL(mock_sync_metadata_store_sync_, UpdateSyncMetadata(_, _, _))
+    ON_CALL(mock_sync_metadata_store_sync_, UpdateSyncMetadata)
         .WillByDefault(testing::Return(true));
-    ON_CALL(mock_sync_metadata_store_sync_, ClearSyncMetadata(_, _))
+    ON_CALL(mock_sync_metadata_store_sync_, ClearSyncMetadata)
         .WillByDefault(testing::Return(true));
-    ON_CALL(mock_sync_metadata_store_sync_, UpdateModelTypeState(_, _))
+    ON_CALL(mock_sync_metadata_store_sync_, UpdateModelTypeState)
         .WillByDefault(testing::Return(true));
-    ON_CALL(mock_sync_metadata_store_sync_, ClearModelTypeState(_))
+    ON_CALL(mock_sync_metadata_store_sync_, ClearModelTypeState)
         .WillByDefault(testing::Return(true));
   }
 
@@ -399,8 +399,8 @@ TEST_F(PasswordSyncBridgeTest,
   changes.push_back(PasswordStoreChange(
       PasswordStoreChange::REMOVE, MakePasswordForm(kSignonRealm3), /*id=*/3));
 
-  EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(mock_processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
 
   bridge()->ActOnPasswordStoreChanges(changes);
 }
@@ -420,7 +420,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyMetadataWithEmptySyncChanges) {
       std::make_unique<syncer::InMemoryMetadataChangeList>();
   metadata_change_list->UpdateMetadata(kStorageKey, metadata);
 
-  EXPECT_CALL(*mock_password_store_sync(), NotifyLoginsChanged(_)).Times(0);
+  EXPECT_CALL(*mock_password_store_sync(), NotifyLoginsChanged).Times(0);
 
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               UpdateSyncMetadata(syncer::PASSWORDS, kStorageKey, _));
@@ -450,7 +450,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteCreation) {
       NotifyLoginsChanged(UnorderedElementsAre(ChangeHasPrimaryKey(1))));
 
   // Processor shouldn't be notified about remote changes.
-  EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
@@ -500,8 +500,8 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteUpdate) {
                   UnorderedElementsAre(ChangeHasPrimaryKey(kPrimaryKey))));
 
   // Processor shouldn't be notified about remote changes.
-  EXPECT_CALL(mock_processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(mock_processor(), UpdateStorageKey(_, _, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(mock_processor(), UpdateStorageKey).Times(0);
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
@@ -528,7 +528,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteDeletion) {
                   UnorderedElementsAre(ChangeHasPrimaryKey(kPrimaryKey))));
 
   // Processor shouldn't be notified about remote changes.
-  EXPECT_CALL(mock_processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateDelete(kStorageKey));
@@ -729,7 +729,7 @@ TEST_F(
 TEST_F(PasswordSyncBridgeTest,
        ShouldMergeSyncRemoteAndLocalPasswordsWithErrorWhenStoreReadFails) {
   // Simulate a failed ReadAllLogins() by returning a kDbError.
-  ON_CALL(*mock_password_store_sync(), ReadAllLogins(_))
+  ON_CALL(*mock_password_store_sync(), ReadAllLogins)
       .WillByDefault(testing::Return(FormRetrievalResult::kDbError));
   base::Optional<syncer::ModelError> error =
       bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(), {});
@@ -759,7 +759,7 @@ TEST_F(
     PasswordSyncBridgeTest,
     ShouldMergeSyncRemoteAndLocalPasswordsWithErrorWhenStoreUpdateModelTypeStateFails) {
   // Simulate failure in UpdateModelTypeState();
-  ON_CALL(*mock_sync_metadata_store_sync(), UpdateModelTypeState(_, _))
+  ON_CALL(*mock_sync_metadata_store_sync(), UpdateModelTypeState)
       .WillByDefault(testing::Return(false));
 
   sync_pb::ModelTypeState model_type_state;
@@ -850,7 +850,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldDeleteUndecryptableLoginsDuringMerge) {
 
   // We should try to read first, and simulate an encryption failure. Then,
   // cleanup the database and try to read again which should be successful now.
-  EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins(_))
+  EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
       .WillOnce(Return(FormRetrievalResult::kEncrytionServiceFailure))
       .WillOnce(Return(FormRetrievalResult::kSuccess));
   EXPECT_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins());

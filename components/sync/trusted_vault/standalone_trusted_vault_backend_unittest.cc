@@ -459,7 +459,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
                                       account_info);
   backend()->SetPrimaryAccount(account_info);
 
-  EXPECT_CALL(*connection(), DownloadKeys(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*connection(), DownloadKeys).Times(0);
 
   std::vector<std::vector<uint8_t>> fetched_keys;
   // Callback should be called immediately.

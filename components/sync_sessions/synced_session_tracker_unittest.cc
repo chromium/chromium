@@ -1085,7 +1085,7 @@ TEST_F(SyncedSessionTrackerTest, SerializeTrackerToSpecifics) {
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&callback));
 
   // Attempt to serialize unknown entities.
-  EXPECT_CALL(callback, Run(_, _)).Times(0);
+  EXPECT_CALL(callback, Run).Times(0);
   SerializePartialTrackerToSpecifics(tracker_, {{kTag, {kTabNode5}}},
                                      callback.Get());
   SerializePartialTrackerToSpecifics(

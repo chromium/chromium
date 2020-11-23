@@ -120,7 +120,7 @@ class UserEventSyncBridgeTest : public testing::Test {
     base::RunLoop loop;
     base::RepeatingClosure quit_closure = loop.QuitClosure();
     // Let the bridge initialize fully, which should run ModelReadyToSync().
-    ON_CALL(*processor(), ModelReadyToSync(_))
+    ON_CALL(*processor(), ModelReadyToSync)
         .WillByDefault(InvokeWithoutArgs([=]() { quit_closure.Run(); }));
     loop.Run();
     ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
@@ -200,8 +200,7 @@ TEST_F(UserEventSyncBridgeTest, SingleRecord) {
   WaitUntilModelReadyToSync();
   const UserEventSpecifics specifics(CreateSpecifics(1u, 2u, 3u));
   std::string storage_key;
-  EXPECT_CALL(*processor(), Put(_, _, _))
-      .WillOnce(WithArg<0>(SaveArg<0>(&storage_key)));
+  EXPECT_CALL(*processor(), Put).WillOnce(WithArg<0>(SaveArg<0>(&storage_key)));
   bridge()->RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics));
 
   EXPECT_THAT(GetData(storage_key), Pointee(MatchesUserEvent(specifics)));
@@ -226,7 +225,7 @@ TEST_F(UserEventSyncBridgeTest, ApplyStopSyncChanges) {
 TEST_F(UserEventSyncBridgeTest, MultipleRecords) {
   WaitUntilModelReadyToSync();
   std::set<std::string> unique_storage_keys;
-  EXPECT_CALL(*processor(), Put(_, _, _))
+  EXPECT_CALL(*processor(), Put)
       .Times(4)
       .WillRepeatedly(
           [&unique_storage_keys](const std::string& storage_key,
@@ -248,7 +247,7 @@ TEST_F(UserEventSyncBridgeTest, ApplySyncChanges) {
   WaitUntilModelReadyToSync();
   std::string storage_key1;
   std::string storage_key2;
-  EXPECT_CALL(*processor(), Put(_, _, _))
+  EXPECT_CALL(*processor(), Put)
       .WillOnce(WithArg<0>(SaveArg<0>(&storage_key1)))
       .WillOnce(WithArg<0>(SaveArg<0>(&storage_key2)));
 
@@ -275,8 +274,7 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
   int64_t fourth_id = 14;
 
   std::string storage_key;
-  EXPECT_CALL(*processor(), Put(_, _, _))
-      .WillOnce(WithArg<0>(SaveArg<0>(&storage_key)));
+  EXPECT_CALL(*processor(), Put).WillOnce(WithArg<0>(SaveArg<0>(&storage_key)));
 
   // This id update should be applied to the event as it is initially
   // recorded.
@@ -302,7 +300,7 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
 
   // This id update should be ignored, since we received commit confirmation
   // above.
-  EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(*processor(), Put).Times(0);
   mapper()->ChangeId(third_id, fourth_id);
   EXPECT_THAT(GetAllData(), IsEmpty());
 }
@@ -354,7 +352,7 @@ TEST_F(UserEventSyncBridgeTest, RecordBeforeMetadataLoads) {
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(false));
   ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return(""));
   bridge()->RecordUserEvent(SpecificsUniquePtr(1u, 2u, 3u));
-  EXPECT_CALL(*processor(), ModelReadyToSync(_));
+  EXPECT_CALL(*processor(), ModelReadyToSync);
   WaitUntilModelReadyToSync("account_id");
   EXPECT_THAT(GetAllData(), IsEmpty());
 }

@@ -706,14 +706,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
       std::vector<std::unique_ptr<syncer::CommitRequestData>> &&)>
       callback;
   std::vector<std::unique_ptr<syncer::CommitRequestData>> callback_result;
-  ON_CALL(callback, Run(_))
+  ON_CALL(callback, Run)
       .WillByDefault(
           [&callback_result](
               std::vector<std::unique_ptr<syncer::CommitRequestData>>&&
                   commit_data) { callback_result = std::move(commit_data); });
 
   ASSERT_EQ(0u, bookmark_client()->GetTasksCount());
-  EXPECT_CALL(callback, Run(_));
+  EXPECT_CALL(callback, Run);
   processor()->GetLocalChanges(/*max_entries=*/10, callback.Get());
   EXPECT_TRUE(callback_result.empty());
   EXPECT_TRUE(node->is_favicon_loading());
@@ -721,7 +721,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   bookmark_client()->SimulateFaviconLoaded(GURL(kUrl), gfx::Image(),
                                            GURL(kIconUrl));
   ASSERT_TRUE(node->is_favicon_loaded());
-  EXPECT_CALL(callback, Run(_));
+  EXPECT_CALL(callback, Run);
   processor()->GetLocalChanges(/*max_entries=*/10, callback.Get());
   EXPECT_FALSE(callback_result.empty());
 }

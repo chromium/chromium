@@ -205,7 +205,7 @@ void CallTestWithSelf(const WeakHandle<Base>& b1) {
 TEST_F(WeakHandleTest, WithDestroyedThread) {
   StrictMock<Base> b1;
   WeakHandle<Base> b2;
-  EXPECT_CALL(b1, TestWithSelf(_)).WillOnce(SaveArg<0>(&b2));
+  EXPECT_CALL(b1, TestWithSelf).WillOnce(SaveArg<0>(&b2));
 
   {
     base::Thread t("Test thread");

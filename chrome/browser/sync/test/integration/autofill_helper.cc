@@ -80,7 +80,7 @@ void RemoveKeyDontBlockForSync(int profile, const AutofillKey& key) {
                            base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   MockWebDataServiceObserver mock_observer;
-  EXPECT_CALL(mock_observer, AutofillEntriesChanged(_))
+  EXPECT_CALL(mock_observer, AutofillEntriesChanged)
       .WillOnce(SignalEvent(&done_event));
 
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);
@@ -233,7 +233,7 @@ void AddKeys(int profile, const std::set<AutofillKey>& keys) {
   WaitableEvent done_event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                            base::WaitableEvent::InitialState::NOT_SIGNALED);
   MockWebDataServiceObserver mock_observer;
-  EXPECT_CALL(mock_observer, AutofillEntriesChanged(_))
+  EXPECT_CALL(mock_observer, AutofillEntriesChanged)
       .WillOnce(SignalEvent(&done_event));
 
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);

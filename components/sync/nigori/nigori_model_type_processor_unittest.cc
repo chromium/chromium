@@ -583,7 +583,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {
   SimulateConnectSync();
 
   // Simulate returning error at MergeSyncData()
-  ON_CALL(*mock_nigori_sync_bridge(), MergeSyncData(_))
+  ON_CALL(*mock_nigori_sync_bridge(), MergeSyncData)
       .WillByDefault([&](const base::Optional<EntityData>& data) {
         return ModelError(FROM_HERE, "some error");
       });
@@ -594,7 +594,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {
       /*server_version=*/1));
 
   ASSERT_TRUE(processor()->IsConnectedForTest());
-  EXPECT_CALL(error_handler_callback, Run(_));
+  EXPECT_CALL(error_handler_callback, Run);
   processor()->OnUpdateReceived(CreateDummyModelTypeState(),
                                 std::move(updates));
   EXPECT_FALSE(processor()->IsConnectedForTest());
@@ -612,7 +612,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   SimulateConnectSync();
 
   // Simulate returning error at ApplySyncChanges()
-  ON_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges(_))
+  ON_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges)
       .WillByDefault([&](const base::Optional<EntityData>& data) {
         return ModelError(FROM_HERE, "some error");
       });
@@ -623,7 +623,7 @@ TEST_F(NigoriModelTypeProcessorTest,
       /*server_version=*/2));
 
   ASSERT_TRUE(processor()->IsConnectedForTest());
-  EXPECT_CALL(error_handler_callback, Run(_));
+  EXPECT_CALL(error_handler_callback, Run);
   processor()->OnUpdateReceived(CreateDummyModelTypeState(),
                                 std::move(updates));
   EXPECT_FALSE(processor()->IsConnectedForTest());
@@ -638,7 +638,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   request.error_handler = error_handler_callback.Get();
   request.cache_guid = kCacheGuid;
 
-  EXPECT_CALL(error_handler_callback, Run(_));
+  EXPECT_CALL(error_handler_callback, Run);
   processor()->OnSyncStarting(request, base::DoNothing());
 }
 

@@ -270,7 +270,7 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
           callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(callback, Run(_)).Times(0);
+  EXPECT_CALL(callback, Run).Times(0);
   request.reset();
   // Returned value isn't checked here, because the request can be cancelled
   // before reaching TestURLLoaderFactory.

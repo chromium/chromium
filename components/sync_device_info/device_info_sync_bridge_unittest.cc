@@ -395,7 +395,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     DeviceInfoPrefs::RegisterProfilePrefs(pref_service_.registry());
 
     // By default, mimic a real processor's behavior for IsTrackingMetadata().
-    ON_CALL(mock_processor_, ModelReadyToSync(_))
+    ON_CALL(mock_processor_, ModelReadyToSync)
         .WillByDefault([this](std::unique_ptr<MetadataBatch> batch) {
           ON_CALL(mock_processor_, IsTrackingMetadata())
               .WillByDefault(
@@ -814,7 +814,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesWithLocalGuid) {
 
   // The bridge should ignore these changes using this specifics because its
   // guid will match the local device.
-  EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(*processor(), Put).Times(0);
 
   const DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
   auto error_on_add = bridge()->ApplySyncChanges(
@@ -837,7 +837,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyDeleteNonexistent) {
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete("guid"));
-  EXPECT_CALL(*processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(*processor(), Delete).Times(0);
   auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                                           std::move(entity_change_list));
   EXPECT_FALSE(error);
@@ -853,7 +853,7 @@ TEST_F(DeviceInfoSyncBridgeTest, MergeEmpty) {
   ASSERT_FALSE(bridge()->IsPulseTimerRunningForTest());
 
   EXPECT_CALL(*processor(), Put(kLocalGuid, _, _));
-  EXPECT_CALL(*processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(*processor(), Delete).Times(0);
 
   bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
@@ -875,7 +875,7 @@ TEST_F(DeviceInfoSyncBridgeTest, MergeLocalGuid) {
   ASSERT_FALSE(local_device()->GetLocalDeviceInfo());
 
   EXPECT_CALL(*processor(), Put(kLocalGuid, _, _));
-  EXPECT_CALL(*processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(*processor(), Delete).Times(0);
 
   bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
@@ -895,9 +895,9 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevices) {
   // Local device.
   EXPECT_EQ(1, bridge()->CountActiveDevices());
 
-  ON_CALL(*processor(), GetEntityCreationTime(_))
+  ON_CALL(*processor(), GetEntityCreationTime)
       .WillByDefault(Return(base::Time::Now()));
-  ON_CALL(*processor(), GetEntityModificationTime(_))
+  ON_CALL(*processor(), GetEntityModificationTime)
       .WillByDefault(Return(base::Time::Now()));
 
   // Regardless of the time, these following two ApplySyncChanges(...) calls

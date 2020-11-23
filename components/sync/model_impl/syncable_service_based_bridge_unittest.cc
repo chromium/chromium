@@ -86,10 +86,10 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
  protected:
   SyncableServiceBasedBridgeTest()
       : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
-    ON_CALL(syncable_service_, WaitUntilReadyToSync(_))
+    ON_CALL(syncable_service_, WaitUntilReadyToSync)
         .WillByDefault(
             Invoke([](base::OnceClosure done) { std::move(done).Run(); }));
-    ON_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _))
+    ON_CALL(syncable_service_, MergeDataAndStartSyncing)
         .WillByDefault(
             [&](ModelType type, const SyncDataList& initial_sync_data,
                 std::unique_ptr<SyncChangeProcessor> sync_processor,
@@ -183,7 +183,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
        ShouldStartSyncingWithEmptyInitialRemoteData) {
   // Bridge initialization alone, without sync itself starting, should not
   // issue calls to the syncable service.
-  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _)).Times(0);
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing).Times(0);
   InitializeBridge();
 
   // Starting sync itself is also not sufficient, until initial remote data is
@@ -216,20 +216,20 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
 TEST_F(SyncableServiceBasedBridgeTest, ShouldWaitUntilModelReadyToSync) {
   base::OnceClosure syncable_service_ready_cb;
-  ON_CALL(syncable_service_, WaitUntilReadyToSync(_))
+  ON_CALL(syncable_service_, WaitUntilReadyToSync)
       .WillByDefault(Invoke([&](base::OnceClosure done) {
         syncable_service_ready_cb = std::move(done);
       }));
 
-  EXPECT_CALL(mock_processor_, ModelReadyToSync(_)).Times(0);
-  EXPECT_CALL(syncable_service_, WaitUntilReadyToSync(_)).Times(0);
-  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_processor_, ModelReadyToSync).Times(0);
+  EXPECT_CALL(syncable_service_, WaitUntilReadyToSync).Times(0);
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing).Times(0);
 
   // Bridge initialization alone, without sync itself starting, should not
   // issue calls to the syncable service.
   InitializeBridge();
 
-  EXPECT_CALL(syncable_service_, WaitUntilReadyToSync(_));
+  EXPECT_CALL(syncable_service_, WaitUntilReadyToSync);
   // Required to initialize the store.
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(syncable_service_ready_cb);
@@ -241,7 +241,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldWaitUntilModelReadyToSync) {
 
   // When the SyncableService gets ready, the bridge should propagate this
   // information to the processor.
-  EXPECT_CALL(mock_processor_, ModelReadyToSync(_));
+  EXPECT_CALL(mock_processor_, ModelReadyToSync);
   std::move(syncable_service_ready_cb).Run();
 }
 
@@ -254,7 +254,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
   EXPECT_CALL(syncable_service_, StopSyncing(kModelType));
   real_processor_->OnSyncStopping(CLEAR_METADATA);
 
-  EXPECT_CALL(syncable_service_, StopSyncing(_)).Times(0);
+  EXPECT_CALL(syncable_service_, StopSyncing).Times(0);
   ShutdownBridge();
 }
 
@@ -270,7 +270,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
 TEST_F(SyncableServiceBasedBridgeTest,
        ShouldNotStopSyncableServiceIfNotPreviouslyStarted) {
-  EXPECT_CALL(syncable_service_, StopSyncing(_)).Times(0);
+  EXPECT_CALL(syncable_service_, StopSyncing).Times(0);
   InitializeBridge();
   StartSyncing();
   real_processor_->OnSyncStopping(KEEP_METADATA);
@@ -278,7 +278,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
 TEST_F(SyncableServiceBasedBridgeTest,
        ShouldNotStopSyncableServiceDuringShutdownIfNotPreviouslyStarted) {
-  EXPECT_CALL(syncable_service_, StopSyncing(_)).Times(0);
+  EXPECT_CALL(syncable_service_, StopSyncing).Times(0);
   InitializeBridge();
   StartSyncing();
   ShutdownBridge();
@@ -286,17 +286,17 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
 TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateErrorDuringStart) {
   // Instrument MergeDataAndStartSyncing() to return an error.
-  ON_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _))
+  ON_CALL(syncable_service_, MergeDataAndStartSyncing)
       .WillByDefault(Return(ModelError(FROM_HERE, "Test error")));
 
-  EXPECT_CALL(mock_error_handler_, Run(_));
+  EXPECT_CALL(mock_error_handler_, Run);
 
   InitializeBridge();
   StartSyncing();
   worker_->UpdateFromServer();
 
   // Since the syncable service failed to start, it shouldn't be stopped.
-  EXPECT_CALL(syncable_service_, StopSyncing(_)).Times(0);
+  EXPECT_CALL(syncable_service_, StopSyncing).Times(0);
   ShutdownBridge();
 }
 
@@ -308,13 +308,13 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   // Stopping Sync temporarily (KEEP_METADATA) should *not* result in the
   // SyncableService being stopped.
-  EXPECT_CALL(syncable_service_, StopSyncing(_)).Times(0);
+  EXPECT_CALL(syncable_service_, StopSyncing).Times(0);
   real_processor_->OnSyncStopping(KEEP_METADATA);
   EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash.value(), _)));
 
   // Since the SyncableService wasn't stopped, it shouldn't get restarted either
   // when Sync starts up again.
-  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _)).Times(0);
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing).Times(0);
   StartSyncing();
 
   // Finally, shutting down the bridge (during browser shutdown) should also
@@ -331,7 +331,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   // Mimic restart, which shouldn't start syncing until OnSyncStarting() is
   // received (exercised in StartSyncing()).
-  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _)).Times(0);
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing).Times(0);
   ShutdownBridge();
   InitializeBridge();
 
@@ -349,7 +349,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldSupportDisableReenableSequence) {
   real_processor_->OnSyncStopping(CLEAR_METADATA);
   EXPECT_THAT(GetAllData(), IsEmpty());
 
-  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _)).Times(0);
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing).Times(0);
   StartSyncing();
   EXPECT_CALL(
       syncable_service_,
@@ -359,7 +359,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldSupportDisableReenableSequence) {
 
 TEST_F(SyncableServiceBasedBridgeTest,
        ShouldPropagateLocalEntitiesDuringMerge) {
-  ON_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _))
+  ON_CALL(syncable_service_, MergeDataAndStartSyncing)
       .WillByDefault([&](ModelType type, const SyncDataList& initial_sync_data,
                          std::unique_ptr<SyncChangeProcessor> sync_processor,
                          std::unique_ptr<SyncErrorFactory> sync_error_factory) {
@@ -446,7 +446,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalDeletion) {
 
 TEST_F(SyncableServiceBasedBridgeTest,
        ShouldIgnoreLocalCreationIfPreviousError) {
-  EXPECT_CALL(mock_processor_, Put(_, _, _)).Times(0);
+  EXPECT_CALL(mock_processor_, Put).Times(0);
 
   InitializeBridge();
   StartSyncing();
@@ -455,7 +455,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
   ASSERT_THAT(GetAllData(), IsEmpty());
 
   // We fake an error, reported by the bridge.
-  EXPECT_CALL(mock_error_handler_, Run(_));
+  EXPECT_CALL(mock_error_handler_, Run);
   real_processor_->ReportError(ModelError(FROM_HERE, "Fake error"));
   ASSERT_TRUE(real_processor_->GetError());
 
@@ -578,7 +578,7 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
 
   EXPECT_CALL(mock_processor, IsEntityUnsynced(kClientTagHash))
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_processor, UntrackEntityForStorageKey(_)).Times(0);
+  EXPECT_CALL(mock_processor, UntrackEntityForStorageKey).Times(0);
 
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_history_delete_directive();
