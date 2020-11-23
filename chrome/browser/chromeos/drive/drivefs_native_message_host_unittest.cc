@@ -72,13 +72,14 @@ class DriveFsNativeMessageHostTest
               (const std::string& message),
               (override));
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   drivefs::mojom::ExtensionConnectionParamsPtr params_;
   mojo::Receiver<drivefs::mojom::NativeMessagingHost> receiver_{this};
   mojo::Remote<drivefs::mojom::NativeMessagingPort> extension_port_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   DISALLOW_COPY_AND_ASSIGN(DriveFsNativeMessageHostTest);
 };
 
@@ -157,6 +158,27 @@ TEST_F(DriveFsNativeMessageHostTest, Error) {
   extension_port_.ResetWithReason(1u, "foo");
 
   run_loop.Run();
+}
+
+class DriveFsNativeMessageHostTestWithoutFlag
+    : public DriveFsNativeMessageHostTest {
+ public:
+  DriveFsNativeMessageHostTestWithoutFlag() {
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kDriveFsBidirectionalNativeMessaging);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(DriveFsNativeMessageHostTestWithoutFlag);
+};
+
+TEST_F(DriveFsNativeMessageHostTestWithoutFlag,
+       DriveFsCannotInitiateMessaging) {
+  ASSERT_FALSE(CreateDriveFsInitiatedNativeMessageHost(
+      extension_port_.BindNewPipeAndPassReceiver(),
+      receiver_.BindNewPipeAndPassRemote()));
 }
 
 }  // namespace
