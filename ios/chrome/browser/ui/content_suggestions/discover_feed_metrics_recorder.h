@@ -83,6 +83,14 @@
 // Records an unknown |commandID| performed by the Feed.
 - (void)recordCommandID:(int)commandID;
 
+// Records if a notice card was presented at the time the feed was initially
+// loaded. e.g. Launch time, user refreshes, and acccount switches.
+- (void)recordNoticeCardShown:(BOOL)shown;
+
+// Records the |durationInSeconds| it took to Discover feed to Fetch articles.
+- (void)recordFeedArticlesFetchDurationInSeconds:
+    (NSTimeInterval)durationInSeconds;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_
