@@ -5,6 +5,9 @@
 <link rel="help" href="https://drafts.csswg.org/selectors/#the-hover-pseudo">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <style>
   .affected:hover { color: green }
   #hoveredContents { display: contents }
@@ -14,6 +17,12 @@
   <div id="hovered2">Hover me - should become green</div>
 </div>
 <script>
+  function mouseMoveToTarget(selector) {
+     let target = document.querySelector(selector);
+     return new test_driver.Actions().pointerMove(0, 0, {origin: target})
+             .send();
+  }
+
   function testElementGreen(test, element) {
     element.addEventListener("mouseover", test.step_func(event => {
       assert_equals(getComputedStyle(element).color, "rgb(0, 128, 0)");
@@ -30,4 +39,9 @@
 
   async_test(t => { testElementGreen(t, hovered); }, "Hover #hovered element should make it go green");
   async_test(t => { testElementGreen(t, hovered2); }, "Hover #hoveredContents child should make it go green");
+
+  mouseMoveToTarget("#hovered").then(() => {
+    mouseMoveToTarget("#hovered2");
+  });
+
 </script>
