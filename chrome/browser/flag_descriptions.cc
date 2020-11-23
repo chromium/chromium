@@ -3220,6 +3220,10 @@ const char kAndroidNightModeTabReparentingDescription[] =
     "If enabled, when the user changes themes the current tabs are reparented "
     "instead of reloaded.";
 
+const char kSwipeToMoveCursorName[] = "Swipe to move cursor";
+const char kSwipeToMoveCursorDescription[] =
+    "Allows user to use touch gestures to move the text cursor around.";
+
 const char kTabbedAppOverflowMenuIconsName[] =
     "Android tabbed app overflow menu icons";
 const char kTabbedAppOverflowMenuIconsDescription[] =

@@ -2185,6 +2185,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-swipe-to-move-cursor",
+    "owners": [ "ctzsm", "changwan"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-switch-access-point-scanning",
     "owners": ["anastasi@google.com", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 92

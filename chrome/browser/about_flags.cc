@@ -6804,7 +6804,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrerender2Description, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kPrerender2,
                                     kPrerender2Variations,
-                                    "Prerender2")}
+                                    "Prerender2")},
+
+#if defined(OS_ANDROID)
+    {"enable-swipe-to-move-cursor", flag_descriptions::kSwipeToMoveCursorName,
+     flag_descriptions::kSwipeToMoveCursorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSwipeToMoveCursor)},
+#endif  // defined(OS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
