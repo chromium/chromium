@@ -159,6 +159,14 @@ Polymer({
       value: null,
     },
 
+    /** @private */
+    movingMultiplePasswordsToAccountFeatureEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean(
+            'enableMovingMultiplePasswordsToAccount');
+      }
+    },
   },
 
   keyBindings: {

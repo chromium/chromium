@@ -270,6 +270,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           password_manager::features::kEnablePasswordsAccountStorage));
 
   html_source->AddBoolean(
+      "enableMovingMultiplePasswordsToAccount",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kEnableMovingMultiplePasswordsToAccount));
+
+  html_source->AddBoolean(
       "enableContentSettingsRedesign",
       base::FeatureList::IsEnabled(features::kContentSettingsRedesign));
 
