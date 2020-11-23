@@ -153,6 +153,9 @@ declare_args() {
   # Turn off the --call-graph-profile-sort flag for lld by default. Enable
   # selectively for targets where it's beneficial.
   enable_call_graph_profile_sort = chrome_pgo_phase == 2
+
+  # Enable DWARF v5.
+  use_dwarf5 = false
 }
 
 declare_args() {
@@ -2297,11 +2300,15 @@ config("symbols") {
       # version 7 also produces debug data that is incompatible with Breakpad
       # dump_syms, so this is still required (https://crbug.com/622406).
       cflags += [ "-fno-standalone-debug" ]
-    } else if (is_mac) {
+    } else if (is_mac && !use_dwarf5) {
       # clang defaults to DWARF2 on macOS unless mac_deployment_target is
       # at least 10.11.
       # TODO(thakis): Remove this once mac_deployment_target is 10.11.
       cflags += [ "-gdwarf-4" ]
+    }
+
+    if (use_dwarf5 && !is_nacl) {
+      cflags += [ "-gdwarf-5" ]
     }
 
     # The gcc-based nacl compilers don't support -fdebug-compilation-dir (see
@@ -2376,11 +2383,15 @@ config("minimal_symbols") {
     }
   } else {
     cflags = []
-    if (is_mac) {
+    if (is_mac && !use_dwarf5) {
       # clang defaults to DWARF2 on macOS unless mac_deployment_target is
       # at least 10.11.
       # TODO(thakis): Remove this once mac_deployment_target is 10.11.
       cflags += [ "-gdwarf-4" ]
+    }
+
+    if (use_dwarf5 && !is_nacl) {
+      cflags += [ "-gdwarf-5" ]
     }
 
     # The gcc-based nacl compilers don't support -fdebug-compilation-dir (see
