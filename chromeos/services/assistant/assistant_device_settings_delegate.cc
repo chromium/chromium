@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/google3/assistant/api/client_op/device_args.pb.h"
-#include "chromeos/services/assistant/cros_platform_api.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
+#include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 

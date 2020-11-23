@@ -112,13 +112,14 @@ component("lib") {
 
     deps += [
       ":buildflags",
-      ":cros_libassistant",
       "//chromeos/assistant/internal",
       "//chromeos/assistant/internal:libassistant",
       "//chromeos/assistant/internal/proto/google3",
       "//chromeos/dbus",
       "//chromeos/resources",
       "//chromeos/services/assistant/proxy",
+      "//chromeos/services/assistant/public/cpp/migration",
+      "//chromeos/services/assistant/public/cpp/migration",
       "//chromeos/services/network_config/public/mojom",
       "//chromeos/strings",
       "//libassistant/shared/internal_api:fuchsia_api_helper",
@@ -132,25 +133,6 @@ component("lib") {
       "//services/network/public/mojom",
       "//ui/base",
       "//url",
-    ]
-  }
-}
-
-# This source_set contains the border APIs that interact with Libassistant.
-# TODO(b/171748795): During the migration to a Libassistant mojom service,
-# these APIs are used both by the mojom service and from this directory.
-# Once the migration is complete these should no longer be used here and
-# everything should have been moved to the mojom service.
-
-if (enable_cros_libassistant) {
-  source_set("cros_libassistant") {
-    sources = [
-      "assistant_manager_service_delegate.h",
-      "cros_platform_api.h",
-    ]
-    deps = [
-      "//base",
-      "//libassistant/shared/public",
     ]
   }
 }
@@ -201,10 +183,6 @@ source_set("tests") {
       "platform/network_provider_impl_unittest.cc",
       "platform/power_manager_provider_impl_unittest.cc",
       "platform/system_provider_impl_unittest.cc",
-      "test_support/fake_assistant_manager_service_delegate.cc",
-      "test_support/fake_assistant_manager_service_delegate.h",
-      "test_support/fake_platform_api.cc",
-      "test_support/fake_platform_api.h",
       "test_support/fake_service_context.cc",
       "test_support/fake_service_context.h",
       "test_support/mock_media_manager.cc",
@@ -217,7 +195,8 @@ source_set("tests") {
       "//chromeos/assistant/internal:tests",
       "//chromeos/assistant/internal/proto/google3",
       "//chromeos/dbus",
-      "//chromeos/services/assistant:cros_libassistant",
+      "//chromeos/services/assistant/public/cpp/migration",
+      "//chromeos/services/assistant/public/cpp/migration:test_support",
       "//chromeos/services/network_config/public/mojom",
       "//services/audio/public/cpp:test_support",
       "//services/device/public/cpp:test_support",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/public/cpp/libassistant_v1_api.h"
+#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 
 #include "base/check.h"
 #include "base/check_op.h"

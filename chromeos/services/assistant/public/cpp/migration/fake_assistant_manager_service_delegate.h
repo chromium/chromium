@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_MANAGER_SERVICE_DELEGATE_H_
-#define CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_MANAGER_SERVICE_DELEGATE_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_ASSISTANT_MANAGER_SERVICE_DELEGATE_H_
+#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_ASSISTANT_MANAGER_SERVICE_DELEGATE_H_
 
-#include "chromeos/services/assistant/assistant_manager_service_delegate.h"
+#include "base/component_export.h"
+
+#include <memory>
+#include <string>
+
+#include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 
 namespace chromeos {
 namespace assistant {
@@ -15,7 +20,8 @@ class FakeAssistantManagerInternal;
 
 // Implementation of |AssistantManagerServiceDelegate| that returns fake
 // instances for all of the member methods. Used during unittests.
-class FakeAssistantManagerServiceDelegate
+class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
+    FakeAssistantManagerServiceDelegate
     : public AssistantManagerServiceDelegate {
  public:
   FakeAssistantManagerServiceDelegate();
@@ -56,4 +62,4 @@ class FakeAssistantManagerServiceDelegate
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_MANAGER_SERVICE_DELEGATE_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_ASSISTANT_MANAGER_SERVICE_DELEGATE_H_

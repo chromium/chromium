@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_CROS_PLATFORM_API_H_
-#define CHROMEOS_SERVICES_ASSISTANT_CROS_PLATFORM_API_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_CROS_PLATFORM_API_H_
+#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_CROS_PLATFORM_API_H_
 
 #include "base/macros.h"
 #include "libassistant/shared/public/platform_api.h"
@@ -34,4 +34,4 @@ class CrosPlatformApi : public assistant_client::PlatformApi {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_CROS_PLATFORM_API_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_CROS_PLATFORM_API_H_

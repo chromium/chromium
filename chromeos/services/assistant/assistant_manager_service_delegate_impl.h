@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chromeos/services/assistant/assistant_manager_service_delegate.h"
+#include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 

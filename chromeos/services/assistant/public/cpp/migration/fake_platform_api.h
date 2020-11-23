@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_API_H_
-#define CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_API_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_PLATFORM_API_H_
+#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_PLATFORM_API_H_
 
 #include <memory>
 
 #include "base/macros.h"
-#include "chromeos/services/assistant/cros_platform_api.h"
+#include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
 
 namespace chromeos {
 namespace assistant {
@@ -42,4 +42,4 @@ class FakePlatformApi : public CrosPlatformApi {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_API_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_PLATFORM_API_H_

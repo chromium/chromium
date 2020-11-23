@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_LIBASSISTANT_V1_API_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_LIBASSISTANT_V1_API_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_LIBASSISTANT_V1_API_H_
+#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_LIBASSISTANT_V1_API_H_
 
 #include "base/component_export.h"
 
@@ -19,7 +19,7 @@ namespace assistant {
 // Only a single instance of this class may exist at any given time.
 // TODO(b/171748795): Remove once all Libassistant access has been moved in the
 // //chromeos/services/libassistant service.
-class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) LibassistantV1Api {
+class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC_MIGRATION) LibassistantV1Api {
  public:
   LibassistantV1Api(
       assistant_client::AssistantManager* assistant_manager,
@@ -46,4 +46,4 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) LibassistantV1Api {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_LIBASSISTANT_V1_API_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_LIBASSISTANT_V1_API_H_

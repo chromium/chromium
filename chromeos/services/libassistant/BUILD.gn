@@ -8,7 +8,10 @@ component("libassistant") {
     "libassistant_service.h",
   ]
 
-  deps = [ "//chromeos/services/libassistant/public/mojom" ]
+  deps = [
+    "//chromeos/services/assistant/public/cpp/migration",
+    "//chromeos/services/libassistant/public/mojom",
+  ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
 

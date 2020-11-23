@@ -1,0 +1,7 @@
+A migration is currently in progress, moving the Libassistant APIs to 
+//chromeos/services/libassistant.
+
+The files in this directory are temporary shared between 
+//chromeos/service/assistant and //chromeos/services/libassistant.
+
+Once the migration is over, this directory should be gone.

@@ -8,9 +8,9 @@
 #include "chromeos/assistant/internal/cros_display_connection.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/services/assistant/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/cpp/libassistant_v1_api.h"
+#include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
+#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 

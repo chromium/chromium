@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/test_support/fake_assistant_manager_service_delegate.h"
+#include "chromeos/services/assistant/public/cpp/migration/fake_assistant_manager_service_delegate.h"
 
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
-#include "chromeos/services/assistant/test_support/fake_platform_api.h"
+#include "chromeos/services/assistant/public/cpp/migration/fake_platform_api.h"
 
 namespace chromeos {
 namespace assistant {

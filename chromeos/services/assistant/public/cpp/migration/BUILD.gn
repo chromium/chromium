@@ -1,0 +1,44 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//chromeos/assistant/assistant.gni")
+
+assert(is_chromeos)
+assert(enable_cros_libassistant)
+
+component("migration") {
+  defines = [ "IS_ASSISTANT_SERVICE_PUBLIC_MIGRATION_IMPL" ]
+
+  sources = [
+    "assistant_manager_service_delegate.h",
+    "cros_platform_api.h",
+    "libassistant_v1_api.cc",
+    "libassistant_v1_api.h",
+  ]
+
+  public_deps = [ "//libassistant/shared/public" ]
+
+  deps = [ "//base" ]
+}
+
+component("test_support") {
+  testonly = true
+
+  output_name = "migration_test_support"
+  defines = [ "IS_ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT_IMPL" ]
+
+  sources = [
+    "fake_assistant_manager_service_delegate.cc",
+    "fake_assistant_manager_service_delegate.h",
+    "fake_platform_api.cc",
+    "fake_platform_api.h",
+  ]
+
+  deps = [
+    ":migration",
+    "//base",
+    "//chromeos/assistant/internal:test_support",
+    "//chromeos/assistant/internal/proto/google3",
+    "//libassistant/shared/public",
+  ]
+}
