@@ -333,8 +333,11 @@ void CaptureModeController::Stop() {
 
 void CaptureModeController::PerformCapture() {
   DCHECK(IsActive());
+  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
+  if (!capture_params)
+    return;
 
-  if (!IsCaptureAllowed()) {
+  if (!IsCaptureAllowed(*capture_params)) {
     ShowDisabledNotification();
     Stop();
     return;
@@ -344,9 +347,9 @@ void CaptureModeController::PerformCapture() {
   capture_mode_session_->ReportSessionHistograms();
 
   if (type_ == CaptureModeType::kImage)
-    CaptureImage();
+    CaptureImage(*capture_params);
   else
-    CaptureVideo();
+    CaptureVideo(*capture_params);
 }
 
 void CaptureModeController::EndVideoRecording() {
@@ -438,12 +441,10 @@ void CaptureModeController::OnRecordingServiceDisconnected() {
       kReconnectDelay);
 }
 
-bool CaptureModeController::IsCaptureAllowed() const {
-  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
-  if (!capture_params)
-    return false;
+bool CaptureModeController::IsCaptureAllowed(
+    const CaptureParams& capture_params) const {
   return delegate_->IsCaptureAllowed(
-      capture_params->window, capture_params->bounds,
+      capture_params.window, capture_params.bounds,
       /*for_video=*/type_ == CaptureModeType::kVideo);
 }
 
@@ -502,22 +503,18 @@ CaptureModeController::GetCaptureParams() const {
   return CaptureParams{window, bounds};
 }
 
-void CaptureModeController::CaptureImage() {
+void CaptureModeController::CaptureImage(const CaptureParams& capture_params) {
   DCHECK_EQ(CaptureModeType::kImage, type_);
-  DCHECK(IsCaptureAllowed());
+  DCHECK(IsCaptureAllowed(capture_params));
 
-  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
   // Stop the capture session now, so as not to take a screenshot of the capture
   // bar.
   Stop();
 
-  if (!capture_params)
-    return;
-
-  DCHECK(!capture_params->bounds.IsEmpty());
+  DCHECK(!capture_params.bounds.IsEmpty());
 
   ui::GrabWindowSnapshotAsyncPNG(
-      capture_params->window, capture_params->bounds,
+      capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
                      weak_ptr_factory_.GetWeakPtr(), base::Time::Now()));
 
@@ -528,9 +525,9 @@ void CaptureModeController::CaptureImage() {
   num_consecutive_screenshots_scheduler_.Reset();
 }
 
-void CaptureModeController::CaptureVideo() {
+void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {
   DCHECK_EQ(CaptureModeType::kVideo, type_);
-  DCHECK(IsCaptureAllowed());
+  DCHECK(IsCaptureAllowed(capture_params));
 
   if (skip_count_down_ui_) {
     OnVideoRecordCountDownFinished();
