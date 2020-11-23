@@ -28,7 +28,8 @@ AppDownloadingScreen::AppDownloadingScreen(
 }
 
 AppDownloadingScreen::~AppDownloadingScreen() {
-  view_->Bind(nullptr);
+  if (view_)
+    view_->Bind(nullptr);
 }
 
 void AppDownloadingScreen::ShowImpl() {

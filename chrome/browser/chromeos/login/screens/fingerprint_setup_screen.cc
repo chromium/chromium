@@ -112,7 +112,8 @@ FingerprintSetupScreen::FingerprintSetupScreen(
 }
 
 FingerprintSetupScreen::~FingerprintSetupScreen() {
-  view_->Bind(nullptr);
+  if (view_)
+    view_->Bind(nullptr);
 }
 
 bool FingerprintSetupScreen::MaybeSkip(WizardContext* context) {

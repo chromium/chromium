@@ -57,7 +57,8 @@ PinSetupScreen::PinSetupScreen(PinSetupScreenView* view,
 }
 
 PinSetupScreen::~PinSetupScreen() {
-  view_->Bind(nullptr);
+  if (view_)
+    view_->Bind(nullptr);
 }
 
 bool PinSetupScreen::MaybeSkip(WizardContext* context) {

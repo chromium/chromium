@@ -97,7 +97,8 @@ MarketingOptInScreen::MarketingOptInScreen(
 }
 
 MarketingOptInScreen::~MarketingOptInScreen() {
-  view_->Bind(nullptr);
+  if (view_)
+    view_->Bind(nullptr);
 }
 
 bool MarketingOptInScreen::MaybeSkip(WizardContext* context) {

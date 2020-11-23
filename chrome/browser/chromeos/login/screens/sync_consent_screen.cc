@@ -101,7 +101,8 @@ SyncConsentScreen::SyncConsentScreen(SyncConsentScreenView* view,
 }
 
 SyncConsentScreen::~SyncConsentScreen() {
-  view_->Bind(NULL);
+  if (view_)
+    view_->Bind(nullptr);
 }
 
 void SyncConsentScreen::Init() {
