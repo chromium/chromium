@@ -5976,8 +5976,8 @@ crbug.com/1142877 external/wpt/mediacapture-fromelement/capture.html [ Pass Fail
 crbug.com/1143720 [ Win7 ] external/wpt/media-source/mediasource-detach.html [ Pass Failure ]
 
 # Eco-Infra Sheriff 2020-11-02
-crbug.com/1144677 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Pass Failure ]
-crbug.com/1144677 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Pass Failure ]
+crbug.com/1151922 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure ]
+crbug.com/1151922 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure ]
 crbug.com/1144677 external/wpt/infrastructure/reftest/reftest.www.sub.html [ Failure ]
 
 crbug.com/1144537 external/wpt/xhr/responsexml-document-properties.htm [ Pass Failure ]
