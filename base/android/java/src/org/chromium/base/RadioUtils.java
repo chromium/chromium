@@ -97,8 +97,16 @@ public class RadioUtils {
         TelephonyManager telephonyManager =
                 (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.TELEPHONY_SERVICE);
-        SignalStrength signalStrength = telephonyManager.getSignalStrength();
-        if (signalStrength == null) return -1;
-        return signalStrength.getLevel();
+        int level = -1;
+        try {
+            SignalStrength signalStrength = telephonyManager.getSignalStrength();
+            if (signalStrength != null) {
+                level = signalStrength.getLevel();
+            }
+        } catch (java.lang.SecurityException e) {
+            // Sometimes SignalStrength.getLevel() requires extra permissions
+            // that Chrome doesn't have. See crbug.com/1150536.
+        }
+        return level;
     }
 }
