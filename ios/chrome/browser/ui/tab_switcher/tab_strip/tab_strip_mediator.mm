@@ -197,6 +197,13 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
       WebStateOpener());
 }
 
+- (void)selectTab:(int)index {
+  if (!self.webStateList)
+    return;
+
+  _webStateList->ActivateWebStateAt(index);
+}
+
 #pragma mark - Private
 
 // Calls |-populateItems:selectedItemID:| on the consumer.

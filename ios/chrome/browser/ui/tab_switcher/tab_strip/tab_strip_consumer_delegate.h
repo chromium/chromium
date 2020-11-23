@@ -13,6 +13,9 @@
 // Tells the receiver to insert a new item in the tabstrip.
 - (void)addNewItem;
 
+// Tells the receiver to show to the selected tab.
+- (void)selectTab:(int)index;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_CONSUMER_DELEGATE_H_

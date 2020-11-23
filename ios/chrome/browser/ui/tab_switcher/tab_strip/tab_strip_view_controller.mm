@@ -178,4 +178,12 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   [self.delegate addNewItem];
 }
 
+#pragma mark - UICollectionViewDelegate
+
+- (void)collectionView:(UICollectionView*)collectionView
+    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  int index = indexPath.item;
+  [self.delegate selectTab:index];
+}
+
 @end
