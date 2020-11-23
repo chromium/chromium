@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">নাইট লাইট</translation>
 <translation id="2727175239389218057">উত্তর দিন</translation>
 <translation id="2727977024730340865">একটি নিম্ন শক্তির চার্জার প্লাগইন করা হয়েছে৷ বিশ্বস্ত ব্যাটারি চার্জ নাও হতে পারে৷</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">আপনি এখনই প্রস্থান করুন হবেন৷</translation>
 <translation id="28232023175184696">ইন্টারনেটের সাথে কানেক্ট করা যাচ্ছে না। আবার চেষ্টা করতে ক্লিক করুন।</translation>
@@ -493,6 +494,7 @@
 <translation id="5648021990716966815">মাইক জ্যাক</translation>
 <translation id="5669267381087807207">সক্রিয় করা হচ্ছে</translation>
 <translation id="5673434351075758678">সেটিংস সিঙ্ক করার পরে "<ph name="FROM_LOCALE" />" থেকে "<ph name="TO_LOCALE" />" সেট করা হয়েছে।</translation>
+<translation id="5677928146339483299">অবরুদ্ধ</translation>
 <translation id="5679050765726761783">কম পাওয়ারের অ্যাডাপ্টার কানেক্ট করা হয়েছে</translation>
 <translation id="5682642926269496722">বর্তমান ব্যবহারকারীর অ্যাকাউন্টের জন্য Google অ্যাসিস্ট্যান্ট উপলভ্য নয়।</translation>
 <translation id="5689633613396158040">নাইট লাইট ফিচারের জন্য স্ক্রিনের দিকে স্বচ্ছন্দে তাকানো যায় বা কম আলোতে পড়তে পারা যায়। কোন সময় নাইট লাইট ফিচারটি সম্পূর্ণভাবে চালু করা হবে বা বন্ধ করা হবে তা পরিবর্তন করতে ট্যাপ করুন।</translation>
@@ -564,6 +566,7 @@
 <translation id="6297287540776456956">একটি অঞ্চল নির্বাচন করতে স্টাইলাস ব্যবহার করুন</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> <ph name="ROTATION" /> আবর্তিত হয়েছে</translation>
 <translation id="6315170314923504164">ভয়েস</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> এমন একটি ম্যানেজ করা সেশন যা <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="6376931439017688372">ব্লুটুথ চালু আছে</translation>
 <translation id="6381109794406942707">ডিভাইস আনলক করতে, আপনার পিন এন্টার করুন।</translation>
 <translation id="639644700271529076">CAPS LOCK বন্ধ আছে</translation>
@@ -692,6 +695,7 @@
 <translation id="7590883480672980941">ইনপুট সেটিংস</translation>
 <translation id="7593891976182323525">Search অথবা Shift</translation>
 <translation id="7600875258240007829">সব বিজ্ঞপ্তি দেখুন</translation>
+<translation id="7607002721634913082">বিরত রয়েছে</translation>
 <translation id="7618774594543487847">নিউট্রাল</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ফারেনহাইট</translation>
 <translation id="7633755430369750696">'নিয়ারবাই শেয়ার' সেটিংস দেখুন।</translation>

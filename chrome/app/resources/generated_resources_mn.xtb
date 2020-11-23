@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Chrome-д Google smarts авах</translation>
 <translation id="1147322039136785890">Одоо <ph name="SUPERVISED_USER_NAME" />-н ээлж</translation>
 <translation id="1147991416141538220">Хандалт хүсэхийн тулд энэ төхөөрөмжийн администратортай холбоо барина уу.</translation>
+<translation id="1148063863818152153">Таны төхөөрөмжийн EID</translation>
 <translation id="1149401351239820326">Хугацаа дуусах сар</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" />-г скан хийж байна</translation>
 <translation id="1150490752229770117">Энэ бол энэ <ph name="DEVICE_TYPE" />-н программ хангамж болон аюулгүй байдлын сүүлийн автомат шинэчлэлт. Ирээдүйд шинэчлэлт хийхийн тулд, шинэ загварт дэвшүүлнэ үү. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -314,6 +315,7 @@
 <translation id="1343865611738742294">Linux аппад USB төхөөрөмжид хандах зөвшөөрөл өгнө үү. USB төхөөрөмжийг салгасны дараа Linux үүнийг санахгүй.</translation>
 <translation id="1346630054604077329">Баталгаажуулаад, дахин эхлүүлэх</translation>
 <translation id="1347256498747320987">Шинэчлэлтүүд болон аппуудыг суулгах. Үргэлжлүүлснээр та энэ төхөөрөмж нь Google, таны оператор компани, таны төхөөрөмжийн үйлдвэрлэгчээс шинэчлэлтүүд болон аппуудыг мөн адил автоматаар татаж, суулгаж (мобайл дата ашиглаж болзошгүй) болохыг зөвшөөрч байна. Эдгээр аппын зарим нь аппын худалдан авалтыг санал болгож болзошгүй. <ph name="BEGIN_LINK1" />Нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Linux-н хадгалах сан</translation>
 <translation id="1347975661240122359">Батерейны түвшин <ph name="BATTERY_LEVEL" />% болох үед шинэчлэлтийг эхлүүлнэ.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">PPD-г олж чадсангүй. Chromebook-ээ онлайн эсэхийг шалгаад дахин оролдоно уу.</translation>
@@ -551,6 +553,7 @@
 <translation id="1608668830839595724">Сонгосон зүйлс дээр хийх нэмэлт үйлдэл</translation>
 <translation id="161042844686301425">Шар хөх өнгө</translation>
 <translation id="1611432201750675208">Таны төхөөрөмжийг түгжсэн байна</translation>
+<translation id="1612019740169791082">Таны контейнерыг дискийн хэмжээг өөрчлөхийг дэмжихээр тохируулаагүй. Linux-т хадгалсан зайн хэмжээг тохируулахын тулд хуулбарлаж, дараа нь шинэ контейнерт сэргээнэ үү.</translation>
 <translation id="1614511179807650956">Ta боломжтой бүх мобайл датагаа ашигласан байж болзошгүй. Нэмэлт дата худалдаж авахын тулд <ph name="NAME" />-н идэвхжүүлэлтийн порталд зочилно уу</translation>
 <translation id="161460670679785907">Таны утсыг таних боломжгүй байна</translation>
 <translation id="1616206807336925449">Энэ өргөтгөл нь ямар нэгэн тусгай зөвшөөрөл шаарддаггүй.</translation>
@@ -685,6 +688,7 @@
 <translation id="175772926354468439">Загварыг идэвхжүүлэх</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Chrome Веб Дэлгүүрт харах</translation>
+<translation id="1761845175367251960"><ph name="NAME" />-н бүртгэлүүд</translation>
 <translation id="176193854664720708">Асаах товчид хурууны хээ мэдрэгч байна. Үүнд дурын хуруугаар зөөлөн хүрнэ үү.</translation>
 <translation id="1763046204212875858">Програмын богино холбоосыг үүсгэ</translation>
 <translation id="1763808908432309942">Шинэ чихтэй хуудсанд нээх</translation>
@@ -894,6 +898,7 @@
 <translation id="1999115740519098545">Эхлүүлэх</translation>
 <translation id="2000419248597011803">Таны өгөгдмөл хайлтын системд хаяг оруулах хэсэг, хайх хэсгийн зарим күүки болон хайлтыг илгээдэг</translation>
 <translation id="2002109485265116295">Тухайн агшин</translation>
+<translation id="200217416291116199">Сайжруулалтыг дуусгах боломжгүй тохиолдолд файлуудыг хуулбарлахыг зөвлөдөг. Сайжруулалтыг эхлүүлснээр Linux-г унтраана. Үргэлжлүүлэхээсээ өмнө нээлттэй файлуудыг хадгална уу.</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />'-н датаг идэвхжүүлэхийн тулд эхлээд Wi-Fi сүлжээнд холбогдоно уу</translation>
 <translation id="2005199804247617997">Бусад профайл</translation>
 <translation id="2006638907958895361">Холбоосыг <ph name="APP" />-д нээх</translation>
@@ -1604,6 +1609,7 @@
 <translation id="2807517655263062534">Таны татаж авсан файл энд харагдана</translation>
 <translation id="2809586584051668049">ба <ph name="NUMBER_ADDITIONAL_DISABLED" /> дэлгэрэнгүй</translation>
 <translation id="2810390687497823527">Хэрэв та өргөтгөлийг танихгүй эсвэл таны хөтөч сайн ажиллахгүй байвал та өргөтгөлийг эндээс унтраах эсвэл өөрчлөх боломжтой.</translation>
+<translation id="2811205483104563968">Бүртгэлүүд</translation>
 <translation id="2812049959647166806">Thunderbolt-г дэмждэггүй</translation>
 <translation id="2812989263793994277">Зургийг бүү харуул</translation>
 <translation id="2813094189969465044">Эцэг эхийн хяналт</translation>
@@ -1642,6 +1648,7 @@
 <translation id="2858138569776157458">Шилдэг сайтууд</translation>
 <translation id="2861301611394761800">Системийн шинэчлэлт дууслаа. Системийг дахин эхлүүлнэ үү.</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
+<translation id="2862815659905780618">Linux-н хөгжүүлэлтийн орчныг хасах</translation>
 <translation id="2864601841139725659">Профайл зургаа тохируулах</translation>
 <translation id="2865919525181940183">Одоогоор дэлгэц дээр байгаа програмуудын дэлгэцийн зураг</translation>
 <translation id="286674810810214575">Тэжээлийн эх сурвалжийг шалгаж байна...</translation>
@@ -1755,6 +1762,7 @@
 <translation id="2989123969927553766">Хулганын гүйлгэлтийн хурдасгуур</translation>
 <translation id="2989474696604907455">Хавсаргаагүй</translation>
 <translation id="2989786307324390836">DER шифрлэлттэй бинар дан гэрчилгээ</translation>
+<translation id="2990313168615879645">Google Бүртгэл нэмэх</translation>
 <translation id="2992931425024192067">Бүх мэдэгдлийн агуулгыг харуулах</translation>
 <translation id="2993517869960930405">Аппликейшний мэдээлэл...</translation>
 <translation id="2996286169319737844">Өгөгдлийг таны синкийн нэвтрэх үгтэй шифрлэдэг. Үүнд Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг агуулдаггүй.</translation>
@@ -2366,6 +2374,7 @@
 <translation id="3706463572498736864">Хүснэгт тутмын хуудас</translation>
 <translation id="370649949373421643">Утасгүй интернетийг идэвхжүүл</translation>
 <translation id="370665806235115550">Уншиж байна...</translation>
+<translation id="3707163604290651814">Одоогоор <ph name="NAME" />-р нэвтэрсэн</translation>
 <translation id="3709244229496787112">Файлыг татаж дуусахаас өмнө веб хөтөч хаагдсан.</translation>
 <translation id="3711931198657368127"><ph name="URL" />-г буулгаад, очих</translation>
 <translation id="3711945201266135623">Хэвлэх серверээс <ph name="NUM_PRINTERS" /> хэвлэгч олдлоо</translation>
@@ -2871,6 +2880,7 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
 <translation id="4310139701823742692">Файлын формат буруу байна. PPD файлыг шалгаад дахин оролдоно уу.</translation>
 <translation id="431076611119798497">Дэлгэрэнгүй мэдээлэл</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Google Бүртгэл}other{<ph name="EXTRA_ACCOUNTS" /> Google Бүртгэл}}</translation>
 <translation id="4312866146174492540">Блоклох (өгөгдмөл)</translation>
 <translation id="4314815835985389558">Синк хийхийг удирдах</translation>
 <translation id="4316850752623536204">Хөгжүүлэгчийн вебсайт</translation>
@@ -3250,6 +3260,7 @@
 <translation id="4764368918650455114">Хоёр төхөөрөмжийн түгжээг хоёуланг нь тайлсан эсэх, хоорондоо ойрхон байгаа эсэх, Bluetooth-г нь асаасан эсэхээ шалгана уу. Та Chromebook-тай хуваалцаж байгаа бол Ойролцоо хуваалцах онцлог асаалттай байгаа эсэхийг шалгана уу (цаг сонгож төлөв байдал илэрхийлэгчийг нээгээд, Ойролцоо хуваалцах онцлогийг сонгоно уу). <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Андройд Мессежийг таны утаснаас таны Chromebook-д мессеж илгээхийг зөвшөөрдөг</translation>
 <translation id="4768332406694066911">Танд эдгээр байгууллагаас таныг тодорхойлох сертификат байна</translation>
+<translation id="4773112038801431077">Linux-г сайжруулах</translation>
 <translation id="477647109558161443">Дэлгэц дээрх холбоос үүсгэх</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-ийн нууц үг</translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3743,6 +3754,7 @@
 <translation id="5368720394188453070">Таны утас түгжигдсэн байна. Нэвтрэхийн тулд утсаа нээнэ үү.</translation>
 <translation id="5368779022775404937"><ph name="REALM" />-д нэвтрэх</translation>
 <translation id="5369491905435686894">Хулганын хурдасгуурыг идэвхжүүлэх</translation>
+<translation id="5369694795837229225">Linux-н хөгжүүлэлтийн орчныг тохируулах</translation>
 <translation id="5370819323174483825">Дахин ачаалла</translation>
 <translation id="5372529912055771682">Өгөгдсөн оролцооны горимыг үйлдлийн системийн энэ хувилбарт дэмжихгүй байна. Та хамгийн сүүлийн үеийн хувилбарыг ажиллуулж байгаа эсэхээ шалгаад дахин оролдож үзнэ үү.</translation>
 <translation id="5372579129492968947">Өргөтгөлийг тогтоосныг болиулах</translation>
@@ -4466,6 +4478,8 @@
 <translation id="6212168817037875041">Дэлгэцийг унтраах</translation>
 <translation id="6212752530110374741">Имэйлийн холбоос</translation>
 <translation id="6213230117190778270">Хүлээн авах</translation>
+<translation id="6215620815501168899">EID болон QR кодын попапыг хаах</translation>
+<translation id="6216601812881225442">Таны контейнер хэмжээг нь өөрчлөхийг дэмждэггүй. Linux-т урьдчилан оноосон зайн хэмжээг тохируулахын тулд хуулбарлаж, дараа нь шинэ контейнерт сэргээнэ үү.</translation>
 <translation id="6216696360484424239">Автоматаар нэвтрэх</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> офлайн байна. Интернэтэд холбогдоод дахин оролдоно уу</translation>
 <translation id="6220413761270491930">Өргөтгөлийг ачаалахад алдаа гарлаа</translation>
@@ -4858,6 +4872,7 @@
 <translation id="6680442031740878064">Сул зай: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Үнэлэх</translation>
 <translation id="6681668084120808868">Гэрэл зураг авах</translation>
+<translation id="6683948477137300040">Төхөөрөмжийн EID болон QR кодын попапыг харуулах</translation>
 <translation id="6684827949542560880">Хамгийн сүүлийн шинэчлэлтийг татаж байна</translation>
 <translation id="668599234725812620">Google Play-г нээх</translation>
 <translation id="6686490380836145850">Цонхнуудыг баруун тийш нь хаах</translation>
@@ -5093,6 +5108,7 @@
 <translation id="6955535239952325894">Удирдсан хөтчүүд дээр энэ тохиргоог идэвхгүй болгосон</translation>
 <translation id="6957044667612803194">Энэ аюулгүй байдлын түлхүүр ПИН-г дэмждэггүй</translation>
 <translation id="6957231940976260713">Үйлчилгээний нэр</translation>
+<translation id="6960507406838246615">Linux-н шинэчлэлт шаардлагатай</translation>
 <translation id="696103774840402661">Энэ <ph name="DEVICE_TYPE" /> дээрх бүх хэрэглэгчийн бүх файл болон дотоод өгөгдлийг бүрмөсөн устгасан.</translation>
 <translation id="6964390816189577014">Баатар</translation>
 <translation id="6964760285928603117">Бүлгээс хасах</translation>
@@ -5112,6 +5128,7 @@
 <translation id="697312151395002334">Попап илгээх болон дахин чиглүүлэлт ашиглахыг зөвшөөрсөн</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) руу дэвшүүлэх боломжтой байна</translation>
 <translation id="6974609594866392343">Офлайн туршилтын горим</translation>
+<translation id="697508444536771064">Linux-г унтраах</translation>
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
 <translation id="6977877318519394148">Rosetta-г суулгах</translation>
 <translation id="6978121630131642226">Хайлтын систем</translation>
@@ -5512,6 +5529,7 @@
 <translation id="7443806024147773267">Google Бүртгэлдээ нэвтрэх бүрд нууц үгэндээ хандаарай</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" />-ийг идэвхгүй болго</translation>
 <translation id="7448430327655618736">Автоматаар суулгасан апп</translation>
+<translation id="7448538354405258275">Танд үйлчилгээг идэвхжүүлэхэд туслахын тулд хэрэглэгчийн үйлчилгээний төлөөлөгч EID дугаарыг ашиглаж болно.</translation>
 <translation id="7449752890690775568">Нууц үгийг хасах уу?</translation>
 <translation id="7450761244949417357">Одоо <ph name="ALTERNATIVE_BROWSER_NAME" />-д нээж байна</translation>
 <translation id="7453008956351770337">Энэ хэвлэгчийг сонгосноор та дараах өргөтгөлд хандалт хийхийг зөвшөөрч байна:</translation>
@@ -6038,6 +6056,7 @@
 <translation id="8032244173881942855">Чихтэй хуудсыг дамжуулах боломжгүй.</translation>
 <translation id="8033827949643255796">Сонгогдсон</translation>
 <translation id="8033958968890501070">Хугацаа хэтэрсэн</translation>
+<translation id="8036049989879571495">Linux-н хөгжүүлэлтийн орчныг тохируулах (Бэта)</translation>
 <translation id="8037117027592400564">Нэгтгэсэн яриаг ашиглан яригдсан бүх текстийг унш</translation>
 <translation id="8037357227543935929">Асуух (өгөгдмөл)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -6961,6 +6980,7 @@
 <translation id="909108997331068008"><ph name="EXISTING_USER" />-н профайл <ph name="NEW_USER" />-д аль хэдийн нэвтэрсэн байна</translation>
 <translation id="9094033019050270033">Нууц үг шинэчлэх</translation>
 <translation id="9094038138851891550">Хэрэглэгчийн нэр буруу</translation>
+<translation id="9094859731829297286">Та Linux-т тогтсон хэмжээтэй дискийг хадгалахдаа итгэлтэй байна уу?</translation>
 <translation id="9094982973264386462">Устгах</translation>
 <translation id="9095253524804455615">Устгах</translation>
 <translation id="909554839118732438">Нууцлалтайг хаах</translation>

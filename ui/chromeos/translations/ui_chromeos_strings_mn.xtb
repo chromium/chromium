@@ -2,14 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1000498691615767391">Нээх хавтсыг сонгоно уу</translation>
-<translation id="1016731229041675999">Араб галиг</translation>
-<translation id="102325055885714714">Тамил галиг</translation>
 <translation id="1035094536595558507">Слайдаар харах</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> файлыг устгаж байна...</translation>
 <translation id="1049926623896334335">Word баримт</translation>
 <translation id="1060368002126861100">Файлуудыг <ph name="APP_NAME" />-р нээхийн тулд эхлээд тэдгээрийг Windows-н файлын фолдерт зөөнө үү.</translation>
 <translation id="1062407476771304334">Солих</translation>
-<translation id="1082570120854863773">Хятад (уламжлалт) пиньинь</translation>
 <translation id="1119069657431255176">Bzip2 файл нэгтгэн хадгалах программ</translation>
 <translation id="1120073797882051782">Хангыль Ромажа</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> олдсон.
@@ -20,8 +17,6 @@
 <translation id="1150565364351027703">Нарны шил</translation>
 <translation id="115443833402798225">Хангыль Ahnmatae горим</translation>
 <translation id="1155759005174418845">Каталан</translation>
-<translation id="1169885125071442573">Гужарати галиг</translation>
-<translation id="1170149495446063094">Олон улсын гартай англи хэл (АНУ)</translation>
 <translation id="1172970565351728681">Ойролцоогоор <ph name="REMAINING_TIME" /> үлдсэн</translation>
 <translation id="1173894706177603556">Нэр солих</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" />-ийг хуулж байна...</translation>
@@ -30,13 +25,10 @@
 <translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1243314992276662751">Байршуул</translation>
 <translation id="1249250836236328755">Төрөл</translation>
-<translation id="1251468808511160368">Programmer Dvorak гартай англи хэл (АНУ)</translation>
-<translation id="1276362640455948667">АНУ-ын олон улсын гартай португал хэл</translation>
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1297922636971898492">Google Drive одоогоор боломжгүй байна. Google Drive ажиллаж эхлэхэд байршуулалт автоматиар эхэлнэ.</translation>
 <translation id="1307931752636661898">Linux-н файлуудыг харах боломжгүй байна</translation>
 <translation id="1338950911836659113">Устгаж байна...</translation>
-<translation id="1345094301418504404">Франц (Канад)</translation>
 <translation id="1346748346194534595">Баруун</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> файл импорт хийж байна...</translation>
 <translation id="1358735829858566124">Файл болон хадгалалтын сан нь ашиглах боломжгүй байна.</translation>
@@ -44,15 +36,11 @@
 <translation id="1378727793141957596">Google Drive-д тавтай морилно уу!</translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1395262318152388157">Хайх слайд</translation>
-<translation id="1411401459521499147">Стандарт гартай румын</translation>
-<translation id="14286271616944851">Перс</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1435838927755162558">Фолдерыг Parallels Desktop-тай хуваалцах</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> руу зөөсөн.</translation>
 <translation id="1464724975715666883">1 алдаа.</translation>
-<translation id="1466220122465387403">Англи суурьтай гартай сорани курд</translation>
 <translation id="1467432559032391204">Зүүн</translation>
-<translation id="1472351751615457820">Грек галиг</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />"-г байршуулаагүй. Tаны Google Drive-д хангалттай багтаамж алга.</translation>
 <translation id="148466539719134488">Швейцарь</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" />-ын нэрийг өөрчлөх боломжгүй байна.</translation>
@@ -63,9 +51,7 @@
 <translation id="1572585716423026576">Ханын зураг болгох</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камер</translation>
-<translation id="1622022025445651011">Франц (Франц)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файлыг офлайнаар ашиглах боломжтой болгож байна</translation>
-<translation id="1649464394998806860">AATSEEL авиа зүйн гартай орос</translation>
 <translation id="164969095109328410">Chrome төхөөрөмж</translation>
 <translation id="1665611772925418501">Энэ файлыг өөрчилж чадсангүй.</translation>
 <translation id="1673103856845176271">Файлд аюулгүй байдлын үүднээс нэвтэрч чадсангүй.</translation>
@@ -96,12 +82,8 @@
 <translation id="1995337122023280937">Файлын байршил руу очих</translation>
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
-<translation id="2016165510591645686">Хятад пиньинь</translation>
 <translation id="2028997212275086731">RAR архив</translation>
 <translation id="2046702855113914483">Рамен</translation>
-<translation id="2060251957438343874">Герман (Герман)</translation>
-<translation id="2060392775416297569">Хятад Цанцзе</translation>
-<translation id="2066433303065022982">Еврей галиг</translation>
 <translation id="2070909990982335904">Цэгээр эхэлсэн нэрсийг системд хадгалсан байгаа тул өөр нэр сонгоно уу.</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2084108471225856927">Төхөөрөмжийн тохиргоонууд</translation>
@@ -110,11 +92,10 @@
 <translation id="2163152940313951844">Хүчингүй тэмдэгт: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2198315389084035571">Хялбаршуулсан Хятад хэл</translation>
 <translation id="2208158072373999562">Зип архив</translation>
+<translation id="2208919847696382164">Linux-р суулгах</translation>
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
-<translation id="2258078827108167865">Кхмер</translation>
 <translation id="2275059641601412272">Зөөсөн.</translation>
-<translation id="2287742181953707290">АНУ-ын олон улсын компьютерын гартай португал хэл</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файлыг нээж байна.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлыг нээж байна.</translation>
@@ -127,18 +108,15 @@
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> боломжтой</translation>
 <translation id="2425665904502185219">Нийт файлын хэмжээ</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> зүйлийг <ph name="FOLDER_NAME" /> руу хуулж байна</translation>
-<translation id="2445471348947930094">Гужарати авиа зүй</translation>
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2453576648990281505">Ийм файл байна</translation>
 <translation id="2464079411014186876">Зайрмаг</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
-<translation id="2484472280211296077">Тамил авиа зүй</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгасан</translation>
 <translation id="2541377937973966830">Энэ фолдерын контентуудыг зөвхөн уншиж болно. Зарим үйл ажиллагааг дэмждэггүй.</translation>
 <translation id="2542049655219295786">Google-ийн хүснэгт</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />-д нэмэх</translation>
-<translation id="255285553751745003">Вьетнам телекс</translation>
 <translation id="255937426064304553">АНУ олон улсын</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Frog</translation>
@@ -151,21 +129,18 @@
 <translation id="2664412712123763093">Файлын байршил</translation>
 <translation id="2672394958563893062">Алдаа гарлаа. Эхнээс нь дахин эхлүүлэхээр дарна уу.</translation>
 <translation id="2676946222714718093">-нд тоглуулж байна</translation>
-<translation id="2718873684053049373">Хятад даи</translation>
+<translation id="2718540689505416944">Linux-р апп суулгах</translation>
 <translation id="2735623501230989521">Parallels Desktop-д <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="2771816809568414714">Бяслаг</translation>
 <translation id="2781645665747935084">Бельги</translation>
 <translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
 <translation id="2787047795752739979">Эх хувилбарыг дахин бичих</translation>
-<translation id="2798201218072736543">Португал (Бразил)</translation>
-<translation id="2822854841007275488">Араб хэл</translation>
 <translation id="2843806747483486897">Анхдагч тохиргоог өөрчлөх ...</translation>
 <translation id="2850124913210091882">Хадгалах</translation>
 <translation id="288024221176729610">Чех</translation>
 <translation id="2887525882758501333">PDF бичиг баримт</translation>
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;-тай таарах хайлт олдсонгүй</translation>
 <translation id="2894654529758326923">Мэдээлэл</translation>
-<translation id="2899393425226141282">Neo 2 гартай герман хэл (Герман)</translation>
 <translation id="2902312830803030883">Бусад үйлдэл</translation>
 <translation id="2902734494705624966">АНУ өргөтгөсөн</translation>
 <translation id="2923240520113693977">Эстон</translation>
@@ -180,19 +155,15 @@
 <translation id="3003633581067744647">Өнгөц зургаар харах горим руу сэлгэх</translation>
 <translation id="3007214526293698309">Харьцааг засах</translation>
 <translation id="303198083543495566">Газар зүй</translation>
-<translation id="3040867506619073727">Синхала</translation>
 <translation id="3057861065630527966">Өөрийн зураг болон видеог хадгалах</translation>
 <translation id="3067790092342515856">Windows-н файлууд</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" />-тай хуваалцах</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ДУУССАН</translation>
-<translation id="3171711500892772766">Тэлүгү авиа зүй</translation>
-<translation id="3182237543071236785">Англи хэл (ИБ)</translation>
 <translation id="3188257591659621405">Миний файл</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Зам</translation>
-<translation id="3204169104280704562">Workman гартай англи хэл (АНУ)</translation>
 <translation id="3224239078034945833">Canadian Multilingual</translation>
 <translation id="3236289833370040187">Эзэмшигчийг <ph name="DESTINATION_DOMAIN" />-д шилжүүлнэ.</translation>
 <translation id="3241720467332021590">Ирланд хэл</translation>
@@ -209,7 +180,6 @@
 <translation id="3335337277364016868">Бүртгэсэн жил</translation>
 <translation id="3353984535370177728">Татаж оруулах хавтсыг сонгох</translation>
 <translation id="3356580349448036450">Бүрэн</translation>
-<translation id="3369522691271417561">Араб суурьтай гартай сорани курд</translation>
 <translation id="3414856743105198592">Зөөврийн хэрэгслийг форматлах нь бүх өгөгдлийг арилгана. Та үйлдлийг үргэжлүүлэх үү?</translation>
 <translation id="3437801641691368414">Үүсгэсэн цаг</translation>
 <translation id="3466147780910026086">Таны төхөөрөмжийг уншиж байна...</translation>
@@ -218,7 +188,6 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> руу хуулсан.</translation>
 <translation id="3475447146579922140">Google-ийн хүснэгт</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> алдаа.</translation>
-<translation id="349603508045926994">Перс галиг</translation>
 <translation id="3522708245912499433">Португал</translation>
 <translation id="3524311639100184459">Анхааруулга: Эдгээр файл нь түр зуурын файлууд бөгөөд дискийн зайг чөлөөлөхийн тулд автоматаар устгаж болно.  <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Хавтас</translation>
@@ -227,7 +196,6 @@
 <translation id="357479282490346887">Литви</translation>
 <translation id="3603385196401704894">Канадын франц хэл</translation>
 <translation id="3606220979431771195">Турк хэлний-F</translation>
-<translation id="3608699648194837100">Тамил ITRANS</translation>
 <translation id="3609785682760573515">Sync хийж байна ...</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
@@ -238,7 +206,6 @@
 <translation id="3645531960514756307">Фолдерийг тогтоосныг болиулах</translation>
 <translation id="3685122418104378273">Гар утасны мэдээллийг ашиглаж байх үед Google Drive синк нь автоматаар идэвхгүй болно.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />-г цуцлах.</translation>
-<translation id="3717701509378976246">Армени</translation>
 <translation id="3726463242007121105">Файлын систем нь дэмжигдээгүй учир энэ төхөөрөмжийг нээх боломжгүй.</translation>
 <translation id="3741243925913727067">Өөрийн төхөөрөмж дээрх зураг болон видеог Google Drive дээр хадгалах.</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
@@ -264,7 +231,6 @@
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3966388904776714213">Аудио тоглуулагч</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
-<translation id="4097397818890482665">Каннада галиг</translation>
 <translation id="4124935795427217608">Ганц эвэртэй морь</translation>
 <translation id="4158739975813877944">Тоглуулах жагсаалтыг нээх</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" />-г зөөсөн.</translation>
@@ -276,21 +242,17 @@
 <translation id="4261901459838235729">Google танилцуулга</translation>
 <translation id="4290535918735525311">Linux-тай хуваалцсан 1 фолдер</translation>
 <translation id="4299729908419173967">Бразил хэл</translation>
-<translation id="4305486654020746131">Пaнжаб</translation>
 <translation id="4309915981827077375">Ерөнхий мэдээлэл</translation>
-<translation id="4315949787858895817">Голланд (Бельги)</translation>
 <translation id="4326192123064055915">Кофе</translation>
 <translation id="4336032328163998280">Хуулах үйл ажиллагаа амжилтгүй боллоо. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Амтат гуа</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Гадаад холбоос</translation>
-<translation id="4406790547322756995">TCVN гартай вьетнам</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
 <translation id="4470564870223067757">Хангыль 2 Багц</translation>
 <translation id="4477219268485577442">Болгарын авиа зүй</translation>
 <translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4527800702232535228">Энэ фолдерыг Parallels Desktop-тай хуваалцсан байна</translation>
-<translation id="4532112105534982530">Bépo гартай франц хэл (Франц)</translation>
 <translation id="4552678318981539154">Нэмэлт мэдээлэл хадгах зай худалдан авах</translation>
 <translation id="4559318885353833501"><ph name="FILE_NAME" />-г устгасан</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -298,14 +260,10 @@
 <translation id="457386861538956877">Илүү ихийг ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" />-г сонголтод нэмсэн.</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" />-н илэрцийг харуулж байна.</translation>
-<translation id="4598673198033263991">Япон хэлний гартай үсэг тоо</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу хуулж байна</translation>
-<translation id="4627439232948440198">Санскрит</translation>
 <translation id="4631887759990505102">Уран бүтээлч</translation>
-<translation id="463813589602055304">Хятад Вуби</translation>
 <translation id="4656293982926141856">Энэ компьютер</translation>
 <translation id="4669606053856530811">Эдгээр зүйлийг '<ph name="SOURCE_NAME" />'-н гишүүдтэй хуваалцаагүй тохиолдолд тус гишүүд хандах боломжгүй.</translation>
-<translation id="4669979276126590335">Серби галиг</translation>
 <translation id="4690246192099372265">Швед</translation>
 <translation id="4693155481716051732">Сүши</translation>
 <translation id="4694604912444486114">Сармагчин</translation>
@@ -316,13 +274,10 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> зураг хадгалагдсан байна</translation>
 <translation id="4725511304875193254">Корги нохой</translation>
 <translation id="4732760563705710320">Уучлаарай, энэ видео бичлэгийг cast тоглуулах боломжгүй байна.</translation>
-<translation id="4733240808404733495">TIS 820-2531 гартай тай</translation>
 <translation id="4734518477988699048">Оруулсан утга буруу байна.</translation>
 <translation id="4737050008115666127">Газардах</translation>
-<translation id="4738570502598323051">InScript гартай тамил</translation>
 <translation id="4747271164117300400">Македон</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
-<translation id="4763055924467562718">Каннада авиа зүй</translation>
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">PowerPoint танилцуулга</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
@@ -331,9 +286,7 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Төхөөрөмжийг зөвхөн унших боломжтой</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> сонгогдсон зүйлс</translation>
-<translation id="4842306555839940112">Тэлүгү галиг</translation>
 <translation id="4843566743023903107">Chromebase</translation>
-<translation id="4849981557599196363">Герман (Бельги)</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="485316830061041779">Герман</translation>
 <translation id="4867079195717347957">Баганыг буурах дарааллаар эрэмбэлэхийн тулд товшино уу.</translation>
@@ -345,7 +298,6 @@
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />-г нөөцлөхөд бэлэн</translation>
 <translation id="4924638091161556692">Засагдсан</translation>
 <translation id="4935975195727477204">Gazania Flower</translation>
-<translation id="4942961016321891903">Малайлам авиа зүй</translation>
 <translation id="4943368462779413526">Хөл бөмбөг</translation>
 <translation id="4961158930123534723">1 фолдерыг Parallels Desktop-тай хуваалцсан</translation>
 <translation id="4969785127455456148">Цомог</translation>
@@ -358,7 +310,6 @@
 <translation id="5010406651457630570">Компьютерууд</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Энэ ажиллагаа хүлээгдэж байснаас удаан явагдаж байна. Та үүнийг зогсоохыг хүсч байна уу?</translation>
-<translation id="5026887030745057099">Хинди</translation>
 <translation id="5036159836254554629">Parallels Desktop-тай хуваалцахыг удирдах</translation>
 <translation id="5038625366300922036">Дэлгэрэнгүйг үзнэ үү...</translation>
 <translation id="5061708541166515394">Харьцуулах</translation>
@@ -369,7 +320,6 @@
 <translation id="5098629044894065541">Кипр</translation>
 <translation id="5123433949759960244">Сагсан бөмбөг</translation>
 <translation id="5129662217315786329">Польш</translation>
-<translation id="5132435854979302863">Филиппин</translation>
 <translation id="5144820558584035333">Хангыль 3 Багц (390)</translation>
 <translation id="5145331109270917438">Огноо өөрчлөгдсөн</translation>
 <translation id="515594325917491223">Шатар</translation>
@@ -392,7 +342,6 @@
     нэг газар үүсгэж, хуваалцаж, ажиллаарай.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Хуулсан.</translation>
 <translation id="5275973617553375938">Google Drive-аас файлуудыг сэргээлээ</translation>
-<translation id="5283140566205748520">Франц (Бельги)</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318819489018851358">Linux-р хуваалцах</translation>
 <translation id="5323213332664049067">Латин Америк</translation>
@@ -403,14 +352,10 @@
 <translation id="5358764674931277">Фреймийн хурд</translation>
 <translation id="5368191757080475556">Linux-тай фолдер хуваалцах</translation>
 <translation id="5402367795255837559">Брайль</translation>
-<translation id="5418923334382419584">Мьянмар хэлний гар</translation>
-<translation id="5427022459704612663">Вьетнам VIQR</translation>
 <translation id="5428105026674456456">Испани</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />-н илэрц байхгүй байна.</translation>
 <translation id="5449551289610225147">Буруу нууц үг</translation>
-<translation id="5468013476539915283">Англи хэл (АНУ)</translation>
 <translation id="5469868506864199649">Итали хэл</translation>
-<translation id="5484429245813572665">Индонез</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="5500122897333236901">Исланд</translation>
 <translation id="5508696409934741614">Цэг</translation>
@@ -418,11 +363,8 @@
 <translation id="5524517123096967210">Файлыг уншиж чадсангүй.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> зураг</translation>
 <translation id="5534520101572674276">Хэмжээг тооцоолж байна</translation>
-<translation id="5551831234974556292">Малти</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5601917305267643189">Испани (Испани)</translation>
 <translation id="5605830556594064952">АНУ-ын Дворак</translation>
-<translation id="5623849870004487514">Авиа зүйн гартай балба хэл</translation>
 <translation id="5649768706273821470">Сонсох</translation>
 <translation id="5678784840044122290">Linux апп таны Терминалд боломжтой болохоос гадна таны Эхлүүлэгчид дүрс тэмдэг харуулж болзошгүй.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архив эсвэл виртуал дискнээс салгах боломжгүй байна<ph name="END_BOLD" />
@@ -430,9 +372,7 @@
    Архив эсвэл виртуал дискний бүх файлыг хаагаад дахин оролдоно уу.</translation>
 <translation id="5691596662111998220">Өө өөө, <ph name="FILE_NAME" /> алга байна.</translation>
 <translation id="5700087501958648444">Аудионы мэдээлэл</translation>
-<translation id="570049376144986742">Франц (Швейцар)</translation>
 <translation id="5731409020711461763">1 шинэ зураг</translation>
-<translation id="573799789564358869">Colemak гартай англи хэл (АНУ)</translation>
 <translation id="5752453871435543420">Chrome OS Cloud-н хадгалалт</translation>
 <translation id="5756666464756035725">Унгарын QWERTY</translation>
 <translation id="5776325638577448643">Устгах, форматлах</translation>
@@ -445,7 +385,6 @@
 <translation id="5833610766403489739">Энэ файл нь хаа нэгтээ байна. Татацын байршлын тохиргоогоо шалгаад дахин оролдож үзнэ үү.</translation>
 <translation id="5838451609423551646">Сонголт хийх хэсгээс бүх оролтыг хассан.</translation>
 <translation id="5838825566232597749">Олон улсын US Workman гар</translation>
-<translation id="5846013392911797712">Кедмани гартай тай</translation>
 <translation id="5850516540536751549">Энэ файлын төрлийг дэмждэггүй. Ийм төрөлтэй файлыг нээхийн тулд тохирохыг программыг <ph name="BEGIN_LINK" />Chrome Веб Дэлгүүр<ph name="END_LINK" />-ээс олно уу.
      <ph name="BEGIN_LINK_HELP" />Дэлгэрэнгүй мэдээллийг эндээс<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Энд харах зүйл алга..</translation>
@@ -453,22 +392,17 @@
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Дараах санамсаргүй алдаа гарсан тул хуулж чадсангүй: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5952382594224963380">Марати</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> зүйл</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Эрэмбийн сонголт</translation>
 <translation id="6007237601604674381">Зөөж чадсангүй. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6012987430370760224">Марати гар (Aвиа зүйн)</translation>
 <translation id="6019169947004469866">Таслах</translation>
 <translation id="60357267506638014">Чех QWERTY</translation>
 <translation id="604001903249547235">Cloud-н хадгалалт</translation>
 <translation id="6040143037577758943">Хаах</translation>
-<translation id="6041767187407754614">Хятад Квик</translation>
 <translation id="6074825444536523002">Google-ийн маягт</translation>
 <translation id="6096979789310008754">Хайлтын текстийг устгасан, бүх файл болон фолдерыг харуулж байна.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу зөөж байна</translation>
-<translation id="6111770213269631447">Хөрвүүлэлт (namaskar → নমস্কার)</translation>
-<translation id="6113836390962820517">АНУ-ын гартай япон хэл</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" />-ийг зөөвөрлөж байна...</translation>
 <translation id="6146563240635539929">Видео</translation>
@@ -487,20 +421,16 @@
 <translation id="6356685157277930264">Файлын мэдээллийн цонх</translation>
 <translation id="6358884629796491903">Луу</translation>
 <translation id="637062427944097960">Энэ файл нь өөр десктоп дээр нээгдсэн байна. Үүнийг харахын тулд <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) руу шилжинэ үү.</translation>
-<translation id="6374309724856959519">Өргөтгөсөн гартай англи хэл (АНУ)</translation>
 <translation id="6394388407447716302">Зєвхєн унших</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> зүйл</translation>
 <translation id="6398765197997659313">Дэлгэц дүүрэн харах горимоос гарах</translation>
-<translation id="6412376911804527326">Лао</translation>
 <translation id="642282551015776456">Энэ нэрийг хавтасны нэрийн файл болгон ашиглаж болохгүй.</translation>
-<translation id="647955688546403164">Dvorak гартай англи хэл (ИБ)</translation>
 <translation id="6485131920355264772">Сансрын мэдээллийг сэргээн татаж авч чадсангүй</translation>
 <translation id="6509122719576673235">Норвег хэл</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> синхрончилж байна...</translation>
 <translation id="6549689063733911810">Сүүлд</translation>
 <translation id="6556866813142980365">Дахин хийх</translation>
-<translation id="6556932543564608391">Dvorak гартай англи хэл (АНУ)</translation>
 <translation id="6558280019477628686">Алдаа гарлаа. Зарим зүйлийг устгаагүй байж болзошгүй.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" устгаж байна...</translation>
 <translation id="6581162200855843583">Google Drive холбоос</translation>
@@ -511,16 +441,13 @@
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6650726141019353908">Ягаан эрвээхий</translation>
 <translation id="6657585470893396449">Нууц үг</translation>
-<translation id="6680841910911617814">Голланд (Нидерланд)</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6718273304615422081">Зип болгож байна...</translation>
 <translation id="6751256176799620176">1 фолдер сонгосон</translation>
-<translation id="6767296108234383966">Малайлам галиг</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6795884519221689054">Хулсны баавгай</translation>
 <translation id="6806699711453372963">Linux-н хуваалцлыг удирдах</translation>
 <translation id="6808193438228982088">Үнэг</translation>
-<translation id="6819938753873901684">Тигринья</translation>
 <translation id="6820687829547641339">Gzip compressed tar archive файлын төрөл</translation>
 <translation id="6823166707458800069">Энэ фолдерт хадгалсан бүх файлыг автоматаар онлайнд нөөцөлсөн.</translation>
 <translation id="6825883775269213504">Орос хэл</translation>
@@ -529,7 +456,6 @@
 <translation id="6862635236584086457">Энэ хавтсанд хадгалагдсан бүх файл нь автоматиар онлайнд давхар хадгалагдсан байгаа</translation>
 <translation id="6876155724392614295">Дугуй</translation>
 <translation id="6878261347041253038">Деванагари хэлний гар (дуудлагын)</translation>
-<translation id="6878301034829092662">YaZHert авиа зүйн гартай орос</translation>
 <translation id="6885780034956018177">Эмгэн хумс</translation>
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6898028766943174120">Бусад дэд фолдер...</translation>
@@ -552,19 +478,13 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Суулгах ажиллагаа амжилтгүй боллоо.</translation>
 <translation id="7040138676081995583">Нээх программыг сонгох...</translation>
-<translation id="7096940708283911567">Одиа</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> зүйлс сонгогдсон байна</translation>
 <translation id="7106346894903675391">Илүү их хадгалалтын санг худалдаж аваарай...</translation>
 <translation id="7126604456862387217">"&lt;b&gt; <ph name="SEARCH_STRING" /> &lt;/ б&gt; '- search &lt;em&gt; Drive &lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
-<translation id="714369685015246514">Хятад матрицын арга</translation>
-<translation id="7169438078134535111">F-гартай турк</translation>
-<translation id="7170467426996704624">Хөрвүүлэлт (салам → ሰላም)</translation>
-<translation id="7173380554947442031">Вьетнам VNI</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Файлыг ...хэлбэрээр хадгалах</translation>
-<translation id="7221999925319694720">Хятад жуинь</translation>
 <translation id="7238097264433196391">Драйвын нэр</translation>
 <translation id="7248671827512403053">Аппликейшн</translation>
 <translation id="7268659760406822741">Бэлэн үйлчилгээ</translation>
@@ -573,14 +493,12 @@
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулж байна...</translation>
 <translation id="7375951387215729722">Файлын жагсаалтыг <ph name="COLUMN_NAME" />-н дагуу буурах дарааллаар эрэмбэлсэн.</translation>
-<translation id="7396038720194014279">Хинди гар (Авиа зүйн)</translation>
 <translation id="7417453074306512035">Этиоп хэлний гар</translation>
 <translation id="7417705661718309329">Google-ийн газрын зураг</translation>
 <translation id="7460898608667578234">Украйн</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> олдсон
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Драйвт<ph name="END_LINK" /> нөөцлөхөд бэлэн</translation>
-<translation id="7498032756958781551">InScript гартай балба хэл</translation>
 <translation id="7505167922889582512">Далд файлуудыг харуулах</translation>
 <translation id="7508545000531937079">Слайд үзүүлэх</translation>
 <translation id="751507702149411736">Беларус</translation>
@@ -590,7 +508,6 @@
 <translation id="7551643184018910560">Програмын жагсаалтын өмнө гаргах</translation>
 <translation id="7553492409867692754">Linux аппуудад <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="7576032389798113292">6x4</translation>
-<translation id="7585326627181105002">Олон улсын компьютерын гартай англи хэл (АНУ)</translation>
 <translation id="7589661784326793847">Түр хүлээнэ үү</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />-г офлайнаар ашиглах боломжтой болгож байна</translation>
 <translation id="7603724359189955920">Toрлол</translation>
@@ -607,7 +524,6 @@
 <translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7730494089396812859">Cloud-н дэлгэрэнгүй мэдээллийг харуулах</translation>
 <translation id="7748626145866214022">Үйлдлийн талбар хэсэгт илүү их сонголт боломжтой байна. Үйлдлийн талбарыг чиглүүлэхийн тулд Alt + A дарна уу.</translation>
-<translation id="7756956835689272676">Олон хэлний гартай франц хэл (Канад)</translation>
 <translation id="7765158879357617694">Зөөх</translation>
 <translation id="7774365994322694683">Шувуу</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" оффлайныг хадгалахын тулд та  <ph name="MARKUP_1" />-аас нэмэлт <ph name="TOTAL_FILE_SIZE" />-ыг чөлөөлөх ёстой. 
@@ -630,8 +546,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />-д хадгалж чадсангүй. Бүх засварыг Татаж авсан файлын фолдерын <ph name="DOWNLOADS_FOLDER" />-д хадгална.</translation>
 <translation id="7881969471599061635">Хадмалыг цуцлах</translation>
 <translation id="78946041517601018">Дундын драйв</translation>
-<translation id="7898607018410277265">Гужарати гар (Шинэ авиа зүйн)</translation>
-<translation id="7908150161525408421">Испани (Латин Америк)</translation>
 <translation id="7908793776359722643">Хуваарилалтыг форматалснаар үүнд хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="7925686952655276919">Синхрончилоход үүрэн холбооны датаг бүү ашигла</translation>
 <translation id="7928710562641958568">Төхөөрөмжийг гаргах</translation>
@@ -639,7 +553,6 @@
 <translation id="7953739707111622108">Энэ төхөөрөмжийн файлын системийг таньж чадаагүй учраас нээж болохгүй  байна.</translation>
 <translation id="7969525169268594403">Словени</translation>
 <translation id="7982283708762922719">Өндөр</translation>
-<translation id="7988940501536183135">Авиа зүйн гартай орос</translation>
 <translation id="8008366997883261463">Жак Рассел Терриер</translation>
 <translation id="8028993641010258682">Хэмжээ</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -647,22 +560,18 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> аудио</translation>
 <translation id="8045462269890919536">Румын</translation>
 <translation id="8052887694493382350">Энэ файлыг Windows-н программ хангамжийг ашиглаж буй компьютерт зориулсан байна. Энэ нь таны Chrome OS-г ажиллуулдаг төхөөрөмжид тохирохгүй. <ph name="BEGIN_LINK_HELP" />Нэмэлт мэдээлэл авах<ph name="END_LINK_HELP" /></translation>
-<translation id="8061794649181228915">Workman олон улсын гартай англи хэл (АНУ)</translation>
 <translation id="8066773524873206594">Бүх засварыг <ph name="DOWNLOADS_FOLDER" />-д хадгална.</translation>
 <translation id="8079530767338315840">Давтах</translation>
 <translation id="8106045200081704138">Надтай хуваалцсан</translation>
 <translation id="8116072619078571545">Мөстэй ус</translation>
-<translation id="8130367958112291342">Qwerty гартай чех хэл</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" Тантай хуваалцагдсан байна. Та энэ файлыг эзэмшдэггүй учраас устгах боломжгүй.</translation>
 <translation id="8151638057146502721">Тохируулах</translation>
 <translation id="8153607920959057464">Энэ файлыг  дэлгэцэн дээр харуулж чадсангүй.</translation>
 <translation id="8154842056504218462">Бүх оролтыг сонгосон.</translation>
 <translation id="8157684860301034423">Аппын мэдээллийг сэргээж чадсангүй.</translation>
 <translation id="8157939133946352716">7x5</translation>
-<translation id="8159982522558068586">Бичгийн машины гартай тамил</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8193175696669055101">Төхөөрөмжийн загвар:</translation>
-<translation id="8196481879028929035">Португал (Португал)</translation>
 <translation id="8208580316430297579">Урлагийн бүтээл</translation>
 <translation id="8223479393428528563">Эдгээр файлыг интернетэд холбогдоогүй байхдаа ашиглахаар хадгалахын тулд интернетэд холбогдсоныхоо дараагаар холбогдох файл дээр очин хулганын баруун талд даран <ph name="OFFLINE_CHECKBOX_NAME" /> сонголтыг сонгоно уу.</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
@@ -676,9 +585,7 @@
 <translation id="8329978297633540474">Энгийн текст</translation>
 <translation id="8335587457941836791">Програмын жагсаалтын эхэнд байрлуулахыг болих</translation>
 <translation id="8336153091935557858">Өчигдөр <ph name="YESTERDAY_DAYTIME" /></translation>
-<translation id="8336524887811696057">Балба галиг</translation>
 <translation id="8342318071240498787">Ийм нэртэй файл болон файлын хадгалалтын сан байна.</translation>
-<translation id="8362125533493859258">Англи хэл (Канад)</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> руу</translation>
 <translation id="8395901698320285466">Хэмжээ</translation>
 <translation id="8437209419043462667">АНУ</translation>
@@ -695,28 +602,18 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> зүйлийг хуулж байна</translation>
 <translation id="8600173386174225982">Файлын жагсаалтыг өнгөц зургаар харах горимд шилжүүлэв.</translation>
 <translation id="8601932370724196034">Crostini зургийн файл</translation>
-<translation id="8608272065177710825">Авиа зүйн гартай болгар</translation>
-<translation id="8619608420536266892">Tamil99 гартай тамил</translation>
-<translation id="863846969551842412">Кантон</translation>
-<translation id="8669047053197791123">Pattachote гартай тай</translation>
 <translation id="8669949407341943408">Зөөж байна...</translation>
-<translation id="8688649574682805922">Герман (Швейцар)</translation>
-<translation id="8694836330346852143">Урду</translation>
 <translation id="8698464937041809063">Google-ийн зураг</translation>
 <translation id="8714406895390098252">Унадаг дугуй</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> сонгогдсон.</translation>
 <translation id="872537912056138402">Хорват</translation>
-<translation id="8770002329960263418">АНУ-ын олон улсын компьютерын гартай голланд (Нидерланд)</translation>
 <translation id="8775404590947523323">Таны хийсэн өөрчлөлт автоматиар хадгалагдсан.<ph name="BREAKS" />Анхны зургийг хадгалахын тулд "Overwrite original" сонголтыг идэвхгүй болго</translation>
 <translation id="8808686172382650546">Муур</translation>
 <translation id="8810671769985673465">Zip болгож чадсангүй. Байгаа зүйлс: "$1" "<ph name="FILE_NAME" />"</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />'-н гишүүд эдгээр зүйлийн хуулбарт хандах эрх авна.</translation>
-<translation id="8846896937446866962">Qwerty гартай унгар хэл</translation>
 <translation id="8860454412039442620">Эксел хүснэгт</translation>
 <translation id="8900820606136623064">Унгар</translation>
 <translation id="8919081441417203123">Дани хэл</translation>
-<translation id="8941776146379310519">Малай</translation>
-<translation id="8960999352790021682">Бенгали хэлний гар (дуудлагын)</translation>
 <translation id="8965697826696209160">Хангалттай багтаамж байхгүй байна.</translation>
 <translation id="9017798300203431059">Орос хэлний авиа зүй</translation>
 <translation id="9034924485347205037">Linux-н файл</translation>
@@ -733,7 +630,6 @@
 <translation id="9131598836763251128">Нэг буюу хэд хэдэн файлуудыг сонгох</translation>
 <translation id="9133055936679483811">Файл нэгтгэлт амжилтгүй боллоо. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">Энэ файл нь Macintosh-ийн программ хангамжийг ашигладаг компьютерт зориулагдсан байна. Энэ нь Chrome OS ажиллуулдаг таны төхөөрөмжтэй тохирохгүй тул та Chrome Web Store-оос таны төхөөрөмжтэй тохирох өөр апликейшнийг олно уу.</translation>
-<translation id="913758436357682283">Мьянмар Мьянсан гар</translation>
 <translation id="9148058034647219655">гарах</translation>
 <translation id="9154418932169119429">Офлайн байхад энэ зургийг харах боломжгүй.</translation>
 <translation id="9213073329713032541">Суулгалтыг амжилттай эхлүүллээ.</translation>

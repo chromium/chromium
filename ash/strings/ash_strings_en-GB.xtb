@@ -238,6 +238,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3236488194889173876">No mobile network available</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">What can you do?</translation>
+<translation id="3269597722229482060">Right-click</translation>
 <translation id="3289674678944039601">Charging via adaptor</translation>
 <translation id="3290356915286466215">Unsecured</translation>
 <translation id="3294437725009624529">Guest</translation>
@@ -340,6 +341,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4212472694152630271">Switch to PIN</translation>
 <translation id="4215497585250573029">VPN settings</translation>
 <translation id="4217571870635786043">Dictation</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, installed app, paused</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">No SIM</translation>
@@ -494,6 +496,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5673434351075758678">From '<ph name="FROM_LOCALE" />' to '<ph name="TO_LOCALE" />' after syncing your settings.</translation>
+<translation id="5677928146339483299">Blocked</translation>
 <translation id="5679050765726761783">Low-power adaptor connected</translation>
 <translation id="5682642926269496722">The Google Assistant is not available for current user account.</translation>
 <translation id="5689633613396158040">Night Light makes it easier to look at your screen or read in dim light. Tap to change what time Night Light turns on, or turn it off completely.</translation>
@@ -693,6 +696,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
 <translation id="7600875258240007829">See all notifications</translation>
+<translation id="7607002721634913082">Paused</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Show Nearby Share settings.</translation>
@@ -759,6 +763,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8142699993796781067">Private network</translation>
 <translation id="8152092012181020186">Press Ctrl + W to close.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> This setting is managed by your administrator.</translation>
+<translation id="8155628902202578800">Open info dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Using <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Mobile network. Signal strength of <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Notifications are hidden.</translation>
@@ -824,6 +829,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>
 <translation id="8759408218731716181">Can't set up multiple sign-in</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, installed app, blocked</translation>
 <translation id="8785070478575117577">Connect to <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

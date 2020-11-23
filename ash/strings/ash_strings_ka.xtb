@@ -494,6 +494,7 @@
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
 <translation id="5673434351075758678">„<ph name="FROM_LOCALE" />“ გახდა „<ph name="TO_LOCALE" />“ თქვენი პარამეტრების სინქრონიზაციის შემდეგ.</translation>
+<translation id="5677928146339483299">დაბლოკილი</translation>
 <translation id="5679050765726761783">დაკავშირებულია დაბალი სიმძლავრის ელკვების ადაპტერი</translation>
 <translation id="5682642926269496722">Google ასისტენტი მიუწვდომელია მომხმარებლის ამჟამინდელი ანგარიშისთვის.</translation>
 <translation id="5689633613396158040">ღამის განათება გაგიმარტივებთ ეკრანზე კითხვას ან მის ყურებას მკრთალი განათების პირობებში. შეეხეთ ღამის განათების ჩართვის დროის შესაცვლელად ან მის მთლიანად გამოსართავად.</translation>
@@ -693,6 +694,7 @@
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
 <translation id="7593891976182323525">ძიება ან Shift</translation>
 <translation id="7600875258240007829">ყველა შეტყობინების ნახვა</translation>
+<translation id="7607002721634913082">დაპაუზებული</translation>
 <translation id="7618774594543487847">ნეიტრალური</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">=მახლობლად გაზიარების პარამეტრების ჩვენება.</translation>

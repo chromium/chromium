@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">야간 조명</translation>
 <translation id="2727175239389218057">답장</translation>
 <translation id="2727977024730340865">저출력 충전기에 연결되었습니다. 배터리 충전 상태가 불안정합니다.</translation>
+<translation id="2778650143428714839"><ph name="MANAGER" />에서 관리하는 <ph name="DEVICE_TYPE" /></translation>
 <translation id="2792498699870441125">Alt+검색 키</translation>
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
 <translation id="28232023175184696">인터넷에 연결할 수 없습니다. 다시 시도하려면 클릭하세요.</translation>
@@ -296,7 +297,7 @@
 <translation id="3799080171973636491">전체 화면 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="380165613292957338">안녕하세요, 무엇을 도와드릴까요?</translation>
 <translation id="3826099427150913765">비밀번호로 전환</translation>
-<translation id="383058930331066723">절전 모드 사용 중</translation>
+<translation id="383058930331066723">절전 모드 사용</translation>
 <translation id="383629559565718788">키보드 설정 표시</translation>
 <translation id="3846214748874656680">전체화면 종료</translation>
 <translation id="3846575436967432996">네트워크 정보 없음</translation>
@@ -484,7 +485,7 @@
 <translation id="556042886152191864">버튼</translation>
 <translation id="5571066253365925590">블루투스를 사용함</translation>
 <translation id="557563299383177668">다음 단락</translation>
-<translation id="55808498489107691">화면의 콘텐츠 때문에 관리자가 화면 캡처를 중지했습니다.</translation>
+<translation id="55808498489107691">화면의 콘텐츠 때문에 관리자가 화면 캡처를 차단했습니다.</translation>
 <translation id="558849140439112033">드래그하여 캡처할 영역을 선택하세요.</translation>
 <translation id="5597451508971090205"><ph name="DATE" /> <ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">음성 피드백을 사용 중지하려면 Ctrl + Alt + Z를 누르세요.</translation>
@@ -493,6 +494,7 @@
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5673434351075758678">설정 동기화 후 ‘<ph name="FROM_LOCALE" />’에서 ‘<ph name="TO_LOCALE" />’(으)로 변경합니다.</translation>
+<translation id="5677928146339483299">차단</translation>
 <translation id="5679050765726761783">저전력 어댑터 연결됨</translation>
 <translation id="5682642926269496722">현재 사용자 계정에서 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="5689633613396158040">야간 조명을 사용하면 주위가 어두울 때도 편안하게 화면을 보고 읽을 수 있습니다. 탭하여 야간 조명을 켜거나 완전히 끌 시간을 변경하세요.</translation>
@@ -563,6 +565,7 @@
 <translation id="6297287540776456956">스타일러스를 사용하여 영역을 선택하세요.</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" />(이)가 <ph name="ROTATION" />(으)로 회전되었습니다.</translation>
 <translation id="6315170314923504164">음성</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" />는 <ph name="MANAGER" />에서 관리하는 세션입니다.</translation>
 <translation id="6376931439017688372">블루투스 사용 중</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
 <translation id="639644700271529076">CAPS LOCK이 꺼져 있음</translation>
@@ -691,6 +694,7 @@
 <translation id="7590883480672980941">입력 설정</translation>
 <translation id="7593891976182323525">검색 또는 Shift 키</translation>
 <translation id="7600875258240007829">모든 알림 보기</translation>
+<translation id="7607002721634913082">일시중지됨</translation>
 <translation id="7618774594543487847">중성 색상</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">Nearby Share 설정 표시</translation>

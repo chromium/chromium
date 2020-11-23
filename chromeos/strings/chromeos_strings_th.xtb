@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">เวลาในการตอบสนองของ HTTPS สูงมาก</translation>
 <translation id="1413240736185167732">ไม่สำเร็จ - ตัวกรองล้มเหลว</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
 <translation id="1478594628797167447">เครื่องสแกน</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (ชุดข้อความ <ph name="THREAD_COUNT" /> รายการ)</translation>
 <translation id="1641857168437328880">ตัวป้อนเอกสาร (ด้านเดียว)</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="1662989795263954667">หยุดพิมพ์ - หมึกหมด</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">สแกนแล้วบันทึกไว้ใน</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
 <translation id="4548483925627140043">ไม่พบสัญญาณ</translation>
+<translation id="455835558791489930">แบตเตอรี่ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
 <translation id="4646949265910132906">การเชื่อมต่อ Wi-Fi ที่ปลอดภัย</translation>
@@ -138,8 +142,10 @@
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="6839141349259399400">หากเชื่อมต่อกับเครื่องสแกนไม่ได้</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
+<translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>

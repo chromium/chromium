@@ -431,6 +431,7 @@
 <translation id="1475502736924165259">ଅନ୍ୟ କୌଣସି ବର୍ଗଗୁଡ଼ିକରେ ଫିଟ୍ ହେଉନଥିବା ଫାଇଲ୍‌ରେ ଆପଣଙ୍କର ସାର୍ଟିଫିକେଟ୍ ଅଛି</translation>
 <translation id="1476088332184200792">ଆପଣଙ୍କର ଡିଭାଇସ୍‍କୁ କପି କରନ୍ତୁ</translation>
 <translation id="1476607407192946488">&amp;ଭାଷା ସେଟିଂ</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> ପାଇଁ ଆପଣ ଆପଣଙ୍କ ସ୍ମାର୍ଟ କାର୍ଡକୁ ଇନସାର୍ଟ କରି ରଖିବା ଆବଶ୍ୟକ।</translation>
 <translation id="1478340334823509079">ବିବରଣୀ: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ଇନ୍‌ଷ୍ଟଲେସନ୍ ସକ୍ଷମ ହୋଇନାହିଁ</translation>
 <translation id="1481537595330271162">ଡିସ୍କର ଆକାର ପରିବର୍ତ୍ତନ କରିବାରେ ତ୍ରୁଟି</translation>
@@ -2023,6 +2024,7 @@
 <translation id="3320630259304269485">ସେଫ୍ ବ୍ରାଉଜିଂ (ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକରୁ ସୁରକ୍ଷା) ଏବଂ ଅନ୍ୟ ସୁରକ୍ଷା ସେଟିଂସ୍</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{ଏହି ଡାଟାରେ ସମ୍ବେଦନଶୀଳ କିମ୍ବା ବିପଦଜନକ ବିଷୟବସ୍ତୁ ଅଛି। ଏହି ବିଷୟବସ୍ତୁ କାଢ଼ି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।}=1{ଏହି ଫାଇଲରେ ସମ୍ବେଦନଶୀଳ କିମ୍ବା ବିପଦଜନକ ବିଷୟବସ୍ତୁ ଅଛି। ଏହି ବିଷୟବସ୍ତୁ କାଢ଼ି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।}other{ଏହି ଫାଇଲଗୁଡ଼ିକରେ ସମ୍ବେଦନଶୀଳ କିମ୍ବା ବିପଦଜନକ ବିଷୟବସ୍ତୁ ଅଛି। ଏହି ବିଷୟବସ୍ତୁ କାଢ଼ି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।}}</translation>
 <translation id="3323521181261657960">ବୋନସ୍! ଆପଣ ଅଧିକ ସ୍କ୍ରିନ୍ ସମୟ ପାଇଛନ୍ତି</translation>
+<translation id="3325804108816646710">ଉପଲବ୍ଧ ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି...</translation>
 <translation id="3325910708063135066">Mac ସିଷ୍ଟମ୍ ଅଗ୍ରାଧିକାରଗୁଡ଼ିକରେ କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="3327050066667856415">Chromebook ସୁରକ୍ଷା ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି। ଆପଣଙ୍କ ଡିଭାଇସ୍ ସ୍ୱଚାଳିତ ଭାବରେ ମାଲୱେୟାର୍ ଠାରୁ ସୁରକ୍ଷିତ ଅଛି – କୌଣସି ଅତିରିକ୍ତ ସଫ୍ଟୱେର୍ ଆବଶ୍ୟକ ନାହିଁ।</translation>
 <translation id="3328489342742826322">କୌଣସି ବ୍ୟାକ୍‍ଅପ୍‍ରୁ ରିଷ୍ଟୋର୍ କରିବା ଦ୍ୱାରା ଆପଣଙ୍କର Linux ଫାଇଲ୍ସ ଫୋଲ୍ଡର୍‍‍ରେ ପୂର୍ବରୁ ଥିବା Linux ଆପ୍ଲିକେସନ୍ସ ଏବଂ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ।</translation>
@@ -2090,6 +2092,7 @@
 <translation id="3412265149091626468">ଚୟନକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3413122095806433232">CA ପ୍ରଦାନକାରୀ: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">ଆକାର:</translation>
+<translation id="3414966631182382431"><ph name="MANAGER" /> ଦ୍ୱାରା ଆପଣଙ୍କର <ph name="BEGIN_LINK" />ବ୍ରାଉଜର୍ ପରିଚାଳିତ ହେଉଛି<ph name="END_LINK" /></translation>
 <translation id="3416468988018290825">ସର୍ବଦା ପୂର୍ଣ୍ଣ URLଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="3417835166382867856">ଟାବଗୁଡ଼ିକୁ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="3417836307470882032">24-ଘଣ୍ଟିଆ ଘଣ୍ଟା ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -3163,6 +3166,7 @@
 <translation id="4651484272688821107">ଡେମୋ ମୋଡ୍ ସାଧନଗୁଡ଼ିକ ସହିତ ଅନ୍‌ଲାଇନ୍ କମ୍ପୋନେଟ୍ ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="4652935475563630866">କ୍ୟାମେରା ସେଟିଂରେ ହୋଇଥିବା ପରିବର୍ତ୍ତନ Parallels Desktopକୁ ପୁଣି ଲଞ୍ଚ କରିବା ଆବଶ୍ୟକ କରେ। ଆଗକୁ ବଢ଼ିବା ପାଇଁ Parallels Desktop ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="4653405415038586100">Linux କନଫିଗର୍ କରାଯାଉଥିବା ସମୟରେ ଏକ ତ୍ରୁଟି</translation>
+<translation id="4657914796247705218">TrackPoint ସ୍ପିଡ୍</translation>
 <translation id="465878909996028221">କେବଳ http, ବ୍ରାଉଜର୍ ରିଡାଇରେକ୍ଟ ପାଇଁ https ଏବଂ ଫାଇଲ୍ ପ୍ରୋଟୋକଲ୍‍ଗୁଡ଼ିକ ସମର୍ଥିତ ଅଟେ।</translation>
 <translation id="4659077111144409915">ପ୍ରାଥମିକ ଆକାଉଣ୍ଟ</translation>
 <translation id="4659126640776004816">ଆପଣ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ସାଇନ୍ ଇନ୍ କଲେ ଏହି ଫିଚର୍ ଚାଲୁ ହୁଏ।</translation>
@@ -3823,6 +3827,7 @@
 <translation id="5470735824776589490">ପାୱର୍‌ୱାସ୍ ସହିତ ଆପଣଙ୍କର ଡିଭାଇସ୍‌କୁ ରିସେଟ୍ କରିବା ପୂର୍ବରୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ ଅଟେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">ଆଜ୍ଞା ନମସ୍କାର! ମୁଁ ଆପଣଙ୍କ ଲେଖାକୁ ସ୍ପୀଚ୍‌ରେ ପରିବର୍ତ୍ତନ କରୁଥିବା ଭଏସ୍‌ ଅଟେ।</translation>
 <translation id="5472627187093107397">ଏହି ସାଇଟ୍ ପାଇଁ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ୍ କରନ୍ତୁ</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PINରେ ଅତିକମରେ ଗୋଟିଏ ଅକ୍ଷର ରହିବା ଆବଶ୍ୟକ}other{PINରେ ଅତିକମରେ #ଟି ଅକ୍ଷର ରହିବା ଆବଶ୍ୟକ}}</translation>
 <translation id="5473333559083690127">ନୂଆ PIN ପୁଣି ଲେଖନ୍ତୁ</translation>
 <translation id="5481273127572794904">ଏକାଧିକ ଫାଇଲକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଉନଲୋଡ୍ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="5481941284378890518">ନିକଟସ୍ଥ ପ୍ରିଣ୍ଟର୍‌ ଯୋଗ କରନ୍ତୁ</translation>
@@ -4361,6 +4366,7 @@
 <translation id="6087960857463881712">ବଢ଼ିଆ ମୁହଁ</translation>
 <translation id="6091761513005122595">ସଫଳତାର ସହ ସେୟାର୍‌ ଖଞ୍ଜାଯାଇଛି।</translation>
 <translation id="6093888419484831006">ଅପ୍‌ଡେଟ୍‌ ବାତିଲ ହେଉଛି...</translation>
+<translation id="6095541101974653012">ଆପଣ ଲଗ୍ ଆଉଟ୍ ହୋଇଯାଇଛନ୍ତି।</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">ବଡ଼ କରି ଖୋଲନ୍ତୁ</translation>
 <translation id="6096326118418049043">X.500 ନାମ</translation>
@@ -4693,6 +4699,7 @@
 <translation id="6474884162850599008">Google Driveର ଆକାଉଣ୍ଟ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‍ର ବିଷୟବସ୍ତୁ ସେୟାର୍ କରିବାକୁ ଚାହେଁ। ଆପଣ ଯାହା ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି ତାହା ବାଛନ୍ତୁ।</translation>
 <translation id="6478248366783946499">ବିପଦପୂର୍ଣ୍ଣ ଫାଇଲ୍‍କୁ ରଖିବେ କି?</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="6483485061007832714">ଡାଉନ୍‌ଲୋଡ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> ଖୋଲୁଛି...</translation>
 <translation id="6488384360522318064">ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
@@ -4883,6 +4890,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="671928215901716392">ଲକ୍ ସ୍କ୍ରୀନ୍</translation>
 <translation id="6721678857435001674">ଆପଣଙ୍କ ସୁରକ୍ଷା କୀ'ର ନିର୍ମାତାଙ୍କ ନାମ ଏବଂ ମଡେଲ୍ ନମ୍ବର ଦେଖନ୍ତୁ</translation>
 <translation id="6721972322305477112">&amp;ଫାଇଲ୍</translation>
+<translation id="672208878794563299">ଏହି ସାଇଟ୍ ପରବର୍ତ୍ତୀ ଥର ପୁଣି ପଚାରିବ।</translation>
 <translation id="672213144943476270">ଅତିଥି ରୂପରେ ବ୍ରାଉଜିଂ କରିବା ପୂର୍ବରୁ ଦୟାକରି ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‍କୁ ଅନ୍‍ଲକ୍ କରନ୍ତୁ।</translation>
 <translation id="6723661294526996303">ବୁକମାର୍କ ଓ ସେଟିଂସ୍‌ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ...</translation>
 <translation id="6723839937902243910">ପାୱର୍</translation>
@@ -6277,6 +6285,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8317671367883557781">ନେଟ୍‌ୱାର୍କ ସଂଯୋଗ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8319414634934645341">ପ୍ରସାରିତ କୀ'ର ବ୍ୟବହାର</translation>
 <translation id="8320459152843401447">ଆପଣଙ୍କର ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍</translation>
+<translation id="8321837372750396788">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେବ।</translation>
 <translation id="8322814362483282060">ଏହି ପୃଷ୍ଠାକୁ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍ କରିବାରୁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="8323167517179506834">URL ଟାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="8324784016256120271">ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ବ୍ୟକ୍ତିଗତକୃତ କରିବା ପରି ବିଭିନ୍ନ ସାଇଟରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିବା ନିମନ୍ତେ ସାଇଟଗୁଡ଼ିକ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ</translation>
@@ -6584,6 +6593,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8698269656364382265">ପୂର୍ବବର୍ତ୍ତୀ ସ୍କ୍ରିନକୁ ଫେରିବା ପାଇଁ, ବାମ ପାର୍ଶ୍ୱରୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="869884720829132584">ଆପ୍ଲିକେସନ୍ ମେନୁ</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>
+<translation id="8702825062053163569">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ଲକ୍ ହୋଇଯାଇଛି।</translation>
 <translation id="8703346390800944767">ବିଜ୍ଞାପନକୁ ଛାଡ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="8705331520020532516">କ୍ରମିକ ସଂଖ୍ୟା</translation>
 <translation id="8705580154597116082">ଫୋନ୍ ମାଧ୍ୟମରେ Wi-Fi ଉପଲବ୍ଧ ଅଛି</translation>

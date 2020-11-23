@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">Мобайл сүлжээ алга</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> цонхыг <ph name="ACTIVE_DESK" /> дэлгэцээс <ph name="TARGET_DESK" /> дэлгэц рүү зөөсөн</translation>
 <translation id="3255483164551725916">Та юу хийх боломжтой вэ?</translation>
+<translation id="3269597722229482060">Баруун талыг товших</translation>
 <translation id="3289674678944039601">Адаптераар цэнэглэж байна</translation>
 <translation id="3290356915286466215">Хамгаалалтгүй</translation>
 <translation id="3294437725009624529">Зочин</translation>
@@ -341,6 +342,7 @@
 <translation id="4212472694152630271">ПИН рүү сэлгэх</translation>
 <translation id="4215497585250573029">VPN тохиргоо</translation>
 <translation id="4217571870635786043">Заавар</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, Суулгасан апп, Түр зогсоосон</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Дэлгэцийн агшин</translation>
 <translation id="425364040945105958">СИМ алга</translation>
@@ -495,6 +497,7 @@
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5673434351075758678">Тохиргоогоо синк хийсний дараа "<ph name="FROM_LOCALE" />"-с "<ph name="TO_LOCALE" />" руу шилжүүлнэ.</translation>
+<translation id="5677928146339483299">Хаагдсан</translation>
 <translation id="5679050765726761783">Бага тэжээлийн адаптерыг холбосон</translation>
 <translation id="5682642926269496722">Одоогийн хэрэглэгчийн бүртгэл дээр Google Туслах боломжгүй байна.</translation>
 <translation id="5689633613396158040">Шөнийн гэрэл нь бүдэг гэрэлтэй үед дэлгэцээ харах эсвэл уншихад илүү хялбар болгодог. Аль цагт Шөнийн гэрлийг бүрмөсөн асааж эсвэл унтраахыг өөрчлөхийн тулд товшино уу.</translation>
@@ -694,6 +697,7 @@
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
 <translation id="7593891976182323525">Search эсвэл Shift</translation>
 <translation id="7600875258240007829">Бүх мэдэгдлийг харах</translation>
+<translation id="7607002721634913082">зогссон</translation>
 <translation id="7618774594543487847">Завсрын</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Ойролцоо хуваалцах тохиргоог харуулна.</translation>
@@ -760,6 +764,7 @@
 <translation id="8142699993796781067">Хувийн сүлжээ</translation>
 <translation id="8152092012181020186">Хаахын тулд Ctrl + W дээр дарна уу.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Энэ тохиргоог таны администратор удирддаг.</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />-н мэдээллийн харилцах цонхыг нээх</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />-г ашиглаж байна</translation>
 <translation id="8170567869359129153">Мобайл сүлжээ. Дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Мэдэгдлийг нуусан.</translation>
@@ -826,6 +831,7 @@
 <translation id="8755498163081687682">Өөрийгөө баталгаажуулах: <ph name="ORIGIN_NAME" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="875593634123171288">VPN тохиргоог харуулах</translation>
 <translation id="8759408218731716181">Олон хэрэглэгчтэй нэвтрэх эрхийг суулгаж чадахгүй байна</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, Суулгасан апп, Блоклосон</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-д холбогдох</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>

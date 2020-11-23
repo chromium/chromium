@@ -88,7 +88,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
 <translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>
-<translation id="467715984478005772">Հրապատը կասկածելի է</translation>
+<translation id="467715984478005772">Հնարավոր է, որ հրապատ կա</translation>
 <translation id="4691278870498629773">Դադարեցվել է – Դարակը բացակայում է</translation>
 <translation id="469379815867856270">Ազդանշանի հզորությունը</translation>
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
@@ -139,8 +139,8 @@
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
 <translation id="6747215703636344499">Դադարեցվել է – Ելքային դարակը լցված է</translation>
-<translation id="6766275201586212568">DNS-ի անհաջող լուծաչափեր</translation>
-<translation id="6768237774506518020">DNS-ի լուծաչափի խափանումների բարձր մակարդակ</translation>
+<translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
+<translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
 <translation id="6839141349259399400">Չի՞ հաջողվում միանալ սկաներներին։</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>

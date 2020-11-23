@@ -2,14 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1000498691615767391">Odaberite mapu za otvaranje</translation>
-<translation id="1016731229041675999">Transliteracija za arapski</translation>
-<translation id="102325055885714714">Transliteracija za tamilski</translation>
 <translation id="1035094536595558507">Prikaz prezentacije</translation>
 <translation id="1047956942837015229">Brisanje stavki (<ph name="COUNT" />)...</translation>
 <translation id="1049926623896334335">Wordov dokument</translation>
 <translation id="1060368002126861100">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, najprije ih premjestite u mapu datoteka u Windowsima.</translation>
 <translation id="1062407476771304334">Zamijeni</translation>
-<translation id="1082570120854863773">Kineski (tradicionalni) pinyin</translation>
 <translation id="1119069657431255176">Sažeta tar arhiva Bzip2</translation>
 <translation id="1120073797882051782">hangul romaja</translation>
 <translation id="1148097584170732637">Pronađene su datoteke (ukupno <ph name="FILE_COUNT" />).
@@ -20,8 +17,6 @@
 <translation id="1150565364351027703">Sunčane naočale</translation>
 <translation id="115443833402798225">hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalanski</translation>
-<translation id="1169885125071442573">Transliteracija za gudžaratski</translation>
-<translation id="1170149495446063094">engleski (US) s međunarodnom tipkovnicom</translation>
 <translation id="1172970565351728681">Preostalo je oko <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="117624967391683467">Kopiranje datoteke <ph name="FILE_NAME" />...</translation>
@@ -30,13 +25,10 @@
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1249250836236328755">Žanr</translation>
-<translation id="1251468808511160368">engleski (SAD) s programerskom tipkovnicom Dvorak</translation>
-<translation id="1276362640455948667">Portugalski s američkom međunarodnom tipkovnicom</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1297922636971898492">Google disk trenutačno nije dostupan. Prijenos će se automatski ponovo pokrenuti kada Google disk opet postane dostupan.</translation>
 <translation id="1307931752636661898">Nije moguće pregledati Linux datoteke</translation>
 <translation id="1338950911836659113">Brisanje...</translation>
-<translation id="1345094301418504404">Francuski (Kanada)</translation>
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1351692861129622852">Uvoz datoteka (<ph name="FILE_COUNT" />)...</translation>
 <translation id="1358735829858566124">Datoteka ili direktorij nisu upotrebljivi.</translation>
@@ -44,15 +36,11 @@
 <translation id="1378727793141957596">Dobro došli u Google disk!</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1395262318152388157">Klizač za traženje</translation>
-<translation id="1411401459521499147">Rumunjski sa standardnom tipkovnicom</translation>
-<translation id="14286271616944851">Perzijski</translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1435838927755162558">Dijeljenje mape s Parallels Desktopom</translation>
 <translation id="1439494416798956626">Premješteno u <ph name="FOLDER_NAME" />.</translation>
 <translation id="1464724975715666883">1 pogreška.</translation>
-<translation id="1466220122465387403">Soransko-kurdski s tipkovnicom temeljenom na engleskom</translation>
 <translation id="1467432559032391204">Ulijevo</translation>
-<translation id="1472351751615457820">Transliteracija za grčki</translation>
 <translation id="1474339897586437869">Datoteka "<ph name="FILENAME" />" nije prenesena. Nema dovoljno slobodnog prostora na Google disku.</translation>
 <translation id="148466539719134488">švicarska</translation>
 <translation id="1497522201463361063">Nije moguće promijeniti naziv datoteke "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -63,9 +51,7 @@
 <translation id="1572585716423026576">Postavi kao pozadinu</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
-<translation id="1622022025445651011">Francuski (Francuska)</translation>
 <translation id="1646019627374511909">Broj datoteka koje će biti dostupne offline: <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="1649464394998806860">Ruski s fonetskom tipkovnicom AATSEEL</translation>
 <translation id="164969095109328410">Chrome uređaj</translation>
 <translation id="1665611772925418501">Nije bilo moguće mijenjati datoteku.</translation>
 <translation id="1673103856845176271">Nije bilo moguće pristupiti datoteci zbog sigurnosnih razloga.</translation>
@@ -96,12 +82,8 @@
 <translation id="1995337122023280937">Otvorite lokaciju datoteke</translation>
 <translation id="2001796770603320721">Upravljaj na Disku</translation>
 <translation id="2009067268969781306">Formatiranjem diska izbrisat će se svi podaci koji su na njemu pohranjeni. Tu radnju nije moguće poništiti.</translation>
-<translation id="2016165510591645686">Kineski pinyin</translation>
 <translation id="2028997212275086731">RAR arhiva</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2060251957438343874">Njemački (Njemačka)</translation>
-<translation id="2060392775416297569">Kineski cangjie</translation>
-<translation id="2066433303065022982">Transliteracija za hebrejski</translation>
 <translation id="2070909990982335904">Imena koja na početku imaju točku rezervirana su za sustav. Odaberite drugo ime.</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2084108471225856927">Postavke uređaja</translation>
@@ -112,9 +94,7 @@
 <translation id="2208158072373999562">Zip arhiva</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati te stavke (njih <ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nije moguće izraditi mapu "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2258078827108167865">Kmerski</translation>
 <translation id="2275059641601412272">Premješteno.</translation>
-<translation id="2287742181953707290">portugalski s američkom međunarodnom tipkovnicom za PC</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otvaranje datoteka (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Otvaranje datoteke <ph name="FILE_NAME" />.</translation>
@@ -127,18 +107,15 @@
 <translation id="240770291734945588">Dostupno je <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">Ukupna veličina datoteka</translation>
 <translation id="2428749644083375155">Kopiranje stavki (njih <ph name="NUMBER_OF_ITEMS" />) u mapu <ph name="FOLDER_NAME" /></translation>
-<translation id="2445471348947930094">Gudžaratski fonetski</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2453576648990281505">Datoteka već postoji</translation>
 <translation id="2464079411014186876">Sladoled</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="2484472280211296077">Tamilski fonetski</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547">Broj izbrisanih stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Sadržaj ove mape dostupan je samo za čitanje. Neke aktivnosti nisu podržane.</translation>
 <translation id="2542049655219295786">Googleova tablica</translation>
 <translation id="2547921442987553570">Dodaj u proširenje <ph name="EXTENSION_NAME" /></translation>
-<translation id="255285553751745003">Vijetnamski teleks</translation>
 <translation id="255937426064304553">američka (međunarodna)</translation>
 <translation id="2562685439590298522">Dokumenti</translation>
 <translation id="2563185590376525700">Žaba</translation>
@@ -151,21 +128,17 @@
 <translation id="2664412712123763093">Lokacija datoteke</translation>
 <translation id="2672394958563893062">Dogodila se pogreška. Kliknite za ponovno pokretanje od početka.</translation>
 <translation id="2676946222714718093">Reprodukcija na uređaju</translation>
-<translation id="2718873684053049373">Kineski dayi</translation>
 <translation id="2735623501230989521">Dajte Parallels Desktopu dopuštenje za pristup datotekama u mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijska</translation>
 <translation id="2782104745158847185">Pogreška pri instaliranju Linux aplikacije</translation>
 <translation id="2787047795752739979">Prebriši izvornik</translation>
-<translation id="2798201218072736543">Portugalski (Brazil)</translation>
-<translation id="2822854841007275488">Arapski</translation>
 <translation id="2843806747483486897">Promijeni zadano...</translation>
 <translation id="2850124913210091882">Stvori sigurnosnu kopiju</translation>
 <translation id="288024221176729610">Češki</translation>
 <translation id="2887525882758501333">PDF dokument</translation>
 <translation id="2888807692577297075">Nijedna stavka ne odgovara pretraživanju &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informacije</translation>
-<translation id="2899393425226141282">Njemački (Njemačka) s Neo 2 tipkovnicom</translation>
 <translation id="2902312830803030883">Druge radnje</translation>
 <translation id="2902734494705624966">američka (proširena)</translation>
 <translation id="2923240520113693977">Estonski</translation>
@@ -180,19 +153,15 @@
 <translation id="3003633581067744647">Prebaci na prikaz minijatura</translation>
 <translation id="3007214526293698309">Ispravi omjer</translation>
 <translation id="303198083543495566">Geografija</translation>
-<translation id="3040867506619073727">Sinhalski</translation>
 <translation id="3057861065630527966">Izrada sigurnosnih kopija fotografija i videozapisa</translation>
 <translation id="3067790092342515856">Windows datoteke</translation>
 <translation id="3078461028045006476">Podijeli s aplikacijom <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebitovi</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">GOTOVO</translation>
-<translation id="3171711500892772766">Teluški fonetski</translation>
-<translation id="3182237543071236785">engleski (UK)</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3197563288998582412">engleska (Velika Britanija: Dvorak)</translation>
 <translation id="3202131003361292969">Put</translation>
-<translation id="3204169104280704562">engleski (SAD) s Workman tipkovnicom</translation>
 <translation id="3224239078034945833">kanadska (višejezična)</translation>
 <translation id="3236289833370040187">Vlasništvo će se prenijeti na domenu <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irski</translation>
@@ -209,7 +178,6 @@
 <translation id="3335337277364016868">Godina snimanja</translation>
 <translation id="3353984535370177728">Odaberite mapu za prijenos</translation>
 <translation id="3356580349448036450">Dovršeno</translation>
-<translation id="3369522691271417561">Soransko-kurdski s tipkovnicom temeljenom na arapskom</translation>
 <translation id="3414856743105198592">Formatiranjem izmjenjivih medija izbrisat će se svi podaci. Želite li nastaviti?</translation>
 <translation id="3437801641691368414">Vrijeme izrade</translation>
 <translation id="3466147780910026086">Pretraživanje medijskog uređaja...</translation>
@@ -218,7 +186,6 @@
 <translation id="3473378059788601120">Kopirano u mapu <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Googleova proračunska tablica</translation>
 <translation id="3495304270784461826">Broj pogrešaka: <ph name="COUNT" />.</translation>
-<translation id="349603508045926994">Transliteracija za perzijski</translation>
 <translation id="3522708245912499433">Portugalski</translation>
 <translation id="3524311639100184459">Oprez: ove su datoteke privremene i mogu se automatski izbrisati za oslobađanje prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mapa</translation>
@@ -227,7 +194,6 @@
 <translation id="357479282490346887">Litavski</translation>
 <translation id="3603385196401704894">francuska (kanadska)</translation>
 <translation id="3606220979431771195">Turska F</translation>
-<translation id="3608699648194837100">Tamilski ITRANS</translation>
 <translation id="3609785682760573515">Sinkronizacija...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
@@ -238,7 +204,6 @@
 <translation id="3645531960514756307">Otkvači mapu</translation>
 <translation id="3685122418104378273">Sinkronizacija Google diska onemogućena je prema zadanim postavkama kada se upotrebljavaju mobilni podaci.</translation>
 <translation id="3689865792480713551">Otkažite <ph name="ACTIVITY_DESCRIPTION" />.</translation>
-<translation id="3717701509378976246">Armenski</translation>
 <translation id="3726463242007121105">Nije moguće otvoriti ovaj uređaj jer nije podržan njegov datotečni sustav.</translation>
 <translation id="3741243925913727067">Izrada sigurnosnih kopija fotografija i videozapisa s medijskog uređaja na Google disku.</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
@@ -264,7 +229,6 @@
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3966388904776714213">Audio Player</translation>
 <translation id="4002066346123236978">Naslov</translation>
-<translation id="4097397818890482665">Transliteracija na karnatački</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4158739975813877944">Otvori popis pjesama</translation>
 <translation id="4159731583141908892">Premješteno: <ph name="FILE_NAME" />.</translation>
@@ -276,21 +240,17 @@
 <translation id="4261901459838235729">Googleova prezentacija</translation>
 <translation id="4290535918735525311">Jedna mapa podijeljena s Linuxom</translation>
 <translation id="4299729908419173967">brazilski</translation>
-<translation id="4305486654020746131">Pandžapski</translation>
 <translation id="4309915981827077375">Opće informacije</translation>
-<translation id="4315949787858895817">nizozemski (Belgija)</translation>
 <translation id="4326192123064055915">Kava</translation>
 <translation id="4336032328163998280">Kopiranje nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Dinja</translation>
 <translation id="4372884569765913867">1 x 1</translation>
 <translation id="4394214039309501350">Vanjska veza</translation>
-<translation id="4406790547322756995">Vijetnamski s tipkovnicom TCVN</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4470564870223067757">hangul 2 set</translation>
 <translation id="4477219268485577442">bugarska (fonetska)</translation>
 <translation id="4522570452068850558">Detalji</translation>
 <translation id="4527800702232535228">Ova se mapa dijeli s Parallels Desktopom</translation>
-<translation id="4532112105534982530">Francuski (Francuska) s Bépo tipkovnicom</translation>
 <translation id="4552678318981539154">Kupite još prostora za pohranu</translation>
 <translation id="4559318885353833501">Izbrisana je datoteka <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -298,14 +258,10 @@
 <translation id="457386861538956877">Više...</translation>
 <translation id="4579744207439506346">Stavka <ph name="ENTRY_NAME" /> dodana je odabiru.</translation>
 <translation id="4594543368593301662">Prikazuju se rezultati za <ph name="SEARCH_TERM" />.</translation>
-<translation id="4598673198033263991">Alfanumerički s japanskom tipkovnicom</translation>
 <translation id="4603392156942865207">Kopiranje datoteke <ph name="FILE_NAME" /> u mapu <ph name="FOLDER_NAME" /></translation>
-<translation id="4627439232948440198">sanskrt</translation>
 <translation id="4631887759990505102">Izvođač</translation>
-<translation id="463813589602055304">Kineski wubi</translation>
 <translation id="4656293982926141856">Ovo računalo</translation>
 <translation id="4669606053856530811">Članovi grupe "<ph name="SOURCE_NAME" />" izgubit će pristup ako se te stavke ne podijele s njima.</translation>
-<translation id="4669979276126590335">Transliteracija za srpski</translation>
 <translation id="4690246192099372265">Švedski</translation>
 <translation id="4693155481716051732">Suši</translation>
 <translation id="4694604912444486114">Majmun</translation>
@@ -316,13 +272,10 @@
 <translation id="4724850507808590449">Izrađene su sigurnosne kopije fotografija (ukupno <ph name="FILE_COUNT" />)</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Nažalost, vaš uređaj za emitiranje ne podržava ovaj videozapis.</translation>
-<translation id="4733240808404733495">Tajlandski s tipkovnicom TIS 820-2531</translation>
 <translation id="4734518477988699048">Vrijednost unosa nije važeća.</translation>
 <translation id="4737050008115666127">Slijetanje</translation>
-<translation id="4738570502598323051">Tamilski s tipkovnicom InScript</translation>
 <translation id="4747271164117300400">makedonski</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
-<translation id="4763055924467562718">Karnatački fonetski</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPointova prezentacija</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
@@ -331,9 +284,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
 <translation id="4839847978919684242">Odabrane stavke: <ph name="SELCTED_FILES_COUNT" /></translation>
-<translation id="4842306555839940112">Transliteracija za teluški</translation>
 <translation id="4843566743023903107">Chromebaseovi</translation>
-<translation id="4849981557599196363">njemački (Belgija)</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="485316830061041779">Njemački</translation>
 <translation id="4867079195717347957">Kliknite da biste stavke u stupcu poredali silaznim redoslijedom.</translation>
@@ -345,7 +296,6 @@
 <translation id="4905417359854579806">Sigurnosno kopiranje datoteka (ukupno <ph name="FILE_COUNT" />) je spremno</translation>
 <translation id="4924638091161556692">Obrađeno</translation>
 <translation id="4935975195727477204">Cvijet gazanije</translation>
-<translation id="4942961016321891903">malajalamski, fonetski</translation>
 <translation id="4943368462779413526">Američki nogomet</translation>
 <translation id="4961158930123534723">S Parallels Desktopom dijeli se jedna mapa</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -358,7 +308,6 @@
 <translation id="5010406651457630570">Računala</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Jedan proces traje dulje nego što je to uobičajeno. Želite li ga prekinuti?</translation>
-<translation id="5026887030745057099">hindi</translation>
 <translation id="5036159836254554629">Upravljajte dijeljenjem s Parallels Desktopom</translation>
 <translation id="5038625366300922036">Pogledajte više...</translation>
 <translation id="5061708541166515394">Kontrast</translation>
@@ -369,7 +318,6 @@
 <translation id="5098629044894065541">Hebrejski</translation>
 <translation id="5123433949759960244">Košarka</translation>
 <translation id="5129662217315786329">Poljski</translation>
-<translation id="5132435854979302863">filipinski</translation>
 <translation id="5144820558584035333">hangul 3 set (390)</translation>
 <translation id="5145331109270917438">Datum izmjene</translation>
 <translation id="515594325917491223">Šah</translation>
@@ -394,7 +342,6 @@
     na datotekama s drugima i sve to na jednom mjestu.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Kopirano.</translation>
 <translation id="5275973617553375938">Oporavljene datoteke s Google diska</translation>
-<translation id="5283140566205748520">francuski (Belgija)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5318819489018851358">Dijeli s Linuxom</translation>
@@ -406,14 +353,10 @@
 <translation id="5358764674931277">Brzina kadrova u sekundi</translation>
 <translation id="5368191757080475556">Dijelite mapu s Linuxom</translation>
 <translation id="5402367795255837559">Brajica</translation>
-<translation id="5418923334382419584">mjanmarska tipkovnica</translation>
-<translation id="5427022459704612663">Vijetnamski VIQR</translation>
 <translation id="5428105026674456456">Španjolski</translation>
 <translation id="5438282218546237410">Nema rezultata za <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Nevažeća zaporka</translation>
-<translation id="5468013476539915283">engleski (SAD)</translation>
 <translation id="5469868506864199649">Talijanski</translation>
-<translation id="5484429245813572665">indonezijski</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5500122897333236901">Islandski</translation>
 <translation id="5508696409934741614">Točke</translation>
@@ -421,11 +364,8 @@
 <translation id="5524517123096967210">Nije bilo moguće pročitati datoteku.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> slika</translation>
 <translation id="5534520101572674276">Veličina izračuna</translation>
-<translation id="5551831234974556292">malteški</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5601917305267643189">Španjolski (Španjolska)</translation>
 <translation id="5605830556594064952">američka (SAD: Dvorak)</translation>
-<translation id="5623849870004487514">nepalski s fonetskom tipkovnicom</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5678784840044122290">Linux aplikacija bit će dostupna na vašem terminalu, a možda će se i u Pokretaču prikazati ikona.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Prekid veze s arhivom ili virtualnim diskom nije moguć<ph name="END_BOLD" />
@@ -433,9 +373,7 @@
    Zatvorite sve datoteke u arhivi ili na virtualnom disku i pokušajte ponovo.</translation>
 <translation id="5691596662111998220">Ups, stavka <ph name="FILE_NAME" /> više ne postoji.</translation>
 <translation id="5700087501958648444">Informacije o audiozapisima</translation>
-<translation id="570049376144986742">Francuski (Švicarska)</translation>
 <translation id="5731409020711461763">1 nova fotografija</translation>
-<translation id="573799789564358869">engleski (SAD) s Colemak tipkovnicom</translation>
 <translation id="5752453871435543420">Sigurnosno kopiranje u oblaku OS-a Chrome</translation>
 <translation id="5756666464756035725">Mađarska QWERTY</translation>
 <translation id="5776325638577448643">Izbriši i formatiraj</translation>
@@ -448,7 +386,6 @@
 <translation id="5833610766403489739">Datoteka nije pronađena. Provjerite postavku lokacije preuzimanja i pokušajte ponovo.</translation>
 <translation id="5838451609423551646">Uklonjeni su svi unosi iz odabira.</translation>
 <translation id="5838825566232597749">Američka međunarodna Workman</translation>
-<translation id="5846013392911797712">Tajlandski s tipkovnicom Kedmanee</translation>
 <translation id="5850516540536751549">Ta vrsta datoteke nije podržana. Posjetite <ph name="BEGIN_LINK" />Chrome web-trgovinu<ph name="END_LINK" /> da biste pronašli aplikaciju koja može otvoriti tu vrstu datoteke.
     <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Ovdje nema ničega...</translation>
@@ -456,22 +393,17 @@
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopiranje nije uspjelo, neočekivana pogreška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5952382594224963380">marati</translation>
 <translation id="5955954492236143329">Broj stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxovi</translation>
 <translation id="5982621672636444458">Opcije razvrstavanja</translation>
 <translation id="6007237601604674381">Premještanje nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6012987430370760224">marathska tipkovnica (fonetska)</translation>
 <translation id="6019169947004469866">Obreži</translation>
 <translation id="60357267506638014">češka (QWERTY)</translation>
 <translation id="604001903249547235">Sigurnosno kopiranje u oblaku</translation>
 <translation id="6040143037577758943">Zatvori</translation>
-<translation id="6041767187407754614">Kineski brzi</translation>
 <translation id="6074825444536523002">Google obrazac</translation>
 <translation id="6096979789310008754">Pretraži izbrisani tekst, uz prikaz svih datoteka i mapa.</translation>
 <translation id="610101264611565198">Datoteka <ph name="FILE_NAME" /> premješta se u mapu <ph name="FOLDER_NAME" /></translation>
-<translation id="6111770213269631447">transliteracija (namaskar → নমস্কার)</translation>
-<translation id="6113836390962820517">Japanski s američkom tipkovnicom</translation>
 <translation id="6129953537138746214">Razmak</translation>
 <translation id="6133173853026656527">Premještanje datoteke <ph name="FILE_NAME" />...</translation>
 <translation id="6146563240635539929">Videozapisi</translation>
@@ -490,20 +422,16 @@
 <translation id="6356685157277930264">Prozor povratnih informacija za datoteke</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="637062427944097960">Ova je datoteka otvorena na drugoj radnoj površini. Prebacite se na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da biste je vidjeli.</translation>
-<translation id="6374309724856959519">engleski (US) s proširenom tipkovnicom</translation>
 <translation id="6394388407447716302">Samo za čitanje</translation>
 <translation id="6395575651121294044">Broj stavki: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Izađi iz cijelog zaslona</translation>
-<translation id="6412376911804527326">Laoski</translation>
 <translation id="642282551015776456">To ime ne može se upotrijebiti kao datoteka naziva mape</translation>
-<translation id="647955688546403164">engleski (UK) s tipkovnicom Dvorak</translation>
 <translation id="6485131920355264772">Dohvaćanje informacija o prostoru nije uspjelo</translation>
 <translation id="6509122719576673235">Norveški</translation>
 <translation id="6527303717912515753">Podijeli</translation>
 <translation id="653019979737152879">Sinkronizacija datoteke <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6556866813142980365">Ponovi</translation>
-<translation id="6556932543564608391">engleski (SAD) s programerskom tipkovnicom Dvorak</translation>
 <translation id="6558280019477628686">Dogodila se pogreška. Neke stavke možda nisu izbrisane.</translation>
 <translation id="656398493051028875">Brisanje datoteke "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Veza na Google disk</translation>
@@ -514,16 +442,13 @@
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6650726141019353908">Ružičasti leptir</translation>
 <translation id="6657585470893396449">Zaporka</translation>
-<translation id="6680841910911617814">Nizozemski (Nizozemska)</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6718273304615422081">Komprimiranje...</translation>
 <translation id="6751256176799620176">Odabrana je 1 mapa</translation>
-<translation id="6767296108234383966">malajalamski, transliteracija</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Upravljanje dijeljenjem s Linuxom</translation>
 <translation id="6808193438228982088">Lisica</translation>
-<translation id="6819938753873901684">Tigrinja</translation>
 <translation id="6820687829547641339">Sažeta tar arhiva Gzip</translation>
 <translation id="6823166707458800069">Sve datoteke spremljene u ovoj mapi automatski se sigurnosno kopiraju online.</translation>
 <translation id="6825883775269213504">Ruski</translation>
@@ -532,7 +457,6 @@
 <translation id="6862635236584086457">Za sve datoteke spremljene u ovoj mapi automatski se izrađuje sigurnosna kopija na mreži</translation>
 <translation id="6876155724392614295">Voziti bicikl</translation>
 <translation id="6878261347041253038">tipkovnica za devanagari (fonetska)</translation>
-<translation id="6878301034829092662">Ruski s fonetskom tipkovnicom YaZHert</translation>
 <translation id="6885780034956018177">Puž</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6898028766943174120">Više podmapa...</translation>
@@ -555,19 +479,13 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalacija nije uspjela.</translation>
 <translation id="7040138676081995583">Otvori aplikacijom...</translation>
-<translation id="7096940708283911567">orijski</translation>
 <translation id="7100897339030255923">Broj odabranih stavki: <ph name="COUNT" /></translation>
 <translation id="7106346894903675391">Kupite još prostora za pohranu...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pretraži Disk&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
-<translation id="714369685015246514">Niz za kineski</translation>
-<translation id="7169438078134535111">Turski s F tipkovnicom</translation>
-<translation id="7170467426996704624">transliteracija (salam → ሰላም)</translation>
-<translation id="7173380554947442031">Vijetnamski VNI</translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Spremi datoteku kao</translation>
-<translation id="7221999925319694720">Kineski zhuyin</translation>
 <translation id="7238097264433196391">Naziv diska</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
 <translation id="7268659760406822741">Dostupne usluge</translation>
@@ -576,14 +494,12 @@
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7359359531237882347">Kopiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Popis datoteka razvrstan prema "<ph name="COLUMN_NAME" />", silaznim redoslijedom.</translation>
-<translation id="7396038720194014279">hindska tipkovnica (fonetska)</translation>
 <translation id="7417453074306512035">etiopska tipkovnica</translation>
 <translation id="7417705661718309329">Google karta</translation>
 <translation id="7460898608667578234">Ukrajinski</translation>
 <translation id="7489215562877293245">Pronađene su datoteke (ukupno <ph name="FILE_COUNT" />)
     <ph name="LINE_BREAK1" />
     Sigurnosno kopiranje na <ph name="BEGIN_LINK" />Google disk<ph name="END_LINK" /> je spremno</translation>
-<translation id="7498032756958781551">nepalski s tipkovnicom InScript</translation>
 <translation id="7505167922889582512">Prikaži skrivene datoteke</translation>
 <translation id="7508545000531937079">Prezentacija</translation>
 <translation id="751507702149411736">Bjeloruski</translation>
@@ -593,7 +509,6 @@
 <translation id="7551643184018910560">Prikvači na policu</translation>
 <translation id="7553492409867692754">Daje dopuštenje Linux aplikacijama za pristup datotekama u mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
-<translation id="7585326627181105002">engleski (US) s međunarodnom tipkovnicom za PC</translation>
 <translation id="7589661784326793847">Pričekajte trenutak</translation>
 <translation id="7592775719802218421">Offline dostupnost datoteke <ph name="FILE_NAME" /></translation>
 <translation id="7603724359189955920">Rešetke</translation>
@@ -610,7 +525,6 @@
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7730494089396812859">Prikaz pojedinosti sigurnosnog kopiranja u oblaku</translation>
 <translation id="7748626145866214022">Više opcija dostupno je na traci radnji. Pritisnite Alt + A da biste fokusirali traku radnji.</translation>
-<translation id="7756956835689272676">Francuski (Kanada) s višejezičnom tipkovnicom</translation>
 <translation id="7765158879357617694">Pomakni</translation>
 <translation id="7774365994322694683">Ptica</translation>
 <translation id="7788080748068240085">Da biste izvenmrežno spremili datoteku "<ph name="FILE_NAME" />", morate osloboditi još <ph name="TOTAL_FILE_SIZE" /> prostora:<ph name="MARKUP_1" />
@@ -633,8 +547,6 @@
 <translation id="7873831373602885875">Spremanje u mapu <ph name="FOLDER_NAME" /> nije moguće. Sva uređivanja spremit će se u mapu <ph name="DOWNLOADS_FOLDER" /> u mapi Preuzimanja.</translation>
 <translation id="7881969471599061635">Onemogući titlove</translation>
 <translation id="78946041517601018">Dijeljeni diskovi</translation>
-<translation id="7898607018410277265">gudžaratska tipkovnica (nova fonetska)</translation>
-<translation id="7908150161525408421">Španjolski (Latinska Amerika)</translation>
 <translation id="7908793776359722643">Formatiranjem particije izbrisat će se svi podaci koji su na njoj pohranjeni. Tu radnju nije moguće poništiti.</translation>
 <translation id="7925686952655276919">Ne upotrebljavaj mobilne podatke za sinkronizaciju</translation>
 <translation id="7928710562641958568">Izbaci uređaj</translation>
@@ -642,7 +554,6 @@
 <translation id="7953739707111622108">Nije moguće otvoriti ovaj uređaj jer nije prepoznat njegov datotečni sustav.</translation>
 <translation id="7969525169268594403">Slovenski</translation>
 <translation id="7982283708762922719">Visina</translation>
-<translation id="7988940501536183135">Ruski s fonetskom tipkovnicom</translation>
 <translation id="8008366997883261463">Jack Russell terijer</translation>
 <translation id="8028993641010258682">Veličina</translation>
 <translation id="803771048473350947">Datoteka</translation>
@@ -650,22 +561,18 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audiozapis</translation>
 <translation id="8045462269890919536">Rumunjski</translation>
 <translation id="8052887694493382350">Ova je datoteka predviđena za računalo sa softverom Windows. Nije kompatibilna s uređajem na kojem se izvodi Chrome OS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /></translation>
-<translation id="8061794649181228915">engleski (SAD) s međunarodnom Workman tipkovnicom</translation>
 <translation id="8066773524873206594">Sva uređivanja spremit će se u mapu <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Ponovi</translation>
 <translation id="8106045200081704138">Dijeljeno sa mnom</translation>
 <translation id="8116072619078571545">Ledena voda</translation>
-<translation id="8130367958112291342">Češki s QWERTY tipkovnicom</translation>
 <translation id="8137331602592933310">S vama je podijeljena datoteka "<ph name="FILENAME" />". Ne možete je izbrisati jer joj niste vlasnik.</translation>
 <translation id="8151638057146502721">Konfiguracija</translation>
 <translation id="8153607920959057464">Nije bilo moguće prikazati datoteku.</translation>
 <translation id="8154842056504218462">Odabrane su sve stavke.</translation>
 <translation id="8157684860301034423">Dohvaćanje informacija o aplikaciji nije uspjelo.</translation>
 <translation id="8157939133946352716">7 x 5</translation>
-<translation id="8159982522558068586">Tamilski s tipkovnicom pisaćeg stroja</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model uređaja</translation>
-<translation id="8196481879028929035">Portugalski (Portugal)</translation>
 <translation id="8208580316430297579">Slika</translation>
 <translation id="8223479393428528563">Da biste spremili te datoteke za izvanmrežnu upotrebu, ponovo se povežite s internetom, kliknite datoteke desnom tipkom i odaberite opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Prekini</translation>
@@ -679,9 +586,7 @@
 <translation id="8329978297633540474">Običan tekst</translation>
 <translation id="8335587457941836791">Otkvači s police</translation>
 <translation id="8336153091935557858">Jučer u <ph name="YESTERDAY_DAYTIME" /></translation>
-<translation id="8336524887811696057">Transliteracija za nepalski</translation>
 <translation id="8342318071240498787">Datoteka ili direktorij s istim imenom već postoje.</translation>
-<translation id="8362125533493859258">engleski (Kanada)</translation>
 <translation id="8382450452152102026">U mapu <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimenzije</translation>
 <translation id="8437209419043462667">američka</translation>
@@ -698,28 +603,18 @@
 <translation id="8579285237314169903">Sinkronizacija ovoliko stavki: <ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Popis datoteka promijenio se na prikaz minijatura.</translation>
 <translation id="8601932370724196034">Slikovna datoteka Crostinija</translation>
-<translation id="8608272065177710825">Bugarski s fonetskom tipkovnicom</translation>
-<translation id="8619608420536266892">Tamilski s tipkovnicom Tamil99</translation>
-<translation id="863846969551842412">Kantonski</translation>
-<translation id="8669047053197791123">Tajlandski s tipkovnicom Pattachote</translation>
 <translation id="8669949407341943408">Premještanje...</translation>
-<translation id="8688649574682805922">Njemački (Švicarska)</translation>
-<translation id="8694836330346852143">urdski</translation>
 <translation id="8698464937041809063">Googleov crtež</translation>
 <translation id="8714406895390098252">Bicikl</translation>
 <translation id="8719721339511222681">Odabrana je stavka <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Hrvatski</translation>
-<translation id="8770002329960263418">nizozemski (Nizozemska) s američkom međunarodnom tipkovnicom za PC</translation>
 <translation id="8775404590947523323">Vaša se uređivanja spremaju automatski.<ph name="BREAKS" />Da biste zadržali kopiju izvorne slike, isključite oznaku opcije "Prebriši izvornik"</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Komprimiranje nije uspjelo, stavka postoji: "<ph name="FILE_NAME" />"</translation>
 <translation id="8834164572807951958">Članovi grupe "<ph name="DESTINATION_NAME" />" dobit će pristup kopiji tih stavki.</translation>
-<translation id="8846896937446866962">Mađarski s QWERTY tipkovnicom</translation>
 <translation id="8860454412039442620">Excelova proračunska tablica</translation>
 <translation id="8900820606136623064">Mađarski</translation>
 <translation id="8919081441417203123">Danski</translation>
-<translation id="8941776146379310519">malajski</translation>
-<translation id="8960999352790021682">bengalska tipkovnica (fonetska)</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
 <translation id="9017798300203431059">ruska (fonetska)</translation>
 <translation id="9034924485347205037">Linux datoteke</translation>
@@ -736,7 +631,6 @@
 <translation id="9131598836763251128">Odaberite jednu ili više datoteka</translation>
 <translation id="9133055936679483811">Komprimiranje nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">Ova je datoteka predviđena za računalo koje upotrebljava Macintosh softver. Nije kompatibilna s vašim uređajem na kojem se izvodi Chrome OS. Potražite odgovarajuću zamjensku aplikaciju u Chromeovoj web-trgovini.</translation>
-<translation id="913758436357682283">mjanmarska Myansan tipkovnica</translation>
 <translation id="9148058034647219655">Izlaz</translation>
 <translation id="9154418932169119429">Ova slika nije dostupna izvan mreže.</translation>
 <translation id="9213073329713032541">Instalacija je uspješno pokrenuta.</translation>

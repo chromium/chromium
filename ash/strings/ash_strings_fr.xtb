@@ -493,6 +493,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5673434351075758678">La langue utilisée est passée de "<ph name="FROM_LOCALE" />" à "<ph name="TO_LOCALE" />" après la synchronisation de vos paramètres.</translation>
+<translation id="5677928146339483299">Bloqué</translation>
 <translation id="5679050765726761783">Adaptateur basse consommation branché</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas disponible pour le compte utilisateur actuel.</translation>
 <translation id="5689633613396158040">Cette fonctionnalité facilite la lecture à l'écran lorsque l'éclairage est faible. Appuyez ici pour modifier l'heure à laquelle elle doit s'activer ou désactivez-la complètement.</translation>
@@ -691,6 +692,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7590883480672980941">Paramètres de saisie</translation>
 <translation id="7593891976182323525">Recherche ou Maj</translation>
 <translation id="7600875258240007829">Afficher toutes les notifications</translation>
+<translation id="7607002721634913082">Suspendu</translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Afficher les paramètres de partage à proximité.</translation>

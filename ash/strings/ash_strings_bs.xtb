@@ -494,6 +494,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5648021990716966815">Utičnica mikrofona</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5673434351075758678">Nakon sinhroniziranja postavki, jezik se promijenio iz jezika "<ph name="FROM_LOCALE" />" u jezik "<ph name="TO_LOCALE" />".</translation>
+<translation id="5677928146339483299">Blokirano</translation>
 <translation id="5679050765726761783">Povezan je adapter za napajanje male snage</translation>
 <translation id="5682642926269496722">Google Asistent nije dostupan za račun trenutnog korisnika.</translation>
 <translation id="5689633613396158040">Noćno svjetlo olakšava gledanje u ekran ili čitanje pod prigušenim svjetlom. Dodirnite da promijenite vrijeme uključivanja Noćnog svjetla ili ga isključite u potpunosti.</translation>
@@ -693,6 +694,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7590883480672980941">Postavke unosa</translation>
 <translation id="7593891976182323525">Tipka za pretraživanje ili Shift</translation>
 <translation id="7600875258240007829">Prikaži sva obavještenja</translation>
+<translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Vidite postavke Dijeljenja u blizini.</translation>

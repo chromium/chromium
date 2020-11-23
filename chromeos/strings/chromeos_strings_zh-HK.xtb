@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1018656279737460067">已取消</translation>
-<translation id="1071587090247825784">已偵測到防火牆</translation>
+<translation id="1071587090247825784">偵測到防火牆</translation>
 <translation id="1075811647922107217">頁面大小</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1204296502688602597">DNS 延遲時間</translation>
@@ -11,7 +11,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">依掃瞄區大小自動調整</translation>
 <translation id="1397738625398125236">可連線偵測的閘道</translation>
-<translation id="1398634363027580500">非常高的 HTTPS 延遲時間</translation>
+<translation id="1398634363027580500">HTTPS 延遲時間非常長</translation>
 <translation id="1413240736185167732">失敗 - 篩選器發生錯誤</translation>
 <translation id="1468664791493211953">優惠</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 會管理此裝置，並可能監察您的活動。</translation>
@@ -88,7 +88,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
 <translation id="467510802200863975">密碼不相符</translation>
-<translation id="467715984478005772">可疑的防火牆</translation>
+<translation id="467715984478005772">可能有防火牆</translation>
 <translation id="4691278870498629773">已停止 - 沒有紙匣</translation>
 <translation id="469379815867856270">訊號強度</translation>
 <translation id="4731797938093519117">家長存取</translation>
@@ -140,7 +140,7 @@
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6747215703636344499">已停止 - 輸出紙匣已滿</translation>
 <translation id="6766275201586212568">DNS 解析失敗</translation>
-<translation id="6768237774506518020">高 DNS 解析失敗率</translation>
+<translation id="6768237774506518020">DNS 解析失敗率高</translation>
 <translation id="6839141349259399400">無法連接至掃瞄器嗎？</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
@@ -150,7 +150,7 @@
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7648838807254605802">高 HTTPS 延遲時間</translation>
+<translation id="7648838807254605802">HTTPS 延遲時間長</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7805768142964895445">狀態</translation>

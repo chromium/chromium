@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">แสงตอนกลางคืน</translation>
 <translation id="2727175239389218057">ตอบ</translation>
 <translation id="2727977024730340865">เสียบอยู่กับที่ชาร์จพลังงานต่ำ การชาร์จแบตเตอรี่อาจไม่น่าเชื่อถือ</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt+ค้นหา</translation>
 <translation id="2819276065543622893">คุณจะออกจากระบบในตอนนี้</translation>
 <translation id="28232023175184696">เชื่อมต่ออินเทอร์เน็ตไม่ได้ คลิกเพื่อลองอีกครั้ง</translation>
@@ -493,6 +494,7 @@
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
 <translation id="5673434351075758678">เปลี่ยนจาก "<ph name="FROM_LOCALE" />" เป็น "<ph name="TO_LOCALE" />" หลังการซิงก์การตั้งค่า</translation>
+<translation id="5677928146339483299">ถูกบล็อก</translation>
 <translation id="5679050765726761783">เชื่อมต่ออะแดปเตอร์พลังงานต่ำแล้ว</translation>
 <translation id="5682642926269496722">Google Assistant ไม่พร้อมใช้งานกับบัญชีผู้ใช้ปัจจุบัน</translation>
 <translation id="5689633613396158040">แสงตอนกลางคืนช่วยให้มองหรืออ่านหน้าจอในแสงสลัวได้ง่ายขึ้น แตะเพื่อเปลี่ยนเวลาเปิดแสงตอนกลางคืนหรือจะปิดไปเลยก็ได้</translation>
@@ -563,6 +565,7 @@
 <translation id="6297287540776456956">ใช้สไตลัสเพื่อเลือกพื้นที่</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> หมุนเวียนเป็น <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">เสียง</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> เป็นเซสชันที่มีการจัดการซึ่งจัดการโดย <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">บลูทูธเปิดอยู่</translation>
 <translation id="6381109794406942707">ป้อน PIN เพื่อปลดล็อกอุปกรณ์</translation>
 <translation id="639644700271529076">CAPS LOCK ปิดอยู่</translation>
@@ -691,6 +694,7 @@
 <translation id="7590883480672980941">การตั้งค่าการป้อนข้อมูล</translation>
 <translation id="7593891976182323525">ค้นหาหรือ Shift</translation>
 <translation id="7600875258240007829">ดูการแจ้งเตือนทั้งหมด</translation>
+<translation id="7607002721634913082">หยุดชั่วคราว</translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">แสดงการตั้งค่าการแชร์ใกล้เคียง</translation>

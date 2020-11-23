@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">रात्रिकालीन प्रकाश</translation>
 <translation id="2727175239389218057">जवाफ दिनुहोस्</translation>
 <translation id="2727977024730340865">कम शक्ति भएको चार्जरमा प्लग इन गरिएको छ। ब्याट्री चार्जिङ भरपर्दो नहुन सक्छ।</translation>
+<translation id="2778650143428714839"><ph name="MANAGER" /> ले <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="2792498699870441125">Alt + खोज</translation>
 <translation id="2819276065543622893">तपाइँलाई अब साइन आउट गराइनेछ।</translation>
 <translation id="28232023175184696">इन्टरनेटमा कनेक्ट हुन सकेन। फेरि प्रयास गर्न क्लिक गर्नुहोस्।</translation>
@@ -493,6 +494,7 @@
 <translation id="5648021990716966815">माइकको ज्याक</translation>
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
 <translation id="5673434351075758678">तपाईंका सेटिङहरू सिंक पश्चात् "<ph name="TO_LOCALE" />" बाट "<ph name="FROM_LOCALE" />" मा परिवर्तन भएका छन्।</translation>
+<translation id="5677928146339483299">ब्लक गरिएको छ</translation>
 <translation id="5679050765726761783">न्यून पावर भएको एड्याप्टर जोडिएको छ</translation>
 <translation id="5682642926269496722">हालको प्रयोगकर्ताको खातामा Google सहायक उपलब्ध छैन।</translation>
 <translation id="5689633613396158040">रात्रि प्रकाशले मधुरो प्रकाशमा आफ्नो स्क्रिनमा हेर्न वा पढ्न अझ सजिलो बनाउँछ। रात्रि प्रकाश सक्रिय हुने समय परिवर्तन गर्न वा यसलाई पूर्ण रूपमा निष्क्रिय पार्न ट्याप गर्नुहोस्।</translation>
@@ -563,6 +565,7 @@
 <translation id="6297287540776456956">कुनै क्षेत्रलाई चयन गर्न स्टाइलसको प्रयोग गर्नुहोस्</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> लाई <ph name="ROTATION" /> मा घुमाइएको थियो</translation>
 <translation id="6315170314923504164">भ्वाइस</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> ले व्यवस्थापन गर्ने सत्र हो</translation>
 <translation id="6376931439017688372">ब्लुटुथ सक्रिय छ</translation>
 <translation id="6381109794406942707">यो यन्त्र अनलक गर्न आफ्नो PIN प्रविष्टि गर्नुहोस्।</translation>
 <translation id="639644700271529076">CAPS LOCK बन्द छ</translation>
@@ -691,6 +694,7 @@
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
 <translation id="7593891976182323525">सिफ्टको लागि खोज्नुहोस्</translation>
 <translation id="7600875258240007829">सबै सूचनाहरू हेर्नुहोस्</translation>
+<translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7618774594543487847">तटस्थ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">नजिकैका यन्त्रसँग सेयर गर्ने सुविधासम्बन्धी सेटिङ देखाउनुहोस्।</translation>

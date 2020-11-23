@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">HTTPS 지연 시간 매우 높음</translation>
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
 <translation id="1468664791493211953">혜택</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
 <translation id="1478594628797167447">스캐너</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" />에서 이 사용자를 관리하며 원격으로 설정을 관리하고 사용자 활동을 모니터링할 수 있습니다.</translation>
 <translation id="150962533380566081">잘못된 PUK입니다.</translation>
 <translation id="1510238584712386396">런처</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개)</translation>
 <translation id="1641857168437328880">서류 급지(단면)</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1662989795263954667">중지됨 - 잉크 부족</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">스캔 파일 저장 위치</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="4548483925627140043">신호를 찾을 수 없습니다.</translation>
+<translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 배터리</translation>
 <translation id="458794348635939462">모든 호스트를 확인할 수 없습니다.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> 인쇄 작업을 취소하려면 Enter를 누릅니다.</translation>
 <translation id="4646949265910132906">보안 Wi-Fi 연결</translation>
@@ -116,7 +120,7 @@
 <translation id="6048107060512778456">실패 - 용지 걸림</translation>
 <translation id="6050189528197190982">회색조</translation>
 <translation id="6058625436358447366">완료하려면 이전 및 새 비밀번호를 입력하세요.</translation>
-<translation id="6061772781719867950">HTTP 요청 실패함</translation>
+<translation id="6061772781719867950">HTTPS 요청 실패함</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
 <translation id="6108689792487843350">게이트웨이에 연결할 수 없습니다.</translation>
 <translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
@@ -138,8 +142,10 @@
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="6839141349259399400">스캐너에 연결할 수 없나요?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
 <translation id="714876143603641390">LAN 연결</translation>
 <translation id="7162487448488904999">갤러리</translation>
+<translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은 <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="7561454561030345039">관리자가 관리하는 작업입니다.</translation>

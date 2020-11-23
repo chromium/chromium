@@ -493,6 +493,7 @@
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5669267381087807207">啟用中</translation>
 <translation id="5673434351075758678">同步處理設定後，「<ph name="FROM_LOCALE" />」已變更為「<ph name="TO_LOCALE" />」。</translation>
+<translation id="5677928146339483299">已封鎖</translation>
 <translation id="5679050765726761783">已連接低功率電源變壓器</translation>
 <translation id="5682642926269496722">Google 助理不支援目前的使用者帳戶。</translation>
 <translation id="5689633613396158040">夜燈功能可讓你在光線昏暗的環境下更容易看清畫面內容或閱讀文字。輕觸即可變更夜燈的開啟時間，或完全關閉夜燈功能。</translation>
@@ -691,6 +692,7 @@
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
+<translation id="7607002721634913082">已暫停</translation>
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7633755430369750696">顯示鄰近分享設定。</translation>

@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1018656279737460067">Bekor qilindi</translation>
-<translation id="1071587090247825784">Fayrvol aniqlandi</translation>
+<translation id="1071587090247825784">Himoya devori aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1204296502688602597">DNS kechikishi</translation>
@@ -88,7 +88,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Chop etilishini bekor qilish uchun Enter tugmasini bosing.</translation>
 <translation id="4646949265910132906">Xavfsiz WiFi aloqasi</translation>
 <translation id="467510802200863975">Parollaringiz mos kelmadi</translation>
-<translation id="467715984478005772">Fayrvol muzlatildi</translation>
+<translation id="467715984478005772">Himoya devori aniqlandi</translation>
 <translation id="4691278870498629773">Toʻxtatildi - Tarnov joyida emas</translation>
 <translation id="469379815867856270">Signal darajasi</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>

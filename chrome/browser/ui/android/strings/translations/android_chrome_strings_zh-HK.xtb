@@ -626,7 +626,7 @@
 <translation id="5524843473235508879">已禁止重新導向。</translation>
 <translation id="5527082711130173040">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK1" />更新權限<ph name="END_LINK1" />。系統已<ph name="BEGIN_LINK2" />關閉此裝置<ph name="END_LINK2" />的位置存取權。</translation>
 <translation id="5530766185686772672">關閉無痕式分頁</translation>
-<translation id="5530920986376047241">您可將頁面儲存至閱讀清單，以便再次查看。</translation>
+<translation id="5530920986376047241">您可將頁面儲存至閱讀清單，以便再次查看</translation>
 <translation id="5534640966246046842">已複製網站</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5561549206367097665">正在等待網絡連線…</translation>
@@ -972,7 +972,7 @@
 <translation id="7772375229873196092">關閉 <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
 <translation id="7778840695157240389">請稍後回來查看新的報導</translation>
-<translation id="7786595606756654269">當您搜尋網絡及瀏覽已開啟網站時，「Google 助理」為您提供更好的語音體驗。系統會將您所在網站的網址及內容傳送給「Google 助理」。</translation>
+<translation id="7786595606756654269">當您搜尋網絡及瀏覽已開啟的網站時，「Google 助理」將為您提供更好的語音體驗。系統會將您所在網站的網址及內容傳送給「Google 助理」。</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">還原咗 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -998,7 +998,7 @@
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>
 <translation id="7963646190083259054">供應商：</translation>
 <translation id="7967911570373677897">如要掃瞄二維條碼，請在設定中允許 Chrome 使用攝錄機</translation>
-<translation id="7968014550143838305">已加入閣讀清單</translation>
+<translation id="7968014550143838305">已加入閱讀清單</translation>
 <translation id="7971136598759319605">曾於 1 天前在線</translation>
 <translation id="7975379999046275268">預覽網頁<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">預先載入網頁，以加快瀏覽和搜尋速度</translation>

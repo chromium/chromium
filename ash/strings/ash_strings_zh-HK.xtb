@@ -475,7 +475,7 @@
 <translation id="54609108002486618">受管理</translation>
 <translation id="5465662442746197494">需要協助嗎？</translation>
 <translation id="5496819745535887422">您的管理員正在回復裝置。所有資料將於裝置重新啟動後刪除。</translation>
-<translation id="5516420770350073386">由於螢幕上的內容，因此管理員已停止錄影螢幕畫面。</translation>
+<translation id="5516420770350073386">管理員因畫面上的內容，已停止錄影螢幕畫面。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="5532994612895037630">輕按任何一處即可錄影全螢幕畫面</translation>
@@ -494,6 +494,7 @@
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5669267381087807207">啟用</translation>
 <translation id="5673434351075758678">同步處理您的設定後，系統會將語言從「<ph name="FROM_LOCALE" />」改為「<ph name="TO_LOCALE" />」。</translation>
+<translation id="5677928146339483299">已封鎖</translation>
 <translation id="5679050765726761783">已連接低功率電源適配器</translation>
 <translation id="5682642926269496722">「Google 助理」不適用於目前的使用者帳戶。</translation>
 <translation id="5689633613396158040">「夜燈模式」讓您更易在光線昏暗的環境下觀看螢幕內容或閱讀。輕按即可變更「夜燈模式」的開啟時間，或完全關閉此功能。</translation>
@@ -693,6 +694,7 @@
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
+<translation id="7607002721634913082">已暫停</translation>
 <translation id="7618774594543487847">中性色調</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7633755430369750696">顯示「咫尺共享」設定。</translation>

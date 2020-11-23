@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">תאורת לילה</translation>
 <translation id="2727175239389218057">מענה</translation>
 <translation id="2727977024730340865">מחובר למטען בעל מתח נמוך. ייתכן שטעינת הסוללה לא תהיה אמינה.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> מנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">‏Alt + חיפוש</translation>
 <translation id="2819276065543622893">המערכת תוציא אותך עכשיו מהחשבון.</translation>
 <translation id="28232023175184696">לא ניתן להתחבר לאינטרנט. יש ללחוץ כדי לנסות שוב.</translation>
@@ -493,6 +494,7 @@
 <translation id="5648021990716966815">שקע מיקרופון</translation>
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5673434351075758678">מ"<ph name="FROM_LOCALE" />" ל"<ph name="TO_LOCALE" />" אחרי סנכרון ההגדרות.</translation>
+<translation id="5677928146339483299">חסום</translation>
 <translation id="5679050765726761783">המתאם שחיברת הוא בעל הספק נמוך</translation>
 <translation id="5682642926269496722">‏Google Assistant לא זמינה לחשבון המשתמש הנוכחי.</translation>
 <translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש להקיש כדי לשנות את השעה שבה מופעלת 'תאורת לילה' או כדי לכבות אותה לגמרי.</translation>
@@ -563,6 +565,7 @@
 <translation id="6297287540776456956">יש לבחור אזור באמצעות הסטיילוס</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> סובב אל <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">קול</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> הוא סשן מנוהל שמנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">‏Bluetooth פועל</translation>
 <translation id="6381109794406942707">כדי לבטל את הנעילה של המכשיר, יש להזין את קוד האימות.</translation>
 <translation id="639644700271529076">‏CAPS LOCK כבוי</translation>
@@ -693,6 +696,7 @@
 <translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7593891976182323525">‏חיפוש או Shift</translation>
 <translation id="7600875258240007829">הצגת כל ההתראות</translation>
+<translation id="7607002721634913082">ההורדה בהשהיה</translation>
 <translation id="7618774594543487847">ניטרלי</translation>
 <translation id="7624117708979618027">‎<ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">הצגה של הרשאות שיתוף בקרבת מקום.</translation>

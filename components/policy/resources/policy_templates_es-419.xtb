@@ -809,7 +809,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Esta política solo se puede establecer en la Consola del administrador de Google.</translation>
 <translation id="2358176879566587521">Se quita esta política. No es compatible con esta versión de <ph name="PRODUCT_NAME" />. Obtén más información en https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2364639863953745682">Modo de la experiencia de integración del Asistente</translation>
-<translation id="2384233438419344179">Si habilitas la política, los elementos de la página web que no sean del dominio especificado en la barra de direcciones del navegador no podrán establecer cookies. Si inhabilitas la política, esos elementos podrán establecer cookies y evitar que los usuarios cambien esta configuración.
+<translation id="2384233438419344179">Si habilitas la política, los elementos de la página web que no sean del dominio especificado en la barra de direcciones del navegador no podrán establecer cookies. Si inhabilitas la política, esos elementos podrán establecer cookies y los usuarios no podrán cambiar esta configuración.
 
       Si no la estableces, se activarán las cookies de terceros, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
@@ -2837,13 +2837,13 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá mostrar información de productos en pestaña completa.
 
       El establecimiento de esta política permite controlar la presentación de páginas de bienvenida que ayudan a los usuarios a acceder a <ph name="PRODUCT_NAME" />, elegir <ph name="PRODUCT_NAME" /> como navegador predeterminado o recibir información sobre funciones de productos.</translation>
-<translation id="544654037134815017">Esta política controla la visibilidad de las tarjetas en la página Nueva pestaña. Las tarjetas aparecen como puntos de entrada para iniciar trayectorias comunes de los usuarios en función de su comportamiento de navegación.
+<translation id="544654037134815017">Esta política controla la visibilidad de las tarjetas en la página Nueva pestaña. Las tarjetas proporcionan puntos de entrada para iniciar trayectorias comunes de los usuarios en función de su comportamiento de navegación.
 
-      Si habilitas la política, la página Nueva pestaña mostrará tarjetas cuando esté disponible el contenido.
+      Si habilitas la política, la página Nueva pestaña mostrará tarjetas si hay contenido disponible.
 
       Si la inhabilitas, la página Nueva pestaña no mostrará tarjetas.
 
-      Si no la estableces, usuario podrá controlar la visibilidad de las tarjetas. El valor predeterminado es visible.
+      Si no la estableces, el usuario podrá controlar la visibilidad de las tarjetas. Las tarjetas son visibles de forma predeterminada.
       </translation>
 <translation id="5457065417344056871">Habilitar modo de invitado en el navegador</translation>
 <translation id="5457387982448145430">Si habilitas la política, se importarán las contraseñas guardadas del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importarán las contraseñas guardadas en la primera ejecución.
@@ -3144,7 +3144,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si inhabilitas la política o no la estableces y hay conflicto con la política de la nube, tendrá prioridad la política de la plataforma.
 
-      Esta política obligatoria afecta las políticas de la nube que tengan alcance en la máquina.</translation>
+      Esta política obligatoria afecta las políticas de la nube para esta máquina.</translation>
 <translation id="5961137303188584693">Dirección MAC para el NIC integrado del dispositivo</translation>
 <translation id="5966615072639944554">Extensiones que tienen permitido utilizar la API de atestación remota</translation>
 <translation id="5975765799383881158">Si habilitas la política o no la estableces, los usuarios podrán enviar comentarios a Google desde Menú &gt; Ayuda &gt; Informar un problema o la combinación de teclas correspondiente.
@@ -3351,7 +3351,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       </translation>
 <translation id="6313170479290171718">Esta política dejó de estar disponible. En su lugar, utiliza <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
-      Si estableces el valor True para la política, se activará el teclado en pantalla para el acceso. Si estableces el valor False, se desactivará el teclado en pantalla para el acceso.
+      Si estableces la política como verdadera, se activará el teclado en pantalla para el acceso. Si la estableces como falsa, se desactivará el teclado en pantalla para el acceso.
 
       Si estableces la política, los usuarios podrán activar o desactivar el teclado en pantalla de forma temporal. Cuando la pantalla de acceso se actualice o permanezca inactiva durante un minuto, el teclado se revertirá a su estado original.
 
@@ -3503,7 +3503,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si no la estableces o estableces Dejar que los usuarios decidan o None, los usuarios podrán administrar la detección automática de la zona horaria mediante los controles normales que se encuentran en chrome://settings.</translation>
 <translation id="6532769014584932288">Permitir bloqueos de activación</translation>
-<translation id="6536444379078076149">Habilita o inhabilita la visualización de la IU relacionada con la conexión en el escritorio host cuando hay una conexión activa.</translation>
+<translation id="6536444379078076149">Habilita o inhabilita la visualización de la IU relacionada con la conexión en el escritorio host cuando hay una conexión activa</translation>
 <translation id="6536600139108165863">Reinicio automático cuando se apaga el dispositivo</translation>
 <translation id="6539246272469751178">Esta política no tiene efecto en las apps de Android. Estas apps siempre usan el directorio de descargas predeterminado y no pueden acceder a ningún archivo que haya descargado <ph name="PRODUCT_OS_NAME" /> en un directorio de descargas no predeterminado.</translation>
 <translation id="654303922206238013">Estrategia de migración para eCryptfs</translation>
@@ -4203,7 +4203,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si el DTC wilco está disponible en el dispositivo indicado, y se establece la política como verdadera, se activará la recopilación, procesamiento y envío de estos datos.</translation>
 <translation id="7519251620064708155">Permitir la generación de claves en estos sitios</translation>
 <translation id="7529144158022474049">Actualizar de forma automática el factor de dispersión</translation>
-<translation id="7529332889403151669">Especifica si debe mostrarse la alerta de pantalla completa cuando el dispositivo estaba suspendido o con la pantalla apagada.
+<translation id="7529332889403151669">Especifica si debe mostrarse la alerta de pantalla completa cuando el dispositivo salga de un modo de suspensión o pantalla oscura.
 
       Si no estableces la política o la estableces como verdadera, se mostrará una alerta para recordar a los usuarios que deben salir de la pantalla completa antes de ingresar la contraseña. Si la estableces como falsa, no se mostrarán alertas.</translation>
 <translation id="7529963829662387349">Si estableces la política, los usuarios podrán elegir uno de los métodos de entrada (diseños de teclado) para las sesiones de <ph name="PRODUCT_OS_NAME" /> que especifiques.
@@ -4213,7 +4213,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Nota: Si el método de entrada actual no es compatible, este cambiará al diseño de teclado del hardware (si se permite) o a la primera entrada válida de la lista. Se ignorarán los métodos no válidos o no compatibles.</translation>
 <translation id="7534199150025803530">Esta política no tiene efecto en la app de Google Drive de Android. Si quieres evitar el uso de Google Drive con conexiones móviles, debes inhabilitar la instalación de su app.</translation>
 <translation id="7540622499178214923">Permite el controlador de telemetría y diagnósticos wilco</translation>
-<translation id="7540826630642174841">Si estableces la política, se ignorarán las políticas de dispositivo especificadas durante los intervalos especificados. En su lugar, se utilizará la configuración predeterminada de estas políticas. <ph name="PRODUCT_NAME" /> volverá a aplicar las políticas de dispositivo cuando comience o finalice el período de la política. El usuario recibe una notificación y sale de su cuenta de manera automática cuando cambia este período y se modifica la configuración de la política de dispositivo (p. ej., cuando un usuario accede con una cuenta no permitida).</translation>
+<translation id="7540826630642174841">Si estableces la política, se ignorarán las políticas de dispositivo especificadas durante los intervalos determinados. En su lugar, se utilizará la configuración predeterminada de estas políticas. <ph name="PRODUCT_NAME" /> volverá a aplicar las políticas de dispositivo cuando comience o finalice el período de la política. El usuario recibe una notificación y se le obliga a salir de su cuenta de manera automática cuando cambia este período y se modifica la configuración de las políticas de dispositivo (p. ej., cuando un usuario accede con una cuenta no permitida).</translation>
 <translation id="7547549430720182663">Combinar</translation>
 <translation id="7553535237300701827">Según el valor que se establezca para esta política, el flujo de autenticación de acceso será una de las siguientes opciones:
 
@@ -4653,7 +4653,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8179161412673077784">Impide que los sitios que brindan experiencias abusivas abran ventanas o pestañas nuevas</translation>
 <translation id="8183108371184777472">Impide la ejecución de la ventana del navegador</translation>
 <translation id="8186911565834244165">Permite que los usuarios hagan comentarios</translation>
-<translation id="8195133650230097559">Ignora las solicitudes para los bloqueos de activación para la administración de energía</translation>
+<translation id="8195133650230097559">Ignora las solicitudes de bloqueo de activación para la administración de energía</translation>
 <translation id="8196558469954193908">Esta política permite la integración de la conexión HTTP/2 cuando se usan los certificados de cliente. Para lograr la integración, el nombre de host de la nueva conexión potencial y el de la conexión existente deben coincidir con uno o más patrones descritos en esta política, que está compuesta por una lista de hosts con el siguiente formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" coincide con "example.com" y todos los subdominios (p. ej. "sub.example.com"), mientras que ".example.net" coincide exactamente con "example.net".
 
       Las solicitudes de integración a diferentes hosts mediante conexiones que usan certificados de cliente pueden generar problemas de seguridad y privacidad, dado que la autoridad se manifestará para todas las solicitudes, incluso si el usuario no lo permitió de forma explícita. Esta política es temporal y se quitará en futuras actualizaciones. Consulta https://crbug.com/855690.
@@ -4815,7 +4815,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si se establece esta política como verdadera o no se establece, el usuario tendrá acceso con permisos de administrador a los contenedores de Crostini.
       Si se establece como falsa, el usuario no tendrá acceso con permisos de administrador a ningún contenedor de Crostini, ya sea nuevo o existente.</translation>
-<translation id="8415953438346821074">Si habilitas esta configuración, los datos almacenados en los perfiles de <ph name="PRODUCT_NAME" />, como los favoritos, los datos de Autocompletar, las contraseñas, etc. también se guardarán en un archivo almacenado en la carpeta de perfil del usuario Roaming o una ubicación que el administrador especifique mediante la política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Si habilitas esta política, se inhabilitará la sincronización en la nube.
+<translation id="8415953438346821074">Si habilitas esta opción, la configuración almacenada en los perfiles de <ph name="PRODUCT_NAME" /> (como los favoritos, los datos de Autocompletar, las contraseñas, etc.) también se guardará en un archivo en la carpeta Roaming del perfil del usuario o en una ubicación que el administrador especifique mediante la política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Si habilitas esta política, se inhabilitará la sincronización en la nube.
 
       Si inhabilitas la política o no la estableces, solo se usarán los perfiles locales comunes.</translation>
 <translation id="8417305981081876834">Establecer la longitud máxima del PIN de pantalla bloqueada</translation>

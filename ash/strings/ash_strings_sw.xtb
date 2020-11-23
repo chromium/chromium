@@ -238,6 +238,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3236488194889173876">Mtandao wa simu haupatikani</translation>
 <translation id="3249513730522716925">Dirisha la <ph name="WINDOW_TITLE" /> limehamishwa kutoka Kiolesura cha <ph name="ACTIVE_DESK" /> hadi Kiolesura cha <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Unaweza kufanya nini?</translation>
+<translation id="3269597722229482060">Bofya Kulia</translation>
 <translation id="3289674678944039601">Inachaji kupitia adapta</translation>
 <translation id="3290356915286466215">Haulindwi</translation>
 <translation id="3294437725009624529">Mgeni</translation>
@@ -340,6 +341,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4212472694152630271">Tumia PIN</translation>
 <translation id="4215497585250573029">Mipangilio ya VPN</translation>
 <translation id="4217571870635786043">Kuandika kwa kutamka</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, Programu Iliyosakinishwa, Imesitishwa</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Picha ya skrini</translation>
 <translation id="425364040945105958">Hakuna SIM</translation>
@@ -494,6 +496,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5648021990716966815">Pini ya maikrofoni</translation>
 <translation id="5669267381087807207">Inawashwa</translation>
 <translation id="5673434351075758678">Imebadalisha lugha kutoka "<ph name="FROM_LOCALE" />" kuwa "<ph name="TO_LOCALE" />" baada ya kusawazisha mipangilio yako.</translation>
+<translation id="5677928146339483299">Kumezuiwa</translation>
 <translation id="5679050765726761783">Umeunganisha adapta inayotumia kiwango cha chini cha nguvu za umeme</translation>
 <translation id="5682642926269496722">Programu ya Mratibu wa Google haipatikani katika akaunti ya mtumiaji wa sasa.</translation>
 <translation id="5689633613396158040">Mwanga wa Usiku hufanya uangalie skrini yako au usome katika mwangaza hafifu kwa urahisi. Gusa ili ubadilishe saa ambapo Mwanga wa Usiku huwashwa au uuzime kabisa.</translation>
@@ -694,6 +697,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7590883480672980941">Mipangilio ya kuweka data</translation>
 <translation id="7593891976182323525">Utafutaji au Hama</translation>
 <translation id="7600875258240007829">Angalia arifa zote</translation>
+<translation id="7607002721634913082">Imepumzishwa</translation>
 <translation id="7618774594543487847">Wastani</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Onyesha mipangilio ya kipengele cha Uhamishaji wa Karibu.</translation>
@@ -760,6 +764,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8142699993796781067">Mtandao binafsi</translation>
 <translation id="8152092012181020186">Bonyeza Ctrl + W ili ufunge.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Mipangilio hii inadhibitiwa na msimamizi wako.</translation>
+<translation id="8155628902202578800">Fungua kidirisha cha maelezo cha <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Unatumia <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Mtandao wa simu. Uthabiti wa mtandao wa <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Arifa zimefichwa.</translation>
@@ -825,6 +830,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8755498163081687682">Thibitisha utambulisho wako: <ph name="ORIGIN_NAME" /> ingependa kuthibitisha kwamba ni wewe</translation>
 <translation id="875593634123171288">Onyesha mipangilio ya VPN</translation>
 <translation id="8759408218731716181">Haiwezi kusanida uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, Programu Iliyosakinishwa, Imezuiwa</translation>
 <translation id="8785070478575117577">Unganisha kwenye <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

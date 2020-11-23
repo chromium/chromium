@@ -4528,7 +4528,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6268252012308737255">Ireki <ph name="APP" /> aplikazioan</translation>
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>
 <translation id="6270770586500173387">Bidali <ph name="BEGIN_LINK1" />sistemari eta aplikazioei buruzko informazioa<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />estatistikak<ph name="END_LINK2" /></translation>
-<translation id="6271348838875430303">zuzenketa desegin da</translation>
+<translation id="6271348838875430303">desegin da zuzenketa</translation>
 <translation id="6272643420381259437">Errore bat gertatu da (<ph name="ERROR" />) plugina deskargatzean</translation>
 <translation id="6273677812470008672">Kalitatea</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proxyak erabiltzaile-izena eta pasahitza behar ditu.</translation>
@@ -7122,7 +7122,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="971774202801778802">Laster-markaren URLa</translation>
 <translation id="973473557718930265">Irten</translation>
 <translation id="975893173032473675">Itzulpenaren xede-hizkuntza</translation>
-<translation id="976499800099896273">Zuzentzaile automatikoaren aldaketa desegiteko leihoa ageri da, <ph name="TYPED_WORD" /> hitzaren ordez <ph name="CORRECTED_WORD" /> idatzi delako.  Sakatu Gora gezi-tekla hura atzitzeko edo Ihes tekla hari ez ikusi egiteko.</translation>
+<translation id="976499800099896273">Zuzentzaile automatikoaren aldaketa desegiteko leihoa ageri da, "<ph name="TYPED_WORD" />" hitzaren ordez "<ph name="CORRECTED_WORD" />" idatzi delako.  Sakatu Gora gezi-tekla hura atzitzeko edo Ihes tekla hari ez ikusi egiteko.</translation>
 <translation id="978146274692397928">Hasiera puntuazioaren zabalera osoa da</translation>
 <translation id="97905529126098460">Bertan behera uzteko prozesua amaitzen denean itxiko da leihoa.</translation>
 <translation id="980731642137034229">Ekintza-menuaren botoia</translation>

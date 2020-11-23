@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Get Google smarts in Chrome</translation>
 <translation id="1147322039136785890">Now it's <ph name="SUPERVISED_USER_NAME" />'s turn</translation>
 <translation id="1147991416141538220">To ask for access, contact the administrator of this device.</translation>
+<translation id="1148063863818152153">Your device EID</translation>
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1149725087019908252">Scanning <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">This is the last automatic software and security update for this <ph name="DEVICE_TYPE" />. To get future updates, upgrade to a newer model. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -314,6 +315,7 @@
 <translation id="1343865611738742294">Give Linux apps permission to access USB devices. Linux won't remember a USB device after it's removed.</translation>
 <translation id="1346630054604077329">Confirm and restart</translation>
 <translation id="1347256498747320987">Install updates &amp; apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Linux storage</translation>
 <translation id="1347975661240122359">Update will begin when battery reaches <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Can’t find PPD. Make sure that your Chromebook is online and try again.</translation>
@@ -555,6 +557,7 @@
 <translation id="1608668830839595724">More actions for selected items</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Your device is locked</translation>
+<translation id="1612019740169791082">Your container is not configured to support disk resizes. To adjust the amount of space that is reserved for Linux, back up and then restore into a new container.</translation>
 <translation id="1614511179807650956">You may have used up your mobile data allowance. Visit the <ph name="NAME" /> activation portal to buy more data</translation>
 <translation id="161460670679785907">Unable to detect your phone</translation>
 <translation id="1616206807336925449">This extension requires no special permissions.</translation>
@@ -689,6 +692,7 @@
 <translation id="175772926354468439">Enable theme</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">View in Chrome Web Store</translation>
+<translation id="1761845175367251960"><ph name="NAME" />'s accounts</translation>
 <translation id="176193854664720708">The fingerprint sensor is in the power button. Touch it lightly with any finger.</translation>
 <translation id="1763046204212875858">Create application shortcuts</translation>
 <translation id="1763808908432309942">Opens in a new tab</translation>
@@ -898,6 +902,7 @@
 <translation id="1999115740519098545">On start-up</translation>
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="2002109485265116295">Real-time</translation>
+<translation id="200217416291116199">Backing up files is recommended in case the upgrade cannot be completed. Starting the upgrade will cause Linux to shut down. Please save open files before proceeding.</translation>
 <translation id="2003130567827682533">To activate '<ph name="NAME" />' data, first connect to a Wi-Fi network</translation>
 <translation id="2005199804247617997">Other profiles</translation>
 <translation id="2006638907958895361">Open Link in <ph name="APP" /></translation>
@@ -1609,6 +1614,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2807517655263062534">Files you download appear here</translation>
 <translation id="2809586584051668049">and <ph name="NUMBER_ADDITIONAL_DISABLED" /> more</translation>
 <translation id="2810390687497823527">If you don't recognise an extension, or if your browser isn't working as expected, you can turn off or customise extensions here.</translation>
+<translation id="2811205483104563968">Accounts</translation>
 <translation id="2812049959647166806">Thunderbolt is not supported</translation>
 <translation id="2812989263793994277">Do not show any images</translation>
 <translation id="2813094189969465044">Parental controls</translation>
@@ -1647,6 +1653,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2858138569776157458">Top sites</translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
+<translation id="2862815659905780618">Remove Linux development environment</translation>
 <translation id="2864601841139725659">Set your profile picture</translation>
 <translation id="2865919525181940183">Screenshot of programs that are currently on the screen</translation>
 <translation id="286674810810214575">Checking power sources…</translation>
@@ -1760,6 +1767,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2989123969927553766">Mouse scroll acceleration</translation>
 <translation id="2989474696604907455">not attached</translation>
 <translation id="2989786307324390836">DER-encoded binary, single certificate</translation>
+<translation id="2990313168615879645">Add Google Account</translation>
 <translation id="2992931425024192067">Show all notification content</translation>
 <translation id="2993517869960930405">App Info</translation>
 <translation id="2996286169319737844">Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.</translation>
@@ -2371,6 +2379,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3706463572498736864">Pages per sheet</translation>
 <translation id="370649949373421643">Enable Wi-Fi</translation>
 <translation id="370665806235115550">Loading...</translation>
+<translation id="3707163604290651814">Currently signed in as <ph name="NAME" /></translation>
 <translation id="3709244229496787112">The browser was shut down before the download completed.</translation>
 <translation id="3711931198657368127">Paste and go to <ph name="URL" /></translation>
 <translation id="3711945201266135623">Found <ph name="NUM_PRINTERS" /> printers from the print server</translation>
@@ -2877,6 +2886,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
 <translation id="4310139701823742692">File is in the wrong format. Check the PPD file and try again.</translation>
 <translation id="431076611119798497">&amp;Details</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Google Account}other{<ph name="EXTRA_ACCOUNTS" /> Google Accounts}}</translation>
 <translation id="4312866146174492540">Block (default)</translation>
 <translation id="4314815835985389558">Manage sync</translation>
 <translation id="4316850752623536204">Developer Website</translation>
@@ -3256,6 +3266,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4764368918650455114">Make sure that both devices are unlocked, close together and have Bluetooth turned on. If you’re sharing with a Chromebook, make sure that it has Nearby Sharing turned on (open the status area by selecting the time, then select Nearby Share). <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Allows Android Messages to relay texts from your phone to your Chromebook</translation>
 <translation id="4768332406694066911">You have certificates from these organisations that identify you</translation>
+<translation id="4773112038801431077">Upgrade Linux</translation>
 <translation id="477647109558161443">Create a desktop shortcut</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3749,6 +3760,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5368720394188453070">Your phone is locked. Unlock it to enter.</translation>
 <translation id="5368779022775404937">Sign in to <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Enable mouse acceleration</translation>
+<translation id="5369694795837229225">Set up Linux development environment</translation>
 <translation id="5370819323174483825">&amp;Reload</translation>
 <translation id="5372529912055771682">The supplied enrolment mode is not supported by this version of the operating system. Please make sure you are running the newest version and try again.</translation>
 <translation id="5372579129492968947">Unpin extension</translation>
@@ -4473,6 +4485,8 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6212168817037875041">Turn off display</translation>
 <translation id="6212752530110374741">Email Link</translation>
 <translation id="6213230117190778270">Receive</translation>
+<translation id="6215620815501168899">Close EID and QR code pop-up</translation>
+<translation id="6216601812881225442">Your container doesn't support being resized. To adjust the amount of space that is pre-allocated to Linux, back up and then restore into a new container.</translation>
 <translation id="6216696360484424239">Sign in automatically</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> is offline. Connect to the Internet and try again.</translation>
 <translation id="6220413761270491930">Error Loading Extension</translation>
@@ -4865,6 +4879,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Rate</translation>
 <translation id="6681668084120808868">Take photo</translation>
+<translation id="6683948477137300040">Show device EID and QR code pop-up</translation>
 <translation id="6684827949542560880">Downloading the latest update</translation>
 <translation id="668599234725812620">Open Google Play</translation>
 <translation id="6686490380836145850">Close tabs to the right</translation>
@@ -5100,6 +5115,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6955535239952325894">This setting is disabled on managed browsers</translation>
 <translation id="6957044667612803194">This security key doesn’t support PINs</translation>
 <translation id="6957231940976260713">Service name</translation>
+<translation id="6960507406838246615">Linux update required</translation>
 <translation id="696103774840402661">All files and local data for all users on this <ph name="DEVICE_TYPE" /> has been permanently deleted.</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remove From Group</translation>
@@ -5119,6 +5135,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="697312151395002334">Allowed to send pop-ups and use redirects</translation>
 <translation id="6973611239564315524">An upgrade to Debian 10 (Buster) is available</translation>
 <translation id="6974609594866392343">Offline demo mode</translation>
+<translation id="697508444536771064">Shut down Linux</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
 <translation id="6977877318519394148">Install Rosetta</translation>
 <translation id="6978121630131642226">Search Engines</translation>
@@ -5519,6 +5536,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7443806024147773267">Access your passwords whenever you're signed in to your Google account</translation>
 <translation id="7444983668544353857">Disable <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Automatically install apps</translation>
+<translation id="7448538354405258275">A customer service rep can use the EID number to help you activate the service.</translation>
 <translation id="7449752890690775568">Remove password?</translation>
 <translation id="7450761244949417357">Opening in <ph name="ALTERNATIVE_BROWSER_NAME" /> now</translation>
 <translation id="7453008956351770337">By selecting this printer, you are giving the following extension the permission to access your printer:</translation>
@@ -6048,6 +6066,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8032244173881942855">Unable to cast tab.</translation>
 <translation id="8033827949643255796">selected</translation>
 <translation id="8033958968890501070">Time out</translation>
+<translation id="8036049989879571495">Set up Linux development environment (beta)</translation>
 <translation id="8037117027592400564">Read all text spoken using synthesised speech</translation>
 <translation id="8037357227543935929">Ask (default)</translation>
 <translation id="803771048473350947">File</translation>
@@ -6974,6 +6993,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="909108997331068008"><ph name="EXISTING_USER" />'s profile is already signed in to <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Update password</translation>
 <translation id="9094038138851891550">Username invalid</translation>
+<translation id="9094859731829297286">Are you sure that you want to reserve a fixed-size disk for Linux?</translation>
 <translation id="9094982973264386462">Remove</translation>
 <translation id="9095253524804455615">Remove</translation>
 <translation id="909554839118732438">Close Incognito</translation>

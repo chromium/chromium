@@ -494,6 +494,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5648021990716966815">Fisha e mikrofonit</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5673434351075758678">Nga "<ph name="FROM_LOCALE" />" në "<ph name="TO_LOCALE" />" pas sinkronizimit të cilësimeve të tua.</translation>
+<translation id="5677928146339483299">Të bllokuara</translation>
 <translation id="5679050765726761783">Është lidhur një përshtatës me fuqi të ulët</translation>
 <translation id="5682642926269496722">"Asistenti i Google" nuk ofrohet për llogarinë aktuale të përdoruesit.</translation>
 <translation id="5689633613396158040">"Drita e natës" e bën më të lehtë shikimin e ekranit ose leximin në dritë të zbehtë. Trokit për të ndryshuar se kur aktivizohet ose çaktivizohet plotësisht "Drita e natës".</translation>
@@ -541,7 +542,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6043212731627905357">Ky monitor nuk po përshtatet me pajisjen tënde <ph name="DEVICE_TYPE" /> (monitori nuk mbështetet).</translation>
 <translation id="6043994281159824495">Dil tani</translation>
 <translation id="6047696787498798094">Ndarja e ekranit do të ndalojë kur të kalosh te një përdorues tjetër. Dëshiron që të vazhdosh?</translation>
-<translation id="6054305421211936131">Identifikohu me kartën inteligjente</translation>
+<translation id="6054305421211936131">Identifikohu me kartën smart</translation>
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
 <translation id="6062360702481658777">Do të dalësh automatikisht për <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Kompjuteri është i zbulueshëm për pajisjet me Bluetooth në afërsi dhe do të shfaqet si "<ph name="NAME" />" me adresën <ph name="ADDRESS" /></translation>
@@ -580,7 +581,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6459472438155181876">Po zgjeron ekranin në <ph name="DISPLAY_NAME" /></translation>
 <translation id="6482559668224714696">Zmadhuesi në ekran të plotë</translation>
 <translation id="6490471652906364588">Pajisja USB-C (porta djathtas)</translation>
-<translation id="649452524636452238">Kodi PIN i kartës inteligjente</translation>
+<translation id="649452524636452238">Kodi PIN i kartës smart</translation>
 <translation id="6501401484702599040">Po transmeton ekranin te <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Zgjidh një dritare për të regjistruar</translation>
 <translation id="652139407789908527">Ekrani yt do të jetë bosh për një kohë më të gjatë se zakonisht (deri në një minutë) gjatë këtij përditësimi. Mos e shtyp butonin e energjisë kur përditësimi është në vazhdim.</translation>
@@ -628,7 +629,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6886172995547742638">Pajisja jote <ph name="DEVICE_TYPE" /> mund të ketë një cilësi funksionimi më të ulët. Përdor një përshtatës elektrik të certifikuar të tipit USB-C me fuqi <ph name="PREFERRED_MINIMUM_POWER" /> W ose më shumë.</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6910714959251846841">Ky përditësim kërkon spastrim rrënjësor të pajisjes tënde. Mëso më shumë për përditësimin e fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
-<translation id="6919251195245069855">Karta inteligjente nuk mund të njihej. Provo përsëri.</translation>
+<translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6972754398087986839">Fillo</translation>
@@ -693,6 +694,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
 <translation id="7593891976182323525">Kërko ose Shift</translation>
 <translation id="7600875258240007829">Shiko të gjitha njoftimet</translation>
+<translation id="7607002721634913082">Ndërprerë</translation>
 <translation id="7618774594543487847">Neutrale</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi".</translation>

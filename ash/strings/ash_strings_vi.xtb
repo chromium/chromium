@@ -493,6 +493,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
 <translation id="5669267381087807207">Đang kích hoạt</translation>
 <translation id="5673434351075758678">Từ "<ph name="FROM_LOCALE" />" sang "<ph name="TO_LOCALE" />" sau khi đồng bộ hóa cài đặt của bạn.</translation>
+<translation id="5677928146339483299">Bị chặn</translation>
 <translation id="5679050765726761783">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="5682642926269496722">Tài khoản người dùng hiện tại chưa hỗ trợ Trợ lý Google.</translation>
 <translation id="5689633613396158040">Chế độ Ánh sáng đêm giúp bạn cảm thấy dễ chịu khi nhìn màn hình hoặc đọc trong điều kiện ánh sáng yếu. Hãy nhấn để thay đổi thời gian bật hoặc tắt hoàn toàn chế Ánh sáng đêm.</translation>
@@ -691,6 +692,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7590883480672980941">Cài đặt phương thức nhập</translation>
 <translation id="7593891976182323525">Search hoặc Shift</translation>
 <translation id="7600875258240007829">Xem tất cả thông báo</translation>
+<translation id="7607002721634913082">Đã tạm dừng</translation>
 <translation id="7618774594543487847">Trung tính</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">Hiện tùy chọn cài đặt Chia sẻ lân cận.</translation>

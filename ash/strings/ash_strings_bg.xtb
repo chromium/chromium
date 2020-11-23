@@ -494,6 +494,7 @@
 <translation id="5648021990716966815">Жак за микрофон</translation>
 <translation id="5669267381087807207">Активира се</translation>
 <translation id="5673434351075758678">От <ph name="FROM_LOCALE" /> към <ph name="TO_LOCALE" /> след синхронизиране на настройките ви.</translation>
+<translation id="5677928146339483299">Блокирано</translation>
 <translation id="5679050765726761783">Свързан е захранващ адаптер с малка мощност</translation>
 <translation id="5682642926269496722">Google Асистент не се поддържа за текущия профил на потребител.</translation>
 <translation id="5689633613396158040">Функцията „Нощно осветление“ облекчава гледането на екрана и улеснява четенето при слаба светлина. Докоснете, за да изберете кога да се включва функцията или да я изключите напълно.</translation>
@@ -693,6 +694,7 @@
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7593891976182323525">„търсене“ или „Shift“</translation>
 <translation id="7600875258240007829">Преглед на всички известия</translation>
+<translation id="7607002721634913082">На пауза</translation>
 <translation id="7618774594543487847">Неутрален</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Показване на настройките на „Споделяне наблизо“.</translation>

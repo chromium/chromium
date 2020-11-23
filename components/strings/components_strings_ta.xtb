@@ -1243,6 +1243,7 @@
 <translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> இன் அசல் கொள்கையின்படி தடுக்கப்பட்டுள்ளது.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ஒத்திசைக்கப்பட்டது)</translation>
+<translation id="5913377024445952699">ஸ்கிரீன்ஷாட் எடுப்பது இடைநிறுத்தப்பட்டது</translation>
 <translation id="59174027418879706">இயக்கப்பட்டது</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">இயக்கப்பட்டுள்ளது</translation>
@@ -1915,6 +1916,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">பொருந்தும் கடவுச்சொற்கள் எதுவுமில்லை. சேமித்த எல்லாக் கடவுச்சொற்களையும் பார்க்கவும்.</translation>
 <translation id="8625384913736129811">இந்தச் சாதனத்தில் கார்டைச் சேமி</translation>
+<translation id="8627040765059109009">ஸ்கிரீன்ஷாட் எடுப்பது மீண்டும் தொடங்கப்பட்டது</translation>
 <translation id="8657078576661269990">கிளிப்போர்டிலுள்ள தரவை <ph name="ORIGIN_NAME" /> என்பதிலிருந்து <ph name="VM_NAME_1" />, <ph name="VM_NAME_2" /> ஆகியவற்றுக்குப் பகிர்வதை உங்கள் நிர்வாகி தடுத்துள்ளார்</translation>
 <translation id="8663226718884576429">ஆர்டர் சுருக்கம், <ph name="TOTAL_LABEL" />, மேலும் விவரங்கள்</translation>
 <translation id="867224526087042813">கையொப்பம்</translation>
@@ -2059,7 +2061,7 @@
 <translation id="9207861905230894330">கட்டுரையைச் சேர்ப்பதில் தோல்வி.</translation>
 <translation id="9213433120051936369">தோற்றத்தைத் தனிப்பயனாக்குங்கள்</translation>
 <translation id="9215416866750762878">இந்தத் தளத்துடன் Chrome பாதுகாப்பாக இணைவதை, ஆப்ஸ் தடுக்கிறது</translation>
-<translation id="9219103736887031265">படங்கள்</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">படிவத்தை அழி</translation>
 <translation id="936474030629450166">Super-B</translation>
