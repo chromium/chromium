@@ -2241,7 +2241,7 @@ void QuicChromiumClientSession::OnProbeSucceeded(
 
   // Notify the connection that migration succeeds after probing.
   if (connection()->IsPathDegrading())
-    connection()->OnSuccessfulMigrationAfterProbing();
+    connection()->OnSuccessfulMigration();
 
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_AFTER_PROBING,

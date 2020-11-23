@@ -285,7 +285,8 @@ void QuicTransportClient::CreateConnection() {
 
   session_ = std::make_unique<quic::QuicTransportClientSession>(
       connection_.get(), this, InitializeQuicConfig(*quic_context_->params()),
-      supported_versions_, url_, &crypto_config_, origin_, this);
+      supported_versions_, url_, &crypto_config_, origin_, this,
+      /*datagram_observer=*/nullptr);
 
   packet_reader_ = std::make_unique<QuicChromiumPacketReader>(
       socket_.get(), quic_context_->clock(), this, kQuicYieldAfterPacketsRead,
