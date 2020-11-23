@@ -132,8 +132,6 @@ class MODULES_EXPORT VideoEncoder final
 
   void ResetInternal();
   ScriptPromiseResolver* MakePromise();
-  void ResolvePromise(Request* req);
-  void RejectPromise(Request* req, DOMException* ex = nullptr);
 
   ParsedConfig* ParseConfig(const VideoEncoderConfig*, ExceptionState&);
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&);
@@ -168,12 +166,9 @@ class MODULES_EXPORT VideoEncoder final
   // an operation and its callback.
   uint32_t reset_count_ = 0;
 
-  // Number of not resolved/rejected promises created by this VideoEncoder.
-  uint32_t outstanding_promises_ = 0;
-
   // Some kConfigure and kFlush requests can't be executed in parallel with
   // kEncode. This flag stops processing of new requests in the requests_ queue
-  // till the current requests is finished.
+  // till the current requests are finished.
   bool stall_request_processing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
