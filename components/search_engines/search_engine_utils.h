@@ -11,8 +11,8 @@ class GURL;
 
 namespace SearchEngineUtils {
 
-// Like the above, but takes a GURL which is expected to represent a search URL.
-// This may be called on any thread.
+// Takes a GURL and returns the matching enum if it matches the URL of a
+// well-known search engine. This may be called on any thread.
 SearchEngineType GetEngineType(const GURL& url);
 
 }  // namespace SearchEngineUtils

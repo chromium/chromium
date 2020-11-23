@@ -81,6 +81,8 @@ class CORE_EXPORT TextFragmentAnchorMetrics final
   void Trace(Visitor*) const;
 
  private:
+  std::string GetPrefixForHistograms() const;
+
   Member<Document> document_;
 
 #ifndef NDEBUG
