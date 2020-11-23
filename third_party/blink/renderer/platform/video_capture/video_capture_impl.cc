@@ -682,28 +682,11 @@ void VideoCaptureImpl::OnBufferReady(
         // The GpuMemoryBuffer is allocated and owned by the video capture
         // buffer pool from the video capture service process, so we don't need
         // to destroy the GpuMemoryBuffer here.
-        gfx::GpuMemoryBufferHandle handle =
-            buffer_context->TakeGpuMemoryBufferHandle();
-#if defined(OS_MAC)
-        gfx::ScopedIOSurface io_surface = handle.io_surface;
-#endif
         auto gmb =
             gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
-                std::move(handle), gfx::Size(info->coded_size), gfx_format,
+                buffer_context->TakeGpuMemoryBufferHandle(),
+                gfx::Size(info->coded_size), gfx_format,
                 gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing());
-#if defined(OS_MAC)
-        if (!gmb) {
-          // CHECK-crash happens below because gmb is null here.
-          // These additional CHECKs were added to aid investigations of
-          // https://crbug.com/1148964.
-          // TODO(https://crbug.com/1148964): When the referenced bug is
-          // resolved, delete these CHECKs.
-          CHECK(io_surface)
-              << "GMB could not be created because io_surface is null";
-          CHECK(false)
-              << "GMB could not be created even though io_surface is not null";
-        }
-#endif
         buffer_context->SetGpuMemoryBuffer(std::move(gmb));
       }
       CHECK(buffer_context->GetGpuMemoryBuffer());
