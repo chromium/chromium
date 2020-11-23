@@ -33,7 +33,7 @@
   // Test that we can setup call with legacy settings.
   function callWithLegacySdp() {
     setOfferSdpTransform(function(sdp) {
-      return removeBundle(useGice(useExternalSdes(sdp)));
+      return removeBundle(useExternalSdes(sdp));
     });
     createConnections({
       'mandatory': {'RtpDataChannels': true, 'DtlsSrtpKeyAgreement': false}
@@ -283,13 +283,6 @@
 
   function removeBundle(sdp) {
     return sdp.replace(/a=group:BUNDLE .*\r\n/g, '');
-  }
-
-  function useGice(sdp) {
-    sdp = sdp.replace(/t=.*\r\n/g, function(subString) {
-      return subString + 'a=ice-options:google-ice\r\n';
-    });
-    return sdp;
   }
 
   function useExternalSdes(sdp) {
