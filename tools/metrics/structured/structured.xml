@@ -5,7 +5,6 @@
 <events>
 
 <event name="CrOSActionEvent.FileOpened" project="Hindsight">
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     Records whenever a file is opened in the File App on ChromeOS.
   </summary>
@@ -32,7 +31,6 @@
 </event>
 
 <event name="CrOSActionEvent.SearchResultLaunched" project="Hindsight">
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     Records information about the launch of an item from ChromeOS launcher.
   </summary>
@@ -61,7 +59,6 @@
 </event>
 
 <event name="CrOSActionEvent.SettingChanged" project="Hindsight">
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     Records when a setting is changed; only records quick settings for now.
   </summary>
@@ -100,7 +97,6 @@
 </event>
 
 <event name="CrOSActionEvent.TabEvent.TabNavigated" project="Hindsight">
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     Records a tab activity of navigating to a new url.
   </summary>
@@ -132,7 +128,6 @@
 </event>
 
 <event name="CrOSActionEvent.TabEvent.TabOpened" project="Hindsight">
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     Records a tab activity of opening a new url with ctrl+click.
   </summary>
@@ -165,7 +160,6 @@
 </event>
 
 <event name="CrOSActionEvent.TabEvent.TabReactivated" project="Hindsight">
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     Records a tab activity of reactivating an existing tab.
   </summary>
@@ -186,8 +180,7 @@
   </metric>
 </event>
 
-<event name="LauncherUsage">
-  <owner>tby@chromium.org</owner>
+<event name="LauncherUsage" project="LauncherUsage">
   <summary>
     Records information about the launch of an item (such as an app or a file)
     from the ChromeOS launcher. One event is recorded for every launch
@@ -236,8 +229,7 @@
   </metric>
 </event>
 
-<event name="TestEventOne">
-  <owner>tby@chromium.org</owner>
+<event name="TestEventOne" project="TestProjectOne">
   <summary>
     Event for unit testing, do not use.
   </summary>
@@ -253,8 +245,7 @@
   </metric>
 </event>
 
-<event name="TestEventThree" project="TestProject">
-  <owner>tby@chromium.org</owner>
+<event name="TestEventThree" project="TestProjectTwo">
   <summary>
     Event for unit testing, do not use.
   </summary>
@@ -265,8 +256,7 @@
   </metric>
 </event>
 
-<event name="TestEventTwo" project="TestProject">
-  <owner>tby@chromium.org</owner>
+<event name="TestEventTwo" project="TestProjectTwo">
   <summary>
     Event for unit testing, do not use.
   </summary>
@@ -283,13 +273,32 @@
 
 <project name="Hindsight">
   <owner>charleszhao@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
   <summary>
     Project for recording CrOSActions.
   </summary>
 </project>
 
-<project name="TestProject">
+<project name="LauncherUsage">
   <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <summary>
+    Records information about search results launched from the launcher.
+  </summary>
+</project>
+
+<project name="TestProjectOne">
+  <owner>tby@chromium.org</owner>
+  <id>none</id>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+</project>
+
+<project name="TestProjectTwo">
+  <owner>tby@chromium.org</owner>
+  <id>none</id>
   <summary>
     Project for unit testing, do not use.
   </summary>

@@ -34,19 +34,17 @@ namespace {
 // 32 byte long test key, matching the size of a real key.
 constexpr char kKey[] = "abcdefghijklmnopqrstuvwxyzabcdef";
 
-// These event and metric names are used for testing.
-// - event: TestEventOne
-//   - metric: TestValueOne
-//   - metric: TestValueTwo
-// - event: TestEventTwo
-//   - metric: TestValueOne
+// These project, event, and metric names are used for testing.
+// - project: TestProjectOne
+//   - event: TestEventOne
+//     - metric: TestMetricOne
+//     - metric: TestMetricTwo
+// - project: TestProjectTwo
 
-// The name hash of "TestEventOne".
-constexpr uint64_t kEventOneHash = UINT64_C(15619026293081468407);
-// The name hash of "TestEventTwo".
-constexpr uint64_t kEventTwoHash = UINT64_C(15791833939776536363);
-// The name hash of "TestProject".
-constexpr uint64_t kProjectHash = UINT64_C(17426425568333718899);
+// The name hash of "TestProjectOne".
+constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
+// The name hash of "TestProjectTwo".
+constexpr uint64_t kProjectTwoHash = UINT64_C(5876808001962504629);
 
 // The name hash of "TestMetricOne".
 constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
@@ -57,9 +55,7 @@ constexpr uint64_t kMetricTwoHash = UINT64_C(14083999144141567134);
 constexpr char kUserId[] = "2070DF23E0D95759";
 
 // Test values and their hashes. Hashes are the first 8 bytes of:
-//
-// HMAC_SHA256(concat(hex(kMetricNHash), kValueN),
-// "abcdefghijklmnopqrstuvwxyzabcdef")
+// HMAC_SHA256(concat(hex(kMetricNHash), kValueN), kKey)
 constexpr char kValueOne[] = "value one";
 constexpr char kValueTwo[] = "value two";
 constexpr char kValueOneHash[] = "805B8790DC69B773";
@@ -179,16 +175,16 @@ class KeyDataTest : public testing::Test {
 };
 
 // If there is no key store file present, check that new keys are generated for
-// each event, and those keys are of the right length and different from each
+// each project, and those keys are of the right length and different from each
 // other.
-TEST_F(KeyDataTest, GeneratesKeysForEvents) {
+TEST_F(KeyDataTest, GeneratesKeysForProjects) {
   StandardSetup();
   histogram_tester_.ExpectUniqueSample(
       "UMA.StructuredMetrics.KeyValidationState", KeyValidationState::kCreated,
       NumberOfEvents());
 
-  const std::string key_one = GetString(KeyPath(kEventOneHash));
-  const std::string key_two = GetString(KeyPath(kProjectHash));
+  const std::string key_one = GetString(KeyPath(kProjectOneHash));
+  const std::string key_two = GetString(KeyPath(kProjectTwoHash));
 
   EXPECT_EQ(key_one.size(), 32ul);
   EXPECT_EQ(key_two.size(), 32ul);
@@ -203,7 +199,7 @@ TEST_F(KeyDataTest, GeneratesDistinctKeys) {
   for (int i = 0; i < 10; ++i) {
     ResetState();
     StandardSetup();
-    keys.insert(GetString(KeyPath(kEventOneHash)));
+    keys.insert(GetString(KeyPath(kProjectOneHash)));
     histogram_tester_.ExpectUniqueSample(
         "UMA.StructuredMetrics.KeyValidationState",
         KeyValidationState::kCreated, NumberOfEvents() * (i + 1));
@@ -218,7 +214,7 @@ TEST_F(KeyDataTest, ReuseExistingKeys) {
   histogram_tester_.ExpectBucketCount(
       "UMA.StructuredMetrics.KeyValidationState", KeyValidationState::kCreated,
       NumberOfEvents());
-  const std::string key_one = GetString(KeyPath(kEventOneHash));
+  const std::string key_one = GetString(KeyPath(kProjectOneHash));
   CommitKeyStore();
 
   key_data_.reset();
@@ -227,7 +223,7 @@ TEST_F(KeyDataTest, ReuseExistingKeys) {
   histogram_tester_.ExpectBucketCount(
       "UMA.StructuredMetrics.KeyValidationState", KeyValidationState::kValid,
       NumberOfEvents());
-  const std::string key_two = GetString(KeyPath(kEventOneHash));
+  const std::string key_two = GetString(KeyPath(kProjectOneHash));
 
   EXPECT_EQ(key_one, key_two);
 }
@@ -236,57 +232,56 @@ TEST_F(KeyDataTest, ReuseExistingKeys) {
 // value.
 TEST_F(KeyDataTest, DifferentEventsDifferentHashes) {
   StandardSetup();
-  // Even though
   EXPECT_NE(
-      key_data_->HashForEventMetric(kEventOneHash, kMetricOneHash, "value"),
-      key_data_->HashForEventMetric(kEventTwoHash, kMetricOneHash, "value"));
-  ExpectNoErrors();
-}
-
-// Check that an event has different hashes for different values of the same
-// metric.
-TEST_F(KeyDataTest, DifferentMetricsDifferentHashes) {
-  StandardSetup();
-  EXPECT_NE(
-      key_data_->HashForEventMetric(kEventOneHash, kMetricOneHash, "first"),
-      key_data_->HashForEventMetric(kEventOneHash, kMetricOneHash, "second"));
+      key_data_->HashForEventMetric(kProjectOneHash, kMetricOneHash, "value"),
+      key_data_->HashForEventMetric(kProjectTwoHash, kMetricOneHash, "value"));
   ExpectNoErrors();
 }
 
 // Check that an event has different hashes for different metrics with the same
 // value.
+TEST_F(KeyDataTest, DifferentMetricsDifferentHashes) {
+  StandardSetup();
+  EXPECT_NE(
+      key_data_->HashForEventMetric(kProjectOneHash, kMetricOneHash, "value"),
+      key_data_->HashForEventMetric(kProjectOneHash, kMetricTwoHash, "value"));
+  ExpectNoErrors();
+}
+
+// Check that an event has different hashes for different values of the same
+// metric.
 TEST_F(KeyDataTest, DifferentValuesDifferentHashes) {
   StandardSetup();
   EXPECT_NE(
-      key_data_->HashForEventMetric(kEventOneHash, kMetricOneHash, "value"),
-      key_data_->HashForEventMetric(kEventOneHash, kMetricTwoHash, "value"));
+      key_data_->HashForEventMetric(kProjectOneHash, kMetricOneHash, "first"),
+      key_data_->HashForEventMetric(kProjectOneHash, kMetricOneHash, "second"));
   ExpectNoErrors();
 }
 
 // Ensure that KeyData::UserId is the expected value of SHA256(key).
 TEST_F(KeyDataTest, CheckUserIDs) {
   MakeKeyStore();
-  SetKeyData(kEventOneHash, kKey, 0, 90);
+  SetKeyData(kProjectOneHash, kKey, 0, 90);
   CommitKeyStore();
 
   MakeKeyData();
-  EXPECT_EQ(HashToHex(key_data_->UserEventId(kEventOneHash)), kUserId);
-  EXPECT_NE(HashToHex(key_data_->UserEventId(kEventTwoHash)), kUserId);
+  EXPECT_EQ(HashToHex(key_data_->UserEventId(kProjectOneHash)), kUserId);
+  EXPECT_NE(HashToHex(key_data_->UserEventId(kProjectTwoHash)), kUserId);
   ExpectNoErrors();
 }
 
 // Ensure that KeyData::Hash returns expected values for a known key and value.
 TEST_F(KeyDataTest, CheckHashes) {
   MakeKeyStore();
-  SetString(KeyPath(kEventOneHash), kKey);
-  SetKeyData(kEventOneHash, kKey, 0, 90);
+  SetString(KeyPath(kProjectOneHash), kKey);
+  SetKeyData(kProjectOneHash, kKey, 0, 90);
   CommitKeyStore();
 
   MakeKeyData();
-  EXPECT_EQ(HashToHex(key_data_->HashForEventMetric(kEventOneHash,
+  EXPECT_EQ(HashToHex(key_data_->HashForEventMetric(kProjectOneHash,
                                                     kMetricOneHash, kValueOne)),
             kValueOneHash);
-  EXPECT_EQ(HashToHex(key_data_->HashForEventMetric(kEventOneHash,
+  EXPECT_EQ(HashToHex(key_data_->HashForEventMetric(kProjectOneHash,
                                                     kMetricTwoHash, kValueTwo)),
             kValueTwoHash);
   ExpectNoErrors();
@@ -301,22 +296,22 @@ TEST_F(KeyDataTest, KeysRotated) {
   // logic.
 
   StandardSetup();
-  const uint64_t first_id = key_data_->UserEventId(kEventOneHash);
+  const uint64_t first_id = key_data_->UserEventId(kProjectOneHash);
   const int start_day = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
 
   // TestEventOne has a default rotation period of 90 days.
-  EXPECT_EQ(GetInt(RotationPeriodPath(kEventOneHash)), 90);
+  EXPECT_EQ(GetInt(RotationPeriodPath(kProjectOneHash)), 90);
 
   // Set the last rotation to today for testing.
-  SetInt(LastRotationPath(kEventOneHash), start_day);
+  SetInt(LastRotationPath(kProjectOneHash), start_day);
 
   {
     // Advancing by 50 days, the key should not be rotated.
     key_data_.reset();
     time_.Advance(base::TimeDelta::FromDays(50));
     StandardSetup();
-    EXPECT_EQ(key_data_->UserEventId(kEventOneHash), first_id);
-    EXPECT_EQ(GetInt(LastRotationPath(kEventOneHash)), start_day);
+    EXPECT_EQ(key_data_->UserEventId(kProjectOneHash), first_id);
+    EXPECT_EQ(GetInt(LastRotationPath(kProjectOneHash)), start_day);
   }
 
   {
@@ -325,8 +320,8 @@ TEST_F(KeyDataTest, KeysRotated) {
     key_data_.reset();
     time_.Advance(base::TimeDelta::FromDays(50));
     StandardSetup();
-    EXPECT_NE(key_data_->UserEventId(kEventOneHash), first_id);
-    EXPECT_EQ(GetInt(LastRotationPath(kEventOneHash)), start_day + 90);
+    EXPECT_NE(key_data_->UserEventId(kProjectOneHash), first_id);
+    EXPECT_EQ(GetInt(LastRotationPath(kProjectOneHash)), start_day + 90);
   }
 
   {
@@ -335,7 +330,7 @@ TEST_F(KeyDataTest, KeysRotated) {
     key_data_.reset();
     time_.Advance(base::TimeDelta::FromDays(453));
     StandardSetup();
-    EXPECT_EQ(GetInt(LastRotationPath(kEventOneHash)), start_day + 6 * 90);
+    EXPECT_EQ(GetInt(LastRotationPath(kProjectOneHash)), start_day + 6 * 90);
   }
 }
 

@@ -36,14 +36,20 @@ class EventInfo(object):
     self.name = sanitize_name(event_obj['name'])
     self.name_hash = HashName(event_obj['name'])
 
-    # If a project is associated with this event, project_obj will be non-None
-    # and we should use the project's name as the key name hash. Otherwise, use
-    # the event's name as the key name hash.
-    if project_obj:
-      project_name = sanitize_name(project_obj['name'])
-    else:
-      project_name = sanitize_name(event_obj['name'])
+    project_name = sanitize_name(project_obj['name'])
     self.project_name_hash = HashName(project_name)
+
+    id_type = project_obj['id']['text']
+    if id_type == 'uma':
+      self.project_id_type = 'kUmaId'
+    elif id_type == 'per-project':
+      self.project_id_type = 'kProjectId'
+    elif id_type == 'none':
+      self.project_id_type = 'kUnidentified'
+    else:
+      raise Exception(
+          "Structured metrics event '{}' has invalid id field '{}'".format(
+              self.name, id_type))
 
 
 class MetricInfo(object):

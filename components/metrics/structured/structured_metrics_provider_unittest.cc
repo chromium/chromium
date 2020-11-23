@@ -27,28 +27,31 @@ namespace structured {
 
 namespace {
 
-// These event and metric names are used for testing.
-// - event: TestEventOne
-//   - metric: TestMetricOne
-//   - metric: TestMetricTwo
-// - event: TestsEventTwo
-//   - metric: TestMetricThree
+// These project, event, and metric names are used for testing.
+// - project: TestProjectOne
+//   - event: TestEventOne
+//     - metric: TestMetricOne
+//     - metric: TestMetricTwo
+// - project: TestProjectTwo
+//   - event: TestEventTwo
+//     - metric: TestMetricThree
+//   - event: TestEventThree
+//     - metric: TestMetricFour
 
 // To test that the right values are calculated for hashed metrics, we need to
 // set up some fake keys that we know the output hashes for. kKeyData contains
 // the JSON for a simple structured_metrics.json file with keys for the test
-// events. The two keys are ID'd by the name hashes of "TestEventOne" and
-// "TestProject", because TestEventTwo is associated with TestProject.
+// projects, "TestProjectOne" and "TestProjectTwo".
 // TODO(crbug.com/1016655): Once custom rotation periods have been implemented,
 // change the large constants to 0.
 constexpr char kKeyData[] = R"({
   "keys":{
-    "15619026293081468407":{
+    "16881314472396226433":{
       "rotation_period":1000000,
       "last_rotation":1000000,
       "key":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     },
-    "17426425568333718899":{
+    "5876808001962504629":{
       "rotation_period":1000000,
       "last_rotation":1000000,
       "key":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
@@ -69,11 +72,13 @@ constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
 constexpr uint64_t kMetricTwoHash = UINT64_C(14083999144141567134);
 // The name hash of "TestMetricThree".
 constexpr uint64_t kMetricThreeHash = UINT64_C(13469300759843809564);
+// The name hash of "TestMetricFour".
+// constexpr uint64_t kMetricFourHash = UINT64_C(13469300759843809564);
 
 // The hex-encoded first 8 bytes of SHA256("aaa...a")
-constexpr char kKeyOneId[] = "3BA3F5F43B926026";
+constexpr char kProjectOneId[] = "3BA3F5F43B926026";
 // The hex-encoded first 8 bytes of SHA256("bbb...b")
-constexpr char kKeyTwoId[] = "BDB339768BC5E4FE";
+constexpr char kProjectTwoId[] = "BDB339768BC5E4FE";
 
 // Test values.
 constexpr char kValueOne[] = "value one";
@@ -252,7 +257,7 @@ TEST_F(StructuredMetricsProviderTest, EventsReportedCorrectly) {
   {  // First event
     const auto& event = uma.structured_event(0);
     EXPECT_EQ(event.event_name_hash(), kEventOneHash);
-    EXPECT_EQ(HashToHex(event.profile_event_id()), kKeyOneId);
+    EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectOneId);
     ASSERT_EQ(event.metrics_size(), 2);
 
     {  // First metric
@@ -274,7 +279,7 @@ TEST_F(StructuredMetricsProviderTest, EventsReportedCorrectly) {
   {  // Second event
     const auto& event = uma.structured_event(1);
     EXPECT_EQ(event.event_name_hash(), kEventTwoHash);
-    EXPECT_EQ(HashToHex(event.profile_event_id()), kKeyTwoId);
+    EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectTwoId);
     ASSERT_EQ(event.metrics_size(), 1);
 
     {  // First metric
@@ -313,9 +318,9 @@ TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
 
   // Events two and three share a project, so should have the same ID. Event
   // one should have its own ID.
-  EXPECT_EQ(HashToHex(event_one.profile_event_id()), kKeyOneId);
-  EXPECT_EQ(HashToHex(event_two.profile_event_id()), kKeyTwoId);
-  EXPECT_EQ(HashToHex(event_three.profile_event_id()), kKeyTwoId);
+  EXPECT_EQ(HashToHex(event_one.profile_event_id()), kProjectOneId);
+  EXPECT_EQ(HashToHex(event_two.profile_event_id()), kProjectTwoId);
+  EXPECT_EQ(HashToHex(event_three.profile_event_id()), kProjectTwoId);
 
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.PrefReadError", 0);

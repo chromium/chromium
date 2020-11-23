@@ -17,7 +17,7 @@ STRUCTURED_XML = path_util.GetInputFile(('tools/metrics/structured/'
 
 
 def checkElementOwners(config, element_tag):
-  """Check that every element in the config has at least one owner."""
+  """Check that every element with the given tag has at least one owner."""
   errors = []
 
   for node in config.getElementsByTagName(element_tag):
@@ -103,7 +103,6 @@ def main():
     [projects] = config.getElementsByTagName('projects')
 
     errors = []
-    errors.extend(checkElementOwners(events, 'event'))
     errors.extend(checkElementOwners(projects, 'project'))
     errors.extend(checkElementsNotDuplicated(events, 'event'))
     errors.extend(checkElementsNotDuplicated(projects, 'project'))
