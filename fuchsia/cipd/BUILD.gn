@@ -16,22 +16,6 @@ if (host_os == "mac") {
   _gn_path = "//buildtools/linux64/gn"
 }
 
-# Produces a consolidated license file.
-action("license") {
-  _license_path = "${target_gen_dir}/LICENSE"
-  script = "//tools/licenses.py"
-  inputs = [ "$_gn_path" ]
-  outputs = [ _license_path ]
-  args = [
-    "license_file",
-    rebase_path(_license_path, root_build_dir),
-    "--gn-target",
-    "//fuchsia/runners:web_runner_pkg",
-    "--gn-out-dir",
-    ".",
-  ]
-}
-
 # Extracts the numeric Chrome build ID and writes it to a file in the output
 # directory.
 #
@@ -61,23 +45,41 @@ template("cipd_archive") {
                          [
                            "deps",
                            "sources",
+                           "testonly",
                          ])
+
+  # Produces a consolidated license file.
+  action("${target_name}_license") {
+    _license_path = "${target_gen_dir}/${target_name}/LICENSE"
+    _invoker_dir = get_label_info(":${invoker.target_name}", "dir")
+    _license_target = "${_invoker_dir}:${invoker.target_name}"
+    script = "//tools/licenses.py"
+    inputs = [ "$_gn_path" ]
+    outputs = [ _license_path ]
+    args = [
+      "license_file",
+      rebase_path(_license_path, root_build_dir),
+      "--gn-target",
+      _license_target,
+      "--gn-out-dir",
+      ".",
+    ]
+  }
 
   if (!defined(deps)) {
     deps = []
   }
   deps += [
+    ":${target_name}_license",
     ":build_id",
-    ":license",
   ]
 
   if (!defined(sources)) {
     sources = []
   }
-  sources += get_target_outputs(":license")
+  sources += get_target_outputs(":${target_name}_license")
 
   cipd_package_definition(target_name) {
-    testonly = true
     forward_variables_from(invoker,
                            [
                              "description",
@@ -130,6 +132,7 @@ cipd_archive("web_engine_shell") {
   package_definition_yaml = "web_engine_shell.yaml"
   package = "chromium/fuchsia/web_engine_shell-\${targetarch}"
   description = "Simple command-line embedder for WebEngine."
+  testonly = true
 
   deps = [ "//fuchsia/engine:web_engine_shell_pkg" ]
 
@@ -166,6 +169,7 @@ cipd_archive("chromedriver") {
   package_definition_yaml = "chromedriver.yaml"
   package = "chromium/fuchsia/chromedriver/\${os}-\${arch}"
   description = "Prebuilt Chromedriver binary for Fuchsia host."
+  testonly = true
   install_mode = "copy"
   deps = [ ":strip_chromedriver_binary" ]
 
@@ -177,6 +181,7 @@ cipd_archive("tests") {
   package_definition_yaml = "tests.yaml"
   package = "chromium/fuchsia/tests-\${targetarch}"
   description = "Prebuilt Chromium tests for Fuchsia."
+  testonly = true
 
   deps = [
     "//base:base_unittests_pkg",
@@ -247,6 +252,7 @@ cipd_archive("clear_key_cdm") {
   package_definition_yaml = "clear_key_cdm.yaml"
   package = "chromium/fuchsia/libclearkeycdm-\${targetarch}"
   description = "Prebuilt libclearkeycdm.so binary for Fuchsia."
+  testonly = true
 
   deps = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm" ]
 
