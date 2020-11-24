@@ -59,15 +59,15 @@ public class ChromeColors {
     }
 
     /**
-     * Returns the medium text secondary style based on the given parameter.
+     * Returns the text medium thick secondary style based on the given parameter.
      *
      * @param forceLightTextColor When true, returns the light-mode medium text secondary style;
      *         otherwise returns adaptive medium text secondary style.
      * @return The medium text secondary style.
      */
-    public static int getMediumTextSecondaryStyle(boolean forceLightTextColor) {
-        return forceLightTextColor ? R.style.TextAppearance_TextMedium_Secondary_Light
-                                   : R.style.TextAppearance_TextMedium_Secondary;
+    public static int getTextMediumThickSecondaryStyle(boolean forceLightTextColor) {
+        return forceLightTextColor ? R.style.TextAppearance_TextMediumThick_Secondary_Light
+                                   : R.style.TextAppearance_TextMediumThick_Secondary;
     }
 
     /**

@@ -24,8 +24,8 @@ public class HeaderViewBinder {
         } else if (propertyKey == SuggestionCommonProperties.OMNIBOX_THEME) {
             final boolean useDarkColors = !OmniboxResourceProvider.isDarkMode(
                     model.get(SuggestionCommonProperties.OMNIBOX_THEME));
-            TextViewCompat.setTextAppearance(
-                    view.getTextView(), ChromeColors.getMediumTextSecondaryStyle(!useDarkColors));
+            TextViewCompat.setTextAppearance(view.getTextView(),
+                    ChromeColors.getTextMediumThickSecondaryStyle(!useDarkColors));
             ApiCompatibilityUtils.setImageTintList(view.getIconView(),
                     ChromeColors.getPrimaryIconTint(view.getContext(), !useDarkColors));
         } else if (propertyKey == SuggestionCommonProperties.LAYOUT_DIRECTION) {

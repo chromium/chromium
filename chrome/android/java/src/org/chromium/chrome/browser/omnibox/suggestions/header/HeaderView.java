@@ -56,7 +56,7 @@ public class HeaderView extends SimpleHorizontalLayoutView {
         mHeaderText.setEllipsize(TruncateAt.END);
         mHeaderText.setAllCaps(true);
         TextViewCompat.setTextAppearance(
-                mHeaderText, ChromeColors.getMediumTextSecondaryStyle(false));
+                mHeaderText, ChromeColors.getTextMediumThickSecondaryStyle(false));
         mHeaderText.setMinHeight(context.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_header_height));
         mHeaderText.setGravity(Gravity.CENTER_VERTICAL);
