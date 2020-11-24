@@ -274,8 +274,13 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   tmp_file.Close();
   const bool result = ReplaceFile(tmp_file_path, path, &replace_file_error);
 #if defined(OS_WIN)
+  // Save and restore the last error code so that it's not polluted by the
+  // thread priority change.
+  const auto last_error = ::GetLastError();
   if (reset_priority)
     PlatformThread::SetCurrentThreadPriority(previous_priority);
+  if (!result)
+    ::SetLastError(last_error);
 #endif  // defined(OS_WIN)
 
   if (!result) {
