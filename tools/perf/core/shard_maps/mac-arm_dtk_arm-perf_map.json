@@ -197,6 +197,9 @@
                 "begin": 2,
                 "abridged": false
             },
+            "tab_search": {
+                "abridged": false
+            },
             "tab_switching.typical_25": {
                 "abridged": false
             },

@@ -57,4 +57,4 @@ class TabSearch(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_tab_search'
+    return 'tab_search'
