@@ -10,6 +10,7 @@ const EXAMPLE_URL_1 = 'https://example.com/feed.json';
 
 GEN('#include "base/run_loop.h"');
 GEN('#include "base/strings/utf_string_conversions.h"');
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/media/feeds/media_feeds_service.h"');
 GEN('#include "chrome/browser/media/feeds/media_feeds_service_factory.h"');
 GEN('#include "chrome/browser/media/history/media_history_keyed_service.h"');
@@ -298,7 +299,14 @@ TEST_F('MediaFeedsWebUIBrowserTest', 'All', function() {
   mocha.run();
 });
 
-TEST_F('MediaFeedsWebUIBrowserTest', 'ConfigTable', function() {
+// https://crbug.com/1141621: Flaky on Windows.
+GEN('#if defined(OS_WIN)');
+GEN('#define MAYBE_ConfigTable DISABLED_ConfigTable');
+GEN('#else');
+GEN('#define MAYBE_ConfigTable ConfigTable');
+GEN('#endif');
+
+TEST_F('MediaFeedsWebUIBrowserTest', 'MAYBE_ConfigTable', function() {
   suiteSetup(function() {
     return whenConfigTableIsPopulatedForTest();
   });
