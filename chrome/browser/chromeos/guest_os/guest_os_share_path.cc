@@ -470,7 +470,7 @@ void GuestOsSharePath::SharePaths(const std::string& vm_name,
           base::Owned(new ErrorCapture(paths.size(), std::move(callback))));
   for (const auto& path : paths) {
     CallSeneschalSharePath(vm_name, path, persist,
-                           base::BindOnce(barrier, std::move(path)));
+                           base::BindOnce(barrier, path));
   }
 }
 
