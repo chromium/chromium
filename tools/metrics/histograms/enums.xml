@@ -22608,6 +22608,7 @@ Called by update_document_policy_enum.py.-->
   <int value="805" label="NTPCardsVisible"/>
   <int value="806" label="BasicAuthOverHttpEnabled"/>
   <int value="807" label="SystemFeaturesDisableMode"/>
+  <int value="808" label="IntegratedWebAuthenticationAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

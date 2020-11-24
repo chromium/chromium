@@ -8285,5 +8285,17 @@
         }
       }
     ]
+  },
+  "IntegratedWebAuthenticationAllowed": {
+    "os": ["chromeos"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "IntegratedWebAuthenticationAllowed": false },
+        "prefs": {
+          "auth.integrated_web_authentication_allowed": { "local_state": true }
+        }
+      }
+    ]
   }
 }

@@ -1124,6 +1124,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSystemFeaturesDisableMode,
     policy::policy_prefs::kSystemFeaturesDisableMode,
     base::Value::Type::STRING },
+    { key::kIntegratedWebAuthenticationAllowed,
+    prefs::kIntegratedWebAuthenticationAllowed,
+    base::Value::Type::BOOLEAN },
 #else // BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kMetricsReportingEnabled,
     metrics::prefs::kMetricsReportingEnabled,

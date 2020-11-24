@@ -1056,6 +1056,11 @@ const char kSystemProxyUserTrafficHostAndPort[] =
 const char kEduCoexistenceArcMigrationCompleted[] =
     "account_manager.edu_coexistence_arc_migration_completed";
 
+// Boolean pref indicating whether reusing the Chrome OS login credentials for
+// network authentication is allowed. Note: currently only used for managed
+// proxies secured with NTLM authentication.
+const char kIntegratedWebAuthenticationAllowed[] =
+    "auth.integrated_web_authentication_allowed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A boolean pref set to true if a Home button to open the Home pages should be
