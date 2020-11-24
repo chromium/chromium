@@ -5082,7 +5082,7 @@
         },
         {
           'value': None,
-          'caption': 'Allow 3rd party cookes, but allow the user to change this setting',
+          'caption': 'Allow 3rd party cookies, but allow the user to change this setting',
         },
       ],
       'example_value': False,
@@ -11874,13 +11874,13 @@
 
       * A warning dialog appears if the user remains idle for the time specified by <ph name="IDLE_WARNING_FIELD_NAME">IdleWarning</ph>. It warns the user that the idle action will be taken and only appears if the idle action is to sign out or shut down.
 
-      * The action specified by <ph name="IDLE_ACTION_FIELD_NAME">IdleAction</ph> is taken if the user is idle for the time specified by Idle.
+      * The action specified by <ph name="IDLE_ACTION_FIELD_NAME">IdleAction</ph> is taken if the user is idle for the time specified by <ph name="IDLE_FIELD_NAME">Idle</ph>.
 
       For each of the above actions, the delay should be specified in milliseconds and must be set to a value greater than zero to trigger the corresponding action. If the delay is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> won't take the corresponding action.
 
       For each of the above delays, when the time is unset, a default value is used.
 
-      <ph name="SCREEN_DIM_FIELD_NAME">ScreenDim</ph> values will be clamped to be less than or equal to <ph name="SCREEN_OFF_FIELD_NAME">ScreenOff</ph>. <ph name="SCREEN_OFF_FIELD_NAME">ScreenOff</ph> and <ph name="IDLE_WARNING_FIELD_NAME">IdleWarning</ph> will be clamped to be less than or equal to Idle.
+      <ph name="SCREEN_DIM_FIELD_NAME">ScreenDim</ph> values will be clamped to be less than or equal to <ph name="SCREEN_OFF_FIELD_NAME">ScreenOff</ph>. <ph name="SCREEN_OFF_FIELD_NAME">ScreenOff</ph> and <ph name="IDLE_WARNING_FIELD_NAME">IdleWarning</ph> will be clamped to be less than or equal to <ph name="IDLE_FIELD_NAME">Idle</ph>.
 
       <ph name="IDLE_ACTION_FIELD_NAME">IdleAction</ph> can be one of 4 actions:
 
@@ -20429,7 +20429,7 @@
       'id': 538,
       'caption': '''Enable peak shift power management''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled and setting <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME">DevicePowerPeakShiftBatteryThreshold</ph> and <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME">DevicePowerPeakShiftDayConfig</ph> keeps power peak shift on, if supported on the device. Power peak shift power management policy is a power-saving policy that minimizes alternating current usage during peak times. For each weekday, you can set a start and end time to run in power peak shift mode. As long as the battery stays above the threshold specified, during these times, the device runs from the battery (even if the alternating current is attached). After the specified end time, the device runs from alternating current (if attached), but won't charge the battery. The device will again function normally using alternating current and recharging the battery after the specified start time.
+      'desc': '''Setting the policy to Enabled and setting <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME">DevicePowerPeakShiftBatteryThreshold</ph> and <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME">DevicePowerPeakShiftDayConfig</ph> keeps power peak shift on, if supported on the device. Power peak shift power management policy is a power-saving policy that minimizes alternating current usage during peak times. For each weekday, you can set a start and end time to run in power peak shift mode. As long as the battery stays above the threshold specified, during these times, the device runs from the battery (even if the alternating current is attached). After the specified end time, the device runs from alternating current (if attached), but won't charge the battery. The device will again function normally using alternating current and recharging the battery after the specified charge start time.
 
       Setting the policy to Disabled keeps power peak shift off.
 
