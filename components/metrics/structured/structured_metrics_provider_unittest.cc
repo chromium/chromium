@@ -182,7 +182,7 @@ TEST_F(StructuredMetricsProviderTest, ProviderInitializesFromBlankSlate) {
 TEST_F(StructuredMetricsProviderTest, EventsNotReportedWhenRecordingDisabled) {
   Init();
   OnRecordingDisabled();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
   ExpectOnlyFileReadError();
 }
@@ -224,15 +224,15 @@ TEST_F(StructuredMetricsProviderTest, RecordingDisabledByDefault) {
 TEST_F(StructuredMetricsProviderTest, RecordedEventAppearsInReport) {
   Init();
 
-  events::TestEventOne()
+  events::test_project_one::TestEventOne()
       .SetTestMetricOne("a string")
       .SetTestMetricTwo(12345)
       .Record();
-  events::TestEventOne()
+  events::test_project_one::TestEventOne()
       .SetTestMetricOne("a string")
       .SetTestMetricTwo(12345)
       .Record();
-  events::TestEventOne()
+  events::test_project_one::TestEventOne()
       .SetTestMetricOne("a string")
       .SetTestMetricTwo(12345)
       .Record();
@@ -245,11 +245,13 @@ TEST_F(StructuredMetricsProviderTest, EventsReportedCorrectly) {
   WriteTestingKeys();
   Init();
 
-  events::TestEventOne()
+  events::test_project_one::TestEventOne()
       .SetTestMetricOne(kValueOne)
       .SetTestMetricTwo(12345)
       .Record();
-  events::TestEventTwo().SetTestMetricThree(kValueTwo).Record();
+  events::test_project_two::TestEventTwo()
+      .SetTestMetricThree(kValueTwo)
+      .Record();
 
   const auto uma = GetProvidedEvents();
   ASSERT_EQ(uma.structured_event_size(), 2);
@@ -300,9 +302,9 @@ TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
   WriteTestingKeys();
   Init();
 
-  events::TestEventOne().Record();
-  events::TestEventTwo().Record();
-  events::TestEventThree().Record();
+  events::test_project_one::TestEventOne().Record();
+  events::test_project_two::TestEventTwo().Record();
+  events::test_project_two::TestEventThree().Record();
 
   const auto uma = GetProvidedEvents();
   ASSERT_EQ(uma.structured_event_size(), 3);
@@ -331,15 +333,15 @@ TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
 TEST_F(StructuredMetricsProviderTest, EventsClearedAfterReport) {
   Init();
 
-  events::TestEventOne().SetTestMetricTwo(1).Record();
-  events::TestEventOne().SetTestMetricTwo(2).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(2).Record();
   // Should provide both the previous events.
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 2);
 
   // But the previous events shouldn't appear in the second report.
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
 
-  events::TestEventOne().SetTestMetricTwo(3).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(3).Record();
   // The third request should only contain the third event.
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 1);
 
@@ -351,7 +353,7 @@ TEST_F(StructuredMetricsProviderTest, EventsClearedAfterReport) {
 TEST_F(StructuredMetricsProviderTest, EventsFromPreviousSessionAreReported) {
   // Start first session and record one event.
   Init();
-  events::TestEventOne().SetTestMetricTwo(1234).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1234).Record();
 
   // Write events to disk, then destroy the provider.
   CommitPendingWrite();
@@ -372,15 +374,15 @@ TEST_F(StructuredMetricsProviderTest, EventsFromPreviousSessionAreReported) {
 TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeInitialization) {
   // Manually create and initialize the provider, adding recording calls between
   // each step. All of these events should be ignored.
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   provider_ = std::make_unique<StructuredMetricsProvider>();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingEnabled();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnProfileAdded(TempDirPath());
   // This one should still fail even though all of the initialization calls are
   // done, because the provider hasn't finished loading the keys from disk.
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   Wait();
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
 
@@ -393,10 +395,10 @@ TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeInitialization) {
 TEST_F(StructuredMetricsProviderTest,
        ExistingEventsClearedWhenRecordingDisabled) {
   Init();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingDisabled();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
 
   ExpectOnlyFileReadError();
@@ -406,14 +408,14 @@ TEST_F(StructuredMetricsProviderTest,
 // and then enabled again.
 TEST_F(StructuredMetricsProviderTest, ReportingResumesWhenEnabled) {
   Init();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingDisabled();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
 
   OnRecordingEnabled();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 2);
 
   ExpectOnlyFileReadError();
@@ -450,7 +452,7 @@ TEST_F(StructuredMetricsProviderTest, MigrateEventsKey) {
 
   // Initialize and trigger a migration by recording an event.
   Init();
-  events::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   CommitPendingWrite();
 
   // Check that the new format has the structure:

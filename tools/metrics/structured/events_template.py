@@ -37,9 +37,11 @@ constexpr uint64_t kProjectNameHashes[] = {project_name_hashes};
 #endif  // {file.guard_path}\
 """
 
-# TODO(crbug.com/1016655): Add in a namespace based on the project here.
 HEADER_PROJECT_TEMPLATE = """\
-{event_code}
+namespace {project.namespace} {{
+
+{event_code}\
+}}  // namespace {project.namespace}
 
 """
 
@@ -89,9 +91,11 @@ namespace events {{
 }}  // namespace metrics\
 """
 
-# TODO(crbug.com/1016655): Add in a namespace based on the project here.
 IMPL_PROJECT_TEMPLATE = """\
-{event_code}
+namespace {project.namespace} {{
+
+{event_code}\
+}}  // namespace {project.namespace}
 
 """
 

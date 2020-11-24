@@ -227,7 +227,7 @@ void SearchController::Train(AppLaunchData&& app_launch_data) {
     base::Time::Exploded now_exploded;
     now.LocalExplode(&now_exploded);
 
-    metrics::structured::events::LauncherUsage()
+    metrics::structured::events::launcher_usage::LauncherUsage()
         .SetTarget(NormalizeId(app_launch_data.id))
         .SetApp(last_launched_app_id_)
         .SetSearchQuery(base::UTF16ToUTF8(last_query_))
