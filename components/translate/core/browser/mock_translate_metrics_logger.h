@@ -7,6 +7,8 @@
 
 #include "components/translate/core/browser/translate_metrics_logger.h"
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -37,6 +39,8 @@ class MockTranslateMetricsLogger : public TranslateMetricsLogger {
   MOCK_METHOD0(LogReversion, void());
   MOCK_METHOD1(LogUIChange, void(bool));
   MOCK_METHOD1(LogOmniboxIconChange, void(bool));
+  MOCK_METHOD1(LogSourceLanguage, void(const std::string&));
+  MOCK_METHOD1(LogTargetLanguage, void(const std::string&));
 
  private:
   base::WeakPtrFactory<MockTranslateMetricsLogger> weak_method_factory_{this};

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -360,6 +361,54 @@ TEST_F(TranslateMetricsLoggerImplTest,
 
   // Check that the member variables match expectations.
   CheckTotalTimeTranslated(delay3, delay1 + delay2);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogSourceLanguage) {
+  // Set constants for the test.
+  std::vector<std::string> source_languages = {"en", "es", "fr", "it", "de"};
+
+  // Log the source languages.
+  for (auto source_language : source_languages)
+    translate_metrics_logger()->LogSourceLanguage(source_language);
+
+  // Record the stored metrics.
+  translate_metrics_logger()->RecordMetrics(true);
+
+  // Check that the histograms match expectations.
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadInitialSourceLanguage,
+      base::HashMetricName(source_languages[0]), 1);
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadFinalSourceLanguage,
+      base::HashMetricName(source_languages[source_languages.size() - 1]), 1);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogTargetLanguage) {
+  // Set constants for the test.
+  std::vector<std::string> target_languages = {"de", "en", "en", "de", "fr",
+                                               "fr", "es", "it", "it", "es"};
+
+  // We only care about changes in the target language, so if the language stays
+  // the same, we don't count it.
+  int num_target_language_changes = 6;
+
+  // Log the target languages.
+  for (auto target_language : target_languages)
+    translate_metrics_logger()->LogTargetLanguage(target_language);
+
+  // Record the stored metrics
+  translate_metrics_logger()->RecordMetrics(true);
+
+  // Check that the histograms match expectations.
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadInitialTargetLanguage,
+      base::HashMetricName(target_languages[0]), 1);
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadFinalTargetLanguage,
+      base::HashMetricName(target_languages[target_languages.size() - 1]), 1);
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadNumTargetLanguageChanges, num_target_language_changes,
+      1);
 }
 
 }  // namespace testing

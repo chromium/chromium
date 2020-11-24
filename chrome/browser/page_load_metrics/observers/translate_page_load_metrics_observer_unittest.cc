@@ -74,6 +74,14 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogOmniboxIconChange(is_omnibox_icon_shown);
   }
 
+  void LogSourceLanguage(const std::string& source_language_code) override {
+    mock_translate_metrics_logger_->LogSourceLanguage(source_language_code);
+  }
+
+  void LogTargetLanguage(const std::string& target_language_code) override {
+    mock_translate_metrics_logger_->LogTargetLanguage(target_language_code);
+  }
+
  private:
   translate::testing::MockTranslateMetricsLogger*
       mock_translate_metrics_logger_;  // Weak.

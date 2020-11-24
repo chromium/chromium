@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_METRICS_LOGGER_H_
 
 #include <stdint.h>
+#include <string>
 
 namespace translate {
 
@@ -88,6 +89,11 @@ class TranslateMetricsLogger {
   virtual void LogReversion() = 0;
   virtual void LogUIChange(bool is_ui_shown) = 0;
   virtual void LogOmniboxIconChange(bool is_omnibox_icon_show) = 0;
+
+  // Used to record the source language and target language both initially and
+  // if the user changes these values.
+  virtual void LogSourceLanguage(const std::string& source_language_code) = 0;
+  virtual void LogTargetLanguage(const std::string& target_language_code) = 0;
 };
 
 }  // namespace translate

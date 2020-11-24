@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_METRICS_LOGGER_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -17,8 +18,13 @@ class TickClock;
 namespace translate {
 
 extern const char kTranslatePageLoadAutofillAssistantDeferredTriggerDecision[];
+extern const char kTranslatePageLoadFinalSourceLanguage[];
 extern const char kTranslatePageLoadFinalState[];
+extern const char kTranslatePageLoadFinalTargetLanguage[];
+extern const char kTranslatePageLoadInitialSourceLanguage[];
 extern const char kTranslatePageLoadInitialState[];
+extern const char kTranslatePageLoadInitialTargetLanguage[];
+extern const char kTranslatePageLoadNumTargetLanguageChanges[];
 extern const char kTranslatePageLoadNumTranslations[];
 extern const char kTranslatePageLoadNumReversions[];
 extern const char kTranslatePageLoadRankerDecision[];
@@ -43,6 +49,8 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogReversion() override {}
   void LogUIChange(bool is_ui_shown) override {}
   void LogOmniboxIconChange(bool is_omnibox_icon_shown) override {}
+  void LogSourceLanguage(const std::string& source_language_code) override {}
+  void LogTargetLanguage(const std::string& target_language_code) override {}
 };
 
 class TranslateManager;
@@ -81,6 +89,8 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogReversion() override;
   void LogUIChange(bool is_ui_shown) override;
   void LogOmniboxIconChange(bool is_omnibox_icon_shown) override;
+  void LogSourceLanguage(const std::string& source_language_code) override;
+  void LogTargetLanguage(const std::string& target_language_code) override;
 
   // TODO(curranmax): Add appropriate functions for the Translate code to log
   // relevant events. https://crbug.com/1114868.
@@ -148,6 +158,14 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   base::TimeTicks time_of_last_state_change_;
   base::TimeDelta total_time_translated_;
   base::TimeDelta total_time_not_translated_;
+
+  // Tracks the source and target language over the course of the page load.
+  std::string initial_source_language_;
+  std::string current_source_language_;
+
+  std::string initial_target_language_;
+  std::string current_target_language_;
+  int num_target_language_changes_ = 0;
 
   base::WeakPtrFactory<TranslateMetricsLoggerImpl> weak_method_factory_{this};
 };

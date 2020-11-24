@@ -164,6 +164,12 @@ void TranslateUIDelegate::UpdateOriginalLanguageIndex(size_t language_index) {
 
   UMA_HISTOGRAM_BOOLEAN(kModifyOriginalLang, true);
   original_language_index_ = language_index;
+
+  std::string language_code = "und";
+  if (language_index < GetNumberOfLanguages())
+    language_code = GetLanguageCodeAt(language_index);
+  translate_manager_->GetActiveTranslateMetricsLogger()->LogSourceLanguage(
+      language_code);
 }
 
 void TranslateUIDelegate::UpdateOriginalLanguage(
@@ -186,6 +192,9 @@ void TranslateUIDelegate::UpdateTargetLanguageIndex(size_t language_index) {
   DCHECK_LT(language_index, GetNumberOfLanguages());
   UMA_HISTOGRAM_BOOLEAN(kModifyTargetLang, true);
   target_language_index_ = language_index;
+
+  translate_manager_->GetActiveTranslateMetricsLogger()->LogTargetLanguage(
+      GetLanguageCodeAt(language_index));
 }
 
 void TranslateUIDelegate::UpdateTargetLanguage(

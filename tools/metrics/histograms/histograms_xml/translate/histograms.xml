@@ -471,6 +471,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.FinalSourceLanguage" enum="LanguageCode"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the hashcode of the source language at the end of the page load.
+    This may differ from the initial source language determined by Chrome,
+    because the user can manually change the source language. This value is
+    logged once the page load is completed or the first time Chrome is
+    backgrounded during the course of the page load, whichever comes first.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PageLoad.FinalState" enum="TranslateState"
     expires_after="2021-04-04">
   <owner>curranmax@google.com</owner>
@@ -482,6 +496,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     only, and full UI shown). This value is logged once the page load is
     completed or the first time Chrome is backgrounded during the course of the
     page load, whichever comes first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.FinalTargetLanguage" enum="LanguageCode"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the hashcode of the target language at the end of the page load.
+    This may differ from the initial target language determined by Chrome,
+    because the user can manually change the target language. This value is
+    logged once the page load is completed or the first time Chrome is
+    backgrounded during the course of the page load, whichever comes first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.InitialSourceLanguage" enum="LanguageCode"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the hashcode of the source language at the beginning of the page
+    load. The initial source language is automatically determined by Chrome.
+    This value is logged once the page load is completed or the first time
+    Chrome is backgrounded during the course of the page load, whichever comes
+    first.
   </summary>
 </histogram>
 
@@ -499,6 +541,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.InitialTargetLanguage" enum="LanguageCode"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the hashcode of the target language at the beginning of the page
+    load. The initial target language is automatically determined by Chrome.
+    This value is logged once the page load is completed or the first time
+    Chrome is backgrounded during the course of the page load, whichever comes
+    first.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PageLoad.NumReversions" units="reversions"
     expires_after="2021-04-04">
   <owner>curranmax@google.com</owner>
@@ -509,6 +565,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This value is logged once the page load is completed or the first time
     Chrome is backgrounded during the course of the page load, whichever comes
     first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.NumTargetLanguageChanges"
+    units="target language changes" expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of times the user changed the target language over the course of
+    the page load. This value is logged once the page load is completed or the
+    first time Chrome is backgrounded during the course of the page load,
+    whichever comes first.
   </summary>
 </histogram>
 
