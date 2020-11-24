@@ -901,6 +901,8 @@ suite('NewTabPageRealboxTest', () => {
 
         // Matches are hidden.
         assertFalse(areMatchesShowing());
+        // Force a synchronous render.
+        realbox.$.matches.$.groups.render();
         // First match is still selected.
         matchEls =
             realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
@@ -1015,11 +1017,12 @@ suite('NewTabPageRealboxTest', () => {
 
         // Matches are hidden.
         assertFalse(areMatchesShowing());
-        // First match is no longer selected (zero-prefix case).
+        // Force a synchronous render.
+        realbox.$.matches.$.groups.render();
+        // Matches are cleared.
         matchEls =
             realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
-        assertEquals(2, matchEls.length);
-        assertFalse(matchEls[0].classList.contains(CLASSES.SELECTED));
+        assertEquals(0, matchEls.length);
         // Input is cleared (zero-prefix case).
         assertEquals('', realbox.$.input.value);
         // Icon is restored (zero-prefix case).
@@ -1579,13 +1582,16 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(escapeEvent);
     assertTrue(escapeEvent.defaultPrevented);
 
-    // Matches are hidden and input gets cleared.
+    // Matches are hidden.
     assertFalse(areMatchesShowing());
-    assertEquals('', realbox.$.input.value);
-    realbox.$.matches.$.selector.forceSynchronousItemUpdate();
+    // Force a synchronous render.
+    realbox.$.matches.$.groups.render();
+    // Matches are cleared.
     matchEls =
         realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
-    assertEquals(2, matchEls.length);
+    assertEquals(0, matchEls.length);
+    // Input is cleared.
+    assertEquals('', realbox.$.input.value);
   });
 
   test('arrow up/down moves selection / focus', async () => {

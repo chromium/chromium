@@ -59,7 +59,7 @@
 <iron-selector id="selector" selectable="ntp-realbox-match"
     items="{{selectableMatchElements_}}" selected="{{selectedMatchIndex}}"
     selected-class="selected">
-  <template is="dom-repeat" items="[[groupIds_]]" as="groupId">
+  <template is="dom-repeat" id="groups" items="[[groupIds_]]" as="groupId">
     <template is="dom-if" if="[[groupHasHeader_(groupId)]]">
       <!-- Header cannot be tabbed into but gets focus when clicked. This stops
            the dropdown from losing focus and closing as a result. -->

@@ -380,7 +380,6 @@ class RealboxElement extends PolymerElement {
       // mechanism via which inline autocompletion is shown in the realbox.
       this.queryAutocomplete_(inputValue, e.isComposing);
     } else {
-      this.matchesAreVisible = false;
       this.clearAutocompleteMatches_();
     }
 
@@ -470,20 +469,21 @@ class RealboxElement extends PolymerElement {
     // of the realbox wrapper.
     const relatedTarget = /** @type {Element} */ (e.relatedTarget);
     if (!this.$.inputWrapper.contains(relatedTarget)) {
-      // Unselect the selected match and clear the input if the input was empty
-      // when the matches arrived.
       if (this.lastQueriedInput_ === '') {
-        this.$.matches.unselect();
+        // Clear the input as well as the matches if the input was empty when
+        // the matches arrived.
         this.updateInput_({text: '', inline: ''});
-      }
-      this.matchesAreVisible = false;
+        this.clearAutocompleteMatches_();
+      } else {
+        this.matchesAreVisible = false;
 
-      // Stop autocomplete but leave (potentially stale) results and continue
-      // listening for key presses. These stale results should never be shown.
-      // They correspond to the potentially stale suggestion left in the realbox
-      // when blurred. That stale result may be navigated to by focusing and
-      // pressing 'Enter'.
-      this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
+        // Stop autocomplete but leave (potentially stale) results and continue
+        // listening for key presses. These stale results should never be shown.
+        // They correspond to the potentially stale suggestion left in the
+        // realbox when blurred. That stale result may be navigated to by
+        // focusing and pressing 'Enter'.
+        this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
+      }
     }
   }
 
@@ -561,7 +561,6 @@ class RealboxElement extends PolymerElement {
 
     if (e.key === 'Escape' && this.selectedMatchIndex_ === 0) {
       this.updateInput_({text: '', inline: ''});
-      this.matchesAreVisible = false;
       this.clearAutocompleteMatches_();
       e.preventDefault();
       return;
@@ -668,6 +667,7 @@ class RealboxElement extends PolymerElement {
    * @private
    */
   clearAutocompleteMatches_() {
+    this.matchesAreVisible = false;
     this.result_ = null;
     this.$.matches.unselect();
     this.pageHandler_.stopAutocomplete(/*clearResult=*/ true);
