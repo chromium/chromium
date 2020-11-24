@@ -641,15 +641,13 @@ PiexLoader.load = function(source, onPiexModuleFailed) {
   return readSourceData(source)
       .then((buffer) => {
         if (piexModuleFailed()) {
-          // Just reject here: handle in the .catch() clause below.
-          return Promise.reject('piex wasm module failed');
+          throw new Error('piex wasm module failed');
         }
         imageBuffer = new ImageBuffer(buffer);
         return imageBuffer.process();
       })
       .then((/** !PiexWasmImageResult */ result) => {
         const buffer = /** @type {!ImageBuffer} */ (imageBuffer);
-        buffer.close();
         return new PiexLoaderResponse(buffer.preview(result));
       })
       .catch((error) => {
@@ -657,8 +655,10 @@ PiexLoader.load = function(source, onPiexModuleFailed) {
           setTimeout(onPiexModuleFailed, 0);
           return Promise.reject('piex wasm module failed');
         }
-        imageBuffer && imageBuffer.close();
         console.error('[PiexLoader] ' + error);
         return Promise.reject(error);
+      })
+      .finally(() => {
+        imageBuffer && imageBuffer.close();
       });
 };
