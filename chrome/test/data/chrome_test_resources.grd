@@ -11,6 +11,9 @@
       <message translateable="false" name="IDS_FEATURE_PROMO_BODY">
         Use this feature please
       </message>
+      <message translateable="false" name="IDS_FEATURE_PROMO_BODY_WITH_STRING_PLACEHOLDER">
+        Click <ph name="FOO">$1</ph> to do something
+      </message>
     </messages>
   </release>
 </grit>

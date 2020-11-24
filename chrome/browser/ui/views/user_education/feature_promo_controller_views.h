@@ -72,6 +72,10 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   bool MaybeShowPromo(
       const base::Feature& iph_feature,
       BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
+  bool MaybeShowPromoWithTextReplacements(
+      const base::Feature& iph_feature,
+      FeaturePromoTextReplacements text_replacements,
+      BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
   bool BubbleIsShowing(const base::Feature& iph_feature) const override;
   bool CloseBubble(const base::Feature& iph_feature) override;
   PromoHandle CloseBubbleAndContinuePromo(
@@ -99,6 +103,10 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   }
 
  private:
+  bool MaybeShowPromoImpl(const base::Feature& iph_feature,
+                          const FeaturePromoBubbleParams& params,
+                          BubbleCloseCallback close_callback);
+
   // Called when PromoHandle is destroyed to finish the promo.
   void FinishContinuedPromo() override;
 

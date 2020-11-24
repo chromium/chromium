@@ -12,6 +12,8 @@ namespace base {
 struct Feature;
 }
 
+class FeaturePromoTextReplacements;
+
 // Manages display of in-product help promos. All IPH displays in Top
 // Chrome should go through here.
 class FeaturePromoController {
@@ -38,6 +40,16 @@ class FeaturePromoController {
   // this method when possible.
   virtual bool MaybeShowPromo(
       const base::Feature& iph_feature,
+      BubbleCloseCallback close_callback = BubbleCloseCallback()) = 0;
+
+  // Like the above, but adds context-specific text in the promo
+  // bubble's body text. The correct usage of |text_replacements|
+  // depends on how the promo is registered with the implementation. It
+  // should have one replacement for each placeholder in the registered
+  // body text.
+  virtual bool MaybeShowPromoWithTextReplacements(
+      const base::Feature& iph_feature,
+      FeaturePromoTextReplacements text_replacements,
       BubbleCloseCallback close_callback = BubbleCloseCallback()) = 0;
 
   // Returns whether a bubble is showing for the given IPH. Note that if

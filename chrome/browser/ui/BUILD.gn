@@ -1290,6 +1290,8 @@ static_library("ui") {
       "user_education/feature_promo_controller.h",
       "user_education/feature_promo_snooze_service.cc",
       "user_education/feature_promo_snooze_service.h",
+      "user_education/feature_promo_text_replacements.cc",
+      "user_education/feature_promo_text_replacements.h",
       "user_education/reopen_tab_in_product_help.cc",
       "user_education/reopen_tab_in_product_help.h",
       "user_education/reopen_tab_in_product_help_factory.cc",
