@@ -30,6 +30,9 @@ namespace net {
 namespace test {
 namespace {
 
+using ::quic::test::MemSliceFromString;
+using ::testing::_;
+
 class MockVisitor : public QuicTransportClient::Visitor {
  public:
   MOCK_METHOD0(OnConnected, void());
@@ -42,6 +45,7 @@ class MockVisitor : public QuicTransportClient::Visitor {
   MOCK_METHOD1(OnDatagramReceived, void(base::StringPiece));
   MOCK_METHOD0(OnCanCreateNewOutgoingBidirectionalStream, void());
   MOCK_METHOD0(OnCanCreateNewOutgoingUnidirectionalStream, void());
+  MOCK_METHOD1(OnDatagramProcessed, void(base::Optional<quic::MessageStatus>));
 };
 
 // A clock that only mocks out WallNow(), but uses real Now() and
@@ -178,6 +182,22 @@ TEST_F(QuicTransportEndToEndTest, Connect) {
   EXPECT_TRUE(client_->session()->IsSessionReady());
 }
 
+TEST_F(QuicTransportEndToEndTest, SendDatagram) {
+  StartServer();
+  client_ = std::make_unique<QuicTransportClient>(
+      GetURL("/discard"), origin_, &visitor_, isolation_key_, context_.get(),
+      QuicTransportClient::Parameters());
+  client_->Connect();
+  EXPECT_CALL(visitor_, OnConnected()).WillOnce(StopRunning());
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+  EXPECT_TRUE(client_->session()->IsSessionReady());
+
+  EXPECT_CALL(visitor_, OnDatagramProcessed(_)).Times(1);
+  client_->session()->datagram_queue()->SendOrQueueDatagram(
+      MemSliceFromString("test"));
+}
+
 TEST_F(QuicTransportEndToEndTest, EchoUnidirectionalStream) {
   StartServer();
   client_ = std::make_unique<QuicTransportClient>(
@@ -297,6 +317,11 @@ TEST_F(QuicTransportEndToEndTest, OldVersion) {
       GetStringValueFromParams(events[0], "version"),
       quic::ParsedQuicVersionToString(
           QuicTransportClient::QuicVersionsForWebTransportOriginTrial()[1]));
+
+  // Ensure the observer is set correctly after the version negotiation process.
+  EXPECT_CALL(visitor_, OnDatagramProcessed(_)).Times(1);
+  client_->session()->datagram_queue()->SendOrQueueDatagram(
+      MemSliceFromString("test"));
 }
 
 }  // namespace

@@ -81,6 +81,8 @@ class NET_EXPORT QuicTransportClient
     virtual void OnDatagramReceived(base::StringPiece datagram) = 0;
     virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
     virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
+    virtual void OnDatagramProcessed(
+        base::Optional<quic::MessageStatus> status) = 0;
   };
 
   struct NET_EXPORT Parameters {
@@ -174,6 +176,17 @@ class NET_EXPORT QuicTransportClient
     CONNECT_STATE_CONFIRM_CONNECTION,
 
     CONNECT_STATE_NUM_STATES,
+  };
+
+  class DatagramObserverProxy : public quic::QuicDatagramQueue::Observer {
+   public:
+    explicit DatagramObserverProxy(QuicTransportClient* client)
+        : client_(client) {}
+    void OnDatagramProcessed(
+        absl::optional<quic::MessageStatus> status) override;
+
+   private:
+    QuicTransportClient* client_;
   };
 
   // DoLoop processing the Connect() call.

@@ -586,6 +586,11 @@ void QuicTransport::OnCanCreateNewOutgoingUnidirectionalStream() {
   // TODO(yhirano): Implement this.
 }
 
+void QuicTransport::OnDatagramProcessed(
+    base::Optional<quic::MessageStatus> status) {
+  // TODO(yhirano): Implement this.
+}
+
 void QuicTransport::TearDown() {
   torn_down_ = true;
   receiver_.reset();

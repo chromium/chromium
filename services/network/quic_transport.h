@@ -77,6 +77,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) QuicTransport final
   void OnDatagramReceived(base::StringPiece datagram) override;
   void OnCanCreateNewOutgoingBidirectionalStream() override;
   void OnCanCreateNewOutgoingUnidirectionalStream() override;
+  void OnDatagramProcessed(base::Optional<quic::MessageStatus> status) override;
 
   bool torn_down() const { return torn_down_; }
 

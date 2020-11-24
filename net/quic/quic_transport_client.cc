@@ -286,7 +286,7 @@ void QuicTransportClient::CreateConnection() {
   session_ = std::make_unique<quic::QuicTransportClientSession>(
       connection_.get(), this, InitializeQuicConfig(*quic_context_->params()),
       supported_versions_, url_, &crypto_config_, origin_, this,
-      /*datagram_observer=*/nullptr);
+      std::make_unique<DatagramObserverProxy>(this));
 
   packet_reader_ = std::make_unique<QuicChromiumPacketReader>(
       socket_.get(), quic_context_->clock(), this, kQuicYieldAfterPacketsRead,
@@ -479,6 +479,13 @@ void QuicTransportClient::OnConnectionClosed(
   }
 
   TransitionToState(FAILED);
+}
+
+void QuicTransportClient::DatagramObserverProxy::OnDatagramProcessed(
+    absl::optional<quic::MessageStatus> status) {
+  client_->visitor_->OnDatagramProcessed(
+      status.has_value() ? base::Optional<quic::MessageStatus>(*status)
+                         : base::Optional<quic::MessageStatus>());
 }
 
 }  // namespace net
