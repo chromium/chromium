@@ -104,6 +104,10 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     return controller_ && controller_->IsWidgetVisibleForTesting();
   }
 
+  bool CanWidgetActivate() {
+    return GetCaptionWidget() && GetCaptionWidget()->CanActivate();
+  }
+
   bool IsWidgetActive() {
     return GetCaptionWidget() && GetCaptionWidget()->IsActive();
   }
@@ -1034,12 +1038,15 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        BubbleDeactivatedWhenHidden) {
   EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_FALSE(CanWidgetActivate());
   EXPECT_FALSE(IsWidgetActive());
   OnPartialTranscription("Cows can detect odors up to 6 miles away.");
   EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_TRUE(CanWidgetActivate());
   EXPECT_TRUE(IsWidgetActive());
   ClickButton(GetCloseButton());
   EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_FALSE(CanWidgetActivate());
   EXPECT_FALSE(IsWidgetActive());
 }
 #endif
