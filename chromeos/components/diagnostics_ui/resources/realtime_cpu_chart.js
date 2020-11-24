@@ -108,33 +108,33 @@ Polymer({
     /** @private {number} */
     width_: {
       type: Number,
-      value: 550,
+      value: 560,
     },
 
     /** @private {number} */
     height_: {
       type: Number,
-      value: 100,
+      value: 114,
     },
 
     /** @private {!Object} */
-    margin_: {
+    padding_: {
       type: Object,
-      value: {top: 10, right: 20, bottom: 10, left: 30},
+      value: {top: 10, right: 20, bottom: 10, left: 50, tick: 10},
     },
 
     /** @private {number} */
     graphWidth_: {
       readOnly: true,
       type: Number,
-      computed: 'getGraphDimension_(width_, margin_.left, margin_.right)'
+      computed: 'getGraphDimension_(width_, padding_.left, padding_.right)'
     },
 
     /** @private {number} */
     graphHeight_: {
       readOnly: true,
       type: Number,
-      computed: 'getGraphDimension_(height_, margin_.top, margin_.bottom)'
+      computed: 'getGraphDimension_(height_, padding_.top, padding_.bottom)'
     }
   },
 
@@ -202,7 +202,7 @@ Polymer({
     // Position chartGroup inside the margin.
     chartGroup.attr(
         'transform',
-        'translate(' + this.margin_.left + ',' + this.margin_.top + ')');
+        'translate(' + this.padding_.left + ',' + this.padding_.top + ')');
 
     // Draw the y-axis legend and also draw the horizontal gridlines by
     // reversing the ticks back into the chart body.
@@ -211,6 +211,7 @@ Polymer({
             d3.axisLeft(/** @type {!d3.LinearScale} */ (this.yAxisScaleFn_))
                 .tickValues(this.yAxisTicks_)
                 .tickFormat((y) => this.getPercentageLabel_(y))
+                .tickPadding(this.padding_.tick)
                 .tickSize(-this.graphWidth_)  // Extend the ticks into the
                                               // entire graph as gridlines.
         );
@@ -247,9 +248,10 @@ Polymer({
         .area()
         // Take the index of each data as x values.
         .x((data, i) => this.xAxisScaleFn_(i))
-        // Bottom coordinates of each area.
+        // Bottom coordinates of each area. System area extends down to -1
+        // instead of 0 to avoid the area border from showing up.
         .y0(data => this.yAxisScaleFn_(
-                areaClass === 'system-area' ? 0 : data.system))
+                areaClass === 'system-area' ? -1 : data.system))
         // Top coordinates of each area.
         .y1(data => this.yAxisScaleFn_(
                 areaClass === 'system-area' ? data.system :

@@ -53,12 +53,12 @@ export function realtimeCpuChartTestSuite() {
   }
 
   /**
-   * Get margin_ private member for testing.
+   * Get padding_ private member for testing.
    * @suppress {visibility} // access private member
    */
-  function getMargins() {
+  function getPaddings() {
     assertTrue(!!realtimeCpuChartElement);
-    return realtimeCpuChartElement.margin_;
+    return realtimeCpuChartElement.padding_;
   }
 
   /**
@@ -110,7 +110,7 @@ export function realtimeCpuChartTestSuite() {
 
       // Margins are in effect.
       assertEquals(
-          `translate(${getMargins().left},${getMargins().top})`,
+          `translate(${getPaddings().left},${getPaddings().top})`,
           chartGroup.getAttribute('transform'));
     });
   });
