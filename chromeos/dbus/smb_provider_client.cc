@@ -612,6 +612,7 @@ class SmbProviderClientImpl : public SmbProviderClient {
       LOG(ERROR) << "StartCopy: parse failure.";
       std::move(callback).Run(smbprovider::ERROR_DBUS_PARSE_FAILED,
                               -1 /* copy_token*/);
+      return;
     }
 
     if (error != smbprovider::ERROR_COPY_PENDING) {
