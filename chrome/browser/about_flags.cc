@@ -5090,13 +5090,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharedClipboardUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(kSharedClipboardUI)},
 
-    {"enable-send-tab-to-self-omnibox-sending-animation",
-     flag_descriptions::kSendTabToSelfOmniboxSendingAnimationName,
-     flag_descriptions::kSendTabToSelfOmniboxSendingAnimationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         send_tab_to_self::kSendTabToSelfOmniboxSendingAnimation)},
-
     {"sharing-prefer-vapid", flag_descriptions::kSharingPreferVapidName,
      flag_descriptions::kSharingPreferVapidDescription, kOsAll,
      FEATURE_VALUE_TYPE(kSharingPreferVapid)},

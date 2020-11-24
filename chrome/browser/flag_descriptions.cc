@@ -2024,12 +2024,6 @@ const char kSecurePaymentConfirmationDebugDescription[] =
     "secure payment confirmation in PaymentRequest API must use user verifying "
     "platform authenticators.";
 
-const char kSendTabToSelfOmniboxSendingAnimationName[] =
-    "Send tab to self omnibox sending animation";
-const char kSendTabToSelfOmniboxSendingAnimationDescription[] =
-    "If enabled, shows Sending... animation in omnibox instead of Desktop OS "
-    "notifications for contextual menu entry points.";
-
 const char kServiceWorkerOnUIName[] = "Service worker on UI thread";
 const char kServiceWorkerOnUIDescription[] =
     "Enables browser process logic related to service workers to run on the UI "

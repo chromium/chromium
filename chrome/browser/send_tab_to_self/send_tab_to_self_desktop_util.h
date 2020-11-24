@@ -42,8 +42,7 @@ enum SendTabToSelfMenuType { kTab, kOmnibox, kContent, kLink };
 void CreateNewEntry(content::WebContents* tab,
                     const std::string& target_device_name,
                     const std::string& target_device_guid,
-                    const GURL& link_url = GURL(),
-                    bool show_notification = true);
+                    const GURL& link_url = GURL());
 
 // Adds a new entry to SendTabToSelfModel when user clicks the single valid
 // device. Will be called when GetValidDeviceCount() == 1.
