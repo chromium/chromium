@@ -132,6 +132,9 @@ public class TabSwitcherCoordinator
                                         .getTabsWithNoOtherRelatedTabs());
                         RecordUserAction.record("MobileMenuGroupTabs");
                         return true;
+                    } else if (id == R.id.track_prices_id || id == R.id.track_prices_check_id) {
+                        PriceTrackingUtilities.flipTrackPricesOnTabs();
+                        return true;
                     }
                     return false;
                 }
