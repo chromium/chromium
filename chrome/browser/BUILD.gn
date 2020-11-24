@@ -3227,6 +3227,7 @@ static_library("browser") {
       "//chrome/browser/safety_check/android",
       "//chrome/browser/share",
       "//chrome/browser/share/android:jni_headers",
+      "//chrome/browser/signin/services/android:jni_headers",
       "//chrome/browser/tab:jni_headers",
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",

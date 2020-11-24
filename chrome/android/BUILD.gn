@@ -3379,7 +3379,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/signin/SigninPromoUtil.java",
     "java/src/org/chromium/chrome/browser/signin/SigninUtils.java",
     "java/src/org/chromium/chrome/browser/signin/UnifiedConsentServiceBridge.java",
-    "java/src/org/chromium/chrome/browser/signin/WebSigninBridge.java",
     "java/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridge.java",
     "java/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorSceneLayer.java",
     "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSites.java",

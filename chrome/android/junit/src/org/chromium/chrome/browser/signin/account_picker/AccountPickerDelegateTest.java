@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninManager;
-import org.chromium.chrome.browser.signin.WebSigninBridge;
+import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountUtils;

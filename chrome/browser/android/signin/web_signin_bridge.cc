@@ -6,10 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/WebSigninBridge_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/services/android/jni_headers/WebSigninBridge_jni.h"
 #include "components/signin/public/android/jni_headers/GoogleServiceAuthError_jni.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
@@ -20,7 +20,7 @@ void ForwardOnSigninCompletedToJava(
     const GoogleServiceAuthError& error) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (error.state() == GoogleServiceAuthError::State::NONE) {
-    Java_WebSigninBridge_onSigninSucceded(env, j_listener);
+    Java_WebSigninBridge_onSigninSucceeded(env, j_listener);
   } else {
     base::android::ScopedJavaLocalRef<jobject> j_error =
         signin::Java_GoogleServiceAuthError_Constructor(env, error.state());
