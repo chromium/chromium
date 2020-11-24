@@ -128,6 +128,7 @@ class MODULES_EXPORT VideoEncoder final
 
   std::unique_ptr<ParsedConfig> active_config_;
   std::unique_ptr<media::VideoEncoder> media_encoder_;
+  bool is_hw_accelerated_ = false;
 
   // |parent_media_log_| must be destroyed if ever the ExecutionContext is
   // destroyed, since the blink::MediaInspectorContext* pointer given to
@@ -155,6 +156,7 @@ class MODULES_EXPORT VideoEncoder final
   // kEncode. This flag stops processing of new requests in the requests_ queue
   // till the current requests is finished.
   bool stall_request_processing_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
