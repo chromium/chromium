@@ -260,4 +260,13 @@ void NetworkServiceClient::OnCorsPreflightRequestCompleted(
       process_id, render_frame_id, devtools_request_id, status);
 }
 
+void NetworkServiceClient::OnTrustTokenOperationDone(
+    int32_t process_id,
+    int32_t routing_id,
+    const std::string& devtools_request_id,
+    network::mojom::TrustTokenOperationResultPtr result) {
+  // TODO(crbug.com/1126824): Implement by forwarding to a
+  //                          devtools_instrumentation method.
+}
+
 }  // namespace content

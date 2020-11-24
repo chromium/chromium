@@ -261,4 +261,18 @@ TrustTokenRequestRedemptionHelper::RetrieveSingleToken() {
   return matching_tokens.front();
 }
 
+mojom::TrustTokenOperationResultPtr
+TrustTokenRequestRedemptionHelper::CollectOperationResultWithStatus(
+    mojom::TrustTokenOperationStatus status) {
+  mojom::TrustTokenOperationResultPtr operation_result =
+      mojom::TrustTokenOperationResult::New();
+  operation_result->status = status;
+  operation_result->type = mojom::TrustTokenOperationType::kRedemption;
+  operation_result->top_level_origin = top_level_origin_;
+  if (issuer_) {
+    operation_result->issuer = *issuer_;
+  }
+  return operation_result;
+}
+
 }  // namespace network

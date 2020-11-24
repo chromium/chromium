@@ -106,6 +106,15 @@ interface NetworkServiceClient {
     int32 render_frame_id,
     mojo_base.mojom.UnguessableToken devtool_request_id,
     URLLoaderCompletionStatus status);
+
+  // Called to send the result of a successful or failed Trust Token
+  // operation. Only called when |devtools_request_id| is available on the
+  // original request.
+  OnTrustTokenOperationDone(
+    int32 process_id,
+    int32 routing_id,
+    string devtool_request_id,
+    TrustTokenOperationResult result);
 };
 
 // Values for configuring HTTP authentication that can only be set once.

@@ -32,6 +32,9 @@ class OperationTimingRequestHelperWrapper : public TrustTokenRequestHelper {
       mojom::URLResponseHead* response,
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
 
+  mojom::TrustTokenOperationResultPtr CollectOperationResultWithStatus(
+      mojom::TrustTokenOperationStatus status) override;
+
  private:
   // Records timing metrics, then calls the callback.
   void FinishBegin(

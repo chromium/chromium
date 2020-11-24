@@ -843,6 +843,16 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
         FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   net::ERR_TRUST_TOKEN_OPERATION_FAILED));
+
+    if (network_service_client_ && devtools_request_id()) {
+      mojom::TrustTokenOperationResultPtr operation_result =
+          mojom::TrustTokenOperationResult::New();
+      operation_result->status = *trust_token_status_;
+      operation_result->type = type;
+      network_service_client_->OnTrustTokenOperationDone(
+          GetProcessId(), GetRenderFrameId(), devtools_request_id().value(),
+          std::move(operation_result));
+    }
     return;
   }
 
@@ -857,6 +867,14 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
 void URLLoader::OnDoneBeginningTrustTokenOperation(
     mojom::TrustTokenOperationStatus status) {
   trust_token_status_ = status;
+
+  // In case the operation failed or we hit the cache, the DevTools event is
+  // emitted from here. Otherwise the DevTools event is always emitted from
+  // |OnDoneFinalizeTrustTokenOperation|.
+  if (status != mojom::TrustTokenOperationStatus::kOk) {
+    MaybeSendTrustTokenOperationResultToDevTools();
+  }
+
   if (status == mojom::TrustTokenOperationStatus::kOk) {
     ScheduleStart();
   } else if (status == mojom::TrustTokenOperationStatus::kAlreadyExists) {
@@ -1257,12 +1275,28 @@ void URLLoader::OnDoneFinalizingTrustTokenOperation(
     mojom::TrustTokenOperationStatus status) {
   trust_token_status_ = status;
 
+  MaybeSendTrustTokenOperationResultToDevTools();
+
   if (status != mojom::TrustTokenOperationStatus::kOk) {
     NotifyCompleted(net::ERR_TRUST_TOKEN_OPERATION_FAILED);
     // |this| may have been deleted.
     return;
   }
   ContinueOnResponseStarted();
+}
+
+void URLLoader::MaybeSendTrustTokenOperationResultToDevTools() {
+  CHECK(trust_token_helper_ && trust_token_status_);
+
+  if (!network_service_client_ || !devtools_request_id())
+    return;
+
+  mojom::TrustTokenOperationResultPtr operation_result =
+      trust_token_helper_->CollectOperationResultWithStatus(
+          *trust_token_status_);
+  network_service_client_->OnTrustTokenOperationDone(
+      GetProcessId(), GetRenderFrameId(), devtools_request_id().value(),
+      std::move(operation_result));
 }
 
 void URLLoader::ContinueOnResponseStarted() {

@@ -215,6 +215,9 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
       mojom::URLResponseHead* response,
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
 
+  mojom::TrustTokenOperationResultPtr CollectOperationResultWithStatus(
+      mojom::TrustTokenOperationStatus status) override;
+
  private:
   // Given issuer-to-redemption-record and issuer-to-signature maps, returns a
   // Trust Tokens signature header, a serialized Structured Headers Draft 15

@@ -5531,6 +5531,14 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
     }
   }
 
+  mojom::TrustTokenOperationResultPtr CollectOperationResultWithStatus(
+      mojom::TrustTokenOperationStatus status) override {
+    mojom::TrustTokenOperationResultPtr operation_result =
+        mojom::TrustTokenOperationResult::New();
+    operation_result->status = status;
+    return operation_result;
+  }
+
  private:
   void OnDoneBeginning(base::OnceClosure done) {
     if (begin_done_flag_) {
@@ -5635,6 +5643,31 @@ class MockTrustTokenRequestHelperFactory
   std::unique_ptr<TrustTokenRequestHelper> helper_;
 };
 
+class MockTrustTokenNetworkServiceClient : public TestNetworkServiceClient {
+ public:
+  MockTrustTokenNetworkServiceClient() = default;
+  ~MockTrustTokenNetworkServiceClient() override = default;
+
+  void OnTrustTokenOperationDone(
+      int32_t process_id,
+      int32_t routing_id,
+      const std::string& devtool_request_id,
+      network::mojom::TrustTokenOperationResultPtr result) override {
+    // Event should be only triggered once.
+    EXPECT_FALSE(trust_token_operation_status_.has_value());
+    trust_token_operation_status_ = result->status;
+  }
+
+  const base::Optional<mojom::TrustTokenOperationStatus>
+  trust_token_operation_status() const {
+    return trust_token_operation_status_;
+  }
+
+ private:
+  base::Optional<mojom::TrustTokenOperationStatus>
+      trust_token_operation_status_ = base::nullopt;
+};
+
 }  // namespace
 
 class URLLoaderSyncOrAsyncTrustTokenOperationTest
@@ -5646,6 +5679,16 @@ class URLLoaderSyncOrAsyncTrustTokenOperationTest
   }
 
  protected:
+  ResourceRequest CreateTrustTokenResourceRequest() {
+    ResourceRequest request = CreateResourceRequest(
+        "GET", test_server()->GetURL("/simple_page.html"));
+    request.trust_token_params =
+        OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+    // Set the devtools id to trigger the OnTrustTokenOperationDone call.
+    request.devtools_request_id = "TEST";
+    return request;
+  }
+
   // Maintain a flag, set by the mock trust token request helper, denoting
   // whether we've successfully executed the outbound Trust Tokens operation.
   // This is used to make URLLoader does not send its main request before it
@@ -5664,20 +5707,17 @@ INSTANTIATE_TEST_SUITE_P(WithSyncAndAsyncOperations,
 // whose Begin and Finalize steps are both successful should succeed overall.
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
        HandlesTrustTokenOperationSuccess) {
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
-  request.trust_token_params =
-      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+  ResourceRequest request = CreateTrustTokenResourceRequest();
 
   base::RunLoop delete_run_loop;
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> url_loader;
   mojom::URLLoaderFactoryParams params;
   params.process_id = mojom::kBrowserProcessId;
+  MockTrustTokenNetworkServiceClient network_service_client;
 
   url_loader = std::make_unique<URLLoader>(
-      context(), nullptr /* network_service_client */,
-      nullptr /* network_context_client */,
+      context(), &network_service_client, nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
@@ -5697,6 +5737,9 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   EXPECT_EQ(client()->completion_status().error_code, net::OK);
   EXPECT_EQ(client()->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kOk);
+  // Verify the DevTools event was fired and it has the right status.
+  EXPECT_EQ(network_service_client.trust_token_operation_status(),
             mojom::TrustTokenOperationStatus::kOk);
   // The page should still have loaded.
   base::FilePath file = GetTestFilePath("simple_page.html");
@@ -5720,20 +5763,17 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 // operation.)
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
        HandlesTrustTokenRedemptionRecordCacheHit) {
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
-  request.trust_token_params =
-      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+  ResourceRequest request = CreateTrustTokenResourceRequest();
 
   base::RunLoop delete_run_loop;
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> url_loader;
   mojom::URLLoaderFactoryParams params;
   params.process_id = mojom::kBrowserProcessId;
+  MockTrustTokenNetworkServiceClient network_service_client;
 
   url_loader = std::make_unique<URLLoader>(
-      context(), nullptr /* network_service_client */,
-      nullptr /* network_context_client */,
+      context(), &network_service_client, nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
@@ -5756,6 +5796,9 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
             net::ERR_TRUST_TOKEN_OPERATION_CACHE_HIT);
   EXPECT_EQ(client()->completion_status().trust_token_operation_status,
             mojom::TrustTokenOperationStatus::kAlreadyExists);
+  // Verify the DevTools event was fired and it has the right status.
+  EXPECT_EQ(network_service_client.trust_token_operation_status(),
+            mojom::TrustTokenOperationStatus::kAlreadyExists);
 
   EXPECT_FALSE(client()->response_head());
   EXPECT_FALSE(client()->response_body().is_valid());
@@ -5765,20 +5808,17 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 // request itself should fail immediately.
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
        HandlesTrustTokenBeginFailure) {
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
-  request.trust_token_params =
-      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+  ResourceRequest request = CreateTrustTokenResourceRequest();
 
   base::RunLoop delete_run_loop;
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> url_loader;
   mojom::URLLoaderFactoryParams params;
   params.process_id = mojom::kBrowserProcessId;
+  MockTrustTokenNetworkServiceClient network_service_client;
 
   url_loader = std::make_unique<URLLoader>(
-      context(), nullptr /* network_service_client */,
-      nullptr /* network_context_client */,
+      context(), &network_service_client, nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
@@ -5800,6 +5840,9 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
             net::ERR_TRUST_TOKEN_OPERATION_FAILED);
   EXPECT_EQ(client()->completion_status().trust_token_operation_status,
             mojom::TrustTokenOperationStatus::kFailedPrecondition);
+  // Verify the DevTools event was fired and it has the right status.
+  EXPECT_EQ(network_service_client.trust_token_operation_status(),
+            mojom::TrustTokenOperationStatus::kFailedPrecondition);
 
   EXPECT_FALSE(client()->response_head());
   EXPECT_FALSE(client()->response_body().is_valid());
@@ -5809,20 +5852,17 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 // its Finalize step fails, the request itself should fail.
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
        HandlesTrustTokenFinalizeFailure) {
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
-  request.trust_token_params =
-      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+  ResourceRequest request = CreateTrustTokenResourceRequest();
 
   base::RunLoop delete_run_loop;
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> url_loader;
   mojom::URLLoaderFactoryParams params;
   params.process_id = mojom::kBrowserProcessId;
+  MockTrustTokenNetworkServiceClient network_service_client;
 
   url_loader = std::make_unique<URLLoader>(
-      context(), nullptr /* network_service_client */,
-      nullptr /* network_context_client */,
+      context(), &network_service_client, nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
@@ -5844,6 +5884,9 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
             net::ERR_TRUST_TOKEN_OPERATION_FAILED);
   EXPECT_EQ(client()->completion_status().trust_token_operation_status,
             mojom::TrustTokenOperationStatus::kBadResponse);
+  // Verify the DevTools event was fired and it has the right status.
+  EXPECT_EQ(network_service_client.trust_token_operation_status(),
+            mojom::TrustTokenOperationStatus::kBadResponse);
 }
 
 // When URLLoader receives a  request parameterized to perform a Trust Tokens
@@ -5852,20 +5895,17 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 // should fail entirely.
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
        HandlesTrustTokenRequestHelperCreationFailure) {
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
-  request.trust_token_params =
-      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+  ResourceRequest request = CreateTrustTokenResourceRequest();
 
   base::RunLoop delete_run_loop;
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> url_loader;
   mojom::URLLoaderFactoryParams params;
   params.process_id = mojom::kBrowserProcessId;
+  MockTrustTokenNetworkServiceClient network_service_client;
 
   url_loader = std::make_unique<URLLoader>(
-      context(), nullptr /* network_service_client */,
-      nullptr /* network_context_client */,
+      context(), &network_service_client, nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
@@ -5886,6 +5926,9 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   EXPECT_EQ(client()->completion_status().error_code,
             net::ERR_TRUST_TOKEN_OPERATION_FAILED);
   EXPECT_EQ(client()->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kInternalError);
+  // Verify the DevTools event was fired and it has the right status.
+  EXPECT_EQ(network_service_client.trust_token_operation_status(),
             mojom::TrustTokenOperationStatus::kInternalError);
 }
 

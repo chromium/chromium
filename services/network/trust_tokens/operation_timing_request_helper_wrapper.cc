@@ -47,4 +47,10 @@ void OperationTimingRequestHelperWrapper::FinishFinalize(
   std::move(done).Run(status);
 }
 
+mojom::TrustTokenOperationResultPtr
+OperationTimingRequestHelperWrapper::CollectOperationResultWithStatus(
+    mojom::TrustTokenOperationStatus status) {
+  return helper_->CollectOperationResultWithStatus(status);
+}
+
 }  // namespace network

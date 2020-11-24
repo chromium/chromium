@@ -293,6 +293,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Continuation of |OnResponseStarted| after possibly asynchronously
   // concluding the request's Trust Tokens operation.
   void ContinueOnResponseStarted();
+  void MaybeSendTrustTokenOperationResultToDevTools();
 
   void ScheduleStart();
   void ReadMore();

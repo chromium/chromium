@@ -187,6 +187,9 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   struct CryptographerAndBlindedTokens;
   struct CryptographerAndUnblindedTokens;
 
+  mojom::TrustTokenOperationResultPtr CollectOperationResultWithStatus(
+      mojom::TrustTokenOperationStatus status) override;
+
  private:
   // Continuation of |Begin| after asynchronous key commitment fetching
   // concludes.
@@ -275,6 +278,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
       is_current_os_callback_;
 
   net::NetLogWithSource net_log_;
+  base::Optional<size_t> num_obtained_tokens_;
   base::WeakPtrFactory<TrustTokenRequestIssuanceHelper> weak_ptr_factory_{this};
 };
 

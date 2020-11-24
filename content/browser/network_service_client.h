@@ -81,6 +81,12 @@ class CONTENT_EXPORT NetworkServiceClient
       const base::UnguessableToken& devtool_request_id,
       const network::URLLoaderCompletionStatus& status) override;
 
+  void OnTrustTokenOperationDone(
+      int32_t process_id,
+      int32_t routing_id,
+      const std::string& devtool_request_id,
+      network::mojom::TrustTokenOperationResultPtr result) override;
+
   // net::CertDatabase::Observer implementation:
   void OnCertDBChanged() override;
 

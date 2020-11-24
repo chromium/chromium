@@ -175,6 +175,9 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
       mojom::URLResponseHead* response,
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) override;
 
+  mojom::TrustTokenOperationResultPtr CollectOperationResultWithStatus(
+      mojom::TrustTokenOperationStatus status) override;
+
  private:
   // Continuation of |Begin| after asynchronous key commitment fetching
   // concludes.

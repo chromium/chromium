@@ -604,4 +604,15 @@ TrustTokenRequestSigningHelper::GetSignature(
   return signer_->Sign(key_bytes, base::make_span(signing_data));
 }
 
+mojom::TrustTokenOperationResultPtr
+TrustTokenRequestSigningHelper::CollectOperationResultWithStatus(
+    mojom::TrustTokenOperationStatus status) {
+  mojom::TrustTokenOperationResultPtr operation_result =
+      mojom::TrustTokenOperationResult::New();
+  operation_result->status = status;
+  operation_result->type = mojom::TrustTokenOperationType::kRedemption;
+  operation_result->top_level_origin = params_.toplevel;
+  return operation_result;
+}
+
 }  // namespace network

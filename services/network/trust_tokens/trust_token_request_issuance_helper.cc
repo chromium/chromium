@@ -321,9 +321,11 @@ void TrustTokenRequestIssuanceHelper::OnDelegateConfirmIssuanceCallComplete(
   token_store_->AddTokens(*issuer_, base::make_span(maybe_tokens->tokens),
                           maybe_tokens->body_of_verifying_key);
 
+  num_obtained_tokens_ = maybe_tokens->tokens.size();
+
   net_log_.EndEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_ISSUANCE,
-      [num_obtained_tokens = maybe_tokens->tokens.size()]() {
+      [num_obtained_tokens = *num_obtained_tokens_]() {
         base::Value ret = CreateLogValue("Success");
         ret.SetIntKey("# tokens obtained", num_obtained_tokens);
         return ret;
@@ -369,6 +371,23 @@ void TrustTokenRequestIssuanceHelper::DoneFinalizingLocallyFulfilledIssuance(
   }
 
   std::move(done).Run(status);
+}
+
+mojom::TrustTokenOperationResultPtr
+TrustTokenRequestIssuanceHelper::CollectOperationResultWithStatus(
+    mojom::TrustTokenOperationStatus status) {
+  mojom::TrustTokenOperationResultPtr operation_result =
+      mojom::TrustTokenOperationResult::New();
+  operation_result->status = status;
+  operation_result->type = mojom::TrustTokenOperationType::kIssuance;
+  operation_result->top_level_origin = top_level_origin_;
+  if (issuer_) {
+    operation_result->issuer = *issuer_;
+  }
+  if (num_obtained_tokens_) {
+    operation_result->issued_token_count = *num_obtained_tokens_;
+  }
+  return operation_result;
 }
 
 }  // namespace network

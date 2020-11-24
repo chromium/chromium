@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_REQUEST_HELPER_H_
 
 #include "base/callback_forward.h"
-#include "services/network/public/mojom/trust_tokens.mojom-shared.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
@@ -41,6 +41,12 @@ class TrustTokenRequestHelper {
   virtual void Finalize(
       mojom::URLResponseHead* response,
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) = 0;
+
+  // Provides operation specific information to DevTools. The |status| of an
+  // operation is passed inline to the "done" callback and not stored on the
+  // helper. Thus, it always needs to be provided explicitly.
+  virtual mojom::TrustTokenOperationResultPtr CollectOperationResultWithStatus(
+      mojom::TrustTokenOperationStatus status) = 0;
 };
 
 }  // namespace network
