@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_path_watcher.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
