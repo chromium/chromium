@@ -212,9 +212,9 @@ class WebFrameWidget : public WebWidget {
 
  private:
   // This private constructor and the class/friend declaration ensures that
-  // WebFrameWidgetBase is the only concrete subclass that implements
-  // WebFrameWidget, so that it is safe to downcast to WebFrameWidgetBase.
-  friend class WebFrameWidgetBase;
+  // WebFrameWidgetImpl is the only concrete subclass that implements
+  // WebFrameWidget, so that it is safe to downcast to WebFrameWidgetImpl.
+  friend class WebFrameWidgetImpl;
   WebFrameWidget() = default;
 };
 

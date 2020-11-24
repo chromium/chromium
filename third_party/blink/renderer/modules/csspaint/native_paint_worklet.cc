@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/csspaint/native_paint_worklet.h"
 
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/modules/csspaint/native_paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_id_generator.h"

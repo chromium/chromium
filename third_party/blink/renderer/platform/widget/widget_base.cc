@@ -312,34 +312,34 @@ void WidgetBase::UpdateVisualProperties(
   //    properties are usually the same for every WidgetBase, except when
   //    device emulation changes them in the main frame WidgetBase only.
   //    Example: screen_info.
-  // 3. Computed in the renderer of the main frame WebFrameWidgetBase (in blink
+  // 3. Computed in the renderer of the main frame WebFrameWidgetImpl (in blink
   //    usually). Passed down through the waterfall dance to child frame
-  //    WebFrameWidgetBase. Here that step is performed by passing the value
-  //    along to all RemoteFrame objects that are below this WebFrameWidgetBase
-  //    in the frame tree. The main frame (top level) WebFrameWidgetBase ignores
+  //    WebFrameWidgetImpl. Here that step is performed by passing the value
+  //    along to all RemoteFrame objects that are below this WebFrameWidgetImpl
+  //    in the frame tree. The main frame (top level) WebFrameWidgetImpl ignores
   //    this value from its RenderWidgetHost since it is controlled in the
-  //    renderer. Child frame WebFrameWidgetBases consume the value from their
+  //    renderer. Child frame WebFrameWidgetImpls consume the value from their
   //    RenderWidgetHost. Example: page_scale_factor.
   // 4. Computed independently in the renderer for each WidgetBase (in blink
   //    usually). Passed down from the parent to the child WidgetBases through
   //    the waterfall dance, but the value only travels one step - the child
-  //    frame WebFrameWidgetBase would compute values for grandchild
-  //    WebFrameWidgetBases independently. Here the value is passed to child
+  //    frame WebFrameWidgetImpl would compute values for grandchild
+  //    WebFrameWidgetImpls independently. Here the value is passed to child
   //    frame RenderWidgets by passing the value along to all RemoteFrame
-  //    objects that are below this WebFrameWidgetBase in the frame tree. Each
+  //    objects that are below this WebFrameWidgetImpl in the frame tree. Each
   //    WidgetBase consumes this value when it is received from its
   //    RenderWidgetHost. Example: compositor_viewport_pixel_rect.
   // For each of these properties:
-  //   If the WebView also knows these properties, each WebFrameWidgetBase
+  //   If the WebView also knows these properties, each WebFrameWidgetImpl
   //   will pass them along to the WebView as it receives it, even if there
-  //   are multiple WebFrameWidgetBases related to the same WebView.
+  //   are multiple WebFrameWidgetImpls related to the same WebView.
   //   However when the main frame in the renderer is the source of truth,
   //   then child widgets must not clobber that value! In all cases child frames
   //   do not need to update state in the WebView when a local main frame is
   //   present as it always sets the value first.
   //   TODO(danakj): This does create a race if there are multiple
-  //   UpdateVisualProperties updates flowing through the WebFrameWidgetBase
-  //   tree at the same time, and it seems that only one WebFrameWidgetBase for
+  //   UpdateVisualProperties updates flowing through the WebFrameWidgetImpl
+  //   tree at the same time, and it seems that only one WebFrameWidgetImpl for
   //   each WebView should be responsible for this update.
   //
   //   TODO(danakj): A more explicit API to give values from here to RenderView

@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -1695,7 +1695,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   intersection.main_frame_viewport_size = gfx::Size(100, 100);
   intersection.viewport_intersection = gfx::Rect(0, 0, 100, 100);
   LocalFrameRoot().FrameWidget()->Resize(gfx::Size(300, 200));
-  static_cast<WebFrameWidgetBase*>(LocalFrameRoot().FrameWidget())
+  static_cast<WebFrameWidgetImpl*>(LocalFrameRoot().FrameWidget())
       ->SetViewportIntersection(intersection.Clone());
 
   auto* root_frame = LocalFrameRoot().GetFrame();
@@ -1736,7 +1736,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
 
   // Show the frame without any other change.
   LocalFrameRoot().WasShown();
-  static_cast<WebFrameWidgetBase*>(LocalFrameRoot().FrameWidget())
+  static_cast<WebFrameWidgetImpl*>(LocalFrameRoot().FrameWidget())
       ->SetViewportIntersection(intersection.Clone());
   CompositeFrame();
   EXPECT_EQ(root_frame->RemoteViewportIntersection(), IntRect(0, 0, 100, 100));

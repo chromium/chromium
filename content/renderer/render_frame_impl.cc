@@ -4515,7 +4515,7 @@ void RenderFrameImpl::ShowContextMenu(
   UntrustworthyContextMenuParams params = ContextMenuParamsBuilder::Build(data);
   if (host_context_menu_location.has_value()) {
     // If the context menu request came from the browser, it came with a
-    // position that was stored on blink::WebFrameWidgetBase and is relative to
+    // position that was stored on blink::WebFrameWidgetImpl and is relative to
     // the WindowScreenRect.
     params.x = host_context_menu_location.value().x();
     params.y = host_context_menu_location.value().y();

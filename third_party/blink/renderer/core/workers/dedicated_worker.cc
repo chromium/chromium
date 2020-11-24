@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host.h"
@@ -281,7 +281,7 @@ BeginFrameProviderParams DedicatedWorker::CreateBeginFrameProviderParams() {
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     LocalFrame* frame = window->GetFrame();
     if (frame) {
-      WebFrameWidgetBase* widget =
+      WebFrameWidgetImpl* widget =
           WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
       begin_frame_provider_params.parent_frame_sink_id =
           widget->GetFrameSinkId();

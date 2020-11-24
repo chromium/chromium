@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -476,7 +476,7 @@ Response InspectorOverlayAgent::setShowDebugBorders(bool show) {
       return response;
   }
   WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetBase* widget_impl = static_cast<WebFrameWidgetBase*>(widget);
+  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
   // While a frame is being detached the inspector will shutdown and
   // turn off debug overlays, but the WebFrameWidget is already gone.
   if (widget_impl) {
@@ -498,7 +498,7 @@ Response InspectorOverlayAgent::setShowFPSCounter(bool show) {
       return response;
   }
   WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetBase* widget_impl = static_cast<WebFrameWidgetBase*>(widget);
+  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
   // While a frame is being detached the inspector will shutdown and
   // turn off debug overlays, but the WebFrameWidget is already gone.
   if (widget_impl) {
@@ -517,7 +517,7 @@ Response InspectorOverlayAgent::setShowPaintRects(bool show) {
       return response;
   }
   WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetBase* widget_impl = static_cast<WebFrameWidgetBase*>(widget);
+  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
   // While a frame is being detached the inspector will shutdown and
   // turn off debug overlays, but the WebFrameWidget is already gone.
   if (widget_impl) {
@@ -538,7 +538,7 @@ Response InspectorOverlayAgent::setShowLayoutShiftRegions(bool show) {
       return response;
   }
   WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetBase* widget_impl = static_cast<WebFrameWidgetBase*>(widget);
+  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
   // While a frame is being detached the inspector will shutdown and
   // turn off debug overlays, but the WebFrameWidget is already gone.
   if (widget_impl) {
@@ -560,7 +560,7 @@ Response InspectorOverlayAgent::setShowScrollBottleneckRects(bool show) {
       return response;
   }
   WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetBase* widget_impl = static_cast<WebFrameWidgetBase*>(widget);
+  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
   // While a frame is being detached the inspector will shutdown and
   // turn off debug overlays, but the WebFrameWidget is already gone.
   if (widget_impl) {
@@ -583,7 +583,7 @@ Response InspectorOverlayAgent::setShowHitTestBorders(bool show) {
       return response;
   }
   WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetBase* widget_impl = static_cast<WebFrameWidgetBase*>(widget);
+  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
   // While a frame is being detached the inspector will shutdown and
   // turn off debug overlays, but the WebFrameWidget is already gone.
   if (widget_impl) {

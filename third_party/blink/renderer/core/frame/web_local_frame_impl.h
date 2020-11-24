@@ -77,7 +77,7 @@ class WebAutofillClient;
 class WebContentSettingsClient;
 class WebDevToolsAgentImpl;
 class WebLocalFrameClient;
-class WebFrameWidgetBase;
+class WebFrameWidgetImpl;
 class WebNode;
 class WebPerformance;
 class WebRemoteFrameImpl;
@@ -444,7 +444,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void SetClient(WebLocalFrameClient* client) { client_ = client; }
 
-  WebFrameWidgetBase* FrameWidgetImpl() { return frame_widget_; }
+  WebFrameWidgetImpl* FrameWidgetImpl() { return frame_widget_; }
 
   WebContentSettingsClient* GetContentSettingsClient() {
     return content_settings_client_;
@@ -461,11 +461,11 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Otherwise creates it and then returns.
   TextFinder& EnsureTextFinder();
 
-  void SetFrameWidget(WebFrameWidgetBase*);
+  void SetFrameWidget(WebFrameWidgetImpl*);
 
   // TODO(dcheng): Remove this and make |FrameWidget()| always return something
   // useful.
-  WebFrameWidgetBase* LocalRootFrameWidget();
+  WebFrameWidgetImpl* LocalRootFrameWidget();
 
   // Returns true if the frame is focused.
   bool IsFocused() const;
@@ -538,7 +538,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   // This is set if the frame is the root of a local frame tree, and requires a
   // widget for layout.
-  Member<WebFrameWidgetBase> frame_widget_;
+  Member<WebFrameWidgetImpl> frame_widget_;
 
   Member<WebDevToolsAgentImpl> dev_tools_agent_;
 

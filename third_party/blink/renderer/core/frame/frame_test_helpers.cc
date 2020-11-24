@@ -59,7 +59,6 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -481,7 +480,7 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   // the case by this point).
   web_view_->DidAttachLocalMainFrame();
 
-  static_cast<WebFrameWidgetBase*>(widget)->UpdateScreenInfo(
+  static_cast<WebFrameWidgetImpl*>(widget)->UpdateScreenInfo(
       test_web_widget_client_->GetInitialScreenInfo());
 
   // Set an initial size for subframes.

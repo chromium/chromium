@@ -11,7 +11,8 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
@@ -289,7 +290,7 @@ TEST_F(ScreenOrientationControllerTest,
   blink::ScreenInfo screen_info;
   screen_info.orientation_angle = 90;
   auto* web_frame_widget_base =
-      static_cast<WebFrameWidgetBase*>(frame->GetWidgetForLocalRoot());
+      static_cast<WebFrameWidgetImpl*>(frame->GetWidgetForLocalRoot());
   web_frame_widget_base->UpdateScreenInfo(screen_info);
   EXPECT_EQ(grandchild_orientation->angle(), 90);
 

@@ -209,8 +209,6 @@ blink_core_sources_frame = [
   "local_frame_client_impl.cc",
   "local_frame_client_impl.h",
   "web_frame.cc",
-  "web_frame_widget_base.cc",
-  "web_frame_widget_base.h",
   "web_frame_widget_impl.cc",
   "web_frame_widget_impl.h",
   "web_local_frame_impl.cc",

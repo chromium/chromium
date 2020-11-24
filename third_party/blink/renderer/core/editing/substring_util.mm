@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -153,7 +153,7 @@ gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
 }  // namespace
 
 NSAttributedString* SubstringUtil::AttributedWordAtPoint(
-    WebFrameWidgetBase* frame_widget,
+    WebFrameWidgetImpl* frame_widget,
     gfx::Point point,
     gfx::Point& baseline_point) {
   HitTestResult result =

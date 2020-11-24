@@ -3143,7 +3143,7 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
     if (widget->GetWebWidget()->HasFocus()) {
       auto* view_proxy = frame_proxy->GetWebViewTestProxy();
       // TODO(dtapuska): We should call the exact IPC the browser
-      // calls. ie. WebFrameWidgetBase::SetActive but that isn't
+      // calls. ie. WebFrameWidgetImpl::SetActive but that isn't
       // exposed outside of blink.
       view_proxy->GetWebView()->SetIsActive(false);
       widget->GetWebWidget()->SetFocus(false);
@@ -3158,7 +3158,7 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
       if (other_widget->GetWebWidget()->HasFocus()) {
         auto* other_view_proxy = other_main_frame->GetWebViewTestProxy();
         // TODO(dtapuska): We should call the exact IPC the browser
-        // calls. ie. WebFrameWidgetBase::SetActive but that isn't
+        // calls. ie. WebFrameWidgetImpl::SetActive but that isn't
         // exposed outside of blink.
         other_view_proxy->GetWebView()->SetIsActive(false);
         other_widget->GetWebWidget()->SetFocus(false);

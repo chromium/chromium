@@ -51,7 +51,7 @@ class WebThreadScheduler;
 }
 
 // This class is the foundational class for all widgets that blink creates.
-// (WebPagePopupImpl, WebFrameWidgetBase) will contain an instance of this
+// (WebPagePopupImpl, WebFrameWidgetImpl) will contain an instance of this
 // class. For simplicity purposes this class will be a member of those classes.
 //
 // Co-orindates handled in this class can be in the "blink coordinate space"

@@ -545,13 +545,13 @@ void ChromeClientImpl::ShowMouseOverURL(const HitTestResult& result) {
 void ChromeClientImpl::SetToolTip(LocalFrame& frame,
                                   const String& tooltip_text,
                                   TextDirection dir) {
-  WebFrameWidgetBase* widget =
+  WebFrameWidgetImpl* widget =
       WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
   if (!tooltip_text.IsEmpty()) {
     widget->SetToolTipText(tooltip_text, dir);
     did_request_non_empty_tool_tip_ = true;
   } else if (did_request_non_empty_tool_tip_) {
-    // WebFrameWidgetBase::SetToolTipText will send a Mojo message via
+    // WebFrameWidgetImpl::SetToolTipText will send a Mojo message via
     // mojom::blink::WidgetHost. We'd like to reduce the number of
     // SetToolTipText calls.
     widget->SetToolTipText(tooltip_text, dir);
@@ -712,7 +712,7 @@ void ChromeClientImpl::SetCursorOverridden(bool overridden) {
 void ChromeClientImpl::AutoscrollStart(const gfx::PointF& viewport_point,
                                        LocalFrame* local_frame) {
   // TODO(dcheng): Why is this null check necessary?
-  if (WebFrameWidgetBase* widget =
+  if (WebFrameWidgetImpl* widget =
           WebLocalFrameImpl::FromFrame(local_frame)->LocalRootFrameWidget())
     widget->AutoscrollStart(viewport_point);
 }
@@ -720,14 +720,14 @@ void ChromeClientImpl::AutoscrollStart(const gfx::PointF& viewport_point,
 void ChromeClientImpl::AutoscrollFling(const gfx::Vector2dF& velocity,
                                        LocalFrame* local_frame) {
   // TODO(dcheng): Why is this null check necessary?
-  if (WebFrameWidgetBase* widget =
+  if (WebFrameWidgetImpl* widget =
           WebLocalFrameImpl::FromFrame(local_frame)->LocalRootFrameWidget())
     widget->AutoscrollFling(velocity);
 }
 
 void ChromeClientImpl::AutoscrollEnd(LocalFrame* local_frame) {
   // TODO(dcheng): Why is this null check necessary?
-  if (WebFrameWidgetBase* widget =
+  if (WebFrameWidgetImpl* widget =
           WebLocalFrameImpl::FromFrame(local_frame)->LocalRootFrameWidget())
     widget->AutoscrollEnd();
 }
@@ -932,7 +932,7 @@ cc::EventListenerProperties ChromeClientImpl::EventListenerProperties(
   if (!frame)
     return cc::EventListenerProperties::kNone;
 
-  WebFrameWidgetBase* widget =
+  WebFrameWidgetImpl* widget =
       WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
   if (!widget)
     return cc::EventListenerProperties::kNone;
@@ -979,7 +979,7 @@ void ChromeClientImpl::SetNeedsLowLatencyInput(LocalFrame* frame,
                                                bool needs_low_latency) {
   DCHECK(frame);
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
-  WebFrameWidgetBase* widget = web_frame->LocalRootFrameWidget();
+  WebFrameWidgetImpl* widget = web_frame->LocalRootFrameWidget();
   if (!widget)
     return;
 
@@ -990,7 +990,7 @@ void ChromeClientImpl::SetNeedsUnbufferedInputForDebugger(LocalFrame* frame,
                                                           bool unbuffered) {
   DCHECK(frame);
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
-  WebFrameWidgetBase* widget = web_frame->LocalRootFrameWidget();
+  WebFrameWidgetImpl* widget = web_frame->LocalRootFrameWidget();
   if (!widget)
     return;
 
@@ -1000,7 +1000,7 @@ void ChromeClientImpl::SetNeedsUnbufferedInputForDebugger(LocalFrame* frame,
 void ChromeClientImpl::RequestUnbufferedInputEvents(LocalFrame* frame) {
   DCHECK(frame);
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
-  WebFrameWidgetBase* widget = web_frame->LocalRootFrameWidget();
+  WebFrameWidgetImpl* widget = web_frame->LocalRootFrameWidget();
   if (!widget)
     return;
 
@@ -1011,7 +1011,7 @@ void ChromeClientImpl::SetTouchAction(LocalFrame* frame,
                                       TouchAction touch_action) {
   DCHECK(frame);
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
-  WebFrameWidgetBase* widget = web_frame->LocalRootFrameWidget();
+  WebFrameWidgetImpl* widget = web_frame->LocalRootFrameWidget();
   if (!widget)
     return;
 

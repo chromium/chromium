@@ -3176,7 +3176,7 @@ WebRect ComputeBlockBoundHelper(WebViewImpl* web_view_impl,
                                 const gfx::Point& point,
                                 bool ignore_clipping) {
   DCHECK(web_view_impl->MainFrameImpl());
-  WebFrameWidgetBase* widget =
+  WebFrameWidgetImpl* widget =
       web_view_impl->MainFrameImpl()->FrameWidgetImpl();
   DCHECK(widget);
   return widget->ComputeBlockBound(point, ignore_clipping);
@@ -7370,7 +7370,7 @@ TEST_F(WebFrameTest, MainFrameIntersectionChanged) {
   auto intersection_state = blink::mojom::blink::ViewportIntersectionState::New(
       viewport_intersection, mainframe_intersection, gfx::Rect(),
       occlusion_state, gfx::Size(), gfx::Point(), transform);
-  static_cast<WebFrameWidgetBase*>(widget)->SetViewportIntersection(
+  static_cast<WebFrameWidgetImpl*>(widget)->SetViewportIntersection(
       std::move(intersection_state));
   EXPECT_EQ(client.MainFrameIntersection(), blink::WebRect(100, 100, 200, 140));
 }
@@ -13549,7 +13549,7 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
   blink::mojom::FrameOcclusionState occlusion_state =
       blink::mojom::FrameOcclusionState::kUnknown;
 
-  static_cast<WebFrameWidgetBase*>(widget)->SetViewportIntersection(
+  static_cast<WebFrameWidgetImpl*>(widget)->SetViewportIntersection(
       blink::mojom::blink::ViewportIntersectionState::New(
           viewport_intersection, mainframe_intersection, viewport_intersection,
           occlusion_state, gfx::Size(), gfx::Point(), viewport_transform));

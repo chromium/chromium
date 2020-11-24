@@ -120,7 +120,7 @@
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/frame/virtual_keyboard_overlay_changed_observer.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
@@ -1788,7 +1788,7 @@ FrameWidget* LocalFrame::GetWidgetForLocalRoot() {
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(this);
   if (!web_frame)
     return nullptr;
-  // This WebFrameWidgetBase upcasts to a FrameWidget which is the interface
+  // This WebFrameWidgetImpl upcasts to a FrameWidget which is the interface
   // exposed to Blink core.
   return web_frame->LocalRootFrameWidget();
 }

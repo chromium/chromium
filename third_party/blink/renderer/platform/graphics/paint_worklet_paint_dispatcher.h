@@ -69,7 +69,7 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
 
   // The main thread is given a base::WeakPtr to this class to hand to the
   // PaintWorklet thread(s), so that they can register and unregister
-  // PaintWorklets. See blink::WebFrameWidgetBase for where this happens.
+  // PaintWorklets. See blink::WebFrameWidgetImpl for where this happens.
   base::WeakPtr<PaintWorkletPaintDispatcher> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
@@ -143,7 +144,7 @@ class WebFrameWidgetImplRemoteFrameSimTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
     InitializeRemote();
-    CHECK(static_cast<WebFrameWidgetBase*>(LocalFrameRoot().FrameWidget())
+    CHECK(static_cast<WebFrameWidgetImpl*>(LocalFrameRoot().FrameWidget())
               ->ForSubframe());
   }
 
@@ -612,13 +613,13 @@ TEST_F(WebFrameWidgetSimTest, DispatchBufferedTouchEvents) {
 
   // Expect listener does not get called, due to devtools flag.
   touch.MovePoint(0, 12, 12);
-  WebFrameWidgetBase::SetIgnoreInputEvents(true);
+  WebFrameWidgetImpl::SetIgnoreInputEvents(true);
   widget->ProcessInputEventSynchronouslyForTesting(
       WebCoalescedInputEvent(touch.Clone(), {}, {}, ui::LatencyInfo()),
       base::DoNothing());
-  EXPECT_TRUE(WebFrameWidgetBase::IgnoreInputEvents());
+  EXPECT_TRUE(WebFrameWidgetImpl::IgnoreInputEvents());
   EXPECT_FALSE(listener->GetInvokedStateAndReset());
-  WebFrameWidgetBase::SetIgnoreInputEvents(false);
+  WebFrameWidgetImpl::SetIgnoreInputEvents(false);
 
   // Expect listener does not get called, due to drag.
   touch.MovePoint(0, 14, 14);
@@ -628,7 +629,7 @@ TEST_F(WebFrameWidgetSimTest, DispatchBufferedTouchEvents) {
       WebCoalescedInputEvent(touch.Clone(), {}, {}, ui::LatencyInfo()),
       base::DoNothing());
   EXPECT_TRUE(widget->DoingDragAndDrop());
-  EXPECT_FALSE(WebFrameWidgetBase::IgnoreInputEvents());
+  EXPECT_FALSE(WebFrameWidgetImpl::IgnoreInputEvents());
   EXPECT_FALSE(listener->GetInvokedStateAndReset());
 }
 

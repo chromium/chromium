@@ -657,7 +657,7 @@ _CONFIG = [
     },
     {
         'paths':
-        ['third_party/blink/renderer/core/frame/web_frame_widget_base.cc'],
+        ['third_party/blink/renderer/core/frame/web_frame_widget_impl.cc'],
         'allowed': [
             'cc::InputHandlerScrollResult',
             'cc::SwapPromise',

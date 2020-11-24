@@ -33,10 +33,10 @@ specific_include_rules = {
   "visual_viewport\.cc": [
     "+cc/layers/solid_color_scrollbar_layer.h",
   ],
-  "web_frame_widget_base\.cc": [
+  "web_frame_widget_impl\.cc": [
     "+cc/trees/swap_promise.h",
   ],
-  "web_frame_widget_base\.h": [
+  "web_frame_widget_impl\.h": [
     "+services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h",
     "+ui/base/mojom/ui_base_types.mojom-shared.h",
   ],

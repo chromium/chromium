@@ -50,7 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
@@ -159,7 +159,7 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     agent->FlushProtocolNotifications();
 
     // 1. Disable input events.
-    WebFrameWidgetBase::SetIgnoreInputEvents(true);
+    WebFrameWidgetImpl::SetIgnoreInputEvents(true);
     for (auto* const view : WebViewImpl::AllInstances())
       view->GetChromeClient().NotifyPopupOpeningObservers();
 
@@ -192,7 +192,7 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     // code, but it is moved here to support browser-side navigation.
     message_loop_->QuitNow();
     page_pauser_.reset();
-    WebFrameWidgetBase::SetIgnoreInputEvents(false);
+    WebFrameWidgetImpl::SetIgnoreInputEvents(false);
   }
 
   bool running_for_debug_break_;

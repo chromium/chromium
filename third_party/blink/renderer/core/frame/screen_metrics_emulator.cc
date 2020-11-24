@@ -6,12 +6,12 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 
 namespace blink {
 
 ScreenMetricsEmulator::ScreenMetricsEmulator(
-    WebFrameWidgetBase* frame_widget,
+    WebFrameWidgetImpl* frame_widget,
     const ScreenInfo& screen_info,
     const gfx::Size& widget_size,
     const gfx::Size& visible_viewport_size,

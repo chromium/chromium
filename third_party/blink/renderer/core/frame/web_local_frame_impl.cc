@@ -191,7 +191,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/smart_clip.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -2431,7 +2431,7 @@ void WebLocalFrameImpl::WillDetachParent() {
   }
 }
 
-void WebLocalFrameImpl::SetFrameWidget(WebFrameWidgetBase* frame_widget) {
+void WebLocalFrameImpl::SetFrameWidget(WebFrameWidgetImpl* frame_widget) {
   frame_widget_ = frame_widget;
 }
 
@@ -2601,7 +2601,7 @@ void WebLocalFrameImpl::SetSpellCheckPanelHostClient(
   spell_check_panel_host_client_ = spell_check_panel_host_client;
 }
 
-WebFrameWidgetBase* WebLocalFrameImpl::LocalRootFrameWidget() {
+WebFrameWidgetImpl* WebLocalFrameImpl::LocalRootFrameWidget() {
   CHECK(LocalRoot());
   return LocalRoot()->FrameWidgetImpl();
 }
