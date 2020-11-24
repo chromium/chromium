@@ -154,6 +154,9 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (!is_active_)
     return false;
 
+  if (object.GetDocument().IsPrintingOrPaintingPreview())
+    return false;
+
   // SVG elements don't participate in the normal layout algorithms and are
   // more likely to be used for animations.
   if (object.IsSVGChild())
