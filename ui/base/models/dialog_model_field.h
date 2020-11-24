@@ -116,6 +116,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
       base::PassKey<DialogModelHost>) const {
     return accelerators_;
   }
+  int unique_id(base::PassKey<DialogModelHost>) const { return unique_id_; }
   DialogModelButton* AsButton(base::PassKey<DialogModelHost>);
   DialogModelBodyText* AsBodyText(base::PassKey<DialogModelHost>);
   DialogModelCheckbox* AsCheckbox(base::PassKey<DialogModelHost>);

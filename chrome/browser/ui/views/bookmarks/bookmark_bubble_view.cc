@@ -224,7 +224,6 @@ void BookmarkBubbleView::ShowBubble(
   // bubbles.
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
-  bubble->SelectAllText(kBookmarkName);
   bookmark_bubble_ = bubble.get();
   if (highlighted_button)
     bubble->SetHighlightedButton(highlighted_button);

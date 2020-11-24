@@ -51,7 +51,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
 
   // ui::DialogModelHost:
   void Close() override;
-  void SelectAllText(int unique_id) override;
   void OnFieldAdded(ui::DialogModelField* field) override;
 
  private:

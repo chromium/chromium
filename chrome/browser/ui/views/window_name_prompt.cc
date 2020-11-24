@@ -43,9 +43,6 @@ std::unique_ptr<views::DialogDelegate> CreateWindowNamePrompt(
 
   auto bubble = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::MODAL_TYPE_WINDOW);
-  // TODO(pbos): Reconsider whether SetInitiallyFocusedView should imply
-  // initially-selected text.
-  bubble->SelectAllText(kWindowNameFieldId);
   return bubble;
 }
 

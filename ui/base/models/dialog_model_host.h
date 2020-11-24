@@ -19,11 +19,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
   // or DialogModelHost.
   virtual void Close() = 0;
 
-  // Selects all text of a textfield.
-  // TODO(pbos): Reconsider whether this should be implied by if the textfield
-  // is initially focused.
-  virtual void SelectAllText(int unique_id) = 0;
-
  protected:
   friend class DialogModel;
   friend class DialogModelField;

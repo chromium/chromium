@@ -321,15 +321,6 @@ void BubbleDialogModelHost::Close() {
   model_.reset();
 }
 
-void BubbleDialogModelHost::SelectAllText(int unique_id) {
-  const DialogModelHostField& field_view_info =
-      FindDialogModelHostField(model_->GetFieldByUniqueId(unique_id));
-
-  DCHECK(field_view_info.focusable_view);
-  static_cast<views::Textfield*>(field_view_info.focusable_view)
-      ->SelectAll(false);
-}
-
 void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
   switch (field->type(GetPassKey())) {
     case ui::DialogModelField::kButton:
@@ -490,6 +481,15 @@ void BubbleDialogModelHost::AddOrUpdateTextfield(
           ? model_field->label(GetPassKey())
           : model_field->accessible_name(GetPassKey()));
   textfield->SetText(model_field->text());
+
+  // If this textfield is initially focused the text should be initially
+  // selected as well.
+  base::Optional<int> initially_focused_field_id =
+      model_->initially_focused_field(GetPassKey());
+  if (initially_focused_field_id &&
+      model_field->unique_id(GetPassKey()) == initially_focused_field_id) {
+    textfield->SelectAll(true);
+  }
 
   property_changed_subscriptions_.push_back(
       textfield->AddTextChangedCallback(base::BindRepeating(
