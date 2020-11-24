@@ -394,4 +394,16 @@ bool WebContentsDelegateAndroid::DoBrowserControlsShrinkRendererSize(
   return contents->GetNativeView()->ControlsResizeView();
 }
 
+blink::mojom::DisplayMode WebContentsDelegateAndroid::GetDisplayMode(
+    const content::WebContents* web_contents) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return blink::mojom::DisplayMode::kUndefined;
+
+  return static_cast<blink::mojom::DisplayMode>(
+      Java_WebContentsDelegateAndroid_getDisplayModeChecked(env, obj));
+}
+
 }  // namespace web_contents_delegate_android

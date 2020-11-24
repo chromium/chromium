@@ -14,11 +14,6 @@ import org.chromium.content_public.browser.WebContents;
  */
 public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateAndroid {
     /**
-     * Returns {@link WebDisplayMode} value.
-     */
-    protected abstract int getDisplayMode();
-
-    /**
      * Returns whether the page should resume accepting requests for the new window. This is
      * used when window creation is asynchronous and the navigations need to be delayed.
      */

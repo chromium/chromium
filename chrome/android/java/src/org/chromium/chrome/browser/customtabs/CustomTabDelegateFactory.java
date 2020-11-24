@@ -316,7 +316,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        protected @WebDisplayMode int getDisplayMode() {
+        public @WebDisplayMode int getDisplayMode() {
             return mDisplayMode;
         }
 

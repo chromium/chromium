@@ -87,9 +87,8 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         findMatchRectsDetails.rects[index] = rect;
     }
 
-    @CalledByNative
     @Override
-    protected int getDisplayMode() {
+    public int getDisplayMode() {
         return mDelegate.getDisplayMode();
     }
 

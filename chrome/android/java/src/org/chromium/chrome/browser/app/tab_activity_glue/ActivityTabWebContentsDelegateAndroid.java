@@ -98,7 +98,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    protected int getDisplayMode() {
+    public int getDisplayMode() {
         return WebDisplayMode.BROWSER;
     }
 

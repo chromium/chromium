@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 
@@ -166,5 +167,24 @@ public class WebContentsDelegateAndroid {
     @CalledByNative
     public boolean shouldAnimateBrowserControlsHeightChanges() {
         return false;
+    }
+
+    /**
+     * Check and return the {@link DisplayMode} value.
+     *
+     * @return The {@link DisplayMode} value.
+     */
+    @CalledByNative
+    protected final int getDisplayModeChecked() {
+        int displayMode = getDisplayMode();
+        assert DisplayMode.isKnownValue(displayMode);
+        return displayMode;
+    }
+
+    /**
+     * @return The {@link DisplayMode} value.
+     */
+    public int getDisplayMode() {
+        return DisplayMode.UNDEFINED;
     }
 }

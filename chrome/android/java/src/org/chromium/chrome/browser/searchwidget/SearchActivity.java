@@ -206,7 +206,7 @@ public class SearchActivity extends AsyncInitializationActivity
             public TabWebContentsDelegateAndroid createWebContentsDelegate(Tab tab) {
                 return new TabWebContentsDelegateAndroid() {
                     @Override
-                    protected int getDisplayMode() {
+                    public int getDisplayMode() {
                         return WebDisplayMode.BROWSER;
                     }
 

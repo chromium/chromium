@@ -220,18 +220,6 @@ bool TabWebContentsDelegateAndroid::ShouldFocusLocationBarByDefault(
   return false;
 }
 
-blink::mojom::DisplayMode TabWebContentsDelegateAndroid::GetDisplayMode(
-    const WebContents* web_contents) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null())
-    return blink::mojom::DisplayMode::kUndefined;
-
-  return static_cast<blink::mojom::DisplayMode>(
-      Java_TabWebContentsDelegateAndroidImpl_getDisplayMode(env, obj));
-}
-
 void TabWebContentsDelegateAndroid::FindReply(
     WebContents* web_contents,
     int request_id,
