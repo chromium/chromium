@@ -329,6 +329,9 @@ class ASH_EXPORT TouchExplorationController
   // Returns true if the touch event is targeted to Arc virtual keyboard.
   bool IsTargetedToArcVirtualKeyboard(const gfx::Point& location_in_host);
 
+  // Whether the right side of the screen should serve as a volume control.
+  bool ShouldEnableVolumeSlideGesture(const ui::TouchEvent& event);
+
   enum State {
     // No fingers are down and no events are pending.
     NO_FINGERS_DOWN,

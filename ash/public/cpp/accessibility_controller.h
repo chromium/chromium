@@ -138,6 +138,9 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Suspends (or resumes) key handling for Switch Access.
   virtual void SuspendSwitchAccessKeyHandling(bool suspend) {}
 
+  // Enables ChromeVox's volume slide gesture.
+  virtual void EnableChromeVoxVolumeSlideGesture() {}
+
  protected:
   AccessibilityController();
   virtual ~AccessibilityController();

@@ -372,6 +372,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       const std::string& path) override;
   void DisablePolicyRecommendationRestorerForTesting() override;
   void SuspendSwitchAccessKeyHandling(bool suspend) override;
+  void EnableChromeVoxVolumeSlideGesture() override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
@@ -386,6 +387,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   SelectToSpeakMenuBubbleController*
   GetSelectToSpeakMenuBubbleControllerForTest() {
     return select_to_speak_bubble_controller_.get();
+  }
+
+  bool enable_chromevox_volume_slide_gesture() {
+    return enable_chromevox_volume_slide_gesture_;
   }
 
  private:
@@ -478,11 +483,15 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // Used to force the backlights off to darken the screen.
   std::unique_ptr<ScopedBacklightsForcedOff> scoped_backlights_forced_off_;
 
+  // True if ChromeVox should enable its volume slide gesture.
+  bool enable_chromevox_volume_slide_gesture_ = true;
+
   base::ObserverList<AccessibilityObserver> observers_;
 
   // The pref service of the currently active user or the signin profile before
   // user logs in. Can be null in ash_unittests.
   PrefService* active_user_prefs_ = nullptr;
+
   // This has to be the first one to be destroyed so we don't get updates about
   // any prefs during destruction.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

@@ -42,6 +42,7 @@
 #include "chrome/browser/chromeos/accessibility/select_to_speak_event_handler_delegate.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -1415,6 +1416,11 @@ void AccessibilityManager::PostLoadChromeVox() {
       media_session::mojom::EnforcementMode::kNone);
 
   InitializeFocusRings(extension_id);
+
+  // Force volume slide gesture to be on for Chromebox for Meetings provisioned
+  // devices.
+  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition())
+    ash::AccessibilityController::Get()->EnableChromeVoxVolumeSlideGesture();
 }
 
 void AccessibilityManager::PostUnloadChromeVox() {

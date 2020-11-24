@@ -1847,6 +1847,10 @@ void AccessibilityControllerImpl::SuspendSwitchAccessKeyHandling(bool suspend) {
       suspend);
 }
 
+void AccessibilityControllerImpl::EnableChromeVoxVolumeSlideGesture() {
+  enable_chromevox_volume_slide_gesture_ = true;
+}
+
 void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
   bool enabled = features_[feature]->enabled();
 
