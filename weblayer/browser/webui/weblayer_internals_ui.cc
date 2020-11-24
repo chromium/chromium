@@ -18,7 +18,7 @@ WebLayerInternalsUI::WebLayerInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIWebLayerHost);
   source->AddResourcePath("weblayer_internals.js", IDR_WEBLAYER_INTERNALS_JS);
-  source->AddResourcePath("weblayer_internals.mojom-lite.js",
+  source->AddResourcePath("weblayer_internals.mojom-webui.js",
                           IDR_WEBLAYER_INTERNALS_MOJO_JS);
   source->SetDefaultResource(IDR_WEBLAYER_INTERNALS_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),

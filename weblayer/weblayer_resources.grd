@@ -11,7 +11,7 @@
     <includes>
       <include name="IDR_WEBLAYER_INTERNALS_HTML" file="browser/resources/weblayer_internals/weblayer_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_WEBLAYER_INTERNALS_JS" file="browser/resources/weblayer_internals/weblayer_internals.js" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_WEBLAYER_INTERNALS_MOJO_JS" file="${root_gen_dir}/weblayer/browser/webui/weblayer_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_WEBLAYER_INTERNALS_MOJO_JS" file="${root_gen_dir}/mojom-webui/weblayer/browser/webui/weblayer_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_SUBRESOURCE_FILTER_UNINDEXED_RULESET" file="../third_party/subresource-filter-ruleset/data/UnindexedRules" type="BINDATA" compress="brotli" />
       <include name="IDR_SUBRESOURCE_FILTER_UNINDEXED_RULESET_MANIFEST_JSON" file="../third_party/subresource-filter-ruleset/manifest.json" type="BINDATA" />
     </includes>
