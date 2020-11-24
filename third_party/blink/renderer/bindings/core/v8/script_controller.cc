@@ -287,16 +287,10 @@ v8::Local<v8::Value> ScriptController::EvaluateScriptInMainWorld(
   DCHECK_EQ(script_state->GetIsolate(), GetIsolate());
 
   v8::Context::Scope scope(script_state->GetContext());
-  v8::EscapableHandleScope handle_scope(GetIsolate());
 
-  v8::Local<v8::Value> object = ExecuteScriptAndReturnValue(
-      script_state->GetContext(), source_code, base_url, sanitize_script_errors,
-      fetch_options);
-
-  if (object.IsEmpty())
-    return v8::Local<v8::Value>();
-
-  return handle_scope.Escape(object);
+  return ExecuteScriptAndReturnValue(script_state->GetContext(), source_code,
+                                     base_url, sanitize_script_errors,
+                                     fetch_options);
 }
 
 v8::Local<v8::Value> ScriptController::EvaluateMethodInMainWorld(
