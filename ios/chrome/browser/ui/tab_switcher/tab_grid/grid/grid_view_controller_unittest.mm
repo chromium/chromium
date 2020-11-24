@@ -31,6 +31,10 @@
 @end
 @implementation FakeGridViewControllerDelegate
 @synthesize itemCount = _itemCount;
+
+- (void)gridViewController:(GridViewController*)gridViewController
+    contentNeedsAuthenticationChanged:(BOOL)needsAuth {
+}
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
   self.itemCount = count;

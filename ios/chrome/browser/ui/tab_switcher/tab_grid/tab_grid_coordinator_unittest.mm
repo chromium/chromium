@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -21,6 +23,20 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface StubSceneState : SceneState
+@end
+
+@implementation StubSceneState {
+  UIWindow* _window;
+}
+- (void)setWindow:(UIWindow*)window {
+  _window = window;
+}
+- (UIWindow*)window {
+  return _window;
+}
+@end
 
 @interface TestTabGridCoordinatorDelegate
     : NSObject <TabGridCoordinatorDelegate>
@@ -42,13 +58,25 @@
 
 namespace {
 
+void AddAgentsToBrowser(Browser* browser, SceneState* scene_state) {
+  SnapshotBrowserAgent::CreateForBrowser(browser);
+  SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(
+      base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
+  SceneStateBrowserAgent::CreateForBrowser(browser, scene_state);
+}
+
 class TabGridCoordinatorTest : public BlockCleanupTest {
  public:
   TabGridCoordinatorTest() {
+    scene_state_ = [[StubSceneState alloc] initWithAppState:nil];
+    scene_state_.window =
+        [[UIApplication sharedApplication].windows firstObject];
+
     browser_ = std::make_unique<TestBrowser>();
-    SnapshotBrowserAgent::CreateForBrowser(browser_.get());
-    SnapshotBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID(base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
+    AddAgentsToBrowser(browser_.get(), scene_state_);
+
+    incognito_browser_ = std::make_unique<TestBrowser>();
+    AddAgentsToBrowser(incognito_browser_.get(), scene_state_);
 
     UIWindow* window = [UIApplication sharedApplication].keyWindow;
     coordinator_ = [[TabGridCoordinator alloc]
@@ -58,7 +86,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         browsingDataCommandEndpoint:OCMProtocolMock(
                                         @protocol(BrowsingDataCommands))
                      regularBrowser:browser_.get()
-                   incognitoBrowser:nil];
+                   incognitoBrowser:incognito_browser_.get()];
     coordinator_.animationsDisabledForTesting = YES;
     // TabGirdCoordinator will make its view controller the root, so stash the
     // original root view controller before starting |coordinator_|.
@@ -92,6 +120,12 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   web::WebTaskEnvironment task_environment_;
   // Browser for the coordinator.
   std::unique_ptr<Browser> browser_;
+
+  // Browser for the coordinator.
+  std::unique_ptr<Browser> incognito_browser_;
+
+  // Scene state emulated in this test.
+  SceneState* scene_state_;
 
   // The TabGridCoordinator that is under test.  The test fixture sets
   // this VC as the root VC for the window.

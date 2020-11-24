@@ -45,6 +45,11 @@
 - (void)didChangeLastItemVisibilityInGridViewController:
     (GridViewController*)gridViewController;
 
+// Tells the delegate when the currently displayed content is hidden from the
+// user until they authenticate. Used for incognito biometric authentication.
+- (void)gridViewController:(GridViewController*)gridViewController
+    contentNeedsAuthenticationChanged:(BOOL)needsAuth;
+
 @end
 
 // A view controller that contains a grid of items.
@@ -71,6 +76,9 @@
 @property(nonatomic, assign) BOOL showsSelectionUpdates;
 // The fraction of the last item of the grid that is visible.
 @property(nonatomic, assign, readonly) CGFloat fractionVisibleOfLastItem;
+// YES when the current contents are hidden from the user before a successful
+// biometric authentication.
+@property(nonatomic, assign) BOOL contentNeedsAuthentication;
 
 // Returns the layout of the grid for use in an animated transition.
 - (GridTransitionLayout*)transitionLayout;

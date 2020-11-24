@@ -7,9 +7,20 @@
 
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
+@class IncognitoReauthSceneAgent;
 class PrefRegistrySimple;
 class PrefService;
 @protocol ReauthenticationProtocol;
+
+@protocol IncognitoReauthObserver <NSObject>
+
+@optional
+// Called when the authentication requirement in a given scene might have
+// changed.
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateAuthenticationRequirement:(BOOL)isRequired;
+
+@end
 
 // A scene agent that tracks the incognito authentication status for the current
 // scene.
@@ -41,6 +52,11 @@ class PrefService;
 // scene foregrounding. The callback will receive the result of the
 // authentication attempt. It will be called on main thread, asynchronously.
 - (void)authenticateWithCompletion:(void (^)(BOOL))completion;
+
+#pragma mark observation
+
+- (void)addObserver:(id<IncognitoReauthObserver>)observer;
+- (void)removeObserver:(id<IncognitoReauthObserver>)observer;
 
 @end
 

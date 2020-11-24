@@ -12,6 +12,10 @@
 // Supports idempotent insert/delete/updates to a grid.
 @protocol GridConsumer
 
+// Notify consumer that the displayed items require authentication before they
+// can be accessed. Used for biometric incognito tab authentication.
+- (void)setItemsRequireAuthentication:(BOOL)requireAuthentication;
+
 // Many of the following methods pass a |selectedItemID| as a parameter,
 // indicating the identifier of the item that should be in the selected state
 // after the method is called. In every such case, a nil |selectedItemID|

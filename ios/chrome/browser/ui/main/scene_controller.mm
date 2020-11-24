@@ -273,12 +273,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // Add agents.
     [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
     [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
-    if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-      [_sceneState
-          addAgent:[[IncognitoReauthSceneAgent alloc]
-                       initWithReauthModule:[[ReauthenticationModule alloc]
-                                                init]]];
-    }
+    [_sceneState
+        addAgent:[[IncognitoReauthSceneAgent alloc]
+                     initWithReauthModule:[[ReauthenticationModule alloc]
+                                              init]]];
   }
   return self;
 }

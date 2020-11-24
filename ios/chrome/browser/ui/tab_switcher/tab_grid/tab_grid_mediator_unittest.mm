@@ -161,6 +161,10 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
 @synthesize items = _items;
 @synthesize selectedItemID = _selectedItemID;
 
+- (void)setItemsRequireAuthentication:(BOOL)require {
+  // No-op.
+}
+
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {
   self.selectedItemID = selectedItemID;
@@ -264,7 +268,8 @@ class TabGridMediatorTest : public PlatformTest {
         TabIdTabHelper::FromWebState(web_state_list_->GetWebStateAt(1))
             ->tab_id();
     consumer_ = [[FakeConsumer alloc] init];
-    mediator_ = [[TabGridMediator alloc] initWithConsumer:consumer_];
+    mediator_ = [[TabGridMediator alloc] initWithConsumer:consumer_
+                                              reauthAgent:nil];
     mediator_.browser = browser_.get();
     mediator_.tabRestoreService = tab_restore_service_;
   }

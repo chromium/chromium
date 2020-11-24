@@ -991,6 +991,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self configureDoneButtonBasedOnPage:self.currentPage];
   }
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
+
+  [self configureNewTabButtonBasedOnContentPermissions];
+}
+
+- (void)configureNewTabButtonBasedOnContentPermissions {
+  BOOL allowNewTab =
+      !((self.currentPage == TabGridPageIncognitoTabs) &&
+        self.incognitoTabsViewController.contentNeedsAuthentication);
+  [self.bottomToolbar setNewTabButtonEnabled:allowNewTab];
 }
 
 - (void)configureDoneButtonBasedOnPage:(TabGridPage)page {
@@ -1002,8 +1011,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   // The Done button should have the same behavior as the other buttons on the
   // top Toolbar.
-  self.doneButton.enabled = !gridViewController.gridEmpty &&
-                            self.topToolbar.pageControl.userInteractionEnabled;
+  BOOL incognitoTabsNeedsAuth =
+      (self.currentPage == TabGridPageIncognitoTabs &&
+       self.incognitoTabsViewController.contentNeedsAuthentication);
+
+  self.doneButton.enabled =
+      !gridViewController.gridEmpty &&
+      self.topToolbar.pageControl.userInteractionEnabled &&
+      !incognitoTabsNeedsAuth;
 }
 
 - (void)configureCloseAllButtonForCurrentPageAndUndoAvailability {
@@ -1020,8 +1035,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Otherwise setup as a Close All button.
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
-  self.closeAllButton.enabled =
-      gridViewController == nil ? NO : !gridViewController.gridEmpty;
+  BOOL enabled =
+      (gridViewController == nil) ? NO : !gridViewController.gridEmpty;
+  BOOL incognitoTabsNeedsAuth =
+      (self.currentPage == TabGridPageIncognitoTabs &&
+       self.incognitoTabsViewController.contentNeedsAuthentication);
+  enabled = enabled && !incognitoTabsNeedsAuth;
+
+  self.closeAllButton.enabled = enabled;
   self.closeAllButton.title =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
   // Setting the |accessibilityIdentifier| seems to trigger layout, which causes
@@ -1384,6 +1405,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           ? CGAffineTransformMakeTranslation(
                 lastItemVisiblity * kScrollThresholdForPlusSignButtonHide, 0)
           : CGAffineTransformIdentity;
+}
+
+- (void)gridViewController:(GridViewController*)gridViewController
+    contentNeedsAuthenticationChanged:(BOOL)needsAuth {
+  [self configureButtonsForActiveAndCurrentPage];
 }
 
 #pragma mark - Control actions

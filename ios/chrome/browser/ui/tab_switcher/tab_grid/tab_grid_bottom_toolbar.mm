@@ -86,6 +86,11 @@
                forControlEvents:UIControlEventTouchUpInside];
 }
 
+- (void)setNewTabButtonEnabled:(BOOL)enabled {
+  _smallNewTabButton.enabled = enabled;
+  _largeNewTabButton.enabled = enabled;
+}
+
 - (void)hide {
   _smallNewTabButton.alpha = 0.0;
   _largeNewTabButton.alpha = 0.0;

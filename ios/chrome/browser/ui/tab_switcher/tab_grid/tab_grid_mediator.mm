@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -109,6 +110,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 }  // namespace
 
 @interface TabGridMediator () <CRWWebStateObserver,
+                               IncognitoReauthObserver,
                                SnapshotCacheObserver,
                                WebStateListObserving>
 // The list from the browser.
@@ -125,6 +127,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 // Short-term cache for grid thumbnails.
 @property(nonatomic, strong)
     NSMutableDictionary<NSString*, UIImage*>* appearanceCache;
+// Agent tracking the authentication status.
+@property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
 @end
 
 @implementation TabGridMediator {
@@ -138,7 +142,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
       _scopedWebStateObserver;
 }
 
-- (instancetype)initWithConsumer:(id<GridConsumer>)consumer {
+- (instancetype)initWithConsumer:(id<GridConsumer>)consumer
+                     reauthAgent:(IncognitoReauthSceneAgent*)agent {
   if (self = [super init]) {
     _consumer = consumer;
     _webStateListObserverBridge =
@@ -152,6 +157,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
         std::make_unique<ScopedObserver<web::WebState, web::WebStateObserver>>(
             _webStateObserverBridge.get());
     _appearanceCache = [[NSMutableDictionary alloc] init];
+    _reauthAgent = agent;
+    [agent addObserver:self];
   }
   return self;
 }
@@ -557,6 +564,13 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   [self.appearanceCache removeAllObjects];
 }
 
+#pragma mark - IncognitoReauthObserver
+
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateAuthenticationRequirement:(BOOL)isRequired {
+  [self.consumer setItemsRequireAuthentication:isRequired];
+}
+
 #pragma mark - Private
 
 // Calls |-populateItems:selectedItemID:| on the consumer.
@@ -565,6 +579,9 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     [self.consumer populateItems:CreateItems(self.webStateList)
                   selectedItemID:GetActiveTabId(self.webStateList)];
   }
+
+  [self.consumer
+      setItemsRequireAuthentication:self.reauthAgent.authenticationRequired];
 }
 
 // Removes |self.syncedClosedTabsCount| most recent entries from the

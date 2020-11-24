@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 
 #include "base/check.h"
+#import "base/ios/crb_protocol_observers.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/application_context.h"
@@ -19,6 +20,14 @@
 #error "This file requires ARC support."
 #endif
 
+@interface IncognitoReauthObserverList
+    : CRBProtocolObservers <IncognitoReauthObserver>
+@end
+@implementation IncognitoReauthObserverList
+@end
+
+#pragma mark - IncognitoReauthSceneAgent
+
 @interface IncognitoReauthSceneAgent () <SceneStateObserver>
 
 // Scene state this agent serves.
@@ -29,6 +38,9 @@
 
 // Tracks wether the user authenticated for incognito since last launch.
 @property(nonatomic, assign) BOOL authenticatedSinceLastForeground;
+
+// Container for observers.
+@property(nonatomic, strong) IncognitoReauthObserverList* observers;
 
 @end
 
@@ -48,14 +60,14 @@
   if (self) {
     DCHECK(reauthModule);
     _reauthModule = reauthModule;
+    _observers = [IncognitoReauthObserverList
+        observersWithProtocol:@protocol(IncognitoReauthObserver)];
   }
   return self;
 }
 
 - (BOOL)isAuthenticationRequired {
-  return base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-         [self authEnabledInSettings] &&
-         self.windowHadIncognitoContentOnForeground &&
+  return [self featureEnabled] && self.windowHadIncognitoContentOnForeground &&
          !self.authenticatedSinceLastForeground;
 }
 
@@ -85,6 +97,36 @@
                                    completion(success);
                                  }
                                }];
+}
+
+- (void)addObserver:(id<IncognitoReauthObserver>)observer {
+  [self.observers addObserver:observer];
+}
+
+- (void)removeObserver:(id<IncognitoReauthObserver>)observer {
+  [self.observers removeObserver:observer];
+}
+
+#pragma mark properties
+
+- (void)setAuthenticatedSinceLastForeground:(BOOL)authenticated {
+  _authenticatedSinceLastForeground = authenticated;
+  if (self.featureEnabled) {
+    [self notifyObservers];
+  }
+}
+
+- (void)setWindowHadIncognitoContentOnForeground:(BOOL)hadIncognitoContent {
+  _windowHadIncognitoContentOnForeground = hadIncognitoContent;
+  if (self.featureEnabled) {
+    [self notifyObservers];
+  }
+}
+
+- (void)notifyObservers {
+  DCHECK(self.featureEnabled);
+  [self.observers reauthAgent:self
+      didUpdateAuthenticationRequirement:self.isAuthenticationRequired];
 }
 
 #pragma mark - SceneStateObserver
@@ -119,14 +161,21 @@
 
 - (PrefService*)localState {
   if (!_localState) {
+    if (!GetApplicationContext()) {
+      // This is called before application context was initialized.
+      return nil;
+    }
     _localState = GetApplicationContext()->GetLocalState();
   }
   return _localState;
 }
 
-// Convenience method to check the pref associated with the reauth setting.
-- (BOOL)authEnabledInSettings {
-  return self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
+// Convenience method to check the pref associated with the reauth setting and
+// the feature flag.
+- (BOOL)featureEnabled {
+  return base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
+         self.localState &&
+         self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
 }
 
 @end

@@ -15,6 +15,7 @@
 #import "base/numerics/safe_conversions.h"
 #include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #include "ios/chrome/browser/procedural_block_types.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
@@ -56,6 +57,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                   UICollectionViewDropDelegate>
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
+// A view to obscure incognito content when the user isn't authorized to
+// see it.
+@property(nonatomic, strong) IncognitoReauthView* blockingView;
 // The local model backing the collection view.
 @property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
 // Identifier of the selected item. This value is disregarded if |self.items| is
@@ -613,6 +617,27 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 #pragma mark - GridConsumer
+
+- (void)setItemsRequireAuthentication:(BOOL)require {
+  self.contentNeedsAuthentication = require;
+  [self.delegate gridViewController:self
+      contentNeedsAuthenticationChanged:require];
+
+  if (require) {
+    if (!self.blockingView) {
+      self.blockingView = [[IncognitoReauthView alloc] init];
+      self.blockingView.translatesAutoresizingMaskIntoConstraints = NO;
+      self.blockingView.layer.zPosition = FLT_MAX;
+      // No need to show tab switcher button when already in the tab switcher.
+      self.blockingView.tabSwitcherButton.hidden = YES;
+    }
+
+    [self.view addSubview:self.blockingView];
+    AddSameConstraints(self.collectionView.frameLayoutGuide, self.blockingView);
+  } else {
+    [self.blockingView removeFromSuperview];
+  }
+}
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {

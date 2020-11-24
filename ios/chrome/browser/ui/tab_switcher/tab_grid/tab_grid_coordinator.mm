@@ -25,7 +25,9 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
@@ -309,7 +311,8 @@
   _baseViewController = baseViewController;
 
   self.regularTabsMediator = [[TabGridMediator alloc]
-      initWithConsumer:baseViewController.regularTabsConsumer];
+      initWithConsumer:baseViewController.regularTabsConsumer
+           reauthAgent:nil];
   ChromeBrowserState* regularBrowserState =
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
   WebStateList* regularWebStateList =
@@ -322,8 +325,19 @@
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
             regularBrowserState);
   }
+
+  IncognitoReauthSceneAgent* reauthAgent = nil;
+  for (id agent in SceneStateBrowserAgent::FromBrowser(_incognitoBrowser)
+           ->GetSceneState()
+           .connectedAgents) {
+    if ([agent isKindOfClass:[IncognitoReauthSceneAgent class]]) {
+      reauthAgent = agent;
+    }
+  }
+
   self.incognitoTabsMediator = [[TabGridMediator alloc]
-      initWithConsumer:baseViewController.incognitoTabsConsumer];
+      initWithConsumer:baseViewController.incognitoTabsConsumer
+           reauthAgent:reauthAgent];
   self.incognitoTabsMediator.browser = _incognitoBrowser;
   self.incognitoTabsMediator.delegate = self;
   baseViewController.regularTabsDelegate = self.regularTabsMediator;
