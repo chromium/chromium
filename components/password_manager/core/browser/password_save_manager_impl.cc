@@ -495,6 +495,11 @@ base::string16 PasswordSaveManagerImpl::GetOldPassword(
 void PasswordSaveManagerImpl::UploadVotesAndMetrics(
     const FormData* observed_form,
     const PasswordForm& parsed_submitted_form) {
+  metrics_util::LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
+      parsed_submitted_form.submission_event);
+  metrics_recorder_->SetSubmissionIndicatorEvent(
+      parsed_submitted_form.submission_event);
+
   if (IsNewLogin()) {
     metrics_util::LogNewlySavedPasswordIsGenerated(
         pending_credentials_.type == PasswordForm::Type::kGenerated,

@@ -320,11 +320,6 @@ void PasswordFormManager::Save() {
 }
 
 void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
-  metrics_util::LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
-      parsed_submitted_form_->submission_event);
-  metrics_recorder_->SetSubmissionIndicatorEvent(
-      parsed_submitted_form_->submission_event);
-
   password_save_manager_->Update(credentials_to_update, observed_form(),
                                  *parsed_submitted_form_);
 
