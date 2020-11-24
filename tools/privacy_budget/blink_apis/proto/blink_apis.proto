@@ -50,8 +50,8 @@ message ExtendedAttributes {
   }
 
   // https://heycam.github.io/webidl/#Exposed
-  repeated Exposed exposed =
-      2;  // One value for each interface/partial interface/etc..
+  // One value for each interface/partial interface/etc..
+  repeated Exposed exposed = 2;
 
   // https://heycam.github.io/webidl/#Global
   bool global = 3;
@@ -119,6 +119,8 @@ message InterfaceLike {
   repeated Attribute attributes = 4;
   repeated Operation operations = 5;
   repeated Constant constants = 6;
+
+  SourceLocation source_location = 30;
 }
 
 message IDLType {
@@ -162,9 +164,12 @@ message Dictionary {
     string name = 1;
     ExtendedAttributes extended_attributes = 2;
     IDLType idl_type = 3;
+    SourceLocation source_location = 30;
   }
 
   repeated Member members = 7;
+
+  SourceLocation source_location = 30;
 }
 
 // Special operation types.
@@ -193,6 +198,8 @@ message Operation {
   // The following fields are only applicable to special operations.
   // https://heycam.github.io/webidl/#dfn-special-operation
   SpecialOperationType special_op_type = 5;
+
+  SourceLocation source_location = 30;
 }
 
 // An interface member or a namespace member declaring a data field.
@@ -203,6 +210,8 @@ message Attribute {
   IDLType idl_type = 3;
   bool is_static = 4;
   bool is_readonly = 5;
+
+  SourceLocation source_location = 30;
 }
 
 // A declaration binding a value to a name.
@@ -216,6 +225,8 @@ message Constant {
   // `type`. There should be no expectation that this representation is
   // unambiguously parsable. It's intended solely for human consumption.
   string value = 4;
+
+  SourceLocation source_location = 30;
 }
 
 // Defines a type who's valid values are a set of strings.
@@ -225,6 +236,8 @@ message Enumeration {
 
   // Enum values are strings.
   repeated string values = 2;
+
+  SourceLocation source_location = 30;
 }
 
 // Declares a new name for a type.
@@ -233,4 +246,15 @@ message Enumeration {
 message Typedef {
   string name = 1;
   IDLType idl_type = 2;
+
+  SourceLocation source_location = 30;
+}
+
+message SourceLocation {
+  // Relative to the root of the Chromium source tree. So pretty much all
+  // strings start with 'third_party/blink/...'
+  string filename = 1;
+
+  // 1-based line number. 0 means there's no line-number information.
+  int32 line = 2;
 }

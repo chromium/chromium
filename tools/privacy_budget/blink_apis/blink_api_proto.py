@@ -14,7 +14,6 @@ class BlinkApiProto(object):
     """BlinkApiProto converts a WebIdlDatabase to
     a identifiability.blink_apis.Snapshot proto defined in
     proto/blink_apis.proto"""
-
     def __init__(self, web_idl_pickle, proto_out_file, chromium_revision):
         self.web_idl_database = web_idl.Database.read_from_file(web_idl_pickle)
         self.proto_out_file = proto_out_file
@@ -132,6 +131,7 @@ class BlinkApiProto(object):
         dest.is_readonly = attr.is_readonly
         self._ConvertExtendedAttributes(dest.extended_attributes, attr)
         self._ConvertIdlType(dest.idl_type, attr.idl_type)
+        self._ConvertSourceLocation(dest.source_location, attr.debug_info)
 
     def _GetSpecialOperationType(self, op):
         if not isinstance(op, web_idl.Operation):
@@ -149,24 +149,28 @@ class BlinkApiProto(object):
         dest.static = op.is_static
         dest.special_op_type = self._GetSpecialOperationType(op)
         self._ConvertIdlType(dest.return_type, op.return_type)
+        self._ConvertSourceLocation(dest.source_location, op.debug_info)
         for arg in op.arguments:
             self._ConvertIdlType(dest.arguments.add(), arg.idl_type)
 
     def _ConvertIdlEnumeration(self, dest, enumer):
         dest.name = enumer.identifier
         dest.values[:] = enumer.values
+        self._ConvertSourceLocation(dest.source_location, enumer.debug_info)
 
     def _ConvertIdlConstant(self, dest, constant):
         dest.name = constant.identifier
         dest.value = constant.value.literal
         self._ConvertExtendedAttributes(dest.extended_attributes, constant)
         self._ConvertIdlType(dest.idl_type, constant.idl_type)
+        self._ConvertSourceLocation(dest.source_location, constant.debug_info)
 
     def _ConvertIdlInterfaceLike(self, dest, interface):
         dest.name = interface.identifier
         if hasattr(interface, 'inherited') and interface.inherited:
             dest.inherits_from = interface.inherited.identifier
         self._ConvertExtendedAttributes(dest.extended_attributes, interface)
+        self._ConvertSourceLocation(dest.source_location, interface.debug_info)
         for attr in interface.attributes:
             self._ConvertIdlAttribute(dest.attributes.add(), attr)
         for op in interface.operations:
@@ -179,10 +183,13 @@ class BlinkApiProto(object):
         dest.name = member.identifier
         self._ConvertExtendedAttributes(dest.extended_attributes, member)
         self._ConvertIdlType(dest.idl_type, member.idl_type)
+        self._ConvertSourceLocation(dest.source_location, member.debug_info)
 
     def _ConvertIdlDictionary(self, dest, dictionary):
         assert isinstance(dictionary, web_idl.Dictionary)
         dest.name = dictionary.identifier
+        self._ConvertSourceLocation(dest.source_location,
+                                    dictionary.debug_info)
         if dictionary.inherited:
             dest.inherits_from = dictionary.inherited.identifier
         for member in dictionary.members:
@@ -192,3 +199,22 @@ class BlinkApiProto(object):
         assert isinstance(typedef, web_idl.Typedef)
         dest.name = typedef.identifier
         self._ConvertIdlType(dest.idl_type, typedef.idl_type)
+
+    def _ConvertSourceLocation(self, dest, debug_info):
+        source_file = None
+        line_no = 0
+
+        if not debug_info or not hasattr(debug_info, 'all_locations'):
+            return
+
+        for loc in list(debug_info.all_locations):
+            if loc.filepath and loc.line_number:
+                source_file = loc.filepath
+                line_no = loc.line_number
+                break
+            if loc.filepath:
+                source_file = loc.filepath
+
+        if source_file:
+            dest.filename = source_file
+            dest.line = line_no
