@@ -48,27 +48,28 @@ namespace {
 
 // Chrome is pinned explicitly.
 const char* kDefaultPinnedApps[] = {
-    extension_misc::kGmailAppId, extension_misc::kGoogleDocAppId,
-    extension_misc::kYoutubeAppId, arc::kPlayStoreAppId};
+    extension_misc::kFilesManagerAppId, extension_misc::kGmailAppId,
+    extension_misc::kGoogleDocAppId, extension_misc::kYoutubeAppId,
+    arc::kPlayStoreAppId};
 
 const char* kDefaultPinnedApps7Apps[] = {
-    extension_misc::kGmailAppId,        extension_misc::kGoogleDocAppId,
-    extension_misc::kGooglePhotosAppId, extension_misc::kFilesManagerAppId,
+    extension_misc::kFilesManagerAppId, extension_misc::kGmailAppId,
+    extension_misc::kGoogleDocAppId,    extension_misc::kGooglePhotosAppId,
     extension_misc::kYoutubeAppId,      arc::kPlayStoreAppId};
 
-const char* kDefaultPinnedApps10Apps[] = {extension_misc::kGmailAppId,
+const char* kDefaultPinnedApps10Apps[] = {extension_misc::kFilesManagerAppId,
+                                          extension_misc::kGmailAppId,
                                           extension_misc::kCalendarAppId,
                                           extension_misc::kGoogleDocAppId,
                                           extension_misc::kGoogleSheetsAppId,
                                           extension_misc::kGoogleSlidesAppId,
-                                          extension_misc::kFilesManagerAppId,
                                           extension_misc::kCameraAppId,
                                           extension_misc::kGooglePhotosAppId,
                                           arc::kPlayStoreAppId};
 
 const char* kTabletFormFactorDefaultPinnedApps[] = {
-    arc::kGmailAppId, extension_misc::kGoogleDocAppId, arc::kYoutubeAppId,
-    arc::kPlayStoreAppId};
+    extension_misc::kFilesManagerAppId, arc::kGmailAppId,
+    extension_misc::kGoogleDocAppId, arc::kYoutubeAppId, arc::kPlayStoreAppId};
 
 const char kDefaultPinnedAppsKey[] = "default";
 const char kDefaultPinnedApps7AppsKey[] = "7apps";
