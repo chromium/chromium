@@ -60,8 +60,8 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   ~WebViewFrameWidget() override;
 
  private:
-  // PageWidgetEventHandler overrides:
-  WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
+  // WebFrameWidgetBase overrides:
+  WebInputEventResult HandleGestureEventScaled(const WebGestureEvent&) override;
 
   // This stores the last hidden page popup. If a GestureTap attempts to open
   // the popup that is closed by its previous GestureTapDown, the popup remains

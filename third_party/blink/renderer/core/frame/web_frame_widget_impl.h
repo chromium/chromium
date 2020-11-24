@@ -80,9 +80,8 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
  private:
   friend class WebFrameWidget;  // For WebFrameWidget::create.
 
-  // PageWidgetEventHandler functions
-  WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
-
+  // WebFrameWidgetBase overrides:
+  WebInputEventResult HandleGestureEventScaled(const WebGestureEvent&) override;
 };
 
 }  // namespace blink

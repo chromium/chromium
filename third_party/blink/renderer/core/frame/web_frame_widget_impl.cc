@@ -211,15 +211,10 @@ WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;
 
 // WebWidget ------------------------------------------------------------------
 
-WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
-    const WebGestureEvent& event) {
-  DCHECK(Client());
-  WebInputEventResult event_result = WebInputEventResult::kNotHandled;
-  bool event_cancelled = false;
+WebInputEventResult WebFrameWidgetImpl::HandleGestureEventScaled(
+    const WebGestureEvent& scaled_event) {
   base::Optional<ContextMenuAllowedScope> maybe_context_menu_scope;
-
-  WebViewImpl* view_impl = View();
-  switch (event.GetType()) {
+  switch (scaled_event.GetType()) {
     case WebInputEvent::Type::kGestureScrollBegin:
     case WebInputEvent::Type::kGestureScrollEnd:
     case WebInputEvent::Type::kGestureScrollUpdate:
@@ -240,27 +235,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     case WebInputEvent::Type::kGestureTapCancel:
     case WebInputEvent::Type::kGestureShowPress:
       break;
-    case WebInputEvent::Type::kGestureDoubleTap:
-      if (GetPage()->GetChromeClient().DoubleTapToZoomEnabled() &&
-          view_impl->MinimumPageScaleFactor() !=
-              view_impl->MaximumPageScaleFactor()) {
-        LocalFrame* frame = LocalRootImpl()->GetFrame();
-        WebGestureEvent scaled_event =
-            TransformWebGestureEvent(frame->View(), event);
-        IntPoint pos_in_local_frame_root =
-            FlooredIntPoint(scaled_event.PositionInRootFrame());
-        auto block_bounds =
-            gfx::Rect(ComputeBlockBound(pos_in_local_frame_root, false));
-
-        // This sends the tap point and bounds to the main frame renderer via
-        // the browser, where their coordinates will be transformed into the
-        // main frame's coordinate space.
-        GetAssociatedFrameWidgetHost()->AnimateDoubleTapZoomInMainFrame(
-            pos_in_local_frame_root, block_bounds);
-      }
-      event_result = WebInputEventResult::kHandledSystem;
-      DidHandleGestureEvent(event, event_cancelled);
-      return event_result;
     case WebInputEvent::Type::kGestureTwoFingerTap:
     case WebInputEvent::Type::kGestureLongPress:
     case WebInputEvent::Type::kGestureLongTap:
@@ -271,10 +245,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
       NOTREACHED();
   }
   LocalFrame* frame = LocalRootImpl()->GetFrame();
-  WebGestureEvent scaled_event = TransformWebGestureEvent(frame->View(), event);
-  event_result = frame->GetEventHandler().HandleGestureEvent(scaled_event);
-  DidHandleGestureEvent(event, event_cancelled);
-  return event_result;
+  return frame->GetEventHandler().HandleGestureEvent(scaled_event);
 }
 
 }  // namespace blink

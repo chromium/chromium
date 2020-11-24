@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/events/wheel_event.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/exported/web_settings_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -779,6 +780,54 @@ WebInputEventResult WebFrameWidgetBase::HandleMouseUp(
       MouseContextMenu(event);
   }
   return result;
+}
+
+WebInputEventResult WebFrameWidgetBase::HandleGestureEvent(
+    const WebGestureEvent& event) {
+  WebInputEventResult event_result = WebInputEventResult::kNotHandled;
+
+  // Fling events are not sent to the renderer.
+  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingStart);
+  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingCancel);
+
+  WebViewImpl* web_view = View();
+
+  LocalFrame* frame = LocalRootImpl()->GetFrame();
+  WebGestureEvent scaled_event = TransformWebGestureEvent(frame->View(), event);
+
+  // Special handling for double tap and scroll events as we don't want to
+  // hit test for them.
+  switch (event.GetType()) {
+    case WebInputEvent::Type::kGestureDoubleTap:
+      if (web_view->SettingsImpl()->DoubleTapToZoomEnabled() &&
+          web_view->MinimumPageScaleFactor() !=
+              web_view->MaximumPageScaleFactor()) {
+        IntPoint pos_in_local_frame_root =
+            FlooredIntPoint(scaled_event.PositionInRootFrame());
+        auto block_bounds =
+            gfx::Rect(ComputeBlockBound(pos_in_local_frame_root, false));
+
+        if (ForMainFrame()) {
+          web_view->AnimateDoubleTapZoom(pos_in_local_frame_root,
+                                       WebRect(block_bounds));
+        } else {
+          // This sends the tap point and bounds to the main frame renderer via
+          // the browser, where their coordinates will be transformed into the
+          // main frame's coordinate space.
+          GetAssociatedFrameWidgetHost()->AnimateDoubleTapZoomInMainFrame(
+              pos_in_local_frame_root, block_bounds);
+        }
+      }
+      event_result = WebInputEventResult::kHandledSystem;
+      DidHandleGestureEvent(event);
+      return event_result;
+    default:
+      break;
+  }
+
+  event_result = HandleGestureEventScaled(scaled_event);
+  DidHandleGestureEvent(event);
+  return event_result;
 }
 
 WebInputEventResult WebFrameWidgetBase::HandleMouseWheel(
@@ -2960,13 +3009,7 @@ void WebFrameWidgetBase::ProcessTouchAction(WebTouchAction touch_action) {
   widget_base_->ProcessTouchAction(touch_action);
 }
 
-void WebFrameWidgetBase::DidHandleGestureEvent(const WebGestureEvent& event,
-                                               bool event_cancelled) {
-  if (event_cancelled) {
-    // The delegate() doesn't need to hear about cancelled events.
-    return;
-  }
-
+void WebFrameWidgetBase::DidHandleGestureEvent(const WebGestureEvent& event) {
 #if defined(OS_ANDROID) || defined(USE_AURA)
   if (event.GetType() == WebInputEvent::Type::kGestureTap) {
     widget_base_->ShowVirtualKeyboard();

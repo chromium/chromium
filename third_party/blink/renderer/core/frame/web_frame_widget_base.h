@@ -604,8 +604,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void ProcessTouchAction(WebTouchAction touch_action);
 
   // Called when a gesture event has been processed.
-  void DidHandleGestureEvent(const WebGestureEvent& event,
-                             bool event_cancelled);
+  void DidHandleGestureEvent(const WebGestureEvent& event);
 
   // Called to update if pointerrawupdate events should be sent.
   void SetHasPointerRawUpdateEventHandlers(bool);
@@ -740,6 +739,12 @@ class CORE_EXPORT WebFrameWidgetBase
   // Returns the current state of synchronous resize mode for testing.
   bool SynchronousResizeModeForTestingEnabled();
 
+  // Handle a gesture event that has already been scaled.
+  // This is temporary to help with reviews of collapsing the complicated
+  // HandleGestureEvent into one implementation.
+  virtual WebInputEventResult HandleGestureEventScaled(
+      const WebGestureEvent&) = 0;
+
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
 
@@ -783,6 +788,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void HandleMouseDown(LocalFrame&, const WebMouseEvent&) override;
   void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
+  WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
   WebInputEventResult HandleMouseWheel(LocalFrame&,
                                        const WebMouseWheelEvent&) override;
   WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;

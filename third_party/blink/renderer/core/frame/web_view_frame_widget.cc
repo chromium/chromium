@@ -70,44 +70,17 @@ WebViewFrameWidget::WebViewFrameWidget(
 
 WebViewFrameWidget::~WebViewFrameWidget() = default;
 
-WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
-    const WebGestureEvent& event) {
-  // TODO(https://crbug.com/1148346): We need to figure out why MainFrameImpl is
-  // null but LocalRootImpl isn't.
-  CHECK(LocalRootImpl());
+WebInputEventResult WebViewFrameWidget::HandleGestureEventScaled(
+    const WebGestureEvent& scaled_event) {
   WebViewImpl* web_view = View();
   if (!web_view->MainFrameImpl())
     return WebInputEventResult::kNotHandled;
 
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
-  bool event_cancelled = false;  // for disambiguation
-
-  // Fling events are not sent to the renderer.
-  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingStart);
-  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingCancel);
-
-  WebGestureEvent scaled_event = TransformWebGestureEvent(
-      web_view->MainFrameImpl()->GetFrameView(), event);
 
   // Special handling for double tap and scroll events as we don't want to
   // hit test for them.
-  switch (event.GetType()) {
-    case WebInputEvent::Type::kGestureDoubleTap:
-      if (web_view->SettingsImpl()->DoubleTapToZoomEnabled() &&
-          web_view->MinimumPageScaleFactor() !=
-              web_view->MaximumPageScaleFactor()) {
-        if (auto* main_frame = web_view->MainFrameImpl()) {
-          IntPoint pos_in_root_frame =
-              FlooredIntPoint(scaled_event.PositionInRootFrame());
-          WebRect block_bounds =
-              main_frame->FrameWidgetImpl()->ComputeBlockBound(
-                  pos_in_root_frame, false);
-          web_view->AnimateDoubleTapZoom(pos_in_root_frame, block_bounds);
-        }
-      }
-      event_result = WebInputEventResult::kHandledSystem;
-      DidHandleGestureEvent(event, event_cancelled);
-      return event_result;
+  switch (scaled_event.GetType()) {
     case WebInputEvent::Type::kGestureScrollBegin:
     case WebInputEvent::Type::kGestureScrollEnd:
     case WebInputEvent::Type::kGestureScrollUpdate:
@@ -116,12 +89,10 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
       // This matches handleWheelEvent.  Perhaps we could simplify things by
       // rewriting scroll handling to work inner frame out, and then unify with
       // other gesture events.
-      event_result = web_view->MainFrameImpl()
-                         ->GetFrame()
-                         ->GetEventHandler()
-                         .HandleGestureScrollEvent(scaled_event);
-      DidHandleGestureEvent(event, event_cancelled);
-      return event_result;
+      return web_view->MainFrameImpl()
+          ->GetFrame()
+          ->GetEventHandler()
+          .HandleGestureScrollEvent(scaled_event);
     default:
       break;
   }
@@ -136,7 +107,7 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
 
   // Handle link highlighting outside the main switch to avoid getting lost in
   // the complicated set of cases handled below.
-  switch (event.GetType()) {
+  switch (scaled_event.GetType()) {
     case WebInputEvent::Type::kGestureShowPress:
       // Queue a highlight animation, then hand off to regular handler.
       web_view->EnableTapHighlightAtPoint(targeted_event);
@@ -150,7 +121,7 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
       break;
   }
 
-  switch (event.GetType()) {
+  switch (scaled_event.GetType()) {
     case WebInputEvent::Type::kGestureTap: {
       {
         ContextMenuAllowedScope scope;
@@ -179,7 +150,7 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
           !web_view->MainFrameImpl()->GetFrameView())
         break;
 
-      if (event.GetType() == WebInputEvent::Type::kGestureLongTap) {
+      if (scaled_event.GetType() == WebInputEvent::Type::kGestureLongTap) {
         if (LocalFrame* inner_frame =
                 targeted_event.GetHitTestResult().InnerNodeFrame()) {
           if (!inner_frame->GetEventHandler().LongTapShouldInvokeContextMenu())
@@ -247,7 +218,6 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
       NOTREACHED();
     }
   }
-  DidHandleGestureEvent(event, event_cancelled);
   return event_result;
 }
 
