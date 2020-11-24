@@ -41,9 +41,9 @@ namespace {
 
 const size_t kMaxClipboardSuggestionShownNumTimesSimpleSize = 20;
 
-// Clipboard suggestions should be placed above search and url suggestions, but
-// below query tiles.
-const int kClipboardMatchRelevanceScore = 1500;
+// Clipboard suggestions should be placed above search and url suggestions
+// (including MostVisited tiles), but below query tiles.
+const int kClipboardMatchRelevanceScore = 1501;
 
 bool IsMatchDeletionEnabled() {
   return base::FeatureList::IsEnabled(
