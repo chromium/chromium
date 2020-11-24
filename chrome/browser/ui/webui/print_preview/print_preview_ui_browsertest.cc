@@ -4,6 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -58,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
 
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_PRINT));
 
-#if BUILDFLAG(ENABLE_PRINTING) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // This is analagous to ENABLE_BASIC_PRINT_DIALOG but helps to verify
   // that it is defined as expected.
   bool is_basic_print_expected = true;

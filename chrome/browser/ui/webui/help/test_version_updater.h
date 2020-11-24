@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
 // A very simple VersionUpdater implementation that immediately invokes the
@@ -27,7 +28,7 @@ class TestVersionUpdater : public VersionUpdater {
 #if defined(OS_MAC)
   void PromoteUpdater() const override {}
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetChannel(const std::string& channel,
                   bool is_powerwash_allowed) override {}
   void GetChannel(bool get_current_channel,

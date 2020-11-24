@@ -4628,6 +4628,7 @@ static_library("test_support") {
   ]
   public_deps = [ ":ui" ]
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser",
     "//chrome/browser/devtools",

@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -544,7 +545,7 @@ void TabStripUIHandler::HandleGetThemeColors(const base::ListValue* args) {
                        ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
                            ui::NativeTheme::kColorId_FocusedBorderColor)));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   colors.SetString(
       "--tabstrip-scrollbar-thumb-color-rgb",
       color_utils::SkColorToRgbString(color_utils::GetColorWithMaxContrast(

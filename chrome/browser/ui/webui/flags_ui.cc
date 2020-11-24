@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/flags_ui_handler.h"
@@ -37,7 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
@@ -71,7 +72,7 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
       "trusted-types jstemplate;");
   source->AddString(flags_ui::kVersion, version_info::GetVersionNumber());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::Get()->IsCurrentUserOwner() &&
       base::SysInfo::IsRunningOnChromeOS()) {
     // Set the string to show which user can actually change the flags.
@@ -92,7 +93,7 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
   return source;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // On ChromeOS verifying if the owner is signed in is async operation and only
 // after finishing it the UI can be properly populated. This function is the
 // callback for whether the owner is signed in. It will respectively pick the
@@ -215,7 +216,7 @@ FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
   FlagsUIHandler* handler = handler_owner.get();
   web_ui->AddMessageHandler(std::move(handler_owner));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Bypass possible incognito profile.
   Profile* original_profile = profile->GetOriginalProfile();
   if (base::SysInfo::IsRunningOnChromeOS() &&

@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -89,7 +90,7 @@ void AppLauncherLoginHandler::RegisterMessages() {
       "initializeSyncLogin",
       base::BindRepeating(&AppLauncherLoginHandler::HandleInitializeSyncLogin,
                           base::Unretained(this)));
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "showSyncLoginUI",
       base::BindRepeating(&AppLauncherLoginHandler::HandleShowSyncLoginUI,
@@ -102,7 +103,7 @@ void AppLauncherLoginHandler::HandleInitializeSyncLogin(
   UpdateLogin();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void AppLauncherLoginHandler::HandleShowSyncLoginUI(
     const base::ListValue* args) {
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -164,7 +165,7 @@ void AppLauncherLoginHandler::UpdateLogin() {
       }
     }
   } else {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Chromeos does not show this status header.
     bool is_signin_allowed =
         profile->GetOriginalProfile()->GetPrefs()->GetBoolean(
@@ -202,7 +203,7 @@ void AppLauncherLoginHandler::UpdateLogin() {
 
 // static
 bool AppLauncherLoginHandler::ShouldShow(Profile* profile) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // For now we don't care about showing sync status on Chrome OS. The promo
   // UI and the avatar menu don't exist on that platform.
   return false;

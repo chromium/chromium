@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -195,7 +196,7 @@ enum class SyncConfirmationDialogAction { kConfirm, kCancel };
 
 enum class ReauthDialogAction { kConfirm, kCancel };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetButtonIdForSyncConfirmationDialogAction(
     SyncConfirmationDialogAction action) {
   switch (action) {
@@ -264,7 +265,7 @@ bool IsElementReady(content::WebContents* web_contents,
       web_contents, find_element_js, &message));
   return message == "Ok";
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -274,7 +275,7 @@ class SigninViewControllerTestUtil {
   static bool TryDismissSyncConfirmationDialog(
       Browser* browser,
       SyncConfirmationDialogAction action) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     NOTREACHED();
     return false;
 #else
@@ -303,7 +304,7 @@ class SigninViewControllerTestUtil {
   static bool TryCompleteSigninEmailConfirmationDialog(
       Browser* browser,
       SigninEmailConfirmationDialog::Action action) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     NOTREACHED();
     return false;
 #else
@@ -336,7 +337,7 @@ class SigninViewControllerTestUtil {
 
   static bool TryCompleteReauthConfirmationDialog(Browser* browser,
                                                   ReauthDialogAction action) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     NOTREACHED();
     return false;
 #else
@@ -435,7 +436,7 @@ void ExecuteJsToSigninInSigninFrame(Browser* browser,
 bool SignInWithUI(Browser* browser,
                   const std::string& username,
                   const std::string& password) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();
   return false;
 #else

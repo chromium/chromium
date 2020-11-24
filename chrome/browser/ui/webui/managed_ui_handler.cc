@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -112,7 +113,7 @@ std::unique_ptr<base::DictionaryValue> ManagedUIHandler::GetDataSourceUpdate()
   auto update = std::make_unique<base::DictionaryValue>();
   update->SetKey("browserManagedByOrg",
                  base::Value(chrome::GetManagedUiWebUILabel(profile_)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   update->SetKey("deviceManagedByOrg",
                  base::Value(chrome::GetDeviceManagedUiWebUILabel()));
 #endif

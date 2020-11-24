@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -88,11 +89,11 @@
 #endif
 #endif  // defined(OS_WIN)
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/settings/languages_handler.h"
-#endif  // defined(OS_WIN) || defined(OS_CHROMEOS)
+#endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/account_manager/account_manager_util.h"
@@ -115,14 +116,14 @@
 #include "components/arc/arc_util.h"
 #include "components/user_manager/user.h"
 #include "ui/base/ui_base_features.h"
-#else  // !defined(OS_CHROMEOS)
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 #include "chrome/browser/ui/webui/settings/system_handler.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(USE_NSS_CERTS)
 #include "chrome/browser/ui/webui/certificates_handler.h"
@@ -148,10 +149,10 @@ web_app::AppRegistrar& GetRegistrarForProfile(Profile* profile) {
 
 SettingsUI::SettingsUI(content::WebUI* web_ui)
     :
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       customize_themes_factory_receiver_(this),
-#else  // !defined(OS_CHROMEOS)
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
       content::WebUIController(web_ui),
 #endif
       webui_load_timer_(web_ui->GetWebContents(),
@@ -171,7 +172,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #elif defined(OS_WIN) || defined(OS_MAC)
   AddSettingsPageUIHandler(std::make_unique<NativeCertificatesHandler>());
 #endif  // defined(USE_NSS_CERTS)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AddSettingsPageUIHandler(
       chromeos::cert_provisioning::CertificateProvisioningUiHandler::
           CreateForProfile(profile));
@@ -192,13 +193,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #if defined(OS_WIN)
   AddSettingsPageUIHandler(std::make_unique<LanguagesHandler>());
 #endif  // defined(OS_WIN)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AddSettingsPageUIHandler(std::make_unique<LanguagesHandler>(profile));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   AddSettingsPageUIHandler(
       std::make_unique<MediaDevicesSelectionHandler>(profile));
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
   AddSettingsPageUIHandler(std::make_unique<MetricsReportingHandler>());
 #endif
   AddSettingsPageUIHandler(std::make_unique<OnStartupHandler>(profile));
@@ -216,7 +217,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(
       std::make_unique<SecurityKeysBioEnrollmentHandler>());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   InitBrowserSettingsWebUIHandlers();
 #else
   AddSettingsPageUIHandler(
@@ -292,7 +293,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           features::kChromeCleanupScanCompletedNotification));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean("splitSettingsSyncEnabled",
                           chromeos::features::IsSplitSettingsSyncEnabled());
   html_source->AddBoolean("useBrowserSyncConsent",
@@ -307,10 +308,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // This is the browser settings page.
   html_source->AddBoolean("isOSSettings", false);
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean("profilesUIRevamp", base::FeatureList::IsEnabled(
                                                   features::kProfilesUIRevamp));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
@@ -348,7 +349,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
 SettingsUI::~SettingsUI() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void SettingsUI::InitBrowserSettingsWebUIHandlers() {
   Profile* profile = Profile::FromWebUI(web_ui());
 
@@ -393,7 +394,7 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
   web_ui()->AddMessageHandler(
       std::make_unique<chromeos::settings::AndroidAppsHandler>(profile));
 }
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
 void SettingsUI::BindInterface(
     mojo::PendingReceiver<
         customize_themes::mojom::CustomizeThemesHandlerFactory>
@@ -402,7 +403,7 @@ void SettingsUI::BindInterface(
     customize_themes_factory_receiver_.reset();
   customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SettingsUI::AddSettingsPageUIHandler(
     std::unique_ptr<content::WebUIMessageHandler> handler) {
@@ -420,7 +421,7 @@ void SettingsUI::TryShowHatsSurveyWithTimeout() {
   }
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SettingsUI::CreateCustomizeThemesHandler(
     mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
         pending_client,
@@ -430,7 +431,7 @@ void SettingsUI::CreateCustomizeThemesHandler(
       std::move(pending_client), std::move(pending_handler),
       web_ui()->GetWebContents(), Profile::FromWebUI(web_ui()));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SettingsUI)
 

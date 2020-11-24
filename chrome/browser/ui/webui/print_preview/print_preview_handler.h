@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/print.mojom.h"
@@ -146,7 +147,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(PrintPreviewHandlerFailingTest,
                            GetPrinterCapabilities);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   class AccessTokenService;
 #endif
 
@@ -221,7 +222,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   // Called when the tab opened by HandleSignIn() is closed.
   void OnSignInTabClosed();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Generates new token and sends back to UI.
   void HandleGetAccessToken(const base::ListValue* args);
 #endif
@@ -238,7 +239,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   // dialog. |args| is unused.
   void HandleManagePrinters(const base::ListValue* args);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets the EULA URL.
   void HandleGetEulaUrl(const base::ListValue* args);
 #endif
@@ -246,7 +247,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   void SendInitialSettings(const std::string& callback_id,
                            const std::string& default_printer);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Send OAuth2 access token.
   void SendAccessToken(const std::string& callback_id,
                        const std::string& access_token);
@@ -311,7 +312,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   void OnPrintResult(const std::string& callback_id,
                      const base::Value& error);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called to initiate a status request for a printer.
   void HandleRequestPrinterStatusUpdate(const base::ListValue* args);
 
@@ -336,7 +337,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   // The settings used for the most recent preview request.
   base::Value last_preview_settings_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Holds token service to get OAuth2 access tokens.
   std::unique_ptr<AccessTokenService> token_service_;
 #endif

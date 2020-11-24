@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -27,7 +28,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/arc/arc_prefs.h"
@@ -37,7 +38,7 @@ using apps::mojom::OptionalBool;
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kArcFrameworkPackage[] = "android";
 constexpr int kMinAndroidFrameworkVersion = 28;  // Android P
 #endif
@@ -51,11 +52,11 @@ constexpr char const* kAppIdsWithHiddenPinToShelf[] = {
   extension_misc::kChromeAppId,
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
     arc::kPlayStoreAppId,
 };
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 app_management::mojom::ExtensionAppPermissionMessagePtr
 CreateExtensionAppPermissionMessage(
@@ -77,7 +78,7 @@ bool ShouldHidePinToShelf(const std::string app_id) {
 }
 
 bool ShouldHideStoragePermission(const std::string app_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::Contains(kAppIdsWithHiddenStoragePermission, app_id);
 #else
   return false;
@@ -98,11 +99,11 @@ AppManagementPageHandler::AppManagementPageHandler(
 
   Observe(&proxy->AppRegistryCache());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc::IsArcAllowedForProfile(profile_)) {
     arc_app_list_prefs_observer_.Add(ArcAppListPrefs::Get(profile_));
   }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 AppManagementPageHandler::~AppManagementPageHandler() {}
@@ -166,7 +167,7 @@ void AppManagementPageHandler::GetExtensionAppPermissionMessages(
 
 void AppManagementPageHandler::SetPinned(const std::string& app_id,
                                          OptionalBool pinned) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   shelf_delegate_.SetPinned(app_id, pinned);
 #else
   NOTREACHED();
@@ -220,7 +221,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 
   // On other OS's, is_pinned defaults to OptionalBool::kUnknown, which is
   // used to represent the fact that there is no concept of being pinned.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   app->is_pinned = shelf_delegate_.IsPinned(update.AppId())
                        ? OptionalBool::kTrue
                        : OptionalBool::kFalse;
@@ -258,7 +259,7 @@ void AppManagementPageHandler::OnAppRegistryCacheWillBeDestroyed(
   Observe(nullptr);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 bool AppManagementPageHandler::IsCurrentArcVersionSupported(Profile* profile) {
   if (arc::IsArcAllowedForProfile(profile)) {
@@ -285,4 +286,4 @@ void AppManagementPageHandler::OnPackageModified(
   }
   OnArcVersionChanged(package_info.package_version);
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Browser;
@@ -107,7 +108,7 @@ class LoginUIService : public KeyedService {
  private:
   // Weak pointers to the recently opened UIs, with the most recent in front.
   std::list<LoginUI*> ui_list_;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile_;
 #endif
 

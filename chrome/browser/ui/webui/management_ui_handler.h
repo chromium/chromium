@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/common/url_constants.h"
 #include "components/policy/core/common/policy_service.h"
@@ -24,7 +25,7 @@
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Constants defining the IDs for the localized strings sent to the page as
 // load time data.
 extern const char kManagementLogUploadEnabled[];
@@ -39,7 +40,7 @@ extern const char kManagementCrostini[];
 extern const char kManagementCrostiniContainerConfiguration[];
 extern const char kManagementReportExtensions[];
 extern const char kManagementReportAndroidApplications[];
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kCloudReportingExtensionId[];
 extern const char kOnPremReportingExtensionStableId[];
@@ -145,7 +146,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   virtual const extensions::Extension* GetEnabledExtension(
       const std::string& extensionId) const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Protected for testing.
   virtual const std::string GetDeviceManager() const;
   virtual const policy::DeviceCloudPolicyManagerChromeOS*
@@ -165,15 +166,15 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   // the admin. If true, a warning will be added to the transparency panel to
   // inform the user that the admin may be able to see their network traffic.
   void AddProxyServerPrivacyDisclosure(base::Value* response) const;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
  private:
   void GetManagementStatus(Profile* profile, base::Value* status) const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void HandleGetDeviceReportingInfo(const base::ListValue* args);
   void HandleGetPluginVmDataCollectionStatus(const base::ListValue* args);
   void HandleGetLocalTrustRootsInfo(const base::ListValue* args);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void HandleGetExtensions(const base::ListValue* args);
   void HandleGetContextualManagedData(const base::ListValue* args);
@@ -186,9 +187,9 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
 
   void NotifyBrowserReportingInfoUpdated();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void NotifyPluginVmDataCollectionUpdated();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void NotifyThreatProtectionInfoUpdated();
 
   // extensions::ExtensionRegistryObserver implementation.

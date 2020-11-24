@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -13,7 +14,7 @@
 #include "chrome/grit/bluetooth_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
 #endif
 
@@ -49,7 +50,7 @@ void BluetoothInternalsUI::BindInterface(
     mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver) {
   page_handler_ =
       std::make_unique<BluetoothInternalsHandler>(std::move(receiver));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   page_handler_->set_debug_logs_manager(
       chromeos::bluetooth::DebugLogsManagerFactory::GetForProfile(
           Profile::FromWebUI(web_ui())));

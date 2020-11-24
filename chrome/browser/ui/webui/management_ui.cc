@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/management_ui_handler.h"
@@ -23,16 +24,16 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/grit/chromium_strings.h"
 #include "ui/chromeos/devicetype_utils.h"
-#else  // defined(OS_CHROMEOS)
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -46,7 +47,7 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
                     ManagementUI::GetManagementPageSubtitle(profile));
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"learnMore", IDS_LEARN_MORE},
     {"localTrustRoots", IDS_MANAGEMENT_LOCAL_TRUST_ROOTS},
     {"managementTrustRootsConfigured", IDS_MANAGEMENT_TRUST_ROOTS_CONFIGURED},
@@ -74,7 +75,7 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
      IDS_MANAGEMENT_REPORT_ANDROID_APPLICATIONS},
     {"proxyServerPrivacyDisclosure",
      IDS_MANAGEMENT_PROXY_SERVER_PRIVACY_DISCLOSURE},
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"browserReporting", IDS_MANAGEMENT_BROWSER_REPORTING},
     {"browserReportingExplanation",
      IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION},
@@ -128,7 +129,7 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
                     l10n_util::GetStringFUTF16(
                         IDS_MANAGEMENT_EXTENSION_REPORT_SAFE_BROWSING_WARNINGS,
                         base::UTF8ToUTF16(safe_browsing::kSafeBrowsingUrl)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString("managementDeviceLearnMoreUrl",
                     chrome::kLearnMoreEnterpriseURL);
   source->AddString("managementAccountLearnMoreUrl",
@@ -137,7 +138,7 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
                     l10n_util::GetStringFUTF16(
                         IDS_MANAGEMENT_REPORT_PLUGIN_VM,
                         l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
@@ -161,7 +162,7 @@ base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
 
 // static
 base::string16 ManagementUI::GetManagementPageSubtitle(Profile* profile) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
@@ -184,7 +185,7 @@ base::string16 ManagementUI::GetManagementPageSubtitle(Profile* profile) {
   return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                     l10n_util::GetStringUTF16(device_type),
                                     base::UTF8ToUTF16(account_manager));
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   const auto account_manager = ManagementUIHandler::GetAccountManager(profile);
   const auto managed =
       profile->GetProfilePolicyConnector()->IsManaged() ||
@@ -199,7 +200,7 @@ base::string16 ManagementUI::GetManagementPageSubtitle(Profile* profile) {
                                       base::UTF8ToUTF16(account_manager));
   }
   return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {

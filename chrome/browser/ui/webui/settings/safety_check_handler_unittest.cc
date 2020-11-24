@@ -18,6 +18,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
 #include "chrome/browser/extensions/test_extension_service.h"
@@ -45,7 +46,7 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_impl_win.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/chromeos/devicetype_utils.h"
 #endif
 
@@ -403,7 +404,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updated) {
           kUpdates,
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdated));
   ASSERT_TRUE(event);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::string16 expected = base::ASCIIToUTF16("Your ") +
                             ui::GetChromeOSDeviceName() +
                             base::ASCIIToUTF16(" is up to date");
@@ -424,7 +425,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updating) {
           kUpdates,
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdating));
   ASSERT_TRUE(event);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   VerifyDisplayString(event, "Updating your device");
 #else
   VerifyDisplayString(event, "Updating Browser");
@@ -442,7 +443,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Relaunch) {
           kUpdates,
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kRelaunch));
   ASSERT_TRUE(event);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   VerifyDisplayString(
       event, "Nearly up to date! Restart your device to finish updating.");
 #else

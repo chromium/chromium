@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
@@ -171,10 +172,10 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (print_settings.FindStringKey(kSettingPinValue))
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPin);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ReportRegeneratePreviewRequestCountBeforeCancel(size_t count) {

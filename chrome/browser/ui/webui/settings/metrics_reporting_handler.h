@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_METRICS_REPORTING_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_METRICS_REPORTING_HANDLER_H_
 
-#if defined(GOOGLE_CHROME_BUILD) && !defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if defined(GOOGLE_CHROME_BUILD) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #include <memory>
 
@@ -68,6 +70,6 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
 
 }  // namespace settings
 
-#endif  // defined(GOOGLE_CHROME_BUILD) && !defined(OS_CHROMEOS)
+#endif  // defined(GOOGLE_CHROME_BUILD) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_METRICS_REPORTING_HANDLER_H_

@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HANDLER_H_
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
 namespace bluetooth {
 class DebugLogsManager;
@@ -27,7 +28,7 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
       mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver);
   ~BluetoothInternalsHandler() override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_debug_logs_manager(
       chromeos::bluetooth::DebugLogsManager* debug_logs_manager) {
     debug_logs_manager_ = debug_logs_manager;
@@ -45,7 +46,7 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
 
   mojo::Receiver<mojom::BluetoothInternalsHandler> receiver_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::bluetooth::DebugLogsManager* debug_logs_manager_ = nullptr;
 #endif
 

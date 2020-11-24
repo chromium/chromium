@@ -5,6 +5,7 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -277,7 +278,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://offline-internals",
     "chrome://webapks",
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     "chrome://account-manager-error",
     "chrome://account-manager-welcome",
     "chrome://account-migration-welcome",

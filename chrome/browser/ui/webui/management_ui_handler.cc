@@ -38,7 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
@@ -67,8 +67,9 @@
 #include "ui/chromeos/devicetype_utils.h"
 #else
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -157,7 +158,7 @@ enum class ReportingType {
   kUserActivity
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kManagementLogUploadEnabled[] = "managementLogUploadEnabled";
 const char kManagementReportActivityTimes[] = "managementReportActivityTimes";
 const char kManagementReportHardwareStatus[] = "managementReportHardwareStatus";
@@ -177,7 +178,7 @@ const char kManagementCrostiniContainerConfiguration[] =
 const char kAccountManagedInfo[] = "accountManagedInfo";
 const char kDeviceManagedInfo[] = "deviceManagedInfo";
 const char kOverview[] = "overview";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kCustomerLogo[] = "customerLogo";
 
@@ -189,20 +190,20 @@ bool IsProfileManaged(Profile* profile) {
   return profile->GetProfilePolicyConnector()->IsManaged();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsDeviceManaged() {
   return webui::IsEnterpriseManaged();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsBrowserManaged() {
   return g_browser_process->browser_policy_connector()
       ->HasMachineLevelPolicies();
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 enum class DeviceReportingType {
   kSupervisedUser,
@@ -260,7 +261,7 @@ void AddDeviceReportingElement(base::Value* report_sources,
   data.SetKey("reportingType", base::Value(ToJSDeviceReportingType(type)));
   report_sources->Append(std::move(data));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::vector<base::Value> GetPermissionsForExtension(
     scoped_refptr<const extensions::Extension> extension) {
@@ -346,13 +347,13 @@ std::string ManagementUIHandler::GetAccountManager(Profile* profile) {
   if (!IsProfileManaged(profile))
     return std::string();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
       profile->GetUserCloudPolicyManagerChromeOS();
 #else
   const policy::UserCloudPolicyManager* user_cloud_policy_manager =
       profile->GetUserCloudPolicyManager();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (user_cloud_policy_manager) {
     const enterprise_management::PolicyData* policy =
@@ -385,12 +386,12 @@ void ManagementUIHandler::InitializeInternal(content::WebUI* web_ui,
                                              Profile* profile) {
   auto handler = std::make_unique<ManagementUIHandler>();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   handler->account_managed_ = IsProfileManaged(profile);
   handler->device_managed_ = IsDeviceManaged();
 #else
   handler->account_managed_ = IsProfileManaged(profile) || IsBrowserManaged();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   web_ui->AddMessageHandler(std::move(handler));
 }
@@ -404,7 +405,7 @@ void ManagementUIHandler::RegisterMessages() {
       "getExtensions",
       base::BindRepeating(&ManagementUIHandler::HandleGetExtensions,
                           base::Unretained(this)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "getLocalTrustRootsInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetLocalTrustRootsInfo,
@@ -418,7 +419,7 @@ void ManagementUIHandler::RegisterMessages() {
       base::BindRepeating(
           &ManagementUIHandler::HandleGetPluginVmDataCollectionStatus,
           base::Unretained(this)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "getThreatProtectionInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetThreatProtectionInfo,
@@ -545,7 +546,7 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const policy::DeviceCloudPolicyManagerChromeOS*
 ManagementUIHandler::GetDeviceCloudPolicyManager() const {
   // Only check for report status in managed environment.
@@ -691,7 +692,7 @@ void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
 
 base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
   base::Value response(base::Value::Type::DICTIONARY);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string enterprise_manager = GetDeviceManager();
   if (enterprise_manager.empty())
     enterprise_manager = GetAccountManager(profile);
@@ -713,7 +714,7 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
         "extensionReportingTitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     response.SetStringPath(
         "pageSubtitle", l10n_util::GetStringUTF16(
                             managed_() ? IDS_MANAGEMENT_SUBTITLE
@@ -728,7 +729,7 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
             : l10n_util::GetStringFUTF16(
                   IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                   l10n_util::GetStringUTF16(device_type)));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   } else {
     response.SetStringPath(
@@ -736,7 +737,7 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
         l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                    base::UTF8ToUTF16(enterprise_manager)));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     response.SetStringPath(
         "pageSubtitle",
         managed_()
@@ -754,7 +755,7 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
             : l10n_util::GetStringFUTF16(
                   IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                   l10n_util::GetStringUTF16(device_type)));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   }
   response.SetBoolPath("managed", managed_());
   GetManagementStatus(profile, &response);
@@ -822,13 +823,13 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(
     info.Append(std::move(value));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string enterprise_manager = GetDeviceManager();
   if (enterprise_manager.empty())
     enterprise_manager = GetAccountManager(profile);
 #else
   std::string enterprise_manager = GetAccountManager(profile);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::Value result(base::Value::Type::DICTIONARY);
   result.SetStringKey("description",
@@ -856,7 +857,7 @@ const extensions::Extension* ManagementUIHandler::GetEnabledExtension(
 }
 
 void ManagementUIHandler::AsyncUpdateLogo() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   const auto url = connector->GetCustomerLogoURL();
@@ -871,7 +872,7 @@ void ManagementUIHandler::AsyncUpdateLogo() {
             ->GetURLLoaderFactoryForBrowserProcess()
             .get());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ManagementUIHandler::OnFetchComplete(const GURL& url,
@@ -884,7 +885,7 @@ void ManagementUIHandler::OnFetchComplete(const GURL& url,
   FireWebUIListener("managed_data_changed");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AddStatusOverviewManagedDeviceAndAccount(
     base::Value* status,
     bool device_managed,
@@ -927,11 +928,11 @@ const std::string ManagementUIHandler::GetDeviceManager() const {
   return device_domain;
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ManagementUIHandler::GetManagementStatus(Profile* profile,
                                               base::Value* status) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   status->SetKey(kDeviceManagedInfo, base::Value());
   status->SetKey(kAccountManagedInfo, base::Value());
   status->SetKey(kOverview, base::Value());
@@ -957,7 +958,7 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
   AddStatusOverviewManagedDeviceAndAccount(
       status, device_managed_, account_managed_ || primary_user_managed,
       device_manager, account_manager);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ManagementUIHandler::HandleGetExtensions(const base::ListValue* args) {
@@ -978,7 +979,7 @@ void ManagementUIHandler::HandleGetExtensions(const base::ListValue* args) {
                             powerful_extensions);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetSize());
@@ -1029,7 +1030,7 @@ void ManagementUIHandler::HandleGetPluginVmDataCollectionStatus(
                             plugin_vm_data_collection_enabled);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ManagementUIHandler::HandleGetContextualManagedData(
     const base::ListValue* args) {
@@ -1062,14 +1063,14 @@ void ManagementUIHandler::NotifyBrowserReportingInfoUpdated() {
   FireWebUIListener("browser-reporting-info-updated", report_sources);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ManagementUIHandler::NotifyPluginVmDataCollectionUpdated() {
   FireWebUIListener(
       "plugin-vm-data-collection-updated",
       base::Value(Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
           plugin_vm::prefs::kPluginVmDataCollectionAllowed)));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ManagementUIHandler::NotifyThreatProtectionInfoUpdated() {
   FireWebUIListener("threat-protection-info-updated",
@@ -1098,7 +1099,7 @@ void ManagementUIHandler::OnExtensionUnloaded(
 void ManagementUIHandler::UpdateManagedState() {
   auto* profile = Profile::FromWebUI(web_ui());
   bool managed_state_changed = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   managed_state_changed |= account_managed_ != IsProfileManaged(profile);
   managed_state_changed |= device_managed_ != IsDeviceManaged();
   account_managed_ = IsProfileManaged(profile);
@@ -1107,7 +1108,7 @@ void ManagementUIHandler::UpdateManagedState() {
   managed_state_changed |=
       account_managed_ != (IsProfileManaged(profile) || IsBrowserManaged());
   account_managed_ = IsProfileManaged(profile) || IsBrowserManaged();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (managed_state_changed)
     FireWebUIListener("managed_data_changed");
@@ -1142,13 +1143,13 @@ void ManagementUIHandler::AddObservers() {
       base::BindRepeating(&ManagementUIHandler::UpdateManagedState,
                           base::Unretained(this)));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   pref_registrar_.Add(
       plugin_vm::prefs::kPluginVmDataCollectionAllowed,
       base::BindRepeating(
           &ManagementUIHandler::NotifyPluginVmDataCollectionUpdated,
           base::Unretained(this)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ManagementUIHandler::RemoveObservers() {

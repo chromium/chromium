@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -49,7 +50,7 @@
 #include "components/printing/browser/printer_capabilities_mac.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #endif
 
@@ -254,7 +255,7 @@ void PdfPrinterHandler::StartPrint(
 
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   bool prompt_user = !cmdline->HasSwitch(switches::kKioskModePrinting);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   use_drive_mount_ =
       settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false);
 #endif
@@ -430,7 +431,7 @@ void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,
 }
 
 base::FilePath PdfPrinterHandler::GetSaveLocation() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   drive::DriveIntegrationService* drive_service =
       drive::DriveIntegrationServiceFactory::GetForProfile(profile_);
   if (use_drive_mount_ && drive_service && drive_service->IsMounted()) {

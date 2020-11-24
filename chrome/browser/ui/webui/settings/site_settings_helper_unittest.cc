@@ -8,6 +8,7 @@
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
@@ -416,7 +417,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
 // ChromeOS - DRM disabled.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   profile.GetPrefs()->SetBoolean(prefs::kEnableDRM, false);
   // Note this is not testing |kContentType|, because this setting is only valid
   // for protected content.

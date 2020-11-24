@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -79,7 +80,7 @@
 #include "chrome/browser/ui/android/android_about_app_info.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/active_directory_policy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -217,7 +218,7 @@ void GetStatusFromCore(const policy::CloudPolicyCore* core,
                   GetTimeSinceLastRefreshString(last_refresh_time));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds a new entry to |dict| with the affiliation status of the user associated
 // with |profile|. Device scope policy status providers call this method with
 // nullptr |profile|. In this case no entry is added as affiliation status only
@@ -240,7 +241,7 @@ void GetOffHoursStatus(base::DictionaryValue* dict) {
                      off_hours_controller->is_off_hours_mode());
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ExtractDomainFromUsername(base::DictionaryValue* dict) {
   std::string username;
@@ -310,7 +311,7 @@ class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStatusProvider);
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A cloud policy status provider for user policy on Chrome OS.
 class UserCloudPolicyStatusProviderChromeOS
     : public UserCloudPolicyStatusProvider {
@@ -326,9 +327,9 @@ class UserCloudPolicyStatusProviderChromeOS
   Profile* profile_;
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStatusProviderChromeOS);
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 class MachineLevelUserCloudPolicyStatusProvider
     : public PolicyStatusProvider,
       public policy::CloudPolicyStore::Observer {
@@ -348,9 +349,9 @@ class MachineLevelUserCloudPolicyStatusProvider
 
   DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStatusProvider);
 };
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A cloud policy status provider for device policy.
 class DeviceCloudPolicyStatusProviderChromeOS
     : public CloudPolicyCoreStatusProvider {
@@ -514,7 +515,7 @@ void UserCloudPolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
   ExtractDomainFromUsername(dict);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 UserCloudPolicyStatusProviderChromeOS::UserCloudPolicyStatusProviderChromeOS(
     policy::CloudPolicyCore* core,
     Profile* profile)
@@ -532,9 +533,9 @@ void UserCloudPolicyStatusProviderChromeOS::GetStatus(
   UserCloudPolicyStatusProvider::GetStatus(dict);
   GetUserAffiliationStatus(dict, profile_);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 MachineLevelUserCloudPolicyStatusProvider::
     MachineLevelUserCloudPolicyStatusProvider(policy::CloudPolicyCore* core)
@@ -604,9 +605,9 @@ void MachineLevelUserCloudPolicyStatusProvider::OnStoreError(
   NotifyStatusChange();
 }
 
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 DeviceCloudPolicyStatusProviderChromeOS::
     DeviceCloudPolicyStatusProviderChromeOS(
         policy::BrowserPolicyConnectorChromeOS* connector)
@@ -735,7 +736,7 @@ void DeviceActiveDirectoryPolicyStatusProvider::GetStatus(
   dict->SetString("enterpriseDisplayDomain", enterprise_display_domain_);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 UpdaterStatusProvider::UpdaterStatusProvider() {
@@ -843,7 +844,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
 
 void PolicyUIHandler::RegisterMessages() {
   Profile* profile = Profile::FromWebUI(web_ui());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   if (connector->IsEnterpriseManaged()) {
@@ -901,7 +902,7 @@ void PolicyUIHandler::RegisterMessages() {
             manager->core());
   }
 #endif  // !defined(OS_ANDROID)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ReloadUpdaterPoliciesAndState();
@@ -1015,9 +1016,9 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
   // Add extension policy names.
   AddExtensionPolicyNames(&names, policy::POLICY_DOMAIN_EXTENSIONS);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AddExtensionPolicyNames(&names, policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1049,14 +1050,14 @@ void PolicyUIHandler::AddExtensionPolicyNames(
   DCHECK(names->is_dict());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* extension_profile =
       policy_domain == policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
           ? chromeos::ProfileHelper::GetSigninProfile()
           : Profile::FromWebUI(web_ui());
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* extension_profile = Profile::FromWebUI(web_ui());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   scoped_refptr<policy::SchemaMap> schema_map =
       extension_profile->GetOriginalProfile()
@@ -1164,7 +1165,7 @@ void PolicyUIHandler::HandleListenPoliciesUpdates(const base::ListValue* args) {
 }
 
 void PolicyUIHandler::HandleReloadPolicies(const base::ListValue* args) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Allow user to manually fetch remote commands. Useful for testing or when
   // the invalidation service is not working properly.
   policy::CloudPolicyManager* const device_manager =
@@ -1232,7 +1233,7 @@ std::string PolicyUIHandler::GetPoliciesAsJson() const {
       cohort_name.c_str());
   chrome_metadata.SetKey("version", base::Value(version));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chrome_metadata.SetKey("platform",
                          base::Value(chromeos::version_loader::GetVersion(
                              chromeos::version_loader::VERSION_FULL)));

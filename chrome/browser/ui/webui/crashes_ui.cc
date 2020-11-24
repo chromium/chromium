@@ -18,6 +18,7 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
@@ -37,7 +38,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #endif
@@ -91,7 +92,7 @@ class CrashesDOMHandler : public WebUIMessageHandler {
   // Asynchronously fetches the list of crashes. Called from JS.
   void HandleRequestCrashes(const base::ListValue* args);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Asynchronously triggers crash uploading. Called from JS.
   void HandleRequestUploads(const base::ListValue* args);
 #endif
@@ -126,7 +127,7 @@ void CrashesDOMHandler::RegisterMessages() {
       base::BindRepeating(&CrashesDOMHandler::HandleRequestCrashes,
                           base::Unretained(this)));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       crash_reporter::kCrashesUIRequestCrashUpload,
       base::BindRepeating(&CrashesDOMHandler::HandleRequestUploads,
@@ -151,7 +152,7 @@ void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue* args) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void CrashesDOMHandler::HandleRequestUploads(const base::ListValue* args) {
   chromeos::DebugDaemonClient* debugd_client =
       chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
@@ -176,7 +177,7 @@ void CrashesDOMHandler::UpdateUI() {
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 
   bool system_crash_reporter = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS has a system crash reporter.
   system_crash_reporter = true;
 #endif
@@ -184,7 +185,9 @@ void CrashesDOMHandler::UpdateUI() {
   bool using_crashpad = false;
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
   using_crashpad = true;
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // ChromeOS uses crash_sender instead of Crashpad for uploads even when
   // Crashpad is enabled for dump generation.
   using_crashpad = crash_reporter::IsCrashpadEnabled();

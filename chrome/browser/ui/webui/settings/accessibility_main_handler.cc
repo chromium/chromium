@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/accessibility_labels_bubble_model.h"
@@ -37,19 +38,19 @@ void AccessibilityMainHandler::RegisterMessages() {
 }
 
 void AccessibilityMainHandler::OnJavascriptAllowed() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   accessibility_subscription_ =
       chromeos::AccessibilityManager::Get()->RegisterCallback(
           base::BindRepeating(
               &AccessibilityMainHandler::OnAccessibilityStatusChanged,
               base::Unretained(this)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void AccessibilityMainHandler::OnJavascriptDisallowed() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   accessibility_subscription_ = {};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void AccessibilityMainHandler::HandleA11yPageReady(
@@ -78,7 +79,7 @@ void AccessibilityMainHandler::SendScreenReaderStateChanged() {
   FireWebUIListener("screen-reader-state-changed", result);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AccessibilityMainHandler::OnAccessibilityStatusChanged(
     const chromeos::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
@@ -86,6 +87,6 @@ void AccessibilityMainHandler::OnAccessibilityStatusChanged(
     SendScreenReaderStateChanged();
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace settings

@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -337,7 +338,7 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
 }
 
 // TODO(crbug.com/1128855): Fix the test for Lacros build.
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ShowFeedbackPage DISABLED_ShowFeedbackPage
 #else
 #define MAYBE_ShowFeedbackPage ShowFeedbackPage

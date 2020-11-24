@@ -24,6 +24,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
@@ -78,7 +79,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/account_manager/account_manager_util.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
@@ -177,12 +178,12 @@ const char kCssBackground[] = "cssBackground";
 // Name of a dictionary pref holding the policy value for the paper size
 // setting.
 const char kMediaSize[] = "mediaSize";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Name of a dictionary field holding policy value for the setting.
 const char kValue[] = "value";
 // Name of a dictionary pref holding the policy value for the sheets number.
 const char kSheets[] = "sheets";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 // Name of a dictionary field indicating whether the 'Save to PDF' destination
 // is disabled.
 const char kPdfPrinterDisabled[] = "pdfPrinterDisabled";
@@ -197,11 +198,11 @@ const char kUserAccounts[] = "userAccounts";
 // Print Preview will always send a request to the Google Cloud Print server on
 // load, to check the user's sign in state.
 const char kSyncAvailable[] = "syncAvailable";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Name of a dictionary field indicating whether the user's Drive directory is
 // mounted.
 const char kIsDriveMounted[] = "isDriveMounted";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Get the print job settings dictionary from |json_str|.
 // Returns |base::Value()| on failure.
@@ -226,7 +227,7 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
     return UserActionBuckets::kOpenInMacPreview;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(chromeos::features::kPrintSaveToDrive) &&
       settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false)) {
     return UserActionBuckets::kPrintToGoogleDriveCros;
@@ -324,21 +325,21 @@ base::Value GetPolicies(const PrefService& prefs) {
   if (!paper_size_policy.DictEmpty())
     policies.SetKey(kMediaSize, std::move(paper_size_policy));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (prefs.HasPrefPath(prefs::kPrintingMaxSheetsAllowed)) {
     base::Value sheets_policy(base::Value::Type::DICTIONARY);
     sheets_policy.SetIntKey(kValue,
                             prefs.GetInteger(prefs::kPrintingMaxSheetsAllowed));
     policies.SetKey(kSheets, std::move(sheets_policy));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return policies;
 }
 
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PrintPreviewHandler::AccessTokenService
     : public OAuth2AccessTokenManager::Consumer {
  public:
@@ -380,7 +381,7 @@ class PrintPreviewHandler::AccessTokenService
 
   DISALLOW_COPY_AND_ASSIGN(AccessTokenService);
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 PrintPreviewHandler::PrintPreviewHandler() {
   ReportUserActionHistogram(UserActionBuckets::kPreviewStarted);
@@ -418,7 +419,7 @@ void PrintPreviewHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "signIn", base::BindRepeating(&PrintPreviewHandler::HandleSignin,
                                     base::Unretained(this)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "getAccessToken",
       base::BindRepeating(&PrintPreviewHandler::HandleGetAccessToken,
@@ -454,7 +455,7 @@ void PrintPreviewHandler::RegisterMessages() {
       base::BindRepeating(&PrintPreviewHandler::HandleManagePrinters,
                           base::Unretained(this)));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "getEulaUrl", base::BindRepeating(&PrintPreviewHandler::HandleGetEulaUrl,
                                         base::Unretained(this)));
@@ -817,7 +818,7 @@ void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
   Profile* profile = Profile::FromWebUI(web_ui());
   DCHECK(profile);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::IsAccountManagerAvailable(profile)) {
     // Chrome OS Account Manager is enabled on this Profile and hence, all
     // account management flows will go through native UIs and not through a
@@ -844,7 +845,7 @@ void PrintPreviewHandler::OnSignInTabClosed() {
   FireWebUIListener("check-for-account-update");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintPreviewHandler::HandleGetAccessToken(const base::ListValue* args) {
   std::string callback_id;
 
@@ -886,7 +887,7 @@ void PrintPreviewHandler::HandleClosePreviewDialog(
       regenerate_preview_request_count_);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintPreviewHandler::HandleGetEulaUrl(const base::ListValue* args) {
   CHECK_EQ(2U, args->GetSize());
 
@@ -1020,7 +1021,7 @@ void PrintPreviewHandler::SendInitialSettings(
     GetUserAccountList(&initial_settings);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(chromeos::features::kPrintSaveToDrive)) {
     drive::DriveIntegrationService* drive_service =
         drive::DriveIntegrationServiceFactory::GetForProfile(
@@ -1028,7 +1029,7 @@ void PrintPreviewHandler::SendInitialSettings(
     initial_settings.SetBoolKey(kIsDriveMounted,
                                 drive_service && drive_service->IsMounted());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ResolveJavascriptCallback(base::Value(callback_id), initial_settings);
 }
@@ -1037,7 +1038,7 @@ void PrintPreviewHandler::ClosePreviewDialog() {
   print_preview_ui()->OnClosePrintPreviewDialog();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintPreviewHandler::SendAccessToken(const std::string& callback_id,
                                           const std::string& access_token) {
   VLOG(1) << "Get getAccessToken finished";
@@ -1399,7 +1400,7 @@ void PrintPreviewHandler::SendManipulateSettingsForTest(
   FireWebUIListener("manipulate-settings-for-test", settings);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintPreviewHandler::HandleRequestPrinterStatusUpdate(
     const base::ListValue* args) {
   CHECK_EQ(2U, args->GetSize());
@@ -1421,7 +1422,7 @@ void PrintPreviewHandler::OnPrinterStatusUpdated(
 #endif
 
 void PrintPreviewHandler::HandleManagePrinters(const base::ListValue* args) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       Profile::FromWebUI(web_ui()),
       chromeos::settings::mojom::kPrintingDetailsSubpagePath);

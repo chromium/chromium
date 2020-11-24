@@ -4,6 +4,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,7 +56,7 @@ class ManagementUITest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(ManagementUITest);
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   profile_policy_connector()->OverrideIsManagedForTesting(false);
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://management"));
@@ -118,4 +119,4 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
 
   VerifyTexts(managed_value_ptr.get(), expected_managed_values);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

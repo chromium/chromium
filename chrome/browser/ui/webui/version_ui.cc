@@ -10,6 +10,7 @@
 #include "base/i18n/message_formatter.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/version_handler.h"
@@ -38,7 +39,7 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/version_handler_chromeos.h"
 #endif
 
@@ -70,14 +71,14 @@ WebUIDataSource* CreateVersionUIDataSource() {
     {version_ui::kProfilePathName, IDS_VERSION_UI_PROFILE_PATH},
     {version_ui::kVariationsName, IDS_VERSION_UI_VARIATIONS},
     {version_ui::kVariationsCmdName, IDS_VERSION_UI_VARIATIONS_CMD},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {version_ui::kARC, IDS_ARC_LABEL},
     {version_ui::kPlatform, IDS_PLATFORM_LABEL},
     {version_ui::kCustomizationId, IDS_VERSION_UI_CUSTOMIZATION_ID},
     {version_ui::kFirmwareVersion, IDS_VERSION_UI_FIRMWARE_VERSION},
 #else
     {version_ui::kOSName, IDS_VERSION_UI_OS},
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_ANDROID)
     {version_ui::kGmsName, IDS_VERSION_UI_GMS},
 #endif  // OS_ANDROID
@@ -100,7 +101,7 @@ VersionUI::VersionUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui->AddMessageHandler(std::make_unique<VersionHandlerChromeOS>());
 #elif defined(OS_WIN)
   web_ui->AddMessageHandler(std::make_unique<VersionHandlerWindows>());
@@ -179,7 +180,7 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
 
 #if defined(OS_MAC)
   html_source->AddString(version_ui::kOSType, base::mac::GetOSDisplayName());
-#elif !defined(OS_CHROMEOS)
+#elif !BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddString(version_ui::kOSType, version_info::GetOSType());
 #endif  // OS_MAC
 

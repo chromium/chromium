@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom-forward.h"
 #include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -15,16 +16,16 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #endif
 
 class Profile;
 
 class AppManagementPageHandler : public app_management::mojom::PageHandler,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                                  public ArcAppListPrefs::Observer,
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                                  public apps::AppRegistryCache::Observer {
  public:
   AppManagementPageHandler(
@@ -33,14 +34,14 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
       Profile* profile);
   ~AppManagementPageHandler() override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool IsCurrentArcVersionSupported(Profile* profile);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void OnPinnedChanged(const std::string& app_id, bool pinned);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnArcVersionChanged(int androidVersion);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // app_management::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;
@@ -62,13 +63,13 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ArcAppListPrefs::Observer:
   void OnPackageInstalled(
       const arc::mojom::ArcPackageInfo& package_info) override;
   void OnPackageModified(
       const arc::mojom::ArcPackageInfo& package_info) override;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   mojo::Receiver<app_management::mojom::PageHandler> receiver_;
 
@@ -76,11 +77,11 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 
   Profile* profile_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ScopedObserver<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_app_list_prefs_observer_{this};
   AppManagementShelfDelegate shelf_delegate_{this};
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DISALLOW_COPY_AND_ASSIGN(AppManagementPageHandler);
 };

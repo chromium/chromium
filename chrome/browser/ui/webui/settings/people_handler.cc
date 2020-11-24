@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -60,7 +61,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/profile_helper.h"
 #endif
 
@@ -290,7 +291,7 @@ void PeopleHandler::RegisterMessages() {
       "SyncPrefsDispatch",
       base::BindRepeating(&PeopleHandler::HandleSyncPrefsDispatch,
                           base::Unretained(this)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "AttemptUserExit",
       base::BindRepeating(&PeopleHandler::HandleAttemptUserExit,
@@ -353,7 +354,7 @@ void PeopleHandler::OnJavascriptDisallowed() {
   sync_service_observer_.RemoveAll();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void PeopleHandler::DisplayGaiaLogin(signin_metrics::AccessPoint access_point) {
   // Advanced options are no longer being configured if the login screen is
   // visible. If the user exits the signin wizard after this without
@@ -630,7 +631,7 @@ void PeopleHandler::HandleShowSyncSetupUI(const base::ListValue* args) {
   web_ui()->GetWebContents()->Focus();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // On ChromeOS, we need to sign out the user session to fix an auth error, so
 // the user goes through the real signin flow to generate a new auth token.
 void PeopleHandler::HandleAttemptUserExit(const base::ListValue* args) {
@@ -650,9 +651,9 @@ void PeopleHandler::HandleTurnOffSync(const base::ListValue* args) {
 
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void PeopleHandler::HandleStartSignin(const base::ListValue* args) {
   AllowJavascript();
 
@@ -771,7 +772,7 @@ void PeopleHandler::CloseSyncSetup() {
         if (sync_service) {
           DVLOG(1) << "Sync setup aborted by user action";
           sync_service->StopAndClear();
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
           // Sign out the user on desktop Chrome if they click cancel during
           // initial setup.
           if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {
@@ -1042,7 +1043,7 @@ void PeopleHandler::MarkFirstSetupComplete() {
 }
 
 void PeopleHandler::MaybeMarkSyncConfiguring() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsProfileAuthNeededOrHasErrors())
     return;
 #endif

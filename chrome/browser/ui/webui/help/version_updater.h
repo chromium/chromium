@@ -10,11 +10,12 @@
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/update_engine_client.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 class WebContents;
@@ -47,7 +48,7 @@ class VersionUpdater {
 
   // TODO(jhawkins): Use a delegate interface instead of multiple callback
   // types.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   typedef base::Callback<void(const std::string&)> ChannelCallback;
   using EolInfoCallback =
       base::OnceCallback<void(chromeos::UpdateEngineClient::EolInfo eol_info)>;
@@ -96,7 +97,7 @@ class VersionUpdater {
   virtual void PromoteUpdater() const = 0;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual void SetChannel(const std::string& channel,
                           bool is_powerwash_allowed) = 0;
   virtual void GetChannel(bool get_current_channel,

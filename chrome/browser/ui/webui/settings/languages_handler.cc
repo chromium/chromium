@@ -7,13 +7,14 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/base/locale_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,7 +24,7 @@
 
 namespace settings {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 LanguagesHandler::LanguagesHandler(Profile* profile) : profile_(profile) {}
 #else
 LanguagesHandler::LanguagesHandler() = default;
@@ -50,10 +51,10 @@ void LanguagesHandler::HandleGetProspectiveUILanguage(
   AllowJavascript();
 
   std::string locale;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, an individual profile may have a preferred locale.
   locale = profile_->GetPrefs()->GetString(language::prefs::kApplicationLocale);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (locale.empty()) {
     locale = g_browser_process->local_state()->GetString(
@@ -74,7 +75,7 @@ void LanguagesHandler::HandleSetProspectiveUILanguage(
 #if defined(OS_WIN)
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetString(language::prefs::kApplicationLocale, language_code);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   // Secondary users and public session users cannot change the locale.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user =

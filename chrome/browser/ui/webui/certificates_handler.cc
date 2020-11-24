@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -573,7 +574,7 @@ void CertificatesHandler::ExportPersonalFileWritten(const int* write_errno,
 }
 
 void CertificatesHandler::HandleImportPersonal(const base::ListValue* args) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // When policy changes while user on the certificate manager page, the UI
   // doesn't update without page refresh and user can still see and use import
   // button. Because of this 'return' the button will do nothing.
@@ -810,14 +811,14 @@ void CertificatesHandler::ImportServerFileRead(const int* read_errno,
 }
 
 void CertificatesHandler::HandleImportCA(const base::ListValue* args) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // When policy changes while user on the certificate manager page, the UI
   // doesn't update without page refresh and user can still see and use import
   // button. Because of this 'return' the button will do nothing.
   if (!IsCACertificateManagementAllowedPolicy(CertificateSource::kImported)) {
     return;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   CHECK_EQ(1U, args->GetSize());
   AssignWebUICallbackId(args);
@@ -965,12 +966,12 @@ void CertificatesHandler::OnCertificateManagerModelCreated(
 void CertificatesHandler::CertificateManagerModelReady() {
   bool client_import_allowed = true;
   bool ca_import_allowed = true;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   client_import_allowed =
       IsClientCertificateManagementAllowedPolicy(Slot::kUser);
   ca_import_allowed =
       IsCACertificateManagementAllowedPolicy(CertificateSource::kImported);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsJavascriptAllowed()) {
     FireWebUIListener("client-import-allowed-changed",
                       base::Value(client_import_allowed));
@@ -1157,7 +1158,7 @@ CertificatesHandler::GetCertInfoFromCallbackArgs(const base::Value& args,
   return cert_info_id_map_.Lookup(cert_info_id);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool CertificatesHandler::IsClientCertificateManagementAllowedPolicy(
     Slot slot) const {
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -1185,7 +1186,7 @@ bool CertificatesHandler::IsCACertificateManagementAllowedPolicy(
       return policy_value != CACertificateManagementPermission::kNone;
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool CertificatesHandler::CanDeleteCertificate(
     const CertificateManagerModel::CertInfo* cert_info) const {
@@ -1195,7 +1196,7 @@ bool CertificatesHandler::CanDeleteCertificate(
     return false;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (cert_info->type() == net::CertType::USER_CERT) {
     return IsClientCertificateManagementAllowedPolicy(
         cert_info->device_wide() ? Slot::kSystem : Slot::kUser);
@@ -1206,7 +1207,7 @@ bool CertificatesHandler::CanDeleteCertificate(
                                    : CertificateSource::kBuiltIn;
     return IsCACertificateManagementAllowedPolicy(source);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 }
 
@@ -1217,16 +1218,16 @@ bool CertificatesHandler::CanEditCertificate(
        CertificateManagerModel::CertInfo::Source::kPolicy)) {
     return false;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   CertificateSource source = cert_info->can_be_deleted()
                                  ? CertificateSource::kImported
                                  : CertificateSource::kBuiltIn;
   return IsCACertificateManagementAllowedPolicy(source);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void CertificatesHandler::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Allow users to manage all client certificates by default. This can be
@@ -1241,6 +1242,6 @@ void CertificatesHandler::RegisterProfilePrefs(
       prefs::kCACertificateManagementAllowed,
       static_cast<int>(CACertificateManagementPermission::kAll));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace certificate_manager

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(GOOGLE_CHROME_BUILD) && !defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if defined(GOOGLE_CHROME_BUILD) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #include "chrome/browser/ui/webui/settings/metrics_reporting_handler.h"
 
@@ -106,4 +108,4 @@ void MetricsReportingHandler::SendMetricsReportingChange() {
 
 }  // namespace settings
 
-#endif  // defined(GOOGLE_CHROME_BUILD) && !defined(OS_CHROMEOS)
+#endif  // defined(GOOGLE_CHROME_BUILD) && !BUILDFLAG(IS_CHROMEOS_ASH)

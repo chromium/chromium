@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -17,12 +18,12 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/user_manager.h"
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 LoginUIService::LoginUIService(Profile* profile)
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     : profile_(profile)
 #endif
 {
@@ -59,7 +60,7 @@ void LoginUIService::SyncConfirmationUIClosed(
 
 void LoginUIService::ShowExtensionLoginPrompt(bool enable_sync,
                                               const std::string& email_hint) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();
 #else
   // There is no sign-in flow for guest or system profile.
@@ -95,7 +96,7 @@ void LoginUIService::ShowExtensionLoginPrompt(bool enable_sync,
 void LoginUIService::DisplayLoginResult(Browser* browser,
                                         const base::string16& error_message,
                                         const base::string16& email) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS doesn't have the avatar bubble so it never calls this function.
   NOTREACHED();
 #else

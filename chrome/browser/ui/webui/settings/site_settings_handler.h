@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/scoped_observer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -68,7 +69,7 @@ class SiteSettingsHandler
   void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override;
   void TreeModelEndBatch(CookiesTreeModel* model) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Alert the Javascript that the |kEnableDRM| pref has changed.
   void OnPrefEnableDrmChanged();
 #endif

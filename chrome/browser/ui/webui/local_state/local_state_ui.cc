@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -27,11 +28,11 @@ namespace {
 // On ChromeOS, the local state file contains some information about other
 // user accounts which we don't want to expose to other users. Use an allowlist
 // to only show variations and UMA related fields which don't contain PII.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define ENABLE_FILTERING true
 #else
 #define ENABLE_FILTERING false
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // UI Handler for chrome://local-state. Displays the Local State file as JSON.
 class LocalStateUIHandler : public content::WebUIMessageHandler {

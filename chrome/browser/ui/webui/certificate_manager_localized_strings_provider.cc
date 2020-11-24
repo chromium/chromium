@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -80,7 +81,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_CERTIFICATE_MANAGER_CONFIRM_PASSWORD},
     {"certificateImportErrorFormat",
      IDS_SETTINGS_CERTIFICATE_MANAGER_IMPORT_ERROR_FORMAT},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"certificateProvisioningListHeader",
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER},
     {"certificateProvisioningRefresh",
@@ -98,7 +99,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
     {"certificateProvisioningLastUpdate",
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LAST_UPDATE},
     {"certificateProvisioningPublicKey", IDS_CERT_DETAILS_SUBJECT_KEY},
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // For A11y.
     {"menu", IDS_MENU},
   };

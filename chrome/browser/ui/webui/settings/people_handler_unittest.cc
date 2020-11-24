@@ -17,6 +17,7 @@
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -204,7 +205,7 @@ class TestingPeopleHandler : public PeopleHandler {
   using PeopleHandler::is_configuring_sync;
 
  private:
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void DisplayGaiaLoginInNewTabOrWindow(
       signin_metrics::AccessPoint access_point) override {}
 #endif
@@ -364,7 +365,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
   DISALLOW_COPY_AND_ASSIGN(PeopleHandlerTest);
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       ConsentLevel::kSync));
@@ -394,7 +395,7 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
       LoginUIServiceFactory::GetForProfile(profile())->current_login_ui());
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PeopleHandlerTest, DisplayConfigureWithEngineDisabledAndCancel) {
   SigninUser();
@@ -1276,7 +1277,7 @@ TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Regression test for crash in guest mode. https://crbug.com/1040476
 TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
   content::BrowserTaskEnvironment task_environment;
@@ -1312,6 +1313,6 @@ TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   ASSERT_EQ(1u, accounts_list.size());
   EXPECT_EQ("user@gmail.com", accounts_list[0].FindKey("email")->GetString());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace settings

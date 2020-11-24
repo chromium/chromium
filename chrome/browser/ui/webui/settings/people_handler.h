@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -154,12 +155,12 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleSetEncryption(const base::ListValue* args);
   void HandleShowSyncSetupUI(const base::ListValue* args);
   void HandleSyncPrefsDispatch(const base::ListValue* args);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void HandleAttemptUserExit(const base::ListValue* args);
   void HandleTurnOnSync(const base::ListValue* args);
   void HandleTurnOffSync(const base::ListValue* args);
 #endif
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void HandleStartSignin(const base::ListValue* args);
   void HandleSignout(const base::ListValue* args);
   void HandlePauseSync(const base::ListValue* args);
@@ -167,7 +168,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleStartKeyRetrieval(const base::ListValue* args);
   void HandleGetSyncStatus(const base::ListValue* args);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Displays the GAIA login form.
   void DisplayGaiaLogin(signin_metrics::AccessPoint access_point);
 

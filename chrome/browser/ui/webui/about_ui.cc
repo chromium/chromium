@@ -39,6 +39,7 @@
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
@@ -77,7 +78,7 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <map>
 
 #include "base/base64.h"
@@ -101,7 +102,7 @@ constexpr char kCreditsJsPath[] = "credits.js";
 constexpr char kStatsJsPath[] = "stats.js";
 constexpr char kStringsJsPath[] = "strings.js";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kKeyboardUtilsPath[] = "keyboard_utils.js";
 
@@ -625,7 +626,7 @@ void AboutUIHTMLSource::StartDataRequest(
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath)
       idr = IDR_ABOUT_UI_CREDITS_JS;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     else if (path == kKeyboardUtilsPath)
       idr = IDR_KEYBOARD_UTILS_JS;
 #endif
@@ -639,7 +640,7 @@ void AboutUIHTMLSource::StartDataRequest(
   } else if (source_name_ == chrome::kChromeUILinuxProxyConfigHost) {
     response = AboutLinuxProxyConfig();
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (source_name_ == chrome::kChromeUIOSCreditsHost) {
     ChromeOSCreditsHandler::Start(path, std::move(callback));
     return;
@@ -649,7 +650,7 @@ void AboutUIHTMLSource::StartDataRequest(
 #endif
 #if !defined(OS_ANDROID)
   } else if (source_name_ == chrome::kChromeUITermsHost) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!path.empty()) {
       ChromeOSTermsHandler::Start(path, std::move(callback));
       return;
@@ -672,19 +673,18 @@ void AboutUIHTMLSource::FinishDataRequest(
 }
 
 std::string AboutUIHTMLSource::GetMimeType(const std::string& path) {
-  if (path == kCreditsJsPath     ||
-#if defined(OS_CHROMEOS)
+  if (path == kCreditsJsPath ||
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       path == kKeyboardUtilsPath ||
 #endif
-      path == kStatsJsPath       ||
-      path == kStringsJsPath) {
+      path == kStatsJsPath || path == kStringsJsPath) {
     return "application/javascript";
   }
   return "text/html";
 }
 
 bool AboutUIHTMLSource::ShouldAddContentSecurityPolicy() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_name_ == chrome::kChromeUIOSCreditsHost ||
       source_name_ == chrome::kChromeUICrostiniCreditsHost) {
     return false;
@@ -704,7 +704,7 @@ std::string AboutUIHTMLSource::GetContentSecurityPolicy(
 
 std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
     const std::string& origin) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Allow chrome://oobe to load chrome://terms via XHR.
   if (source_name_ == chrome::kChromeUITermsHost &&
       base::StartsWith(chrome::kChromeUIOobeURL, origin,

@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,7 +23,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -31,7 +32,7 @@ namespace settings {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char fake_id[] = "fake_id";
 constexpr char fake_email[] = "fake_id@gmail.com";
 #endif
@@ -55,7 +56,7 @@ class ProfileInfoHandlerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::FakeChromeUserManager* fake_user_manager =
         new chromeos::FakeChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -79,7 +80,7 @@ class ProfileInfoHandlerTest : public testing::Test {
     ASSERT_TRUE(response->GetString("name", &name));
     ASSERT_TRUE(response->GetString("iconUrl", &icon_url));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     EXPECT_EQ(fake_id, name);
     EXPECT_FALSE(icon_url.empty());
 #else
@@ -105,7 +106,7 @@ class ProfileInfoHandlerTest : public testing::Test {
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
 

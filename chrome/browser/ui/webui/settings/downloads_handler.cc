@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -19,7 +20,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #endif
 
@@ -49,7 +50,7 @@ void DownloadsHandler::RegisterMessages() {
       "selectDownloadLocation",
       base::BindRepeating(&DownloadsHandler::HandleSelectDownloadLocation,
                           base::Unretained(this)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "getDownloadLocationText",
       base::BindRepeating(&DownloadsHandler::HandleGetDownloadLocationText,
@@ -116,7 +117,7 @@ void DownloadsHandler::FileSelected(const base::FilePath& path,
   pref_service->SetFilePath(prefs::kSaveFileDefaultDirectory, path);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void DownloadsHandler::HandleGetDownloadLocationText(
     const base::ListValue* args) {
   AllowJavascript();

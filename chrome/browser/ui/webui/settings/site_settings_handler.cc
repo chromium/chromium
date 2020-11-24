@@ -19,6 +19,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -69,7 +70,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -529,7 +530,7 @@ void SiteSettingsHandler::OnJavascriptAllowed() {
       base::Bind(&SiteSettingsHandler::SendCookieSettingDescription,
                  base::Unretained(this)));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   pref_change_registrar_->Add(
       prefs::kEnableDRM,
       base::Bind(&SiteSettingsHandler::OnPrefEnableDrmChanged,
@@ -543,7 +544,7 @@ void SiteSettingsHandler::OnJavascriptDisallowed() {
   host_zoom_map_subscription_ = {};
   pref_change_registrar_->Remove(prefs::kBlockAutoplayEnabled);
   pref_change_registrar_->Remove(prefs::kCookieControlsMode);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   pref_change_registrar_->Remove(prefs::kEnableDRM);
 #endif
   observed_profiles_.RemoveAll();
@@ -573,7 +574,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
                     base::Value(usage_string), base::Value(cookie_string));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void SiteSettingsHandler::OnPrefEnableDrmChanged() {
   FireWebUIListener("prefEnableDrmChanged");
 }
@@ -692,7 +693,7 @@ void SiteSettingsHandler::HandleSetDefaultValueForContentType(
       site_settings::ContentSettingsTypeFromGroupName(content_type);
 
   Profile* profile = profile_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS special case: in Guest mode, settings are opened in Incognito
   // mode so we need the original profile to actually modify settings.
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest())

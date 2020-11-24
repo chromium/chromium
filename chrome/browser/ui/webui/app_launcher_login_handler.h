@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
@@ -41,7 +42,7 @@ class AppLauncherLoginHandler : public content::WebUIMessageHandler {
   // passed from JS and should be an empty list.
   void HandleInitializeSyncLogin(const base::ListValue* args);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Called from JS when the user clicks the login container. It shows the
   // appropriate UI based on the current sync state. |args| is the list of
   // arguments passed from JS and should be an empty list.

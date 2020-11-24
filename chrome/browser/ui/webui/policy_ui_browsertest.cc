@@ -19,6 +19,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -52,9 +53,9 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using testing::_;
 using testing::Return;
@@ -159,7 +160,7 @@ void SetChromeMetaData(base::DictionaryValue* expected) {
   expected->SetPath({prefix, "application"}, base::Value(""));
   expected->SetPath({prefix, "version"}, base::Value(""));
   expected->SetPath({prefix, "revision"}, base::Value(""));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   expected->SetPath({prefix, "platform"}, base::Value(""));
 #else
   expected->SetPath({prefix, "OS"}, base::Value(""));
@@ -432,12 +433,12 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   // such policies.
   expected_values.SetDictionary("extensionPolicies",
                                 std::make_unique<base::DictionaryValue>());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   expected_values.SetDictionary("loginScreenExtensionPolicies",
                                 std::make_unique<base::DictionaryValue>());
   expected_values.SetDictionary("deviceLocalAccountPolicies",
                                 std::make_unique<base::DictionaryValue>());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   provider_.UpdateChromePolicy(values);
 
@@ -465,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   // contents).
   VerifyExportingPolicies(expected_values);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // This also checks that we do not bypass the policy that blocks file
   // selection dialogs. This is a desktop only policy.
   values.Set(policy::key::kAllowFileSelectionDialogs,
@@ -596,11 +597,11 @@ class ExtensionPolicyUITest : public PolicyUITest,
   bool UseSigninProfile() const { return GetParam(); }
 
   Profile* extension_profile() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (UseSigninProfile()) {
       return chromeos::ProfileHelper::GetSigninProfile();
     }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return browser()->profile();
   }
 };
@@ -796,10 +797,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionPolicyUITest,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                          ::testing::Values(false, true)
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
                          ::testing::Values(false)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 );

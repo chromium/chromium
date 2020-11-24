@@ -27,6 +27,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -49,7 +50,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "v8/include/v8-version-string.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
@@ -79,7 +80,7 @@ using content::BrowserThread;
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The directory containing the regulatory labels for supported
 // models/regions, relative to chromeos-assets directory
@@ -211,7 +212,7 @@ std::unique_ptr<base::DictionaryValue> GetVersionInfo() {
   return version_info;
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string UpdateStatusToString(VersionUpdater::Status status) {
   std::string status_str;
@@ -277,7 +278,7 @@ void AboutHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "openHelpPage", base::BindRepeating(&AboutHandler::HandleOpenHelpPage,
                                           base::Unretained(this)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "openOsHelpPage", base::BindRepeating(&AboutHandler::HandleOpenOsHelpPage,
                                             base::Unretained(this)));
@@ -328,7 +329,7 @@ void AboutHandler::RegisterMessages() {
                                             base::Unretained(this)));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Handler for the product label image, which will be shown if available.
   content::URLDataSource::Add(profile_,
                               std::make_unique<chromeos::ImageSource>());
@@ -388,7 +389,7 @@ void AboutHandler::HandleRefreshUpdateStatus(const base::ListValue* args) {
 
 void AboutHandler::RefreshUpdateStatus() {
 // On Chrome OS, do not check for an update automatically.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static_cast<VersionUpdaterCros*>(version_updater_.get())
       ->GetUpdateStatus(
           base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)));
@@ -418,7 +419,7 @@ void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetSize());
   std::string callback_id;
@@ -620,7 +621,7 @@ void AboutHandler::OnGetEndOfLifeInfo(
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AboutHandler::RequestUpdate() {
   version_updater_->CheckForUpdate(
@@ -651,7 +652,7 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
   event->SetString("version", version);
   // DictionaryValue does not support int64_t, so convert to string.
   event->SetString("size", base::NumberToString(size));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (status == VersionUpdater::FAILED_OFFLINE ||
       status == VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED) {
     base::string16 types_msg = GetAllowedConnectionTypesMessage();
@@ -662,7 +663,7 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
   } else {
     event->Set("connectionTypes", std::make_unique<base::Value>());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   FireWebUIListener("update-status-changed", *event);
 }
@@ -695,7 +696,7 @@ void AboutHandler::SetPromotionState(VersionUpdater::PromotionState state) {
 }
 #endif  // defined(OS_MAC)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AboutHandler::OnRegulatoryLabelDirFound(
     std::string callback_id,
     const base::FilePath& label_dir_path) {
@@ -728,6 +729,6 @@ void AboutHandler::OnRegulatoryLabelTextRead(
 
   ResolveJavascriptCallback(base::Value(callback_id), *regulatory_info);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace settings

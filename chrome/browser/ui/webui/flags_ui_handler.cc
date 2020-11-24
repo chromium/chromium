@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/flags_ui_handler.h"
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/channel_info.h"
@@ -12,7 +13,7 @@
 #include "components/flags_ui/flags_ui_constants.h"
 #include "components/version_info/channel.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "components/account_id/account_id.h"
@@ -90,7 +91,7 @@ void FlagsUIHandler::HandleRequestExperimentalFeatures(
   results.SetBoolean(flags_ui::kShowOwnerWarning,
                      access_ == flags_ui::kGeneralAccessFlagsOnly);
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   version_info::Channel channel = chrome::GetChannel();
   results.SetBoolean(
       flags_ui::kShowBetaChannelPromotion,
@@ -147,7 +148,7 @@ void FlagsUIHandler::HandleSetOriginListFlagMessage(
 
 void FlagsUIHandler::HandleRestartBrowser(const base::ListValue* args) {
   DCHECK(flags_storage_);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS be less intrusive and restart inside the user session after
   // we apply the newly selected flags.
   base::CommandLine user_flags(base::CommandLine::NO_PROGRAM);

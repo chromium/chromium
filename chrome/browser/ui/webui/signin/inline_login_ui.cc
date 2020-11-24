@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,7 +33,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/webui_resources.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
@@ -42,14 +43,14 @@
 #include "ui/strings/grit/ui_strings.h"
 #else
 #include "chrome/browser/ui/webui/signin/inline_login_handler_impl.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
 constexpr char kResourcesGeneratedPath[] =
     "@out_folder@/gen/chrome/browser/resources/";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AddEduStrings(content::WebUIDataSource* source,
                    const base::string16& username) {
   source->AddLocalizedString("okButton", IDS_APP_OK);
@@ -102,7 +103,7 @@ void AddEduStrings(content::WebUIDataSource* source,
   source->AddLocalizedString("eduCoexistenceErrorDescription",
                              IDS_EDU_COEXISTENCE_ERROR_DESCRIPTION);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 content::WebUIDataSource* CreateWebUIDataSource() {
   content::WebUIDataSource* source =
@@ -124,7 +125,7 @@ content::WebUIDataSource* CreateWebUIDataSource() {
   static constexpr webui::ResourcePath kResources[] = {
     {"inline_login_app.js", IDR_INLINE_LOGIN_APP_JS},
     {"inline_login_browser_proxy.js", IDR_INLINE_LOGIN_BROWSER_PROXY_JS},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"gaia_action_buttons.js", IDR_GAIA_ACTION_BUTTONS_JS},
     {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
     {"edu", IDR_EDU_LOGIN_EDU_LOGIN_HTML},
@@ -165,7 +166,7 @@ content::WebUIDataSource* CreateWebUIDataSource() {
     {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
 #endif
     {"family_link_logo.svg", IDR_FAMILY_LINK_LOGO_SVG},
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 
   webui::AddResourcePathsBulk(source, kResources);
@@ -175,7 +176,7 @@ content::WebUIDataSource* CreateWebUIDataSource() {
       "accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON);
   source->AddLocalizedString(
       "accessibleBackButtonLabel", IDS_SIGNIN_ACCESSIBLE_BACK_BUTTON);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddLocalizedString("accountManagerErrorNoInternetTitle",
                              IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE);
   source->AddLocalizedString("accountManagerErrorNoInternetBody",
@@ -192,7 +193,7 @@ content::WebUIDataSource* CreateWebUIDataSource() {
 // Returns whether |url| can be displayed in a chrome://chrome-signin tab,
 // depending on the signin reason that is encoded in the url.
 bool IsValidChromeSigninReason(const GURL& url) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   signin_metrics::Reason reason =
@@ -220,7 +221,7 @@ bool IsValidChromeSigninReason(const GURL& url) {
       return false;
   }
   NOTREACHED();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -231,14 +232,14 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = CreateWebUIDataSource();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::string16 username =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
   AddEduStrings(source, username);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   content::WebUIDataSource::Add(profile, source);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::InlineLoginHandlerChromeOS>(
           base::BindRepeating(&WebDialogUIBase::CloseDialog,
@@ -262,7 +263,7 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
 #else
   web_ui->AddMessageHandler(std::make_unique<InlineLoginHandlerImpl>());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 

@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -229,10 +230,10 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
 }
 
 void InlineLoginHandler::HandleDialogClose(const base::ListValue* args) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Does nothing if user manager is not showing.
   UserManagerProfileDialog::HideDialog();
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void InlineLoginHandler::CloseDialogFromJavascript() {

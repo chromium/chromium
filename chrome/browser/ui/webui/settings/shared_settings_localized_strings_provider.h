@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 
+#include "build/chromeos_buildflags.h"
+
 namespace content {
 class WebUIDataSource;
 }  // namespace content
@@ -23,7 +25,7 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source);
 // Adds strings used by the <settings-sync-account-control> element.
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds strings used by the <settings-password-prompt-dialog> element.
 void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 #endif
@@ -31,10 +33,10 @@ void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 // Adds strings used by the <settings-sync-page> element.
 void AddSyncPageStrings(content::WebUIDataSource* html_source);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds load time data used by the <settings-nearby-share-subpage>.
 void AddNearbyShareData(content::WebUIDataSource* html_source);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace settings
 

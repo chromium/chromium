@@ -8,11 +8,12 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 class ListValue;
@@ -40,12 +41,12 @@ class AccessibilityMainHandler : public ::settings::SettingsPageUIHandler {
  private:
   void SendScreenReaderStateChanged();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnAccessibilityStatusChanged(
       const chromeos::AccessibilityStatusEventDetails& details);
 
   base::CallbackListSubscription accessibility_subscription_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace settings

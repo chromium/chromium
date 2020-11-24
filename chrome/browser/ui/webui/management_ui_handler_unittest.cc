@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/management_ui_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -29,7 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -84,7 +85,7 @@
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "services/network/test/test_network_connection_tracker.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using testing::_;
 using testing::AnyNumber;
@@ -97,13 +98,13 @@ using testing::ReturnRef;
 struct ContextualManagementSourceUpdate {
   base::string16 extension_reporting_title;
   base::string16 subtitle;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::string16 management_overview;
   base::string16 update_required_eol;
   bool show_proxy_server_privacy_disclosure;
 #else
   base::string16 browser_management_notice;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   bool managed;
 };
 
@@ -111,12 +112,12 @@ namespace {
 const char kDomain[] = "domain.com";
 const char kUser[] = "user@domain.com";
 const char kManager[] = "manager@domain.com";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kGaiaId[] = "gaia_id";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // This class is just to mock the behaviour of the few flags we need for
 // simulating the behaviour of the policy::DeviceStatusCollector.
 // The expected flags are passed to the constructor.
@@ -180,7 +181,7 @@ class TestDeviceCloudPolicyManagerChromeOS
   }
   ~TestDeviceCloudPolicyManagerChromeOS() override = default;
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TestManagementUIHandler : public ManagementUIHandler {
  public:
@@ -222,7 +223,7 @@ class TestManagementUIHandler : public ManagementUIHandler {
     return nullptr;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(policy::DeviceCloudPolicyManagerChromeOS*,
               GetDeviceCloudPolicyManager,
               (),
@@ -241,7 +242,7 @@ class TestManagementUIHandler : public ManagementUIHandler {
 
   const std::string GetDeviceManager() const override { return device_domain; }
   void SetDeviceDomain(const std::string& domain) { device_domain = domain; }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   bool cloud_reporting_extension_exists_ = false;
@@ -253,14 +254,14 @@ class TestManagementUIHandler : public ManagementUIHandler {
 // We need to use a different base class for ChromeOS and non ChromeOS case.
 // TODO(marcgrimme): refactor so that ChromeOS and non ChromeOS part is better
 // separated.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using TestingBaseClass = chromeos::DeviceSettingsTestBase;
 #else
 using TestingBaseClass = testing::Test;
 #endif
 class ManagementUIHandlerTests : public TestingBaseClass {
  public:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ManagementUIHandlerTests()
       : TestingBaseClass(),
         handler_(&policy_service_),
@@ -321,7 +322,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     extracted_.extension_reporting_title =
         ExtractPathFromDict(data, "extensionReportingTitle");
     extracted_.subtitle = ExtractPathFromDict(data, "pageSubtitle");
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     extracted_.management_overview = ExtractPathFromDict(data, "overview");
     extracted_.update_required_eol = ExtractPathFromDict(data, "eolMessage");
     base::Optional<bool> showProxyDisclosure =
@@ -331,7 +332,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #else
     extracted_.browser_management_notice =
         ExtractPathFromDict(data, "browserManagementNotice");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     base::Optional<bool> managed = data.FindBoolPath("managed");
     extracted_.managed = managed.has_value() && managed.value();
   }
@@ -377,7 +378,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.device_domain = "devicedomain.com";
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
     install_attributes_ =
@@ -452,7 +453,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     return handler_.GetDeviceReportingInfo(manager_.get(), status_collector,
                                            system_uploader, GetProfile());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetUpProfileAndHandler() {
     TestingProfile::Builder builder;
@@ -463,7 +464,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     profile_ = builder.Build();
     handler_.SetAccountManagedForTesting(GetTestConfig().managed_account);
     handler_.SetDeviceManagedForTesting(GetTestConfig().managed_device);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     handler_.SetDeviceDomain(GetTestConfig().device_domain);
 #endif
     base::Value data =
@@ -473,7 +474,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
   bool GetManaged() const { return extracted_.managed; }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::string16 GetManagementOverview() const {
     return extracted_.management_overview;
   }
@@ -510,7 +511,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
   TestConfig& GetTestConfig() { return setup_config_; }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnFatalError() { DCHECK(false); }
 
   std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
@@ -550,7 +551,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         base::ThreadTaskRunnerHandle::Get(),
         network::TestNetworkConnectionTracker::CreateGetter());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
   TestConfig setup_config_;
@@ -559,7 +560,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   policy::PolicyMap empty_policy_map_;
   base::string16 device_domain_;
   ContextualManagementSourceUpdate extracted_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::ScopedStubInstallAttributes> install_attributes_;
   std::unique_ptr<crostini::FakeCrostiniFeatures> crostini_features_;
   TestingPrefServiceSimple local_state_;
@@ -604,7 +605,7 @@ AssertionResult MessagesToBeEQ(const char* infolist_expr,
   return AssertionSuccess();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 AssertionResult ReportingElementsToBeEQ(
     const char* elements_expr,
     const char* expected_elements_expr,
@@ -656,7 +657,7 @@ AssertionResult ReportingElementsToBeEQ(
 }
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagementUIHandlerTests,
        ManagementContextualSourceUpdateUnmanagedNoDomain) {
   ResetTestConfig();
@@ -765,9 +766,9 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_TRUE(GetManaged());
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagementUIHandlerTests,
        ManagementContextualSourceUpdateManagedAccountKnownDomain) {
   const std::string domain = "manager.com";
@@ -1178,9 +1179,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   builder_known_domain.SetProfileName("managed@manager.com");
   auto profile_known_domain = builder_known_domain.Build();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   handler_.SetDeviceDomain("");
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   EXPECT_CALL(policy_service_, GetPolicies(chrome_policies_namespace))
       .WillRepeatedly(ReturnRef(chrome_policies));
@@ -1275,7 +1276,7 @@ TEST_F(ManagementUIHandlerTests, GetAccountManager) {
   builder_managed_user.SetProfileName(kUser);
   builder_managed_user.OverridePolicyConnectorIsManagedForTesting(true);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   std::unique_ptr<TestingProfileManager> profile_manager =
       std::make_unique<TestingProfileManager>(
@@ -1288,7 +1289,7 @@ TEST_F(ManagementUIHandlerTests, GetAccountManager) {
 #endif
   auto managed_user = builder_managed_user.Build();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::UserCloudPolicyManagerChromeOS* policy_manager =
       managed_user->GetUserCloudPolicyManagerChromeOS();
   policy::MockCloudPolicyStore* mock_store =
