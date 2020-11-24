@@ -135,4 +135,10 @@ Polymer({
     return loadTimeData.getStringF(
         'cpuTempText', this.cpuUsage_.averageCpuTempCelsius);
   },
+
+  /** @protected */
+  getCpuUsageTooltipText_() {
+    // TODO(michaelcheco): Update when number of cores is added to the api.
+    return loadTimeData.getString('cpuUsageTooltipText');
+  },
 });

@@ -9,6 +9,7 @@ import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo} from 'chrom
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {mojoString16ToString} from 'chrome://diagnostics/mojo_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isChildVisible} from '../../test_util.m.js';
@@ -102,14 +103,22 @@ export function batteryStatusCardTestSuite() {
           dx_utils.assertTextContains(
               dataPoints[0].value,
               `${fakeBatteryHealth[0].batteryWearPercentage}`);
+          dx_utils.assertTextContains(
+              dataPoints[0].tooltipText,
+              loadTimeData.getString('batteryHealthTooltipText'));
           assertEquals(fakeBatteryHealth[0].cycleCount, dataPoints[1].value);
+          dx_utils.assertTextContains(
+              dataPoints[1].tooltipText,
+              loadTimeData.getString('cycleCountTooltipText'));
           dx_utils.assertTextContains(
               dataPoints[2].value,
               `${fakeBatteryChargeStatus[0].currentNowMilliamps}`);
+          dx_utils.assertTextContains(
+              dataPoints[2].tooltipText,
+              loadTimeData.getString('currentNowTooltipText'));
           dx_utils.assertElementContainsText(
               batteryStatusElement.$$('#batteryStatusChipInfo'),
               `${fakeBatteryHealth[0].chargeFullDesignMilliampHours}`);
-
           const barChart =
               dx_utils.getPercentBarChartElement(batteryStatusElement);
           assertEquals(

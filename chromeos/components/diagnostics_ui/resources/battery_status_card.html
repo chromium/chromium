@@ -13,15 +13,18 @@
   </percent-bar-chart>
   <data-point slot="body" id="batteryHealth"
     header="[[i18n('batteryHealthLabel')]]"
-    value="[[getBatteryHealth_(batteryHealth_.batteryWearPercentage)]]">
+    value="[[getBatteryHealth_(batteryHealth_.batteryWearPercentage)]]"
+    tooltip-text="[[i18n('batteryHealthTooltipText')]]">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="cycleCount" header="[[i18n('cycleCount')]]"
-    value="[[batteryHealth_.cycleCount]]">
+    value="[[batteryHealth_.cycleCount]]"
+    tooltip-text="[[i18n('cycleCountTooltipText')]]">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="currentNow" header="[[i18n('currentNowLabel')]]"
-    value="[[getCurrentNow_(batteryChargeStatus_.currentNowMilliamps)]]">
+    value="[[getCurrentNow_(batteryChargeStatus_.currentNowMilliamps)]]"
+    tooltip-text="[[i18n('currentNowTooltipText')]]">
   </data-point>
 
   <routine-section slot="routines" routines="[[routines_]]"

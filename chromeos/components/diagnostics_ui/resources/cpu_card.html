@@ -13,7 +13,8 @@
   <data-point slot="body" id="cpuUsageUser"
     header="[[i18n('cpuUsageLabel')]]"
     value="[[getCurrentlyUsing_(cpuUsage_.percentUsageSystem,
-        cpuUsage_.percentUsageUser)]]">
+        cpuUsage_.percentUsageUser)]]"
+    tooltip-text="[[getCpuUsageTooltipText_()]]">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="cpuTemp" header="[[i18n('cpuTempLabel')]]"

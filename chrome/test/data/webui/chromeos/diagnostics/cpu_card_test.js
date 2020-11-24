@@ -8,6 +8,7 @@ import {CpuUsage, RoutineName, SystemDataProviderInterface, SystemInfo} from 'ch
 import {fakeCpuUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isChildVisible} from '../../test_util.m.js';
@@ -97,6 +98,9 @@ export function cpuCardTestSuite() {
           `${
               fakeCpuUsage[0].percentUsageUser +
               fakeCpuUsage[0].percentUsageSystem}`);
+      dx_utils.assertTextContains(
+          dataPoints[0].tooltipText,
+          loadTimeData.getStringF('cpuUsageTooltipText', 4));
       dx_utils.assertTextContains(
           dataPoints[1].value, `${fakeCpuUsage[0].averageCpuTempCelsius}`);
       // TODO(michaelcheco): Replace with value for CPU speed.

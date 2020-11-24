@@ -669,6 +669,18 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_DEVICE_INFO_TEXT" desc="The text that displays the device's name and milestone version." translateable="true">
         (<ph name="BOARD_NAME">$1<ex>Atlas</ex></ph>, version <ph name="MILESTONE_VERSION">$2<ex>88</ex></ph>)
       </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT" desc="The tooltip that states that battery capacity declines with usage." translateable="true">
+        Batteries capacity declines with usage
+      </message>
+      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT" desc="The tooltip that states that a battery is considered consumed once it reaches its cycle count limit." translateable="true">
+        The battery is considered consumed once it reaches the limit
+      </message>
+      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TOOLTIP_TEXT" desc="The tooltip that states the current rate at which a user's device is charging or discharging." translateable="true">
+        The rate at which the device is currently charging or discharging
+      </message>
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_TOOLTIP_TEXT" desc="The tooltip for CPU usage." translateable="true">
+        This measures the CPU usage, and is an aggregation of all cores
+      </message>
 
       <!-- Quick Answers -->
       <message name="IDS_QUICK_ANSWERS_DEFINITION_TITLE_TEXT" desc="The title text format string used for Quick Answers definition result card. The first placeholder contains the source query text and the second placeholder contains the phonetics.">
