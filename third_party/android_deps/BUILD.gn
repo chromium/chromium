@@ -1454,7 +1454,7 @@ java_prebuilt("com_google_code_gson_gson_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_dagger_dagger_java") {
-  jar_path = "libs/com_google_dagger_dagger/dagger-2.26.jar"
+  jar_path = "libs/com_google_dagger_dagger/dagger-2.30.jar"
   output_name = "com_google_dagger_dagger"
   supports_android = true
   deps = [ ":javax_inject_javax_inject_java" ]
@@ -1462,7 +1462,7 @@ java_prebuilt("com_google_dagger_dagger_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_dagger_dagger_compiler_java") {
-  jar_path = "libs/com_google_dagger_dagger_compiler/dagger-compiler-2.26.jar"
+  jar_path = "libs/com_google_dagger_dagger_compiler/dagger-compiler-2.30.jar"
   output_name = "com_google_dagger_dagger_compiler"
   enable_bytecode_checks = false
   deps = [
@@ -1667,7 +1667,7 @@ java_prebuilt("com_googlecode_java_diff_utils_diffutils_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_squareup_javapoet_java") {
-  jar_path = "libs/com_squareup_javapoet/javapoet-1.11.1.jar"
+  jar_path = "libs/com_squareup_javapoet/javapoet-1.13.0.jar"
   output_name = "com_squareup_javapoet"
   enable_bytecode_checks = false
 }
@@ -2483,7 +2483,7 @@ java_prebuilt("com_google_code_findbugs_jFormatString_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_dagger_dagger_producers_java") {
-  jar_path = "libs/com_google_dagger_dagger_producers/dagger-producers-2.26.jar"
+  jar_path = "libs/com_google_dagger_dagger_producers/dagger-producers-2.30.jar"
   output_name = "com_google_dagger_dagger_producers"
   enable_bytecode_checks = false
 
@@ -2501,7 +2501,7 @@ java_prebuilt("com_google_dagger_dagger_producers_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_dagger_dagger_spi_java") {
-  jar_path = "libs/com_google_dagger_dagger_spi/dagger-spi-2.26.jar"
+  jar_path = "libs/com_google_dagger_dagger_spi/dagger-spi-2.30.jar"
   output_name = "com_google_dagger_dagger_spi"
   enable_bytecode_checks = false
 
@@ -2976,7 +2976,7 @@ java_prebuilt("org_jetbrains_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.3.50.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.3.72.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib"
   enable_bytecode_checks = false
 
@@ -2991,7 +2991,7 @@ java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_common_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.3.50.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.3.72.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib_common"
   enable_bytecode_checks = false
 

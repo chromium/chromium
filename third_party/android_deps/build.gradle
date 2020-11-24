@@ -179,12 +179,12 @@ dependencies {
     // buildCompile targets have supports_android = false.
     buildCompile "com.google.guava:guava:27.0.1-jre"
 
-    def daggerVersion = '2.26'
+    def daggerVersion = '2.30'
     compile "com.google.dagger:dagger:${daggerVersion}"
     buildCompile "com.google.dagger:dagger-compiler:${daggerVersion}"
 
     // Matches version depended on by Dagger.
-    buildCompile "com.squareup:javapoet:1.11.0"
+    buildCompile "com.squareup:javapoet:1.13.0"
 
     def errorproneVersion = '2.4.0'
     // Used by downstream targets.

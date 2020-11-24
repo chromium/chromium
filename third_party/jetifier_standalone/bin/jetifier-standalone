@@ -84,7 +84,16 @@ esac
 if [ -z "$ANDROID_DEPS" ]; then
   ANDROID_DEPS=$THIRD_PARTY_DIR/android_deps/libs
 fi
-CLASSPATH=$APP_HOME/lib/jetifier-standalone.jar:$ANDROID_DEPS/com_android_tools_build_jetifier_jetifier_processor/jetifier-processor-1.0.0-beta08.jar:$ANDROID_DEPS/commons_cli_commons_cli/commons-cli-1.3.1.jar:$ANDROID_DEPS/com_android_tools_build_jetifier_jetifier_core/jetifier-core-1.0.0-beta08.jar:$ANDROID_DEPS/org_ow2_asm_asm_util/asm-util-7.0.jar:$ANDROID_DEPS/org_ow2_asm_asm_commons/asm-commons-7.0.jar:$ANDROID_DEPS/org_ow2_asm_asm_tree/asm-tree-7.0.jar:$ANDROID_DEPS/org_ow2_asm_asm/asm-7.0.jar:$ANDROID_DEPS/org_jdom_jdom2/jdom2-2.0.6.jar:$ANDROID_DEPS/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.3.50.jar:$ANDROID_DEPS/com_google_code_gson_gson/gson-2.8.0.jar:$ANDROID_DEPS/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.3.50.jar:$ANDROID_DEPS/org_jetbrains_annotations/annotations-13.0.jar
+CLASSPATH=$APP_HOME/lib/jetifier-standalone.jar:$ANDROID_DEPS/com_android_tools_build_jetifier_jetifier_processor/jetifier-processor-1.0.0-beta08.jar:$ANDROID_DEPS/commons_cli_commons_cli/commons-cli-1.3.1.jar:$ANDROID_DEPS/com_android_tools_build_jetifier_jetifier_core/jetifier-core-1.0.0-beta08.jar:$ANDROID_DEPS/org_ow2_asm_asm_util/asm-util-7.0.jar:$ANDROID_DEPS/org_ow2_asm_asm_commons/asm-commons-7.0.jar:$ANDROID_DEPS/org_ow2_asm_asm_tree/asm-tree-7.0.jar:$ANDROID_DEPS/org_ow2_asm_asm/asm-7.0.jar:$ANDROID_DEPS/org_jdom_jdom2/jdom2-2.0.6.jar:$ANDROID_DEPS/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.3.72.jar:$ANDROID_DEPS/com_google_code_gson_gson/gson-2.8.0.jar:$ANDROID_DEPS/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.3.72.jar:$ANDROID_DEPS/org_jetbrains_annotations/annotations-13.0.jar
+
+# Ensuring that each file in the CLASSPATH exists.
+for path in ${CLASSPATH//:/ }; do
+    if [ ! -f $path ]; then
+      die "File in CLASSPATH does not exist: $path
+
+Version numbers likely need to be updated in the jetifier-standalone script."
+    fi
+done
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then

@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.11.1-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.13.0-cr0
 package: chromium/third_party/android_deps/libs/com_squareup_javapoet
 description: "JavaPoet"
 data:
-- file: javapoet-1.11.1.jar
+- file: javapoet-1.13.0.jar
