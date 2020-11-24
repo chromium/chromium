@@ -425,6 +425,96 @@
       }
     ]
   },
+  "win7(32)-updater-tester-dbg": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-32",
+              "integrity": "high",
+              "os": "Windows-7-SP1"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_tests",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "updater_integration_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "updater_integration_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-32",
+              "integrity": "high",
+              "os": "Windows-7-SP1"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/updater:updater_integration_tests/"
+      }
+    ]
+  },
+  "win7(32)-updater-tester-rel": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-32",
+              "integrity": "high",
+              "os": "Windows-7-SP1"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_tests",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "updater_integration_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "updater_integration_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-32",
+              "integrity": "high",
+              "os": "Windows-7-SP1"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/updater:updater_integration_tests/"
+      }
+    ]
+  },
   "win7-updater-tester-dbg": {
     "gtest_tests": [
       {

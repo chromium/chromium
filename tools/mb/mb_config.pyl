@@ -657,6 +657,8 @@
       'mac-updater-builder-rel': 'updater_release_bot',
       'win-updater-builder-dbg': 'updater_debug_bot',
       'win-updater-builder-rel': 'updater_release_bot',
+      'win32-updater-builder-dbg': 'updater_debug_bot_x86',
+      'win32-updater-builder-rel': 'updater_release_bot_x86',
     },
 
     # TODO(crbug.com/818301): This master is going away.
@@ -2332,8 +2334,16 @@
       'updater_on_win_mac', 'debug_bot',
     ],
 
+    'updater_debug_bot_x86': [
+      'updater_on_win_mac', 'debug_bot', 'x86',
+    ],
+
     'updater_release_bot': [
       'updater_on_win_mac', 'release_bot',
+    ],
+
+    'updater_release_bot_x86': [
+      'updater_on_win_mac', 'release_bot', 'x86',
     ],
 
     'updater_release_trybot': [

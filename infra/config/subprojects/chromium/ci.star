@@ -2730,47 +2730,83 @@ ci.updater_builder(
 ci.updater_builder(
     name = "win-updater-builder-dbg",
     console_view_entry = ci.console_view_entry(
-        category = "debug|win",
+        category = "debug|win (64)",
         short_name = "bld",
     ),
     os = os.WINDOWS_DEFAULT,
-    cpu = cpu.X86,
+    builderless = True,
+)
+
+ci.updater_builder(
+    name = "win32-updater-builder-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "debug|win (32)",
+        short_name = "bld",
+    ),
+    os = os.WINDOWS_DEFAULT,
     builderless = True,
 )
 
 ci.updater_builder(
     name = "win-updater-builder-rel",
     console_view_entry = ci.console_view_entry(
-        category = "release|win",
+        category = "release|win (64)",
         short_name = "bld",
     ),
     os = os.WINDOWS_DEFAULT,
-    cpu = cpu.X86,
+    builderless = True,
+)
+
+ci.updater_builder(
+    name = "win32-updater-builder-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "release|win (32)",
+        short_name = "bld",
+    ),
+    os = os.WINDOWS_DEFAULT,
     builderless = True,
 )
 
 ci.updater_builder(
     name = "win7-updater-tester-dbg",
     console_view_entry = ci.console_view_entry(
-        category = "debug|win",
+        category = "debug|win (64)",
         short_name = "7",
     ),
     triggered_by = ["win-updater-builder-dbg"],
 )
 
 ci.updater_builder(
+    name = "win7(32)-updater-tester-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "debug|win (32)",
+        short_name = "7",
+    ),
+    triggered_by = ["win32-updater-builder-dbg"],
+)
+
+ci.updater_builder(
     name = "win7-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "release|win",
+        category = "release|win (64)",
         short_name = "7",
     ),
     triggered_by = ["win-updater-builder-rel"],
 )
 
 ci.updater_builder(
+    name = "win7(32)-updater-tester-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "release|win (32)",
+        short_name = "7",
+    ),
+    triggered_by = ["win32-updater-builder-rel"],
+)
+
+ci.updater_builder(
     name = "win10-updater-tester-dbg",
     console_view_entry = ci.console_view_entry(
-        category = "debug|win",
+        category = "debug|win (64)",
         short_name = "10",
     ),
     triggered_by = ["win-updater-builder-dbg"],
@@ -2779,7 +2815,7 @@ ci.updater_builder(
 ci.updater_builder(
     name = "win10-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "release|win",
+        category = "release|win (64)",
         short_name = "10",
     ),
     triggered_by = ["win-updater-builder-rel"],
