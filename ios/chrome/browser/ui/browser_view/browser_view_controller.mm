@@ -3772,9 +3772,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [SizeClassRecorder pageLoadedWithHorizontalSizeClass:sizeClass];
   }
 
-  // If there is no first responder, try to make the webview or the NTP first
-  // responder to have it answer keyboard commands (e.g. space bar to scroll).
-  if (!GetFirstResponder() && self.currentWebState) {
+  // If there is no first responder, or it is not a view, try to make the
+  // webview or the NTP first responder to have it answer keyboard commands
+  // (e.g. space bar to scroll).
+  BOOL isFirstResponderView =
+      [GetFirstResponder() isKindOfClass:[UIView class]];
+  if (!isFirstResponderView && self.currentWebState) {
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
