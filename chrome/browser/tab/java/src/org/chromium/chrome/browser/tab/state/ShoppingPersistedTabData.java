@@ -29,21 +29,23 @@ import java.util.concurrent.TimeUnit;
  */
 public class ShoppingPersistedTabData extends PersistedTabData {
     private static final String TAG = "SPTD";
-    private static final String ENDPOINT =
-            "https://task-management-chrome.sandbox.google.com/tabs/representations?url=%s&locale=en:US";
-    private static final String[] SCOPES =
-            new String[] {"https://www.googleapis.com/auth/userinfo.email",
-                    "https://www.googleapis.com/auth/userinfo.profile"};
+    private static final String ENDPOINT = "https://memex-pa.googleapis.com/v1/annotations?url=%s";
     private static final long TIMEOUT_MS = 1000L;
     private static final String HTTPS_METHOD = "GET";
     private static final String CONTENT_TYPE = "application/json; charset=UTF-8";
     private static final String OAUTH_NAME = "SPTD";
     private static final String EMPTY_POST_DATA = "";
 
-    private static final String REPRESENTATIONS_KEY = "representations";
+    private static final String ANNOTATIONS_KEY = "annotations";
     private static final String PRICE_KEY = "price";
     private static final String TYPE_KEY = "type";
-    private static final String SHOPPING_ID = "SHOPPING";
+    private static final String BUYABLE_PRODUCT_ANNOTATION_KEY = "BUYABLE_PRODUCT";
+    private static final String BUYABLE_PRODUCT_KEY = "buyableProduct";
+    private static final String CURRENT_PRICE_KEY = "currentPrice";
+    private static final String AMOUNT_MICROS_KEY = "amountMicros";
+    private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
+    // TODO(crbug.com/1130068) support all locales
+    private static final String ACCEPT_LANGUAGE_VALUE = "en-US";
 
     private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
             ShoppingPersistedTabData.class;
@@ -112,16 +114,17 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         -> {
                     ShoppingPersistedTabData previousShoppingPersistedTabData =
                             PersistedTabData.from(tab, USER_DATA_KEY);
-                    EndpointFetcher.fetchUsingOAuth(
+                    EndpointFetcher.fetchUsingChromeAPIKey(
                             (endpointResponse)
                                     -> {
                                 supplierCallback.onResult(
                                         build(tab, endpointResponse.getResponseString(),
                                                 previousShoppingPersistedTabData));
                             },
-                            Profile.getLastUsedRegularProfile(), OAUTH_NAME,
-                            String.format(Locale.US, ENDPOINT, tab.getUrlString()), HTTPS_METHOD,
-                            CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS);
+                            Profile.getLastUsedRegularProfile(),
+                            String.format(ENDPOINT, tab.getUrlString()), HTTPS_METHOD, CONTENT_TYPE,
+                            EMPTY_POST_DATA, TIMEOUT_MS,
+                            new String[] {ACCEPT_LANGUAGE_KEY, ACCEPT_LANGUAGE_VALUE});
                 },
                 ShoppingPersistedTabData.class, callback);
     }
@@ -131,12 +134,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         ShoppingPersistedTabData res = new ShoppingPersistedTabData(tab);
         try {
             JSONObject jsonObject = new JSONObject(responseString);
-            JSONArray representations = jsonObject.getJSONArray(REPRESENTATIONS_KEY);
-            for (int i = 0; i < representations.length(); i++) {
-                JSONObject representation = representations.getJSONObject(i);
-                if (SHOPPING_ID.equals(representation.getString(TYPE_KEY))) {
-                    res.setPriceMicros(
-                            representation.getLong(PRICE_KEY), previousShoppingPersistedTabData);
+            JSONArray annotations = jsonObject.getJSONArray(ANNOTATIONS_KEY);
+            for (int i = 0; i < annotations.length(); i++) {
+                JSONObject annotation = annotations.getJSONObject(i);
+                if (BUYABLE_PRODUCT_ANNOTATION_KEY.equals(annotation.getString(TYPE_KEY))) {
+                    JSONObject metadata = annotation.getJSONObject(BUYABLE_PRODUCT_KEY);
+                    JSONObject priceMetadata = metadata.getJSONObject(CURRENT_PRICE_KEY);
+                    res.setPriceMicros(Long.parseLong(priceMetadata.getString(AMOUNT_MICROS_KEY)),
+                            previousShoppingPersistedTabData);
                     break;
                 }
             }

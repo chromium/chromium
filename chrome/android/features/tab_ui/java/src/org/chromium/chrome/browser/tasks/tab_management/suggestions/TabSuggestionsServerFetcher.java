@@ -75,7 +75,8 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
                     -> { fetchCallback(res, callback, tabContext); },
                     mProfileForTesting == null ? Profile.getLastUsedRegularProfile()
                                                : mProfileForTesting,
-                    ENDPOINT, METHOD, CONTENT_TYPE, getTabContextJson(tabContext), TIMEOUT_MS);
+                    ENDPOINT, METHOD, CONTENT_TYPE, getTabContextJson(tabContext), TIMEOUT_MS,
+                    new String[] {});
         } catch (JSONException e) {
             // Soft failure for now so we don't crash the app and fall back on client side
             // providers.

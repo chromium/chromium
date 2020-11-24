@@ -69,6 +69,7 @@ class EndpointFetcher {
                   const std::string& content_type,
                   int64_t timeout_ms,
                   const std::string& post_data,
+                  const std::vector<std::string>& headers,
                   const net::NetworkTrafficAnnotationTag& annotation_tag);
 
   // Constructor if no authentication is needed.
@@ -121,6 +122,7 @@ class EndpointFetcher {
   const std::string content_type_;
   int64_t timeout_ms_;
   const std::string post_data_;
+  const std::vector<std::string> headers_;
   const net::NetworkTrafficAnnotationTag annotation_tag_;
   signin::ScopeSet oauth_scopes_;
 
