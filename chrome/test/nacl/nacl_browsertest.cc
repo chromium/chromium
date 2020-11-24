@@ -59,7 +59,13 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatus0, {
       "pm_exit_status_test.html?trigger=exit0&expected_exit=0"));
 })
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatus254, {
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_ExitStatus254 DISABLED_ExitStatus254
+#else
+#define MAYBE_ExitStatus254 ExitStatus254
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_ExitStatus254, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL(
       "pm_exit_status_test.html?trigger=exit254&expected_exit=254"));
 })
@@ -69,7 +75,8 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatusNeg2, {
       "pm_exit_status_test.html?trigger=exitneg2&expected_exit=254"));
 })
 
-#if defined(ADDRESS_SANITIZER)
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(ADDRESS_SANITIZER) || (defined(OS_WIN) && defined(ARCH_CPU_32_BITS))
 #define Maybe_PPAPICore DISABLED_PPAPICore
 #else
 #define Maybe_PPAPICore PPAPICore
