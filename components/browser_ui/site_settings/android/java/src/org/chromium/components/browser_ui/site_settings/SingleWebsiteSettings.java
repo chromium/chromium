@@ -362,7 +362,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 : ContentSettingsResources.getDisabledIcon(contentSettingsType, getResources());
         if (getSiteSettingsClient().isPageInfoV2Enabled() && value != null
                 && value == ContentSettingValues.BLOCK) {
-            return ContentSettingsResources.getBlockedIcon(getResources(), icon);
+            return ContentSettingsResources.getBlockedSquareIcon(getResources(), icon);
         }
         return icon;
     }
