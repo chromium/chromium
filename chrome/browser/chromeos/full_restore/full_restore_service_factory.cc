@@ -1,0 +1,53 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
+
+#include "ash/public/cpp/ash_features.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+
+namespace chromeos {
+namespace full_restore {
+
+// static
+FullRestoreServiceFactory* FullRestoreServiceFactory::GetInstance() {
+  static base::NoDestructor<FullRestoreServiceFactory> instance;
+  return instance.get();
+}
+
+// static
+FullRestoreService* FullRestoreServiceFactory::GetForBrowserContext(
+    content::BrowserContext* browser_context) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return nullptr;
+
+  // No service for non-regular user profile, or ephemeral user profile.
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!ProfileHelper::IsRegularProfile(profile) ||
+      ProfileHelper::IsEphemeralUserProfile(profile)) {
+    return nullptr;
+  }
+
+  return static_cast<FullRestoreService*>(
+      FullRestoreServiceFactory::GetInstance()->GetServiceForBrowserContext(
+          browser_context, true));
+}
+
+FullRestoreServiceFactory::FullRestoreServiceFactory()
+    : BrowserContextKeyedServiceFactory(
+          "FullRestoreService",
+          BrowserContextDependencyManager::GetInstance()) {}
+
+FullRestoreServiceFactory::~FullRestoreServiceFactory() = default;
+
+KeyedService* FullRestoreServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return new FullRestoreService(Profile::FromBrowserContext(context));
+}
+
+}  // namespace full_restore
+}  // namespace chromeos
