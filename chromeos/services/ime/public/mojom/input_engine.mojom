@@ -6,6 +6,7 @@ module chromeos.ime.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
+import "ui/gfx/range/mojom/range.mojom";
 
 // IME on ChromeOS consists of three parts:
 // - The IME running in an extension to provide a soft keyboard
@@ -134,6 +135,14 @@ struct InputFieldInfo {
   PersonalizationMode personalization;
 };
 
+struct AutocorrectSpan {
+  // The range to set the autocorrect span to.
+  gfx.mojom.Range autocorrect_range;
+
+  // The original text that was replaced by autocorrect.
+  string original_text;
+};
+
 // Manages access to a set of IME engines, implemented by the IME service
 // itself. The IME framework in the browser process is responsible for brokering
 // the connection between the IME service and the IME extension, but does not
@@ -243,6 +252,15 @@ interface InputChannel {
   // TODO(b/161490915): Determine the right behaviour when there is a selection.
   DeleteSurroundingText(uint32 num_bytes_before_cursor,
                         uint32 num_bytes_after_cursor);
+
+  // Asks the input field to mark the region represented by `autocorrect_span`
+  // as having been autocorrected. This usually involves showing some UI
+  // (e.g. flashing the text or showing an underline).
+  // There can only be at most one active autocorrect span. If this method is
+  // called when there is already an active autocorrect span, any UI related to
+  // the old span is removed first.
+  // This method does not modify the input field text.
+  HandleAutocorrect(AutocorrectSpan autocorrect_span);
 };
 
 // Implemented in the browser process, used to perform network requests or

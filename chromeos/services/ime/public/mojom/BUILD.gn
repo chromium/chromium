@@ -9,6 +9,7 @@ mojom("mojom") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }

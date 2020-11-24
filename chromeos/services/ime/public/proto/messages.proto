@@ -39,6 +39,7 @@ message PublicMessage {
     SetCompositionRange set_composition_range = 11;
     FinishComposition finish_composition = 12;
     DeleteSurroundingText delete_surrounding_text = 13;
+    HandleAutocorrect handle_autocorrect = 14;
   }
 }
 
@@ -135,6 +136,20 @@ message SelectionRange {
   optional uint32 focus = 2;
 }
 
+// Protobuf version of gfx.mojom.Range in
+// ui/gfx/range/mojom/range.mojom
+message Range {
+  optional uint32 start = 1;
+  optional uint32 end = 2;
+}
+
+// Protobuf version of InputEngine::AutocorrectSpan in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message AutocorrectSpan {
+  optional Range autocorrect_range = 1;
+  optional string original_text = 2;
+};
+
 // Protobuf version of InputEngine::OnSurroundingTextChanged in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message OnSurroundingTextChanged {
@@ -175,4 +190,10 @@ message FinishComposition {}
 message DeleteSurroundingText {
   optional uint32 num_bytes_before_cursor = 1;
   optional uint32 num_bytes_after_cursor = 2;
+}
+
+// Protobuf version of InputEngine::HandleAutocorrect in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message HandleAutocorrect {
+  optional AutocorrectSpan autocorrect_span = 1;
 }

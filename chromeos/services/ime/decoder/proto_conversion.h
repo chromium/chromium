@@ -41,6 +41,10 @@ ime::PublicMessage OnSurroundingTextChangedToProto(
 // a proto.
 ime::PublicMessage OnCompositionCanceledToProto(uint64_t seq_id);
 
+// Converts a proto to InputChannel::AutocorrectSpan.
+mojom::AutocorrectSpanPtr ProtoToAutocorrectSpan(
+    const chromeos::ime::AutocorrectSpan& autocorrect_span);
+
 }  // namespace ime
 }  // namespace chromeos
 

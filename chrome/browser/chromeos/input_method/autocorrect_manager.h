@@ -27,8 +27,8 @@ class AutocorrectManager {
 
   // Mark `autocorrect_range` with an underline. `autocorrect_range` is based on
   // the current text contents.
-  void MarkAutocorrectRange(gfx::Range autocorrect_range,
-                            const std::string& original_text);
+  void HandleAutocorrect(gfx::Range autocorrect_range,
+                         const std::string& original_text);
 
   // To hide the underline after enough keypresses, this class intercepts
   // keystrokes. Returns whether the keypress has now been handled.

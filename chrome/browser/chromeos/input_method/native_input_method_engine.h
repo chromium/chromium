@@ -123,6 +123,8 @@ class NativeInputMethodEngine : public InputMethodEngine {
                              uint32_t end_byte_index) override;
     void FinishComposition() override;
     void DeleteSurroundingText(uint32_t before, uint32_t after) override;
+    void HandleAutocorrect(
+        ime::mojom::AutocorrectSpanPtr autocorrect_span) override;
 
     // Flush all relevant Mojo pipes.
     void FlushForTesting();

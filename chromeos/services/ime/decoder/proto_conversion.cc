@@ -138,5 +138,15 @@ ime::PublicMessage OnCompositionCanceledToProto(uint64_t seq_id) {
   return message;
 }
 
+mojom::AutocorrectSpanPtr ProtoToAutocorrectSpan(
+    const chromeos::ime::AutocorrectSpan& autocorrect_span) {
+  auto mojo_autocorrect_span = mojom::AutocorrectSpan::New();
+  mojo_autocorrect_span->autocorrect_range =
+      gfx::Range(autocorrect_span.autocorrect_range().start(),
+                 autocorrect_span.autocorrect_range().end());
+  mojo_autocorrect_span->original_text = autocorrect_span.original_text();
+  return mojo_autocorrect_span;
+}
+
 }  // namespace ime
 }  // namespace chromeos

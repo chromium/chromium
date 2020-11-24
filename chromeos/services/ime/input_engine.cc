@@ -216,5 +216,10 @@ void InputEngine::DeleteSurroundingText(uint32_t num_bytes_before_cursor,
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
+void InputEngine::HandleAutocorrect(
+    mojom::AutocorrectSpanPtr autocorrect_span) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 }  // namespace ime
 }  // namespace chromeos

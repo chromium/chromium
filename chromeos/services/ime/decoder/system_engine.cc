@@ -249,6 +249,11 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
       remote->CommitText(reply.commit_text().text());
       break;
     }
+    case ime::PublicMessage::kHandleAutocorrect: {
+      remote->HandleAutocorrect(ProtoToAutocorrectSpan(
+          reply.handle_autocorrect().autocorrect_span()));
+      break;
+    }
     default:
       NOTREACHED();
       break;

@@ -151,7 +151,7 @@ bool NativeInputMethodEngine::IsConnectedForTesting() const {
 void NativeInputMethodEngine::OnAutocorrect(std::string typed_word,
                                             std::string corrected_word,
                                             int start_index) {
-  autocorrect_manager_->MarkAutocorrectRange(
+  autocorrect_manager_->HandleAutocorrect(
       gfx::Range(start_index, start_index + corrected_word.length()),
       typed_word);
 }
@@ -427,6 +427,13 @@ void NativeInputMethodEngine::ImeObserver::DeleteSurroundingText(
   GetInputContext()->DeleteSurroundingText(
       /*offset=*/-static_cast<int>(num_bytes_before_cursor),
       /*length=*/num_bytes_before_cursor + num_bytes_after_cursor);
+}
+
+void NativeInputMethodEngine::ImeObserver::HandleAutocorrect(
+    ime::mojom::AutocorrectSpanPtr autocorrect_span) {
+  autocorrect_manager_->HandleAutocorrect(
+      autocorrect_span->autocorrect_range,
+      std::move(autocorrect_span->original_text));
 }
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {

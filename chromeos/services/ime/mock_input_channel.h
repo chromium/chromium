@@ -72,6 +72,10 @@ class MockInputChannel : public mojom::InputChannel {
               (uint32_t num_bytes_before_cursor,
                uint32_t num_bytes_after_cursor),
               (override));
+  MOCK_METHOD(void,
+              HandleAutocorrect,
+              (mojom::AutocorrectSpanPtr autocorrect_span),
+              (override));
 
  private:
   mojo::Receiver<mojom::InputChannel> receiver_;
