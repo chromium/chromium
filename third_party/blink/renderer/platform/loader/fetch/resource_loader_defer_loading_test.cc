@@ -258,6 +258,30 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToTrue) {
   DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 }
 
+TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToBfcacheDefer) {
+  auto* fetcher = CreateFetcher();
+
+  ResourceRequest request;
+  request.SetUrl(test_url_);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+  FetchParameters fetch_parameters =
+      FetchParameters::CreateForTest(std::move(request));
+
+  Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
+
+  ResourceLoader* loader = resource->Loader();
+  loader->SetDefersLoading(
+      WebURLLoader::DeferType::kDeferredWithBackForwardCache);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
+
+  std::move(code_cache_response_callback_).Run(base::Time(), {});
+  // Since it was requested to be deferred, it should be reset to the
+  // correct value.
+  DCHECK_EQ(web_url_loader_defers_,
+            WebURLLoader::DeferType::kDeferredWithBackForwardCache);
+}
+
 TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersMultipleTimes) {
   auto* fetcher = CreateFetcher();
 

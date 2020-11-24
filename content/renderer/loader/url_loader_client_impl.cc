@@ -374,6 +374,15 @@ void URLLoaderClientImpl::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK(!has_received_response_head_);
+  if (deferred_state_ ==
+      blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
+    // TODO(yuzus): Evict here.
+    // Close the connections and disptach and OnComplete message.
+    url_loader_.reset();
+    url_loader_client_receiver_.reset();
+    OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+    return;
+  }
   if (!bypass_redirect_checks_ &&
       !IsRedirectSafe(last_loaded_url_, redirect_info.new_url)) {
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));

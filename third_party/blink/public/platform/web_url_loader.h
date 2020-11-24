@@ -95,9 +95,16 @@ class WebURLLoader {
       WebURLLoaderClient*) = 0;
 
   // |kDeferred| is when an asynchronous load is suspended.
+  // |kDeferredWithBackForwardCache| is when an asynchronous load is suspended
+  // with BackForwardCache, and BackForwardCache entry can be evicted when
+  // redirects etc. happen.
   // |kNotDeferred| is when an asynchronous load is resumed.
   // SetDefersLoading can be called with any value at any point.
-  enum class DeferType { kDeferred, kNotDeferred };
+  enum class DeferType {
+    kDeferred,
+    kDeferredWithBackForwardCache,
+    kNotDeferred
+  };
   // Suspends/resumes an asynchronous load.
   virtual void SetDefersLoading(DeferType) = 0;
 
