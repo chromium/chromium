@@ -140,8 +140,9 @@ void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
   TtsService::AudioBuffer buf;
   buf.frames.resize(libchrometts_.GoogleTtsGetFramesInAudioBuffer());
   size_t frames_in_buf = 0;
-  buf.status =
+  const int status =
       libchrometts_.GoogleTtsReadBuffered(&buf.frames[0], &frames_in_buf);
+  buf.status = status;
 
   buf.frames.resize(frames_in_buf);
 
@@ -153,7 +154,7 @@ void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
 
   owner_->AddAudioBuffer(std::move(buf));
 
-  if (buf.status <= 0)
+  if (status <= 0)
     return;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
