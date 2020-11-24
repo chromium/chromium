@@ -8,6 +8,8 @@ import("//tools/grit/grit_rule.gni")
 # generate_about_tracing puts its files in this directory
 tracing_gen_dir = "$root_gen_dir/content/browser/tracing"
 
+assert(!is_android)
+
 # The script just writes filename with no dirs to the .grd, so we always need
 # this file to be in the same directory as the inputs.
 tracing_grd = "$tracing_gen_dir/tracing_resources.grd"
