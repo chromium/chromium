@@ -716,9 +716,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   AddBlankTabAndShow(browsers_[1]);
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
       browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
-  // Prep the new tabs for dialog to ensure the beforeunload dialog will show.
-  PrepareForDialog(browsers_[0]->tab_strip_model()->GetWebContentsAt(1));
-  PrepareForDialog(browsers_[1]->tab_strip_model()->GetWebContentsAt(1));
+  PrepareForDialog(browsers_[0]);
+  PrepareForDialog(browsers_[1]);
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
   cancel_observer.Wait();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.addEventListener('DOMContentLoaded', () => {
+onload = function() {
   var port = location.search.substr(1);
   var redirect =
       "http://127.0.0.1:" + port + "/server-redirect";
@@ -14,4 +14,4 @@ window.addEventListener('DOMContentLoaded', () => {
   link.download = "somefile.txt";
   document.body.appendChild(link);
   link.click();
-});
+};
