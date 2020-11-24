@@ -6,29 +6,13 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/system/sys_info.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-const char kLsbRelease[] =
-    "CHROMEOS_RELEASE_NAME=Chrome OS\n"
-    "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
-
-// Overrides base::SysInfo::IsRunningOnChromeOS() to return true.
-// TODO(jamescook): Switch to the shared helper once crrev.com/c/2538285 lands.
-class ScopedIsRunningOnChromeOS {
- public:
-  ScopedIsRunningOnChromeOS() {
-    base::SysInfo::SetChromeOSVersionInfoForTest(kLsbRelease, base::Time());
-  }
-  ~ScopedIsRunningOnChromeOS() {
-    base::SysInfo::SetChromeOSVersionInfoForTest("", base::Time());
-  }
-};
 
 class LacrosChromeServiceDelegateImplTest : public testing::Test {
  public:
@@ -40,7 +24,7 @@ class LacrosChromeServiceDelegateImplTest : public testing::Test {
   ~LacrosChromeServiceDelegateImplTest() override = default;
 
  private:
-  ScopedIsRunningOnChromeOS running_on_chromeos_;
+  base::test::ScopedRunningOnChromeOS running_on_chromeos_;
   // Ensure we restore the previous paths for subsequent tests. We don't
   // actually use these paths, so just point them at /tmp to avoid
   // ScopedPathOverride from creating unnecessary temp directories.
