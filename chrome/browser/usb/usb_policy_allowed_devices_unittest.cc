@@ -33,8 +33,7 @@ class UsbPolicyAllowedDevicesTest : public testing::Test {
   Profile* profile() { return &profile_; }
 
   std::unique_ptr<UsbPolicyAllowedDevices> CreateUsbPolicyAllowedDevices() {
-    return std::make_unique<UsbPolicyAllowedDevices>(
-        profile()->GetPrefs(), prefs::kManagedWebUsbAllowDevicesForUrls);
+    return std::make_unique<UsbPolicyAllowedDevices>(profile()->GetPrefs());
   }
 
   device::FakeUsbDeviceManager device_manager_;

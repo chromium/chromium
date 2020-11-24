@@ -2731,7 +2731,11 @@
             }
           ]
         },
-        "prefs": { "device_login_screen_webusb_allow_devices_for_urls": { "location": "local_state" } }
+        "prefs": {
+          "profile.managed_web_usb_allow_devices_for_urls": {
+            "location": "signin_profile"
+          }
+        }
       }
     ]
   },

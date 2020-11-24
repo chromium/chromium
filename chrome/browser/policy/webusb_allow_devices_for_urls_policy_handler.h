@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_POLICY_WEBUSB_ALLOW_DEVICES_FOR_URLS_POLICY_HANDLER_H_
 #define CHROME_BROWSER_POLICY_WEBUSB_ALLOW_DEVICES_FOR_URLS_POLICY_HANDLER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
-class PrefRegistrySimple;
 class PrefValueMap;
 
 namespace policy {
@@ -22,19 +19,11 @@ class PolicyMap;
 class WebUsbAllowDevicesForUrlsPolicyHandler
     : public SchemaValidatingPolicyHandler {
  public:
-  static std::unique_ptr<WebUsbAllowDevicesForUrlsPolicyHandler>
-  CreateForUserPolicy(const Schema& chrome_schema);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  static std::unique_ptr<WebUsbAllowDevicesForUrlsPolicyHandler>
-  CreateForDevicePolicy(const Schema& chrome_schema);
-
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  WebUsbAllowDevicesForUrlsPolicyHandler(const char* policy_name,
-                                         const char* pref_name,
-                                         const Schema& chrome_schema);
+  explicit WebUsbAllowDevicesForUrlsPolicyHandler(const Schema& schema);
+  WebUsbAllowDevicesForUrlsPolicyHandler(
+      const WebUsbAllowDevicesForUrlsPolicyHandler&) = delete;
+  WebUsbAllowDevicesForUrlsPolicyHandler& operator=(
+      const WebUsbAllowDevicesForUrlsPolicyHandler&) = delete;
   ~WebUsbAllowDevicesForUrlsPolicyHandler() override;
 
   // ConfigurationPolicyHandler implementation:
@@ -42,12 +31,6 @@ class WebUsbAllowDevicesForUrlsPolicyHandler
                            PolicyErrorMap* error) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  // The name of the pref to apply the policy to.
-  const char* pref_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbAllowDevicesForUrlsPolicyHandler);
 };
 
 }  // namespace policy

@@ -1035,11 +1035,6 @@ const char kDeviceName[] = "device_name";
 // settings that links to OS settings.
 const char kSettingsShowOSBanner[] = "settings.cros.show_os_banner";
 
-// A JSON pref for controlling which USB devices are whitelisted for certain
-// urls to be used via the WebUSB API on the login screen.
-const char kDeviceLoginScreenWebUsbAllowDevicesForUrls[] =
-    "device_login_screen_webusb_allow_devices_for_urls";
-
 // Int64 pref indicating the time in microseconds since Windows epoch when the
 // timer for update required which will block user session was started. If the
 // timer is not started the pref holds the default value base::Time().

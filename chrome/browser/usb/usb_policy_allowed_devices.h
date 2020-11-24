@@ -42,8 +42,8 @@ class UsbPolicyAllowedDevices {
                std::set<std::pair<url::Origin, base::Optional<url::Origin>>>>;
 
   // Initializes |pref_change_registrar_| with |pref_service| and adds an
-  // an observer for the |pref_name|.
-  UsbPolicyAllowedDevices(PrefService* pref_service, const char* pref_name);
+  // an observer for the |kManagedWebUsbAllowDevicesForUrls| pref.
+  explicit UsbPolicyAllowedDevices(PrefService* pref_service);
   ~UsbPolicyAllowedDevices();
 
   // Checks if |requesting_origin| (when embedded within |embedding_origin|) is
@@ -59,12 +59,11 @@ class UsbPolicyAllowedDevices {
 
  private:
   // Creates or updates the |usb_device_ids_to_urls_| map using the
-  // pref at |pref_name_|. The existing map is cleared to ensure that previous
-  // pref settings are removed.
+  // |kManagedWebUsbAllowDevicesForUrls| pref. The existing map is cleared to
+  // ensure that previous pref settings are removed.
   void CreateOrUpdateMap();
 
   // Allow for this class to observe changes to the pref value.
-  const char* pref_name_;
   PrefChangeRegistrar pref_change_registrar_;
   UsbDeviceIdsToUrlsMap usb_device_ids_to_urls_;
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/usb/usb_chooser_context.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -15,22 +16,15 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/usb/usb_blocklist.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/pref_names.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/cpp/usb/usb_ids.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#endif  // defined(OS_CHROMEOS)
 
 namespace {
 
@@ -136,21 +130,8 @@ UsbChooserContext::UsbChooserContext(Profile* profile)
                          ContentSettingsType::USB_CHOOSER_DATA,
                          HostContentSettingsMapFactory::GetForProfile(profile)),
       is_incognito_(profile->IsOffTheRecord()) {
-#if defined(OS_CHROMEOS)
-  bool is_signin_profile = chromeos::ProfileHelper::IsSigninProfile(profile);
-  PrefService* pref_service = is_signin_profile
-                                  ? g_browser_process->local_state()
-                                  : profile->GetPrefs();
-  const char* pref_name =
-      is_signin_profile ? prefs::kDeviceLoginScreenWebUsbAllowDevicesForUrls
-                        : prefs::kManagedWebUsbAllowDevicesForUrls;
-#else   // defined(OS_CHROMEOS)
-  PrefService* pref_service = profile->GetPrefs();
-  const char* pref_name = prefs::kManagedWebUsbAllowDevicesForUrls;
-#endif  // defined(OS_CHROMEOS)
-
-  usb_policy_allowed_devices_.reset(
-      new UsbPolicyAllowedDevices(pref_service, pref_name));
+  usb_policy_allowed_devices_ =
+      std::make_unique<UsbPolicyAllowedDevices>(profile->GetPrefs());
 }
 
 // static
