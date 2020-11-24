@@ -236,7 +236,8 @@ void PermissionRequestCreatorApiary::OnAccessTokenFetchComplete(
         kNumPermissionRequestRetries,
         network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   }
-  (*it)->simple_url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  auto* const simple_url_loader_ptr = (*it)->simple_url_loader.get();
+  simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&PermissionRequestCreatorApiary::OnSimpleLoaderComplete,
                      base::Unretained(this), std::move(it)));
