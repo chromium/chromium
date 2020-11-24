@@ -50317,6 +50317,16 @@ Called by update_use_counter_css.py.-->
       label="Histogram active sample wrapped 2^31 during accumulation."/>
 </enum>
 
+<enum name="NeighborLinkMonitorFailureType">
+  <int value="0" label="Unknown type of failure"/>
+  <int value="1" label="IPv4 gateway neighbor lost"/>
+  <int value="2" label="IPv4 DNS server neighbor lost"/>
+  <int value="3" label="IPv4 gateway and DNS server neighbor lost"/>
+  <int value="4" label="IPv6 gateway neighbor lost"/>
+  <int value="5" label="IPv6 DNS server neighbor lost"/>
+  <int value="6" label="IPv6 gateway and DNS server neighbor lost"/>
+</enum>
+
 <enum name="NetCacheState">
   <int value="0" label="FROM_CACHE"/>
   <int value="1" label="STILL_VALID"/>
