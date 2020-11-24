@@ -139,6 +139,18 @@ enum class EnterTabSwitcherSnapshotResult {
   kMaxValue = kPageNotLoadingAndSnapshotSucceeded,
 };
 
+// Histogram enum values for showing the experiment arms of the location
+// permissions experiment. These values are persisted to logs. Entries should
+// not be renumbered and numeric values should never be reused.
+enum class LocationPermissionsUI {
+  // The First Run native location prompt was not shown.
+  kFirstRunPromptNotShown = 0,
+  // The First Run location permissions modal was shown.
+  kFirstRunModal = 1,
+  // kMaxValue should share the value of the highest enumerator.
+  kMaxValue = kFirstRunModal,
+};
+
 // Used to update the current BVC mode if a new tab is added while the tab
 // switcher view is being dismissed.  This is different than ApplicationMode in
 // that it can be set to |NONE| when not in use.
@@ -842,6 +854,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   return base::SysUTF16ToNSString(formattedTitle);
 }
 
+- (void)logLocationPermissionsExperimentForGroupShown:
+    (LocationPermissionsUI)experimentGroup {
+  UMA_HISTOGRAM_ENUMERATION("IOS.LocationPermissionsUI", experimentGroup);
+}
+
 #pragma mark - First Run
 
 // Initializes the first run UI and presents it to the user.
@@ -917,6 +934,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup() &&
       !location_permissions_field_trial::IsInFirstRunModalGroup()) {
+    [self logLocationPermissionsExperimentForGroupShown:
+              LocationPermissionsUI::kFirstRunPromptNotShown];
     // As soon as First Run has finished, give OmniboxGeolocationController an
     // opportunity to present the iOS system location alert.
     [[OmniboxGeolocationController sharedInstance]
@@ -1162,6 +1181,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)showLocationPermissionsFromViewController:
     (UIViewController*)baseViewController {
+  [self logLocationPermissionsExperimentForGroupShown:LocationPermissionsUI::
+                                                          kFirstRunModal];
   self.locationPermissionsCoordinator = [[LocationPermissionsCoordinator alloc]
       initWithBaseViewController:baseViewController
                          browser:self.mainInterface.browser];
