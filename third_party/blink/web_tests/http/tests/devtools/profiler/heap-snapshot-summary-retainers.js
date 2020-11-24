@@ -97,7 +97,7 @@
 
       function step4(retainersRoot) {
         retainersRoot.dataGrid.addEventListener(
-            Profiler.HeapSnapshotRetainmentDataGrid.Events.ExpandRetainersComplete, step5.bind(this, retainersRoot));
+            Profiler.HeapSnapshotRetainmentDataGridEvents.ExpandRetainersComplete, step5.bind(this, retainersRoot));
       }
 
       function step5(retainersRoot) {
@@ -168,7 +168,7 @@
 
       function step4(retainersRoot) {
         retainersRoot.dataGrid.addEventListener(
-            Profiler.HeapSnapshotRetainmentDataGrid.Events.ExpandRetainersComplete, step5.bind(this, retainersRoot));
+            Profiler.HeapSnapshotRetainmentDataGridEvents.ExpandRetainersComplete, step5.bind(this, retainersRoot));
       }
 
       function step5(retainersRoot) {

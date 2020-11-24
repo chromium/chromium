@@ -5456,9 +5456,6 @@ crbug.com/1048149 crbug.com/1050121 [ Mac ] fast/forms/month/month-picker-appear
 crbug.com/1006759 http/tests/devtools/profiler/cpu-profiler-save-load.js [ Pass Failure Timeout ]
 crbug.com/1006759 http/tests/devtools/profiler/heap-snapshot-loader.js [ Pass Failure ]
 
-# Landing a DevTools change
-crbug.com/1152362 http/tests/devtools/profiler/heap-snapshot-summary-retainers.js [ Pass Failure Timeout ]
-
 # Temporarily disabled to land changes in DevTools, multiple dependent CLs
 # [1] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2049183
 # [2] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2119670
