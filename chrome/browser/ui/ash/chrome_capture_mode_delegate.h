@@ -18,6 +18,16 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       delete;
   ~ChromeCaptureModeDelegate() override;
 
+  static ChromeCaptureModeDelegate* Get();
+
+  // Sets |is_screen_capture_locked_| to the given |locked|, and interrupts any
+  // on going video capture.
+  void SetIsScreenCaptureLocked(bool locked);
+
+  // Interrupts an on going video recording if any, due to some restricted
+  // content showing up on the screen, or if screen capture becomes locked.
+  void InterruptVideoRecordingIfAny();
+
   // ash::CaptureModeDelegate:
   base::FilePath GetActiveUserDownloadsDir() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
@@ -37,6 +47,19 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       override;
   void BindAudioStreamFactory(
       mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+
+ private:
+  // Used to temporarily disable capture mode in certain cases for which neither
+  // a device policy, nor DLP will be triggered. For example, Some extension
+  // APIs can request that a tab operate in a locked fullscreen mode, and in
+  // that, capturing the screen is disabled.
+  bool is_screen_capture_locked_ = false;
+
+  // A callback to terminate an on going video recording on ash side due to a
+  // restricted content showing up on the screen, or screen capture becoming
+  // locked.
+  // This is only non-null during recording.
+  base::OnceClosure interrupt_video_recording_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_CAPTURE_MODE_DELEGATE_H_

@@ -70,9 +70,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
       const content::DesktopMediaID& media_id) const;
 
   // Called when video capturing for |area| is started.
-  // |stop_callback| will be called when restricted content will appear there.
-  void OnVideoCaptureStarted(const ScreenshotArea& area,
-                             base::OnceClosure stop_callback);
+  void OnVideoCaptureStarted(const ScreenshotArea& area);
 
   // Called when video capturing is stopped.
   void OnVideoCaptureStopped();
@@ -203,9 +201,8 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // Set of restriction applied to the currently visible content.
   DlpContentRestrictionSet on_screen_restrictions_;
 
-  // The currently running video capture are and callback to stop, if any.
-  base::Optional<std::pair<ScreenshotArea, base::OnceClosure>>
-      running_video_capture_;
+  // The currently running video capture area if any.
+  base::Optional<ScreenshotArea> running_video_capture_area_;
 
   // List of the currently running screen captures.
   std::vector<ScreenCaptureInfo> running_screen_captures_;

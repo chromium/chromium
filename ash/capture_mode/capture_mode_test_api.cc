@@ -67,6 +67,11 @@ void CaptureModeTestApi::SetAudioRecordingEnabled(bool enabled) {
   controller_->enable_audio_recording_ = enabled;
 }
 
+void CaptureModeTestApi::FlushRecordingServiceForTesting() {
+  DCHECK(controller_->is_recording_in_progress());
+  controller_->recording_service_remote_.FlushForTesting();
+}
+
 void CaptureModeTestApi::SetType(bool for_video) {
   controller_->SetType(for_video ? CaptureModeType::kVideo
                                  : CaptureModeType::kImage);
