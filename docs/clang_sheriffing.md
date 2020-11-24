@@ -14,19 +14,19 @@ determining if any compile or test failures are due to an upstream compiler
 change, filing bugs upstream, and often reverting bad changes in LLVM. This
 document describes some of the processes and techniques for doing that.
 
-Some may find the [sheriff-o-matic]
-(https://sheriff-o-matic.appspot.com/chromium.clang) view of the waterfall
-easier to work with.
+Some may find the
+[sheriff-o-matic](https://sheriff-o-matic.appspot.com/chromium.clang)
+view of the waterfall easier to work with.
 
-To keep others informed, [file a bug]
-(https://bugs.chromium.org/p/chromium/issues/entry) .
+To keep others informed, [file a
+bug](https://bugs.chromium.org/p/chromium/issues/entry).
 earlier rather than later for build breaks likely caused by changes in
 clang or the rest fo the toolchain. Make sure to set the component field to
 `Tools > LLVM`, which will include the entire Chrome toolchain (Lexan) team.
 
 At the beginning of your sheriff rotation, it may be
-useful to [search for recent bot breaks]
-(https://bugs.chromium.org/p/chromium/issues/list?q=component%3ATools%3ELLVM&can=2&sort=-modified).
+useful to [search for recent bot
+breaks](https://bugs.chromium.org/p/chromium/issues/list?q=component%3ATools%3ELLVM&can=2&sort=-modified).
 We prefer searching like this to having sheriffs compose status email at the
 end of their week.
 
