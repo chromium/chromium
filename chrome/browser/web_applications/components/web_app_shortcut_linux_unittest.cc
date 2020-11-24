@@ -17,12 +17,17 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
+#include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +40,7 @@ namespace {
 // Provides mock environment variables values based on a stored map.
 class MockEnvironment : public base::Environment {
  public:
-  MockEnvironment() {}
+  MockEnvironment() = default;
   MockEnvironment(const MockEnvironment&) = delete;
   MockEnvironment& operator=(const MockEnvironment&) = delete;
 
@@ -68,113 +73,513 @@ class MockEnvironment : public base::Environment {
 
 };
 
+class ScopedDesktopPath {
+ public:
+  ScopedDesktopPath() { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  ScopedDesktopPath(const ScopedDesktopPath&) = delete;
+  ScopedDesktopPath& operator=(const ScopedDesktopPath&) = delete;
+
+  base::FilePath GetPath() {
+    base::FilePath desktop_path = temp_dir_.GetPath();
+    EXPECT_TRUE(base::CreateDirectory(desktop_path));
+    return desktop_path;
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+class ScopedApplicationsPath {
+ public:
+  ScopedApplicationsPath() { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  ScopedApplicationsPath(const ScopedApplicationsPath&) = delete;
+  ScopedApplicationsPath& operator=(const ScopedApplicationsPath&) = delete;
+
+  base::FilePath GetPath() {
+    base::FilePath applications_path = temp_dir_.GetPath();
+    applications_path = applications_path.AppendASCII("applications");
+    EXPECT_TRUE(base::CreateDirectory(applications_path));
+    return applications_path;
+  }
+
+  base::FilePath GetDataHomePath() { return temp_dir_.GetPath(); }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
 }  // namespace
 
-TEST(ShellIntegrationTest, GetExistingShortcutLocations) {
-  base::FilePath kProfilePath("Profile 1");
-  const char kExtensionId[] = "test_extension";
-  const char kTemplateFilename[] = "chrome-test_extension-Profile_1.desktop";
-  base::FilePath kTemplateFilepath(kTemplateFilename);
-  const char kNoDisplayDesktopFile[] = "[Desktop Entry]\nNoDisplay=true";
+class WebAppShortcutLinuxTest : public WebAppTest {
+ public:
+  base::FilePath CreateShortcutInPath(const base::FilePath& path) {
+    EXPECT_TRUE(base::PathExists(path));
+    base::FilePath shortcut_path = path.Append(GetTemplateFilename());
+    EXPECT_TRUE(base::WriteFile(shortcut_path, ""));
+    return shortcut_path;
+  }
 
-  content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
+    auto shortcut_info = std::make_unique<ShortcutInfo>();
+    shortcut_info->extension_id = GetAppId();
+    shortcut_info->title = base::UTF8ToUTF16("app");
+    shortcut_info->profile_path =
+        base::FilePath("/a/b/c").Append(GetProfilePath());
+    gfx::ImageFamily image_family;
+    SquareSizePx icon_size_in_px = GetDesiredIconSizesForShortcut().back();
+    gfx::ImageSkia image_skia = CreateDefaultApplicationIcon(icon_size_in_px);
+    image_family.Add(gfx::Image(image_skia));
+    shortcut_info->favicon = std::move(image_family);
+    return shortcut_info;
+  }
+
+  std::string GetAppId() { return std::string("test_extension"); }
+
+  std::string GetTemplateFilename() {
+    return std::string("chrome-test_extension-Profile_1.desktop");
+  }
+
+  base::FilePath GetProfilePath() { return base::FilePath("Profile 1"); }
+
+  void ValidateDeleteApplicationsLaunchXdgUtility(
+      const std::vector<std::string>& argv,
+      int* exit_code) {
+    EXPECT_TRUE(exit_code);
+    *exit_code = 0;
+
+    std::vector<std::string> expected_argv;
+    expected_argv.push_back("xdg-desktop-menu");
+    expected_argv.push_back("uninstall");
+    expected_argv.push_back("--mode");
+    expected_argv.push_back("user");
+    expected_argv.push_back("chrome-apps.directory");
+    expected_argv.push_back(GetTemplateFilename());
+
+    EXPECT_EQ(argv, expected_argv);
+  }
+
+  void ValidateCreateDesktopShortcutLaunchXdgUtility(
+      const std::vector<std::string>& argv,
+      int* exit_code,
+      const base::FilePath& expected_applications_path,
+      int invoke_count) {
+    EXPECT_TRUE(exit_code);
+    *exit_code = 0;
+
+    // There are 4 calls to this function:
+    //  case 0) delete the existing shortcut
+    //  case 1) install the icon for the new shortcut
+    //  case 2) install the new shortcut
+    //  case 3) update desktop database
+    EXPECT_LE(invoke_count, 4);
+
+    std::vector<std::string> expected_argv;
+    switch (invoke_count) {
+      case 0:
+        expected_argv.push_back("xdg-desktop-menu");
+        expected_argv.push_back("uninstall");
+        expected_argv.push_back("--mode");
+        expected_argv.push_back("user");
+        expected_argv.push_back(GetTemplateFilename());
+        break;
+
+      case 1:
+        // The icon is generated to a temporary path, but the file name
+        // should be known Confirm the file name is what we expect, and use
+        // the parameter passed in.
+        EXPECT_EQ(argv.size(), 8u);
+        EXPECT_TRUE(argv[6].find("chrome-test_extension-Profile_1.png") !=
+                    std::string::npos);
+        expected_argv.push_back("xdg-icon-resource");
+        expected_argv.push_back("install");
+        expected_argv.push_back("--mode");
+        expected_argv.push_back("user");
+        expected_argv.push_back("--size");
+        expected_argv.push_back("512");
+        expected_argv.push_back(argv[6]);
+        expected_argv.push_back("chrome-test_extension-Profile_1");
+        break;
+
+      case 2:
+        // The desktop file is generated to a temporary path, but the file
+        // name should be known Confirm the file name is what we expect, and
+        // use the parameter passed in.
+        EXPECT_EQ(argv.size(), 6u);
+        EXPECT_TRUE(argv[4].find("chrome-apps.directory") != std::string::npos);
+        EXPECT_TRUE(argv[5].find(GetTemplateFilename()) != std::string::npos);
+
+        expected_argv.push_back("xdg-desktop-menu");
+        expected_argv.push_back("install");
+        expected_argv.push_back("--mode");
+        expected_argv.push_back("user");
+        expected_argv.push_back(argv[4]);
+        expected_argv.push_back(argv[5]);
+        break;
+
+      case 3:
+        expected_argv.push_back("update-desktop-database");
+        expected_argv.push_back(expected_applications_path.value());
+        break;
+    }
+
+    EXPECT_EQ(expected_argv, argv);
+  }
+};
+
+TEST_F(WebAppShortcutLinuxTest, GetExistingShortcutLocations) {
+  base::FilePath kTemplateFilepath(GetTemplateFilename());
 
   // No existing shortcuts.
   {
     MockEnvironment env;
     ShortcutLocations result =
-        GetExistingShortcutLocations(&env, kProfilePath, kExtensionId);
+        GetExistingShortcutLocations(&env, GetProfilePath(), GetAppId());
     EXPECT_FALSE(result.on_desktop);
     EXPECT_EQ(APP_MENU_LOCATION_NONE, result.applications_menu_location);
-
     EXPECT_FALSE(result.in_quick_launch_bar);
+    EXPECT_FALSE(result.in_startup);
   }
 
   // Shortcut on desktop.
   {
-    base::ScopedTempDir temp_dir;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    base::FilePath desktop_path = temp_dir.GetPath();
-
+    ScopedDesktopPath scoped_desktop_path;
+    base::ScopedPathOverride user_desktop_override(
+        base::DIR_USER_DESKTOP, scoped_desktop_path.GetPath());
     MockEnvironment env;
-    ASSERT_TRUE(base::CreateDirectory(desktop_path));
-    ASSERT_TRUE(base::WriteFile(desktop_path.Append(kTemplateFilename), ""));
-    ShortcutLocations result = GetExistingShortcutLocations(
-        &env, kProfilePath, kExtensionId, desktop_path);
+
+    CreateShortcutInPath(scoped_desktop_path.GetPath());
+    ShortcutLocations result =
+        GetExistingShortcutLocations(&env, GetProfilePath(), GetAppId());
     EXPECT_TRUE(result.on_desktop);
     EXPECT_EQ(APP_MENU_LOCATION_NONE, result.applications_menu_location);
-
     EXPECT_FALSE(result.in_quick_launch_bar);
+    EXPECT_FALSE(result.in_startup);
   }
 
   // Shortcut in applications directory.
   {
-    base::ScopedTempDir temp_dir;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    base::FilePath apps_path = temp_dir.GetPath().Append("applications");
-
+    ScopedApplicationsPath scoped_applications_path;
     MockEnvironment env;
-    env.Set("XDG_DATA_HOME", temp_dir.GetPath().value());
-    ASSERT_TRUE(base::CreateDirectory(apps_path));
-    ASSERT_TRUE(base::WriteFile(apps_path.Append(kTemplateFilename), ""));
+
+    env.Set("XDG_DATA_HOME",
+            scoped_applications_path.GetDataHomePath().value());
+    CreateShortcutInPath(scoped_applications_path.GetPath());
     ShortcutLocations result =
-        GetExistingShortcutLocations(&env, kProfilePath, kExtensionId);
+        GetExistingShortcutLocations(&env, GetProfilePath(), GetAppId());
     EXPECT_FALSE(result.on_desktop);
     EXPECT_EQ(APP_MENU_LOCATION_SUBDIR_CHROMEAPPS,
               result.applications_menu_location);
-
     EXPECT_FALSE(result.in_quick_launch_bar);
+    EXPECT_FALSE(result.in_startup);
   }
 
   // Shortcut in applications directory with NoDisplay=true.
   {
-    base::ScopedTempDir temp_dir;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    base::FilePath apps_path = temp_dir.GetPath().Append("applications");
-
+    ScopedApplicationsPath scoped_applications_path;
     MockEnvironment env;
-    env.Set("XDG_DATA_HOME", temp_dir.GetPath().value());
-    ASSERT_TRUE(base::CreateDirectory(apps_path));
-    ASSERT_TRUE(base::WriteFile(apps_path.Append(kTemplateFilename),
-                                kNoDisplayDesktopFile));
+
+    env.Set("XDG_DATA_HOME",
+            scoped_applications_path.GetDataHomePath().value());
+    ASSERT_TRUE(base::WriteFile(
+        scoped_applications_path.GetPath().Append(GetTemplateFilename()),
+        "[Desktop Entry]\nNoDisplay=true"));
     ShortcutLocations result =
-        GetExistingShortcutLocations(&env, kProfilePath, kExtensionId);
+        GetExistingShortcutLocations(&env, GetProfilePath(), GetAppId());
     // Doesn't count as being in applications menu.
     EXPECT_FALSE(result.on_desktop);
     EXPECT_EQ(APP_MENU_LOCATION_HIDDEN, result.applications_menu_location);
     EXPECT_FALSE(result.in_quick_launch_bar);
+    EXPECT_FALSE(result.in_startup);
   }
 
   // Shortcut on desktop and in applications directory.
   {
-    base::ScopedTempDir temp_dir1;
-    ASSERT_TRUE(temp_dir1.CreateUniqueTempDir());
-    base::FilePath desktop_path = temp_dir1.GetPath();
-
-    base::ScopedTempDir temp_dir2;
-    ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
-    base::FilePath apps_path = temp_dir2.GetPath().Append("applications");
-
+    ScopedDesktopPath scoped_desktop_path;
+    base::ScopedPathOverride user_desktop_override(
+        base::DIR_USER_DESKTOP, scoped_desktop_path.GetPath());
+    ScopedApplicationsPath scoped_applications_path;
     MockEnvironment env;
-    ASSERT_TRUE(base::CreateDirectory(desktop_path));
-    ASSERT_TRUE(base::WriteFile(desktop_path.Append(kTemplateFilename), ""));
-    env.Set("XDG_DATA_HOME", temp_dir2.GetPath().value());
-    ASSERT_TRUE(base::CreateDirectory(apps_path));
-    ASSERT_TRUE(base::WriteFile(apps_path.Append(kTemplateFilename), ""));
-    ShortcutLocations result = GetExistingShortcutLocations(
-        &env, kProfilePath, kExtensionId, desktop_path);
+
+    env.Set("XDG_DATA_HOME",
+            scoped_applications_path.GetDataHomePath().value());
+    CreateShortcutInPath(scoped_desktop_path.GetPath());
+    CreateShortcutInPath(scoped_applications_path.GetPath());
+
+    ShortcutLocations result =
+        GetExistingShortcutLocations(&env, GetProfilePath(), GetAppId());
     EXPECT_TRUE(result.on_desktop);
     EXPECT_EQ(APP_MENU_LOCATION_SUBDIR_CHROMEAPPS,
               result.applications_menu_location);
     EXPECT_FALSE(result.in_quick_launch_bar);
+    EXPECT_FALSE(result.in_startup);
   }
 }
 
-TEST(ShellIntegrationTest, GetExtensionShortcutFilename) {
-  base::FilePath kProfilePath("a/b/c/Profile Name?");
-  const char kExtensionId[] = "extensionid";
-  EXPECT_EQ(base::FilePath("chrome-extensionid-Profile_Name_.desktop"),
-            GetAppShortcutFilename(kProfilePath, kExtensionId));
+TEST_F(WebAppShortcutLinuxTest, GetExtensionShortcutFilename) {
+  EXPECT_EQ(base::FilePath("chrome-extensionid-Profile_1.desktop"),
+            GetAppShortcutFilename(GetProfilePath(), "extensionid"));
+}
+
+TEST_F(WebAppShortcutLinuxTest, DeleteDesktopShortcuts) {
+  ScopedDesktopPath scoped_desktop_path;
+  base::FilePath desktop_shortcut_path =
+      CreateShortcutInPath(scoped_desktop_path.GetPath());
+  base::ScopedPathOverride user_desktop_override(base::DIR_USER_DESKTOP,
+                                                 scoped_desktop_path.GetPath());
+
+  int invoke_count = 0;
+  auto DeleteApplicationsLaunchXdgUtility = base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& argv, int* exit_code) -> bool {
+        EXPECT_EQ(invoke_count, 0);
+        invoke_count++;
+        ValidateDeleteApplicationsLaunchXdgUtility(argv, exit_code);
+        return true;
+      });
+
+  SetLaunchXdgUtilityForTesting(DeleteApplicationsLaunchXdgUtility);
+
+  EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
+  EXPECT_TRUE(DeleteDesktopShortcuts(GetProfilePath(), GetAppId()));
+  EXPECT_EQ(invoke_count, 1);
+  EXPECT_FALSE(base::PathExists(desktop_shortcut_path));
+}
+
+TEST_F(WebAppShortcutLinuxTest, DeleteAllDesktopShortcuts) {
+  ScopedDesktopPath scoped_desktop_path;
+  base::FilePath desktop_shortcut_path =
+      CreateShortcutInPath(scoped_desktop_path.GetPath());
+  base::ScopedPathOverride user_desktop_override(base::DIR_USER_DESKTOP,
+                                                 scoped_desktop_path.GetPath());
+
+  ScopedApplicationsPath scoped_applications_path;
+  base::FilePath application_shortcut_path =
+      CreateShortcutInPath(scoped_applications_path.GetPath());
+  MockEnvironment env;
+  env.Set("XDG_DATA_HOME", scoped_applications_path.GetDataHomePath().value());
+
+  int invoke_count = 0;
+  auto DeleteApplicationsLaunchXdgUtility = base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& argv, int* exit_code) -> bool {
+        EXPECT_EQ(invoke_count, 0);
+        invoke_count++;
+        ValidateDeleteApplicationsLaunchXdgUtility(argv, exit_code);
+        return true;
+      });
+
+  SetLaunchXdgUtilityForTesting(DeleteApplicationsLaunchXdgUtility);
+
+  EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
+  EXPECT_TRUE(DeleteAllDesktopShortcuts(&env, GetProfilePath()));
+  EXPECT_EQ(invoke_count, 1);
+  EXPECT_FALSE(base::PathExists(desktop_shortcut_path));
+}
+
+TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcut) {
+  ScopedDesktopPath scoped_desktop_path;
+  ScopedApplicationsPath scoped_applications_path;
+  base::ScopedPathOverride user_desktop_override(base::DIR_USER_DESKTOP,
+                                                 scoped_desktop_path.GetPath());
+  MockEnvironment env;
+  env.Set("XDG_DATA_HOME", scoped_applications_path.GetDataHomePath().value());
+
+  int invoke_count = 0;
+  LaunchXdgUtilityForTesting CreateDesktopShortcutLaunchXdgUtility =
+      base::BindLambdaForTesting([&](const std::vector<std::string>& argv,
+                                     int* exit_code) -> bool {
+        ValidateCreateDesktopShortcutLaunchXdgUtility(
+            argv, exit_code, scoped_applications_path.GetPath(), invoke_count);
+        invoke_count++;
+
+        if (invoke_count < 4)
+          SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+        return true;
+      });
+
+  SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+  ShortcutLocations locations;
+  locations.on_desktop = true;
+  locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+
+  EXPECT_TRUE(CreateDesktopShortcut(&env, *shortcut_info, locations));
+  EXPECT_EQ(invoke_count, 4);
+
+  // At this point, we've already validated creation in the Application menu
+  // because of the hook into XdgUtilityForTesting.
+  // Validate the shortcut was created, and the contents are what we expect
+  // them to be.
+  std::string expected_contents =
+      shell_integration_linux::GetDesktopFileContents(
+          shell_integration_linux::internal::GetChromeExePath(),
+          GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
+          shortcut_info->extension_id, shortcut_info->title,
+          "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
+          "", false);
+
+  base::FilePath desktop_shortcut_path =
+      scoped_desktop_path.GetPath().Append(GetTemplateFilename());
+  ASSERT_TRUE(base::PathExists(desktop_shortcut_path));
+
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(desktop_shortcut_path, &actual_contents));
+  EXPECT_EQ(expected_contents, actual_contents);
+}
+
+TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutEmptyExtension) {
+  ScopedDesktopPath scoped_desktop_path;
+  ScopedApplicationsPath scoped_applications_path;
+  base::ScopedPathOverride user_desktop_override(base::DIR_USER_DESKTOP,
+                                                 scoped_desktop_path.GetPath());
+  MockEnvironment env;
+  env.Set("XDG_DATA_HOME", scoped_applications_path.GetDataHomePath().value());
+
+  int invoke_count = 0;
+  LaunchXdgUtilityForTesting CreateDesktopShortcutLaunchXdgUtility =
+      base::BindLambdaForTesting([&](const std::vector<std::string>& argv,
+                                     int* exit_code) -> bool {
+        EXPECT_TRUE(exit_code);
+        *exit_code = 0;
+
+        // There are 3 calls to this function:
+        //  case 0) install the icon for the new shortcut
+        //  case 1) install the new shortcut
+        //  case 2) update desktop database
+        EXPECT_LE(invoke_count, 3);
+
+        std::vector<std::string> expected_argv;
+        switch (invoke_count) {
+          case 0:
+            // The icon is generated to a temporary path, but the file name
+            // should be known Confirm the file name is what we expect, and use
+            // the parameter passed in.
+            EXPECT_EQ(argv.size(), 8u);
+            EXPECT_TRUE(argv[6].find("chrome-https___example.com_.png") !=
+                        std::string::npos);
+            expected_argv.push_back("xdg-icon-resource");
+            expected_argv.push_back("install");
+            expected_argv.push_back("--mode");
+            expected_argv.push_back("user");
+            expected_argv.push_back("--size");
+            expected_argv.push_back("512");
+            expected_argv.push_back(argv[6]);
+            expected_argv.push_back("chrome-https___example.com_");
+            break;
+
+          case 1:
+            // The desktop file is generated to a temporary path, but the file
+            // name should be known Confirm the file name is what we expect, and
+            // use the parameter passed in.
+            EXPECT_EQ(argv.size(), 6u);
+            EXPECT_TRUE(argv[4].find("chrome-apps.directory") !=
+                        std::string::npos);
+            EXPECT_TRUE(argv[5].find("chrome-https___example.com_.desktop") !=
+                        std::string::npos);
+
+            expected_argv.push_back("xdg-desktop-menu");
+            expected_argv.push_back("install");
+            expected_argv.push_back("--mode");
+            expected_argv.push_back("user");
+            expected_argv.push_back(argv[4]);
+            expected_argv.push_back(argv[5]);
+            break;
+
+          case 2:
+            expected_argv.push_back("update-desktop-database");
+            expected_argv.push_back(scoped_applications_path.GetPath().value());
+            break;
+        }
+
+        invoke_count++;
+        EXPECT_EQ(expected_argv, argv);
+        if (invoke_count < 3)
+          SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+        return true;
+      });
+
+  SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+  shortcut_info->extension_id = "";
+  shortcut_info->url = GURL("https://example.com");
+
+  ShortcutLocations locations;
+  locations.on_desktop = true;
+  locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+
+  EXPECT_TRUE(CreateDesktopShortcut(&env, *shortcut_info, locations));
+  EXPECT_EQ(invoke_count, 3);
+
+  // At this point, we've already validated creation in the Application menu
+  // because of the hook into XdgUtilityForTesting.
+  // Validate the shortcut was created, and the contents are what we expect
+  // them to be.
+  std::string expected_contents =
+      shell_integration_linux::GetDesktopFileContents(
+          shell_integration_linux::internal::GetChromeExePath(),
+          GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
+          shortcut_info->extension_id, shortcut_info->title,
+          "chrome-https___example.com_", shortcut_info->profile_path, "", "",
+          false);
+
+  base::FilePath desktop_shortcut_path = scoped_desktop_path.GetPath().Append(
+      "chrome-https___example.com_.desktop");
+  ASSERT_TRUE(base::PathExists(desktop_shortcut_path));
+
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(desktop_shortcut_path, &actual_contents));
+  EXPECT_EQ(expected_contents, actual_contents);
+}
+
+TEST_F(WebAppShortcutLinuxTest, UpdateDesktopShortcuts) {
+  ScopedDesktopPath scoped_desktop_path;
+  ScopedApplicationsPath scoped_applications_path;
+  base::ScopedPathOverride user_desktop_override(base::DIR_USER_DESKTOP,
+                                                 scoped_desktop_path.GetPath());
+  MockEnvironment env;
+  env.Set("XDG_DATA_HOME", scoped_applications_path.GetDataHomePath().value());
+  CreateShortcutInPath(scoped_desktop_path.GetPath());
+  CreateShortcutInPath(scoped_applications_path.GetPath());
+
+  int invoke_count = 0;
+  LaunchXdgUtilityForTesting CreateDesktopShortcutLaunchXdgUtility =
+      base::BindLambdaForTesting([&](const std::vector<std::string>& argv,
+                                     int* exit_code) -> bool {
+        ValidateCreateDesktopShortcutLaunchXdgUtility(
+            argv, exit_code, scoped_applications_path.GetPath(), invoke_count);
+        invoke_count++;
+
+        if (invoke_count < 4)
+          SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+        return true;
+      });
+
+  SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+
+  UpdateDesktopShortcuts(&env, *shortcut_info);
+  EXPECT_EQ(invoke_count, 4);
+
+  // At this point, we've already validated creation in the Application menu
+  // because of the hook into XdgUtilityForTesting.
+  // Validate the shortcut was created, and the contents are what we expect
+  // them to be.
+  std::string expected_contents =
+      shell_integration_linux::GetDesktopFileContents(
+          shell_integration_linux::internal::GetChromeExePath(),
+          GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
+          shortcut_info->extension_id, shortcut_info->title,
+          "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
+          "", false);
+
+  base::FilePath desktop_shortcut_path =
+      scoped_desktop_path.GetPath().Append(GetTemplateFilename());
+  ASSERT_TRUE(base::PathExists(desktop_shortcut_path));
+
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(desktop_shortcut_path, &actual_contents));
+  EXPECT_EQ(expected_contents, actual_contents);
 }
 
 }  // namespace web_app

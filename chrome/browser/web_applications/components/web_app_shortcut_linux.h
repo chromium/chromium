@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/callback.h"
+
 namespace base {
 class FilePath;
 class Environment;
@@ -17,11 +19,19 @@ namespace web_app {
 struct ShortcutInfo;
 struct ShortcutLocations;
 
+using LaunchXdgUtilityForTesting =
+    base::RepeatingCallback<bool(const std::vector<std::string>&, int*)>;
+
+// Test helper that hooking calls to shell_integration_linux::LaunchXdgUtility
+void SetLaunchXdgUtilityForTesting(
+    LaunchXdgUtilityForTesting launchXdgUtilityForTesting);
+
 // Create shortcuts on the desktop or in the application menu (as specified by
 // |shortcut_info|), for the web page or extension in |shortcut_info|.
 // For extensions, duplicate shortcuts are avoided, so if a requested shortcut
 // already exists it is deleted first.
-bool CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
+bool CreateDesktopShortcut(base::Environment* env,
+                           const ShortcutInfo& shortcut_info,
                            const ShortcutLocations& creation_locations);
 
 // Returns filename for .desktop file based on |profile_path| and
@@ -39,14 +49,8 @@ ShortcutLocations GetExistingShortcutLocations(
     const base::FilePath& profile_path,
     const std::string& extension_id);
 
-// Version of GetExistingShortcutLocations which takes an explicit path
-// to the user's desktop directory. Useful for testing.
-// If |desktop_path| is empty, the desktop is not searched.
-ShortcutLocations GetExistingShortcutLocations(
-    base::Environment* env,
-    const base::FilePath& profile_path,
-    const std::string& extension_id,
-    const base::FilePath& desktop_path);
+void UpdateDesktopShortcuts(base::Environment* env,
+                            const ShortcutInfo& shortcut_info);
 
 // Delete any desktop shortcuts on desktop or in the application menu that have
 // been added for the extension with |extension_id| in |profile_path|. Returns
@@ -56,7 +60,8 @@ bool DeleteDesktopShortcuts(const base::FilePath& profile_path,
 
 // Delete any desktop shortcuts on desktop or in the application menu that have
 // for the profile in |profile_path|. Returns true on successful deletion.
-bool DeleteAllDesktopShortcuts(const base::FilePath& profile_path);
+bool DeleteAllDesktopShortcuts(base::Environment* env,
+                               const base::FilePath& profile_path);
 
 }  // namespace web_app
 
