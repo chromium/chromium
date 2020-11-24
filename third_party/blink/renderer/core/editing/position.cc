@@ -592,6 +592,10 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
   if (pos.IsOffsetInAnchor()) {
     if (anchor->IsCharacterDataNode())
       return PositionInFlatTree(anchor, pos.ComputeOffsetInContainerNode());
+    if (IsActiveV0InsertionPoint(*anchor)) {
+      return ToPositionInFlatTree(Position(NodeTraversal::Parent(*anchor),
+                                           NodeTraversal::Index(*anchor)));
+    }
     DCHECK(!anchor->IsElementNode() || anchor->CanParticipateInFlatTree());
     int offset = pos.ComputeOffsetInContainerNode();
     Node* child = NodeTraversal::ChildAt(*anchor, offset);
@@ -620,9 +624,11 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
 
   if (anchor->IsShadowRoot())
     return PositionInFlatTree(anchor->OwnerShadowHost(), pos.AnchorType());
+  if (IsActiveV0InsertionPoint(*anchor))
+    return ToPositionInFlatTree(pos.ToOffsetInAnchor());
+  DCHECK(anchor->CanParticipateInFlatTree());
   if (pos.IsBeforeAnchor() || pos.IsAfterAnchor()) {
-    if (anchor->CanParticipateInFlatTree() &&
-        !FlatTreeTraversal::Parent(*anchor)) {
+    if (!FlatTreeTraversal::Parent(*anchor)) {
       // For Before/AfterAnchor, if |anchor| doesn't have parent in the flat
       // tree, there is no valid corresponding PositionInFlatTree.
       // Since this function is a primitive function, we do not adjust |pos|

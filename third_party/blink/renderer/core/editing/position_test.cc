@@ -228,6 +228,62 @@ TEST_F(PositionTest, ToPositionInFlatTreeWithEmptyShadowRoot) {
             ToPositionInFlatTree(Position(shadow_root, 0)));
 }
 
+TEST_F(PositionTest, ToPositionInFlatTreeWithV0InsertionPoint1) {
+  SetBodyContent("<p id=host></p>");
+  ShadowRoot* shadow_root = SetShadowContent("<content></content>", "host");
+  Element* host = GetDocument().getElementById("host");
+  Node* content = shadow_root->QuerySelector("content");
+  EXPECT_FALSE(content->CanParticipateInFlatTree());
+  EXPECT_EQ(PositionInFlatTree(host, 0),
+            ToPositionInFlatTree(Position::BeforeNode(*content)));
+  EXPECT_EQ(PositionInFlatTree(host, 0),
+            ToPositionInFlatTree(Position::FirstPositionInNode(*content)));
+  EXPECT_EQ(PositionInFlatTree(host, 0),
+            ToPositionInFlatTree(Position(content, 0)));
+  EXPECT_EQ(PositionInFlatTree(host, 0),
+            ToPositionInFlatTree(Position::LastPositionInNode(*content)));
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*host),
+            ToPositionInFlatTree(Position::AfterNode(*content)));
+}
+
+TEST_F(PositionTest, ToPositionInFlatTreeWithV0InsertionPoint2) {
+  SetBodyContent("<p id=host></p>");
+  ShadowRoot* shadow_root =
+      SetShadowContent("foo<content></content>bar", "host");
+  Element* host = GetDocument().getElementById("host");
+  Node* content = shadow_root->QuerySelector("content");
+  EXPECT_FALSE(content->CanParticipateInFlatTree());
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position::BeforeNode(*content)));
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position::FirstPositionInNode(*content)));
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position(content, 0)));
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position::LastPositionInNode(*content)));
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position::AfterNode(*content)));
+}
+
+TEST_F(PositionTest, ToPositionInFlatTreeWithV0InsertionPoint3) {
+  SetBodyContent("<p id=host><b>11</b><b>22</b></p>");
+  ShadowRoot* shadow_root =
+      SetShadowContent("foo<content></content>bar", "host");
+  Element* host = GetDocument().getElementById("host");
+  Node* content = shadow_root->QuerySelector("content");
+  EXPECT_FALSE(content->CanParticipateInFlatTree());
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position::BeforeNode(*content)));
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position::FirstPositionInNode(*content)));
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position(content, 0)));
+  EXPECT_EQ(PositionInFlatTree(host, 1),
+            ToPositionInFlatTree(Position::LastPositionInNode(*content)));
+  EXPECT_EQ(PositionInFlatTree(host, 3),
+            ToPositionInFlatTree(Position::AfterNode(*content)));
+}
+
 TEST_F(PositionTest, NullPositionNotConnected) {
   EXPECT_FALSE(Position().IsConnected());
   EXPECT_FALSE(PositionInFlatTree().IsConnected());
