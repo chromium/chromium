@@ -125,16 +125,16 @@ bool ShouldForceDirectCompositionRootSurfaceFullDamage() {
             switches::kDirectCompositionForceFullDamageForTesting)) {
       return true;
     }
-    if (!base::FeatureList::IsEnabled(
-            features::kDirectCompositionForceFullDamage)) {
-      return false;
-    }
     UINT brga_flags = DirectCompositionSurfaceWin::GetOverlaySupportFlags(
         DXGI_FORMAT_B8G8R8A8_UNORM);
     constexpr UINT kSupportBits =
         DXGI_OVERLAY_SUPPORT_FLAG_DIRECT | DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
     if ((brga_flags & kSupportBits) == 0)
       return false;
+    if (!base::FeatureList::IsEnabled(
+            features::kDirectCompositionForceFullDamage)) {
+      return false;
+    }
     return true;
   }();
   return should_force;
