@@ -155,8 +155,9 @@ bool NativeInputMethodEngine::IsConnectedForTesting() const {
 void NativeInputMethodEngine::OnAutocorrect(std::string typed_word,
                                             std::string corrected_word,
                                             int start_index) {
-  autocorrect_manager_->MarkAutocorrectRange(corrected_word, typed_word,
-                                             start_index);
+  autocorrect_manager_->MarkAutocorrectRange(
+      gfx::Range(start_index, start_index + corrected_word.length()),
+      typed_word);
 }
 
 NativeInputMethodEngine::ImeObserver*

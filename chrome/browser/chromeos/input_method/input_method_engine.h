@@ -175,18 +175,12 @@ class InputMethodEngine : public InputMethodEngineBase,
   // event handler.
   bool IsValidKeyEvent(const ui::KeyEvent* ui_event) override;
 
-  // Sets a range as autocorrected to display a special dashed underline.  Start
-  // and end are code point offsets in the surroundingTextInfo which control the
-  // start and end point of the underline which is added to the text to show a
-  // word was autocorrected.
+  // Sets the autocorrect range to be `range`. The `range` is in bytes.
   // TODO(b/171924748): Improve documentation for this function all the way down
   // the stack.
-  bool SetAutocorrectRange(const base::string16& autocorrect_text,
-                           uint32_t start,
-                           uint32_t end) override;
+  bool SetAutocorrectRange(const gfx::Range& range) override;
 
   gfx::Range GetAutocorrectRange() override;
-  void ClearAutocorrectRange() override;
 
  private:
   // InputMethodEngineBase:

@@ -222,12 +222,8 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   gfx::Rect GetAutocorrectCharacterBounds(int context_id, std::string* error);
 
   bool SetAutocorrectRange(int context_id,
-                           const base::string16& autocorrect_text,
-                           int start,
-                           int end,
+                           const gfx::Range& range,
                            std::string* error);
-
-  virtual void ClearAutocorrectRange() = 0;
 
   // Set the current selection range.
   bool SetSelectionRange(int context_id,
@@ -302,9 +298,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   // Notifies the InputContextHandler that the autocorrect range should
   // be updated and the autocorrect text has updated.
-  virtual bool SetAutocorrectRange(const base::string16& autocorrect_text,
-                                   uint32_t start,
-                                   uint32_t end) = 0;
+  virtual bool SetAutocorrectRange(const gfx::Range& range) = 0;
 
   // Notifies the InputContextHandler to change the selection range.
   virtual bool SetSelectionRange(uint32_t start, uint32_t end) = 0;

@@ -348,15 +348,9 @@ gfx::Rect TextInput::GetAutocorrectCharacterBounds() const {
 }
 
 // TODO(crbug.com/1091088) Implement setAutocorrectRange
-bool TextInput::SetAutocorrectRange(const base::string16& autocorrect_text,
-                                    const gfx::Range& range) {
+bool TextInput::SetAutocorrectRange(const gfx::Range& range) {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
-}
-
-// TODO(crbug.com/1091088) Implement ClearAutocorrectRange
-void TextInput::ClearAutocorrectRange() {
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void TextInput::OnKeyboardVisibilityChanged(bool is_visible) {

@@ -1877,15 +1877,12 @@ gfx::Rect Textfield::GetAutocorrectCharacterBounds() const {
   return rect;
 }
 
-bool Textfield::SetAutocorrectRange(const base::string16& autocorrect_text,
-                                    const gfx::Range& range) {
-  base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
-                                TextInputClient::SubClass::kTextField);
-  return model_->SetAutocorrectRange(autocorrect_text, range);
-}
-
-void Textfield::ClearAutocorrectRange() {
-  model_->ClearAutocorrectRange();
+bool Textfield::SetAutocorrectRange(const gfx::Range& range) {
+  if (!range.is_empty()) {
+    base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
+                                  TextInputClient::SubClass::kTextField);
+  }
+  return model_->SetAutocorrectRange(range);
 }
 #endif
 

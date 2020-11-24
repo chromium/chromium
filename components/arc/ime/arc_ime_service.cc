@@ -626,10 +626,11 @@ gfx::Rect ArcImeService::GetAutocorrectCharacterBounds() const {
   return gfx::Rect();
 }
 
-bool ArcImeService::SetAutocorrectRange(const base::string16& autocorrect_text,
-                                        const gfx::Range& range) {
-  base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
-                                TextInputClient::SubClass::kArcImeService);
+bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
+  if (!range.is_empty()) {
+    base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
+                                  TextInputClient::SubClass::kArcImeService);
+  }
   // TODO(https:://crbug.com/1091088): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
@@ -640,11 +641,6 @@ void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
     receiver_->DispatchKeyEventPostIME(event);
     event->SetHandled();
   }
-}
-
-void ArcImeService::ClearAutocorrectRange() {
-  // TODO(https:://crbug.com/1091088): Implement this method.
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static

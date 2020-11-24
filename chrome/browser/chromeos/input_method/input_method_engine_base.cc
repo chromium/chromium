@@ -625,12 +625,9 @@ gfx::Rect InputMethodEngineBase::GetAutocorrectCharacterBounds(
   return GetAutocorrectCharacterBounds();
 }
 
-bool InputMethodEngineBase::SetAutocorrectRange(
-    int context_id,
-    const base::string16& autocorrect_text,
-    int start,
-    int end,
-    std::string* error) {
+bool InputMethodEngineBase::SetAutocorrectRange(int context_id,
+                                                const gfx::Range& range,
+                                                std::string* error) {
   if (!IsActive()) {
     *error = kErrorNotActive;
     return false;
@@ -641,8 +638,7 @@ bool InputMethodEngineBase::SetAutocorrectRange(
         kErrorWrongContext, context_id, context_id_);
     return false;
   }
-  return SetAutocorrectRange(autocorrect_text, static_cast<uint32_t>(start),
-                             static_cast<uint32_t>(end));
+  return SetAutocorrectRange(range);
 }
 
 bool InputMethodEngineBase::SetSelectionRange(int context_id,

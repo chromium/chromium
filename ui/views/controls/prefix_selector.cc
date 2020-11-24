@@ -185,15 +185,10 @@ gfx::Rect PrefixSelector::GetAutocorrectCharacterBounds() const {
   return gfx::Rect();
 }
 
-bool PrefixSelector::SetAutocorrectRange(const base::string16& autocorrect_text,
-                                         const gfx::Range& range) {
-  // TODO(crbug.com/1091088) Implement setAutocorrectRange.
+bool PrefixSelector::SetAutocorrectRange(const gfx::Range& range) {
+  // TODO(crbug.com/1091088): Implement SetAutocorrectRange.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
-}
-
-void PrefixSelector::ClearAutocorrectRange() {
-  // TODO(crbug.com/1091088) Implement ClearAutocorrectRange.
 }
 #endif
 

@@ -25,12 +25,10 @@ class AutocorrectManager {
   AutocorrectManager(const AutocorrectManager&) = delete;
   AutocorrectManager& operator=(const AutocorrectManager&) = delete;
 
-  // Called by input method engine on autocorrect to initially show underline.
-  // Needs to be called after the autocorrected text (corrected_word, offset by
-  // start_index code points in SurroundingInfo) has been committed.
-  void MarkAutocorrectRange(const std::string& corrected_word,
-                            const std::string& typed_word,
-                            int start_index);
+  // Mark `autocorrect_range` with an underline. `autocorrect_range` is based on
+  // the current text contents.
+  void MarkAutocorrectRange(gfx::Range autocorrect_range,
+                            const std::string& original_text);
 
   // To hide the underline after enough keypresses, this class intercepts
   // keystrokes. Returns whether the keypress has now been handled.
@@ -53,8 +51,7 @@ class AutocorrectManager {
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
   int key_presses_until_underline_hide_ = 0;
-  std::string last_typed_word_;
-  std::string last_corrected_word_;
+  std::string original_text_;
   bool window_visible = false;
   bool button_highlighted = false;
 };

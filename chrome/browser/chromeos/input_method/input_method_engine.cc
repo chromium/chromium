@@ -479,23 +479,12 @@ gfx::Rect InputMethodEngine::GetAutocorrectCharacterBounds() {
   return input_context->GetAutocorrectCharacterBounds();
 }
 
-bool InputMethodEngine::SetAutocorrectRange(
-    const base::string16& autocorrect_text,
-    uint32_t start,
-    uint32_t end) {
+bool InputMethodEngine::SetAutocorrectRange(const gfx::Range& range) {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
-  return input_context->SetAutocorrectRange(autocorrect_text, start, end);
-}
-
-void InputMethodEngine::ClearAutocorrectRange() {
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return;
-  return input_context->ClearAutocorrectRange();
+  return input_context->SetAutocorrectRange(range);
 }
 
 bool InputMethodEngine::SetSelectionRange(uint32_t start, uint32_t end) {

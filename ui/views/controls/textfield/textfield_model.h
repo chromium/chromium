@@ -238,13 +238,10 @@ class VIEWS_EXPORT TextfieldModel {
   // Return the text range corresponding to the autocorrected text.
   const gfx::Range& autocorrect_range() const { return autocorrect_range_; }
 
-  // Replace the text in the specified range with the autocorrect text and
-  // store necessary metadata (The size of the new text + the original text)
-  // to be able to undo this change if needed.
-  bool SetAutocorrectRange(const base::string16& autocorrect_text,
-                           const gfx::Range& range);
-
-  void ClearAutocorrectRange();
+  // Sets the autocorrect range to |range|. If |range| is empty, then the
+  // autocorrect range is cleared. Returns true if the range was set or cleared
+  // successfully.
+  bool SetAutocorrectRange(const gfx::Range& range);
 #endif
 
   // Puts the text in the specified range into composition mode.
@@ -340,10 +337,6 @@ class VIEWS_EXPORT TextfieldModel {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   gfx::Range autocorrect_range_;
-  // Original text is the text that was replaced by the autocorrect feature.
-  // This should be restored if the Undo button corresponding to the Autocorrect
-  // window is pressed.
-  base::string16 original_text_;
 #endif
 
   // The list of Edits. The oldest Edits are at the front of the list, and the

@@ -152,10 +152,8 @@ class ArcImeService : public KeyedService,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
-  bool SetAutocorrectRange(const base::string16& autocorrect_text,
-                           const gfx::Range& range) override;
+  bool SetAutocorrectRange(const gfx::Range& range) override;
   void OnDispatchingKeyEventPostIME(ui::KeyEvent* event) override;
-  void ClearAutocorrectRange() override;
 
   // Normally, the default device scale factor is used to convert from DPI to
   // physical pixels. This method provides a way to override it for testing.

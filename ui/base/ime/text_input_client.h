@@ -242,15 +242,12 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // These bounds are in screen coordinates.
   virtual gfx::Rect GetAutocorrectCharacterBounds() const = 0;
 
-  // Sets the autocorrect range and returns if it has been set correctly as a
-  // boolean value. Returns false if text or range is empty. Out of range
-  // results in failure and no modification will be made.
-  virtual bool SetAutocorrectRange(const base::string16& autocorrect_text,
-                                   const gfx::Range& range) = 0;
-
-  // Clear the autocorrect range and remove the underline under the
-  // autocorrect text.
-  virtual void ClearAutocorrectRange() = 0;
+  // Sets the autocorrect range to |range|. Clients should show some visual
+  // indication of the range, such as flashing or underlining. If |range| is
+  // empty, then the autocorrect range is cleared.
+  // Returns true if the operation was successful. If |range| is invalid, then
+  // no modifications are made and this function returns false.
+  virtual bool SetAutocorrectRange(const gfx::Range& range) = 0;
 #endif
 
 #if defined(OS_WIN)

@@ -421,7 +421,7 @@ TEST_F(InputMethodChromeOSTest,
        OnWillChangeFocusedClientClearAutocorrectRange) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->SetFocusedTextInputClient(this);
-  ime_->SetAutocorrectRange(base::UTF8ToUTF16("text"), 0, 5);
+  ime_->SetAutocorrectRange(gfx::Range(0, 5));
   EXPECT_EQ(gfx::Range(0, 5), this->GetAutocorrectRange());
 
   ime_->SetFocusedTextInputClient(nullptr);

@@ -3089,99 +3089,42 @@ TEST_F(TextfieldTest, GetCompositionCharacterBounds_ComplexText) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(TextfieldTest, SetAutocorrectRangeText) {
+TEST_F(TextfieldTest, SetAutocorrectRange) {
   InitTextfield();
 
-  ui::CompositionText composition;
-  composition.text = UTF8ToUTF16("Initial txt");
-  textfield_->SetCompositionText(composition);
-  textfield_->SetAutocorrectRange(ASCIIToUTF16("text replacement"),
-                                  gfx::Range(8, 11));
+  textfield_->SetText(ASCIIToUTF16("abc def ghi"));
+  textfield_->SetAutocorrectRange(gfx::Range(4, 7));
 
   gfx::Range autocorrect_range = textfield_->GetAutocorrectRange();
-  EXPECT_EQ(autocorrect_range, gfx::Range(8, 24));
-
-  base::string16 text;
-  textfield_->GetTextFromRange(gfx::Range(0, 24), &text);
-  EXPECT_EQ(text, UTF8ToUTF16("Initial text replacement"));
-}
-
-TEST_F(TextfieldTest, SetAutocorrectRangeExplicitlySet) {
-  InitTextfield();
-  textfield_->InsertText(UTF8ToUTF16("Initial txt"));
-  textfield_->SetAutocorrectRange(ASCIIToUTF16("text replacement"),
-                                  gfx::Range(8, 11));
-
-  gfx::Range autocorrectRange = textfield_->GetAutocorrectRange();
-  EXPECT_EQ(autocorrectRange, gfx::Range(8, 24));
-
-  base::string16 text;
-  textfield_->GetTextFromRange(gfx::Range(0, 24), &text);
-  EXPECT_EQ(text, UTF8ToUTF16("Initial text replacement"));
+  EXPECT_EQ(autocorrect_range, gfx::Range(4, 7));
 }
 
 TEST_F(TextfieldTest, DoesNotSetAutocorrectRangeWhenRangeGivenIsInvalid) {
   InitTextfield();
 
-  ui::CompositionText composition;
-  composition.text = UTF8ToUTF16("Initial");
-  textfield_->SetCompositionText(composition);
+  textfield_->SetText(ASCIIToUTF16("abc"));
 
-  EXPECT_FALSE(textfield_->SetAutocorrectRange(ASCIIToUTF16("text replacement"),
-                                               gfx::Range(8, 11)));
-  EXPECT_EQ(gfx::Range(0, 0), textfield_->GetAutocorrectRange());
-  gfx::Range range;
-  textfield_->GetTextRange(&range);
-  base::string16 text;
-  textfield_->GetTextFromRange(range, &text);
-  EXPECT_EQ(composition.text, text);
-}
-
-TEST_F(TextfieldTest, ReturnsFalseWhenSetAutocorrectRangeWithEmptyText) {
-  InitTextfield();
-
-  ui::CompositionText composition;
-  composition.text = UTF8ToUTF16("Initial");
-  textfield_->SetCompositionText(composition);
-
-  EXPECT_FALSE(
-      textfield_->SetAutocorrectRange(base::EmptyString16(), gfx::Range(0, 2)));
+  EXPECT_FALSE(textfield_->SetAutocorrectRange(gfx::Range(8, 11)));
+  EXPECT_TRUE(textfield_->GetAutocorrectRange().is_empty());
 }
 
 TEST_F(TextfieldTest,
        ClearsAutocorrectRangeWhenSetAutocorrectRangeWithEmptyRange) {
   InitTextfield();
 
-  ui::CompositionText composition;
-  composition.text = UTF8ToUTF16("Initial");
-  textfield_->SetCompositionText(composition);
+  textfield_->SetText(ASCIIToUTF16("abc"));
 
-  EXPECT_FALSE(
-      textfield_->SetAutocorrectRange(UTF8ToUTF16("Test"), gfx::Range(0, 0)));
-}
-
-TEST_F(TextfieldTest, ClearAutocorrectRange) {
-  InitTextfield();
-  textfield_->InsertText(UTF8ToUTF16("Initial txt"));
-  textfield_->SetAutocorrectRange(ASCIIToUTF16("text replacement"),
-                                  gfx::Range(8, 11));
-
-  EXPECT_EQ(textfield_->GetText(), UTF8ToUTF16("Initial text replacement"));
-  EXPECT_EQ(textfield_->GetAutocorrectRange(), gfx::Range(8, 24));
-
-  textfield_->ClearAutocorrectRange();
-
-  EXPECT_EQ(textfield_->GetAutocorrectRange(), gfx::Range());
+  EXPECT_TRUE(textfield_->SetAutocorrectRange(gfx::Range()));
+  EXPECT_TRUE(textfield_->GetAutocorrectRange().is_empty());
 }
 
 TEST_F(TextfieldTest, GetAutocorrectCharacterBoundsTest) {
   InitTextfield();
 
   textfield_->InsertText(UTF8ToUTF16("hello placeholder text"));
-  textfield_->SetAutocorrectRange(ASCIIToUTF16("longlonglongtext"),
-                                  gfx::Range(3, 10));
+  textfield_->SetAutocorrectRange(gfx::Range(3, 10));
 
-  EXPECT_EQ(textfield_->GetAutocorrectRange(), gfx::Range(3, 19));
+  EXPECT_EQ(textfield_->GetAutocorrectRange(), gfx::Range(3, 10));
 
   gfx::Rect rect_for_long_text = textfield_->GetAutocorrectCharacterBounds();
 
@@ -3189,7 +3132,7 @@ TEST_F(TextfieldTest, GetAutocorrectCharacterBoundsTest) {
   textfield_->DeleteRange(gfx::Range(0, 99));
 
   textfield_->InsertText(UTF8ToUTF16("hello placeholder text"));
-  textfield_->SetAutocorrectRange(ASCIIToUTF16("short"), gfx::Range(3, 10));
+  textfield_->SetAutocorrectRange(gfx::Range(3, 8));
 
   EXPECT_EQ(textfield_->GetAutocorrectRange(), gfx::Range(3, 8));
 

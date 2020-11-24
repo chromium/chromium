@@ -314,11 +314,10 @@ void InputMethodChromeOS::OnWillChangeFocusedClient(
     TextInputClient* focused) {
   ConfirmCompositionText(/* reset_engine */ true, /* keep_selection */ false);
 
-  // Removes any autocorrect range in the unfocused TextInputClient.
+  // Remove any autocorrect range in the unfocused TextInputClient.
   gfx::Range text_range;
   if (focused_before && focused_before->GetTextRange(&text_range)) {
-    // This is currently only implemented in RenderWidgetHostViewAura.
-    focused_before->ClearAutocorrectRange();
+    focused_before->SetAutocorrectRange(gfx::Range());
   }
 
   if (GetEngine())
@@ -407,21 +406,10 @@ gfx::Rect InputMethodChromeOS::GetAutocorrectCharacterBounds() {
   return GetTextInputClient()->GetAutocorrectCharacterBounds();
 }
 
-bool InputMethodChromeOS::SetAutocorrectRange(
-    const base::string16& autocorrect_text,
-    uint32_t start,
-    uint32_t end) {
+bool InputMethodChromeOS::SetAutocorrectRange(const gfx::Range& range) {
   if (IsTextInputTypeNone())
     return false;
-  return GetTextInputClient()->SetAutocorrectRange(autocorrect_text,
-                                                   gfx::Range(start, end));
-}
-
-void InputMethodChromeOS::ClearAutocorrectRange() {
-  if (IsTextInputTypeNone())
-    return;
-  // This is currently only implemented in RenderWidgetHostViewAura.
-  return GetTextInputClient()->ClearAutocorrectRange();
+  return GetTextInputClient()->SetAutocorrectRange(range);
 }
 
 bool InputMethodChromeOS::SetSelectionRange(uint32_t start, uint32_t end) {

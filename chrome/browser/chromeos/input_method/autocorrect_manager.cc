@@ -13,6 +13,7 @@
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace chromeos {
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -29,34 +30,29 @@ void LogAssistiveAutocorrectAction(AutocorrectActions action) {
                                 action);
 }
 
-}  // namespace
-
-namespace chromeos {
-
 constexpr int kKeysUntilAutocorrectWindowHides = 4;
+
+}  // namespace
 
 AutocorrectManager::AutocorrectManager(
     SuggestionHandlerInterface* suggestion_handler)
     : suggestion_handler_(suggestion_handler) {}
 
-void AutocorrectManager::MarkAutocorrectRange(const std::string& corrected_word,
-                                              const std::string& typed_word,
-                                              int start_index) {
+void AutocorrectManager::MarkAutocorrectRange(
+    gfx::Range autocorrect_range,
+    const std::string& original_text) {
   // TODO(crbug/1111135): call setAutocorrectTime() (for metrics)
   // TODO(crbug/1111135): record metric (coverage)
-  last_typed_word_ = typed_word;
-  last_corrected_word_ = corrected_word;
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context)
+    return;
+
+  original_text_ = original_text;
   key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
   ClearUnderline();
 
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (input_context) {
-    input_context->SetAutocorrectRange(base::UTF8ToUTF16(corrected_word),
-                                       start_index,
-                                       start_index + corrected_word.length());
-    LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
-  }
+  input_context->SetAutocorrectRange(autocorrect_range);
 }
 
 bool AutocorrectManager::OnKeyEvent(
@@ -71,7 +67,7 @@ bool AutocorrectManager::OnKeyEvent(
     button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
     button.announce_string =
         l10n_util::GetStringFUTF8(IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON,
-                                  base::UTF8ToUTF16(last_typed_word_));
+                                  base::UTF8ToUTF16(original_text_));
     suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
                                               &error);
     button_highlighted = true;
@@ -94,7 +90,7 @@ void AutocorrectManager::ClearUnderline() {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (input_context) {
-    input_context->ClearAutocorrectRange();
+    input_context->SetAutocorrectRange(gfx::Range());
   }
 }
 
@@ -108,13 +104,15 @@ void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
   if (!range.is_empty() && cursor_pos >= range.start() &&
       cursor_pos <= range.end()) {
     if (!window_visible) {
+      const std::string autocorrected_text =
+          base::UTF16ToUTF8(text.substr(range.start(), range.length()));
       chromeos::AssistiveWindowProperties properties;
       properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
       properties.visible = true;
       properties.announce_string = l10n_util::GetStringFUTF8(
           IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
-          base::UTF8ToUTF16(last_typed_word_),
-          base::UTF8ToUTF16(last_corrected_word_));
+          base::UTF8ToUTF16(original_text_),
+          base::UTF8ToUTF16(autocorrected_text));
       window_visible = true;
       button_highlighted = false;
       suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
@@ -177,7 +175,7 @@ void AutocorrectManager::UndoAutocorrect() {
   input_context->CommitText(
       (base::UTF16ToUTF8(
            surrounding_text.surrounding_text.substr(0, range.start())) +
-       last_typed_word_));
+       original_text_));
 }
 
 }  // namespace chromeos

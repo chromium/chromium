@@ -1507,39 +1507,34 @@ gfx::Rect RenderWidgetHostViewAura::GetAutocorrectCharacterBounds() const {
 }
 
 bool RenderWidgetHostViewAura::SetAutocorrectRange(
-    const base::string16& autocorrect_text,
     const gfx::Range& range) {
-  if (autocorrect_text.empty() || range.is_empty())
-    return false;
-
-  base::UmaHistogramEnumeration(
-      "InputMethod.Assistive.Autocorrect.Count",
-      TextInputClient::SubClass::kRenderWidgetHostViewAura);
+  if (!range.is_empty()) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.Autocorrect.Count",
+        TextInputClient::SubClass::kRenderWidgetHostViewAura);
+  }
 
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler)
     return false;
 
+  input_handler->ClearImeTextSpansByType(0,
+                                         std::numeric_limits<uint32_t>::max(),
+                                         ui::ImeTextSpan::Type::kAutocorrect);
+
+  if (range.is_empty())
+    return true;
+
   ui::ImeTextSpan ui_ime_text_span;
   ui_ime_text_span.type = ui::ImeTextSpan::Type::kAutocorrect;
   ui_ime_text_span.start_offset = 0;
-  ui_ime_text_span.end_offset = autocorrect_text.length();
+  ui_ime_text_span.end_offset = range.length();
   ui_ime_text_span.underline_style = ui::ImeTextSpan::UnderlineStyle::kDot;
   ui_ime_text_span.underline_color = gfx::kGoogleGrey700;
 
   input_handler->AddImeTextSpansToExistingText(range.start(), range.end(),
                                                {ui_ime_text_span});
   return true;
-}
-
-void RenderWidgetHostViewAura::ClearAutocorrectRange() {
-  // TODO(crbug/1108170): Once we have a FrameWidgetInputHandlerMock, add a test
-  // to verify that the ClearImeTextSpansByType function has been called.
-  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
-  if (!input_handler)
-    return;
-  input_handler->ClearImeTextSpansByType(0, UINT32_MAX,
-                                         ui::ImeTextSpan::Type::kAutocorrect);
 }
 #endif
 

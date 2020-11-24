@@ -570,8 +570,8 @@ InputMethodPrivateSetAutocorrectRangeFunction::Run() {
   const auto parent_params = SetAutocorrectRange::Params::Create(*args_);
   const auto& params = parent_params->parameters;
   if (!engine->SetAutocorrectRange(
-          params.context_id, base::UTF8ToUTF16(params.autocorrect_string),
-          params.selection_start, params.selection_end, &error)) {
+          params.context_id,
+          gfx::Range(params.selection_start, params.selection_end), &error)) {
     auto results = std::make_unique<base::ListValue>();
     results->Append(std::make_unique<base::Value>(false));
     return RespondNow(Error(InformativeError(error, static_function_name())));

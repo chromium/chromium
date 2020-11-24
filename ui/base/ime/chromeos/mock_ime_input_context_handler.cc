@@ -64,16 +64,9 @@ gfx::Rect MockIMEInputContextHandler::GetAutocorrectCharacterBounds() {
   return gfx::Rect();
 }
 
-bool MockIMEInputContextHandler::SetAutocorrectRange(
-    const base::string16& autocorrect_text,
-    uint32_t start,
-    uint32_t end) {
-  autocorrect_range_ = gfx::Range(start, end);
+bool MockIMEInputContextHandler::SetAutocorrectRange(const gfx::Range& range) {
+  autocorrect_range_ = range;
   return true;
-}
-
-void MockIMEInputContextHandler::ClearAutocorrectRange() {
-  autocorrect_range_ = gfx::Range();
 }
 
 bool MockIMEInputContextHandler::SetSelectionRange(uint32_t start,
