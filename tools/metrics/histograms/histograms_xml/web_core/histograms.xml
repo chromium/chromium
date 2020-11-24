@@ -39,8 +39,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.Document.execCommand" enum="MappedEditingCommands"
-    expires_after="2021-04-25">
-  <owner>yoichio@chromium.org</owner>
+    expires_after="2021-12-31">
+  <owner>yosin@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
   <summary>
     Counts the number of times each document.execCommand is executed. This
     doesn't count commands not supported by Blink.
@@ -48,8 +49,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.Editing.Commands" enum="MappedEditingCommands"
-    expires_after="2020-12-31">
-  <owner>yoichio@chromium.org</owner>
+    expires_after="2021-12-31">
+  <owner>yosin@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
   <summary>
     Counts the number of times each Editor::Command::execute is called. This
     doesn't count commands not supported by Blink.
