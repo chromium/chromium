@@ -7585,7 +7585,7 @@ base::Optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
 
 // static
 BSTR AXPlatformNodeWin::GetValueAttributeAsBstr(AXPlatformNodeWin* target) {
-  if (target->IsDocument()) {
+  if (target->IsPlatformDocument()) {
     base::string16 url =
         base::UTF8ToUTF16(target->GetDelegate()->GetTreeData().url);
     BSTR value = SysAllocString(url.c_str());
@@ -7916,9 +7916,8 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
 
     case UIA_TextEditPatternId:
     case UIA_TextPatternId:
-      if (IsDocument() || IsTextField() || IsText()) {
+      if (IsPlatformDocument() || IsTextField() || IsText())
         return &AXPlatformNodeTextProviderWin::CreateIUnknown;
-      }
       break;
 
     case UIA_TogglePatternId:

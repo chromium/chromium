@@ -1815,7 +1815,7 @@ TEST_F(AXPositionTest, AtEndOfParagraphWithTextPosition) {
   EXPECT_FALSE(text_position->AtEndOfParagraph());
 
   // The end of |inline_box2_| is the end of paragraph since it's
-  // followed by the end of document.
+  // followed by the end of the whole content.
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box2_.id, 6 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -2351,7 +2351,7 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
 }
 
 TEST_F(AXPositionTest,
-       AtStartOrEndOfParagraphWithLeadingAndTrailingDocumentWhitespace) {
+       AtStartOrEndOfParagraphWithLeadingAndTrailingWhitespace) {
   // This test ensures that "At{Start|End}OfParagraph" work correctly when a
   // text position is on a preserved newline character.
   //
@@ -3758,7 +3758,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   EXPECT_EQ(0, test_position->child_index());
 }
 
-TEST_F(AXPositionTest, CreatePositionAtTextBoundaryDocumentStartEndIsIgnored) {
+TEST_F(AXPositionTest, CreatePositionAtTextBoundaryContentStartEndIsIgnored) {
   // +-root_data
   //   +-static_text_data_1
   //   | +-inline_box_data_1 IGNORED
@@ -4107,8 +4107,8 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTreePosition) {
   EXPECT_EQ(button_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
-  // StopAtLastAnchorBoundary should stop at the start of the document while
-  // CrossBoundary should return a null position when crossing it.
+  // StopAtLastAnchorBoundary should stop at the start of the whole content
+  // while CrossBoundary should return a null position when crossing it.
   test_position = test_position->CreatePreviousFormatStartPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -4160,8 +4160,8 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTextPosition) {
   EXPECT_EQ(button_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
-  // StopAtLastAnchorBoundary should stop at the start of the document while
-  // CrossBoundary should return a null position when crossing it.
+  // StopAtLastAnchorBoundary should stop at the start of the whole content
+  // while CrossBoundary should return a null position when crossing it.
   test_position = test_position->CreatePreviousFormatStartPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -4230,7 +4230,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTreePosition) {
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
-  // StopAtLastAnchorBoundary should stop at the end of the document while
+  // StopAtLastAnchorBoundary should stop at the end of the whole content while
   // CrossBoundary should return a null position when crossing it.
   test_position = test_position->CreateNextFormatEndPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
@@ -4288,7 +4288,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTextPosition) {
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(6, test_position->text_offset());
 
-  // StopAtLastAnchorBoundary should stop at the end of the document while
+  // StopAtLastAnchorBoundary should stop at the end of the whole content while
   // CrossBoundary should return a null position when crossing it.
   test_position = test_position->CreateNextFormatEndPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
@@ -4325,7 +4325,7 @@ TEST_F(AXPositionTest, CreatePositionAtFormatBoundaryWithTextPosition) {
 
   SetTree(CreateAXTree({root_data, text_data, more_text_data}));
 
-  // Test CreatePreviousFormatStartPosition at the start of the document.
+  // Test CreatePreviousFormatStartPosition at the start of the whole content.
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), text_data.id, 8 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -4338,7 +4338,7 @@ TEST_F(AXPositionTest, CreatePositionAtFormatBoundaryWithTextPosition) {
   EXPECT_EQ(text_data.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
-  // Test CreateNextFormatEndPosition at the end of the document.
+  // Test CreateNextFormatEndPosition at the end of the whole content.
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), more_text_data.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -4626,7 +4626,7 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTextPosition) {
                                   page_2_data, page_2_text_data, page_3_data,
                                   page_3_text_data));
 
-  // Test CreateNextPageStartPosition at the start of the document.
+  // Test CreateNextPageStartPosition at the start of the whole content.
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), page_1_text_data.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -4655,7 +4655,7 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTextPosition) {
   EXPECT_EQ(page_2_text_data.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
-  // Test CreateNextPageEndPosition until the end of document is reached.
+  // Test CreateNextPageEndPosition until the end of content is reached.
   test_position = test_position->CreateNextPageEndPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -4677,7 +4677,7 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTextPosition) {
   EXPECT_EQ(page_3_text_data.id, test_position->anchor_id());
   EXPECT_EQ(24, test_position->text_offset());
 
-  // StopAtLastAnchorBoundary shouldn't move past the end of the document.
+  // StopAtLastAnchorBoundary shouldn't move past the end of the whole content.
   test_position = test_position->CreateNextPageStartPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -4703,7 +4703,7 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTextPosition) {
   EXPECT_NE(nullptr, null_position);
   EXPECT_TRUE(null_position->IsNullPosition());
 
-  // Now move backward through the document.
+  // Now move backward through the accessibility tree.
   text_position = test_position->CreatePreviousPageEndPosition(
       AXBoundaryBehavior::StopIfAlreadyAtBoundary);
   EXPECT_NE(nullptr, text_position);
@@ -4746,7 +4746,8 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTextPosition) {
   EXPECT_EQ(page_1_text_data.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
-  // StopAtLastAnchorBoundary shouldn't move past the start of the document.
+  // StopAtLastAnchorBoundary shouldn't move past the start of the whole
+  // content.
   test_position = test_position->CreatePreviousPageStartPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -4780,7 +4781,7 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTreePosition) {
                                   page_2_data, page_2_text_data, page_3_data,
                                   page_3_text_data));
 
-  // Test CreateNextPageStartPosition at the start of the document.
+  // Test CreateNextPageStartPosition at the start of the whole content.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), page_1_data.id, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
@@ -4808,7 +4809,7 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTreePosition) {
   EXPECT_EQ(page_2_text_data.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
-  // Test CreateNextPageEndPosition until the end of document is reached.
+  // Test CreateNextPageEndPosition until the end of content is reached.
   test_position = tree_position->CreateNextPageEndPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -4830,7 +4831,7 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTreePosition) {
   EXPECT_EQ(page_2_text_data.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
-  // StopAtLastAnchorBoundary shouldn't move past the end of the document.
+  // StopAtLastAnchorBoundary shouldn't move past the end of the whole content.
   test_position = test_position->CreateNextPageStartPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -4856,7 +4857,7 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTreePosition) {
   EXPECT_NE(nullptr, null_position);
   EXPECT_TRUE(null_position->IsNullPosition());
 
-  // Now move backward through the document.
+  // Now move backward through the accessibility tree.
   tree_position = test_position->CreatePreviousPageEndPosition(
       AXBoundaryBehavior::StopIfAlreadyAtBoundary);
   EXPECT_NE(nullptr, tree_position);
@@ -4899,7 +4900,8 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTreePosition) {
   EXPECT_EQ(page_1_text_data.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
-  // StopAtLastAnchorBoundary shouldn't move past the start of the document.
+  // StopAtLastAnchorBoundary shouldn't move past the start of the whole
+  // content.
   test_position = test_position->CreatePreviousPageStartPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -4951,11 +4953,11 @@ TEST_F(AXPositionTest, CreatePagePositionWithNullPosition) {
   EXPECT_TRUE(test_position->IsNullPosition());
 }
 
-TEST_F(AXPositionTest, CreatePositionAtStartOfDocumentWithNullPosition) {
+TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithNullPosition) {
   TestPositionType null_position = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, null_position);
   TestPositionType test_position =
-      null_position->CreatePositionAtStartOfDocument();
+      null_position->CreatePositionAtStartOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsNullPosition());
 }
@@ -4966,7 +4968,7 @@ TEST_F(AXPositionTest, CreatePagePositionWithNonPaginatedDocument) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
 
-  // Non-paginated documents should move to the start of the document for
+  // Non-paginated documents should move to the start of the whole content for
   // CreatePreviousPageStartPosition (treating the entire document as a single
   // page)
   TestPositionType test_position =
@@ -4992,7 +4994,7 @@ TEST_F(AXPositionTest, CreatePagePositionWithNonPaginatedDocument) {
   EXPECT_TRUE(test_position->IsNullPosition());
 
   // Since there are no distinct pages, CreateNextPageEndPosition should move
-  // to the end of the document, as if it's one large page.
+  // to the end of the whole content, as if it's one large page.
   test_position = text_position->CreateNextPageEndPosition(
       AXBoundaryBehavior::StopIfAlreadyAtBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -5001,7 +5003,7 @@ TEST_F(AXPositionTest, CreatePagePositionWithNonPaginatedDocument) {
   EXPECT_EQ(6, test_position->text_offset());
 
   // CreatePreviousPageStartPosition should move back to the beginning of the
-  // document
+  // whole content.
   test_position = test_position->CreatePreviousPageStartPosition(
       AXBoundaryBehavior::CrossBoundary);
   EXPECT_NE(nullptr, test_position);
@@ -5031,37 +5033,37 @@ TEST_F(AXPositionTest, CreatePagePositionWithNonPaginatedDocument) {
   EXPECT_TRUE(test_position->IsNullPosition());
 }
 
-TEST_F(AXPositionTest, CreatePositionAtStartOfDocumentWithTreePosition) {
+TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), root_.id, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position =
-      tree_position->CreatePositionAtStartOfDocument();
+      tree_position->CreatePositionAtStartOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(root_.id, test_position->anchor_id());
 
   tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
                                                      1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
-  test_position = tree_position->CreatePositionAtStartOfDocument();
+  test_position = tree_position->CreatePositionAtStartOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(root_.id, test_position->anchor_id());
 
   tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), inline_box1_.id, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
-  test_position = tree_position->CreatePositionAtStartOfDocument();
+  test_position = tree_position->CreatePositionAtStartOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(root_.id, test_position->anchor_id());
 }
 
-TEST_F(AXPositionTest, CreatePositionAtStartOfDocumentWithTextPosition) {
+TEST_F(AXPositionTest, CreatePositionAtStartOfContenttPosition) {
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
   TestPositionType test_position =
-      text_position->CreatePositionAtStartOfDocument();
+      text_position->CreatePositionAtStartOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(root_.id, test_position->anchor_id());
 
@@ -5069,53 +5071,53 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfDocumentWithTextPosition) {
       GetTreeID(), inline_box1_.id, 1 /* text_offset */,
       ax::mojom::TextAffinity::kUpstream);
   ASSERT_NE(nullptr, text_position);
-  test_position = text_position->CreatePositionAtStartOfDocument();
+  test_position = text_position->CreatePositionAtStartOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(root_.id, test_position->anchor_id());
   // Affinity should have been reset to the default value.
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
 }
 
-TEST_F(AXPositionTest, CreatePositionAtEndOfDocumentWithNullPosition) {
+TEST_F(AXPositionTest, CreatePositionAtEndOfContentlPosition) {
   TestPositionType null_position = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, null_position);
   TestPositionType test_position =
-      null_position->CreatePositionAtEndOfDocument();
+      null_position->CreatePositionAtEndOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsNullPosition());
 }
 
-TEST_F(AXPositionTest, CreatePositionAtEndOfDocumentWithTreePosition) {
+TEST_F(AXPositionTest, CreatePositionAtEndOfContentePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), root_.id, 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position =
-      tree_position->CreatePositionAtEndOfDocument();
+      tree_position->CreatePositionAtEndOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
 
   tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
                                                      1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
-  test_position = tree_position->CreatePositionAtEndOfDocument();
+  test_position = tree_position->CreatePositionAtEndOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
 
   tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), inline_box1_.id, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
-  test_position = tree_position->CreatePositionAtEndOfDocument();
+  test_position = tree_position->CreatePositionAtEndOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
 }
 
-TEST_F(AXPositionTest, CreatePositionAtEndOfDocumentWithTextPosition) {
+TEST_F(AXPositionTest, CreatePositionAtEndOfContenttPosition) {
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 6 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
   TestPositionType test_position =
-      text_position->CreatePositionAtEndOfDocument();
+      text_position->CreatePositionAtEndOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
 
@@ -5123,7 +5125,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfDocumentWithTextPosition) {
       GetTreeID(), inline_box1_.id, 5 /* text_offset */,
       ax::mojom::TextAffinity::kUpstream);
   ASSERT_NE(nullptr, text_position);
-  test_position = text_position->CreatePositionAtEndOfDocument();
+  test_position = text_position->CreatePositionAtEndOfContent();
   EXPECT_NE(nullptr, test_position);
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   // Affinity should have been reset to the default value.
@@ -5139,7 +5141,7 @@ TEST_F(AXPositionTest, AtLastNodeInTree) {
   EXPECT_FALSE(text_position->AsTreePosition()->AtLastNodeInTree());
 
   TestPositionType test_position =
-      text_position->CreatePositionAtEndOfDocument();
+      text_position->CreatePositionAtEndOfContent();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->AtLastNodeInTree());
   EXPECT_TRUE(test_position->AsTreePosition()->AtLastNodeInTree());
@@ -7108,8 +7110,8 @@ TEST_F(AXPositionTest, OperatorEquals) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position2);
   ASSERT_TRUE(text_position2->IsTextPosition());
-  // Validate that we're actually at the end of the document by normalizing to
-  // the equivalent "before character" position.
+  // Validate that we're actually at the end of the whole content by normalizing
+  // to the equivalent "before character" position.
   EXPECT_TRUE(
       text_position1->AsLeafTextPositionBeforeCharacter()->IsNullPosition());
   EXPECT_TRUE(
@@ -7291,17 +7293,17 @@ TEST_F(AXPositionTest, OperatorsLessThanAndGreaterThan) {
   EXPECT_GT(*text_position1, *text_position2);
   EXPECT_LT(*text_position2, *text_position1);
 
-  // A text position at the end of the document versus one that isn't.
+  // A text position at the end of the whole content versus one that isn't.
   text_position1 = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box2_.id, 6 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position1);
   ASSERT_TRUE(text_position1->IsTextPosition());
-  // Validate that we're actually at the end of the document by normalizing to
-  // the equivalent "before character" position.
+  // Validate that we're actually at the end of the whole content by normalizing
+  // to the equivalent "before character" position.
   EXPECT_TRUE(
       text_position1->AsLeafTextPositionBeforeCharacter()->IsNullPosition());
-  // Now create the not-at-end-of-document position and compare.
+  // Now create the not-at-end-of-content position and compare.
   text_position2 = AXNodePosition::CreateTextPosition(
       GetTreeID(), static_text2_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);

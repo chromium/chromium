@@ -194,8 +194,8 @@ bool BrowserAccessibility::IsDescendantOf(
   return false;
 }
 
-bool BrowserAccessibility::IsDocument() const {
-  return ui::IsDocument(GetRole());
+bool BrowserAccessibility::IsPlatformDocument() const {
+  return ui::IsPlatformDocument(GetRole());
 }
 
 bool BrowserAccessibility::IsIgnored() const {

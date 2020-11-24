@@ -57,9 +57,6 @@ AX_BASE_EXPORT bool IsControl(const ax::mojom::Role role);
 AX_BASE_EXPORT bool IsControlOnAndroid(const ax::mojom::Role role,
                                        bool isFocusable);
 
-// Returns true if the provided role belongs to a document.
-AX_BASE_EXPORT bool IsDocument(const ax::mojom::Role role);
-
 // Returns true if the provided role represents a dialog.
 AX_BASE_EXPORT bool IsDialog(const ax::mojom::Role role);
 
@@ -107,6 +104,11 @@ AX_BASE_EXPORT bool IsMenuItem(ax::mojom::Role role);
 
 // Returns true if the provided role belongs to a menu or related control.
 AX_BASE_EXPORT bool IsMenuRelated(const ax::mojom::Role role);
+
+// Returns true if the provided role belongs to a node that is at the root of
+// what most accessibility APIs consider to be a document, such as the root of a
+// webpage, an iframe, or a PDF.
+AX_BASE_EXPORT bool IsPlatformDocument(const ax::mojom::Role role);
 
 // Returns true if the provided role is presentational in nature, i.e. a node
 // whose implicit native role semantics will not be mapped to the accessibility

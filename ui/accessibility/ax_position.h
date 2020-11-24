@@ -53,6 +53,7 @@ enum class AXBoundaryBehavior {
 };
 
 // Describes in further detail what type of boundary a current position is on.
+//
 // For complex boundaries such as format boundaries, it can be useful to know
 // why a particular boundary was chosen.
 enum class AXBoundaryType {
@@ -60,10 +61,12 @@ enum class AXBoundaryType {
   kNone,
   // At a unit boundary (e.g. a format boundary).
   kUnitBoundary,
-  // At the start of a document.
-  kDocumentStart,
-  // At the end of a document.
-  kDocumentEnd
+  // At the start of the whole content, possibly spanning multiple accessibility
+  // trees.
+  kContentStart,
+  // At the end of the whole content, possibly spanning multiple accessibility
+  // trees.
+  kContentEnd
 };
 
 // When converting to an unignored position, determines how to adjust the new
@@ -615,16 +618,16 @@ class AXPosition {
   // |AtStartOfParagraph| is asymmetric from |AtEndOfParagraph| because of
   // trailing whitespace collapse rules.
   // The start of a paragraph should be a leaf text position (or equivalent),
-  // either at the start of the document, or at the start of the next leaf text
-  // position from the one representing the end of the previous paragraph.
+  // either at the start of the whole content, or at the start of the next leaf
+  // text position from the one representing the end of the previous paragraph.
   // A position |AsLeafTextPosition| is the start of a paragraph if all of the
   // following are true :
   // 1. The current leaf text position must be an unignored position at
   //    the start of an anchor.
   // 2. The current position is not whitespace only, unless it is also
-  //    the first leaf text position within the document.
+  //    the first leaf text position within the whole content.
   // 3. Either (a) the current leaf text position is the first leaf text
-  //    position in the document, or (b) there are no line breaking
+  //    position in the whole content, or (b) there are no line breaking
   //    objects between it and the previous non-whitespace leaf text
   //    position.
   bool AtStartOfParagraph() const {
@@ -642,14 +645,14 @@ class AXPosition {
           return false;
 
         // 2. The current position is not whitespace only, unless it is also
-        //    the first leaf text position within the document.
+        //    the first leaf text position within the whole content.
         if (text_position->IsInWhiteSpace()) {
           return text_position->CreatePreviousLeafTextPosition()
               ->IsNullPosition();
         }
 
         // 3. Either (a) the current leaf text position is the first leaf text
-        //    position in the document, or (b) there are no line breaking
+        //    position in the whole content, or (b) there are no line breaking
         //    objects between it and the previous non-whitespace leaf text
         //    position.
         //
@@ -658,7 +661,7 @@ class AXPosition {
         // If a valid position was found, then this position cannot be
         // the start of a paragraph.
         // This will return a null position when an anchor movement would
-        // cross a paragraph boundary, or the start of document was reached.
+        // cross a paragraph boundary, or the start of content was reached.
         bool crossed_line_breaking_object_token = false;
         const AbortMovePredicate abort_move_predicate =
             base::BindRepeating(&AbortMoveAtParagraphBoundary,
@@ -685,14 +688,14 @@ class AXPosition {
   // |AtEndOfParagraph| is asymmetric from |AtStartOfParagraph| because of
   // trailing whitespace collapse rules.
   // The end of a paragraph should be a leaf text position (or equivalent),
-  // either at the end of the document, or at the end of the previous leaf text
-  // position from the one representing the start of the next paragraph.
-  // A position |AsLeafTextPosition| is the end of a paragraph if all of the
+  // either at the end of the whole content, or at the end of the previous leaf
+  // text position from the one representing the start of the next paragraph. A
+  // position |AsLeafTextPosition| is the end of a paragraph if all of the
   // following are true :
   // 1. The current leaf text position must be an unignored position at
   //    the end of an anchor.
   // 2. Either (a) the current leaf text position is the last leaf text
-  //    position in the document, or (b) there are no line breaking
+  //    position in the whole content, or (b) there are no line breaking
   //    objects between it and the next leaf text position except when
   //    the next leaf text position is whitespace only since whitespace
   //    must be collapsed.
@@ -716,7 +719,7 @@ class AXPosition {
           return false;
 
         // 2. Either (a) the current leaf text position is the last leaf text
-        //    position in the document, or (b) there are no line breaking
+        //    position in the whole content, or (b) there are no line breaking
         //    objects between it and the next leaf text position except when
         //    the next leaf text position is whitespace only since whitespace
         //    must be collapsed.
@@ -728,7 +731,7 @@ class AXPosition {
         // |CreateNextTextAnchorPosition| + |AbortMoveAtParagraphBoundary|
         // will return a null position when an anchor movement would
         // cross a paragraph boundary and there is no doubt that it is the end
-        // of a paragraph, or the end of document was reached.
+        // of a paragraph, or the end of content was reached.
         // There are some fringe cases related to whitespace collapse that
         // cannot be handled easily with only |AbortMoveAtParagraphBoundary|.
         bool crossed_line_breaking_object_token = false;
@@ -769,6 +772,8 @@ class AXPosition {
     }
   }
 
+  // Page boundaries are only supported in certain content types, e.g. PDF
+  // documents.
   bool AtStartOfPage() const {
     AXPositionInstance text_position = AsLeafTextPosition();
     switch (text_position->kind_) {
@@ -786,7 +791,7 @@ class AXPosition {
         // If a valid position was found, then this position cannot be
         // the start of a page.
         // This will return a null position when an anchor movement would
-        // cross a page boundary, or the start of document was reached.
+        // cross a page boundary, or the start of content was reached.
         AXPositionInstance previous_text_position =
             text_position->CreatePreviousTextAnchorPosition(
                 base::BindRepeating(&AbortMoveAtPageBoundary));
@@ -795,6 +800,8 @@ class AXPosition {
     }
   }
 
+  // Page boundaries are only supported in certain content types, e.g. PDF
+  // documents.
   bool AtEndOfPage() const {
     AXPositionInstance text_position = AsLeafTextPosition();
     switch (text_position->kind_) {
@@ -812,7 +819,7 @@ class AXPosition {
         // If a valid position was found, then this position cannot be
         // the end of a page.
         // This will return a null position when an anchor movement would
-        // cross a page boundary, or the end of document was reached.
+        // cross a page boundary, or the end of content was reached.
         AXPositionInstance next_text_position =
             text_position->CreateNextTextAnchorPosition(
                 base::BindRepeating(&AbortMoveAtPageBoundary));
@@ -821,24 +828,24 @@ class AXPosition {
     }
   }
 
+  // Returns true if this position is at the start of the current accessibility
+  // tree, as indicated by its |tree_id_|. Note that the current webpage could
+  // be made up of multiple accessibility trees stitched together, e.g. an
+  // out-of-process iframe will be in its own accessibility tree.
   bool AtStartOfAXTree() const {
-    if (IsNullPosition())
+    if (IsNullPosition() || !AtStartOfAnchor())
       return false;
 
-    if (AtStartOfAnchor()) {
-      AXPositionInstance previous_anchor = CreatePreviousAnchorPosition();
+    AXPositionInstance previous_anchor = CreatePreviousAnchorPosition();
+    // The start of the whole content should also be the start of an AXTree.
+    if (previous_anchor->IsNullPosition())
+      return true;
 
-      // Consider the start of the document as the start of an AXTree.
-      if (previous_anchor->IsNullPosition())
-        return true;
-      else
-        return previous_anchor->tree_id() != tree_id();
-    }
-    return false;
+    return previous_anchor->tree_id() != tree_id();
   }
 
   // Returns true if this position is at the end of the current accessibility
-  // tree, as indicated by its |tree_id_|. Note that the current document could
+  // tree, as indicated by its |tree_id_|. Note that the current webpage could
   // be made up of multiple accessibility trees stitched together, e.g. an
   // out-of-process iframe will be in its own accessibility tree.
   bool AtEndOfAXTree() const {
@@ -846,8 +853,7 @@ class AXPosition {
       return false;
 
     AXPositionInstance next_anchor = CreateNextAnchorPosition();
-    // Consider the end of the document to also signify the end of the current
-    // accessibility tree.
+    // The end of the whole content should also be the end of an AXTree.
     if (next_anchor->IsNullPosition())
       return true;
 
@@ -862,7 +868,7 @@ class AXPosition {
 
     // Treat the first iterable node as a format boundary.
     if (CreatePreviousLeafTreePosition()->IsNullPosition())
-      return AXBoundaryType::kDocumentStart;
+      return AXBoundaryType::kContentStart;
 
     // Ignored positions cannot be format boundaries.
     if (IsIgnored())
@@ -895,7 +901,7 @@ class AXPosition {
 
     // Treat the last iterable node as a format boundary
     if (CreateNextLeafTreePosition()->IsNullPosition())
-      return AXBoundaryType::kDocumentEnd;
+      return AXBoundaryType::kContentEnd;
 
     // Ignored positions cannot be format boundaries.
     if (IsIgnored())
@@ -964,19 +970,26 @@ class AXPosition {
     }
   }
 
-  bool AtStartOfDocument() const {
+  // Returns true if this position is at the start of all content. This might
+  // refer to e.g. a single webpage (made up of multiple iframes), or a PDF
+  // document. Note that the current webpage could be made up of multiple
+  // accessibility trees stitched together, so even though a position could be
+  // at the start of a specific accessibility tree, it might not be at the start
+  // of the whole content.
+  bool AtStartOfContent() const {
     if (IsNullPosition())
       return false;
-    return IsDocument(GetAnchorRole()) && AtStartOfAnchor();
+    return GetAnchorRole() == ax::mojom::Role::kRootWebArea &&
+           AtStartOfAnchor();
   }
 
-  // Returns true if this position is at the end of the current document. A
-  // document represents a single webpage (made up of multiple iframes), or a
-  // PDF, for example. Note that the current document could be made up of
-  // multiple accessibility trees stitched together, so even though a position
-  // could be at the end of a specific accessibility tree, it might not be at
-  // the end of the whole document yet.
-  bool AtEndOfDocument() const {
+  // Returns true if this position is at the end of all content. This might
+  // refer to e.g. a single webpage (made up of multiple iframes), or a PDF
+  // document. Note that the current webpage could be made up of multiple
+  // accessibility trees stitched together, so even though a position could be
+  // at the end of a specific accessibility tree, it might not be at the end of
+  // the whole content.
+  bool AtEndOfContent() const {
     if (IsNullPosition())
       return false;
     return AtLastNodeInTree() && AtEndOfAnchor();
@@ -988,7 +1001,8 @@ class AXPosition {
 
     // Avoid a potentionally expensive MaxTextOffset call by only using tree
     // positions. The only thing that matters is whether our anchor_id_ is at
-    // the last anchor of the document, so we're free to ignore text_offset_.
+    // the last anchor of the whole content, so we're free to ignore
+    // |text_offset_|.
     AXPositionInstance tree_position =
         CreateTreePosition(tree_id_, anchor_id_, 0);
     return tree_position->CreateNextAnchorPosition()->IsNullPosition();
@@ -1667,17 +1681,17 @@ class AXPosition {
 
       case ax::mojom::TextBoundary::kWebPage:
         DCHECK_EQ(boundary_behavior, AXBoundaryBehavior::CrossBoundary)
-            << "We can't reach the start of the document if we are disallowed "
-               "from crossing boundaries.";
+            << "We can't reach the start of the whole contents if we are "
+               "disallowed from crossing boundaries.";
         switch (direction) {
           case ax::mojom::MoveDirection::kNone:
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position = CreatePositionAtStartOfDocument();
+            resulting_position = CreatePositionAtStartOfContent();
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreatePositionAtEndOfDocument();
+            resulting_position = CreatePositionAtEndOfContent();
             break;
         }
         break;
@@ -1808,19 +1822,15 @@ class AXPosition {
     return next_position->CreatePositionAtEndOfAnchor();
   }
 
-  // "document" is defined here as a single, top-level, navigatable unit from
-  //  a user's perspective. This means that all iframes are part of a single
-  // "document" that contains the top-level navigatable page. So this method
-  // will break out of an iframe and return a position at the start of the
-  // top-level document.
+  // Creates a position at the start of all content, e.g. at the start of the
+  // whole webpage or PDF document.
   //
-  // Note that this definition is different than HTML's definition of
-  // "document", where each iframe has its own document object. For a similar
-  // method that stops at iframe boundaries, see
-  // CreatePositionAtStartOfAXTree().
-  AXPositionInstance CreatePositionAtStartOfDocument() const {
+  // Note that this method will break out of an iframe and return a position at
+  // the start of the top-level document. For a similar method that stops at
+  // iframe boundaries, see "CreatePositionAtStartOfAXTree()".
+  AXPositionInstance CreatePositionAtStartOfContent() const {
     AXPositionInstance position =
-        AsTreePosition()->CreateDocumentAncestorPosition();
+        AsTreePosition()->CreateRootWebAreaAncestorPosition();
     if (!position->IsNullPosition()) {
       position = position->CreatePositionAtStartOfAnchor();
       if (IsTextPosition())
@@ -1829,18 +1839,15 @@ class AXPosition {
     return position;
   }
 
-  // "document" is defined here as a single, top-level, navigatable unit from
-  //  a user's perspective. This means that all iframes are part of a single
-  // "document" that contains the top-level navigatable page. So this method
-  // will break out of an iframe and return a position at the end of the
-  // top-level document.
+  // Creates a position at the end of all content, e.g. at the end of the whole
+  // webpage or PDF document.
   //
-  // Note that this definition is different than HTML's definition of
-  // "document", where each iframe has its own document object. For a similar
-  // method that stops at iframe boundaries, see CreatePositionAtEndOfAXTree().
-  AXPositionInstance CreatePositionAtEndOfDocument() const {
+  // Note that this method will break out of an iframe and return a position at
+  // the end of the top-level document. For a similar method that stops at
+  // iframe boundaries, see "CreatePositionAtEndOfAXTree()".
+  AXPositionInstance CreatePositionAtEndOfContent() const {
     AXPositionInstance position =
-        AsTreePosition()->CreateDocumentAncestorPosition();
+        AsTreePosition()->CreateRootWebAreaAncestorPosition();
     if (!position->IsNullPosition()) {
       while (!position->IsLeaf()) {
         position =
@@ -2466,7 +2473,7 @@ class AXPosition {
     if (boundary_type != AXBoundaryType::kNone) {
       if (boundary_behavior == AXBoundaryBehavior::StopIfAlreadyAtBoundary ||
           (boundary_behavior == AXBoundaryBehavior::StopAtLastAnchorBoundary &&
-           boundary_type == AXBoundaryType::kDocumentStart)) {
+           boundary_type == AXBoundaryType::kContentStart)) {
         AXPositionInstance clone = Clone();
         // In order to make equality checks simpler, affinity should be reset so
         // that we would get consistent output from this function regardless of
@@ -2474,7 +2481,7 @@ class AXPosition {
         clone->affinity_ = ax::mojom::TextAffinity::kDownstream;
         return clone;
       } else if (boundary_behavior == AXBoundaryBehavior::CrossBoundary &&
-                 boundary_type == AXBoundaryType::kDocumentStart) {
+                 boundary_type == AXBoundaryType::kContentStart) {
         // If we're at a format boundary and there are no more text positions
         // to traverse, return a null position for cross-boundary moves.
         return CreateNullPosition();
@@ -2495,9 +2502,10 @@ class AXPosition {
       previous_tree_position = tree_position->CreatePreviousLeafTreePosition();
     }
 
-    // The first position in the document is also a format start boundary, so we
-    // should not return NullPosition unless we started from that location.
-    while (boundary_type != AXBoundaryType::kDocumentStart &&
+    // The first position in the whole content is also a format start boundary,
+    // so we should not return NullPosition unless we started from that
+    // location.
+    while (boundary_type != AXBoundaryType::kContentStart &&
            !previous_tree_position->IsNullPosition() &&
            !tree_position->AtStartOfFormat()) {
       tree_position = std::move(previous_tree_position);
@@ -2530,7 +2538,7 @@ class AXPosition {
     if (boundary_type != AXBoundaryType::kNone) {
       if (boundary_behavior == AXBoundaryBehavior::StopIfAlreadyAtBoundary ||
           (boundary_behavior == AXBoundaryBehavior::StopAtLastAnchorBoundary &&
-           boundary_type == AXBoundaryType::kDocumentEnd)) {
+           boundary_type == AXBoundaryType::kContentEnd)) {
         AXPositionInstance clone = Clone();
         // In order to make equality checks simpler, affinity should be reset so
         // that we would get consistent output from this function regardless of
@@ -2538,7 +2546,7 @@ class AXPosition {
         clone->affinity_ = ax::mojom::TextAffinity::kDownstream;
         return clone;
       } else if (boundary_behavior == AXBoundaryBehavior::CrossBoundary &&
-                 boundary_type == AXBoundaryType::kDocumentEnd) {
+                 boundary_type == AXBoundaryType::kContentEnd) {
         // If we're at a format boundary and there are no more text positions
         // to traverse, return a null position for cross-boundary moves.
         return CreateNullPosition();
@@ -2560,9 +2568,9 @@ class AXPosition {
                                ->CreatePositionAtEndOfAnchor();
     }
 
-    // The last position in the document is also a format end boundary, so we
-    // should not return NullPosition unless we started from that location.
-    while (boundary_type != AXBoundaryType::kDocumentEnd &&
+    // The last position in the whole content is also a format end boundary, so
+    // we should not return NullPosition unless we started from that location.
+    while (boundary_type != AXBoundaryType::kContentEnd &&
            !next_tree_position->IsNullPosition() &&
            !tree_position->AtEndOfFormat()) {
       tree_position = std::move(next_tree_position);
@@ -2830,9 +2838,9 @@ class AXPosition {
         AdjustmentBehaviorFromBoundaryDirection(move_direction));
     // If there are no unignored positions in |move_direction| then
     // |text_position| is anchored in ignored content at the start or end
-    // of the document.
+    // of the whole content.
     // For StopAtLastAnchorBoundary, try to adjust in the opposite direction
-    // to return a position within the document just before crossing into
+    // to return a position within the whole content just before crossing into
     // the ignored content. This will be the last unignored anchor boundary.
     if (unignored_position->IsNullPosition() &&
         boundary_behavior == AXBoundaryBehavior::StopAtLastAnchorBoundary) {
@@ -2982,9 +2990,9 @@ class AXPosition {
         AdjustmentBehaviorFromBoundaryDirection(move_direction));
     // If there are no unignored positions in |move_direction| then
     // |text_position| is anchored in ignored content at the start or end
-    // of the document.
+    // of the whole content.
     // For StopAtLastAnchorBoundary, try to adjust in the opposite direction
-    // to return a position within the document just before crossing into
+    // to return a position within the whole content just before crossing into
     // the ignored content. This will be the last unignored anchor boundary.
     if (unignored_position->IsNullPosition() &&
         boundary_behavior == AXBoundaryBehavior::StopAtLastAnchorBoundary) {
@@ -3070,16 +3078,17 @@ class AXPosition {
 
     if (normalized_this_position->IsNullPosition()) {
       if (normalized_other_position->IsNullPosition()) {
-        // Both positions normalized to a position past the end of the document.
+        // Both positions normalized to a position past the end of the whole
+        // content.
         DCHECK_EQ(SlowCompareTo(other).value(), 0);
         return 0;
       }
-      // |this| normalized to a position past the end of the document.
+      // |this| normalized to a position past the end of the whole content.
       DCHECK_GT(SlowCompareTo(other).value(), 0);
       return 1;
     }
     if (normalized_other_position->IsNullPosition()) {
-      // |other| normalized to a position past the end of the document.
+      // |other| normalized to a position past the end of the whole content.
       DCHECK_LT(SlowCompareTo(other).value(), 0);
       return -1;
     }
@@ -3436,7 +3445,7 @@ class AXPosition {
       return false;
     }
 
-    // All unignored leaf nodes in the AXTree except document and text
+    // All unignored leaf nodes in the AXTree except web area and text
     // nodes should be replaced by the embedded object character. Also, nodes
     // that only have ignored children (e.g., a button that contains only an
     // empty div) need to be treated as leaf nodes.
@@ -3445,7 +3454,7 @@ class AXPosition {
     // infinite loop. However, GetAnchor()->IsIgnored() is sufficient here
     // because we know that the anchor at this position doesn't have an
     // unignored child, making this a leaf tree or text position.
-    return !GetAnchor()->IsIgnored() && !IsDocument(GetAnchorRole()) &&
+    return !GetAnchor()->IsIgnored() && !IsPlatformDocument(GetAnchorRole()) &&
            !IsInTextObject() && !IsIframe(GetAnchorRole());
   }
 
@@ -4048,6 +4057,9 @@ class AXPosition {
   }
 
   // AbortMovePredicate function used to detect page boundaries.
+  //
+  // Depending on the type of content, it might be separated into a number of
+  // pages. For example, a PDF document may expose multiple pages.
   static bool AbortMoveAtPageBoundary(const AXPosition& move_from,
                                       const AXPosition& move_to,
                                       const AXMoveType move_type,
@@ -4144,10 +4156,10 @@ class AXPosition {
     return position->GetWordEndOffsets();
   }
 
-  AXPositionInstance CreateDocumentAncestorPosition() const {
+  AXPositionInstance CreateRootWebAreaAncestorPosition() const {
     AXPositionInstance iterator = Clone();
     while (!iterator->IsNullPosition()) {
-      if (IsDocument(iterator->GetAnchorRole()) &&
+      if (iterator->GetAnchorRole() == ax::mojom::Role::kRootWebArea &&
           iterator->CreateParentPosition()->IsNullPosition()) {
         break;
       }

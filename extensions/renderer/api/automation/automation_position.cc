@@ -48,8 +48,8 @@ gin::ObjectTemplateBuilder AutomationPosition::GetObjectTemplateBuilder(
       .SetMethod("atEndOfPage", &AutomationPosition::AtEndOfPage)
       .SetMethod("atStartOfFormat", &AutomationPosition::AtStartOfFormat)
       .SetMethod("atEndOfFormat", &AutomationPosition::AtEndOfFormat)
-      .SetMethod("atStartOfDocument", &AutomationPosition::AtStartOfDocument)
-      .SetMethod("atEndOfDocument", &AutomationPosition::AtEndOfDocument)
+      .SetMethod("atStartOfContent", &AutomationPosition::AtStartOfContent)
+      .SetMethod("atEndOfContent", &AutomationPosition::AtEndOfContent)
       .SetMethod("asTreePosition", &AutomationPosition::AsTreePosition)
       .SetMethod("asTextPosition", &AutomationPosition::AsTextPosition)
       .SetMethod("asLeafTextPosition", &AutomationPosition::AsLeafTextPosition)
@@ -57,10 +57,10 @@ gin::ObjectTemplateBuilder AutomationPosition::GetObjectTemplateBuilder(
                  &AutomationPosition::MoveToPositionAtStartOfAnchor)
       .SetMethod("moveToPositionAtEndOfAnchor",
                  &AutomationPosition::MoveToPositionAtEndOfAnchor)
-      .SetMethod("moveToPositionAtStartOfDocument",
-                 &AutomationPosition::MoveToPositionAtStartOfDocument)
-      .SetMethod("moveToPositionAtEndOfDocument",
-                 &AutomationPosition::MoveToPositionAtEndOfDocument)
+      .SetMethod("moveToPositionAtStartOfContent",
+                 &AutomationPosition::MoveToPositionAtStartOfContent)
+      .SetMethod("moveToPositionAtEndOfContent",
+                 &AutomationPosition::MoveToPositionAtEndOfContent)
       .SetMethod("moveToParentPosition",
                  &AutomationPosition::MoveToParentPosition)
       .SetMethod("moveToNextLeafTreePosition",
@@ -207,12 +207,12 @@ bool AutomationPosition::AtEndOfFormat(gin::Arguments* arguments) {
   return position_->AtEndOfFormat();
 }
 
-bool AutomationPosition::AtStartOfDocument(gin::Arguments* arguments) {
-  return position_->AtStartOfDocument();
+bool AutomationPosition::AtStartOfContent(gin::Arguments* arguments) {
+  return position_->AtStartOfContent();
 }
 
-bool AutomationPosition::AtEndOfDocument(gin::Arguments* arguments) {
-  return position_->AtEndOfDocument();
+bool AutomationPosition::AtEndOfContent(gin::Arguments* arguments) {
+  return position_->AtEndOfContent();
 }
 
 void AutomationPosition::AsTreePosition(gin::Arguments* arguments) {
@@ -237,14 +237,14 @@ void AutomationPosition::MoveToPositionAtEndOfAnchor(
   position_ = position_->CreatePositionAtEndOfAnchor();
 }
 
-void AutomationPosition::MoveToPositionAtStartOfDocument(
+void AutomationPosition::MoveToPositionAtStartOfContent(
     gin::Arguments* arguments) {
-  position_ = position_->CreatePositionAtStartOfDocument();
+  position_ = position_->CreatePositionAtStartOfContent();
 }
 
-void AutomationPosition::MoveToPositionAtEndOfDocument(
+void AutomationPosition::MoveToPositionAtEndOfContent(
     gin::Arguments* arguments) {
-  position_ = position_->CreatePositionAtEndOfDocument();
+  position_ = position_->CreatePositionAtEndOfContent();
 }
 
 void AutomationPosition::MoveToParentPosition(gin::Arguments* arguments) {

@@ -242,7 +242,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
       // no word boundaries, like whitespaces and punctuation. When it happens,
       // move the position back to the start of the document.
       if (start()->IsNullPosition())
-        SetStart(start_backup->CreatePositionAtStartOfDocument());
+        SetStart(start_backup->CreatePositionAtStartOfContent());
 
       // Since start_ is already located at a word boundary, we need to cross it
       // in order to move to the next one. Because Windows ATs behave
@@ -284,9 +284,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
     }
       FALLTHROUGH;
     case TextUnit_Document:
-      SetStart(
-          start()->CreatePositionAtStartOfDocument()->AsLeafTextPosition());
-      SetEnd(start()->CreatePositionAtEndOfDocument());
+      SetStart(start()->CreatePositionAtStartOfContent()->AsLeafTextPosition());
+      SetEnd(start()->CreatePositionAtEndOfContent());
       break;
     default:
       return UIA_E_NOTSUPPORTED;
@@ -681,7 +680,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Move(TextUnit unit,
     SetEnd(start()->Clone());
     if (!is_degenerate_range) {
       bool forwards = count > 0;
-      if (forwards && start()->AtEndOfDocument()) {
+      if (forwards && start()->AtEndOfContent()) {
         // The start is at the end of the document, so move the start backward
         // by one text unit to expand the text range from the degenerate range
         // state.
@@ -1174,11 +1173,11 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByDocument(
   DCHECK_NE(count, 0);
 
   if (count < 0) {
-    *units_moved = !endpoint->AtStartOfDocument() ? -1 : 0;
-    return endpoint->CreatePositionAtStartOfDocument();
+    *units_moved = !endpoint->AtStartOfContent() ? -1 : 0;
+    return endpoint->CreatePositionAtStartOfContent();
   }
-  *units_moved = !endpoint->AtEndOfDocument() ? 1 : 0;
-  return endpoint->CreatePositionAtEndOfDocument();
+  *units_moved = !endpoint->AtEndOfContent() ? 1 : 0;
+  return endpoint->CreatePositionAtEndOfContent();
 }
 
 AXPlatformNodeTextRangeProviderWin::AXPositionInstance

@@ -166,7 +166,7 @@ bool SearchForExactlyOneInnerImage(WebAXObject obj,
     *inner_image = obj;
   } else {
     // If we found something else with a name, fail.
-    if (!ui::IsDocument(obj.Role()) && !ui::IsLink(obj.Role())) {
+    if (!ui::IsPlatformDocument(obj.Role()) && !ui::IsLink(obj.Role())) {
       blink::WebString web_name = obj.GetName();
       if (!base::ContainsOnlyChars(web_name.Utf8(), base::kWhitespaceASCII)) {
         return false;
@@ -972,7 +972,7 @@ void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
   // image (searching only to a max depth of 2), and the link doesn't have
   // accessible text from an attribute like aria-label, then annotate the
   // link/web area with the image's annotation, too.
-  if ((ui::IsLink(dst->role) || ui::IsDocument(dst->role)) &&
+  if ((ui::IsLink(dst->role) || ui::IsPlatformDocument(dst->role)) &&
       dst->GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
     WebAXObject inner_image;
     if (FindExactlyOneInnerImageInMaxDepthThree(src, &inner_image))

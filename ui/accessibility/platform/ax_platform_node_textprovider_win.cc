@@ -300,9 +300,9 @@ ITextRangeProvider* AXPlatformNodeTextProviderWin::GetRangeFromChild(
       descendant->GetDelegate()->CreateTextPositionAt(0)->AsLeafTextPosition();
 
   AXNodePosition::AXPositionInstance end;
-  if (descendant->IsDocument()) {
+  if (descendant->IsPlatformDocument()) {
     // Fast path for getting the range of the web root.
-    end = start->CreatePositionAtEndOfDocument();
+    end = start->CreatePositionAtEndOfContent();
   } else if (descendant->GetChildCount() == 0) {
     end = descendant->GetDelegate()
               ->CreateTextPositionAt(0)

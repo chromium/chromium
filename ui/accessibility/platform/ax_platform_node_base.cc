@@ -599,8 +599,8 @@ bool AXPlatformNodeBase::SetHypertextSelection(int start_offset,
   return delegate_->SetHypertextSelection(start_offset, end_offset);
 }
 
-bool AXPlatformNodeBase::IsDocument() const {
-  return ui::IsDocument(GetData().role);
+bool AXPlatformNodeBase::IsPlatformDocument() const {
+  return ui::IsPlatformDocument(GetData().role);
 }
 
 bool AXPlatformNodeBase::IsSelectionItemSupported() const {

@@ -107,7 +107,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // Return true if this object is equal to or a descendant of |ancestor|.
   bool IsDescendantOf(const BrowserAccessibility* ancestor) const;
 
-  bool IsDocument() const;
+  // Returns true if this object is at the root of what most accessibility APIs
+  // consider to be a document, such as the root of a webpage, an iframe, or a
+  // PDF.
+  bool IsPlatformDocument() const;
 
   bool IsIgnored() const;
 

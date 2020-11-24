@@ -204,17 +204,6 @@ bool IsControlOnAndroid(const ax::mojom::Role role, bool isFocusable) {
   }
 }
 
-bool IsDocument(const ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kDocument:
-    case ax::mojom::Role::kRootWebArea:
-    case ax::mojom::Role::kWebArea:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool IsDialog(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kAlertDialog:
@@ -387,6 +376,19 @@ bool IsMenuRelated(const ax::mojom::Role role) {
     case ax::mojom::Role::kMenuItemRadio:
     case ax::mojom::Role::kMenuListOption:
     case ax::mojom::Role::kMenuListPopup:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsPlatformDocument(const ax::mojom::Role role) {
+  // "ax::mojom::Role::kDocument" is excluded because it refers to nodes with
+  // the ARIA document role. These are not at the root of an HTML document. They
+  // can appear anywhere within an HTML document, but never at its root.
+  switch (role) {
+    case ax::mojom::Role::kRootWebArea:
+    case ax::mojom::Role::kWebArea:
       return true;
     default:
       return false;

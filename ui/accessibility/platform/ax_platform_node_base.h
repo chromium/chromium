@@ -372,7 +372,10 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // Uses the delegate to calculate this node's SetSize.
   base::Optional<int> GetSetSize() const;
 
-  bool IsDocument() const;
+  // Returns true if this object is at the root of what most accessibility APIs
+  // consider to be a document, such as the root of a webpage, an iframe, or a
+  // PDF.
+  bool IsPlatformDocument() const;
 
  protected:
   bool IsSelectionItemSupported() const;

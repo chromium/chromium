@@ -247,7 +247,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
           // Fire the event on the root object, which in the absence of a text
           // field ancestor is the closest UIA text provider (other than the
           // focused object) in which the selection has changed.
-          DCHECK(node->IsDocument());
+          DCHECK(node->IsPlatformDocument());
           EnqueueSelectionChangedEvent(*node);
         }
       }
@@ -911,7 +911,8 @@ void BrowserAccessibilityManagerWin::FinalizeAccessibilityEvents() {
     // IA2_EVENT_TEXT_CARET_MOVED events should not be fired on the document
     // object, just because a selection has been made within it, because they
     // would be both unnecessary and noisy.
-    if (!event_node->IsDocument() && event_node->HasVisibleCaretOrSelection()) {
+    if (!event_node->IsPlatformDocument() &&
+        event_node->HasVisibleCaretOrSelection()) {
       FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, event_node);
     }
     if (ToBrowserAccessibilityWin(event_node)

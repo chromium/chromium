@@ -1932,7 +1932,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
                   /*expected_count*/ -2);
 }
 
-TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMovePage) {
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       DISABLED_TestITextRangeProviderMovePage) {
   Init(BuildAXTreeForMoveByPage());
   AXNode* root_node = GetRootAsAXNode();
 
@@ -3449,7 +3450,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_EQ(*GetEnd(text_range.Get()), *GetEnd(more_text_range.Get()));
 }
 
-TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderGetChildren) {
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       DISABLED_TestITextRangeProviderGetChildren) {
   // Set up ax tree with the following structure:
   //
   // ++1 kRootWebArea
@@ -5161,7 +5163,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, ElementNotAvailable) {
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
-       TestITextRangeProviderIgnoredNodes) {
+       DISABLED_TestITextRangeProviderIgnoredNodes) {
   // Parent Tree
   // 1
   // |

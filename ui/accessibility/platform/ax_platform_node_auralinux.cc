@@ -2380,7 +2380,7 @@ ImplementedAtkInterfaces AXPlatformNodeAuraLinux::GetGTypeInterfaceMask(
   if (data.IsRangeValueSupported())
     interface_mask.Add(ImplementedAtkInterfaces::Value::kValue);
 
-  if (ui::IsDocument(data.role))
+  if (ui::IsPlatformDocument(data.role))
     interface_mask.Add(ImplementedAtkInterfaces::Value::kDocument);
 
   if (IsImage(data.role))
