@@ -651,4 +651,8 @@ void WebRuntimeFeatures::EnableTargetBlankImpliesNoOpener(bool enable) {
   RuntimeEnabledFeatures::SetTargetBlankImpliesNoOpenerEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableCSSColorSchemeUARendering(bool enable) {
+  RuntimeEnabledFeatures::SetCSSColorSchemeUARenderingEnabled(enable);
+}
+
 }  // namespace blink

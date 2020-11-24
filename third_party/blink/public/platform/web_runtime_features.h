@@ -233,6 +233,8 @@ class WebRuntimeFeatures {
 
   BLINK_PLATFORM_EXPORT static void EnableParseUrlProtocolHandler(bool);
 
+  BLINK_PLATFORM_EXPORT static void EnableCSSColorSchemeUARendering(bool);
+
  private:
   WebRuntimeFeatures();
 };
