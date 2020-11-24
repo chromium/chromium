@@ -365,11 +365,8 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptInIsolatedWorld(
 
   v8::Context::Scope scope(script_state->GetContext());
 
-  v8::Local<v8::Value> evaluation_result = ExecuteScriptAndReturnValue(
-      script_state->GetContext(), source, base_url, sanitize_script_errors);
-  if (!evaluation_result.IsEmpty())
-    return evaluation_result;
-  return v8::Local<v8::Value>::New(GetIsolate(), v8::Undefined(GetIsolate()));
+  return ExecuteScriptAndReturnValue(script_state->GetContext(), source,
+                                     base_url, sanitize_script_errors);
 }
 
 scoped_refptr<DOMWrapperWorld>

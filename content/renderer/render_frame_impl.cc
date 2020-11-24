@@ -2622,7 +2622,7 @@ void RenderFrameImpl::JavaScriptIsolatedWorldRequest::Completed(
   }
 
   base::Value value;
-  if (!result.empty() && wants_result_) {
+  if (!result.empty() && !result.begin()->IsEmpty() && wants_result_) {
     // It's safe to always use the main world context when converting
     // here. V8ValueConverterImpl shouldn't actually care about the
     // context scope, and it switches to v8::Object's creation context
