@@ -228,7 +228,7 @@ interface ArcBridgeHost {
       pending_remote<SensorInstance> instance_ptr);
 
   // Notifies Chrome that the SharesheetInstance interface is ready.
-  [MinVersion=53] OnSharesheetInstanceReady@158(
+  [MinVersion=52] OnSharesheetInstanceReady@158(
                       pending_remote<SharesheetInstance> instance_remote);
 
   // Notifies Chrome that the SmartCardManagerInstance interface is ready.
