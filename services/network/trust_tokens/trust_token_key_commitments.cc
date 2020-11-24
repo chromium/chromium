@@ -51,8 +51,8 @@ ParseCommitmentsFromCommandLine() {
 mojom::TrustTokenKeyCommitmentResultPtr FilterCommitments(
     mojom::TrustTokenKeyCommitmentResultPtr result) {
   if (result) {
-    RetainSoonestToExpireTrustTokenKeys(
-        &result->keys, kMaximumConcurrentlyValidTrustTokenVerificationKeys);
+    size_t max_keys = TrustTokenMaxKeysForVersion(result->protocol_version);
+    RetainSoonestToExpireTrustTokenKeys(&result->keys, max_keys);
   }
 
   return result;

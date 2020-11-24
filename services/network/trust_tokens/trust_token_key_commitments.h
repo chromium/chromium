@@ -50,9 +50,8 @@ class TrustTokenKeyCommitments
   //
   // If |origin| is not suitable, or if no commitment result is found, returns
   // nullptr. Otherwise, returns the key commitment result stored for |origin|,
-  // with its verification keys filtered to contain at most
-  // |kMaximumConcurrentlyValidTrustTokenVerificationKeys| keys, none of
-  // which has yet expired.
+  // with its verification keys filtered to contain at most the maximum number
+  // of keys allowed for the protocol version, none of which has yet expired.
   //
   // If commitments for |origin| were passed both through a prior call to |Set|
   // and through the --additional-trust-token-key-commitments command-line

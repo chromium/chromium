@@ -13,14 +13,26 @@ namespace network {
 
 namespace {
 
-std::string GenerateValidVerificationKey() {
+enum KeyType {
+  kPmb,
+  kVoprf,
+};
+std::string GenerateValidVerificationKey(KeyType key_type) {
   std::string verification(TRUST_TOKEN_MAX_PUBLIC_KEY_SIZE, 'a'),
       signing(TRUST_TOKEN_MAX_PRIVATE_KEY_SIZE, 'a');
   size_t verification_len, signing_len;
+  const TRUST_TOKEN_METHOD* method;
+  switch (key_type) {
+    case kPmb:
+      method = TRUST_TOKEN_experiment_v2_pmb();
+      break;
+    case kVoprf:
+      method = TRUST_TOKEN_experiment_v2_voprf();
+      break;
+  }
   CHECK(TRUST_TOKEN_generate_key(
-      TRUST_TOKEN_experiment_v2_pmb(),
-      base::as_writable_bytes(base::make_span(signing)).data(), &signing_len,
-      signing.size(),
+      method, base::as_writable_bytes(base::make_span(signing)).data(),
+      &signing_len, signing.size(),
       base::as_writable_bytes(base::make_span(verification)).data(),
       &verification_len, verification.size(),
       /*id=*/0));
@@ -31,22 +43,40 @@ std::string GenerateValidVerificationKey() {
 
 }  // namespace
 
-TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimit) {
-  // Test that adding more than
-  // |kMaximumConcurrentlyValidTrustTokenVerificationKeys| many keys fails. This
-  // is essentially an integration test ensuring that
-  // kMaximumConcurrentlyValidTrustTokenVerificationKeys is no greater than
-  // BoringSSL's internally-configured maximum number of permitted keys.
+TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimitPmb) {
+  // Test that adding more than the number of support keys fails.
   BoringsslTrustTokenIssuanceCryptographer cryptographer;
   ASSERT_TRUE(cryptographer.Initialize(
       mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb,
       /*issuer_configured_batch_size=*/10));
 
-  for (size_t i = 0; i < kMaximumConcurrentlyValidTrustTokenVerificationKeys;
-       ++i) {
-    ASSERT_TRUE(cryptographer.AddKey(GenerateValidVerificationKey())) << i;
+  size_t max_keys = TrustTokenMaxKeysForVersion(
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb);
+  for (size_t i = 0; i < max_keys; ++i) {
+    ASSERT_TRUE(
+        cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kPmb)))
+        << i;
   }
-  EXPECT_FALSE(cryptographer.AddKey(GenerateValidVerificationKey()));
+  EXPECT_FALSE(
+      cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kPmb)));
+}
+
+TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimitVoprf) {
+  // Test that adding more than the number of support keys fails.
+  BoringsslTrustTokenIssuanceCryptographer cryptographer;
+  ASSERT_TRUE(cryptographer.Initialize(
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf,
+      /*issuer_configured_batch_size=*/10));
+
+  size_t max_keys = TrustTokenMaxKeysForVersion(
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf);
+  for (size_t i = 0; i < max_keys; ++i) {
+    ASSERT_TRUE(
+        cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kVoprf)))
+        << i;
+  }
+  EXPECT_FALSE(
+      cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kVoprf)));
 }
 
 }  // namespace network

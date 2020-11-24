@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
+#include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 
 namespace network {
 
@@ -57,16 +58,14 @@ constexpr int kTrustTokenPerIssuerTokenCapacity = 500;
 // an issuer).
 constexpr int kMaximumTrustTokenIssuanceBatchSize = 100;
 
-// When executing Trust Tokens issuance and redemption,
-// use at most |kMaximumConcurrentlyValidTrustTokenVerificationKeys| many
-// soonest-to-expire-but-unexpired keys from the available key commitments.
-constexpr int kMaximumConcurrentlyValidTrustTokenVerificationKeys = 3;
-
 // When to expire a signed redemption record, assuming that the issuer declined
 // to specify the optional expiry timestamp. This value was chosen in absence of
 // a specific reason to pick anything shorter; it could be revisited.
 constexpr base::Time kTrustTokenDefaultRedemptionRecordExpiry =
     base::Time::Max();
+
+// Returns the maximum number of keys supported by a protocol version.
+size_t TrustTokenMaxKeysForVersion(mojom::TrustTokenProtocolVersion version);
 
 }  // namespace network
 
