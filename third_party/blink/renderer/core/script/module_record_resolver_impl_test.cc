@@ -75,10 +75,8 @@ ModuleScript* ModuleRecordResolverImplTestModulator::GetFetchedModuleScript(
 ModuleScript* CreateReferrerModuleScript(Modulator* modulator,
                                          V8TestingScope& scope) {
   KURL js_url("https://example.com/referrer.js");
-  v8::Local<v8::Module> referrer_record = ModuleRecord::Compile(
-      scope.GetIsolate(), "import './target.js'; export const a = 42;", js_url,
-      js_url, ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> referrer_record = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "import './target.js'; export const a = 42;", js_url);
   KURL referrer_url("https://example.com/referrer.js");
   auto* referrer_module_script =
       JSModuleScript::CreateForTest(modulator, referrer_record, referrer_url);
@@ -89,10 +87,8 @@ ModuleScript* CreateTargetModuleScript(Modulator* modulator,
                                        V8TestingScope& scope,
                                        bool has_parse_error = false) {
   KURL js_url("https://example.com/target.js");
-  v8::Local<v8::Module> record = ModuleRecord::Compile(
-      scope.GetIsolate(), "export const pi = 3.14;", js_url, js_url,
-      ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> record = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "export const pi = 3.14;", js_url);
   KURL url("https://example.com/target.js");
   auto* module_script = JSModuleScript::CreateForTest(modulator, record, url);
   if (has_parse_error) {

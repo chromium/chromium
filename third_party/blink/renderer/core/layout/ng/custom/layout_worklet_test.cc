@@ -58,10 +58,8 @@ class LayoutWorkletTest : public PageTestBase, public ParametrizedModuleTest {
     EXPECT_TRUE(script_state);
 
     KURL js_url("https://example.com/worklet.js");
-    v8::Local<v8::Module> module = ModuleRecord::Compile(
-        script_state->GetIsolate(), source_code, js_url, js_url,
-        ScriptFetchOptions(), TextPosition::MinimumPosition(),
-        ASSERT_NO_EXCEPTION);
+    v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
+        script_state->GetIsolate(), source_code, js_url);
     EXPECT_FALSE(module.IsEmpty());
 
     ScriptValue exception =

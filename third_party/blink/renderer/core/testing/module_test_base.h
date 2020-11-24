@@ -9,12 +9,28 @@
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
+class ModuleTestBase {
+ public:
+  static v8::Local<v8::Module> CompileModule(
+      v8::Isolate*,
+      const char*,
+      const KURL&,
+      ExceptionState& state = DummyExceptionStateForTesting().ReturnThis());
+  static v8::Local<v8::Module> CompileModule(
+      v8::Isolate*,
+      String,
+      const KURL&,
+      ExceptionState& state = DummyExceptionStateForTesting().ReturnThis());
+};
+
 // Helper used to enable or disable top-level await in parametrized tests.
-class ParametrizedModuleTestBase {
+class ParametrizedModuleTestBase : public ModuleTestBase {
  protected:
   void SetUp(bool use_top_level_await);
   void TearDown() {}

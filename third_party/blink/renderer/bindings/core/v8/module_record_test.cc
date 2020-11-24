@@ -29,7 +29,7 @@ namespace {
 
 class TestModuleRecordResolver final : public ModuleRecordResolver {
  public:
-  TestModuleRecordResolver(v8::Isolate* isolate) : isolate_(isolate) {}
+  explicit TestModuleRecordResolver(v8::Isolate* isolate) : isolate_(isolate) {}
   ~TestModuleRecordResolver() override = default;
 
   size_t ResolveCount() const { return specifiers_.size(); }
@@ -114,19 +114,16 @@ class ModuleRecordTest : public ::testing::Test, public ParametrizedModuleTest {
 TEST_P(ModuleRecordTest, compileSuccess) {
   V8TestingScope scope;
   const KURL js_url("https://example.com/foo.js");
-  v8::Local<v8::Module> module = ModuleRecord::Compile(
-      scope.GetIsolate(), "export const a = 42;", js_url, js_url,
-      ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "export const a = 42;", js_url);
   ASSERT_FALSE(module.IsEmpty());
 }
 
 TEST_P(ModuleRecordTest, compileFail) {
   V8TestingScope scope;
   const KURL js_url("https://example.com/foo.js");
-  v8::Local<v8::Module> module = ModuleRecord::Compile(
-      scope.GetIsolate(), "123 = 456", js_url, js_url, ScriptFetchOptions(),
-      TextPosition::MinimumPosition(), scope.GetExceptionState());
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "123 = 456", js_url, scope.GetExceptionState());
   ASSERT_TRUE(module.IsEmpty());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 }
@@ -134,10 +131,9 @@ TEST_P(ModuleRecordTest, compileFail) {
 TEST_P(ModuleRecordTest, moduleRequests) {
   V8TestingScope scope;
   const KURL js_url("https://example.com/foo.js");
-  v8::Local<v8::Module> module = ModuleRecord::Compile(
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
       scope.GetIsolate(), "import 'a'; import 'b'; export const c = 'c';",
-      js_url, js_url, ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+      js_url);
   ASSERT_FALSE(module.IsEmpty());
 
   auto requests = ModuleRecord::ModuleRequests(scope.GetScriptState(), module);
@@ -154,10 +150,8 @@ TEST_P(ModuleRecordTest, instantiateNoDeps) {
   auto* resolver = modulator->GetTestModuleRecordResolver();
 
   const KURL js_url("https://example.com/foo.js");
-  v8::Local<v8::Module> module = ModuleRecord::Compile(
-      scope.GetIsolate(), "export const a = 42;", js_url, js_url,
-      ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "export const a = 42;", js_url);
   ASSERT_FALSE(module.IsEmpty());
   ScriptValue exception =
       ModuleRecord::Instantiate(scope.GetScriptState(), module, js_url);
@@ -174,26 +168,21 @@ TEST_P(ModuleRecordTest, instantiateWithDeps) {
   auto* resolver = modulator->GetTestModuleRecordResolver();
 
   const KURL js_url_a("https://example.com/a.js");
-  v8::Local<v8::Module> module_a = ModuleRecord::Compile(
-      scope.GetIsolate(), "export const a = 'a';", js_url_a, js_url_a,
-      ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> module_a = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "export const a = 'a';", js_url_a);
   ASSERT_FALSE(module_a.IsEmpty());
   resolver->PrepareMockResolveResult(module_a);
 
   const KURL js_url_b("https://example.com/b.js");
-  v8::Local<v8::Module> module_b = ModuleRecord::Compile(
-      scope.GetIsolate(), "export const b = 'b';", js_url_b, js_url_b,
-      ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> module_b = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "export const b = 'b';", js_url_b);
   ASSERT_FALSE(module_b.IsEmpty());
   resolver->PrepareMockResolveResult(module_b);
 
   const KURL js_url_c("https://example.com/c.js");
-  v8::Local<v8::Module> module = ModuleRecord::Compile(
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
       scope.GetIsolate(), "import 'a'; import 'b'; export const c = 123;",
-      js_url_c, js_url_c, ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+      js_url_c);
   ASSERT_FALSE(module.IsEmpty());
   ScriptValue exception =
       ModuleRecord::Instantiate(scope.GetScriptState(), module, js_url_c);
@@ -212,10 +201,8 @@ TEST_P(ModuleRecordTest, EvaluationErrorIsRemembered) {
   auto* resolver = modulator->GetTestModuleRecordResolver();
 
   const KURL js_url_f("https://example.com/failure.js");
-  v8::Local<v8::Module> module_failure = ModuleRecord::Compile(
-      scope.GetIsolate(), "nonexistent_function()", js_url_f, js_url_f,
-      ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> module_failure = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "nonexistent_function()", js_url_f);
   ASSERT_FALSE(module_failure.IsEmpty());
   ASSERT_TRUE(
       ModuleRecord::Instantiate(state, module_failure, js_url_f).IsEmpty());
@@ -226,9 +213,8 @@ TEST_P(ModuleRecordTest, EvaluationErrorIsRemembered) {
   resolver->PrepareMockResolveResult(module_failure);
 
   const KURL js_url_c("https://example.com/c.js");
-  v8::Local<v8::Module> module = ModuleRecord::Compile(
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
       scope.GetIsolate(), "import 'failure'; export const c = 123;", js_url_c,
-      js_url_c, ScriptFetchOptions(), TextPosition::MinimumPosition(),
       scope.GetExceptionState());
   ASSERT_FALSE(module.IsEmpty());
   ASSERT_TRUE(ModuleRecord::Instantiate(state, module, js_url_c).IsEmpty());
@@ -253,10 +239,8 @@ TEST_P(ModuleRecordTest, Evaluate) {
       MakeGarbageCollected<ModuleRecordTestModulator>(scope.GetScriptState());
 
   const KURL js_url("https://example.com/foo.js");
-  v8::Local<v8::Module> module = ModuleRecord::Compile(
-      scope.GetIsolate(), "export const a = 42; window.foo = 'bar';", js_url,
-      js_url, ScriptFetchOptions(), TextPosition::MinimumPosition(),
-      ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
+      scope.GetIsolate(), "export const a = 42; window.foo = 'bar';", js_url);
   ASSERT_FALSE(module.IsEmpty());
   ScriptValue exception =
       ModuleRecord::Instantiate(scope.GetScriptState(), module, js_url);
@@ -289,9 +273,8 @@ TEST_P(ModuleRecordTest, EvaluateCaptureError) {
       MakeGarbageCollected<ModuleRecordTestModulator>(scope.GetScriptState());
 
   const KURL js_url("https://example.com/foo.js");
-  v8::Local<v8::Module> module = ModuleRecord::Compile(
-      scope.GetIsolate(), "throw 'bar';", js_url, js_url, ScriptFetchOptions(),
-      TextPosition::MinimumPosition(), ASSERT_NO_EXCEPTION);
+  v8::Local<v8::Module> module =
+      ModuleTestBase::CompileModule(scope.GetIsolate(), "throw 'bar';", js_url);
   ASSERT_FALSE(module.IsEmpty());
   ScriptValue instantiation_exception =
       ModuleRecord::Instantiate(scope.GetScriptState(), module, js_url);

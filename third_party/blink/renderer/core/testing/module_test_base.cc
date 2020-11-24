@@ -3,11 +3,33 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 
 namespace blink {
+
+v8::Local<v8::Module> ModuleTestBase::CompileModule(
+    v8::Isolate* isolate,
+    const char* source,
+    const KURL& url,
+    ExceptionState& exception_state) {
+  return CompileModule(isolate, String(source), url, exception_state);
+}
+
+v8::Local<v8::Module> ModuleTestBase::CompileModule(
+    v8::Isolate* isolate,
+    String source,
+    const KURL& url,
+    ExceptionState& exception_state) {
+  return ModuleRecord::Compile(isolate, source, url, url, ScriptFetchOptions(),
+                               TextPosition::MinimumPosition(),
+                               exception_state);
+}
 
 void ParametrizedModuleTestBase::SetUp(bool use_top_level_await) {
   if (use_top_level_await) {
