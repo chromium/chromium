@@ -6033,3 +6033,4 @@ crbug.com/1149734 http/tests/devtools/sources/debugger-ui/continue-to-location-m
 
 #Sheriff 2020-11-24
 crbug.com/1087242 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Pass Failure Timeout Crash ]
+crbug.com/1149771 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Pass Timeout ]
