@@ -7,7 +7,7 @@ import("//build/config/linux/gtk/gtk.gni")
 import("//build/lacros/lacros_resource_sizes.gni")
 
 # Code lives in the lacros-chrome browser only, not ash-chrome.
-assert(chromeos_is_browser_only)
+assert(is_chromeos_lacros)
 assert(!use_gtk)
 
 component("lacros") {
