@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -37,7 +36,8 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
-@Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
+@Features.DisableFeatures({ChromeFeatureList.INTEREST_FEED_V2,
+        ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD})
 public final class FeedNewTabPageCardInstrumentationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -57,7 +57,6 @@ public final class FeedNewTabPageCardInstrumentationTest {
     @Feature({"FeedNewTabPage", "WPRRecordReplayTest", "RenderTest"})
     @WPRArchiveDirectory("chrome/android/feed/core/javatests/src/org/chromium/chrome/"
             + "browser/feed/wpr_tests")
-    @DisabledTest(message = "http://crbug.com/1152438")
     public void
     launchNTP_withMultipleFeedCardsRendered() throws IOException, InterruptedException {
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
