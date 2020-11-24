@@ -30,6 +30,8 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "third_party/blink/renderer/platform/graphics/decoding_image_generator.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
@@ -45,30 +47,30 @@ namespace {
 
 // Do not rename entries or reuse numeric values to ensure the histogram is
 // consistent over time.
-enum IncrementalDecodePerImageType {
+enum class IncrementalDecodePerImageType {
   kJpegIncrementalNeeded = 0,
   kJpegAllDataReceivedInitially = 1,
   kWebPIncrementalNeeded = 2,
   kWebPAllDataReceivedInitially = 3,
-  kBoundaryValue
+  kMaxValue = kWebPAllDataReceivedInitially,
 };
 
 void ReportIncrementalDecodeNeeded(bool all_data_received,
                                    const String& image_type) {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(EnumerationHistogram, incremental_decode_needed_histogram,
-                      ("Blink.ImageDecoders.IncrementalDecodeNeeded",
-                       IncrementalDecodePerImageType::kBoundaryValue));
+  base::Optional<IncrementalDecodePerImageType> status;
   if (image_type == "jpg") {
-    incremental_decode_needed_histogram.Count(
-        all_data_received
-            ? IncrementalDecodePerImageType::kJpegAllDataReceivedInitially
-            : IncrementalDecodePerImageType::kJpegIncrementalNeeded);
+    status = all_data_received
+                 ? IncrementalDecodePerImageType::kJpegAllDataReceivedInitially
+                 : IncrementalDecodePerImageType::kJpegIncrementalNeeded;
   } else if (image_type == "webp") {
-    incremental_decode_needed_histogram.Count(
-        all_data_received
-            ? IncrementalDecodePerImageType::kWebPAllDataReceivedInitially
-            : IncrementalDecodePerImageType::kWebPIncrementalNeeded);
+    status = all_data_received
+                 ? IncrementalDecodePerImageType::kWebPAllDataReceivedInitially
+                 : IncrementalDecodePerImageType::kWebPIncrementalNeeded;
+  }
+  if (status) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.ImageDecoders.IncrementalDecodeNeeded",
+                              *status);
   }
 }
 

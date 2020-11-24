@@ -8,11 +8,11 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_macros.h"
 #include "mojo/public/mojom/base/shared_memory.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 
@@ -21,11 +21,11 @@ namespace {
 // These enum values correspond to the
 // "Blink.Fonts.WindowsUniqueLocalFontInstantiationResult" histogram, new values
 // can be added, but old values should never be reused.
-enum WindowsUniqueLocalFontInstantiationResult {
+enum class InstantiationResult {
   kSuccess = 0,
   kErrorOutsideWindowsFontsDirectory = 1,
   kErrorOther = 2,
-  kMaxWindowsUniqueLocalFontInstantiationResult = 3
+  kMaxValue = kErrorOther,
 };
 
 }  // namespace
@@ -88,7 +88,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromPathAndTtcIndex(
   sk_sp<SkTypeface> local_typeface = SkTypeface::MakeFromFile(
       font_file_path.AsUTF8Unsafe().c_str(), ttc_index);
 
-  WindowsUniqueLocalFontInstantiationResult result = kSuccess;
+  InstantiationResult result = InstantiationResult::kSuccess;
 
   // There is a chance that some systems have managed to register fonts into the
   // Windows system font collection outside the C:\Windows\Fonts directory. For
@@ -99,16 +99,13 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromPathAndTtcIndex(
   if (!local_typeface) {
     base::FilePath windows_fonts_path(L"C:\\WINDOWS\\FONTS");
     if (!windows_fonts_path.IsParent(font_file_path))
-      result = kErrorOutsideWindowsFontsDirectory;
+      result = InstantiationResult::kErrorOutsideWindowsFontsDirectory;
     else
-      result = kErrorOther;
+      result = InstantiationResult::kErrorOther;
   }
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      EnumerationHistogram, windows_unique_local_font_instantiation_histogram,
-      ("Blink.Fonts.WindowsUniqueLocalFontInstantiationResult",
-       kMaxWindowsUniqueLocalFontInstantiationResult));
-  windows_unique_local_font_instantiation_histogram.Count(result);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Blink.Fonts.WindowsUniqueLocalFontInstantiationResult", result);
 
   return local_typeface;
 }
