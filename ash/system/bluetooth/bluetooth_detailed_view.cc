@@ -145,6 +145,9 @@ void BluetoothDetailedView::HideLoadingIndicator() {
 
 void BluetoothDetailedView::ShowBluetoothDisabledPanel() {
   device_map_.clear();
+  paired_devices_heading_ = nullptr;
+  unpaired_devices_heading_ = nullptr;
+  bluetooth_discovering_label_ = nullptr;
   scroll_content()->RemoveAllChildViews(true);
 
   DCHECK(scroller());
