@@ -24,6 +24,8 @@
     "*.grd" : "xml",
     // Optional: .gn and .gni are not JavaScript, but at least it gives some
     // approximate syntax highlighting. Ignore the linter warnings!
+    // There's an extension for these files, excluding the linter headaches.
+    // https://marketplace.visualstudio.com/items?itemName=npclaudiu.vscode-gn
     "*.gni" : "javascript",
     "*.gn" : "javascript"
   },
