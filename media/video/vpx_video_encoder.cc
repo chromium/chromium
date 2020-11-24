@@ -4,6 +4,7 @@
 
 #include "media/video/vpx_video_encoder.h"
 
+#include "base/numerics/checked_math.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -40,9 +41,12 @@ int GetNumberOfThreads(int width) {
 
 Status SetUpVpxConfig(const VideoEncoder::Options& opts,
                       vpx_codec_enc_cfg_t* config) {
-  if (opts.width <= 0 || opts.height <= 0)
+  if (opts.frame_size.width() <= 0 || opts.frame_size.height() <= 0)
     return Status(StatusCode::kEncoderUnsupportedConfig,
-                  "Negative width or height values");
+                  "Negative width or height values.");
+
+  if (!opts.frame_size.GetCheckedArea().IsValid())
+    return Status(StatusCode::kEncoderUnsupportedConfig, "Frame is too large.");
 
   config->g_pass = VPX_RC_ONE_PASS;
   config->g_lag_in_frames = 0;
@@ -52,7 +56,7 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
   config->g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
   // Set the number of threads based on the image width and num of cores.
-  config->g_threads = GetNumberOfThreads(opts.width);
+  config->g_threads = GetNumberOfThreads(opts.frame_size.width());
 
   // Insert keyframes at will with a given max interval
   if (opts.keyframe_interval.has_value()) {
@@ -66,13 +70,13 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
     config->rc_target_bitrate = opts.bitrate.value() / 1000;
   } else {
     config->rc_end_usage = VPX_VBR;
-    config->rc_target_bitrate = double{opts.width} * double{opts.height} /
-                                config->g_w / config->g_h *
-                                config->rc_target_bitrate;
+    config->rc_target_bitrate =
+        double{opts.frame_size.GetCheckedArea().ValueOrDie()} / config->g_w /
+        config->g_h * config->rc_target_bitrate;
   }
 
-  config->g_w = opts.width;
-  config->g_h = opts.height;
+  config->g_w = opts.frame_size.width();
+  config->g_h = opts.frame_size.height();
 
   return Status();
 }
@@ -185,8 +189,9 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
-  if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt, options.width,
-                                  options.height, 1, nullptr)) {
+  if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt,
+                                  options.frame_size.width(),
+                                  options.frame_size.height(), 1, nullptr)) {
     status = Status(StatusCode::kEncoderInitializationError,
                     "Invalid format or frame size.");
     std::move(done_cb).Run(status);
@@ -303,6 +308,20 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
+  auto old_area = options_.frame_size.GetCheckedArea();
+  auto new_area = options.frame_size.GetCheckedArea();
+  DCHECK(old_area.IsValid());
+
+  // Libvpx doesn't support reconfiguring in a way that enlarges frame area.
+  // https://bugs.chromium.org/p/webm/issues/detail?id=1642
+  if (!new_area.IsValid() || new_area.ValueOrDie() > old_area.ValueOrDie()) {
+    auto status =
+        Status(StatusCode::kEncoderUnsupportedConfig,
+               "libvpx doesn't support dynamically increasing frame area");
+    std::move(done_cb).Run(std::move(status));
+    return;
+  }
+
   vpx_codec_enc_cfg_t new_config = codec_config_;
   auto status = SetUpVpxConfig(options, &new_config);
   if (!status.is_ok()) {
@@ -310,13 +329,14 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
-  if (options_.width != options.width || options_.height != options.height) {
+  if (options_.frame_size != options.frame_size) {
     // Need to re-allocate |vpx_image_| because the size has changed.
     auto img_fmt = vpx_image_.fmt;
     auto bit_depth = vpx_image_.bit_depth;
     vpx_img_free(&vpx_image_);
-    if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt, options.width,
-                                    options.height, 1, nullptr)) {
+    if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt,
+                                    options.frame_size.width(),
+                                    options.frame_size.height(), 1, nullptr)) {
       status = Status(StatusCode::kEncoderInitializationError,
                       "Invalid format or frame size.");
       std::move(done_cb).Run(status);

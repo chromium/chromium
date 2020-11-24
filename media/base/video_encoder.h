@@ -41,8 +41,7 @@ class MEDIA_EXPORT VideoEncoder {
     base::Optional<uint64_t> bitrate;
     base::Optional<double> framerate;
 
-    int width = 0;
-    int height = 0;
+    gfx::Size frame_size;
 
     base::Optional<int> keyframe_interval = 10000;
   };

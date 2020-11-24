@@ -70,13 +70,15 @@ std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
     if (supported_profile.profile != profile)
       continue;
 
-    if (supported_profile.min_resolution.width() > options.width ||
-        supported_profile.min_resolution.height() > options.height) {
+    if (supported_profile.min_resolution.width() > options.frame_size.width() ||
+        supported_profile.min_resolution.height() >
+            options.frame_size.height()) {
       continue;
     }
 
-    if (supported_profile.max_resolution.width() < options.width ||
-        supported_profile.max_resolution.height() < options.height) {
+    if (supported_profile.max_resolution.width() < options.frame_size.width() ||
+        supported_profile.max_resolution.height() <
+            options.frame_size.height()) {
       continue;
     }
 
@@ -207,16 +209,16 @@ VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
   constexpr int kMaxSupportedFrameSize = 8000;
   auto* parsed = MakeGarbageCollected<ParsedConfig>();
 
-  parsed->options.height = config->height();
-  if (parsed->options.height == 0 ||
-      parsed->options.height > kMaxSupportedFrameSize) {
+  parsed->options.frame_size.set_height(config->height());
+  if (parsed->options.frame_size.height() == 0 ||
+      parsed->options.frame_size.height() > kMaxSupportedFrameSize) {
     exception_state.ThrowTypeError("Invalid height.");
     return nullptr;
   }
 
-  parsed->options.width = config->width();
-  if (parsed->options.width == 0 ||
-      parsed->options.width > kMaxSupportedFrameSize) {
+  parsed->options.frame_size.set_width(config->width());
+  if (parsed->options.frame_size.width() == 0 ||
+      parsed->options.frame_size.width() > kMaxSupportedFrameSize) {
     exception_state.ThrowTypeError("Invalid width.");
     return nullptr;
   }
@@ -472,9 +474,8 @@ void VideoEncoder::encode(VideoFrame* frame,
   }
 
   DCHECK(active_config_);
-  if (internal_frame->cropWidth() != uint32_t{active_config_->options.width} ||
-      internal_frame->cropHeight() !=
-          uint32_t{active_config_->options.height}) {
+  if (internal_frame->frame()->coded_size() !=
+      active_config_->options.frame_size) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
         "Frame size doesn't match initial encoder parameters.");
@@ -790,8 +791,8 @@ void VideoEncoder::CallOutputCallback(
   VideoDecoderConfig* decoder_config =
       MakeGarbageCollected<VideoDecoderConfig>();
   decoder_config->setCodec(active_config->codec_string);
-  decoder_config->setCodedHeight(active_config->options.height);
-  decoder_config->setCodedWidth(active_config->options.width);
+  decoder_config->setCodedHeight(active_config->options.frame_size.height());
+  decoder_config->setCodedWidth(active_config->options.frame_size.width());
   if (codec_desc.has_value()) {
     auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
                                                   codec_desc.value().size());

@@ -255,8 +255,7 @@ void RecordingService::StartNewRecording(
   media::VideoEncoder::Options video_encoder_options;
   video_encoder_options.bitrate = CalculateVpxEncoderBitrate(capture_size);
   video_encoder_options.framerate = kMaxFrameRate;
-  video_encoder_options.width = capture_size.width();
-  video_encoder_options.height = capture_size.height();
+  video_encoder_options.frame_size = capture_size;
   // This value, expressed as a number of frames, forces the encoder to code
   // a keyframe if one has not been coded in the last keyframe_interval frames.
   video_encoder_options.keyframe_interval = 100;
