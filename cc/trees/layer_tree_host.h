@@ -712,9 +712,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   }
 
   void SetDelegatedInkMetadata(
-      std::unique_ptr<viz::DelegatedInkMetadata> metadata) {
-    delegated_ink_metadata_ = std::move(metadata);
-  }
+      std::unique_ptr<viz::DelegatedInkMetadata> metadata);
   viz::DelegatedInkMetadata* DelegatedInkMetadataForTesting() {
     return delegated_ink_metadata_.get();
   }

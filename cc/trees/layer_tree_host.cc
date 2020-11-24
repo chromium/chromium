@@ -1893,4 +1893,10 @@ void LayerTreeHost::SetEnableFrameRateThrottling(
   proxy_->SetEnableFrameRateThrottling(enable_frame_rate_throttling);
 }
 
+void LayerTreeHost::SetDelegatedInkMetadata(
+    std::unique_ptr<viz::DelegatedInkMetadata> metadata) {
+  delegated_ink_metadata_ = std::move(metadata);
+  SetNeedsCommit();
+}
+
 }  // namespace cc
