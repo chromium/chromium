@@ -5,8 +5,6 @@
 #ifndef ASH_WM_DESKS_ROOT_WINDOW_DESK_SWITCH_ANIMATOR_TEST_API_H_
 #define ASH_WM_DESKS_ROOT_WINDOW_DESK_SWITCH_ANIMATOR_TEST_API_H_
 
-#include "base/callback.h"
-
 namespace ui {
 class Layer;
 }
@@ -32,8 +30,6 @@ class RootWindowDeskSwitchAnimatorTestApi {
   ui::Layer* GetScreenshotLayerOfDeskWithIndex(int desk_index);
 
   int GetEndingDeskIndex() const;
-
-  void SetOnEndingScreenshotTakenCallback(base::OnceClosure callback);
 
  private:
   RootWindowDeskSwitchAnimator* const animator_;
