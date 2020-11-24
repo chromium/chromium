@@ -41,6 +41,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   SystemRoutineController& operator=(const SystemRoutineController&) = delete;
 
   // mojom::SystemRoutineController:
+  void GetSupportedRoutines(GetSupportedRoutinesCallback callback) override;
   void RunRoutine(mojom::RoutineType type,
                   mojo::PendingRemote<mojom::RoutineRunner> runner) override;
 
@@ -48,6 +49,11 @@ class SystemRoutineController : public mojom::SystemRoutineController {
       mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver);
 
  private:
+  void OnAvailableRoutinesFetched(
+      GetSupportedRoutinesCallback callback,
+      const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>&
+          supported_routines);
+
   void ExecuteRoutine(mojom::RoutineType routine_type);
 
   void OnRoutineStarted(

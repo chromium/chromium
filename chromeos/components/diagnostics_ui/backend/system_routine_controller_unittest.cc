@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
@@ -106,6 +107,12 @@ std::string ConstructPowerRoutineResultJson(double charge_percent) {
   const bool serialize_success = base::JSONWriter::Write(output_dict, &json);
   DCHECK(serialize_success);
   return json;
+}
+
+void SetAvailableRoutines(
+    const std::vector<healthd::DiagnosticRoutineEnum>& routines) {
+  cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting(
+      routines);
 }
 
 }  // namespace
@@ -424,6 +431,37 @@ TEST_F(SystemRoutineControllerTest, PowerRoutineSuccess) {
       ConstructPowerRoutineResult(mojom::StandardRoutineResult::kTestPassed,
                                   expected_percent_charge,
                                   expected_time_elapsed_seconds));
+}
+
+TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
+  SetAvailableRoutines({healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy,
+                        healthd::DiagnosticRoutineEnum::kMemory,
+                        healthd::DiagnosticRoutineEnum::kPrimeSearch,
+                        healthd::DiagnosticRoutineEnum::kAcPower,
+                        healthd::DiagnosticRoutineEnum::kBatteryCapacity,
+                        healthd::DiagnosticRoutineEnum::kBatteryHealth});
+
+  base::RunLoop run_loop;
+  system_routine_controller_->GetSupportedRoutines(base::BindLambdaForTesting(
+      [&](const std::vector<mojom::RoutineType>& supported_routines) {
+        EXPECT_EQ(3u, supported_routines.size());
+        EXPECT_FALSE(base::Contains(supported_routines,
+                                    mojom::RoutineType::kBatteryCharge));
+        EXPECT_FALSE(base::Contains(supported_routines,
+                                    mojom::RoutineType::kBatteryDischarge));
+        EXPECT_FALSE(
+            base::Contains(supported_routines, mojom::RoutineType::kCpuCache));
+        EXPECT_FALSE(
+            base::Contains(supported_routines, mojom::RoutineType::kCpuStress));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kCpuFloatingPoint));
+        EXPECT_TRUE(
+            base::Contains(supported_routines, mojom::RoutineType::kCpuPrime));
+        EXPECT_TRUE(
+            base::Contains(supported_routines, mojom::RoutineType::kMemory));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace diagnostics

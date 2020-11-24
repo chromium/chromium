@@ -116,6 +116,79 @@ std::string ReadMojoHandleToJsonString(mojo::PlatformHandle handle) {
   return std::string(contents.begin(), contents.end());
 }
 
+bool IsKnownRoutine(healthd::DiagnosticRoutineEnum routine_enum) {
+  switch (routine_enum) {
+    case healthd::DiagnosticRoutineEnum::kBatteryCharge:
+    case healthd::DiagnosticRoutineEnum::kBatteryDischarge:
+    case healthd::DiagnosticRoutineEnum::kCpuCache:
+    case healthd::DiagnosticRoutineEnum::kCpuStress:
+    case healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy:
+    case healthd::DiagnosticRoutineEnum::kMemory:
+    case healthd::DiagnosticRoutineEnum::kPrimeSearch:
+      return true;
+    case healthd::DiagnosticRoutineEnum::kAcPower:
+    case healthd::DiagnosticRoutineEnum::kBatteryCapacity:
+    case healthd::DiagnosticRoutineEnum::kBatteryHealth:
+    case healthd::DiagnosticRoutineEnum::kCaptivePortal:
+    case healthd::DiagnosticRoutineEnum::kDiskRead:
+    case healthd::DiagnosticRoutineEnum::kDnsLatency:
+    case healthd::DiagnosticRoutineEnum::kDnsResolution:
+    case healthd::DiagnosticRoutineEnum::kDnsResolverPresent:
+    case healthd::DiagnosticRoutineEnum::kGatewayCanBePinged:
+    case healthd::DiagnosticRoutineEnum::kHasSecureWiFiConnection:
+    case healthd::DiagnosticRoutineEnum::kHttpFirewall:
+    case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
+    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
+    case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
+    case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
+    case healthd::DiagnosticRoutineEnum::kSignalStrength:
+    case healthd::DiagnosticRoutineEnum::kSmartctlCheck:
+    case healthd::DiagnosticRoutineEnum::kUrandom:
+      return false;
+  }
+}
+
+mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
+    healthd::DiagnosticRoutineEnum routine_enum) {
+  switch (routine_enum) {
+    case healthd::DiagnosticRoutineEnum::kBatteryCharge:
+      return mojom::RoutineType::kBatteryCharge;
+    case healthd::DiagnosticRoutineEnum::kBatteryDischarge:
+      return mojom::RoutineType::kBatteryDischarge;
+    case healthd::DiagnosticRoutineEnum::kCpuCache:
+      return mojom::RoutineType::kCpuCache;
+    case healthd::DiagnosticRoutineEnum::kCpuStress:
+      return mojom::RoutineType::kCpuStress;
+    case healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy:
+      return mojom::RoutineType::kCpuFloatingPoint;
+    case healthd::DiagnosticRoutineEnum::kMemory:
+      return mojom::RoutineType::kMemory;
+    case healthd::DiagnosticRoutineEnum::kPrimeSearch:
+      return mojom::RoutineType::kCpuPrime;
+    case healthd::DiagnosticRoutineEnum::kAcPower:
+    case healthd::DiagnosticRoutineEnum::kBatteryCapacity:
+    case healthd::DiagnosticRoutineEnum::kBatteryHealth:
+    case healthd::DiagnosticRoutineEnum::kCaptivePortal:
+    case healthd::DiagnosticRoutineEnum::kDiskRead:
+    case healthd::DiagnosticRoutineEnum::kDnsLatency:
+    case healthd::DiagnosticRoutineEnum::kDnsResolution:
+    case healthd::DiagnosticRoutineEnum::kDnsResolverPresent:
+    case healthd::DiagnosticRoutineEnum::kGatewayCanBePinged:
+    case healthd::DiagnosticRoutineEnum::kHasSecureWiFiConnection:
+    case healthd::DiagnosticRoutineEnum::kHttpFirewall:
+    case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
+    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
+    case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
+    case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
+    case healthd::DiagnosticRoutineEnum::kSignalStrength:
+    case healthd::DiagnosticRoutineEnum::kSmartctlCheck:
+    case healthd::DiagnosticRoutineEnum::kUrandom:
+      NOTREACHED() << "DiagnosticRoutineEnumToRoutineType called with "
+                      "unsupported routine.";
+      return mojom::RoutineType::kBatteryCharge;
+  }
+}
+
 }  // namespace
 
 SystemRoutineController::SystemRoutineController() {
@@ -142,9 +215,29 @@ void SystemRoutineController::RunRoutine(
   ExecuteRoutine(type);
 }
 
+void SystemRoutineController::GetSupportedRoutines(
+    GetSupportedRoutinesCallback callback) {
+  BindCrosHealthdDiagnosticsServiceIfNeccessary();
+  diagnostics_service_->GetAvailableRoutines(
+      base::BindOnce(&SystemRoutineController::OnAvailableRoutinesFetched,
+                     base::Unretained(this), std::move(callback)));
+}
+
 void SystemRoutineController::BindInterface(
     mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
+}
+
+void SystemRoutineController::OnAvailableRoutinesFetched(
+    GetSupportedRoutinesCallback callback,
+    const std::vector<healthd::DiagnosticRoutineEnum>& available_routines) {
+  std::vector<mojom::RoutineType> supported_routines;
+  for (const auto& routine : available_routines) {
+    if (IsKnownRoutine(routine)) {
+      supported_routines.push_back(DiagnosticRoutineEnumToRoutineType(routine));
+    }
+  }
+  std::move(callback).Run(supported_routines);
 }
 
 void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
