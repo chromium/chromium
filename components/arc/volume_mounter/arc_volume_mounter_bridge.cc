@@ -16,6 +16,7 @@
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
+#include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -131,9 +132,11 @@ void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
   // TODO(niwa): Add a new DeviceType enum value for MyFiles.
   chromeos::DeviceType device_type = chromeos::DeviceType::DEVICE_TYPE_SD;
 
+  // Conditionally set MyFiles to be visible for P and invisible for R. In R, we use IsVisibleRead
+  // so this is not needed.
   volume_mounter_instance->OnMountEvent(mojom::MountPointInfo::New(
       DiskMountManager::MOUNTING, kMyFilesPath, kMyFilesPath, kMyFilesUuid,
-      device_label, device_type, false));
+      device_label, device_type, !IsArcVmEnabled()));
 }
 
 bool ArcVolumeMounterBridge::IsVisibleToAndroidApps(
