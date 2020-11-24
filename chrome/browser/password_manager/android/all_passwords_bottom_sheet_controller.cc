@@ -4,11 +4,13 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 
+#include "base/stl_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -64,7 +66,8 @@ void AllPasswordsBottomSheetController::Show() {
 
 void AllPasswordsBottomSheetController::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
-  // TODO(crbug.com/1104132): Handle empty credentials case.
+  base::EraseIf(results,
+                [](const auto& form_ptr) { return form_ptr->blocked_by_user; });
   view_->Show(std::move(results), focused_field_type_);
 }
 
