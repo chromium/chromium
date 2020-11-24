@@ -740,6 +740,7 @@ crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw
 
 ### webcodecs/
 crbug.com/591099 webcodecs/basic_video_encoding.html [ Failure ]
+crbug.com/591099 webcodecs/reconfiguring_encooder.html [ Failure ]
 
 # broken by https://chromium-review.googlesource.com/c/chromium/src/+/2392444
 crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-wide-content.html [ Failure ]
