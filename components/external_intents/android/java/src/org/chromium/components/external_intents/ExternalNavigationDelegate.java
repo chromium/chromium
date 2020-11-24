@@ -11,7 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
+import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -100,9 +100,9 @@ public interface ExternalNavigationDelegate {
      * @param intent The intent to be handled by the embedder.
      * @param referrerUrl The referrer for the current navigation.
      * @param fallbackUrl The fallback URL to load if the intent cannot be handled by the embedder.
-     * @return The OverrideUrlLoadingResult for the action taken by the embedder.
+     * @return The OverrideUrlLoadingResultType for the action taken by the embedder.
      */
-    @OverrideUrlLoadingResult
+    @OverrideUrlLoadingResultType
     int handleIncognitoIntentTargetingSelf(Intent intent, String referrerUrl, String fallbackUrl);
 
     /**

@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
+import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -143,8 +143,9 @@ public class CustomTabFromChromeExternalNavigationTest {
         }, "Navigation delegate never initialized.");
 
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(navigationDelegate.get().getLastOverrideUrlLoadingResultForTests(),
-                    Matchers.is(OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT));
+            Criteria.checkThat(
+                    navigationDelegate.get().getLastOverrideUrlLoadingResultTypeForTests(),
+                    Matchers.is(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT));
         });
 
         CriteriaHelper.pollUiThread(() -> {

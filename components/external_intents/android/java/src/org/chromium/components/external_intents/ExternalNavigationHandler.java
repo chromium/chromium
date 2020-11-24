@@ -184,12 +184,12 @@ public class ExternalNavigationHandler {
      * NOTE: this enum is used in UMA, do not reorder values. Changes should be append only.
      * Values should be numerated from 0 and can't have gaps.
      */
-    @IntDef({OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT,
-            OverrideUrlLoadingResult.OVERRIDE_WITH_CLOBBERING_TAB,
-            OverrideUrlLoadingResult.OVERRIDE_WITH_ASYNC_ACTION,
-            OverrideUrlLoadingResult.NO_OVERRIDE})
+    @IntDef({OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+            OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB,
+            OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+            OverrideUrlLoadingResultType.NO_OVERRIDE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface OverrideUrlLoadingResult {
+    public @interface OverrideUrlLoadingResultType {
         /* We should override the URL loading and launch an intent. */
         int OVERRIDE_WITH_EXTERNAL_INTENT = 0;
         /* We should override the URL loading and clobber the current tab. */
@@ -217,7 +217,8 @@ public class ExternalNavigationHandler {
      * @return Whether the URL generated an intent, caused a navigation in
      *         current tab, or wasn't handled at all.
      */
-    public @OverrideUrlLoadingResult int shouldOverrideUrlLoading(ExternalNavigationParams params) {
+    public @OverrideUrlLoadingResultType int shouldOverrideUrlLoading(
+            ExternalNavigationParams params) {
         if (DEBUG) Log.i(TAG, "shouldOverrideUrlLoading called on " + params.getUrl());
         Intent targetIntent;
         // Perform generic parsing of the URI to turn it into an Intent.
@@ -225,7 +226,7 @@ public class ExternalNavigationHandler {
             targetIntent = Intent.parseUri(params.getUrl(), Intent.URI_INTENT_SCHEME);
         } catch (Exception ex) {
             Log.w(TAG, "Bad URI %s", params.getUrl(), ex);
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         String browserFallbackUrl =
@@ -240,14 +241,14 @@ public class ExternalNavigationHandler {
         MutableBoolean canLaunchExternalFallbackResult = new MutableBoolean();
 
         long time = SystemClock.elapsedRealtime();
-        @OverrideUrlLoadingResult
+        @OverrideUrlLoadingResultType
         int result = shouldOverrideUrlLoadingInternal(
                 params, targetIntent, browserFallbackUrl, canLaunchExternalFallbackResult);
         assert canLaunchExternalFallbackResult.get() != null;
         RecordHistogram.recordTimesHistogram(
                 "Android.StrictMode.OverrideUrlLoadingTime", SystemClock.elapsedRealtime() - time);
 
-        if (result != OverrideUrlLoadingResult.NO_OVERRIDE) {
+        if (result != OverrideUrlLoadingResultType.NO_OVERRIDE) {
             int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
             boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
             boolean isRedirectFromFormSubmit = isFormSubmit && params.isRedirect();
@@ -256,18 +257,18 @@ public class ExternalNavigationHandler {
                         "Android.Intent.LaunchExternalAppFormSubmitHasUserGesture",
                         params.hasUserGesture());
             }
-        } else if (result == OverrideUrlLoadingResult.NO_OVERRIDE && browserFallbackUrl != null
+        } else if (result == OverrideUrlLoadingResultType.NO_OVERRIDE && browserFallbackUrl != null
                 && (params.getRedirectHandler() == null
                         // For instance, if this is a chained fallback URL, we ignore it.
                         || !params.getRedirectHandler().shouldNotOverrideUrlLoading())) {
             result = handleFallbackUrl(params, targetIntent, browserFallbackUrl,
                     canLaunchExternalFallbackResult.get());
         }
-        if (DEBUG) printDebugShouldOverrideUrlLoadingResult(result);
+        if (DEBUG) printDebugShouldOverrideUrlLoadingResultType(result);
         return result;
     }
 
-    private @OverrideUrlLoadingResult int handleFallbackUrl(ExternalNavigationParams params,
+    private @OverrideUrlLoadingResultType int handleFallbackUrl(ExternalNavigationParams params,
             Intent targetIntent, String browserFallbackUrl, boolean canLaunchExternalFallback) {
         if (mDelegate.isIntentToInstantApp(targetIntent)) {
             RecordHistogram.recordEnumeratedHistogram("Android.InstantApps.DirectInstantAppsIntent",
@@ -285,7 +286,7 @@ public class ExternalNavigationHandler {
                 List<ResolveInfo> resolvingInfos = queryIntentActivities(intent);
                 if (!isAlreadyInTargetWebApk(resolvingInfos, params)
                         && launchWebApkIfSoleIntentHandler(resolvingInfos, intent)) {
-                    return OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT;
+                    return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
                 }
             } catch (Exception e) {
                 if (DEBUG) Log.i(TAG, "Could not parse fallback url as intent");
@@ -306,7 +307,7 @@ public class ExternalNavigationHandler {
         // http://crbug.com/364522.
         if (!params.isMainFrame()) {
             if (DEBUG) Log.i(TAG, "Don't support fallback url in subframes");
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         // NOTE: any further redirection from fall-back URL should not override URL loading.
@@ -320,19 +321,19 @@ public class ExternalNavigationHandler {
         return clobberCurrentTab(browserFallbackUrl, params.getReferrerUrl());
     }
 
-    private void printDebugShouldOverrideUrlLoadingResult(int result) {
+    private void printDebugShouldOverrideUrlLoadingResultType(int result) {
         String resultString;
         switch (result) {
-            case OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT:
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 resultString = "OVERRIDE_WITH_EXTERNAL_INTENT";
                 break;
-            case OverrideUrlLoadingResult.OVERRIDE_WITH_CLOBBERING_TAB:
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
                 resultString = "OVERRIDE_WITH_CLOBBERING_TAB";
                 break;
-            case OverrideUrlLoadingResult.OVERRIDE_WITH_ASYNC_ACTION:
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
                 resultString = "OVERRIDE_WITH_ASYNC_ACTION";
                 break;
-            case OverrideUrlLoadingResult.NO_OVERRIDE: // Fall through.
+            case OverrideUrlLoadingResultType.NO_OVERRIDE: // Fall through.
             default:
                 resultString = "NO_OVERRIDE";
                 break;
@@ -466,11 +467,11 @@ public class ExternalNavigationHandler {
      *
      * @param url The new URL after clobbering the current tab.
      * @param referrerUrl The HTTP referrer URL.
-     * @return OverrideUrlLoadingResult (if the tab has been clobbered, or we're launching an
+     * @return OverrideUrlLoadingResultType (if the tab has been clobbered, or we're launching an
      *         intent.)
      */
     @VisibleForTesting
-    protected @OverrideUrlLoadingResult int clobberCurrentTab(String url, String referrerUrl) {
+    protected @OverrideUrlLoadingResultType int clobberCurrentTab(String url, String referrerUrl) {
         int transitionType = PageTransition.LINK;
         final LoadUrlParams loadUrlParams = new LoadUrlParams(url, transitionType);
         if (!TextUtils.isEmpty(referrerUrl)) {
@@ -487,7 +488,7 @@ public class ExternalNavigationHandler {
                     mDelegate.loadUrlIfPossible(loadUrlParams);
                 }
             });
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_CLOBBERING_TAB;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB;
         } else {
             assert false : "clobberCurrentTab was called with an empty tab.";
             Uri uri = Uri.parse(url);
@@ -497,7 +498,7 @@ public class ExternalNavigationHandler {
             intent.addCategory(Intent.CATEGORY_BROWSABLE);
             intent.setPackage(packageName);
             startActivity(intent, false, mDelegate);
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
         }
     }
 
@@ -781,14 +782,14 @@ public class ExternalNavigationHandler {
     private int handleUnresolvableIntent(
             ExternalNavigationParams params, Intent targetIntent, String browserFallbackUrl) {
         // Fallback URL will be handled by the caller of shouldOverrideUrlLoadingInternal.
-        if (browserFallbackUrl != null) return OverrideUrlLoadingResult.NO_OVERRIDE;
+        if (browserFallbackUrl != null) return OverrideUrlLoadingResultType.NO_OVERRIDE;
         if (targetIntent.getPackage() != null) return handleWithMarketIntent(params, targetIntent);
 
         if (DEBUG) Log.i(TAG, "Could not find an external activity to use");
-        return OverrideUrlLoadingResult.NO_OVERRIDE;
+        return OverrideUrlLoadingResultType.NO_OVERRIDE;
     }
 
-    private @OverrideUrlLoadingResult int handleWithMarketIntent(
+    private @OverrideUrlLoadingResultType int handleWithMarketIntent(
             ExternalNavigationParams params, Intent intent) {
         String marketReferrer = IntentUtils.safeGetStringExtra(intent, EXTRA_MARKET_REFERRER);
         if (TextUtils.isEmpty(marketReferrer)) {
@@ -850,9 +851,9 @@ public class ExternalNavigationHandler {
      * This is the catch-all path for any intent that the app can handle that doesn't have a
      * specialized external app handling it.
      */
-    private @OverrideUrlLoadingResult int fallBackToHandlingInApp() {
+    private @OverrideUrlLoadingResultType int fallBackToHandlingInApp() {
         if (DEBUG) Log.i(TAG, "No specialized handler for URL");
-        return OverrideUrlLoadingResult.NO_OVERRIDE;
+        return OverrideUrlLoadingResultType.NO_OVERRIDE;
     }
 
     /**
@@ -949,7 +950,7 @@ public class ExternalNavigationHandler {
                 params.isRendererInitiated(), params.getInitiatorOrigin());
     }
 
-    private @OverrideUrlLoadingResult int handleExternalIncognitoIntent(Intent targetIntent,
+    private @OverrideUrlLoadingResultType int handleExternalIncognitoIntent(Intent targetIntent,
             ExternalNavigationParams params, String browserFallbackUrl,
             boolean shouldProxyForInstantApps) {
         // This intent may leave this app. Warn the user that incognito does not carry over
@@ -958,10 +959,10 @@ public class ExternalNavigationHandler {
                     params.shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent(),
                     shouldProxyForInstantApps)) {
             if (DEBUG) Log.i(TAG, "Incognito navigation out");
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_ASYNC_ACTION;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION;
         }
         if (DEBUG) Log.i(TAG, "Failed to show incognito alert dialog.");
-        return OverrideUrlLoadingResult.NO_OVERRIDE;
+        return OverrideUrlLoadingResultType.NO_OVERRIDE;
     }
 
     /**
@@ -1128,35 +1129,37 @@ public class ExternalNavigationHandler {
                 || blockExternalNavFromBackgroundTab(params) || ignoreBackForwardNav(params);
     }
 
-    private @OverrideUrlLoadingResult int shouldOverrideUrlLoadingInternal(
+    private @OverrideUrlLoadingResultType int shouldOverrideUrlLoadingInternal(
             ExternalNavigationParams params, Intent targetIntent,
             @Nullable String browserFallbackUrl, MutableBoolean canLaunchExternalFallbackResult) {
         sanitizeQueryIntentActivitiesIntent(targetIntent);
         // Don't allow external fallback URLs by default.
         canLaunchExternalFallbackResult.set(false);
 
-        if (shouldBlockAllExternalAppLaunches(params)) return OverrideUrlLoadingResult.NO_OVERRIDE;
+        if (shouldBlockAllExternalAppLaunches(params)) {
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
+        }
 
         if (handleWithAutofillAssistant(params, targetIntent, browserFallbackUrl)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
 
         if (isInternalPdfDownload(isExternalProtocol, params)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         // This check should happen for reloads, navigations, etc..., which is why
         // it occurs before the subsequent blocks.
         if (startFileIntentIfNecessary(params, targetIntent)) {
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_ASYNC_ACTION;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION;
         }
 
         // This should come after file intents, but before any returns of
         // OVERRIDE_WITH_EXTERNAL_INTENT.
         if (externalIntentRequestsDisabledForUrl(params)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
@@ -1175,42 +1178,42 @@ public class ExternalNavigationHandler {
                 (isLink && isFromIntent && params.isRedirect()) || isOnEffectiveIntentRedirect;
 
         if (handleCCTRedirectsToInstantApps(params, isExternalProtocol, incomingIntentRedirect)) {
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
         } else if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         if (!preferToShowIntentPicker(params, pageTransitionCore, isExternalProtocol, isFormSubmit,
                     linkNotFromIntent, incomingIntentRedirect)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
-        if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResult.NO_OVERRIDE;
+        if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResultType.NO_OVERRIDE;
 
         if (handleWtaiMcProtocol(params)) {
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
         }
         // TODO: handle other WTAI schemes.
-        if (isUnhandledWtaiProtocol(params)) return OverrideUrlLoadingResult.NO_OVERRIDE;
+        if (isUnhandledWtaiProtocol(params)) return OverrideUrlLoadingResultType.NO_OVERRIDE;
 
         boolean hasIntentScheme = params.getUrl().startsWith(UrlConstants.INTENT_URL_SHORT_PREFIX)
                 || params.getUrl().startsWith(UrlConstants.APP_INTENT_URL_SHORT_PREFIX);
         if (hasInternalScheme(params, targetIntent, hasIntentScheme)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         if (hasContentScheme(params, targetIntent, hasIntentScheme)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         if (hasFileSchemeInIntentURI(targetIntent, hasIntentScheme)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
-        if (isYoutubePairingCode(params)) return OverrideUrlLoadingResult.NO_OVERRIDE;
+        if (isYoutubePairingCode(params)) return OverrideUrlLoadingResultType.NO_OVERRIDE;
 
         if (shouldStayInIncognito(params, isExternalProtocol)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
@@ -1233,7 +1236,7 @@ public class ExternalNavigationHandler {
         if (!isExternalProtocol && !hasSpecializedHandler) {
             if (fallBackToHandlingWithInstantApp(
                         params, incomingIntentRedirect, linkNotFromIntent)) {
-                return OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT;
+                return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
             }
             return fallBackToHandlingInApp();
         }
@@ -1243,14 +1246,14 @@ public class ExternalNavigationHandler {
 
         if (shouldStayWithinHost(
                     params, isLink, isFormSubmit, resolvingInfos, isExternalProtocol)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         boolean isDirectInstantAppsIntent =
                 isExternalProtocol && mDelegate.isIntentToInstantApp(targetIntent);
         boolean shouldProxyForInstantApps = isDirectInstantAppsIntent && isSerpReferrer();
         if (preventDirectInstantAppsIntent(isDirectInstantAppsIntent, shouldProxyForInstantApps)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         prepareExternalIntent(targetIntent, params, resolvingInfos, shouldProxyForInstantApps);
@@ -1276,18 +1279,18 @@ public class ExternalNavigationHandler {
 
         if (shouldKeepIntentRedirectInApp(
                     params, incomingIntentRedirect, resolvingInfos, isExternalProtocol)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         if (isAlreadyInTargetWebApk(resolvingInfos, params)) {
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         } else if (launchWebApkIfSoleIntentHandler(resolvingInfos, targetIntent)) {
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
         }
         if (launchExternalIntent(targetIntent, shouldProxyForInstantApps)) {
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
         }
-        return OverrideUrlLoadingResult.NO_OVERRIDE;
+        return OverrideUrlLoadingResultType.NO_OVERRIDE;
     }
 
     /**
@@ -1309,7 +1312,7 @@ public class ExternalNavigationHandler {
      * @return OVERRIDE_WITH_EXTERNAL_INTENT when we successfully started market activity,
      *         NO_OVERRIDE otherwise.
      */
-    private @OverrideUrlLoadingResult int sendIntentToMarket(
+    private @OverrideUrlLoadingResultType int sendIntentToMarket(
             String packageName, String marketReferrer, ExternalNavigationParams params) {
         Uri marketUri =
                 new Uri.Builder()
@@ -1329,7 +1332,7 @@ public class ExternalNavigationHandler {
         if (!deviceCanHandleIntent(intent)) {
             // Exit early if the Play Store isn't available. (https://crbug.com/820709)
             if (DEBUG) Log.i(TAG, "Play Store not installed.");
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResultType.NO_OVERRIDE;
         }
 
         if (params.isIncognito()) {
@@ -1337,14 +1340,14 @@ public class ExternalNavigationHandler {
 
                         params.shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent(), false)) {
                 if (DEBUG) Log.i(TAG, "Failed to show incognito alert dialog.");
-                return OverrideUrlLoadingResult.NO_OVERRIDE;
+                return OverrideUrlLoadingResultType.NO_OVERRIDE;
             }
             if (DEBUG) Log.i(TAG, "Incognito intent to Play Store.");
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_ASYNC_ACTION;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION;
         } else {
             startActivity(intent, false, mDelegate);
             if (DEBUG) Log.i(TAG, "Intent to Play Store.");
-            return OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT;
+            return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
         }
     }
 

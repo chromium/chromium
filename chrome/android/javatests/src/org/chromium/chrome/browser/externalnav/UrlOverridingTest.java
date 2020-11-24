@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
+import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -267,11 +267,11 @@ public class UrlOverridingTest {
             Tab latestTab = latestTabHolder[0];
             InterceptNavigationDelegateImpl delegate = latestDelegateHolder[0];
             if (shouldLaunchExternalIntent) {
-                Criteria.checkThat(delegate.getLastOverrideUrlLoadingResultForTests(),
-                        Matchers.is(OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT));
+                Criteria.checkThat(delegate.getLastOverrideUrlLoadingResultTypeForTests(),
+                        Matchers.is(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT));
             } else {
-                Criteria.checkThat(delegate.getLastOverrideUrlLoadingResultForTests(),
-                        Matchers.not(OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT));
+                Criteria.checkThat(delegate.getLastOverrideUrlLoadingResultTypeForTests(),
+                        Matchers.not(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT));
             }
             if (expectedFinalUrl == null) return;
             Criteria.checkThat(latestTab.getUrlString(), Matchers.is(expectedFinalUrl));
