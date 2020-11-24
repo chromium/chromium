@@ -166,6 +166,7 @@ component("shared_impl") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",

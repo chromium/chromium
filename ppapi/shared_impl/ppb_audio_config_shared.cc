@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_instance_api.h"
 
@@ -84,7 +85,7 @@ uint32_t PPB_AudioConfig_Shared::RecommendSampleFrameCount_1_1(
 
   // Should track the value reported by XP and ALSA backends.
   const uint32_t kHighLatencySampleFrameCount = 2048;
-#if defined(OS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
   // TODO(ihf): Remove this once ARM Chromebooks support low latency audio. For
   // now we classify them as high latency. See crbug.com/289770. Note that
   // Adobe Flash is affected but not HTML5, WebRTC and WebAudio (they are using
