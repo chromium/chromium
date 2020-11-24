@@ -7509,14 +7509,12 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResume) {
   writes.push_back(CreateMockWrite(req, i++));
   for (size_t j = 0; j < num_upload_buffers; j++) {
     for (size_t k = 0; k < num_frames_in_one_upload_buffer; k++) {
-      if (k == num_frames_in_one_upload_buffer - 1 &&
-          kBufferSize % kMaxSpdyFrameChunkSize != 0) {
-        if (j == num_upload_buffers - 1 &&
-            (initial_window_size % kBufferSize != 0)) {
-          writes.push_back(CreateMockWrite(body3, i++));
-        } else {
-          writes.push_back(CreateMockWrite(body2, i++));
-        }
+      if (j == num_upload_buffers - 1 &&
+          (initial_window_size % kBufferSize != 0)) {
+        writes.push_back(CreateMockWrite(body3, i++));
+      } else if (k == num_frames_in_one_upload_buffer - 1 &&
+                 kBufferSize % kMaxSpdyFrameChunkSize != 0) {
+        writes.push_back(CreateMockWrite(body2, i++));
       } else {
         writes.push_back(CreateMockWrite(body1, i++));
       }
@@ -7660,14 +7658,12 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResumeAfterSettings) {
   writes.push_back(CreateMockWrite(req, i++));
   for (size_t j = 0; j < num_upload_buffers; j++) {
     for (size_t k = 0; k < num_frames_in_one_upload_buffer; k++) {
-      if (k == num_frames_in_one_upload_buffer - 1 &&
-          kBufferSize % kMaxSpdyFrameChunkSize != 0) {
-        if (j == num_upload_buffers - 1 &&
-            (initial_window_size % kBufferSize != 0)) {
-          writes.push_back(CreateMockWrite(body3, i++));
-        } else {
-          writes.push_back(CreateMockWrite(body2, i++));
-        }
+      if (j == num_upload_buffers - 1 &&
+          (initial_window_size % kBufferSize != 0)) {
+        writes.push_back(CreateMockWrite(body3, i++));
+      } else if (k == num_frames_in_one_upload_buffer - 1 &&
+                 kBufferSize % kMaxSpdyFrameChunkSize != 0) {
+        writes.push_back(CreateMockWrite(body2, i++));
       } else {
         writes.push_back(CreateMockWrite(body1, i++));
       }
@@ -7823,14 +7819,12 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
   writes.push_back(CreateMockWrite(req, i++));
   for (size_t j = 0; j < num_upload_buffers; j++) {
     for (size_t k = 0; k < num_frames_in_one_upload_buffer; k++) {
-      if (k == num_frames_in_one_upload_buffer - 1 &&
-          kBufferSize % kMaxSpdyFrameChunkSize != 0) {
-        if (j == num_upload_buffers - 1 &&
-            (initial_window_size % kBufferSize != 0)) {
-          writes.push_back(CreateMockWrite(body3, i++));
-        } else {
-          writes.push_back(CreateMockWrite(body2, i++));
-        }
+      if (j == num_upload_buffers - 1 &&
+          (initial_window_size % kBufferSize != 0)) {
+        writes.push_back(CreateMockWrite(body3, i++));
+      } else if (k == num_frames_in_one_upload_buffer - 1 &&
+                 kBufferSize % kMaxSpdyFrameChunkSize != 0) {
+        writes.push_back(CreateMockWrite(body2, i++));
       } else {
         writes.push_back(CreateMockWrite(body1, i++));
       }

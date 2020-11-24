@@ -60,13 +60,14 @@ namespace test {
 class SpdyStreamTest;
 }
 
-// This is somewhat arbitrary and not really fixed, but it will always work
-// reasonably with ethernet. Chop the world into 2-packet chunks.  This is
-// somewhat arbitrary, but is reasonably small and ensures that we elicit
-// ACKs quickly from TCP (because TCP tries to only ACK every other packet).
-const int kMss = 1430;
-// The 8 is the size of the SPDY frame header.
-const int kMaxSpdyFrameChunkSize = (2 * kMss) - 8;
+// TLS and other layers will chunk data at 16KB. Making the max frame size too
+// small will lead to increased CPU/byte cost and overhead on both client/server
+// due to excessive frames to process. Making this larger has diminishing
+// returns as the data will be chunked elsewhere. We also want to ensure we are
+// >= 2860B (~2* MSS => 2 packets) to avoid delayed ACKs. We will also account
+// for the frame header size of 9B to prevent fragmentation when this is added.
+// As a result we will use a 16KB - 9B max data frame size.
+const int kMaxSpdyFrameChunkSize = (16 * 1024) - 9;
 
 // Default value of spdy::SETTINGS_INITIAL_WINDOW_SIZE per protocol
 // specification. A session is always created with this initial window size.
@@ -365,9 +366,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   const HostPortProxyPair& host_port_proxy_pair() const {
     return spdy_session_key_.host_port_proxy_pair();
   }
-  const SpdySessionKey& spdy_session_key() const {
-    return spdy_session_key_;
-  }
+  const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
 
   // Get a pushed stream for a given |url| with stream ID |pushed_stream_id|.
   // The caller must have already claimed the stream from Http2PushPromiseIndex.

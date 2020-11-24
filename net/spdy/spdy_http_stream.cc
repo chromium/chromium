@@ -94,7 +94,9 @@ bool ValidatePushedHeaders(
 
 }  // anonymous namespace
 
-const size_t SpdyHttpStream::kRequestBodyBufferSize = 1 << 14;  // 16KB
+// Align our request body with |kMaxSpdyFrameChunkSize| to prevent unexpected
+// buffer chunking. This is 16KB - frame header size.
+const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                                spdy::SpdyStreamId pushed_stream_id,
