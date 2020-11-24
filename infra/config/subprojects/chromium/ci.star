@@ -2719,6 +2719,15 @@ ci.updater_builder(
 )
 
 ci.updater_builder(
+    name = "mac-arm64-updater-tester-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "release|mac",
+        short_name = "11.0 arm64",
+    ),
+    triggered_by = ["mac-updater-builder-rel"],
+)
+
+ci.updater_builder(
     name = "win-updater-builder-dbg",
     console_view_entry = ci.console_view_entry(
         category = "debug|win",

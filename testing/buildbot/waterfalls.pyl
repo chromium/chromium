@@ -5261,6 +5261,15 @@
     'name': 'chromium.updater',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'mac-arm64-updater-tester-rel': {
+        'mixins': [
+            'mac_arm64_apple_dtk_experimental',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+          'isolated_scripts': 'updater_isolated_scripts',
+        },
+      },
       'mac10.11-updater-tester-rel': {
         'mixins': [
             'mac_10.11',
