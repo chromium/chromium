@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
@@ -38,6 +39,7 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
     private LocationBarDataProvider mLocationBarDataProvider;
     private AssistantVoiceSearchService mAssistantVoiceSearchService;
     private OneshotSupplierImpl<AssistantVoiceSearchService> mAssistantVoiceSearchSupplier;
+    private StatusCoordinator mStatusCoordinator;
 
     /*package */ LocationBarMediator(@NonNull LocationBarLayout locationBarLayout,
             @NonNull LocationBarDataProvider locationBarDataProvider,
@@ -71,10 +73,20 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
         mLocationBarLayout.setUnfocusedWidth(unfocusedWidth);
     }
 
-    /*package */ void setVoiceRecognitionHandlerForTesting(
+    /* package */ void setVoiceRecognitionHandlerForTesting(
             VoiceRecognitionHandler voiceRecognitionHandler) {
         mVoiceRecognitionHandler = voiceRecognitionHandler;
         mLocationBarLayout.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+    }
+
+    /**
+     * Sets coordinators post-construction; they can't be set at construction time since
+     * LocationBarMediator is a delegate for them, so is constructed beforehand.
+     *
+     * @param statusCoordinator
+     */
+    /* package */ void setCoordinators(@NonNull StatusCoordinator statusCoordinator) {
+        mStatusCoordinator = statusCoordinator;
     }
 
     // LocationBarData.Observer implementation
@@ -109,6 +121,7 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
         }
         mLocationBarDataProvider.removeObserver(this);
         mLocationBarDataProvider = null;
+        mStatusCoordinator = null;
     }
 
     @Override
@@ -196,8 +209,11 @@ class LocationBarMediator implements LocationBar, LocationBarDataProvider.Observ
     }
 
     @Override
-    public void onSuggestionsChanged(String autocompleteText) {
+    public void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {
         mLocationBarLayout.onSuggestionsChanged(autocompleteText);
+        // TODO (https://crbug.com/1152501): Refactor the LBM/LBC relationship such that LBM doesn't
+        // need to communicate with other coordinators like this.
+        mStatusCoordinator.onDefaultMatchClassified(defaultMatchIsSearch);
     }
 
     @Override

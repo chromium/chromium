@@ -7,15 +7,12 @@ package org.chromium.chrome.browser.omnibox.status;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
@@ -32,7 +29,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * A component for displaying a status icon (e.g. security icon or navigation icon) and optional
  * verbose status text.
  */
-public class StatusCoordinator implements View.OnClickListener, UrlTextChangeListener {
+public class StatusCoordinator implements View.OnClickListener {
     // TODO(crbug.com/1109369): Do not store the StatusView
     private final StatusView mStatusView;
     private final StatusMediator mMediator;
@@ -287,8 +284,13 @@ public class StatusCoordinator implements View.OnClickListener, UrlTextChangeLis
         return mMediator.getEndPaddingPixelSizeOnFocusDelta();
     }
 
-    @Override
-    public void onTextChanged(String textWithoutAutocomplete, String textWithAutocomplete) {
-        mMediator.onTextChanged(textWithoutAutocomplete);
+    /**
+     * Notifies StatusCoordinator that the default match for the currently entered autocomplete text
+     * has been classified, indicating whether the default match is a search.
+     *
+     * @param defaultMatchIsSearch Whether the default match is a search.
+     */
+    public void onDefaultMatchClassified(boolean defaultMatchIsSearch) {
+        mMediator.updateLocationBarIconForDefaultMatchCategory(defaultMatchIsSearch);
     }
 }

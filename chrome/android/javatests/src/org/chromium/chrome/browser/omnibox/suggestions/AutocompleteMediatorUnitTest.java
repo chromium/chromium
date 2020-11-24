@@ -90,7 +90,7 @@ public class AutocompleteMediatorUnitTest {
         public void onUrlTextChanged() {}
 
         @Override
-        public void onSuggestionsChanged(String autocompleteText) {}
+        public void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {}
 
         @Override
         public void onSuggestionsHidden() {}
@@ -473,7 +473,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionsReceived(
                 new AutocompleteResult(mSuggestionsList, null), "inline_autocomplete");
-        verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete");
+        verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
 
         // Ensure duplicate requests are suppressed.
         mMediator.onSuggestionsReceived(

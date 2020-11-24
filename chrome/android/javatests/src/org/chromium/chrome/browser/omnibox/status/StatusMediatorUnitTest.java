@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -72,8 +71,6 @@ public final class StatusMediatorUnitTest {
     Runnable mMockForceModelViewReconciliationRunnable;
     @Captor
     ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
-    @Captor
-    ArgumentCaptor<String> mUrlCaptor;
 
     Context mContext;
     Resources mResources;
@@ -99,9 +96,6 @@ public final class StatusMediatorUnitTest {
             mMediator.setDelegateForTesting(mDelegate);
         });
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
-
-        when(mDelegate.isUrlValid(mUrlCaptor.capture()))
-                .thenAnswer(invocation -> mUrlCaptor.getValue().equals(TEST_SEARCH_URL));
     }
 
     @Test
@@ -285,7 +279,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setShowIconsWhenUrlFocused(true);
         doReturn(TEST_SEARCH_URL).when(mUrlBarEditingTextStateProvider).getTextWithAutocomplete();
 
-        mMediator.onTextChanged(TEST_SEARCH_URL);
+        mMediator.updateLocationBarIconForDefaultMatchCategory(false);
         Assert.assertEquals(R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
     }
@@ -301,7 +295,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setShowIconsWhenUrlFocused(true);
         doReturn(TEST_SEARCH_URL).when(mUrlBarEditingTextStateProvider).getTextWithAutocomplete();
 
-        mMediator.onTextChanged(TEST_SEARCH_URL.substring(0, TEST_SEARCH_URL.length() - 1));
+        mMediator.updateLocationBarIconForDefaultMatchCategory(false);
         Assert.assertEquals(R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
     }
@@ -317,8 +311,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setShowIconsWhenUrlFocused(true);
         doReturn(TEST_SEARCH_URL).when(mUrlBarEditingTextStateProvider).getTextWithAutocomplete();
 
-        mMediator.onTextChanged("food near me");
-        verify(mDelegate).isUrlValid("food near me");
+        mMediator.updateLocationBarIconForDefaultMatchCategory(true);
         Assert.assertNotEquals(R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
     }
@@ -334,10 +327,9 @@ public final class StatusMediatorUnitTest {
         mMediator.setShowIconsWhenUrlFocused(true);
         // Setup a valid url to prevent the default "" from matching the url.
         doReturn(TEST_SEARCH_URL).when(mUrlBarEditingTextStateProvider).getTextWithAutocomplete();
-        mMediator.onTextChanged(TEST_SEARCH_URL);
+        mMediator.updateLocationBarIconForDefaultMatchCategory(false);
 
-        mMediator.onTextChanged("");
-        verify(mDelegate).isUrlValid("");
+        mMediator.updateLocationBarIconForDefaultMatchCategory(true);
         Assert.assertNotEquals(R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
     }

@@ -761,7 +761,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                     mDropdownViewInfoListBuilder.buildDropdownViewInfoList(autocompleteResult);
             mDropdownViewInfoListManager.setSourceViewInfoList(
                     viewInfoList, autocompleteResult.getGroupsDetails());
-            mDelegate.onSuggestionsChanged(inlineAutocompleteText);
+            boolean defaultMatchIsSearch = true;
+            if (!TextUtils.isEmpty(mUrlBarEditingTextProvider.getTextWithoutAutocomplete())
+                    && !newSuggestions.isEmpty()) {
+                defaultMatchIsSearch = newSuggestions.get(0).isSearchSuggestion();
+            }
+            mDelegate.onSuggestionsChanged(inlineAutocompleteText, defaultMatchIsSearch);
             updateOmniboxSuggestionsVisibility();
         }
     }

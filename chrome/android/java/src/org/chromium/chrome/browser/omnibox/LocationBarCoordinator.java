@@ -128,9 +128,9 @@ public final class LocationBarCoordinator
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider);
+        mLocationBarMediator.setCoordinators(mStatusCoordinator);
 
         mUrlCoordinator.addUrlTextChangeListener(mAutocompleteCoordinator);
-        mUrlCoordinator.addUrlTextChangeListener(mStatusCoordinator);
 
         // The LocationBar's direction is tied to the UrlBar's text direction. Icons inside the
         // location bar, e.g. lock, refresh, X, should be reversed if UrlBar's text is RTL.

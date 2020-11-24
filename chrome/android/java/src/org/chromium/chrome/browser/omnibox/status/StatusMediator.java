@@ -9,12 +9,10 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.View;
-
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.MockedInTests;
@@ -24,12 +22,10 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -39,14 +35,6 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     @VisibleForTesting
     @MockedInTests
     class StatusMediatorDelegate {
-        /** @see {@link AutocompleteCoordinator#qualifyPartialURLQuery} */
-        boolean isUrlValid(String partialUrl) {
-            if (TextUtils.isEmpty(partialUrl)) return false;
-
-            return BrowserStartupController.getInstance().isFullBrowserStarted()
-                    && AutocompleteCoordinator.qualifyPartialURLQuery(partialUrl) != null;
-        }
-
         /** @see {@link SearchEngineLogoUtils#getSearchEngineLogoFavicon} */
         void getSearchEngineLogoFavicon(Resources res, Callback<Bitmap> callback) {
             SearchEngineLogoUtils.getSearchEngineLogoFavicon(
@@ -98,8 +86,7 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     private LocationBarDataProvider mLocationBarDataProvider;
     private UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
 
-    private String mUrlBarTextWithAutocomplete = "";
-    private boolean mUrlBarTextIsValidUrl;
+    private boolean mUrlBarTextIsSearch = true;
 
     private float mUrlFocusPercent;
     private String mSearchEngineLogoUrl;
@@ -288,9 +275,9 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         updateStatusVisibility();
         updateLocationBarIcon();
 
-        // Set the autocomplete text to be empty on an unfocus event to avoid the globe sticking
+        // Set the default match to be a search on an unfocus event to avoid the globe sticking
         // around for subsequent focus events.
-        if (!mUrlHasFocus) updateLocationBarIconForUrlBarAutocompleteText("");
+        if (!mUrlHasFocus) updateLocationBarIconForDefaultMatchCategory(true);
     }
 
     // Extra logic to support extra NTP use cases which show the status icon when animating and when
@@ -552,7 +539,7 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
             boolean isIncognito, Callback<StatusIconResource> resourceCallback) {
         mShouldCancelCustomFavicon = false;
         // If the current url text is a valid url, then swap the dse icon for a globe.
-        if (mUrlBarTextIsValidUrl) {
+        if (!mUrlBarTextIsSearch) {
             resourceCallback.onResult(new StatusIconResource(R.drawable.ic_globe_24dp,
                     getSecurityIconTintForSearchEngineIcon(R.drawable.ic_globe_24dp)));
         } else if (mIsSearchEngineGoogle) {
@@ -620,23 +607,13 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         return 0;
     }
 
-    /** @see org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener */
-    void onTextChanged(CharSequence urlBarText) {
-        updateLocationBarIconForUrlBarAutocompleteText(
-                resolveUrlBarTextWithAutocomplete(urlBarText));
-    }
-
     /**
-     * Updates variables and possibly the status icon based on the given urlBarTextWithAutocomplete.
+     *  Informs StatusMediator that the default match may have changed categories, updating the
+     * status icon if it has.
      */
-    private void updateLocationBarIconForUrlBarAutocompleteText(String urlBarTextWithAutocomplete) {
-        // Ignore text we've already seen to avoid unnecessary updates to the drawable resource.
-        if (TextUtils.equals(mUrlBarTextWithAutocomplete, urlBarTextWithAutocomplete)) return;
-
-        mUrlBarTextWithAutocomplete = urlBarTextWithAutocomplete;
-        boolean isValid = mDelegate.isUrlValid(mUrlBarTextWithAutocomplete);
-        if (isValid != mUrlBarTextIsValidUrl) {
-            mUrlBarTextIsValidUrl = isValid;
+    /* package */ void updateLocationBarIconForDefaultMatchCategory(boolean defaultMatchIsSearch) {
+        if (defaultMatchIsSearch != mUrlBarTextIsSearch) {
+            mUrlBarTextIsSearch = defaultMatchIsSearch;
             updateLocationBarIcon();
         }
     }

@@ -19,8 +19,10 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
      * Notified that suggestions have changed.
      * @param autocompleteText The inline autocomplete text that can be appended to the
      *                         currently entered user text.
+     * @param defaultMatchIsSearch Whether the default match is a search (as opposed to a URL).
+     *         This is true if there are no suggestions.
      */
-    void onSuggestionsChanged(String autocompleteText);
+    void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch);
 
     /**
      * Notified that the suggestions have been hidden.
