@@ -190,10 +190,10 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
     if (metric.type == EventBase::MetricType::kString) {
       // Store hashed values as strings, because the JSON parser only retains 53
       // bits of precision for ints. This would corrupt the hashes.
-      name_value.SetStringKey(
-          "value", base::NumberToString(key_data_->HashForEventMetric(
-                       event.project_name_hash(), metric.name_hash,
-                       metric.string_value)));
+      name_value.SetStringKey("value",
+                              base::NumberToString(key_data_->HmacMetric(
+                                  event.project_name_hash(), metric.name_hash,
+                                  metric.string_value)));
     } else if (metric.type == EventBase::MetricType::kInt) {
       name_value.SetIntKey("value", metric.int_value);
     }
@@ -205,9 +205,8 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   // ID that will eventually be used as the profile_event_id of this event.
   base::Value event_value(base::Value::Type::DICTIONARY);
   event_value.SetStringKey("name", base::NumberToString(event.name_hash()));
-  event_value.SetStringKey(
-      "id",
-      base::NumberToString(key_data_->UserEventId(event.project_name_hash())));
+  event_value.SetStringKey("id", base::NumberToString(key_data_->UserProjectId(
+                                     event.project_name_hash())));
   event_value.SetKey("metrics", std::move(metrics));
 
   // Add the event to |storage_|.

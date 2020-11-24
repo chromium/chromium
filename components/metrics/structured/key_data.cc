@@ -41,17 +41,18 @@ std::string HashToHex(const uint64_t hash) {
   return base::HexEncode(&hash, sizeof(uint64_t));
 }
 
-std::string KeyPath(const uint64_t event) {
-  return base::StrCat({"keys.", base::NumberToString(event), ".key"});
+std::string KeyPath(const uint64_t project) {
+  return base::StrCat({"keys.", base::NumberToString(project), ".key"});
 }
 
-std::string LastRotationPath(const uint64_t event) {
-  return base::StrCat({"keys.", base::NumberToString(event), ".last_rotation"});
-}
-
-std::string RotationPeriodPath(const uint64_t event) {
+std::string LastRotationPath(const uint64_t project) {
   return base::StrCat(
-      {"keys.", base::NumberToString(event), ".rotation_period"});
+      {"keys.", base::NumberToString(project), ".last_rotation"});
+}
+
+std::string RotationPeriodPath(const uint64_t project) {
+  return base::StrCat(
+      {"keys.", base::NumberToString(project), ".rotation_period"});
 }
 
 }  // namespace
@@ -124,15 +125,15 @@ void KeyData::ValidateKeys() {
   }
 }
 
-void KeyData::SetLastRotation(const uint64_t event, const int last_rotation) {
-  return key_store_->SetValue(LastRotationPath(event),
+void KeyData::SetLastRotation(const uint64_t project, const int last_rotation) {
+  return key_store_->SetValue(LastRotationPath(project),
                               std::make_unique<base::Value>(last_rotation),
                               WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
 
-void KeyData::SetRotationPeriod(const uint64_t event,
+void KeyData::SetRotationPeriod(const uint64_t project,
                                 const int rotation_period) {
-  return key_store_->SetValue(RotationPeriodPath(event),
+  return key_store_->SetValue(RotationPeriodPath(project),
                               std::make_unique<base::Value>(rotation_period),
                               WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
@@ -143,9 +144,9 @@ void KeyData::SetKey(const uint64_t project_name_hash, const std::string& key) {
                               WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
 
-int KeyData::GetLastRotation(const uint64_t event) {
+int KeyData::GetLastRotation(const uint64_t project) {
   const base::Value* value;
-  if (!(key_store_->GetValue(LastRotationPath(event), &value) &&
+  if (!(key_store_->GetValue(LastRotationPath(project), &value) &&
         value->is_int())) {
     LogInternalError(StructuredMetricsError::kMissingLastRotation);
     NOTREACHED();
@@ -154,9 +155,9 @@ int KeyData::GetLastRotation(const uint64_t event) {
   return value->GetInt();
 }
 
-int KeyData::GetRotationPeriod(const uint64_t event) {
+int KeyData::GetRotationPeriod(const uint64_t project) {
   const base::Value* value;
-  if (!(key_store_->GetValue(RotationPeriodPath(event), &value) &&
+  if (!(key_store_->GetValue(RotationPeriodPath(project), &value) &&
         value->is_int())) {
     LogInternalError(StructuredMetricsError::kMissingRotationPeriod);
     NOTREACHED();
@@ -165,8 +166,8 @@ int KeyData::GetRotationPeriod(const uint64_t event) {
   return value->GetInt();
 }
 
-uint64_t KeyData::UserEventId(const uint64_t project_name_hash) {
-  // Retrieve the key for |event|.
+uint64_t KeyData::UserProjectId(const uint64_t project_name_hash) {
+  // Retrieve the key for |project_name_hash|.
   const base::Optional<std::string> key = ValidateAndGetKey(project_name_hash);
   if (!key) {
     NOTREACHED();
@@ -179,9 +180,9 @@ uint64_t KeyData::UserEventId(const uint64_t project_name_hash) {
   return hash;
 }
 
-uint64_t KeyData::HashForEventMetric(const uint64_t project_name_hash,
-                                     const uint64_t metric,
-                                     const std::string& value) {
+uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
+                             const uint64_t metric_name_hash,
+                             const std::string& value) {
   // Retrieve the key for |project_name_hash|.
   const base::Optional<std::string> key = ValidateAndGetKey(project_name_hash);
   if (!key) {
@@ -194,7 +195,8 @@ uint64_t KeyData::HashForEventMetric(const uint64_t project_name_hash,
   CHECK(hmac.Init(key.value()));
 
   // Compute and return the digest.
-  const std::string salted_value = base::StrCat({HashToHex(metric), value});
+  const std::string salted_value =
+      base::StrCat({HashToHex(metric_name_hash), value});
   uint64_t digest;
   CHECK(hmac.Sign(salted_value, reinterpret_cast<uint8_t*>(&digest),
                   sizeof(digest)));
