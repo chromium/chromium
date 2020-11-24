@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/template_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -112,6 +113,39 @@ TYPED_TEST(StrongAliasTest, CanBeConstructedFromMoveOnlyType) {
   auto bare_value = std::make_unique<TypeParam>(GetExampleValue<TypeParam>(1));
   FooAlias b(std::move(bare_value));
   EXPECT_EQ(*b.value(), GetExampleValue<TypeParam>(1));
+}
+
+TYPED_TEST(StrongAliasTest, MutableOperatorArrow) {
+  // Note, using a move-only unique_ptr to T:
+  using Ptr = std::unique_ptr<TypeParam>;
+  using FooAlias = StrongAlias<class FooTag, Ptr>;
+
+  FooAlias a(std::make_unique<TypeParam>());
+  EXPECT_TRUE(a.value());
+
+  // Check that `a` can be modified through the use of operator->.
+  a->reset();
+
+  EXPECT_FALSE(a.value());
+}
+
+TYPED_TEST(StrongAliasTest, MutableOperatorStar) {
+  // Note, using a move-only unique_ptr to T:
+  using Ptr = std::unique_ptr<TypeParam>;
+  using FooAlias = StrongAlias<class FooTag, Ptr>;
+
+  FooAlias a(std::make_unique<TypeParam>());
+  FooAlias b(std::make_unique<TypeParam>());
+  EXPECT_TRUE(*a);
+  EXPECT_TRUE(*b);
+
+  // Check that both the mutable l-value and r-value overloads work and we can
+  // move out of the aliases.
+  { Ptr ignore(*std::move(a)); }
+  { Ptr ignore(std::move(*b)); }
+
+  EXPECT_FALSE(a.value());
+  EXPECT_FALSE(b.value());
 }
 
 TYPED_TEST(StrongAliasTest, MutableValue) {
@@ -296,10 +330,20 @@ TYPED_TEST(StrongAliasTest, CanDifferentiateOverloads) {
 
 TEST(StrongAliasTest, EnsureConstexpr) {
   using FooAlias = StrongAlias<class FooTag, int>;
+  using BarAlias = StrongAlias<class BarTag, base::StringPiece>;
 
   // Check constructors.
   static constexpr FooAlias kZero{};
   static constexpr FooAlias kOne(1);
+  static constexpr BarAlias kHello("Hello");
+
+  // Check operator->.
+  static_assert(kHello->size() == 5, "");
+
+  // Check operator*.
+  static_assert(*kZero == 0, "");
+  static_assert(*kOne == 1, "");
+  static_assert(*kHello == "Hello", "");
 
   // Check value().
   static_assert(kZero.value() == 0, "");

@@ -35,11 +35,14 @@ namespace base {
 //
 // using Orange = StrongAlias<class OrangeTag, int>;
 // using Apple = StrongAlias<class AppleTag, int>;
+// using Banana = StrongAlias<class BananaTag, std::string>;
 // Apple apple(2);
+// Banana banana("Hello");
 // Orange orange = apple;  // Does not compile.
 // Orange other_orange = orange;  // Compiles, types match.
 // Orange x = orange + apple;  // Does not compile.
 // Orange y = Orange(orange.value() + apple.value());  // Compiles.
+// Orange z = Orange(banana->size() + *other_orange);  // Compiles.
 // if (orange > apple);  // Does not compile.
 // if (orange > other_orange);  // Compiles.
 // void foo(Orange);
@@ -59,7 +62,8 @@ namespace base {
 // impossible, without reflection, to expose all methods of the UnderlyingType
 // in StrongAlias's interface. It's also potentially unwanted (ex. you don't
 // want to be able to add two StrongAliases that represent socket handles).
-// A getter is provided in case you need to access the UnderlyingType.
+// A getter and dereference operators are provided in case you need to access
+// the UnderlyingType.
 //
 // See also
 // - //styleguide/c++/blink-c++.md which provides recommendation and examples of
@@ -75,6 +79,16 @@ class StrongAlias {
   constexpr explicit StrongAlias(const UnderlyingType& v) : value_(v) {}
   constexpr explicit StrongAlias(UnderlyingType&& v) noexcept
       : value_(std::move(v)) {}
+
+  constexpr UnderlyingType* operator->() { return &value_; }
+  constexpr const UnderlyingType* operator->() const { return &value_; }
+
+  constexpr UnderlyingType& operator*() & { return value_; }
+  constexpr const UnderlyingType& operator*() const& { return value_; }
+  constexpr UnderlyingType&& operator*() && { return std::move(value_); }
+  constexpr const UnderlyingType&& operator*() const&& {
+    return std::move(value_);
+  }
 
   constexpr UnderlyingType& value() & { return value_; }
   constexpr const UnderlyingType& value() const& { return value_; }
