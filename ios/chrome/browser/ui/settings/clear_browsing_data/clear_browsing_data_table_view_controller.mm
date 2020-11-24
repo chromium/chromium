@@ -43,7 +43,8 @@
 
 @interface ClearBrowsingDataTableViewController () <
     TableViewTextLinkCellDelegate,
-    ClearBrowsingDataConsumer>
+    ClearBrowsingDataConsumer,
+    UIGestureRecognizerDelegate>
 
 // TODO(crbug.com/850699): remove direct dependency and replace with
 // delegate.
@@ -191,6 +192,24 @@
     [self.alertCoordinator stop];
     self.alertCoordinator = nil;
   }
+  if (self.overlayCoordinator.started) {
+    [self.overlayCoordinator stop];
+    self.navigationController.interactivePopGestureRecognizer.delegate = nil;
+    self.overlayCoordinator = nil;
+  }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
+  if (gestureRecognizer ==
+      self.navigationController.interactivePopGestureRecognizer) {
+    // This view controller should only be observing gestures when the activity
+    // overlay is showing (e.g. when Clear Browsing Data is in progress and the
+    // user should not be able to swipe away from this view).
+    return NO;
+  }
+  return YES;
 }
 
 #pragma mark - UITableViewDataSource
@@ -322,6 +341,9 @@
 
   self.overlayCoordinator.blockAllWindows = YES;
 
+  // Observe Gestures while overlay is visible to prevent user from swiping away
+  // from this view during the process of clear browsing data.
+  self.navigationController.interactivePopGestureRecognizer.delegate = self;
   [self.overlayCoordinator start];
 
   __weak ClearBrowsingDataTableViewController* weakSelf = self;
@@ -337,6 +359,7 @@
     // least 1 second instead of looking like a glitch.
     dispatch_after(timeOneSecondLater, dispatch_get_main_queue(), ^{
       [self.overlayCoordinator stop];
+      self.navigationController.interactivePopGestureRecognizer.delegate = nil;
       if (completionBlock)
         completionBlock();
     });
