@@ -15346,7 +15346,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Create commit params with the same URL as the start one, so URL checks
   // pass, but use a different origin than the origin lock of the process.
   auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = 0;
   params->did_create_new_entry = false;
   params->url = start_url;
   params->referrer = blink::mojom::Referrer::New();

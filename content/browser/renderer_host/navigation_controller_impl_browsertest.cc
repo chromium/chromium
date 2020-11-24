@@ -8708,7 +8708,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // call. The browser doesn't know about the navigation at all previously.
   GURL bad_url(embedded_test_server()->GetURL("/title2.html"));
   auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = 0;
   params->did_create_new_entry = true;
   params->url = bad_url;
   params->referrer = blink::mojom::Referrer::New();

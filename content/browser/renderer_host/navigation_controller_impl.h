@@ -476,7 +476,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Classifies the given renderer navigation (see the NavigationType enum).
   NavigationType ClassifyNavigation(
       RenderFrameHostImpl* rfh,
-      const mojom::DidCommitProvisionalLoadParams& params);
+      const mojom::DidCommitProvisionalLoadParams& params,
+      NavigationRequest* navigation_request);
 
   // Handlers for the different types of navigation types. They will actually
   // handle the navigations corresponding to the different NavClasses above.

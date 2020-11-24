@@ -129,18 +129,15 @@ const base::string16& TestWebContents::GetTitle() {
 }
 
 void TestWebContents::TestDidNavigate(RenderFrameHost* render_frame_host,
-                                      int nav_entry_id,
                                       bool did_create_new_entry,
                                       const GURL& url,
                                       ui::PageTransition transition) {
-  TestDidNavigateWithSequenceNumber(render_frame_host, nav_entry_id,
-                                    did_create_new_entry, url, Referrer(),
-                                    transition, false, -1, -1);
+  TestDidNavigateWithSequenceNumber(render_frame_host, did_create_new_entry,
+                                    url, Referrer(), transition, false, -1, -1);
 }
 
 void TestWebContents::TestDidNavigateWithSequenceNumber(
     RenderFrameHost* render_frame_host,
-    int nav_entry_id,
     bool did_create_new_entry,
     const GURL& url,
     const Referrer& referrer,
@@ -156,7 +153,6 @@ void TestWebContents::TestDidNavigateWithSequenceNumber(
     rfh->SimulateNavigationStart(url);
 
   auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = nav_entry_id;
   params->item_sequence_number = item_sequence_number;
   params->document_sequence_number = document_sequence_number;
   params->url = url;

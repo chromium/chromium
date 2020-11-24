@@ -8867,7 +8867,6 @@ RenderFrameHostImpl::CommitAsTracedValue(
           ->GetProcessLock(agent_scheduling_group_.GetProcess()->GetID())
           .ToString());
 
-  value->SetInteger("nav_entry_id", params.nav_entry_id);
   value->SetInteger("item_sequence_number", params.item_sequence_number);
   value->SetInteger("document_sequence_number",
                     params.document_sequence_number);

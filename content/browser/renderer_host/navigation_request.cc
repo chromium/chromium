@@ -4648,7 +4648,6 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCache() {
   params->should_replace_current_entry =
       common_params().should_replace_current_entry;
   DCHECK_EQ(params->post_id, -1);
-  params->nav_entry_id = commit_params().nav_entry_id;
   params->navigation_token = commit_params().navigation_token;
   params->did_create_new_entry = false;
   DCHECK_EQ(params->origin, commit_params().origin_to_commit.value());

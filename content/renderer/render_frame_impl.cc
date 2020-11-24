@@ -4990,7 +4990,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->should_replace_current_entry =
       document_loader->ReplacesCurrentHistoryItem();
   params->post_id = -1;
-  params->nav_entry_id = navigation_state->commit_params().nav_entry_id;
   params->embedding_token = embedding_token;
 
   // Pass the navigation token back to the browser process, or generate a new

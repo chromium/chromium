@@ -1070,7 +1070,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // Set the replacement bit here and ClassifyNavigation will identify this
   // case and return NEW_PAGE.
   if (!rfh->GetParent() && pending_entry_ &&
-      pending_entry_->GetUniqueID() == params.nav_entry_id &&
+      pending_entry_->GetUniqueID() ==
+          navigation_request->commit_params().nav_entry_id &&
       pending_entry_->site_instance() &&
       pending_entry_->site_instance() != rfh->GetSiteInstance()) {
     DCHECK_NE(-1, pending_entry_index_);
@@ -1086,7 +1087,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   }
 
   // Do navigation-type specific actions. These will make and commit an entry.
-  details->type = ClassifyNavigation(rfh, params);
+  details->type = ClassifyNavigation(rfh, params, navigation_request);
 
   // is_same_document must be computed before the entry gets committed.
   details->is_same_document = is_same_document_navigation;
@@ -1242,7 +1243,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
 NavigationType NavigationControllerImpl::ClassifyNavigation(
     RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const mojom::DidCommitProvisionalLoadParams& params,
+    NavigationRequest* navigation_request) {
   TraceReturnReason<tracing_category::kNavigation> trace_return(
       "ClassifyNavigation");
 
@@ -1286,7 +1288,8 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     return NAVIGATION_TYPE_NAV_IGNORE;
   }
 
-  if (params.nav_entry_id == 0) {
+  const int nav_entry_id = navigation_request->commit_params().nav_entry_id;
+  if (nav_entry_id == 0) {
     // This is a renderer-initiated navigation (nav_entry_id == 0), but didn't
     // create a new page.
 
@@ -1309,7 +1312,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     return NAVIGATION_TYPE_EXISTING_PAGE;
   }
 
-  if (pending_entry_ && pending_entry_->GetUniqueID() == params.nav_entry_id) {
+  if (pending_entry_ && pending_entry_->GetUniqueID() == nav_entry_id) {
     // If the SiteInstance of the |pending_entry_| does not match the
     // SiteInstance that got committed, treat this as a new navigation with
     // replacement. This can happen if back/forward/reload encounters a server
@@ -1361,7 +1364,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
   }
 
   if (params.url_is_unreachable && failed_pending_entry_id_ != 0 &&
-      params.nav_entry_id == failed_pending_entry_id_) {
+      nav_entry_id == failed_pending_entry_id_) {
     // If the renderer was going to a new pending entry that got cleared because
     // of an error, this is the case of the user trying to retry a failed load
     // by pressing return. Classify as EXISTING_PAGE because we probably don't
@@ -1372,7 +1375,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
   }
 
   // Now we know that the notification is for an existing page. Find that entry.
-  int existing_entry_index = GetEntryIndexWithUniqueID(params.nav_entry_id);
+  int existing_entry_index = GetEntryIndexWithUniqueID(nav_entry_id);
   trace_return.traced_value()->SetInteger("existing_entry_index",
                                           existing_entry_index);
   if (existing_entry_index == -1) {
@@ -1562,7 +1565,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
   // process, then it should be the one replaced, so update the
   // last_committed_entry_index_ to use it.
   if (replace_entry && pending_entry_index_ != -1 &&
-      pending_entry_->GetUniqueID() == params.nav_entry_id) {
+      pending_entry_->GetUniqueID() == request->commit_params().nav_entry_id) {
     last_committed_entry_index_ = pending_entry_index_;
   }
 
@@ -1614,9 +1617,9 @@ void NavigationControllerImpl::RendererDidNavigateToExistingPage(
             has_cert);
       }
     }
-  } else if (params.nav_entry_id) {
+  } else if (const int nav_entry_id = request->commit_params().nav_entry_id) {
     // This is a browser-initiated navigation (back/forward/reload).
-    entry = GetEntryWithUniqueID(params.nav_entry_id);
+    entry = GetEntryWithUniqueID(nav_entry_id);
 
     if (is_same_document) {
       // There's no SSLStatus in the NavigationRequest for same document
@@ -1769,7 +1772,8 @@ void NavigationControllerImpl::RendererDidNavigateToSamePage(
   // We assign the entry's unique ID to be that of the new one. Since this is
   // always the result of a user action, we want to dismiss infobars, etc. like
   // a regular user-initiated navigation.
-  DCHECK_EQ(pending_entry_->GetUniqueID(), params.nav_entry_id);
+  DCHECK_EQ(pending_entry_->GetUniqueID(),
+            request->commit_params().nav_entry_id);
   existing_entry->set_unique_id(pending_entry_->GetUniqueID());
 
   // The URL may have changed due to redirects.
@@ -1886,12 +1890,12 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
   // This is only necessary for history navigations in subframes.
   bool send_commit_notification = false;
 
-  // If the |nav_entry_id| is non-zero and matches an existing entry, this is
-  // a history navigation.  Update the last committed index accordingly.
-  // If we don't recognize the |nav_entry_id|, it might be a recently pruned
-  // entry.  We'll handle it below.
-  if (params.nav_entry_id) {
-    int entry_index = GetEntryIndexWithUniqueID(params.nav_entry_id);
+  // If |nav_entry_id| is non-zero and matches an existing entry, this
+  // is a history navigation.  Update the last committed index accordingly. If
+  // we don't recognize the |nav_entry_id|, it might be a recently
+  // pruned entry.  We'll handle it below.
+  if (const int nav_entry_id = request->commit_params().nav_entry_id) {
+    int entry_index = GetEntryIndexWithUniqueID(nav_entry_id);
     if (entry_index != -1 && entry_index != last_committed_entry_index_) {
       // Make sure that a subframe commit isn't changing the main frame's
       // origin. Otherwise the renderer process may be confused, leading to a

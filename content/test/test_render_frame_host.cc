@@ -264,8 +264,8 @@ void TestRenderFrameHost::SendNavigateWithParameters(
        url.ReplaceComponents(replacements) ==
            GetLastCommittedURL().ReplaceComponents(replacements));
 
-  auto params = BuildDidCommitParams(nav_entry_id, did_create_new_entry, url,
-                                     transition, response_code);
+  auto params = BuildDidCommitParams(did_create_new_entry, url, transition,
+                                     response_code);
   if (!was_within_same_document)
     params->embedding_token = base::UnguessableToken::Create();
 
@@ -431,7 +431,6 @@ void TestRenderFrameHost::SimulateCommitProcessed(
         browser_interface_broker_receiver,
     bool same_document) {
   CHECK(params);
-
   if (!same_document) {
     // Note: Although the code does not prohibit the running of multiple
     // callbacks, no more than 1 callback will ever run, because navigation_id
@@ -521,13 +520,11 @@ void TestRenderFrameHost::SendCommitFailedNavigation(
 }
 
 mojom::DidCommitProvisionalLoadParamsPtr
-TestRenderFrameHost::BuildDidCommitParams(int nav_entry_id,
-                                          bool did_create_new_entry,
+TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
                                           const GURL& url,
                                           ui::PageTransition transition,
                                           int response_code) {
   auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = nav_entry_id;
   params->url = url;
   params->referrer = blink::mojom::Referrer::New();
   params->transition = transition;

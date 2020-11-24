@@ -1327,7 +1327,6 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   }
 
   CHECK(same_document || request_);
-  params->nav_entry_id = request_ ? request_->nav_entry_id() : 0;
 
   // Simulate Blink assigning a item sequence number and document sequence
   // number to the navigation.

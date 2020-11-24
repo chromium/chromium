@@ -2273,7 +2273,6 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
   // First navigation (using location.replace).
   const GURL url2("http://foo#a");
   auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = 0;
   params->did_create_new_entry = false;
   params->should_replace_current_entry = true;
   params->url = url2;
@@ -2298,7 +2297,6 @@ TEST_F(NavigationControllerTest, PushStateWithoutPreviousEntry) {
   ASSERT_FALSE(controller_impl().GetLastCommittedEntry());
   GURL url("http://foo");
   auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = 0;
   params->did_create_new_entry = true;
   params->url = url;
   params->referrer = blink::mojom::Referrer::New();
@@ -2998,7 +2996,6 @@ TEST_F(NavigationControllerTest,
 
   // Doing a replaceState to a cross-origin URL is thus allowed.
   auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = 1;
   params->did_create_new_entry = false;
   params->url = different_origin_url;
   params->referrer = blink::mojom::Referrer::New();
@@ -3494,8 +3491,8 @@ TEST_F(NavigationControllerTest, CopyStateFromAndPruneTargetPending2) {
   EXPECT_EQ(url2b, other_controller.GetPendingEntry()->GetURL());
 
   // Let the pending entry commit.
-  other_contents->TestDidNavigate(other_contents->GetMainFrame(), 0, false,
-                                  url2b, ui::PAGE_TRANSITION_LINK);
+  other_contents->TestDidNavigate(other_contents->GetMainFrame(), false, url2b,
+                                  ui::PAGE_TRANSITION_LINK);
 }
 
 // Test CopyStateFromAndPrune with 2 urls, a back navigation pending in the
@@ -4049,7 +4046,6 @@ TEST_F(NavigationControllerTest, PushStateUpdatesTitleAndFavicon) {
   // history.pushState() is called.
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   GURL kUrl2("http://foo#foo");
-  params->nav_entry_id = 0;
   params->did_create_new_entry = true;
   params->url = kUrl2;
   params->referrer = blink::mojom::Referrer::New();

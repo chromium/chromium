@@ -253,7 +253,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   int32_t ComputeNextPageID();
 
   mojom::DidCommitProvisionalLoadParamsPtr BuildDidCommitParams(
-      int nav_entry_id,
       bool did_create_new_entry,
       const GURL& url,
       ui::PageTransition transition,

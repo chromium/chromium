@@ -264,7 +264,6 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
                std::string());
 
   auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = 0;
   params->url = GURL(url::kAboutBlankURL);
   params->origin = url::Origin::Create(params->url);
   params->referrer = blink::mojom::Referrer::New();
@@ -798,10 +797,9 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredSitelessUrl) {
 
   EXPECT_TRUE(controller().NeedsReload());
   controller().LoadIfNecessary();
-  NavigationEntry* entry = controller().GetPendingEntry();
   orig_rfh->PrepareForCommit();
-  contents()->TestDidNavigate(orig_rfh, entry->GetUniqueID(), false,
-                              native_url, ui::PAGE_TRANSITION_RELOAD);
+  contents()->TestDidNavigate(orig_rfh, false, native_url,
+                              ui::PAGE_TRANSITION_RELOAD);
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   EXPECT_EQ(GURL(), contents()->GetSiteInstance()->GetSiteURL());
   EXPECT_FALSE(orig_instance->HasSite());
@@ -841,10 +839,9 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
   ASSERT_EQ(1, controller().GetEntryCount());
   EXPECT_TRUE(controller().NeedsReload());
   controller().LoadIfNecessary();
-  NavigationEntry* entry = controller().GetPendingEntry();
   orig_rfh->PrepareForCommit();
-  contents()->TestDidNavigate(orig_rfh, entry->GetUniqueID(), false,
-                              regular_url, ui::PAGE_TRANSITION_RELOAD);
+  contents()->TestDidNavigate(orig_rfh, false, regular_url,
+                              ui::PAGE_TRANSITION_RELOAD);
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   EXPECT_TRUE(orig_instance->HasSite());
   EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
@@ -1273,7 +1270,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   EXPECT_EQ(entry1, controller().GetLastCommittedEntry());
 
   // When the second back commits, it should be ignored.
-  contents()->TestDidNavigate(google_rfh, entry2->GetUniqueID(), false, url2,
+  contents()->TestDidNavigate(google_rfh, false, url2,
                               ui::PAGE_TRANSITION_TYPED);
   EXPECT_EQ(entry1, controller().GetLastCommittedEntry());
 

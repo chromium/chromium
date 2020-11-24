@@ -75,12 +75,10 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void NavigateAndFail(const GURL& url, int error_code) override;
   void TestSetIsLoading(bool value) override;
   void TestDidNavigate(RenderFrameHost* render_frame_host,
-                       int nav_entry_id,
                        bool did_create_new_entry,
                        const GURL& url,
                        ui::PageTransition transition) override;
   void TestDidNavigateWithSequenceNumber(RenderFrameHost* render_frame_host,
-                                         int nav_entry_id,
                                          bool did_create_new_entry,
                                          const GURL& url,
                                          const Referrer& referrer,
