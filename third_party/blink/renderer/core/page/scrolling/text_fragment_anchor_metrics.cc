@@ -153,6 +153,10 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
                            TRACE_EVENT_SCOPE_THREAD, "end_text_length",
                            match.selector.End().length());
 
+      base::UmaHistogramBoolean(
+          base::StrCat({uma_prefix, "SpansMultipleBlocks"}),
+          match.spans_multiple_blocks);
+
       // We only record ListItemMatch and TableCellMatch for exact matches
       DCHECK(!match.is_list_item && !match.is_table_cell);
     }

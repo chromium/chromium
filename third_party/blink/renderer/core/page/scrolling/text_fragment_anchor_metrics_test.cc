@@ -1460,6 +1460,79 @@ TEST_P(TextFragmentRelatedMetricTest, TextFragmentActivationDoesNotCountAPI) {
       WebFeature::kV8Document_FragmentDirective_AttributeGetter));
 }
 
+// Test recording of the SpansMultipleBlocks metric. Records true because the
+// range crosses an intervening block element.
+TEST_F(TextFragmentAnchorMetricsTest, SpansMultipleBlocksInterveningBlock) {
+  SimRequest request("https://example.com/test.html#:~:text=start,end",
+                     "text/html");
+  LoadURL("https://example.com/test.html#:~:text=start,end");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>
+      start of text
+      <div>block</div>
+      text end
+    </div>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  BeginEmptyFrame();
+  BeginEmptyFrame();
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.Unknown.SpansMultipleBlocks", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.Unknown.SpansMultipleBlocks", 1, 1);
+}
+
+// Test recording of the SpansMultipleBlocks metric. Records true because the
+// range start and end are in different block elements.
+TEST_F(TextFragmentAnchorMetricsTest, SpansMultipleBlocks) {
+  SimRequest request("https://example.com/test.html#:~:text=start,end",
+                     "text/html");
+  LoadURL("https://example.com/test.html#:~:text=start,end");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>
+      <div>start of text</div>
+      text end
+    </div>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  BeginEmptyFrame();
+  BeginEmptyFrame();
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.Unknown.SpansMultipleBlocks", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.Unknown.SpansMultipleBlocks", 1, 1);
+}
+
+// Test recording of the SpansMultipleBlocks metric. Records false because the
+// range start and end are in the same block element with no intervening block.
+TEST_F(TextFragmentAnchorMetricsTest, SpansMultipleBlocksSingleBlock) {
+  SimRequest request("https://example.com/test.html#:~:text=start,end",
+                     "text/html");
+  LoadURL("https://example.com/test.html#:~:text=start,end");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>
+      start of <i>text</i>
+      text end
+    </div>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  BeginEmptyFrame();
+  BeginEmptyFrame();
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.Unknown.SpansMultipleBlocks", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.Unknown.SpansMultipleBlocks", 0, 1);
+}
+
 }  // namespace
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -2038,6 +2040,61 @@ TEST_F(TextFragmentAnchorTest, MatchAcrossCommentNode) {
   EXPECT_EQ(div, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(div)));
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
+}
+
+// Checks that selection in the same text node is considerered uninterrupted.
+TEST_F(TextFragmentAnchorTest, IsInSameUninterruptedBlock_OneTextNode) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id='first'>First paragraph text</div>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end = PositionInFlatTree(first_paragraph, 15);
+  ASSERT_EQ("First paragraph", PlainText(EphemeralRangeInFlatTree(start, end)));
+
+  EXPECT_TRUE(TextFragmentFinder::IsInSameUninterruptedBlock(start, end));
+}
+
+// Checks that selection in the same text node with nested non-block element is
+// considerered uninterrupted.
+TEST_F(TextFragmentAnchorTest,
+       IsInSameUninterruptedBlock_NonBlockInterruption) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id='first'>First <i>styled text</i> paragraph text</div>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end =
+      PositionInFlatTree(first_paragraph->nextSibling()->nextSibling(), 10);
+  ASSERT_EQ("First styled text paragraph",
+            PlainText(EphemeralRangeInFlatTree(start, end)));
+
+  EXPECT_TRUE(TextFragmentFinder::IsInSameUninterruptedBlock(start, end));
+}
+
+// Checks that selection in the same text node with nested block element is
+// considerered interrupted.
+TEST_F(TextFragmentAnchorTest, IsInSameUninterruptedBlock_BlockInterruption) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id='first'>First <div>block text</div> paragraph text</div>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end =
+      PositionInFlatTree(first_paragraph->nextSibling()->nextSibling(), 10);
+  ASSERT_EQ("First\nblock text\nparagraph",
+            PlainText(EphemeralRangeInFlatTree(start, end)));
+
+  EXPECT_FALSE(TextFragmentFinder::IsInSameUninterruptedBlock(start, end));
 }
 
 }  // namespace

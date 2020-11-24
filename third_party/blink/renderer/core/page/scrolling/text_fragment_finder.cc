@@ -254,6 +254,33 @@ bool ContainedByTableCell(const EphemeralRangeInFlatTree& range) {
 
 }  // namespace
 
+// static
+bool TextFragmentFinder::IsInSameUninterruptedBlock(
+    const PositionInFlatTree& start,
+    const PositionInFlatTree& end) {
+  Node* start_node = start.ComputeContainerNode();
+  Node* end_node = end.ComputeContainerNode();
+
+  if (start_node->isSameNode(end_node))
+    return true;
+
+  Node& start_ancestor =
+      FindBuffer::GetFirstBlockLevelAncestorInclusive(*start_node);
+  Node& end_ancestor =
+      FindBuffer::GetFirstBlockLevelAncestorInclusive(*end_node);
+
+  if (!start_ancestor.isSameNode(&end_ancestor))
+    return false;
+
+  Node* node = start_node;
+  while (!node->isSameNode(end_node)) {
+    if (FindBuffer::IsNodeBlockLevel(*node))
+      return false;
+    node = FlatTreeTraversal::Next(*node);
+  }
+  return true;
+}
+
 TextFragmentFinder::TextFragmentFinder(Client& client,
                                        const TextFragmentSelector& selector)
     : client_(client), selector_(selector) {
@@ -289,6 +316,8 @@ void TextFragmentFinder::FindMatch(Document& document) {
       }
     } else if (selector_.Type() == TextFragmentSelector::SelectorType::kRange) {
       match_metrics.text = PlainText(match);
+      match_metrics.spans_multiple_blocks = !IsInSameUninterruptedBlock(
+          match.StartPosition(), match.EndPosition());
     }
 
     // Continue searching to see if we have an ambiguous selector.

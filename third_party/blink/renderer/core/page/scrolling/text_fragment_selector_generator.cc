@@ -407,15 +407,11 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   EphemeralRangeInFlatTree ephemeral_range(selection_range_);
 
   // If not in same node, should use ranges.
-  if (!IsInSameUninterruptedBlock(selection_range_->StartPosition(),
-                                  selection_range_->EndPosition())) {
+  if (!TextFragmentFinder::IsInSameUninterruptedBlock(
+          ephemeral_range.StartPosition(), ephemeral_range.EndPosition())) {
     step_ = kRange;
     return;
   }
-
-  // TODO(gayane): If same node, need to check if start and end are interrupted
-  // by a block. Example: <div>start of the selection <div> sub block </div>end
-  // of the selection</div>.
 
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
   if (selected_text.IsEmpty()) {
@@ -460,8 +456,8 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
 
     // If selection starts and ends in the same block, then split selected text
     // roughly in the middle.
-    if (IsInSameUninterruptedBlock(selection_range_->StartPosition(),
-                                   selection_range_->EndPosition())) {
+    if (TextFragmentFinder::IsInSameUninterruptedBlock(
+            ephemeral_range.StartPosition(), ephemeral_range.EndPosition())) {
       String selection_text = PlainText(ephemeral_range);
       selection_text.Ensure16Bit();
       int selection_length = selection_text.length();
@@ -604,31 +600,5 @@ String TextFragmentSelectorGenerator::GetNextTextBlock(
   auto range_start = Position(suffix_start, suffix_start_offset);
   auto range_end = Position(suffix_end, suffix_end->textContent().length());
   return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
-}
-
-bool TextFragmentSelectorGenerator::IsInSameUninterruptedBlock(
-    const Position& start,
-    const Position& end) {
-  Node* start_node = start.ComputeContainerNode();
-  Node* end_node = end.ComputeContainerNode();
-
-  if (start_node->isSameNode(end_node))
-    return true;
-
-  Node& start_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(*start_node);
-  Node& end_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(*end_node);
-
-  if (!start_ancestor.isSameNode(&end_ancestor))
-    return false;
-
-  Node* node = start_node;
-  while (!node->isSameNode(end_node)) {
-    if (FindBuffer::IsNodeBlockLevel(*node))
-      return false;
-    node = FlatTreeTraversal::Next(*node);
-  }
-  return true;
 }
 }  // namespace blink

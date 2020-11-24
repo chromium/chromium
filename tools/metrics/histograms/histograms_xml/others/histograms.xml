@@ -14948,6 +14948,21 @@ should be kept until we remove incident reporting. -->
   <token key="TextFragmentSource" variants="TextFragmentSource"/>
 </histogram>
 
+<histogram name="TextFragmentAnchor{TextFragmentSource}.SpansMultipleBlocks"
+    units="Boolean" expires_after="2021-05-20">
+  <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Whether or not a range-based text fragment match crosses any block
+    boundaries. That is, the start and end of the range are in different blocks
+    or in the same block but contain an intervening block. Only recorded for
+    range-based (start,end) text fragments. Only recorded on successful match.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
 <histogram name="TextFragmentAnchor{TextFragmentSource}.StartTextLength"
     units="characters" expires_after="2021-03-07">
   <owner>nburris@chromium.org</owner>

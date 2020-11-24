@@ -42,8 +42,9 @@ CORE_EXPORT String
 PlainText(const EphemeralRange&,
           const TextIteratorBehavior& = TextIteratorBehavior());
 
-String PlainText(const EphemeralRangeInFlatTree&,
-                 const TextIteratorBehavior& = TextIteratorBehavior());
+CORE_EXPORT String
+PlainText(const EphemeralRangeInFlatTree&,
+          const TextIteratorBehavior& = TextIteratorBehavior());
 
 // Iterates through the DOM range, returning all the text, and 0-length
 // boundaries at points where replaced elements break up the text flow.  The
