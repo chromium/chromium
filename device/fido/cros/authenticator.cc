@@ -167,6 +167,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResp(
     FIDO_LOG(ERROR) << "Attestation statement is not a CBOR map.";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                             base::nullopt);
+    return;
   }
   auto statement = std::make_unique<OpaqueAttestationStatement>(
       resp.attestation_format(), std::move(*statement_map));
