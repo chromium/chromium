@@ -201,6 +201,12 @@ crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Fai
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1018028 [ win angle-vulkan nvidia ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1110111 [ win nvidia ] conformance/rendering/point-no-attributes.html [ RetryOnFailure ]
+# TODO(crbug.com/1136231): Uncomment suppressions for s3tc-and-rgtc.html below
+# under crbug.com/963205 and crbug.com/964321 once these two failures are fixed.
+crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1152259 [ win ] conformance/reading/read-pixels-test.html [ Failure ]
+crbug.com/1152259 [ linux ] conformance/reading/read-pixels-test.html [ Failure ]
 
 # Skipping new tests
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
@@ -376,7 +382,7 @@ crbug.com/992224 [ win angle-d3d9 ] conformance/glsl/samplers/glsl-function-text
 # WIN / OpenGL / NVIDIA failures
 crbug.com/715001 [ win nvidia angle-opengl passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/703779 [ win nvidia angle-opengl ] conformance/textures/misc/texture-size.html [ Failure ]
-crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc.html [ RetryOnFailure ]
+# crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/s3tc-and-rgtc.html [ RetryOnFailure ]
 crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ RetryOnFailure ]
 
 # Mark ANGLE's OpenGL as flaky on Windows Nvidia
@@ -404,7 +410,7 @@ crbug.com/angleproject/4334 [ win angle-vulkan passthrough ] conformance/texture
 
 # Vulkan / Win / NVIDIA / Passthrough command decoder
 crbug.com/963205 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
-crbug.com/964321 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-s3tc.html [ RetryOnFailure ]
+# crbug.com/964321 [ win nvidia angle-vulkan passthrough ] conformance/extensions/s3tc-and-rgtc.html [ RetryOnFailure ]
 crbug.com/1051576 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
 crbug.com/963217 [ win nvidia angle-vulkan passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/angleproject/3883 [ win nvidia angle-vulkan passthrough ] conformance/misc/uninitialized-test.html [ Failure ]

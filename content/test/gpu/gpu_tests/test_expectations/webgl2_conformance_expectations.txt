@@ -118,6 +118,12 @@ crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-de
 crbug.com/1082533 [ win angle-vulkan passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1018028 [ win angle-vulkan ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
+# TODO(crbug.com/1136231): Uncomment suppression for s3tc-and-rgtc.html below
+# under crbug.com/963205 once these two failures are fixed.
+crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1152259 [ win ] conformance/reading/read-pixels-test.html [ Failure ]
+crbug.com/1152259 [ linux ] conformance/reading/read-pixels-test.html [ Failure ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
@@ -256,7 +262,7 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/t
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Failure ]
 
 # WIN / OpenGL / NVIDIA failures
-crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc.html [ RetryOnFailure ]
+# crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/s3tc-and-rgtc.html [ RetryOnFailure ]
 crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ RetryOnFailure ]
 crbug.com/715001 [ angle-opengl win nvidia                    ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/703779 [ angle-opengl win nvidia                    ] conformance/textures/misc/texture-size.html [ Failure ]
