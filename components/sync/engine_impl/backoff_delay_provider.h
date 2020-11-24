@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_ENGINE_IMPL_BACKOFF_DELAY_PROVIDER_H_
 #define COMPONENTS_SYNC_ENGINE_IMPL_BACKOFF_DELAY_PROVIDER_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/time/time.h"
 
@@ -16,7 +18,7 @@ struct ModelNeutralState;
 class BackoffDelayProvider {
  public:
   // Factory function to create a standard BackoffDelayProvider.
-  static BackoffDelayProvider* FromDefaults();
+  static std::unique_ptr<BackoffDelayProvider> FromDefaults();
 
   // Similar to above, but causes sync to retry very quickly (see
   // polling_constants.h) when it encounters an error before exponential
@@ -24,7 +26,7 @@ class BackoffDelayProvider {
   //
   // *** NOTE *** This should only be used if kSyncShortInitialRetryOverride
   // was passed to command line.
-  static BackoffDelayProvider* WithShortInitialRetryOverride();
+  static std::unique_ptr<BackoffDelayProvider> WithShortInitialRetryOverride();
 
   virtual ~BackoffDelayProvider();
 

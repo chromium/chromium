@@ -282,11 +282,12 @@ class SyncSchedulerImplTest : public testing::Test {
   }
 
   void RebuildScheduler() {
-    // The old syncer is destroyed with the scheduler that owns it.
-    syncer_ = new testing::StrictMock<MockSyncer>();
+    auto syncer = std::make_unique<testing::StrictMock<MockSyncer>>();
+    // The syncer is destroyed with the scheduler that owns it.
+    syncer_ = syncer.get();
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
-        syncer_, false);
+        std::move(syncer), false);
     scheduler_->nudge_tracker_.SetDefaultNudgeDelay(default_delay());
   }
 
@@ -407,11 +408,12 @@ class SyncSchedulerImplTest : public testing::Test {
   }
 
   void NewSchedulerForLocalBackend() {
-    // The old syncer is destroyed with the scheduler that owns it.
-    syncer_ = new testing::StrictMock<MockSyncer>();
+    auto syncer = std::make_unique<testing::StrictMock<MockSyncer>>();
+    // The syncer is destroyed with the scheduler that owns it.
+    syncer_ = syncer.get();
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
-        syncer_, true);
+        std::move(syncer), true);
     scheduler_->nudge_tracker_.SetDefaultNudgeDelay(default_delay());
   }
 

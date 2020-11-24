@@ -169,12 +169,12 @@ class SyncerTest : public testing::Test,
         "fake_invalidator_client_id", local_cache_guid(),
         mock_server_->store_birthday(), "fake_bag_of_chips",
         /*poll_interval=*/base::TimeDelta::FromMinutes(30));
-    syncer_ = new Syncer(&cancelation_signal_);
+    auto syncer = std::make_unique<Syncer>(&cancelation_signal_);
+    // The syncer is destroyed with the scheduler that owns it.
+    syncer_ = syncer.get();
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(),
-        context_.get(),
-        // scheduler_ owned syncer_ now and will manage the memory of syncer_
-        syncer_, false);
+        context_.get(), std::move(syncer), false);
 
     mock_server_->SetKeystoreKey("encryption_key");
   }

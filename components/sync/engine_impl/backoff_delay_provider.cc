@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
@@ -18,17 +19,20 @@ using base::TimeDelta;
 namespace syncer {
 
 // static
-BackoffDelayProvider* BackoffDelayProvider::FromDefaults() {
-  return new BackoffDelayProvider(
+std::unique_ptr<BackoffDelayProvider> BackoffDelayProvider::FromDefaults() {
+  // base::WrapUnique() used because the constructor is private.
+  return base::WrapUnique(new BackoffDelayProvider(
       TimeDelta::FromSeconds(kInitialBackoffRetrySeconds),
-      TimeDelta::FromSeconds(kInitialBackoffImmediateRetrySeconds));
+      TimeDelta::FromSeconds(kInitialBackoffImmediateRetrySeconds)));
 }
 
 // static
-BackoffDelayProvider* BackoffDelayProvider::WithShortInitialRetryOverride() {
-  return new BackoffDelayProvider(
+std::unique_ptr<BackoffDelayProvider>
+BackoffDelayProvider::WithShortInitialRetryOverride() {
+  // base::WrapUnique() used because the constructor is private.
+  return base::WrapUnique(new BackoffDelayProvider(
       TimeDelta::FromSeconds(kInitialBackoffShortRetrySeconds),
-      TimeDelta::FromSeconds(kInitialBackoffImmediateRetrySeconds));
+      TimeDelta::FromSeconds(kInitialBackoffImmediateRetrySeconds)));
 }
 
 BackoffDelayProvider::BackoffDelayProvider(

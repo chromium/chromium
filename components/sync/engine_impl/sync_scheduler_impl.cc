@@ -116,17 +116,18 @@ ConfigurationParams::~ConfigurationParams() = default;
 #define SDVLOG_LOC(from_here, verbose_level) \
   DVLOG_LOC(from_here, verbose_level) << name_ << ": "
 
-SyncSchedulerImpl::SyncSchedulerImpl(const std::string& name,
-                                     BackoffDelayProvider* delay_provider,
-                                     SyncCycleContext* context,
-                                     Syncer* syncer,
-                                     bool ignore_auth_credentials)
+SyncSchedulerImpl::SyncSchedulerImpl(
+    const std::string& name,
+    std::unique_ptr<BackoffDelayProvider> delay_provider,
+    SyncCycleContext* context,
+    std::unique_ptr<Syncer> syncer,
+    bool ignore_auth_credentials)
     : name_(name),
       started_(false),
       syncer_poll_interval_seconds_(context->poll_interval()),
       mode_(CONFIGURATION_MODE),
-      delay_provider_(delay_provider),
-      syncer_(syncer),
+      delay_provider_(std::move(delay_provider)),
+      syncer_(std::move(syncer)),
       cycle_context_(context),
       next_sync_cycle_job_priority_(NORMAL_PRIORITY),
       ignore_auth_credentials_(ignore_auth_credentials) {}
