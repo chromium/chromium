@@ -5,6 +5,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
 
+#import "base/feature_list.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -107,7 +108,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   authenticationService->WaitUntilCacheIsPopulated();
   // The user should be signed out before triggering sign-in or upgrade states.
   // Users are allowed to be signed-in during FirstRun for testing purposes.
-  DCHECK(!authenticationService->IsAuthenticated() ||
+  DCHECK(base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) ||
+         !authenticationService->IsAuthenticated() ||
          self.signinIntent == UserSigninIntentFirstRun);
   [super start];
   self.viewController = [[UserSigninViewController alloc] init];

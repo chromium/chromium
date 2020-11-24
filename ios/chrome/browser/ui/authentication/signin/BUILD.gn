@@ -101,14 +101,20 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "signin_coordinator_egtest.mm" ]
+  sources = [
+    "signin_coordinator_egtest.mm",
+    "signin_coordinator_mice_egtest.mm",
+  ]
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/public/provider/chrome/browser/signin:constants",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
