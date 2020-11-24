@@ -19,7 +19,7 @@ class InteriorResizeHandleTargeter : public aura::WindowTargeter {
       delete;
   ~InteriorResizeHandleTargeter() override;
 
-  // aura::WindowTargeter
+  // aura::WindowTargeter:
   bool GetHitTestRects(aura::Window* target,
                        gfx::Rect* hit_test_rect_mouse,
                        gfx::Rect* hit_test_rect_touch) const override;
@@ -28,4 +28,4 @@ class InteriorResizeHandleTargeter : public aura::WindowTargeter {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_UI_BASE_WINDOW_PROPERTIES_H_
+#endif  // CHROMEOS_UI_FRAME_INTERIOR_RESIZE_HANDLER_TARGETER_H_

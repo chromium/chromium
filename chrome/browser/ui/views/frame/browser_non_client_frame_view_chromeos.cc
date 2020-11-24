@@ -68,6 +68,10 @@
 #include "chrome/browser/ui/ash/session_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ui/frame/interior_resize_handler_targeter.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 // Color for the window title text.
@@ -95,10 +99,13 @@ BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1067535): Check whether Ash/Chrome and Lacros
-  // will share the same ResizeHandler class.
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(
       frame->GetNativeWindow());
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  frame->GetNativeWindow()->SetEventTargeter(
+      std::make_unique<chromeos::InteriorResizeHandleTargeter>());
 #endif
 }
 

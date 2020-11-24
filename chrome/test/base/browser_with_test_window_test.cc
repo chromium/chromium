@@ -47,6 +47,10 @@ void BrowserWithTestWindowTest::SetUp() {
   ash_test_helper_.SetUp();
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  tablet_state_ = std::make_unique<chromeos::TabletState>();
+#endif
+
   // This must be created after |ash_test_helper_| is set up so that it doesn't
   // create a DeviceDataManager.
   rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
@@ -94,6 +98,10 @@ void BrowserWithTestWindowTest::TearDown() {
   }
 
   profile_manager_.reset();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  tablet_state_.reset();
+#endif
 
 #if defined(OS_CHROMEOS)
   // If initialized, the KioskAppManager will register an observer to

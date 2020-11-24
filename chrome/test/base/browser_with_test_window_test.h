@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,6 +30,10 @@
 #else
 #include "ui/views/test/scoped_views_test_helper.h"
 #endif
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ui/base/tablet_state.h"
 #endif
 
 #if defined(OS_WIN)
@@ -231,6 +236,10 @@ class BrowserWithTestWindowTest : public testing::Test {
   std::unique_ptr<views::ScopedViewsTestHelper> views_test_helper_ =
       std::make_unique<views::ScopedViewsTestHelper>(
           std::make_unique<ChromeTestViewsDelegate<>>());
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<chromeos::TabletState> tablet_state_;
 #endif
 
   // The existence of this object enables tests via RenderViewHostTester.

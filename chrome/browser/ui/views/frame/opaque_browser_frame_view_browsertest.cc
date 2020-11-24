@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -51,7 +52,8 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
     // browser windows, see |CreateBrowserNonClientFrameView()|.
     bool is_opaque_browser_frame_view =
         frame_view->GetClassName() == OpaqueBrowserFrameView::kClassName;
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
     DCHECK(is_opaque_browser_frame_view);
 #else
     if (!is_opaque_browser_frame_view)
@@ -102,7 +104,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, NoThemeColor) {
             gfx::kGoogleGrey900);
 }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
 // The app theme color should be ignored in system theme mode.
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, SystemThemeColor) {
   SetThemeMode(ThemeMode::kSystem);

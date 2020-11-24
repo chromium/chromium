@@ -79,7 +79,13 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
   GURL url1_;
 };
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, FocusOnLaunch) {
+// TODO(https://crbug.com/1152160): Enable FocusOnLaunch on Lacros builds.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_FocusOnLaunch DISABLED_FocusOnLaunch
+#else
+#define MAYBE_FocusOnLaunch FocusOnLaunch
+#endif
+IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
   ui_test_utils::NavigateToURL(browser(), url1_);
 
   Browser* new_browser = QuitBrowserAndRestore(browser(), 1);

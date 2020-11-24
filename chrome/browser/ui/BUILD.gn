@@ -2089,11 +2089,6 @@ static_library("ui") {
       "views/extensions/request_file_system_dialog_view.h",
       "views/frame/browser_frame_ash.cc",
       "views/frame/browser_frame_ash.h",
-      "views/frame/browser_frame_header_chromeos.cc",
-      "views/frame/browser_frame_header_chromeos.h",
-      "views/frame/browser_non_client_frame_view_chromeos.cc",
-      "views/frame/browser_non_client_frame_view_chromeos.h",
-      "views/frame/browser_non_client_frame_view_factory_chromeos.cc",
       "views/frame/custom_tab_browser_frame.cc",
       "views/frame/custom_tab_browser_frame.h",
       "views/frame/immersive_mode_controller_chromeos.cc",
@@ -2735,8 +2730,17 @@ static_library("ui") {
     }
   }
 
-  # TODO(crbug.com/1052397): Rename GN variable. This is the lacros browser.
-  if (chromeos_is_browser_only) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [
+      "views/frame/browser_frame_header_chromeos.cc",
+      "views/frame/browser_frame_header_chromeos.h",
+      "views/frame/browser_non_client_frame_view_chromeos.cc",
+      "views/frame/browser_non_client_frame_view_chromeos.h",
+      "views/frame/browser_non_client_frame_view_factory_chromeos.cc",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
     sources += [
       "views/chrome_browser_main_extra_parts_views_lacros.cc",
       "views/chrome_browser_main_extra_parts_views_lacros.h",
@@ -4312,9 +4316,13 @@ static_library("ui") {
       "//ui/wm",
     ]
 
+    if (!is_chromeos && !chromeos_is_browser_only) {
+      sources +=
+          [ "views/frame/browser_non_client_frame_view_factory_views.cc" ]
+    }
+
     if (!is_chromeos) {
       sources += [
-        "views/frame/browser_non_client_frame_view_factory_views.cc",
         "views/frame/desktop_browser_frame_aura.cc",
         "views/frame/desktop_browser_frame_aura.h",
       ]

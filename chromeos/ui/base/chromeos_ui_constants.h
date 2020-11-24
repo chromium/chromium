@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_UI_BASE_CHROMEOS_UI_CONSTANTS_H_
 #define CHROMEOS_UI_BASE_CHROMEOS_UI_CONSTANTS_H_
 
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace chromeos {
@@ -22,7 +23,14 @@ constexpr int kResizeAreaCornerSize = 16;
 // "non-client" area and use it for resizing.
 constexpr int kResizeOutsideBoundsSize = 6;
 constexpr int kResizeOutsideBoundsScaleForTouch = 5;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr int kResizeInsideBoundsSize = 1;
+#else
+// TODO(https://crbug.com/1113900): Remove this if-check when resize-shadow
+// works in lacros/chrome.
+constexpr int kResizeInsideBoundsSize = 2;
+#endif
 
 // The default frame color.
 constexpr SkColor kDefaultFrameColor = SkColorSetRGB(0xFD, 0xFE, 0xFF);

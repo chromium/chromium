@@ -31,5 +31,9 @@ component("base") {
     "//ui/base",
     "//ui/display",
     "//ui/gfx/geometry",
+
+    # TODO(https://crbug.com/1113900): Remove this dependency when resize-shadow
+    # is integrated to lacros.
+    "//build:chromeos_buildflags",
   ]
 }
