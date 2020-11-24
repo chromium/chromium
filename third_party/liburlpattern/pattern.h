@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "base/component_export.h"
+#include "third_party/liburlpattern/options.h"
 
 // NOTE: This code is a work-in-progress.  It is not ready for production use.
 
@@ -47,30 +48,30 @@ enum class Modifier {
 // consists of an ordered sequence of Part objects.
 struct COMPONENT_EXPORT(LIBURLPATTERN) Part {
   // The type of the Part.
-  const PartType type = PartType::kFixed;
+  PartType type = PartType::kFixed;
 
   // The name of the Part.  Only kRegex, kSegmentWildcard, and kFullWildcard
   // parts may have a |name|.  kFixed parts must have an empty |name|.
-  const std::string name;
+  std::string name;
 
   // A fixed string prefix that is expected before any regex or wildcard match.
   // kFixed parts must have an empty |prefix|.
-  const std::string prefix;
+  std::string prefix;
 
   // The meaning of the |value| depends on the |type| of the Part.  For kFixed
   // parts the |value| contains the fixed string to match.  For kRegex parts
   // the |value| contains a regular expression to match.  The |value| is empty
   // for kSegmentWildcard and kFullWildcard parts since the |type| encodes what
   // to match.
-  const std::string value;
+  std::string value;
 
   // A fixed string prefix that is expected after any regex or wildcard match.
   // kFixed parts must have an empty |suffix|.
-  const std::string suffix;
+  std::string suffix;
 
   // A |modifier| indicating whether the Part is optional and/or repeated.  Any
   // Part type may have a |modifier|.
-  const Modifier modifier = Modifier::kNone;
+  Modifier modifier = Modifier::kNone;
 
   Part(PartType type, std::string value, Modifier modifier);
   Part(PartType type,
@@ -101,12 +102,35 @@ std::ostream& operator<<(std::ostream& o, Part part);
 // patterns are supported for direct matching.
 class COMPONENT_EXPORT(LIBURLPATTERN) Pattern {
  public:
-  explicit Pattern(std::vector<Part> part_list);
+  Pattern(std::vector<Part> part_list,
+          Options options,
+          std::string segment_wildcard_regex);
+
+  // Generate an ECMA-262 regular expression string that is equivalent to this
+  // pattern.  A vector of strings can be optionally passed to |name_list_out|
+  // to be populated with the list of group names.  These correspond
+  // sequentially to the regular expression capture groups.  Note, the
+  // regular expression string does not currently used named capture groups
+  // directly in order to match the upstream path-to-regexp behavior.
+  std::string GenerateRegexString(
+      std::vector<std::string>* name_list_out = nullptr) const;
 
   const std::vector<Part>& PartList() const { return part_list_; }
 
  private:
+  // Compute the expected size of the string that will be returned by
+  // GenerateRegexString().
+  size_t RegexStringLength() const;
+
+  // Utility method to help with generating the regex string and length.
+  void AppendDelimiterList(std::string& append_target) const;
+  size_t DelimiterListLength() const;
+  void AppendEndsWith(std::string& append_target) const;
+  size_t EndsWithLength() const;
+
   std::vector<Part> part_list_;
+  Options options_;
+  std::string segment_wildcard_regex_;
 };
 
 }  // namespace liburlpattern

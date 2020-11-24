@@ -13,6 +13,7 @@ component("liburlpattern") {
 
   # Note, also update the local modifications in README.chromium.
   sources = [
+    "options.h",
     "parse.cc",
     "parse.h",
     "pattern.cc",
@@ -34,6 +35,7 @@ test("liburlpattern_unittests") {
   # Note, also update the local modifications in README.chromium.
   sources = [
     "parse_unittest.cc",
+    "pattern_unittest.cc",
     "tokenize_unittest.cc",
     "utils_unittest.cc",
   ]

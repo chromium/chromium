@@ -19,17 +19,15 @@ namespace liburlpattern {
 
 namespace {
 
-// The "full wildcard" regex pattern.  This regex value is treated specially
-// resulting in a kFullWildcard Part instead of a kRegex Part.
-static const char* kWildcardRegex = ".*";
-
 // Helper class that tracks the parser state.
 class State {
  public:
-  State(std::vector<Token> token_list, absl::string_view delimiter_list)
+  State(std::vector<Token> token_list, Options options)
       : token_list_(std::move(token_list)),
+        options_(std::move(options)),
         segment_wildcard_regex_(
-            absl::StrFormat("[^%s]+?", EscapeString(delimiter_list))) {}
+            absl::StrFormat("[^%s]+?", EscapeString(options_.delimiter_list))) {
+  }
 
   // Return true if there are more tokens to process.
   bool HasMoreTokens() const { return index_ < token_list_.size(); }
@@ -147,13 +145,13 @@ class State {
     // Next determine the type of the Part.  This depends on the regex value
     // since we give certain values special treatment with their own type.
     // A |segment_wildcard_regex_| is mapped to the kSegmentWildcard type.  A
-    // |kWildcardRegex| is mapped to the kFullWildcard type.  Otherwise
+    // |kFullWildcardRegex| is mapped to the kFullWildcard type.  Otherwise
     // the Part gets the kRegex type.
     PartType type = PartType::kRegex;
     if (regex_value == segment_wildcard_regex_) {
       type = PartType::kSegmentWildcard;
       regex_value = "";
-    } else if (regex_value == kWildcardRegex) {
+    } else if (regex_value == kFullWildcardRegex) {
       type = PartType::kFullWildcard;
       regex_value = "";
     }
@@ -173,7 +171,10 @@ class State {
                             modifier);
   }
 
-  Pattern TakeAsPattern() { return Pattern(std::move(part_list_)); }
+  Pattern TakeAsPattern() {
+    return Pattern(std::move(part_list_), std::move(options_),
+                   std::move(segment_wildcard_regex_));
+  }
 
  private:
   // Generate a numeric key string to be used for groups that do not
@@ -182,6 +183,10 @@ class State {
 
   // The input list of Token objects to process.
   const std::vector<Token> token_list_;
+
+  // The set of options used to parse and construct this Pattern.  This
+  // controls the behavior of things like kSegmentWildcard parts, etc.
+  Options options_;
 
   // The special regex value corresponding to the default regex value
   // given to a lone kName Token.  This is a variable since its value
@@ -206,13 +211,12 @@ class State {
 }  // namespace
 
 absl::StatusOr<Pattern> Parse(absl::string_view pattern,
-                              absl::string_view delimiter_list,
-                              absl::string_view prefix_list) {
+                              const Options& options) {
   auto result = Tokenize(pattern);
   if (!result.ok())
     return result.status();
 
-  State state(std::move(result.value()), delimiter_list);
+  State state(std::move(result.value()), options);
 
   while (state.HasMoreTokens()) {
     // Look for the sequence: <prefix char><name><regex><modifier>
@@ -237,7 +241,8 @@ absl::StatusOr<Pattern> Parse(absl::string_view pattern,
       // configured prefix_list are automatically treated as prefixes.  A
       // kEscapedChar Token is never treated as a prefix.
       absl::string_view prefix = char_token ? char_token->value : "";
-      if (prefix_list.find(prefix) == std::string::npos) {
+      if (options.prefix_list.find(prefix.data(), /*pos=*/0, prefix.size()) ==
+          std::string::npos) {
         // This is not a prefix character.  Add it to the buffered characters
         // to be added as a kFixed Part later.
         state.AppendToPendingFixedValue(prefix);

@@ -17,14 +17,16 @@ all files here.
 
 Local Modifications:
 third_party/liburlpattern/BUILD.gn
-third_party/liburlpattern/parse.h
+third_party/liburlpattern/options.h
 third_party/liburlpattern/parse.cc
+third_party/liburlpattern/parse.h
 third_party/liburlpattern/parse_unittest.cc
-third_party/liburlpattern/pattern.h
 third_party/liburlpattern/pattern.cc
-third_party/liburlpattern/tokenize.h
+third_party/liburlpattern/pattern.h
+third_party/liburlpattern/pattern_unittest.cc
 third_party/liburlpattern/tokenize.cc
+third_party/liburlpattern/tokenize.h
 third_party/liburlpattern/tokenize_unittest.cc
-third_party/liburlpattern/utils.h
 third_party/liburlpattern/utils.cc
+third_party/liburlpattern/utils.h
 third_party/liburlpattern/utils_unittest.cc

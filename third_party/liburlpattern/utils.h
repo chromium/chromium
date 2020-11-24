@@ -12,10 +12,22 @@
 
 namespace liburlpattern {
 
+// The "full wildcard" regex pattern.  This regex value is treated specially
+// resulting in a kFullWildcard Part instead of a kRegex Part.
+constexpr const char* kFullWildcardRegex = ".*";
+
+// Return the expected length of the value returned by EscapeString().
+COMPONENT_EXPORT(LIBURLPATTERN)
+size_t EscapedLength(absl::string_view input);
+
 // Escape an input string so that it may be safely included in a
 // regular expression.
 COMPONENT_EXPORT(LIBURLPATTERN)
 std::string EscapeString(absl::string_view input);
+
+// Escape the input string so that it may be safely included in a
+// regular expression and append the result directly to the given target.
+void EscapeStringAndAppend(absl::string_view input, std::string& append_target);
 
 }  // namespace liburlpattern
 

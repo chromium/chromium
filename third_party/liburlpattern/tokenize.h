@@ -44,14 +44,14 @@ const char* TokenTypeToString(TokenType type);
 // Simple structure representing a single lexical token.
 struct COMPONENT_EXPORT(LIBURLPATTERN) Token {
   // Indicate the token type.
-  const TokenType type = TokenType::kEnd;
+  TokenType type = TokenType::kEnd;
 
   // Index of the start of this token in the original pattern string.
-  const size_t index = 0;
+  size_t index = 0;
 
   // The value of the token.  May be one or many characters depending on type.
   // May be null zero characters for the kEnd type.
-  const absl::string_view value;
+  absl::string_view value;
 
   Token(TokenType t, size_t i, absl::string_view v)
       : type(t), index(i), value(v) {}

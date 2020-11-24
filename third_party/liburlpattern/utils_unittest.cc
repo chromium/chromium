@@ -7,64 +7,70 @@
 
 namespace liburlpattern {
 
+void RunEscapeStringTest(absl::string_view input, absl::string_view expected) {
+  std::string result = EscapeString(input);
+  EXPECT_EQ(result, expected);
+  EXPECT_EQ(EscapedLength(input), result.size());
+}
+
 TEST(UtilsTest, EscapeStringDot) {
-  EXPECT_EQ(EscapeString("index.html"), "index\\.html");
+  RunEscapeStringTest("index.html", "index\\.html");
 }
 
 TEST(UtilsTest, EscapeStringPlus) {
-  EXPECT_EQ(EscapeString("foo+"), "foo\\+");
+  RunEscapeStringTest("foo+", "foo\\+");
 }
 
 TEST(UtilsTest, EscapeStringStar) {
-  EXPECT_EQ(EscapeString("foo*"), "foo\\*");
+  RunEscapeStringTest("foo*", "foo\\*");
 }
 
 TEST(UtilsTest, EscapeStringQuestion) {
-  EXPECT_EQ(EscapeString("foo?"), "foo\\?");
+  RunEscapeStringTest("foo?", "foo\\?");
 }
 
 TEST(UtilsTest, EscapeStringEquals) {
-  EXPECT_EQ(EscapeString("foo=bar"), "foo\\=bar");
+  RunEscapeStringTest("foo=bar", "foo\\=bar");
 }
 
 TEST(UtilsTest, EscapeStringCaret) {
-  EXPECT_EQ(EscapeString("^foo"), "\\^foo");
+  RunEscapeStringTest("^foo", "\\^foo");
 }
 
 TEST(UtilsTest, EscapeStringBang) {
-  EXPECT_EQ(EscapeString("!foo"), "\\!foo");
+  RunEscapeStringTest("!foo", "\\!foo");
 }
 
 TEST(UtilsTest, EscapeStringColon) {
-  EXPECT_EQ(EscapeString(":foo"), "\\:foo");
+  RunEscapeStringTest(":foo", "\\:foo");
 }
 
 TEST(UtilsTest, EscapeStringDollar) {
-  EXPECT_EQ(EscapeString("foo$"), "foo\\$");
+  RunEscapeStringTest("foo$", "foo\\$");
 }
 
 TEST(UtilsTest, EscapeStringCurlyBraces) {
-  EXPECT_EQ(EscapeString("{foo}"), "\\{foo\\}");
+  RunEscapeStringTest("{foo}", "\\{foo\\}");
 }
 
 TEST(UtilsTest, EscapeStringParens) {
-  EXPECT_EQ(EscapeString("(foo)"), "\\(foo\\)");
+  RunEscapeStringTest("(foo)", "\\(foo\\)");
 }
 
 TEST(UtilsTest, EscapeStringSquareBrackets) {
-  EXPECT_EQ(EscapeString("[foo]"), "\\[foo\\]");
+  RunEscapeStringTest("[foo]", "\\[foo\\]");
 }
 
 TEST(UtilsTest, EscapeStringPipe) {
-  EXPECT_EQ(EscapeString("foo|bar"), "foo\\|bar");
+  RunEscapeStringTest("foo|bar", "foo\\|bar");
 }
 
 TEST(UtilsTest, EscapeStringSlash) {
-  EXPECT_EQ(EscapeString("/foo/bar"), "\\/foo\\/bar");
+  RunEscapeStringTest("/foo/bar", "\\/foo\\/bar");
 }
 
 TEST(UtilsTest, EscapeStringBackslash) {
-  EXPECT_EQ(EscapeString("\\d"), "\\\\d");
+  RunEscapeStringTest("\\d", "\\\\d");
 }
 
 }  // namespace liburlpattern
