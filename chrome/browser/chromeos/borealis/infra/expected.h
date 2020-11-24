@@ -13,8 +13,8 @@
 // TODO(b/172501195): Make these available outside namespace borealis.
 namespace borealis {
 
-// When signalling results that can succeed or fail, an Expected is used to
-// fomalise those two options either with a |T|, indicating success, or an |E|
+// When signaling results that can succeed or fail, an Expected is used to
+// formalize those two options either with a |T|, indicating success, or an |E|
 // which indicates failure.
 //
 // This class is a non-drop-in-replacement for the std::expected, as that RFC is
@@ -32,18 +32,17 @@ class Expected {
 
   // TODO(b/172501195): This implementation is only partial, either complete it
   // or replace it with the standard. Until then |T| and |E| should probably be
-  // copyable.
-  static_assert(std::is_copy_constructible<T>::value,
-                "Expected's value type must be copy-constructible");
-  static_assert(std::is_copy_assignable<T>::value,
-                "Expected's value type must be copy-assignable");
+  // movable and copy-able respectively.
+  static_assert(std::is_move_constructible<T>::value,
+                "Expected's value type must be move-constructible");
   static_assert(std::is_copy_constructible<E>::value,
                 "Expected's error type must be copy-constructible");
   static_assert(std::is_copy_assignable<E>::value,
                 "Expected's error type must be copy-assignable");
 
   // Construct an object with the expected type.
-  explicit Expected(T value) : storage_(value) {}
+  template <class TT>
+  explicit Expected(TT&& value) : storage_(std::forward<T>(value)) {}
 
   // Construct an object with the error type.
   static Expected<T, E> Unexpected(E error) { return Expected(error); }
@@ -58,11 +57,11 @@ class Expected {
 
   // Unsafe access to the underlying value. Use only if you know |this| is in
   // the requested state.
-  T Value() { return absl::get<T>(storage_); }
+  T& Value() { return absl::get<T>(storage_); }
 
   // Unsafe access to the underlying error. Use only if you know |this| is in
   // the requested state.
-  E Error() { return absl::get<E>(storage_); }
+  E& Error() { return absl::get<E>(storage_); }
 
   // Safe access to the underlying value, or nullptr;
   T* MaybeValue() { return absl::get_if<T>(&storage_); }
