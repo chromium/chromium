@@ -147,11 +147,6 @@ void MockInputMethodManager::RemoveCandidateWindowObserver(
 void MockInputMethodManager::RemoveImeMenuObserver(
     InputMethodManager::ImeMenuObserver* observer) {}
 
-std::unique_ptr<InputMethodDescriptors>
-MockInputMethodManager::GetSupportedInputMethods() const {
-  return nullptr;
-}
-
 void MockInputMethodManager::ActivateInputMethodMenuItem(
     const std::string& key) {}
 

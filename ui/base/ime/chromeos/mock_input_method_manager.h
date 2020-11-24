@@ -99,8 +99,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockInputMethodManager
       InputMethodManager::CandidateWindowObserver* observer) override;
   void RemoveImeMenuObserver(
       InputMethodManager::ImeMenuObserver* observer) override;
-  std::unique_ptr<InputMethodDescriptors> GetSupportedInputMethods()
-      const override;
   void ActivateInputMethodMenuItem(const std::string& key) override;
   void ConnectInputEngineManager(
       mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver)

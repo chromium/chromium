@@ -786,8 +786,6 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "ime/chromeos/input_method_allowlist.cc",
-      "ime/chromeos/input_method_allowlist.h",
       "ime/chromeos/mock_component_extension_ime_manager.cc",
       "ime/chromeos/mock_component_extension_ime_manager.h",
       "ime/chromeos/mock_component_extension_ime_manager_delegate.cc",
@@ -802,7 +800,7 @@ static_library("test_support") {
       "ime/chromeos/mock_input_method_manager.h",
     ]
     deps += [
-      # Generates a header used by input_method_allowlist.cc
+      # Generates a header used by component_extension_ime_manager.cc
       "//chromeos/ime:gencode",
       "//ui/base/ime/chromeos",
     ]

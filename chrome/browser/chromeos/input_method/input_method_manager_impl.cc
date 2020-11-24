@@ -1032,11 +1032,6 @@ void InputMethodManagerImpl::RemoveImeMenuObserver(
   ime_menu_observers_.RemoveObserver(observer);
 }
 
-std::unique_ptr<InputMethodDescriptors>
-InputMethodManagerImpl::GetSupportedInputMethods() const {
-  return std::unique_ptr<InputMethodDescriptors>(new InputMethodDescriptors);
-}
-
 const InputMethodDescriptor* InputMethodManagerImpl::LookupInputMethod(
     const std::string& input_method_id,
     InputMethodManagerImpl::StateImpl* state) {

@@ -12,7 +12,6 @@
 #include "ui/base/ime/chromeos/fake_ime_keyboard.h"
 #include "ui/base/ime/chromeos/fake_input_method_delegate.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_allowlist.h"
 #include "ui/base/ime/chromeos/mock_input_method_manager.h"
 
 namespace chromeos {
@@ -54,8 +53,6 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
   void AddImeMenuObserver(ImeMenuObserver* observer) override;
   void RemoveObserver(InputMethodManager::Observer* observer) override;
   void RemoveImeMenuObserver(ImeMenuObserver* observer) override;
-  std::unique_ptr<InputMethodDescriptors> GetSupportedInputMethods()
-      const override;
   bool IsISOLevel5ShiftUsedByCurrentInputMethod() const override;
   ImeKeyboard* GetImeKeyboard() override;
   InputMethodUtil* GetInputMethodUtil() override;

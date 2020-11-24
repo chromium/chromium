@@ -9,8 +9,6 @@ This program generates a C++ header file containing the information on
 available input methods.  It parses input_methods.txt, and then generates a
 static array definition from the information extracted. The input and output
 file names are specified on the command line.
-The header input_methods.h is used in input_method_allowlist.cc which is for
-testing purpose.
 
 Run it like:
   gen_input_methods.py input_methods.txt input_methods.h

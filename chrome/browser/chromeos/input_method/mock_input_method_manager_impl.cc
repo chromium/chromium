@@ -84,18 +84,6 @@ void MockInputMethodManagerImpl::RemoveImeMenuObserver(
   ++remove_menu_observer_count_;
 }
 
-std::unique_ptr<InputMethodDescriptors>
-MockInputMethodManagerImpl::GetSupportedInputMethods() const {
-  std::unique_ptr<InputMethodDescriptors> result;
-#if _LIBCPP_STD_VER > 11
-  result = std::make_unique<InputMethodDescriptors>();
-#else
-  result.reset(new InputMethodDescriptors);
-#endif
-  result->push_back(InputMethodUtil::GetFallbackInputMethodDescriptor());
-  return result;
-}
-
 bool MockInputMethodManagerImpl::IsISOLevel5ShiftUsedByCurrentInputMethod()
     const {
   return mod3_used_;

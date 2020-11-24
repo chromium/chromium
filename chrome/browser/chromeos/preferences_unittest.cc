@@ -38,7 +38,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/input_method_allowlist.h"
 #include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
 #include "url/gurl.h"
 
@@ -124,11 +123,6 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
   }
 
   ~MyMockInputMethodManager() override {}
-
-  std::unique_ptr<InputMethodDescriptors> GetSupportedInputMethods()
-      const override {
-    return allowlist::GetSupportedInputMethods();
-  }
 
   std::string last_input_method_id_;
 
@@ -270,6 +264,34 @@ class InputMethodPreferencesTest : public PreferencesTest {
 
   std::vector<ComponentExtensionIME> CreateImeList() {
     std::vector<ComponentExtensionIME> ime_list;
+
+    ComponentExtensionIME ext_xkb;
+    ext_xkb.id = extension_ime_util::kXkbExtensionId;
+    ext_xkb.description = "ext_xkb_description";
+    ext_xkb.path = base::FilePath("ext_xkb_file_path");
+
+    ComponentExtensionEngine ext_xkb_engine_se;
+    ext_xkb_engine_se.engine_id = "xkb:se::swe";
+    ext_xkb_engine_se.display_name = "xkb:se::swe";
+    ext_xkb_engine_se.language_codes.push_back("sv");
+    ext_xkb_engine_se.layouts.push_back("se");
+    ext_xkb.engines.push_back(ext_xkb_engine_se);
+
+    ComponentExtensionEngine ext_xkb_engine_jp;
+    ext_xkb_engine_jp.engine_id = "xkb:jp::jpn";
+    ext_xkb_engine_jp.display_name = "xkb:jp::jpn";
+    ext_xkb_engine_jp.language_codes.push_back("ja");
+    ext_xkb_engine_jp.layouts.push_back("jp");
+    ext_xkb.engines.push_back(ext_xkb_engine_jp);
+
+    ComponentExtensionEngine ext_xkb_engine_ru;
+    ext_xkb_engine_ru.engine_id = "xkb:ru::rus";
+    ext_xkb_engine_ru.display_name = "xkb:ru::rus";
+    ext_xkb_engine_ru.language_codes.push_back("ru");
+    ext_xkb_engine_ru.layouts.push_back("ru");
+    ext_xkb.engines.push_back(ext_xkb_engine_ru);
+
+    ime_list.push_back(ext_xkb);
 
     ComponentExtensionIME ext;
     ext.id = extension_ime_util::kMozcExtensionId;

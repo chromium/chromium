@@ -252,11 +252,11 @@ std::string InputMethodSyncer::AddSupportedInputMethodValues(
       pref_name == prefs::kLanguageEnabledImes) {
     input_method::InputMethodManager* manager =
         input_method::InputMethodManager::Get();
-    std::unique_ptr<input_method::InputMethodDescriptors> supported_descriptors;
+    std::unique_ptr<input_method::InputMethodDescriptors>
+        supported_descriptors =
+            std::make_unique<input_method::InputMethodDescriptors>();
 
     if (pref_name == prefs::kLanguagePreloadEngines) {
-      // Set the known input methods.
-      supported_descriptors = manager->GetSupportedInputMethods();
       // Add the available component extension IMEs.
       ComponentExtensionIMEManager* component_extension_manager =
           manager->GetComponentExtensionIMEManager();
@@ -266,7 +266,6 @@ std::string InputMethodSyncer::AddSupportedInputMethodValues(
                                     component_descriptors.begin(),
                                     component_descriptors.end());
     } else {
-      supported_descriptors.reset(new input_method::InputMethodDescriptors);
       ime_state_->GetInputMethodExtensions(supported_descriptors.get());
     }
     CheckAndResolveInputMethodIDs(*supported_descriptors, &new_token_values);
