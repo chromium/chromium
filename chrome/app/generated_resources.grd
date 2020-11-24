@@ -1196,7 +1196,7 @@ are declared in tools/grit/grit_rule.gni.
           R&amp;eopen closed window
         </message>
         <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
-          &amp;Name window...
+          Name &amp;window...
         </message>
       </if>
       <if expr="use_titlecase">
@@ -1231,7 +1231,7 @@ are declared in tools/grit/grit_rule.gni.
           R&amp;eopen Closed Window
         </message>
         <message name="IDS_NAME_WINDOW" desc="In Title Case: The text label of the Name Window menu item, used to give a user-specified name to a window.">
-          &amp;Name Window...
+          Name &amp;Window...
         </message>
       </if>
 
