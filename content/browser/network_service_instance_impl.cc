@@ -39,7 +39,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/log/net_log_util.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
-#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -507,9 +506,6 @@ void PingNetworkService(base::OnceClosure closure) {
 
 namespace {
 
-cert_verifier::mojom::CertVerifierServiceFactory*
-    g_cert_verifier_service_factory_for_testing = nullptr;
-
 mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
 GetNewCertVerifierServiceRemote(
     cert_verifier::mojom::CertVerifierServiceFactory*
@@ -523,60 +519,68 @@ GetNewCertVerifierServiceRemote(
   return cert_verifier_remote;
 }
 
-void RunInProcessCertVerifierServiceFactory(
+void CreateInProcessCertVerifierServiceOnThread(
     mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
         receiver) {
-#if defined(OS_CHROMEOS)
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO) ||
-         BrowserThread::CurrentlyOn(BrowserThread::IO));
-#else
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
-#endif
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      std::unique_ptr<cert_verifier::CertVerifierServiceFactoryImpl>>>
-      service_factory_slot;
-  service_factory_slot->GetOrCreateValue() =
-      std::make_unique<cert_verifier::CertVerifierServiceFactoryImpl>(
-          std::move(receiver));
+  // Except in tests, our CertVerifierServiceFactoryImpl is a singleton.
+  static base::NoDestructor<cert_verifier::CertVerifierServiceFactoryImpl>
+      cv_service_factory(std::move(receiver));
 }
 
 // Owns the CertVerifierServiceFactory used by the browser.
 // Lives on the UI thread.
-mojo::Remote<cert_verifier::mojom::CertVerifierServiceFactory>&
-GetCertVerifierServiceFactoryRemoteStorage() {
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      mojo::Remote<cert_verifier::mojom::CertVerifierServiceFactory>>>
-      cert_verifier_service_factory_remote;
-  return cert_verifier_service_factory_remote->GetOrCreateValue();
-}
+class CertVerifierServiceFactoryOwner {
+ public:
+  CertVerifierServiceFactoryOwner() = default;
+  CertVerifierServiceFactoryOwner(const CertVerifierServiceFactoryOwner&) =
+      delete;
+  CertVerifierServiceFactoryOwner& operator=(
+      const CertVerifierServiceFactoryOwner&) = delete;
+  ~CertVerifierServiceFactoryOwner() = delete;
 
-// Returns a pointer to a CertVerifierServiceFactory usable on the UI thread.
-cert_verifier::mojom::CertVerifierServiceFactory*
-GetCertVerifierServiceFactory() {
-  if (g_cert_verifier_service_factory_for_testing)
-    return g_cert_verifier_service_factory_for_testing;
-
-  mojo::Remote<cert_verifier::mojom::CertVerifierServiceFactory>&
-      factory_remote_storage = GetCertVerifierServiceFactoryRemoteStorage();
-  if (!factory_remote_storage.is_bound() ||
-      !factory_remote_storage.is_connected()) {
-    factory_remote_storage.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // ChromeOS's in-process CertVerifierService should run on the IO thread
-    // because it interacts with IO-bound NSS and ChromeOS user slots.
-    // See for example InitializeNSSForChromeOSUser().
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RunInProcessCertVerifierServiceFactory,
-                       factory_remote_storage.BindNewPipeAndPassReceiver()));
-#else
-    RunInProcessCertVerifierServiceFactory(
-        factory_remote_storage.BindNewPipeAndPassReceiver());
-#endif
+  static CertVerifierServiceFactoryOwner* Get() {
+    static base::NoDestructor<CertVerifierServiceFactoryOwner>
+        cert_verifier_service_factory_owner;
+    return &*cert_verifier_service_factory_owner;
   }
-  return factory_remote_storage.get();
-}
+
+  // Passing nullptr will reset the current remote.
+  void SetCertVerifierServiceFactoryForTesting(
+      cert_verifier::mojom::CertVerifierServiceFactory* service_factory) {
+    if (service_factory) {
+      DCHECK(!service_factory_);
+    }
+    service_factory_ = service_factory;
+    service_factory_remote_.reset();
+  }
+
+  // Returns a pointer to a CertVerifierServiceFactory usable on the UI thread.
+  cert_verifier::mojom::CertVerifierServiceFactory*
+  GetCertVerifierServiceFactory() {
+    if (!service_factory_) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // ChromeOS's in-process CertVerifierService should run on the IO thread
+      // because it interacts with IO-bound NSS and ChromeOS user slots.
+      // See for example InitializeNSSForChromeOSUser().
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CreateInProcessCertVerifierServiceOnThread,
+                         service_factory_remote_.BindNewPipeAndPassReceiver()));
+#else
+      CreateInProcessCertVerifierServiceOnThread(
+          service_factory_remote_.BindNewPipeAndPassReceiver());
+#endif
+      service_factory_ = service_factory_remote_.get();
+    }
+    return service_factory_;
+  }
+
+ private:
+  // Bound to UI thread.
+  mojo::Remote<cert_verifier::mojom::CertVerifierServiceFactory>
+      service_factory_remote_;
+  cert_verifier::mojom::CertVerifierServiceFactory* service_factory_ = nullptr;
+};
 
 }  // namespace
 
@@ -592,9 +596,10 @@ network::mojom::CertVerifierParamsPtr GetCertVerifierParams(
       network::mojom::CertVerifierServiceRemoteParams::New();
 
   // Create a cert verifier service.
-  cv_service_remote_params->cert_verifier_service =
-      GetNewCertVerifierServiceRemote(GetCertVerifierServiceFactory(),
-                                      std::move(cert_verifier_creation_params));
+  cv_service_remote_params
+      ->cert_verifier_service = GetNewCertVerifierServiceRemote(
+      CertVerifierServiceFactoryOwner::Get()->GetCertVerifierServiceFactory(),
+      std::move(cert_verifier_creation_params));
 
   return network::mojom::CertVerifierParams::NewRemoteParams(
       std::move(cv_service_remote_params));
@@ -602,7 +607,8 @@ network::mojom::CertVerifierParamsPtr GetCertVerifierParams(
 
 void SetCertVerifierServiceFactoryForTesting(
     cert_verifier::mojom::CertVerifierServiceFactory* service_factory) {
-  g_cert_verifier_service_factory_for_testing = service_factory;
+  CertVerifierServiceFactoryOwner::Get()
+      ->SetCertVerifierServiceFactoryForTesting(service_factory);
 }
 
 }  // namespace content
