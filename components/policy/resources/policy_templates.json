@@ -16312,13 +16312,17 @@
       'id': 784,
       'caption': '''Configure allowed quick unlock modes''',
       'tags': [],
-      'desc': '''The policy controls a list of quick unlock modes that users can configure and use to unlock the lock screen.
+      'desc': '''Setting the policy controls which quick unlock modes can unlock the lock screen.
 
-          This value is a list of strings; valid list entries are: "all", "PIN", "FINGERPRINT". Adding "all" to the list means that every quick unlock mode is available to the user, including ones implemented in the future. Otherwise, only the quick unlock modes present in the list will be available.
+      To allow:
 
-          For example, to allow every quick unlock mode, use ["all"]. To allow only PIN unlock, use ["PIN"]. To allow PIN and fingerprint, use ["PIN", "FINGERPRINT"].
+      * Every quick unlock mode, use ["all"] (includes modes added in the future).
 
-          If the policy is not set or set to an empty list, no quick unlock modes are available for managed devices''',
+      * Only PIN unlock, use ["PIN"].
+
+      * PIN and fingerprint, use ["PIN", "FINGERPRINT"].
+
+      If the policy is unset or set to an empty list, no quick unlock modes are available for managed devices.''',
     },
     {
       'name': 'QuickUnlockModeWhitelist',
@@ -16347,15 +16351,19 @@
       'id': 352,
       'caption': '''Configure allowed quick unlock modes''',
       'tags': [],
-      'desc': '''The policy controls a list of quick unlock modes that users can configure and use to unlock the lock screen.
+      'desc': '''Setting the policy controls which quick unlock modes can unlock the lock screen.
 
-          This value is a list of strings; valid list entries are: "all", "PIN", "FINGERPRINT". Adding "all" to the list means that every quick unlock mode is available to the user, including ones implemented in the future. Otherwise, only the quick unlock modes present in the list will be available.
+      To allow:
 
-          For example, to allow every quick unlock mode, use ["all"]. To allow only PIN unlock, use ["PIN"]. To allow PIN and fingerprint, use ["PIN", "FINGERPRINT"].
+      * Every quick unlock mode, use ["all"] (includes modes added in the future).
 
-          If the policy is not set or set to an empty list, no quick unlock modes are available for managed devices
+      * Only PIN unlock, use ["PIN"].
 
-          This policy is deprecated, please use <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME">QuickUnlockModeAllowlist</ph> instead=''',
+      * PIN and fingerprint, use ["PIN", "FINGERPRINT"].
+
+      If the policy is unset or set to an empty list, no quick unlock modes are available for managed devices.
+
+      This policy is deprecated, please use <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME">QuickUnlockModeAllowlist</ph> instead''',
     },
     {
       'name': 'QuickUnlockTimeout',
@@ -16396,11 +16404,9 @@
       'id': 353,
       'caption': '''Set how often user has to enter password to use quick unlock''',
       'tags': [],
-      'desc': '''This setting controls how often the lock screen will request the password to be entered in order to continue using quick unlock. Each time the lock screen is entered, if the last password entry was more than this setting, the quick unlock will not be available on entering the lock screen. Should the user stay on the lock screen past this period of time, a password will be requested next time the user enters the wrong code, or re-enters the lock screen, whichever comes first.
+      'desc': '''Setting the policy controls how often the lock screen requests the password for quick unlock. Each time the lock screen appears, if the last password entry occured before the time window specified by the value chosen, quick unlock won't be available. If users stay on the lock screen past this amount of time, a password is requested next time they enter the wrong code or re-enter the lock screen, whichever comes first.
 
-          If this setting is configured, users using quick unlock will be requested to enter their passwords on the lock screen depending on this setting.
-
-          If this setting is not configured, users using quick unlock will be requested to enter their password on the lock screen every day.''',
+      Leaving the policy unset means users using quick unlock enter their password on the lock screen daily.''',
     },
     {
       'name': 'PinUnlockMinimumLength',
@@ -16416,12 +16422,9 @@
       'id': 354,
       'caption': '''Set the minimum length of the lock screen PIN''',
       'tags': [],
-      'desc': '''If the policy is set, the configured minimal PIN length is
-          enforced. (The absolute minimum PIN length is 1; values less than 1
-          are treated as 1.)
+      'desc': '''Setting the policy enforces the minimum PIN length chosen. (Values below 1 are rounded up to the minimum of 1.)
 
-          If the policy is not set, a minimal PIN length of 6 digits is
-          enforced. This is the recommended minimum.''',
+      Leaving the policy unset enforces a minimal PIN length of 6 digits, the recommended minimum.''',
     },
     {
       'name': 'PinUnlockMaximumLength',
@@ -16437,9 +16440,9 @@
       'id': 355,
       'caption': '''Set the maximum length of the lock screen PIN''',
       'tags': [],
-      'desc': '''If the policy is set, the configured maximal PIN length is enforced. A value of 0 or less means no maximum length; in that case the user may set a PIN as long as they want. If this setting is less than <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME">PinUnlockMinimumLength</ph> but greater than 0, the maximum length is the same as the minimum length.
+      'desc': '''Setting the policy means the configured maximum PIN length is enforced. A value of 0 or less means the user may set a PIN of any length. If the value is less than <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME">PinUnlockMinimumLength</ph> but greater than 0, the maximum length is set to the minimum length.
 
-          If the policy is not set, no maximum length is enforced.''',
+      Leaving the policy unset means no maximum length is enforced.''',
     },
     {
       'name': 'PinUnlockWeakPinsAllowed',
@@ -16455,11 +16458,9 @@
       'id': 356,
       'caption': '''Enable users to set weak PINs for the lock screen PIN''',
       'tags': [],
-      'desc': '''If false, users will be unable to set PINs which are weak and easy to guess.
+      'desc': '''Setting the policy to Enabled allows weak PINs. Some characteristics of weak PINs: only one digit (1111), digits increase by 1 (1234), digits decrease by 1 (4321), and common PINs. Setting the policy to Disabled means users can't set weak, easy-to-guess PINs.
 
-          Some example weak PINs: PINs containing only one digit (1111), PINs whose digits are increasing by 1 (1234), PINs whose digits are decreasing by 1 (4321), and PINs which are commonly used.
-
-          By default, users will get a warning, not error, if the PIN is considered weak.''',
+      By default, users get a warning, not an error, for a weak PIN.''',
     },
     {
       'name': 'DeviceWallpaperImage',
