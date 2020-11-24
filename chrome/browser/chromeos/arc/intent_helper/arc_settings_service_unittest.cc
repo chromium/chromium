@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/chromeos/arc/arc_optin_uma.h"
+#include "chrome/browser/chromeos/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
@@ -162,8 +163,11 @@ TEST_F(ArcSettingsServiceTest,
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcInitialSettingsPending));
 
-  arc_session_manager()->OnProvisioningFinished(ProvisioningResult::SUCCESS,
-                                                {});
+  arc::mojom::ArcSignInResultPtr result =
+      arc::mojom::ArcSignInResult::NewSuccess(
+          arc::mojom::ArcSignInSuccess::SUCCESS);
+  arc_session_manager()->OnProvisioningFinished(
+      ArcProvisioningResult(std::move(result)));
 
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcInitialSettingsPending));
@@ -201,8 +205,11 @@ TEST_F(ArcSettingsServiceTest,
                   ->GetBroadcastsForAction(kActionLocaionEnabled)
                   .empty());
 
-  arc_session_manager()->OnProvisioningFinished(ProvisioningResult::SUCCESS,
-                                                {});
+  arc::mojom::ArcSignInResultPtr result =
+      arc::mojom::ArcSignInResult::NewSuccess(
+          arc::mojom::ArcSignInSuccess::SUCCESS);
+  arc_session_manager()->OnProvisioningFinished(
+      ArcProvisioningResult(std::move(result)));
 
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcInitialSettingsPending));

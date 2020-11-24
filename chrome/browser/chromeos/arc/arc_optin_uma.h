@@ -18,6 +18,8 @@ class TimeDelta;
 
 namespace arc {
 
+class ArcProvisioningResult;
+
 // These enums are used to define the buckets for an enumerated UMA histogram
 // and need to be synced with tools/metrics/histograms/enums.xml. Note that
 // values 0, 1, 2, 3 and 4 are now deprecated.
@@ -103,7 +105,7 @@ enum class OptInSilentAuthCode {
 // The values should be listed in ascending order. They are also persisted to
 // logs, and their values should therefore never be renumbered nor reused. For
 // detailed meaning, please consult auth.mojom.
-enum class ProvisioningResult : int {
+enum class ProvisioningResultUMA : int {
   // Provisioning was successful. Note, SUCCESS_ALREADY_PROVISIONED is also
   // successful state.
   SUCCESS = 0,
@@ -224,15 +226,15 @@ void UpdateEnabledStateByUserTypeUMA();
 void UpdateOptInActionUMA(OptInActionType type);
 void UpdateOptInCancelUMA(OptInCancelReason reason);
 void UpdateOptInFlowResultUMA(OptInFlowResult result);
-void UpdateProvisioningResultUMA(ProvisioningResult result,
+void UpdateProvisioningResultUMA(ProvisioningResultUMA result,
                                  const Profile* profile);
 void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
                                       const Profile* profile);
-void UpdateSecondarySigninResultUMA(ProvisioningResult result);
+void UpdateSecondarySigninResultUMA(ProvisioningResultUMA result);
 void UpdateProvisioningTiming(const base::TimeDelta& elapsed_time,
                               bool success,
                               const Profile* profile);
-void UpdateReauthorizationResultUMA(ProvisioningResult result,
+void UpdateReauthorizationResultUMA(ProvisioningResultUMA result,
                                     const Profile* profile);
 void UpdatePlayAutoInstallRequestState(mojom::PaiFlowState state,
                                        const Profile* profile);
@@ -261,8 +263,14 @@ void UpdateMainAccountResolutionStatus(
     const Profile* profile,
     mojom::MainAccountResolutionStatus status);
 
+// Returns the enum for use in UMA stat and displaying error code on the UI.
+// This enum should not be used anywhere else. Please work with the object
+// instead.
+ProvisioningResultUMA GetProvisioningResultUMA(
+    const ArcProvisioningResult& provisioning_result);
+
 // Outputs the stringified |result| to |os|. This is only for logging purposes.
-std::ostream& operator<<(std::ostream& os, const ProvisioningResult& result);
+std::ostream& operator<<(std::ostream& os, const ProvisioningResultUMA& result);
 
 }  // namespace arc
 

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,9 +75,9 @@ void UpdateOptInFlowResultUMA(OptInFlowResult result) {
   base::UmaHistogramEnumeration("Arc.OptInResult", result);
 }
 
-void UpdateProvisioningResultUMA(ProvisioningResult result,
+void UpdateProvisioningResultUMA(ProvisioningResultUMA result,
                                  const Profile* profile) {
-  DCHECK_NE(result, ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR);
+  DCHECK_NE(result, ProvisioningResultUMA::CHROME_SERVER_COMMUNICATION_ERROR);
   base::UmaHistogramEnumeration(
       GetHistogramNameByUserType("Arc.Provisioning.Result", profile), result);
 }
@@ -88,7 +89,7 @@ void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
       error);
 }
 
-void UpdateSecondarySigninResultUMA(ProvisioningResult result) {
+void UpdateSecondarySigninResultUMA(ProvisioningResultUMA result) {
   base::UmaHistogramEnumeration("Arc.Secondary.Signin.Result", result);
 }
 
@@ -105,7 +106,7 @@ void UpdateProvisioningTiming(const base::TimeDelta& elapsed_time,
       base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(6), 50);
 }
 
-void UpdateReauthorizationResultUMA(ProvisioningResult result,
+void UpdateReauthorizationResultUMA(ProvisioningResultUMA result,
                                     const Profile* profile) {
   base::UmaHistogramEnumeration(
       GetHistogramNameByUserType("Arc.Reauthorization.Result", profile),
@@ -205,9 +206,80 @@ void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state) {
                            static_cast<int>(state));
 }
 
-std::ostream& operator<<(std::ostream& os, const ProvisioningResult& result) {
+ProvisioningResultUMA GetProvisioningResultUMA(
+    const ArcProvisioningResult& provisioning_result) {
+  if (provisioning_result.is_stopped())
+    return ProvisioningResultUMA::ARC_STOPPED;
+
+  if (provisioning_result.is_timedout())
+    return ProvisioningResultUMA::OVERALL_SIGN_IN_TIMEOUT;
+
+  const mojom::ArcSignInResult* result = provisioning_result.signin_result();
+  if (result->is_success()) {
+    if (result->get_success() == mojom::ArcSignInSuccess::SUCCESS)
+      return ProvisioningResultUMA::SUCCESS;
+    else
+      return ProvisioningResultUMA::SUCCESS_ALREADY_PROVISIONED;
+  }
+
+  if (result->get_error()->is_cloud_provision_flow_error())
+    return ProvisioningResultUMA::CLOUD_PROVISION_FLOW_ERROR;
+
+  if (result->get_error()->is_general_error()) {
+#define MAP_GENERAL_ERROR(name)         \
+  case mojom::GeneralSignInError::name: \
+    return ProvisioningResultUMA::name
+
+    switch (result->get_error()->get_general_error()) {
+      MAP_GENERAL_ERROR(UNKNOWN_ERROR);
+      MAP_GENERAL_ERROR(MOJO_VERSION_MISMATCH);
+      MAP_GENERAL_ERROR(PROVISIONING_TIMEOUT);
+      MAP_GENERAL_ERROR(NO_NETWORK_CONNECTION);
+      MAP_GENERAL_ERROR(CHROME_SERVER_COMMUNICATION_ERROR);
+      MAP_GENERAL_ERROR(ARC_DISABLED);
+      MAP_GENERAL_ERROR(UNSUPPORTED_ACCOUNT_TYPE);
+      MAP_GENERAL_ERROR(CHROME_ACCOUNT_NOT_FOUND);
+    }
+#undef MAP_GENERAL_ERROR
+  }
+
+  if (result->get_error()->is_checkin_error()) {
+#define MAP_CHECKIN_ERROR(name)         \
+  case mojom::DeviceCheckInError::name: \
+    return ProvisioningResultUMA::name
+
+    switch (result->get_error()->get_checkin_error()) {
+      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_FAILED);
+      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_TIMEOUT);
+      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_INTERNAL_ERROR);
+    }
+#undef MAP_CHECKIN_ERROR
+  }
+
+  if (result->get_error()->is_gms_error()) {
+#define MAP_GMS_ERROR(name)   \
+  case mojom::GMSError::name: \
+    return ProvisioningResultUMA::name
+
+    switch (result->get_error()->get_gms_error()) {
+      MAP_GMS_ERROR(GMS_NETWORK_ERROR);
+      MAP_GMS_ERROR(GMS_SERVICE_UNAVAILABLE);
+      MAP_GMS_ERROR(GMS_BAD_AUTHENTICATION);
+      MAP_GMS_ERROR(GMS_SIGN_IN_FAILED);
+      MAP_GMS_ERROR(GMS_SIGN_IN_TIMEOUT);
+      MAP_GMS_ERROR(GMS_SIGN_IN_INTERNAL_ERROR);
+    }
+#undef MAP_GMS_ERROR
+  }
+
+  NOTREACHED() << "unknown sign result";
+  return ProvisioningResultUMA::UNKNOWN_ERROR;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const ProvisioningResultUMA& result) {
 #define MAP_PROVISIONING_RESULT(name) \
-  case ProvisioningResult::name:      \
+  case ProvisioningResultUMA::name:   \
     return os << #name
 
   switch (result) {

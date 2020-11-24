@@ -32,6 +32,7 @@
 #include "chrome/browser/chromeos/arc/optin/arc_terms_of_service_default_negotiator.h"
 #include "chrome/browser/chromeos/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 #include "chrome/browser/chromeos/arc/policy/arc_android_management_checker.h"
+#include "chrome/browser/chromeos/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_resources.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/policy/powerwash_requirements_checker.h"
@@ -291,7 +292,7 @@ bool ReadSaltOnDisk(const base::FilePath& salt_path, std::string* out_salt) {
   return true;
 }
 
-int GetSignInErrorCode(arc::mojom::ArcSignInErrorPtr signin_error) {
+int GetSignInErrorCode(const arc::mojom::ArcSignInError* signin_error) {
   if (!signin_error)
     return 0;
 
@@ -549,7 +550,7 @@ void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
   state_ = State::STOPPED;
 
   if (arc_sign_in_timer_.IsRunning())
-    OnProvisioningFinished(ProvisioningResult::ARC_STOPPED, reason);
+    OnProvisioningFinished(ArcProvisioningResult(reason));
 
   for (auto& observer : observer_list_)
     observer.OnArcSessionStopped(reason);
@@ -563,8 +564,7 @@ void ArcSessionManager::OnSessionRestarting() {
 }
 
 void ArcSessionManager::OnProvisioningFinished(
-    ProvisioningResult result,
-    absl::variant<mojom::ArcSignInErrorPtr, ArcStopReason> error) {
+    const ArcProvisioningResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // If the Mojo message to notify finishing the provisioning is already sent
@@ -574,27 +574,22 @@ void ArcSessionManager::OnProvisioningFinished(
   // does not support the case of re-enabling.
   if (!enable_requested_) {
     LOG(WARNING) << "Provisioning result received after ARC was disabled. "
-                 << "Ignoring result " << static_cast<int>(result) << ".";
+                 << "Ignoring result " << result << ".";
     return;
   }
 
-  mojom::ArcSignInErrorPtr signin_error =
-      absl::holds_alternative<mojom::ArcSignInErrorPtr>(error)
-          ? std::move(absl::get<mojom::ArcSignInErrorPtr>(error))
-          : nullptr;
+  const mojom::ArcSignInError* signin_error =
+      result.has_signin_error() ? result.signin_error() : nullptr;
 
   // Due asynchronous nature of stopping the ARC instance,
   // OnProvisioningFinished may arrive after setting the |State::STOPPED| state
   // and |State::Active| is not guaranteed to be set here.
   // prefs::kArcDataRemoveRequested also can be active for now.
 
-  const bool provisioning_successful =
-      result == ProvisioningResult::SUCCESS ||
-      result == ProvisioningResult::SUCCESS_ALREADY_PROVISIONED;
+  const bool provisioning_successful = result.is_success();
   if (provisioning_reported_) {
-    // We don't expect ProvisioningResult::SUCCESS or
-    // ProvisioningResult::SUCCESS_ALREADY_PROVISIONED to be reported twice or
-    // reported after an error.
+    // We don't expect success ArcProvisnioningResult to be reported twice
+    // or reported after an error.
     DCHECK(!provisioning_successful);
     // TODO(khmel): Consider changing LOG to NOTREACHED once we guaranty that
     // no double message can happen in production.
@@ -606,7 +601,8 @@ void ArcSessionManager::OnProvisioningFinished(
   if (scoped_opt_in_tracker_ && !provisioning_successful)
     scoped_opt_in_tracker_->TrackError();
 
-  if (result == ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR) {
+  if (result.has_general_error(
+          mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR)) {
     // TODO(poromov): Consider ARC PublicSession offline mode.
     // Currently ARC session will be exited below, while the main user session
     // will be kept alive without Android apps.
@@ -628,7 +624,7 @@ void ArcSessionManager::OnProvisioningFinished(
 
     UpdateProvisioningTiming(base::TimeTicks::Now() - sign_in_start_time_,
                              provisioning_successful, profile_);
-    UpdateProvisioningResultUMA(result, profile_);
+    UpdateProvisioningResultUMA(GetProvisioningResultUMA(result), profile_);
     if (signin_error && signin_error->is_cloud_provision_flow_error()) {
       UpdateCloudProvisionFlowErrorUMA(
           signin_error->get_cloud_provision_flow_error(), profile_);
@@ -674,78 +670,66 @@ void ArcSessionManager::OnProvisioningFinished(
 
   ArcSupportHost::Error support_error;
   VLOG(1) << "ARC provisioning failed: " << result << ".";
-  switch (result) {
-    case ProvisioningResult::GMS_NETWORK_ERROR:
-      support_error = ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR;
-      break;
-    case ProvisioningResult::GMS_SERVICE_UNAVAILABLE:
-    case ProvisioningResult::GMS_SIGN_IN_FAILED:
-    case ProvisioningResult::GMS_SIGN_IN_TIMEOUT:
-    case ProvisioningResult::GMS_SIGN_IN_INTERNAL_ERROR:
-      support_error = ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR;
-      break;
-    case ProvisioningResult::GMS_BAD_AUTHENTICATION:
-      support_error = ArcSupportHost::Error::SIGN_IN_BAD_AUTHENTICATION_ERROR;
-      break;
-    case ProvisioningResult::DEVICE_CHECK_IN_FAILED:
-    case ProvisioningResult::DEVICE_CHECK_IN_TIMEOUT:
-    case ProvisioningResult::DEVICE_CHECK_IN_INTERNAL_ERROR:
-      support_error = ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
-      break;
-    case ProvisioningResult::CLOUD_PROVISION_FLOW_ERROR:
-      DCHECK(signin_error && signin_error->is_cloud_provision_flow_error());
-      support_error = GetCloudProvisionFlowError(
-          signin_error->get_cloud_provision_flow_error());
-      break;
-    case ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR:
-      support_error = ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR;
-      break;
-    case ProvisioningResult::NO_NETWORK_CONNECTION:
-      support_error = ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR;
-      break;
-    case ProvisioningResult::ARC_DISABLED:
-      support_error = ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR;
-      break;
-    case ProvisioningResult::ARC_STOPPED:
-      DCHECK(absl::holds_alternative<ArcStopReason>(error));
-      support_error =
-          absl::get<ArcStopReason>(error) == ArcStopReason::LOW_DISK_SPACE
-              ? ArcSupportHost::Error::LOW_DISK_SPACE_ERROR
-              : ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
-      break;
-    default:
-      support_error = ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
-      break;
+  if (signin_error && signin_error->is_gms_error() &&
+      signin_error->get_gms_error() == mojom::GMSError::GMS_NETWORK_ERROR) {
+    support_error = ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR;
+  } else if (signin_error && signin_error->is_gms_error() &&
+             signin_error->get_gms_error() ==
+                 mojom::GMSError::GMS_BAD_AUTHENTICATION) {
+    support_error = ArcSupportHost::Error::SIGN_IN_BAD_AUTHENTICATION_ERROR;
+  } else if (signin_error && signin_error->is_gms_error()) {
+    support_error = ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR;
+  } else if (signin_error && signin_error->is_checkin_error()) {
+    support_error = ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
+  } else if (signin_error && signin_error->is_cloud_provision_flow_error()) {
+    support_error = GetCloudProvisionFlowError(
+        signin_error->get_cloud_provision_flow_error());
+  } else if (result.has_general_error(mojom::GeneralSignInError::
+                                          CHROME_SERVER_COMMUNICATION_ERROR)) {
+    support_error = ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR;
+  } else if (result.has_general_error(
+                 mojom::GeneralSignInError::NO_NETWORK_CONNECTION)) {
+    support_error = ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR;
+  } else if (result.has_general_error(
+                 mojom::GeneralSignInError::ARC_DISABLED)) {
+    support_error = ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR;
+  } else if (result.is_stopped()) {
+    support_error = result.stop_reason() == ArcStopReason::LOW_DISK_SPACE
+                        ? ArcSupportHost::Error::LOW_DISK_SPACE_ERROR
+                        : ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
+  } else {
+    support_error = ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
   }
 
   // When ARC provisioning fails due to Chrome failing to talk to server, we
   // don't need to keep the ARC session running as the logs necessary to
   // investigate are already present. ARC session will not provide any useful
   // context.
-  if (result == ProvisioningResult::ARC_STOPPED ||
-      result == ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR) {
+  if (result.is_stopped() ||
+      result.has_general_error(
+          mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR)) {
     if (profile_->GetPrefs()->HasPrefPath(prefs::kArcSignedIn))
       profile_->GetPrefs()->SetBoolean(prefs::kArcSignedIn, false);
     VLOG(1) << "Stopping ARC due to provisioning failure";
     ShutdownSession();
   }
 
-  if (result == ProvisioningResult::CLOUD_PROVISION_FLOW_ERROR ||
+  if ((signin_error && signin_error->is_cloud_provision_flow_error()) ||
       // OVERALL_SIGN_IN_TIMEOUT might be an indication that ARC believes it is
       // fully setup, but Chrome does not.
-      result == ProvisioningResult::OVERALL_SIGN_IN_TIMEOUT ||
+      result.is_timedout() ||
       // Just to be safe, remove data if we don't know the cause.
-      result == ProvisioningResult::UNKNOWN_ERROR) {
+      result.has_general_error(mojom::GeneralSignInError::UNKNOWN_ERROR)) {
     VLOG(1) << "ARC provisioning failed permanently. Removing user data";
     RequestArcDataRemoval();
   }
 
   base::Optional<int> error_code;
   if (support_error == ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR) {
-    error_code =
-        static_cast<std::underlying_type_t<ProvisioningResult>>(result);
+    error_code = static_cast<std::underlying_type_t<ProvisioningResultUMA>>(
+        GetProvisioningResultUMA(result));
   } else if (signin_error) {
-    error_code = GetSignInErrorCode(std::move(signin_error));
+    error_code = GetSignInErrorCode(signin_error);
   }
   ShowArcSupportHostError({support_error, error_code} /* error_info */,
                           true /* should_show_send_feedback */);
@@ -933,7 +917,7 @@ void ArcSessionManager::StopAndEnableArc() {
 
 void ArcSessionManager::OnArcSignInTimeout() {
   LOG(ERROR) << "Timed out waiting for first sign in.";
-  OnProvisioningFinished(ProvisioningResult::OVERALL_SIGN_IN_TIMEOUT, {});
+  OnProvisioningFinished(ArcProvisioningResult(OverallSignInTimeout()));
 }
 
 void ArcSessionManager::CancelAuthCode() {
@@ -1265,8 +1249,8 @@ void ArcSessionManager::StartAndroidManagementCheck() {
 
   // State::STOPPED appears here in following scenario.
   // Initial provisioning finished with state
-  // ProvisioningResult::ArcStop or
-  // ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR.
+  // ProvisioningResultUMA::ArcStop or
+  // ProvisioningResultUMA::CHROME_SERVER_COMMUNICATION_ERROR.
   // At this moment |prefs::kArcTermsAccepted| is set to true, once user
   // confirmed ToS prior to provisioning flow. Once user presses "Try Again"
   // button, OnRetryClicked calls this immediately.
@@ -1551,10 +1535,9 @@ void ArcSessionManager::OnRetryClicked() {
   } else {
     // Otherwise, we start ARC once it is stopped now. Usually ARC container is
     // left active after provisioning failure but in case
-    // ProvisioningResult::ARC_STOPPED and
-    // ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR failures container
-    // is stopped.
-    // At this point ToS is already accepted and
+    // ProvisioningResultUMA::ARC_STOPPED and
+    // ProvisioningResultUMA::CHROME_SERVER_COMMUNICATION_ERROR failures
+    // container is stopped. At this point ToS is already accepted and
     // IsArcTermsOfServiceNegotiationNeeded returns true or ToS needs not to be
     // shown at all. However there is an exception when this does not happen in
     // case an error page is shown when re-opt-in right after opt-out (this is a

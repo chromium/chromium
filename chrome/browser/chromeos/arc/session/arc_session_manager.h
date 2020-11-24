@@ -41,10 +41,11 @@ class ArcAndroidManagementChecker;
 class ArcDataRemover;
 class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
+class ArcProvisioningResult;
 class ArcTermsOfServiceNegotiator;
 class ArcUiAvailabilityReporter;
 
-enum class ProvisioningResult : int;
+enum class ProvisioningResultUMA : int;
 enum class ArcStopReason;
 
 // This class is responsible for handing stages of ARC life-cycle.
@@ -210,14 +211,13 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcSupportHost* support_host() { return support_host_.get(); }
 
   // On provisioning completion (regardless of whether successfully done or
-  // not), this is called with its status. On success, called with
-  // ProvisioningResult::SUCCESS, otherwise |result| is the error reason.
-  // |error| either contains the sign-in error that came from ARC or it may
-  // indicate that ARC stopped prematurely and provisioning could not finish
-  // successfully.
-  void OnProvisioningFinished(
-      ProvisioningResult result,
-      absl::variant<mojom::ArcSignInErrorPtr, ArcStopReason> error);
+  // not), this is called with its status. On success, is_success() of
+  // |result| returns true, otherwise ArcSignInResult can be retrieved from
+  // get() if sign-in result came from ARC or is_stopped()
+  // will indicate that ARC stopped prematurely and provisioning could
+  // not finish successfully. is_timedout() indicates that operation timed
+  // out.
+  void OnProvisioningFinished(const ArcProvisioningResult& result);
 
   // A helper function that calls ArcSessionRunner's SetUserInfo.
   void SetUserInfo();

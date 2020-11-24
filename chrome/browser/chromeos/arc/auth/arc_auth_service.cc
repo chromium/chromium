@@ -20,6 +20,7 @@
 #include "chrome/browser/chromeos/arc/auth/arc_background_auth_code_fetcher.h"
 #include "chrome/browser/chromeos/arc/auth/arc_robot_auth_code_fetcher.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -70,63 +71,6 @@ class ArcAuthServiceFactory
   ArcAuthServiceFactory() { DependsOn(IdentityManagerFactory::GetInstance()); }
   ~ArcAuthServiceFactory() override = default;
 };
-
-// Converts mojom::ArcSignInResult into ProvisiningResult.
-ProvisioningResult ConvertArcSignInResultToProvisioningResult(
-    mojom::ArcSignInResult* result) {
-  if (result->is_success()) {
-    if (result->get_success() == mojom::ArcSignInSuccess::SUCCESS)
-      return ProvisioningResult::SUCCESS;
-    else
-      return ProvisioningResult::SUCCESS_ALREADY_PROVISIONED;
-  } else if (result->get_error()->is_cloud_provision_flow_error()) {
-    return ProvisioningResult::CLOUD_PROVISION_FLOW_ERROR;
-  } else if (result->get_error()->is_general_error()) {
-#define MAP_GENERAL_ERROR(name)         \
-  case mojom::GeneralSignInError::name: \
-    return ProvisioningResult::name
-
-    switch (result->get_error()->get_general_error()) {
-      MAP_GENERAL_ERROR(UNKNOWN_ERROR);
-      MAP_GENERAL_ERROR(MOJO_VERSION_MISMATCH);
-      MAP_GENERAL_ERROR(PROVISIONING_TIMEOUT);
-      MAP_GENERAL_ERROR(NO_NETWORK_CONNECTION);
-      MAP_GENERAL_ERROR(CHROME_SERVER_COMMUNICATION_ERROR);
-      MAP_GENERAL_ERROR(ARC_DISABLED);
-      MAP_GENERAL_ERROR(UNSUPPORTED_ACCOUNT_TYPE);
-      MAP_GENERAL_ERROR(CHROME_ACCOUNT_NOT_FOUND);
-    }
-#undef MAP_GENERAL_ERROR
-  } else if (result->get_error()->is_checkin_error()) {
-#define MAP_CHECKIN_ERROR(name)         \
-  case mojom::DeviceCheckInError::name: \
-    return ProvisioningResult::name
-
-    switch (result->get_error()->get_checkin_error()) {
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_FAILED);
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_TIMEOUT);
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_INTERNAL_ERROR);
-    }
-#undef MAP_CHECKIN_ERROR
-  } else if (result->get_error()->is_gms_error()) {
-#define MAP_GMS_ERROR(name)   \
-  case mojom::GMSError::name: \
-    return ProvisioningResult::name
-
-    switch (result->get_error()->get_gms_error()) {
-      MAP_GMS_ERROR(GMS_NETWORK_ERROR);
-      MAP_GMS_ERROR(GMS_SERVICE_UNAVAILABLE);
-      MAP_GMS_ERROR(GMS_BAD_AUTHENTICATION);
-      MAP_GMS_ERROR(GMS_SIGN_IN_FAILED);
-      MAP_GMS_ERROR(GMS_SIGN_IN_TIMEOUT);
-      MAP_GMS_ERROR(GMS_SIGN_IN_INTERNAL_ERROR);
-    }
-#undef MAP_GMS_ERROR
-  }
-
-  NOTREACHED() << "unknown sign result";
-  return ProvisioningResult::UNKNOWN_ERROR;
-}
 
 mojom::ChromeAccountType GetAccountType(const Profile* profile) {
   if (profile->IsChild())
@@ -368,14 +312,11 @@ void ArcAuthService::OnConnectionClosed() {
 
 void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
                                            mojom::ArcSignInAccountPtr account) {
-  const ProvisioningResult provisioning_result =
-      ConvertArcSignInResultToProvisioningResult(result.get());
+  ArcProvisioningResult provisioning_result(std::move(result));
 
   if (account->is_initial_signin()) {
     // UMA for initial signin is updated from ArcSessionManager.
-    ArcSessionManager::Get()->OnProvisioningFinished(
-        provisioning_result,
-        result->is_error() ? std::move(result->get_error()) : nullptr);
+    ArcSessionManager::Get()->OnProvisioningFinished(provisioning_result);
     return;
   }
 
@@ -385,6 +326,9 @@ void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
     return;
   }
 
+  ProvisioningResultUMA provisioning_result_enum =
+      GetProvisioningResultUMA(provisioning_result);
+
   if (!account->is_account_name() || !account->get_account_name() ||
       account->get_account_name().value().empty() ||
       IsPrimaryOrDeviceLocalAccount(identity_manager_,
@@ -393,11 +337,11 @@ void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
     // The check for |!account_name.has_value()| is for backwards compatibility
     // with older ARC versions, for which Mojo will set |account_name| to
     // empty/null.
-    DCHECK_NE(ProvisioningResult::SUCCESS_ALREADY_PROVISIONED,
-              provisioning_result);
-    UpdateReauthorizationResultUMA(provisioning_result, profile_);
+    DCHECK_NE(ProvisioningResultUMA::SUCCESS_ALREADY_PROVISIONED,
+              provisioning_result_enum);
+    UpdateReauthorizationResultUMA(provisioning_result_enum, profile_);
   } else {
-    UpdateSecondarySigninResultUMA(provisioning_result);
+    UpdateSecondarySigninResultUMA(provisioning_result_enum);
   }
 }
 
