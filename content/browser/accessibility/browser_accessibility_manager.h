@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/accessibility_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility_position.h"
 #include "content/common/content_export.h"
 #include "content/common/render_accessibility.mojom-forward.h"
@@ -37,6 +36,7 @@
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {

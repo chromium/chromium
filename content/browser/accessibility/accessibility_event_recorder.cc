@@ -5,8 +5,8 @@
 #include "content/browser/accessibility/accessibility_event_recorder.h"
 
 #include "build/build_config.h"
-#include "content/browser/accessibility/accessibility_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/base/buildflags.h"
 
 namespace content {
 

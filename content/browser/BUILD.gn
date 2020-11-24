@@ -254,7 +254,6 @@ source_set("browser") {
   ]
 
   public_deps = [
-    ":accessibility_buildflags",
     "//base/util/memory_pressure",
     "//base/util/type_safety",
     "//ipc",
@@ -2818,12 +2817,6 @@ source_set("browser") {
       "//services/metrics/public/cpp:ukm_builders",
     ]
   }
-}
-
-buildflag_header("accessibility_buildflags") {
-  header = "accessibility_buildflags.h"
-  header_dir = "content/browser/accessibility"
-  flags = [ "USE_ATK=$use_atk" ]
 }
 
 if (is_android) {
