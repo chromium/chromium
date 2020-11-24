@@ -67,6 +67,7 @@ void HasSecureWiFiConnectionRoutine::RunRoutine(
     HasSecureWiFiConnectionRoutineCallback callback) {
   if (!CanRun()) {
     std::move(callback).Run(verdict(), std::move(problems_));
+    return;
   }
   routine_completed_callback_ = std::move(callback);
   FetchActiveWiFiNetworks();
