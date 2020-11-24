@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
@@ -116,8 +117,11 @@ public final class LocationBarCoordinator
         View urlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         OneshotSupplierImpl<AssistantVoiceSearchService> assistantVoiceSearchSupplier =
                 new OneshotSupplierImpl();
-        mLocationBarMediator = new LocationBarMediator(
-                mLocationBarLayout, locationBarDataProvider, assistantVoiceSearchSupplier);
+        // TODO(crbug.com/1151513): Inject LocaleManager instance to LocationBarCoordinator instead
+        // of using the singleton.
+        mLocationBarMediator = new LocationBarMediator(mLocationBarLayout, locationBarDataProvider,
+                assistantVoiceSearchSupplier, overrideUrlLoadingDelegate,
+                LocaleManager.getInstance());
         mUrlCoordinator = new UrlBarCoordinator((UrlBar) urlBar, windowDelegate, actionModeCallback,
                 mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                 mLocationBarMediator);
@@ -143,8 +147,7 @@ public final class LocationBarCoordinator
         mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
                 locationBarDataProvider, profileObservableSupplier, windowDelegate, windowAndroid,
-                overrideUrlLoadingDelegate, mLocationBarMediator.getVoiceRecognitionHandler(),
-                assistantVoiceSearchSupplier);
+                mLocationBarMediator.getVoiceRecognitionHandler(), assistantVoiceSearchSupplier);
     }
 
     @Override

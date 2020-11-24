@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
-import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -38,9 +37,6 @@ import org.chromium.ui.base.WindowAndroid;
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
     /** Delegates calls out to the containing Activity. */
     public static interface Delegate {
-        /** Load a URL in the associated tab. */
-        void loadUrl(String url, @Nullable String postDataType, @Nullable byte[] postData);
-
         /** The user hit the back button. */
         void backKeyPressed();
     }
@@ -69,25 +65,16 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
-            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull OneshotSupplier<AssistantVoiceSearchService>
                     assistantVoiceSearchServiceSupplier) {
         super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
                 locationBarDataProvider, profileSupplier, windowDelegate, windowAndroid,
-                overrideUrlLoadingDelegate, voiceRecognitionHandler,
-                assistantVoiceSearchServiceSupplier);
+                voiceRecognitionHandler, assistantVoiceSearchServiceSupplier);
         setUrlBarFocusable(true);
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
                 mPendingSearchPromoDecision);
-    }
-
-    @Override
-    protected void loadUrlWithPostData(String url, int transition, long inputStart,
-            @Nullable String postDataType, @Nullable byte[] postData) {
-        mDelegate.loadUrl(url, postDataType, postData);
-        LocaleManager.getInstance().recordLocaleBasedSearchMetrics(true, url, transition);
     }
 
     @Override
