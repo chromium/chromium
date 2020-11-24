@@ -3722,6 +3722,8 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
 
 #if !defined(OS_IOS)
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   EXPECT_CALL(*store_, GetLogins)
@@ -3767,6 +3769,8 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
 }
 
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   EXPECT_CALL(*store_, GetLogins)
