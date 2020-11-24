@@ -141,6 +141,12 @@ MEDIA_EXPORT void CopyRGBToVideoFrame(const uint8_t* source,
                                       const gfx::Rect& region_in_frame,
                                       VideoFrame* frame);
 
+// A helper function to map GpuMemoryBuffer-based VideoFrame. This function
+// maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
+// format. The returned VideoFrame owns the |frame|.
+MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
+    scoped_refptr<VideoFrame> frame);
+
 // Converts a frame with YV12A format into I420 by dropping alpha channel.
 MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
     scoped_refptr<VideoFrame> frame);

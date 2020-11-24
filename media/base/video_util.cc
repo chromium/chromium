@@ -13,6 +13,7 @@
 #include "base/numerics/safe_math.h"
 #include "media/base/video_frame.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -424,15 +425,53 @@ void CopyRGBToVideoFrame(const uint8_t* source,
                      region_in_frame.width(), region_in_frame.height());
 }
 
+scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
+    scoped_refptr<VideoFrame> video_frame) {
+  DCHECK(video_frame);
+  DCHECK_EQ(video_frame->storage_type(),
+            VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
+
+  auto* gmb = video_frame->GetGpuMemoryBuffer();
+  DCHECK(gmb);
+
+  if (!gmb->Map())
+    return nullptr;
+
+  const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
+  uint8_t* plane_addrs[VideoFrame::kMaxPlanes] = {};
+  for (size_t i = 0; i < num_planes; i++)
+    plane_addrs[i] = static_cast<uint8_t*>(gmb->memory(i));
+
+  auto mapped_frame = VideoFrame::WrapExternalYuvDataWithLayout(
+      video_frame->layout(), video_frame->visible_rect(),
+      video_frame->natural_size(), plane_addrs[0], plane_addrs[1],
+      plane_addrs[2], video_frame->timestamp());
+
+  if (!mapped_frame) {
+    gmb->Unmap();
+    return nullptr;
+  }
+
+  mapped_frame->set_color_space(video_frame->ColorSpace());
+
+  // Pass |video_frame| so that it outlives |mapped_frame| and the mapped buffer
+  // is unmapped on destruction.
+  mapped_frame->AddDestructionObserver(base::BindOnce(
+      [](scoped_refptr<VideoFrame> frame) {
+        DCHECK(frame->HasGpuMemoryBuffer());
+        frame->GetGpuMemoryBuffer()->Unmap();
+      },
+      std::move(video_frame)));
+  return mapped_frame;
+}
+
 scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
     scoped_refptr<VideoFrame> frame) {
   DCHECK_EQ(VideoFrame::STORAGE_OWNED_MEMORY, frame->storage_type());
   DCHECK_EQ(PIXEL_FORMAT_I420A, frame->format());
 
-  scoped_refptr<media::VideoFrame> wrapped_frame =
-      media::VideoFrame::WrapVideoFrame(frame, PIXEL_FORMAT_I420,
-                                        frame->visible_rect(),
-                                        frame->natural_size());
+  scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
+      frame, PIXEL_FORMAT_I420, frame->visible_rect(), frame->natural_size());
   if (!wrapped_frame)
     return nullptr;
   return wrapped_frame;

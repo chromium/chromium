@@ -141,7 +141,8 @@ class MODULES_EXPORT VideoEncoder final
   bool CanReconfigure(ParsedConfig& original_config, ParsedConfig& new_config);
 
   std::unique_ptr<media::VideoEncoder> media_encoder_;
-  bool is_hw_accelerated_ = false;
+  // This flag maybe removed when all encoders can handle NV12 frame.
+  bool support_nv12_ = false;
 
   // |parent_media_log_| must be destroyed if ever the ExecutionContext is
   // destroyed, since the blink::MediaInspectorContext* pointer given to

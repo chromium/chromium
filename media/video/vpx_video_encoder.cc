@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 
@@ -78,6 +79,21 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
   config->g_w = opts.frame_size.width();
   config->g_h = opts.frame_size.height();
 
+  return Status();
+}
+
+Status MaybeRewrapImageWithFormat(vpx_image_t* vpx_image,
+                                  const vpx_img_fmt fmt,
+                                  int width,
+                                  int height) {
+  if (vpx_image->fmt != fmt) {
+    vpx_img_free(vpx_image);
+    if (vpx_image != vpx_img_wrap(vpx_image, fmt, width, height, 1, nullptr)) {
+      return Status(StatusCode::kEncoderFailedEncode,
+                    "Invalid format or frame size.");
+    }
+  }
+  // else no-op since the image don't need to change format.
   return Status();
 }
 
@@ -232,12 +248,22 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   "No frame provided for encoding."));
     return;
   }
-  if (!frame->IsMappable() || frame->format() != PIXEL_FORMAT_I420) {
+  if (!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) {
     status =
         Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
             .WithData("IsMappable", frame->IsMappable())
             .WithData("format", frame->format());
     std::move(done_cb).Run(std::move(status));
+    return;
+  }
+
+  if (frame->format() == PIXEL_FORMAT_NV12 &&
+      frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
+    frame = ConvertToMemoryMappedFrame(frame);
+  if (!frame) {
+    std::move(done_cb).Run(
+        Status(StatusCode::kEncoderFailedEncode,
+               "Convert GMB frame to MemoryMappedFrame failed."));
     return;
   }
 
@@ -265,15 +291,37 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       NOTREACHED();
       break;
     default:
-      vpx_image_.planes[VPX_PLANE_Y] =
-          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
-      vpx_image_.planes[VPX_PLANE_U] =
-          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUPlane));
-      vpx_image_.planes[VPX_PLANE_V] =
-          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kVPlane));
-      vpx_image_.stride[VPX_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
-      vpx_image_.stride[VPX_PLANE_U] = frame->stride(VideoFrame::kUPlane);
-      vpx_image_.stride[VPX_PLANE_V] = frame->stride(VideoFrame::kVPlane);
+      vpx_img_fmt_t fmt = frame->format() == PIXEL_FORMAT_NV12
+                              ? VPX_IMG_FMT_NV12
+                              : VPX_IMG_FMT_I420;
+      Status status = MaybeRewrapImageWithFormat(
+          &vpx_image_, fmt, codec_config_.g_w, codec_config_.g_h);
+      if (!status.is_ok()) {
+        std::move(done_cb).Run(status);
+        return;
+      }
+      if (fmt == VPX_IMG_FMT_NV12) {
+        vpx_image_.planes[VPX_PLANE_Y] =
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
+        vpx_image_.planes[VPX_PLANE_U] =
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUVPlane));
+        // For NV12,the V plane address is set to U plane address + 1, see
+        // vpx_image.c: img->planes[VPX_PLANE_V] = img->planes[VPX_PLANE_U] + 1.
+        vpx_image_.planes[VPX_PLANE_V] = vpx_image_.planes[VPX_PLANE_U] + 1;
+        vpx_image_.stride[VPX_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
+        vpx_image_.stride[VPX_PLANE_U] = frame->stride(VideoFrame::kUVPlane);
+        vpx_image_.stride[VPX_PLANE_V] = frame->stride(VideoFrame::kUVPlane);
+      } else {
+        vpx_image_.planes[VPX_PLANE_Y] =
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
+        vpx_image_.planes[VPX_PLANE_U] =
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUPlane));
+        vpx_image_.planes[VPX_PLANE_V] =
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kVPlane));
+        vpx_image_.stride[VPX_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
+        vpx_image_.stride[VPX_PLANE_U] = frame->stride(VideoFrame::kUPlane);
+        vpx_image_.stride[VPX_PLANE_V] = frame->stride(VideoFrame::kVPlane);
+      }
       break;
   }
 
