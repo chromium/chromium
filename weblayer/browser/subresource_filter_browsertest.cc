@@ -144,8 +144,16 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
 // Verifies that subframes that are flagged by the subresource filter ruleset
 // are blocked from loading on activated URLs.
+// Flaky on Windows. See https://crbug.com/1152429
+#if defined(OS_WIN)
+#define MAYBE_DisallowedSubframeURLBlockedOnActivatedURL \
+  DISABLED_DisallowedSubframeURLBlockedOnActivatedURL
+#else
+#define MAYBE_DisallowedSubframeURLBlockedOnActivatedURL \
+  DisallowedSubframeURLBlockedOnActivatedURL
+#endif
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       DisallowedSubframeURLBlockedOnActivatedURL) {
+                       MAYBE_DisallowedSubframeURLBlockedOnActivatedURL) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
   content::WebContentsConsoleObserver console_observer(web_contents);
