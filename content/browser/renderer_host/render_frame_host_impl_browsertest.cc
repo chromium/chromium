@@ -3955,9 +3955,9 @@ IN_PROC_BROWSER_TEST_F(
       if (frame->GetLastCommittedURL().IsAboutBlank()) {
         // TODO(986744): `about:blank` is not navigated via
         // `RenderFrameHostImpl::CommitNavigation`, but handled in the renderer
-        // via `RenderFrameImpl::CommitSyncNavigation`. This means that we don't
-        // calculate the value correctly on the browser-side, but do correctly
-        // inherit from the initiator on the Blink-side.
+        // via `RenderFrameImpl::CommitInitialEmptyDocument`. This means that we
+        // don't calculate the value correctly on the browser-side, but do
+        // correctly inherit from the initiator on the Blink-side.
         EXPECT_EQ(
             network::mojom::IPAddressSpace::kUnknown,
             rfhi->last_committed_client_security_state()->ip_address_space);

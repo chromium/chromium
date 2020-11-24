@@ -1005,9 +1005,21 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Used to load the initial empty document. This one is special, since it
   // isn't the result of a navigation.
-  // TODO(rakina): Rename the method now that this is only used for the
-  // special case of committing the initial empty document.
-  void CommitSyncNavigation(std::unique_ptr<blink::WebNavigationInfo> info);
+  //
+  // TODO(arthursonzogni): Consider removing this function. Blink already have a
+  // concept of an initial empty document. It has already committed, as part of
+  // constructing the blink::LocalFrame.
+  // This function in reality commits an empty document a second time! Moreover
+  // it isn't considered by blink to be an initial empty document
+  // (CommitReason::kRegular, not CommitReason::kInitialization).
+  // The purpose of this function is to trigger DidCommitNavigation, even if it
+  // isn't associated with a real NavigationRequest.
+  // See also:
+  // - https://crbug.com/778318
+  // - https://chromium-review.googlesource.com/c/chromium/src/+/804797
+  // - https://github.com/whatwg/html/issues/3267
+  void CommitInitialEmptyDocument(
+      std::unique_ptr<blink::WebNavigationInfo> info);
 
   // Commit navigation with |navigation_params| prepared.
   void CommitNavigationWithParams(
