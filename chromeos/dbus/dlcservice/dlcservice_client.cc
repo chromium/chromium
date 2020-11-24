@@ -356,10 +356,11 @@ class DlcserviceClientImpl : public DlcserviceClient {
                  ProgressCallback progress_callback,
                  dbus::Response* response,
                  dbus::ErrorResponse* err_response) {
-    HoldInstallation(dlc_id, std::move(install_callback),
-                     std::move(progress_callback));
-    if (response)
+    if (response) {
+      HoldInstallation(dlc_id, std::move(install_callback),
+                       std::move(progress_callback));
       return;
+    }
 
     const auto err = DlcserviceErrorResponseHandler(err_response).get_err();
     if (err == dlcservice::kErrorBusy) {
@@ -367,6 +368,8 @@ class DlcserviceClientImpl : public DlcserviceClient {
           &DlcserviceClientImpl::Install, weak_ptr_factory_.GetWeakPtr(),
           dlc_id, std::move(install_callback), std::move(progress_callback)));
     } else {
+      HoldInstallation(dlc_id, std::move(install_callback),
+                       std::move(progress_callback));
       dlcservice::DlcState dlc_state;
       dlc_state.set_id(dlc_id);
       dlc_state.set_last_error_code(err);
