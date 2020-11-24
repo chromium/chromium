@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -31,7 +32,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #endif
 
@@ -55,7 +56,7 @@ class OSExchangeData;
 // Views-implementation of OmniboxView.
 class OmniboxViewViews : public OmniboxView,
                          public views::Textfield,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                          public chromeos::input_method::InputMethodManager::
                              CandidateWindowObserver,
 #endif
@@ -445,7 +446,7 @@ class OmniboxViewViews : public OmniboxView,
   bool ShouldShowPlaceholderText() const override;
 
   // chromeos::input_method::InputMethodManager::CandidateWindowObserver:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void CandidateWindowOpened(
       chromeos::input_method::InputMethodManager* manager) override;
   void CandidateWindowClosed(
@@ -616,7 +617,7 @@ class OmniboxViewViews : public OmniboxView,
   // |location_bar_view_| can be NULL in tests.
   LocationBarView* location_bar_view_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // True if the IME candidate window is open. When this is true, we want to
   // avoid showing the popup. So far, the candidate window is detected only
   // on Chrome OS.

@@ -8,6 +8,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -27,7 +28,7 @@
 #include "ui/views/window/native_frame_view.h"
 #include "ui/views/window/non_client_view.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/views/background.h"
@@ -44,7 +45,7 @@ const views::BubbleBorder::Shadow kShadowType =
     views::BubbleBorder::SMALL_SHADOW;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The background for App List dialogs, which appears as a rounded rectangle
 // with the same border radius and color as the app list contents.
 class AppListOverlayBackground : public views::Background {
@@ -70,7 +71,7 @@ class AppListOverlayBackground : public views::Background {
  private:
   DISALLOW_COPY_AND_ASSIGN(AppListOverlayBackground);
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Base container for modal dialogs. Encases a content view in a modal dialog
 // with an accelerator to close on escape.
@@ -101,7 +102,7 @@ class BaseDialogContainer : public views::DialogDelegateView {
   DISALLOW_COPY_AND_ASSIGN(BaseDialogContainer);
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The contents view for an App List Dialog, which covers the entire app list
 // and adds a close button.
@@ -145,7 +146,7 @@ class AppListDialogContainer : public BaseDialogContainer {
   DISALLOW_COPY_AND_ASSIGN(AppListDialogContainer);
 };
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A BubbleFrameView that allows its client view to extend all the way to the
 // top of the dialog, overlapping the BubbleFrameView's close button. This
@@ -210,12 +211,12 @@ class NativeDialogContainer : public BaseDialogContainer {
 
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 views::DialogDelegateView* CreateAppListContainerForView(
     std::unique_ptr<views::View> view) {
   return new AppListDialogContainer(std::move(view));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 views::DialogDelegateView* CreateDialogContainerForView(
     std::unique_ptr<views::View> view,

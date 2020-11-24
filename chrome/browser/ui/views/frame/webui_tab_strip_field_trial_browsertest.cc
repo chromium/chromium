@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/variations/active_field_trials.h"
@@ -22,9 +23,9 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_switches.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripFieldTrialDefaultTabletModeBrowserTest,
 }
 
 // The following tests depend on ash.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Overrides the device's tablet mode capability, forcing it to appear
 // as a tablet.
@@ -188,4 +189,4 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripFieldTrialCommandLineOverrideBrowserTest,
   EXPECT_FALSE(IsInGroup("Default"));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

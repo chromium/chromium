@@ -13,6 +13,7 @@
 #include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_observer.h"
@@ -87,7 +88,7 @@ constexpr base::TimeDelta kContentSettingsFadeInDuration =
 
 constexpr int kPaddingBetweenNavigationButtons = 9;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr int kWebAppFrameLeftMargin = 4;
 #else
 constexpr int kWebAppFrameLeftMargin = 9;

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
@@ -28,7 +29,7 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/tablet_mode.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
@@ -180,7 +181,7 @@ ExtensionDialog::ExtensionDialog(
   SetTitle(init_params.title);
 
   bool can_resize = true;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Prevent dialog resize mouse cursor in tablet mode, crbug.com/453634.
   if (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode())
     can_resize = false;
@@ -222,7 +223,7 @@ ExtensionDialog::ExtensionDialog(
   bounds.AdjustToFit(screen_rect);
   window->SetBounds(bounds);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   aura::Window* native_view = window->GetNativeWindow();
   if (init_params.title_color) {
     // Frame active color changes the title color when dialog is active.

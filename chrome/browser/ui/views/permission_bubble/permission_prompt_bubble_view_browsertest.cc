@@ -5,6 +5,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/custom_handlers/register_protocol_handler_permission_request.h"
 #include "chrome/browser/download/download_permission_request.h"
@@ -331,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
 }
 
 // ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER is ChromeOS only.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
                        InvokeUi_protected_media) {
   ShowAndVerifyUi();

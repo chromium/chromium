@@ -39,7 +39,7 @@
 using media_session::mojom::MediaSessionAction;
 
 // Global Media Controls are not supported on Chrome OS.
-#if !BUILDFLAG(IS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -969,4 +969,4 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaptionProgressUpdate) {
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
-#endif  // !BUILDFLAG(IS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

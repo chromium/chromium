@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
@@ -53,7 +54,7 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
 
   void InitializeViewForExtension(Profile* profile, const std::string& app_id);
   void InitializeViewForWebApp(Profile* profile, const std::string& app_id);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void InitializeViewForArcApp(Profile* profile, const std::string& app_id);
   void InitializeViewWithMessage(const base::string16& message);
 #endif

@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -399,7 +400,7 @@ OmniboxViewViews::OmniboxViewViews(OmniboxEditController* controller,
 }
 
 OmniboxViewViews::~OmniboxViewViews() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::input_method::InputMethodManager::Get()->
       RemoveCandidateWindowObserver(this);
 #endif
@@ -439,7 +440,7 @@ void OmniboxViewViews::Init() {
   constexpr gfx::Insets kTextfieldInsets(3);
   SetBorder(views::CreateEmptyBorder(kTextfieldInsets));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::input_method::InputMethodManager::Get()->
       AddCandidateWindowObserver(this);
 #endif
@@ -1242,7 +1243,7 @@ int OmniboxViewViews::GetWidth() const {
 }
 
 bool OmniboxViewViews::IsImeShowingPopup() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ime_candidate_window_open_;
 #else
   return GetInputMethod() ? GetInputMethod()->IsCandidatePopupOpen() : false;
@@ -2155,7 +2156,7 @@ bool OmniboxViewViews::ShouldShowPlaceholderText() const {
          !model()->is_caret_visible() && !model()->is_keyword_selected();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void OmniboxViewViews::CandidateWindowOpened(
       chromeos::input_method::InputMethodManager* manager) {
   ime_candidate_window_open_ = true;

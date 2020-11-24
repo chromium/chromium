@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -146,7 +147,7 @@ class TabDragController : public views::WidgetObserver {
  private:
   friend class TabDragControllerTest;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   class DeferredTargetTabstripObserver;
 #endif
 
@@ -543,7 +544,7 @@ class TabDragController : public views::WidgetObserver {
   // null if the dragged Tab is detached.
   TabDragContext* attached_context_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Observe the target TabDragContext to attach to after the drag
   // ends. It's only possible to happen in Chrome OS tablet mode, if the dragged
   // tabs are dragged over an overview window, we should wait until the drag

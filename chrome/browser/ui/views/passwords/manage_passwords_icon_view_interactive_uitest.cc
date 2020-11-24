@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
@@ -132,10 +133,10 @@ IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, CloseOnClick) {
 
 // TODO(crbug.com/932818): Remove the condition once the experiment is enabled
 // on ChromeOS. For now, on ChromeOS, we only test the non-experimental branch.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE_P(All,
                          ManagePasswordsIconViewTest,
                          ::testing::Values(false));
 #else
 INSTANTIATE_TEST_SUITE_P(All, ManagePasswordsIconViewTest, ::testing::Bool());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

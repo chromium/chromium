@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
@@ -211,7 +212,7 @@ void ToolbarActionViewInteractiveUITest::TearDownOnMainThread() {
 // TODO(crbug.com/963678): fails on ChromeOS as it's assuming SendMouseMove()
 // synchronously updates the location of the mouse (which is needed by
 // SendMouseClick()).
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 // TODO(pkasting): https://crbug.com/911374 Menu controller thinks the mouse is
 // already down when handling the left click.
 // TODO(crbug.com/1092372): Flaky on Win7.
@@ -383,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionViewInteractiveUITest,
 // TODO(crbug.com/963678): fails on ChromeOS as it's assuming SendMouseMove()
 // synchronously updates the location of the mouse (which is needed by
 // SendMouseClick()).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ActivateOverflowedToolbarActionWithKeyboard \
   DISABLED_ActivateOverflowedToolbarActionWithKeyboard
 #else

@@ -343,6 +343,7 @@ static_library("ui") {
     "//base:i18n",
     "//base/allocator:buildflags",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//cc/paint",
     "//chrome:extra_resources",
     "//chrome:resources",

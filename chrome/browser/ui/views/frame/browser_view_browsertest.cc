@@ -7,6 +7,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -413,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, F6CyclesThroughCaptionBubbleToo) {
         browser_view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_F6, 0)));
   }
 
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Check the native widget has focus.
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(bubble->GetWidget()->GetNativeView());
@@ -429,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, F6CyclesThroughCaptionBubbleToo) {
   EXPECT_FALSE(bubble->HasFocus());
   EXPECT_FALSE(bubble->GetFocusManager()->GetFocusedView());
   EXPECT_TRUE(browser_view()->GetWidget()->GetFocusManager()->GetFocusedView());
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // The bubble's native widget should no longer have focus.
   EXPECT_FALSE(bubble->GetWidget()->GetNativeView() ==
                focus_client->GetFocusedWindow());

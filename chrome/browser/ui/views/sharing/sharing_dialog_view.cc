@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharing/sharing_app.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
@@ -33,7 +34,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "url/origin.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #endif
@@ -197,7 +198,7 @@ views::BubbleDialogDelegateView* SharingDialogView::GetAsBubble(
 // static
 views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
     SharingDialog* dialog) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!dialog) {
     auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
     if (bubble && bubble->icon_type() == PageActionIconType::kClickToCall)

@@ -8,15 +8,16 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/ui_features.h"
 
 // Platform-specific headers for detecting tablet devices.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/tablet_mode.h"
 #elif defined(OS_WIN)
 #include <windows.h>
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -78,7 +79,7 @@ WebUITabStripFieldTrial::WebUITabStripFieldTrial() {
 
 // static
 bool WebUITabStripFieldTrial::DeviceIsTabletModeCapable() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
 #elif defined(OS_WIN)
   return HasBuiltInTouchScreen();
@@ -88,5 +89,5 @@ bool WebUITabStripFieldTrial::DeviceIsTabletModeCapable() {
   // devices, it'll do no better than the existing field trial. So,
   // return false and don't record this synthetic field trial.
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

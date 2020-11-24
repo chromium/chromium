@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -17,7 +18,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 
@@ -25,9 +26,10 @@
 #include "ui/views/test/test_desktop_screen_x11.h"
 #endif  // defined(USE_X11)
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_OZONE)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
 #include "ui/views/test/test_desktop_screen_ozone.h"
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_OZONE)
+#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
+        // defined(USE_OZONE)
 #endif
 
 namespace {
@@ -95,7 +97,7 @@ ViewEventTestBase::ViewEventTestBase() {
   // in a new process.
   mojo::core::Init();
 
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(pkasting): Determine why the TestScreen in AuraTestHelper is
   // insufficient for these tests, then either bolster/replace it or fix the
   // tests.
@@ -104,7 +106,7 @@ ViewEventTestBase::ViewEventTestBase() {
   if (!features::IsUsingOzonePlatform())
     views::test::TestDesktopScreenX11::GetInstance();
 #endif  // defined(USE_X11)
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_OZONE)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
   if (!display::Screen::GetScreen())
     display::Screen::SetScreenInstance(
         views::test::TestDesktopScreenOzone::GetInstance());

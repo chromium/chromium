@@ -8,10 +8,11 @@
 #include "content/public/browser/overlay_window.h"
 
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/rounded_corner_decorator.h"
 #endif
 
@@ -211,7 +212,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   views::TrackImageButton* next_track_controls_view_ = nullptr;
   views::SkipAdLabelButton* skip_ad_controls_view_ = nullptr;
   views::ResizeHandleButton* resize_handle_view_ = nullptr;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::RoundedCornerDecorator> decorator_;
 #endif
 

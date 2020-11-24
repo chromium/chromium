@@ -6527,6 +6527,7 @@ if (!is_android) {
     deps = [
       ":test_support",
       ":test_support_ui",
+      "//build:chromeos_buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
       "//chrome:strings",

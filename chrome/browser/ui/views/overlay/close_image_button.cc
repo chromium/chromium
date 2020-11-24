@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,7 +43,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
 void CloseImageButton::SetPosition(
     const gfx::Size& size,
     OverlayWindowViews::WindowQuadrant quadrant) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (quadrant == OverlayWindowViews::WindowQuadrant::kBottomLeft) {
     ImageButton::SetPosition(
         gfx::Point(kCloseButtonMargin, kCloseButtonMargin));

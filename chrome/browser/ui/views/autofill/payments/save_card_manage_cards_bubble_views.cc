@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -17,7 +18,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
 #endif
 
@@ -51,7 +52,7 @@ SaveCardManageCardsBubbleViews::CreateMainContentView() {
 
 std::unique_ptr<views::View>
 SaveCardManageCardsBubbleViews::CreateSigninPromoView() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS does not show the signin promo.
   return nullptr;
 #else

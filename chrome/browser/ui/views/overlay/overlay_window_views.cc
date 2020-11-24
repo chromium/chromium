@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -41,7 +42,7 @@
 #include "ui/views/window/non_client_view.h"
 #include "ui/views/window/window_resize_utils.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "ui/aura/window.h"
@@ -62,7 +63,7 @@ constexpr int kOverlayBorderThickness = 10;
 // The opacity of the controls scrim.
 constexpr double kControlsScrimOpacity = 0.6;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The opacity of the resize handle control.
 constexpr double kResizeHandleOpacity = 0.38;
 #endif
@@ -148,7 +149,7 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
       return window_component;
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // If the resize handle is clicked on, we want to force the hit test to
     // force a resize drag.
     if (window->AreControlsVisible() &&
@@ -397,7 +398,7 @@ void OverlayWindowViews::SetUpViews() {
             overlay->RecordButtonPressed(OverlayWindowControl::kSkipAd);
           },
           base::Unretained(this)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto resize_handle_view = std::make_unique<views::ResizeHandleButton>(
       views::Button::PressedCallback());
 #endif
@@ -450,7 +451,7 @@ void OverlayWindowViews::SetUpViews() {
   skip_ad_controls_view->layer()->SetFillsBoundsOpaquely(true);
   skip_ad_controls_view->layer()->SetName("SkipAdControlsView");
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // views::View that shows the affordance that the window can be resized. ----
   resize_handle_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   resize_handle_view->layer()->SetFillsBoundsOpaquely(false);
@@ -476,7 +477,7 @@ void OverlayWindowViews::SetUpViews() {
       AddChildView(&view_holder_, std::move(next_track_controls_view));
   skip_ad_controls_view_ =
       AddChildView(&view_holder_, std::move(skip_ad_controls_view));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   resize_handle_view_ =
       AddChildView(&view_holder_, std::move(resize_handle_view));
 #endif
@@ -484,9 +485,9 @@ void OverlayWindowViews::SetUpViews() {
 }
 
 void OverlayWindowViews::OnRootViewReady() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   GetRootView()->SetPaintToLayer(ui::LAYER_TEXTURED);
   GetRootView()->layer()->SetName("RootView");
@@ -554,7 +555,7 @@ void OverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
   // is accessible via accessibility tools.
   skip_ad_controls_view_->ToggleVisibility(is_visible && show_skip_ad_button_);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   GetResizeHandleLayer()->SetVisible(is_visible);
 #endif
 }
@@ -585,7 +586,7 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
 
   WindowQuadrant quadrant = GetCurrentWindowQuadrant(GetBounds(), controller_);
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   resize_handle_view_->SetPosition(GetBounds().size(), quadrant);
 #endif
 
@@ -716,7 +717,7 @@ void OverlayWindowViews::Close() {
 void OverlayWindowViews::ShowInactive() {
   views::Widget::ShowInactive();
   views::Widget::SetVisibleOnAllWorkspaces(true);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // For rounded corners.
   if (ash::features::IsPipRoundedCornersEnabled()) {
     decorator_ = std::make_unique<ash::RoundedCornerDecorator>(
@@ -843,7 +844,7 @@ void OverlayWindowViews::OnNativeWidgetMove() {
   // window.
   UpdateMaxSize(GetWorkAreaForWindow());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Update the positioning of some icons when the window is moved.
   WindowQuadrant quadrant = GetCurrentWindowQuadrant(GetBounds(), controller_);
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
@@ -998,7 +999,7 @@ gfx::Rect OverlayWindowViews::GetCloseControlsBounds() {
   return close_controls_view_->GetMirroredBounds();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 gfx::Rect OverlayWindowViews::GetResizeHandleControlsBounds() {
   return resize_handle_view_->GetMirroredBounds();
 }
@@ -1016,7 +1017,7 @@ gfx::Rect OverlayWindowViews::GetPreviousTrackControlsBounds() {
   return previous_track_controls_view_->GetMirroredBounds();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 int OverlayWindowViews::GetResizeHTComponent() const {
   return resize_handle_view_->GetHTComponent();
 }
@@ -1037,7 +1038,7 @@ ui::Layer* OverlayWindowViews::GetBackToTabControlsLayer() {
 ui::Layer* OverlayWindowViews::GetCloseControlsLayer() {
   return close_controls_view_->layer();
 }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 ui::Layer* OverlayWindowViews::GetResizeHandleLayer() {
   return resize_handle_view_->layer();
 }
@@ -1105,7 +1106,7 @@ gfx::Point OverlayWindowViews::close_image_position_for_testing() const {
   return close_controls_view_->origin();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 gfx::Point OverlayWindowViews::resize_handle_position_for_testing() const {
   return resize_handle_view_->origin();
 }

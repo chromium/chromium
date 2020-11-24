@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -28,7 +29,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/intent_helper/arc_intent_picker_app_fetcher.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #endif
@@ -43,7 +44,7 @@ using content::Referrer;
 // ChromeOS-only, so for this unit test to match the behavior of
 // IntentPickerBubbleView on non-ChromeOS platforms, if needs to not filter any
 // packages.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char* kArcIntentHelperPackageName =
     arc::ArcIntentHelperBridge::kArcIntentHelperPackageName;
 bool (*IsIntentHelperPackage)(const std::string&) =

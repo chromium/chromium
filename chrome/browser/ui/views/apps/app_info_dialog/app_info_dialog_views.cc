@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
@@ -43,7 +44,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -68,7 +69,7 @@ bool CanPlatformShowAppInfoDialog() {
 }
 
 bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_system_web_app = web_app::WebAppProvider::Get(profile)
                                ->system_web_app_manager()
                                .IsSystemWebApp(extension_id);
@@ -93,7 +94,7 @@ bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
   return CanPlatformShowAppInfoDialog();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowAppInfoInAppList(gfx::NativeWindow parent,
                           const gfx::Rect& app_info_bounds,
                           Profile* profile,
@@ -159,7 +160,7 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
   dialog_body_contents->AddChildView(
       std::make_unique<AppInfoPermissionsPanel>(profile, app));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // When Google Play Store is enabled and the Settings app is available, show
   // the "Manage supported links" link for Chrome.
   if (app->id() == extension_misc::kChromeAppId &&

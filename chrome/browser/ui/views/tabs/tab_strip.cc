@@ -31,6 +31,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -2892,7 +2893,7 @@ void TabStrip::UpdateStackedLayoutFromMouseEvent(views::View* source,
 // everything shifts. Instead we wait for the release.
 //
 // TODO(sky): revisit this when touch events are really plumbed through.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   constexpr auto kMouseMoveTime = base::TimeDelta::FromMilliseconds(200);
   constexpr int kMouseMoveCountBeforeConsiderReal = 3;
 #endif
@@ -2914,7 +2915,7 @@ void TabStrip::UpdateStackedLayoutFromMouseEvent(views::View* source,
       break;
 
     case ui::ET_MOUSE_MOVED: {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // Ash does not synthesize mouse events from touch events.
       SetResetToShrinkOnExit(true);
 #else

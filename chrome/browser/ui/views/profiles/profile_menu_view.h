@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -57,7 +58,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnSyncErrorButtonClicked(sync_ui_util::AvatarSyncErrorType error);
   void OnSigninAccountButtonClicked(AccountInfo account);
   void OnCookiesClearedOnExitLinkClicked();
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void OnSignoutButtonClicked();
   void OnSigninButtonClicked();
   void OnOtherProfileSelected(const base::FilePath& profile_path);
@@ -77,7 +78,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void BuildAutofillButtons();
   void BuildSyncInfo();
   void BuildFeatureButtons();
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void BuildSelectableProfiles();
   void BuildProfileManagementHeading();
   void BuildProfileManagementFeatureButtons();

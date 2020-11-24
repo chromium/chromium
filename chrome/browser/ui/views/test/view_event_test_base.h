@@ -19,9 +19,10 @@
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace display {
 class Screen;
 }
@@ -122,7 +123,7 @@ class ViewEventTestBase : public ChromeViewsTestBase {
   // failures invokes Done.
   void RunTestMethod(base::OnceClosure task);
 
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<display::Screen> screen_;
 #endif
 

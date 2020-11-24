@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser.h"
@@ -91,7 +92,7 @@ class TabSharingUIViewsBrowserTest : public InProcessBrowserTest {
                 int shared_tab_index,
                 size_t infobar_count = 1,
                 bool has_border = true) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
     has_border = false;
 #endif
@@ -335,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
   // Check that the border is only displayed on the last shared tab (known
   // limitation https://crbug.com/996631).
   views::Widget* contents_border = GetContentsBorder(browser());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
   EXPECT_EQ(nullptr, contents_border);
 #else

@@ -17,6 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -865,8 +866,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 // TODO(https://crbug.com/1125474): Remove OS_CHROMEOS and enable for Lacros
 // when supported.
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
 #if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem
@@ -907,8 +910,8 @@ INSTANTIATE_TEST_SUITE_P(
     EphemeralGuestProfileMenuClickTest,
     ::testing::Range(size_t(0),
                      base::size(kActionableItems_EphemeralGuestProfile)));
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) &&
-        // !defined(OS_CHROMEOS))
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS))
 
 class ProfileMenuClickKeyAcceleratorTest : public ProfileMenuClickTestBase {
  public:

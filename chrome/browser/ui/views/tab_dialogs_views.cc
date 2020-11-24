@@ -8,12 +8,13 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/hung_renderer_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/views/sync/profile_signin_confirmation_dialog_views.h"
 #endif
 
@@ -62,7 +63,7 @@ void TabDialogsViews::ShowProfileSigninConfirmation(
     Profile* profile,
     const std::string& username,
     std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   ProfileSigninConfirmationDialogViews::ShowDialog(browser, profile, username,
                                                    std::move(delegate));
 #else

@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
@@ -44,7 +45,7 @@ base::string16 GetMessageTextForOrigin(
 
 }  // namespace
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 void ExternalProtocolHandler::RunExternalProtocolDialog(
     const GURL& url,
@@ -65,7 +66,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   new ExternalProtocolDialog(web_contents, url, program_name,
                              initiating_origin);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 ExternalProtocolDialog::ExternalProtocolDialog(
     WebContents* web_contents,

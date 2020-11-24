@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -13,7 +14,7 @@
 using AvatarToolbarButtonTest = TestWithBrowserView;
 
 // CrOS only shows the avatar button for incognito/guest.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(AvatarToolbarButtonTest, HighlightMeetsMinimumContrast) {
   auto* button = browser_view()->GetWidget()->GetContentsView()->AddChildView(

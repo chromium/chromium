@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/extensions/extension_message_bubble_browsertest.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -363,13 +364,13 @@ class NtpExtensionBubbleViewBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     LegacyExtensionMessageBubbleViewBrowserTest::SetUpCommandLine(command_line);
 // The NTP bubble is only enabled by default on Mac, Windows, and CrOS.
-#if !defined(OS_WIN) && !defined(OS_MAC) && !defined(OS_CHROMEOS)
+#if !defined(OS_WIN) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
     extensions::SetNtpPostInstallUiEnabledForTesting(true);
 #endif
   }
 
   void TearDownOnMainThread() override {
-#if !defined(OS_WIN) && !defined(OS_MAC) && !defined(OS_CHROMEOS)
+#if !defined(OS_WIN) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
     extensions::SetNtpPostInstallUiEnabledForTesting(false);
 #endif
     LegacyExtensionMessageBubbleViewBrowserTest::TearDownOnMainThread();

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace views {
@@ -15,14 +16,14 @@ class DialogDelegateView;
 class View;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Creates a new dialog containing |view| that can be displayed inside the app
 // list, covering the entire app list and adding a close button.
 views::DialogDelegateView* CreateAppListContainerForView(
     std::unique_ptr<views::View> view);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Creates a new native dialog of the given |size| containing |view| with a
 // close button and draggable titlebar.

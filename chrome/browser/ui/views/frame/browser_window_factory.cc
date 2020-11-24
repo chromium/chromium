@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/views/frame/custom_tab_browser_frame.h"
 #endif
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
@@ -16,6 +16,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #endif
+#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
@@ -28,7 +29,7 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   // so we don't need to do anything with the pointer.
   BrowserView* view = new BrowserView(std::move(browser));
   BrowserFrame* browser_frame = nullptr;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (view->browser()->is_type_custom_tab())
     browser_frame = new CustomTabBrowserFrame(view);
 #endif

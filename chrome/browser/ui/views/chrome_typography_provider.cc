@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -20,7 +21,7 @@
 #include "ui/native_theme/native_theme_win.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/ash_typography.h"  // nogncheck
 #endif
@@ -39,7 +40,7 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
   int size_delta = kDefaultSize - gfx::PlatformFont::kDefaultBaseFontSize;
   gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ApplyAshFontStyles(context, style, &size_delta, &font_weight);
 #endif
 
@@ -81,7 +82,7 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
     // Secondary font is for double-digit counts. Because we have control over
     // system fonts on ChromeOS, we can just choose a condensed font. For other
     // platforms we adjust size.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     typeface = "Roboto Condensed";
 #else
     size_delta -= 2;

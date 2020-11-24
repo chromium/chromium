@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 
@@ -41,12 +42,12 @@ class AppInfoFooterPanel
 
   void CreateButtons();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Updates the visibility of the pin/unpin buttons so that only one is visible
   // at a time. If |focus_button| is true, sets the focus to whichever button is
   // now visible.
   void UpdatePinButtons(bool focus_visible_button);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Overridden from ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
@@ -56,13 +57,13 @@ class AppInfoFooterPanel
   void CreateShortcuts();
   static bool CanCreateShortcuts(const extensions::Extension* app);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Pins and unpins the app from the shelf. Must only be called if
   // CanSetPinnedToShelf() returns true.
   void SetPinnedToShelf(bool value);
   static bool CanSetPinnedToShelf(Profile* profile,
                                   const extensions::Extension* app);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Uninstall the app. Must only be called if CanUninstallApp() returns true.
   void UninstallApp();
@@ -71,10 +72,10 @@ class AppInfoFooterPanel
 
   // UI elements on the dialog. Elements are null if they are not displayed.
   views::View* create_shortcuts_button_ = nullptr;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   views::View* pin_to_shelf_button_ = nullptr;
   views::View* unpin_from_shelf_button_ = nullptr;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   views::View* remove_button_ = nullptr;
 
   std::unique_ptr<extensions::ExtensionUninstallDialog>

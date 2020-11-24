@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -73,7 +74,7 @@ CommanderFrontendViews::CommanderFrontendViews(
       base::BindRepeating(&CommanderFrontendViews::OnViewModelUpdated,
                           weak_ptr_factory_.GetWeakPtr()));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   profile_manager->CreateProfileAsync(
       ProfileManager::GetSystemProfilePath(),

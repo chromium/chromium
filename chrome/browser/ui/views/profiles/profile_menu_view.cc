@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -204,7 +205,7 @@ void ProfileMenuView::BuildMenu() {
   BuildFeatureButtons();
 
 //  ChromeOS doesn't support multi-profile.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!(IsGuest(profile) &&
         base::FeatureList::IsEnabled(features::kNewProfilePicker))) {
     BuildProfileManagementHeading();
@@ -322,7 +323,7 @@ void ProfileMenuView::OnSyncSettingsButtonClicked() {
 
 void ProfileMenuView::OnSyncErrorButtonClicked(
     sync_ui_util::AvatarSyncErrorType error) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, sync errors are fixed by re-signing into the OS.
   chrome::AttemptUserExit();
 #else
@@ -393,7 +394,7 @@ void ProfileMenuView::OnSigninAccountButtonClicked(AccountInfo account) {
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileMenuView::OnSignoutButtonClicked() {
   RecordClick(ActionableItem::kSignoutButton);
   if (!perform_menu_actions())
@@ -447,7 +448,7 @@ void ProfileMenuView::OnEditProfileButtonClicked() {
     return;
   chrome::ShowSettingsSubPage(browser(), chrome::kManageProfileSubPage);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ProfileMenuView::OnCookiesClearedOnExitLinkClicked() {
   RecordClick(ActionableItem::kCookiesClearedOnExitLink);
@@ -473,7 +474,7 @@ void ProfileMenuView::BuildIdentity() {
   base::string16 profile_name;
   base::Optional<EditButtonParams> edit_button_params;
 // Profile names are not supported on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   size_t num_of_profiles =
       g_browser_process->profile_manager()->GetNumberOfProfiles();
   if (num_of_profiles > 1 || !profile_attributes->IsUsingDefaultName() ||
@@ -591,7 +592,7 @@ void ProfileMenuView::BuildSyncInfo() {
                             base::Unretained(this), account_info.value()),
         /*show_badge=*/true);
   } else {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // There is always an account on ChromeOS.
     NOTREACHED();
 #else
@@ -652,7 +653,7 @@ void ProfileMenuView::BuildFeatureButtons() {
     }
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   const bool has_primary_account =
       !IsGuest(profile) && identity_manager->HasPrimaryAccount();
   // The sign-out button is always at the bottom.
@@ -666,7 +667,7 @@ void ProfileMenuView::BuildFeatureButtons() {
 #endif
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileMenuView::BuildProfileManagementHeading() {
   SetProfileManagementHeading(
       UseNewPicker()
@@ -726,4 +727,4 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
                             base::Unretained(this)));
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
