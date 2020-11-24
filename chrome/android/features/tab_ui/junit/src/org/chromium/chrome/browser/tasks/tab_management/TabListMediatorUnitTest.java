@@ -28,6 +28,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -1849,31 +1850,54 @@ public class TabListMediatorUnitTest {
     @Test
     public void testPriceTrackingProperty() {
         TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
-        Profile.setLastUsedProfileForTesting(mProfile);
-        Map<String, String> responses = new HashMap<>();
-        responses.put(TAB1_URL, ENDPOINT_RESPONSE);
-        responses.put(TAB2_URL, EMPTY_ENDPOINT_RESPONSE);
-        mockEndpointResponse(responses);
-        PersistedTabDataConfiguration.setUseTestConfig(true);
-        initAndAssertAllProperties();
-        List<Tab> tabs = new ArrayList<>();
-        tabs.add(mTabModel.getTabAt(0));
-        tabs.add(mTabModel.getTabAt(1));
+        for (boolean signedIn : new boolean[] {false, true}) {
+            for (boolean priceTrackingEnabled : new boolean[] {false, true}) {
+                for (boolean incognito : new boolean[] {false, true}) {
+                    TabListMediator mMediatorSpy = spy(mMediator);
+                    doReturn(signedIn).when(mMediatorSpy).isSignedIn();
+                    PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                            PriceTrackingUtilities.TRACK_PRICES_ON_TABS, priceTrackingEnabled);
+                    Profile.setLastUsedProfileForTesting(mProfile);
+                    Map<String, String> responses = new HashMap<>();
+                    responses.put(TAB1_URL, ENDPOINT_RESPONSE);
+                    responses.put(TAB2_URL, EMPTY_ENDPOINT_RESPONSE);
+                    mockEndpointResponse(responses);
+                    PersistedTabDataConfiguration.setUseTestConfig(true);
+                    initAndAssertAllProperties(mMediatorSpy);
+                    List<Tab> tabs = new ArrayList<>();
+                    doReturn(incognito).when(mTab1).isIncognito();
+                    doReturn(incognito).when(mTab2).isIncognito();
 
-        mMediator.resetWithListOfTabs(
-                PseudoTab.getListOfPseudoTab(tabs), /*quickMode =*/false, /*mruMode =*/false);
-        mModel.get(0)
-                .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
-                .fetch((shoppingPersistedTabData) -> {
-                    assertThat(
-                            shoppingPersistedTabData.getPriceMicros(), equalTo(123456789012345L));
-                });
-        mModel.get(1)
-                .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
-                .fetch((shoppingPersistedTabData) -> {
-                    assertThat(shoppingPersistedTabData.getPriceMicros(),
-                            equalTo(ShoppingPersistedTabData.NO_PRICE_KNOWN));
-                });
+                    tabs.add(mTabModel.getTabAt(0));
+                    tabs.add(mTabModel.getTabAt(1));
+
+                    mMediatorSpy.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs),
+                            /*quickMode =*/false, /*mruMode =*/false);
+                    if (signedIn && priceTrackingEnabled && !incognito) {
+                        mModel.get(0)
+                                .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
+                                .fetch((shoppingPersistedTabData) -> {
+                                    assertThat(shoppingPersistedTabData.getPriceMicros(),
+                                            equalTo(123456789012345L));
+                                });
+                        mModel.get(1)
+                                .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
+                                .fetch((shoppingPersistedTabData) -> {
+                                    assertThat(shoppingPersistedTabData.getPriceMicros(),
+                                            equalTo(ShoppingPersistedTabData.NO_PRICE_KNOWN));
+                                });
+                    } else {
+                        assertNull(mModel.get(0).model.get(
+                                TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER));
+                        assertNull(mModel.get(1).model.get(
+                                TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER));
+                    }
+                }
+            }
+        }
+        // Set incognito status back to how it was
+        doReturn(true).when(mTab1).isIncognito();
+        doReturn(true).when(mTab2).isIncognito();
     }
 
     @Test
@@ -2371,12 +2395,18 @@ public class TabListMediatorUnitTest {
                 .getString(anyInt(), anyString());
     }
 
+    // initAndAssertAllProperties called with regular mMediator
     private void initAndAssertAllProperties() {
+        initAndAssertAllProperties(mMediator);
+    }
+
+    // initAndAssertAllProperties called with custom mMediator (e.g. if spy needs to be used)
+    private void initAndAssertAllProperties(TabListMediator mediator) {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); i++) {
             tabs.add(mTabModel.getTabAt(i));
         }
-        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
+        mediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
         for (Callback<Drawable> callback : mCallbackCaptor.getAllValues()) {
             callback.onResult(new ColorDrawable(Color.RED));
         }
