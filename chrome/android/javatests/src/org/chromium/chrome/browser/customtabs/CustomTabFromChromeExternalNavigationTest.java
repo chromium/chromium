@@ -111,8 +111,7 @@ public class CustomTabFromChromeExternalNavigationTest {
     @Test
     @Feature("CustomTabFromChrome")
     @LargeTest
-    public void
-    testIntentWithRedirectToApp() {
+    public void testIntentWithRedirectToApp() {
         final String redirectUrl = "https://maps.google.com/maps?q=1600+amphitheatre+parkway";
         final String initialUrl =
                 mServerRule.getServer().getURL("/chrome/test/data/android/redirect/js_redirect.html"
@@ -123,7 +122,7 @@ public class CustomTabFromChromeExternalNavigationTest {
                         + Base64.encodeToString(
                                 ApiCompatibilityUtils.getBytesUtf8(redirectUrl), Base64.URL_SAFE));
 
-        mActivityRule.startActivityCompletely(getCustomTabFromChromeIntent(initialUrl, true));
+        mActivityRule.launchActivity(getCustomTabFromChromeIntent(initialUrl, true));
         mActivityRule.waitForActivityNativeInitializationComplete();
 
         final AtomicReference<InterceptNavigationDelegateImpl> navigationDelegate =

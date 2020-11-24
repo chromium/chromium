@@ -11,7 +11,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
+
+import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -81,7 +84,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @MediumTest
     public void testPromoNotShownAfterBeingDismissed() {
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
-        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
         onView(withId(R.id.signin_promo_close_button)).perform(click());
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
 

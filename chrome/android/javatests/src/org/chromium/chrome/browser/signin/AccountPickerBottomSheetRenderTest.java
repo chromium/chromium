@@ -22,7 +22,6 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -34,7 +33,6 @@ import org.mockito.Mock;
 import org.chromium.base.Callback;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -118,11 +116,6 @@ public class AccountPickerBottomSheetRenderTest {
         initMocks(this);
         when(mAccountPickerDelegateMock.isIncognitoModeEnabled()).thenReturn(true);
         mActivityTestRule.startMainActivityOnBlankPage();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
     }
 
     @AfterClass

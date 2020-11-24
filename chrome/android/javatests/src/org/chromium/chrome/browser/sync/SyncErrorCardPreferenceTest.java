@@ -62,7 +62,7 @@ public class SyncErrorCardPreferenceTest {
 
     @Rule
     public final SettingsActivityTestRule<ManageSyncSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(ManageSyncSettings.class, true);
+            new SettingsActivityTestRule<>(ManageSyncSettings.class);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =

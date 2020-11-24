@@ -90,7 +90,7 @@ public class ManageSyncSettingsTest {
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final SettingsActivityTestRule<ManageSyncSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(ManageSyncSettings.class, true);
+            new SettingsActivityTestRule<>(ManageSyncSettings.class);
 
     // SettingsActivity needs to be initialized and destroyed with the mock
     // signin environment setup in SyncTestRule

@@ -26,9 +26,16 @@ public class ApplicationTestUtils {
 
     /** Waits until the given activity transitions to the given state. */
     public static void waitForActivityState(Activity activity, Stage stage) {
-        CriteriaHelper.pollUiThread(() -> {
-            return sMonitor.getLifecycleStageOf(activity) == stage;
-        }, ScalableTimeout.scaleTimeout(10000), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        waitForActivityState(null, activity, stage);
+    }
+
+    /** Waits until the given activity transitions to the given state. */
+    public static void waitForActivityState(String failureReason, Activity activity, Stage stage) {
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> { return sMonitor.getLifecycleStageOf(activity) == stage; },
+                failureReason, ScalableTimeout.scaleTimeout(10000),
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /** Finishes the given activity and waits for its onDestroy() to be called. */
@@ -38,7 +45,9 @@ public class ApplicationTestUtils {
                 activity.finish();
             }
         });
-        waitForActivityState(activity, Stage.DESTROYED);
+        waitForActivityState(
+                "Failed to finish the Activity. Did you start a second Activity and not finish it?",
+                activity, Stage.DESTROYED);
     }
 
     /**
@@ -48,11 +57,25 @@ public class ApplicationTestUtils {
      * @return The newly created Activity.
      */
     public static <T extends Activity> T recreateActivity(T activity) {
-        final Class<?> activityClass = activity.getClass();
+        return waitForActivityWithClass(
+                activity.getClass(), Stage.RESUMED, () -> activity.recreate());
+    }
+
+    /**
+     * Waits for an activity of the specified class to reach the specified Activity {@link Stage},
+     * triggered by running the provided trigger.
+     *
+     * @param activityClass The class type to wait for.
+     * @param state The Activity {@link Stage} to wait for an activity of the right class type to
+     * reach.
+     * @param trigger The Runnable that will trigger the state change to wait for.
+     */
+    public static <T extends Activity> T waitForActivityWithClass(
+            Class<? extends Activity> activityClass, Stage stage, Runnable trigger) {
         final CallbackHelper activityCallback = new CallbackHelper();
         final AtomicReference<T> activityRef = new AtomicReference<>();
-        ActivityLifecycleCallback stateListener = (Activity newActivity, Stage stage) -> {
-            if (stage == Stage.RESUMED) {
+        ActivityLifecycleCallback stateListener = (Activity newActivity, Stage newStage) -> {
+            if (newStage == stage) {
                 if (!activityClass.isAssignableFrom(newActivity.getClass())) return;
 
                 activityRef.set((T) newActivity);
@@ -62,8 +85,8 @@ public class ApplicationTestUtils {
         sMonitor.addLifecycleCallback(stateListener);
 
         try {
-            ThreadUtils.runOnUiThreadBlocking(() -> activity.recreate());
-            activityCallback.waitForCallback("Activity did not start as expected", 0);
+            ThreadUtils.runOnUiThreadBlocking(() -> trigger.run());
+            activityCallback.waitForCallback("No Activity reached target state.", 0);
             T createdActivity = activityRef.get();
             Assert.assertNotNull("Activity reference is null.", createdActivity);
             return createdActivity;
