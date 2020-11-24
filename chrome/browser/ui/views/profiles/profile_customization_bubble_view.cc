@@ -75,9 +75,6 @@ void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubbleInternal(
     Browser* browser) {
   DCHECK(browser);
 
-  if (!base::FeatureList::IsEnabled(features::kProfilesUIRevamp))
-    return;
-
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
                                  ->toolbar_button_provider()
                                  ->GetAvatarToolbarButton();

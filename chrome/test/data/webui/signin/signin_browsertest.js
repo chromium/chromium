@@ -171,15 +171,6 @@ var ProfileCustomizationTest = class extends SigninBrowserTest {
   get browsePreload() {
     return 'chrome://profile-customization/test_loader.html?module=signin/profile_customization_test.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kProfilesUIRevamp',
-      ]
-    };
-  }
 };
 
 TEST_F('ProfileCustomizationTest', 'Bubble', function() {

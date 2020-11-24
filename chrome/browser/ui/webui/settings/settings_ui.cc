@@ -309,8 +309,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // This is the browser settings page.
   html_source->AddBoolean("isOSSettings", false);
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  html_source->AddBoolean("profilesUIRevamp", base::FeatureList::IsEnabled(
-                                                  features::kProfilesUIRevamp));
+  html_source->AddBoolean("newProfilePicker", base::FeatureList::IsEnabled(
+                                                  features::kNewProfilePicker));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));

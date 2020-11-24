@@ -291,8 +291,7 @@ TEST_F(ManageProfileHandlerTest, GetAvailableIconsSignedInProfile) {
 
 TEST_F(ManageProfileHandlerTest, GetAvailableIconsLocalProfile) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kNewProfilePicker, features::kProfilesUIRevamp}, {});
+  scoped_feature_list.InitAndEnableFeature(features::kNewProfilePicker);
   EXPECT_FALSE(entry()->IsUsingGAIAPicture());
   EXPECT_EQ(entry()->GetAvatarIconIndex(),
             profiles::GetPlaceholderAvatarIndex());
@@ -341,8 +340,7 @@ TEST_F(ManageProfileHandlerTest, ProfileAvatarChangedWebUIEvent) {
 
 TEST_F(ManageProfileHandlerTest, ProfileThemeColorsChangedWebUIEvent) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kNewProfilePicker, features::kProfilesUIRevamp}, {});
+  scoped_feature_list.InitAndEnableFeature(features::kNewProfilePicker);
   ProfileThemeColors colors = {SK_ColorTRANSPARENT, SK_ColorBLACK,
                                SK_ColorWHITE};
   entry()->SetProfileThemeColors(colors);

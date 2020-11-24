@@ -80,7 +80,7 @@ suite('ManageProfileTests', function() {
   setup(function() {
     browserProxy = new TestManageProfileBrowserProxy();
     ManageProfileBrowserProxyImpl.instance_ = browserProxy;
-    setFlags({profilesUIRevamp: false, profileShortcutsEnabled: false});
+    setFlags({newProfilePicker: false, profileShortcutsEnabled: false});
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
   });
 
@@ -137,7 +137,7 @@ suite('ManageProfileTests', function() {
     }
     await changeIcon();
     browserProxy.reset();
-    setFlags({profilesUIRevamp: true});
+    setFlags({newProfilePicker: true});
     await changeIcon();
   });
 
@@ -158,7 +158,7 @@ suite('ManageProfileTests', function() {
     }
     await changeName();
     browserProxy.resetResolver('setProfileName');
-    setFlags({profilesUIRevamp: true});
+    setFlags({newProfilePicker: true});
     await changeName();
   });
 
@@ -173,7 +173,7 @@ suite('ManageProfileTests', function() {
       assertTrue(!!nameField.disabled);
     }
     profileNameDisabledForSupervisedUser();
-    setFlags({profilesUIRevamp: true});
+    setFlags({newProfilePicker: true});
     profileNameDisabledForSupervisedUser();
   });
 
@@ -192,7 +192,7 @@ suite('ManageProfileTests', function() {
     }
     await profileNameUpdated();
     browserProxy.resetResolver('getAvailableIcons');
-    setFlags({profilesUIRevamp: true});
+    setFlags({newProfilePicker: true});
     await profileNameUpdated();
   });
 
@@ -210,7 +210,7 @@ suite('ManageProfileTests', function() {
     assertFalse(!!manageProfile.$$('#themeSelector'));
 
     // Recreate a manage profile element with overridden loadTimeData.
-    setFlags({profilesUIRevamp: true});
+    setFlags({newProfilePicker: true});
 
     assertTrue(!!manageProfile.$$('#themeSelector'));
   });
@@ -243,10 +243,10 @@ suite('ManageProfileTests', function() {
       hasShortcutToggle.click();
       return browserProxy.whenCalled('addProfileShortcut');
     }
-    setFlags({profilesUIRevamp: false, profileShortcutsEnabled: true});
+    setFlags({newProfilePicker: false, profileShortcutsEnabled: true});
     await profileShortcutToggle();
     browserProxy.reset();
-    setFlags({profilesUIRevamp: true, profileShortcutsEnabled: true});
+    setFlags({newProfilePicker: true, profileShortcutsEnabled: true});
     await profileShortcutToggle();
   });
 
@@ -267,10 +267,10 @@ suite('ManageProfileTests', function() {
 
       assertFalse(hasShortcutToggle.checked);
     }
-    setFlags({profilesUIRevamp: false, profileShortcutsEnabled: true});
+    setFlags({newProfilePicker: false, profileShortcutsEnabled: true});
     await profileShortcutToggleShortcutNotFound();
     browserProxy.resetResolver('getProfileShortcutStatus');
-    setFlags({profilesUIRevamp: true, profileShortcutsEnabled: true});
+    setFlags({newProfilePicker: true, profileShortcutsEnabled: true});
     await profileShortcutToggleShortcutNotFound();
   });
 
@@ -289,10 +289,10 @@ suite('ManageProfileTests', function() {
 
       assertFalse(!!manageProfile.$$('#hasShortcutToggle'));
     }
-    setFlags({profilesUIRevamp: false, profileShortcutsEnabled: true});
+    setFlags({newProfilePicker: false, profileShortcutsEnabled: true});
     await profileShortcutSettingHidden();
     browserProxy.resetResolver('getProfileShortcutStatus');
-    setFlags({profilesUIRevamp: true, profileShortcutsEnabled: true});
+    setFlags({newProfilePicker: true, profileShortcutsEnabled: true});
     await profileShortcutSettingHidden();
   });
 });

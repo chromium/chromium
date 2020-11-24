@@ -43,9 +43,7 @@ PasswordManagerSigninInterceptTestHelper::
     PasswordManagerSigninInterceptTestHelper(
         net::test_server::EmbeddedTestServer* https_test_server)
     : https_test_server_(https_test_server) {
-  feature_list_.InitWithFeatures(
-      {kDiceWebSigninInterceptionFeature, ::features::kProfilesUIRevamp},
-      /*disabled_features=*/{});
+  feature_list_.InitAndEnableFeature(kDiceWebSigninInterceptionFeature);
 }
 
 PasswordManagerSigninInterceptTestHelper::
