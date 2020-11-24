@@ -15,6 +15,8 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_test_util.h"
@@ -137,9 +139,7 @@ class AppServiceAppWindowBrowserTest
 
   ~AppServiceAppWindowBrowserTest() override = default;
 
-  void SetUp() override {
-    extensions::PlatformAppBrowserTest::SetUp();
-  }
+  void SetUp() override { extensions::PlatformAppBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     controller_ = ChromeLauncherController::instance();
@@ -348,6 +348,54 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
   widget->CloseNow();
   windows = app_service_proxy_->InstanceRegistry().GetWindows(kLacrosAppId);
   EXPECT_EQ(0u, windows.size());
+}
+
+class AppServiceAppWindowBorealisBrowserTest
+    : public AppServiceAppWindowBrowserTest {
+ public:
+  ~AppServiceAppWindowBorealisBrowserTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
+                       BorealisKnownApp) {
+  // Generate a fake app.
+  vm_tools::apps::ApplicationList list;
+  list.set_vm_name("vm");
+  list.set_container_name("container");
+  list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+  vm_tools::apps::App* app = list.add_apps();
+  app->set_desktop_file_id("foo.desktop");
+  app->mutable_name()->add_values()->set_value("foo");
+  app->set_no_display(false);
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile())
+      ->UpdateApplicationList(list);
+  app_service_proxy_->FlushMojoCallsForTesting();
+
+  views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.foo");
+  std::string app_id = guest_os::GuestOsRegistryService::GenerateAppId(
+      "foo.desktop", "vm", "container");
+
+  EXPECT_EQ(1u,
+            app_service_proxy_->InstanceRegistry().GetWindows(app_id).size());
+  EXPECT_NE(-1, shelf_model()->ItemIndexByAppID(app_id));
+
+  widget->CloseNow();
+  EXPECT_TRUE(
+      app_service_proxy_->InstanceRegistry().GetWindows(app_id).empty());
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
+                       BorealisUnknownApp) {
+  views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.bar");
+  std::string app_id = "crostini:org.chromium.termina.wmclass.bar";
+
+  EXPECT_EQ(1u,
+            app_service_proxy_->InstanceRegistry().GetWindows(app_id).size());
+  EXPECT_NE(-1, shelf_model()->ItemIndexByAppID(app_id));
+
+  widget->CloseNow();
+  EXPECT_TRUE(
+      app_service_proxy_->InstanceRegistry().GetWindows(app_id).empty());
 }
 
 class AppServiceAppWindowWebAppBrowserTest

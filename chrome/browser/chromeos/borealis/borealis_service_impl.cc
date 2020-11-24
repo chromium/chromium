@@ -6,21 +6,29 @@
 
 #include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
+#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace borealis {
 
 BorealisServiceImpl::BorealisServiceImpl(Profile* profile)
-    : profile_(profile), features_(profile_), app_launcher_(profile_) {}
+    : profile_(profile),
+      app_launcher_(profile_),
+      features_(profile_),
+      window_manager_(profile_) {}
 
 BorealisServiceImpl::~BorealisServiceImpl() = default;
+
+BorealisAppLauncher& BorealisServiceImpl::AppLauncher() {
+  return app_launcher_;
+}
 
 BorealisFeatures& BorealisServiceImpl::Features() {
   return features_;
 }
 
-BorealisAppLauncher& BorealisServiceImpl::AppLauncher() {
-  return app_launcher_;
+BorealisWindowManager& BorealisServiceImpl::WindowManager() {
+  return window_manager_;
 }
 
 }  // namespace borealis

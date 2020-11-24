@@ -14,6 +14,8 @@
 #include "base/stl_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
+#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
@@ -599,8 +601,19 @@ ash::ShelfID AppServiceAppWindowLauncherController::GetShelfId(
   if (crosapi::browser_util::IsLacrosWindow(window))
     return ash::ShelfID(extension_misc::kLacrosAppId);
 
+  std::string shelf_app_id;
+  if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
+    for (auto* profile : profile_list_) {
+      shelf_app_id = borealis::BorealisService::GetForProfile(profile)
+                         ->WindowManager()
+                         .GetShelfAppId(window);
+      if (!shelf_app_id.empty()) {
+        return ash::ShelfID(shelf_app_id);
+      }
+    }
+  }
+
   if (crostini_tracker_) {
-    std::string shelf_app_id;
     shelf_app_id = crostini_tracker_->GetShelfAppId(window);
     if (!shelf_app_id.empty())
       return ash::ShelfID(shelf_app_id);

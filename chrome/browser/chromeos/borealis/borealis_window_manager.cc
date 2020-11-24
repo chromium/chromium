@@ -1,0 +1,65 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
+
+#include <string>
+
+#include "base/logging.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/chromeos/borealis/borealis_util.h"
+#include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
+#include "components/exo/shell_surface_util.h"
+
+namespace {
+
+// Borealis windows are created with app/startup ids beginning with this.
+const char kBorealisWindowPrefix[] = "org.chromium.borealis.";
+
+// Returns an ID for this window (which is the app_id or startup_id, depending
+// on which are set. The ID string is owned by the window.
+const std::string* GetWindowId(aura::Window* window) {
+  const std::string* id = exo::GetShellApplicationId(window);
+  if (id)
+    return id;
+  return exo::GetShellStartupId(window);
+}
+
+}  // namespace
+
+namespace borealis {
+
+// static
+bool BorealisWindowManager::IsBorealisWindow(aura::Window* window) {
+  const std::string* id = GetWindowId(window);
+  if (!id)
+    return false;
+  return base::StartsWith(*id, kBorealisWindowPrefix);
+}
+
+BorealisWindowManager::BorealisWindowManager(Profile* profile)
+    : profile_(profile) {}
+
+std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
+  if (!IsBorealisWindow(window))
+    return {};
+  // TODO(b/173977876): When we have better ways of associating apps with
+  // windows we will implement them. Until then, the mapping is identical to
+  // Crostini's so just spoof the relevant information and use theirs.
+  std::string pretend_crostini_id(*GetWindowId(window));
+  base::ReplaceFirstSubstringAfterOffset(
+      &pretend_crostini_id, 0, kBorealisWindowPrefix, "org.chromium.termina.");
+  std::string crostini_equivalent_id =
+      crostini::GetCrostiniShelfAppId(profile_, &pretend_crostini_id, nullptr);
+
+  // If crostini thinks this app is registered, then it actually is registered
+  // for borealis.
+  if (!crostini::IsUnmatchedCrostiniShelfAppId(crostini_equivalent_id))
+    return crostini_equivalent_id;
+
+  // The app has no registration, it is anonymous.
+  return crostini_equivalent_id;
+}
+
+}  // namespace borealis
