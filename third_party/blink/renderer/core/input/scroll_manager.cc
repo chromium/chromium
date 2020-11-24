@@ -1080,7 +1080,7 @@ Node* ScrollManager::NodeTargetForScrollableAreaElementId(
 
   Node* event_target = nullptr;
   if (layout_box->GetDocument().GetFrame() == frame_) {
-    event_target = scrollable_area->GetLayoutBox()->GetNode();
+    event_target = scrollable_area->EventTargetNode();
   } else {
     // The targeted ScrollableArea may not belong to this frame. If that
     // is the case, target its ancestor HTMLFrameOwnerElement that exists
