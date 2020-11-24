@@ -123,10 +123,9 @@ namespace identity {
     // |details| : Token options.
     // |callback| : Called with an OAuth2 access token as specified by the
     // manifest, or undefined if there was an error. The
-    // <code>grantedScopes</code> parameter is not yet available and will be
-    // populated in future versions of Chrome. When available, this parameter
-    // will contain the list of granted scopes corresponding with the returned
-    // token.
+    // <code>grantedScopes</code> parameter is populated since Chrome 87. When
+    // available, this parameter contains the list of granted scopes
+    // corresponding with the returned token.
     static void getAuthToken(optional TokenDetails details,
                              optional GetAuthTokenCallback callback);
 
@@ -162,9 +161,11 @@ namespace identity {
         optional InvalidateAuthTokenCallback callback);
 
     // Resets the state of the Identity API:
-    // - Removes all OAuth2 access tokens from the token cache
-    // - Removes user's account preferences
-    // - De-authorizes the user from all auth flows
+    // <ul>
+    //   <li>Removes all OAuth2 access tokens from the token cache</li>
+    //   <li>Removes user's account preferences</li>
+    //   <li>De-authorizes the user from all auth flows</li>
+    // </ul>
     //
     // |callback| : Called when the state has been cleared.
     static void clearAllCachedAuthTokens(
