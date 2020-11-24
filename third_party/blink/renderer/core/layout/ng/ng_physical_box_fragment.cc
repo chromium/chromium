@@ -762,6 +762,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
 
   NGLink closest_child = {nullptr};
   LayoutUnit shortest_distance = LayoutUnit::Max();
+  bool found_hit_test_candidate = false;
   const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
   PhysicalRect point_rect(point, pixel_size);
 
@@ -776,8 +777,18 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
   // direction (column rows and spanners).
   for (const NGLink& child : Children()) {
     const auto& box_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
-    if (!IsHitTestCandidate(box_fragment))
-      continue;
+    bool is_hit_test_candidate = IsHitTestCandidate(box_fragment);
+    if (!is_hit_test_candidate) {
+      if (found_hit_test_candidate)
+        continue;
+      // We prefer valid hit-test candidates, but if there are no such children,
+      // we'll lower our requirements somewhat. The exact reasoning behind the
+      // details here is unknown, but it is something that evolved during
+      // WebKit's early years.
+      if (box_fragment.Style().Visibility() != EVisibility::kVisible ||
+          (box_fragment.Children().empty() && !box_fragment.IsBlockFlow()))
+        continue;
+    }
 
     PhysicalRect child_rect(child.offset, child->Size());
     LayoutUnit horizontal_distance;
@@ -800,10 +811,13 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
     const LayoutUnit distance = horizontal_distance * horizontal_distance +
                                 vertical_distance * vertical_distance;
 
-    if (shortest_distance > distance) {
-      // This child is closer to the point than any previous child.
+    if (shortest_distance > distance ||
+        (is_hit_test_candidate && !found_hit_test_candidate)) {
+      // This child is either closer to the point than any previous child, or
+      // this is the first child that is an actual hit-test candidate.
       shortest_distance = distance;
       closest_child = child;
+      found_hit_test_candidate = is_hit_test_candidate;
     }
   }
 
