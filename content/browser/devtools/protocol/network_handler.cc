@@ -2476,7 +2476,7 @@ void NetworkHandler::OnRequestWillBeSentExtraInfo(
     const std::string& devtools_request_id,
     const net::CookieAccessResultList& request_cookie_list,
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
-    network::mojom::ClientSecurityStatePtr security_state) {
+    const network::mojom::ClientSecurityStatePtr& security_state) {
   if (!enabled_)
     return;
 
