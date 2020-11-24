@@ -10,10 +10,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/version_info/version_info.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/statistics_provider.h"
 #endif
 
@@ -51,7 +52,7 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() {
   std::string os_name = base::SysInfo::OperatingSystemName();
   std::string os_hardware = base::SysInfo::OperatingSystemArchitecture();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::system::StatisticsProvider* provider =
       chromeos::system::StatisticsProvider::GetInstance();
 
@@ -65,7 +66,7 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() {
 #endif
 
   std::string os_version("-");
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
   int32_t os_bugfix_version = 0;

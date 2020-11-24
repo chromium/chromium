@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_CHROME_POLICY_CONVERSIONS_CLIENT_H_
 #define CHROME_BROWSER_POLICY_CHROME_POLICY_CONVERSIONS_CLIENT_H_
 
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 
 namespace content {
@@ -35,7 +36,7 @@ class ChromePolicyConversionsClient : public PolicyConversionsClient {
   const ConfigurationPolicyHandlerList* GetHandlerList() const override;
   bool HasUserPolicies() const override;
   base::Value GetExtensionPolicies(PolicyDomain policy_domain) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Value GetDeviceLocalAccountPolicies() override;
   base::Value GetIdentityFields() override;
 #endif

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefRegistrySimple;
@@ -24,12 +25,12 @@ class WebUsbAllowDevicesForUrlsPolicyHandler
   static std::unique_ptr<WebUsbAllowDevicesForUrlsPolicyHandler>
   CreateForUserPolicy(const Schema& chrome_schema);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static std::unique_ptr<WebUsbAllowDevicesForUrlsPolicyHandler>
   CreateForDevicePolicy(const Schema& chrome_schema);
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   WebUsbAllowDevicesForUrlsPolicyHandler(const char* policy_name,
                                          const char* pref_name,

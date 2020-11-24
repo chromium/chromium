@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/account_id/account_id.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -29,11 +30,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using testing::Return;
 using testing::_;
@@ -119,9 +120,9 @@ class ProfilePolicyConnectorTest : public testing::Test {
   MockCloudPolicyStore cloud_policy_store_;
   std::unique_ptr<CloudPolicyManager> cloud_policy_manager_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_F(ProfilePolicyConnectorTest, IsManagedForManagedUsers) {
@@ -142,7 +143,7 @@ TEST_F(ProfilePolicyConnectorTest, IsManagedForManagedUsers) {
   connector.Shutdown();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfilePolicyConnectorTest, IsManagedForActiveDirectoryUsers) {
   user_manager::ScopedUserManager scoped_user_manager_enabler(
       std::make_unique<chromeos::FakeChromeUserManager>());
@@ -221,7 +222,7 @@ TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
   // Cleanup.
   connector.Shutdown();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
   MockConfigurationPolicyProvider mock_platform_provider;

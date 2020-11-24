@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "extensions/common/extension_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -29,7 +30,7 @@ namespace policy {
 class MockConfigurationPolicyProvider;
 }  // namespace policy
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 class DeviceStateMixin;
@@ -39,7 +40,7 @@ namespace policy {
 class DevicePolicyCrosTestHelper;
 }  // namespace policy
 
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A mixin that allows to force-install an extension/app via the device policy.
 //
@@ -100,13 +101,13 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
       Profile* profile,
       policy::MockConfigurationPolicyProvider* mock_policy_provider);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void InitWithDeviceStateMixin(Profile* profile,
                                 chromeos::DeviceStateMixin* device_state_mixin);
   void InitWithDevicePolicyCrosTestHelper(
       Profile* profile,
       policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Force-installs the CRX file |crx_path|; under the hood, generates an update
   // manifest and serves it and the CRX file by the embedded test server.
@@ -186,7 +187,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   net::EmbeddedTestServer embedded_test_server_;
   Profile* profile_ = nullptr;
   policy::MockConfigurationPolicyProvider* mock_policy_provider_ = nullptr;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::DeviceStateMixin* device_state_mixin_ = nullptr;
   policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper_ = nullptr;
 #endif

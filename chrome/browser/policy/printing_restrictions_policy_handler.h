@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "printing/backend/printing_restrictions.h"
 
@@ -46,7 +47,7 @@ class PrintingEnumPolicyHandler : public TypeCheckingPolicyHandler {
   base::flat_map<std::string, Mode> policy_value_to_mode_;
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PrintingAllowedColorModesPolicyHandler
     : public PrintingEnumPolicyHandler<printing::ColorModeRestriction> {
  public:
@@ -88,7 +89,7 @@ class PrintingPinDefaultPolicyHandler
   PrintingPinDefaultPolicyHandler();
   ~PrintingPinDefaultPolicyHandler() override;
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PrintingAllowedBackgroundGraphicsModesPolicyHandler
     : public PrintingEnumPolicyHandler<

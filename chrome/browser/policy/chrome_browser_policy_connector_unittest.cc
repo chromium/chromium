@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -16,7 +17,7 @@
 
 namespace policy {
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // HasMachineLevelPolicies() is not implemented on ChromeOS.
 TEST(ChromeBrowserPolicyConnectorTest, HasMachineLevelPolicies) {
   base::test::TaskEnvironment env;
@@ -33,6 +34,6 @@ TEST(ChromeBrowserPolicyConnectorTest, HasMachineLevelPolicies) {
   EXPECT_TRUE(connector.HasMachineLevelPolicies());
   BrowserPolicyConnectorBase::SetPolicyProviderForTesting(nullptr);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy

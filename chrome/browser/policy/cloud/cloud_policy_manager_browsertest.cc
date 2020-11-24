@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #else
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -168,7 +169,7 @@ class CloudPolicyManagerTest : public InProcessBrowserTest {
         g_browser_process->browser_policy_connector();
     connector->ScheduleServiceInitialization(0);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     policy_manager()->core()->client()->SetURLLoaderFactoryForTesting(
         test_url_loader_factory_->GetSafeWeakWrapper());
 #else
@@ -192,7 +193,7 @@ class CloudPolicyManagerTest : public InProcessBrowserTest {
     EXPECT_EQ(0, test_url_loader_factory_->NumPending());
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   UserCloudPolicyManagerChromeOS* policy_manager() {
     return browser()->profile()->GetUserCloudPolicyManagerChromeOS();
   }
@@ -200,7 +201,7 @@ class CloudPolicyManagerTest : public InProcessBrowserTest {
   UserCloudPolicyManager* policy_manager() {
     return browser()->profile()->GetUserCloudPolicyManager();
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Register the client of the policy_manager() using a bogus auth token, and
   // returns once the registration gets a result back.
@@ -221,7 +222,7 @@ class CloudPolicyManagerTest : public InProcessBrowserTest {
     // Give a bogus OAuth token to the |policy_manager|. This should make its
     // CloudPolicyClient fetch the DMToken.
     CloudPolicyClient::RegistrationParameters parameters(
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         em::DeviceRegisterRequest::USER,
 #else
         em::DeviceRegisterRequest::BROWSER,
@@ -244,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, Register) {
         // Accept one register request. The initial request should not include
         // the reregister flag.
         em::DeviceRegisterRequest::Type expected_type =
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
             em::DeviceRegisterRequest::USER;
 #else
             em::DeviceRegisterRequest::BROWSER;
@@ -294,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterWithRetry) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         em::DeviceRegisterRequest::Type expected_type =
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
             em::DeviceRegisterRequest::USER;
 #else
             em::DeviceRegisterRequest::BROWSER;

@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -210,30 +211,30 @@ constexpr char InvalidPolicyNoUrls[] = R"(
     ])";
 
 std::string GetPolicyName(PolicyType policy_type) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (policy_type == PolicyType::kDevice)
     return key::kDeviceLoginScreenWebUsbAllowDevicesForUrls;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return key::kWebUsbAllowDevicesForUrls;
 }
 
 std::string GetPrefName(PolicyType policy_type) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (policy_type == PolicyType::kDevice)
     return prefs::kDeviceLoginScreenWebUsbAllowDevicesForUrls;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return prefs::kManagedWebUsbAllowDevicesForUrls;
 }
 
 std::unique_ptr<WebUsbAllowDevicesForUrlsPolicyHandler> CreateHandler(
     PolicyType policy_type,
     const Schema& chrome_schema) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (policy_type == PolicyType::kDevice) {
     return WebUsbAllowDevicesForUrlsPolicyHandler::CreateForDevicePolicy(
         chrome_schema);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return WebUsbAllowDevicesForUrlsPolicyHandler::CreateForUserPolicy(
       chrome_schema);
 }
@@ -755,7 +756,7 @@ TEST_P(WebUsbAllowDevicesForUrlsPolicyHandlerTest, ApplyPolicySettingsNoUrls) {
 // other operating systems, this test just tests the user policy.
 INSTANTIATE_TEST_SUITE_P(All,
                          WebUsbAllowDevicesForUrlsPolicyHandlerTest,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                          testing::Values(PolicyType::kUser, PolicyType::kDevice)
 #else
                          testing::Values(PolicyType::kUser)

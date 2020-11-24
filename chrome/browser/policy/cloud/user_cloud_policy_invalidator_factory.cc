@@ -5,11 +5,12 @@
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator_factory.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #else
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -35,7 +36,7 @@ UserCloudPolicyInvalidatorFactory::~UserCloudPolicyInvalidatorFactory() {}
 KeyedService* UserCloudPolicyInvalidatorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   CloudPolicyManager* policy_manager =
       profile->GetUserCloudPolicyManagerChromeOS();
 #else

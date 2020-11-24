@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/stl_util.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
@@ -55,7 +56,7 @@ class RestoreOnStartupPolicyTest : public PolicyTest,
   RestoreOnStartupPolicyTest() = default;
   ~RestoreOnStartupPolicyTest() override = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(nkostylev): Investigate if we can remove this switch.
     command_line->AppendSwitch(switches::kCreateBrowserOnStartupForTests);

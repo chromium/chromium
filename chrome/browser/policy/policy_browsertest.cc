@@ -52,6 +52,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -170,7 +171,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/shell.h"
@@ -209,12 +210,12 @@ namespace policy {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const int kOneHourInMs = 60 * 60 * 1000;
 const int kThreeHoursInMs = 180 * 60 * 1000;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 int CountScreenshots() {
   DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(
       ProfileManager::GetActiveUserProfile());
@@ -321,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SeparateProxyPoliciesMerging) {
   expected_value.SetIntKey(key::kProxyServerMode, 3);
   expected.Set(key::kProxySettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, std::move(expected_value), nullptr);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetEnterpriseUsersDefaults(&expected);
 #endif
 
@@ -490,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, UrlKeyedAnonymizedDataCollection) {
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Flaky on MSan (crbug.com/476964) and regular Chrome OS (crbug.com/645769).
 IN_PROC_BROWSER_TEST_F(PolicyTest, DISABLED_DisableScreenshotsFile) {
@@ -622,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {
   Mock::VerifyAndClearExpectations(&observer);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Test that TaskManagerInterface::IsEndProcessEnabled is controlled by
 // TaskManagerEndProcessEnabled policy
@@ -651,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, TaskManagerEndProcessEnabled) {
   EXPECT_TRUE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Similar to PolicyTest but sets the proper policy before the browser is
 // started.
 class PolicyVariationsServiceTest : public PolicyTest {
@@ -681,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(PolicyVariationsServiceTest, VariationsURLIsValid) {
 }
 #endif  // !defined(CHROME_OS)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets the hardware acceleration mode policy before the browser is started.
 class HardwareAccelerationModePolicyTest : public PolicyTest {
  public:
@@ -703,9 +704,9 @@ IN_PROC_BROWSER_TEST_F(HardwareAccelerationModePolicyTest,
   EXPECT_FALSE(
       content::GpuDataManager::GetInstance()->HardwareAccelerationEnabled());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Policy is only available in ChromeOS
 IN_PROC_BROWSER_TEST_F(PolicyTest, UnifiedDesktopEnabledByDefault) {
   // Verify that Unified Desktop can be enabled by policy
@@ -731,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, UnifiedDesktopEnabledByDefault) {
   EXPECT_FALSE(display_manager->unified_desktop_enabled());
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class NetworkTimePolicyTest : public PolicyTest {
  public:

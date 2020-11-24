@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
@@ -70,7 +71,7 @@
 #include "base/win/win_util.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
@@ -175,10 +176,10 @@ void RegisterURLReplacingHandler(net::EmbeddedTestServer* test_server,
 class ExtensionPolicyTest : public PolicyTest {
  public:
   ExtensionPolicyTest() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitAndDisableFeature(
         chromeos::features::kCameraSystemWebApp);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
  protected:
@@ -291,7 +292,7 @@ class ExtensionPolicyTest : public PolicyTest {
     return return_app_id;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const extensions::Extension* InstallOSSettings() {
     WebApplicationInfo web_app;
     web_app.title = base::ASCIIToUTF16("Settings");
@@ -391,7 +392,7 @@ class ExtensionPolicyTest : public PolicyTest {
 
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Check that component extension can't be blocklisted, besides the camera app
 // that can be disabled by extension policy. This is a temporary solution until
 // there's a dedicated policy to disable the camera, at which point the special
@@ -457,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   extensions::ExtensionService* service = extension_service();
   EXPECT_TRUE(service->IsExtensionEnabled(web_app::kOsSettingsAppId));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        ExtensionInstallBlocklistSelective) {
@@ -1054,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
       extension_cache()->GetExtension(kGoodCrxId, "", nullptr, nullptr));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verifies that if the cache entry contains inconsistent extension version,
 // the crx installation fails and download of a new crx file is attempted.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, CrxVersionInconsistencyInCache) {
@@ -1151,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, CrxVersionInconsistencyInCache) {
   EXPECT_EQ(version, kGoodCrxVersion);
   EXPECT_NE(file_path, filename);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   // Verifies that extensions that are force-installed by policies are
@@ -2053,7 +2054,7 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
         chromeos::switches::kIgnoreUserProfileMappingForTests);
 #endif

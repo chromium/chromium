@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_POLICY_ENROLLMENT_STATUS_H_
 #define CHROME_BROWSER_POLICY_ENROLLMENT_STATUS_H_
 
-#if defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/tpm/install_attributes.h"
 #endif
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -68,7 +69,7 @@ class EnrollmentStatus {
   static EnrollmentStatus ForStoreError(
       CloudPolicyStore::Status store_error,
       CloudPolicyValidatorBase::Status validation_status);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static EnrollmentStatus ForLockError(
       chromeos::InstallAttributes::LockResult lock_status);
 #endif
@@ -80,14 +81,14 @@ class EnrollmentStatus {
   CloudPolicyValidatorBase::Status validation_status() const {
     return validation_status_;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::InstallAttributes::LockResult lock_status() const {
     return lock_status_;
   }
 #endif
 
  private:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EnrollmentStatus(Status status,
                    DeviceManagementStatus client_status,
                    int http_status,
@@ -116,7 +117,7 @@ class EnrollmentStatus {
   int http_status_;
   CloudPolicyStore::Status store_status_;
   CloudPolicyValidatorBase::Status validation_status_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::InstallAttributes::LockResult lock_status_;
 #endif
 };

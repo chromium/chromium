@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
@@ -39,7 +40,7 @@
 #include "net/http/transport_security_state.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/snapshot/screenshot_grabber.h"
 #endif
 
@@ -145,7 +146,7 @@ void PolicyTest::SetRequireCTForTesting(bool required) {
                      required));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class QuitMessageLoopAfterScreenshot
     : public ChromeScreenshotGrabberTestObserver {
  public:
@@ -175,7 +176,7 @@ void PolicyTest::TestScreenshotFile(bool enabled) {
 
   grabber->test_observer_ = nullptr;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
     const base::FilePath::StringType& name) {
@@ -188,7 +189,7 @@ scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
 void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {
   PolicyMap policy_with_defaults;
   policy_with_defaults.CopyFrom(policy);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetEnterpriseUsersDefaults(&policy_with_defaults);
 #endif
   provider_.UpdateChromePolicy(policy_with_defaults);
@@ -233,7 +234,7 @@ void PolicyTest::ApplySafeSearchPolicy(
   UpdateProviderPolicy(policies);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PolicyTest::SetEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   keyboard_client->SetEnableFlag(flag);
@@ -243,7 +244,7 @@ void PolicyTest::ClearEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   keyboard_client->ClearEnableFlag(flag);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 GURL PolicyTest::GetExpectedSearchURL(bool expect_safe_search) {

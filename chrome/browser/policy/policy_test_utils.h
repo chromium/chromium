@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/files/file_path.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -77,13 +78,13 @@ class PolicyTest : public InProcessBrowserTest {
                              base::Optional<base::Value> legacy_youtube,
                              base::Optional<base::Value> youtube_restrict);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void TestScreenshotFile(bool enabled);
 
   void SetEnableFlag(const keyboard::KeyboardEnableFlag& flag);
 
   void ClearEnableFlag(const keyboard::KeyboardEnableFlag& flag);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static GURL GetExpectedSearchURL(bool expect_safe_search);
 

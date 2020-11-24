@@ -5,9 +5,10 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 
 #include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -34,7 +35,7 @@ DMToken* GetTestingDMTokenStorage() {
 DMToken GetDMToken(Profile* const profile, bool only_affiliated) {
   DMToken dm_token = *GetTestingDMTokenStorage();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!profile)
     return dm_token;
   auto* policy_manager = profile->GetUserCloudPolicyManagerChromeOS();

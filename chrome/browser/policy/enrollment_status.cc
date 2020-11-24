@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/enrollment_status.h"
 
+#include "build/chromeos_buildflags.h"
 #include "net/http/http_status_code.h"
 
 namespace policy {
@@ -63,7 +64,7 @@ EnrollmentStatus EnrollmentStatus::ForStoreError(
                                                 validation_status);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 EnrollmentStatus EnrollmentStatus::ForLockError(
     chromeos::InstallAttributes::LockResult lock_status) {
@@ -106,7 +107,7 @@ EnrollmentStatus EnrollmentStatus::CreateEnrollmentStatusWithoutLockError(
     int http_status,
     CloudPolicyStore::Status store_status,
     CloudPolicyValidatorBase::Status validation_status) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return EnrollmentStatus(status, client_status, http_status, store_status,
                           validation_status,
                           chromeos::InstallAttributes::LOCK_SUCCESS);

@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -48,7 +49,7 @@ WebUsbAllowDevicesForUrlsPolicyHandler::CreateForUserPolicy(
       chrome_schema);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 std::unique_ptr<WebUsbAllowDevicesForUrlsPolicyHandler>
 WebUsbAllowDevicesForUrlsPolicyHandler::CreateForDevicePolicy(
@@ -64,7 +65,7 @@ void WebUsbAllowDevicesForUrlsPolicyHandler::RegisterPrefs(
   registry->RegisterListPref(
       prefs::kDeviceLoginScreenWebUsbAllowDevicesForUrls);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 WebUsbAllowDevicesForUrlsPolicyHandler::WebUsbAllowDevicesForUrlsPolicyHandler(
     const char* policy_name,
