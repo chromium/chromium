@@ -218,8 +218,7 @@ template <template <typename, typename, typename> class M,
           typename L,
           typename R,
           typename... Args>
-constexpr ClampedNumeric<typename ResultType<M, L, R, Args...>::type>
-ClampMathOp(const L lhs, const R rhs, const Args... args) {
+constexpr auto ClampMathOp(const L lhs, const R rhs, const Args... args) {
   return ClampMathOp<M>(ClampMathOp<M>(lhs, rhs), args...);
 }
 

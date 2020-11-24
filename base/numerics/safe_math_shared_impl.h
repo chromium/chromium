@@ -178,38 +178,13 @@ struct MathWrapper {
   using type = typename math::result_type;
 };
 
-// These variadic templates work out the return types.
-// TODO(jschuh): Rip all this out once we have C++14 non-trailing auto support.
-template <template <typename, typename, typename> class M,
-          typename L,
-          typename R,
-          typename... Args>
-struct ResultType;
-
-template <template <typename, typename, typename> class M,
-          typename L,
-          typename R>
-struct ResultType<M, L, R> {
-  using type = typename MathWrapper<M, L, R>::type;
-};
-
-template <template <typename, typename, typename> class M,
-          typename L,
-          typename R,
-          typename... Args>
-struct ResultType {
-  using type =
-      typename ResultType<M, typename ResultType<M, L, R>::type, Args...>::type;
-};
-
 // The following macros are just boilerplate for the standard arithmetic
 // operator overloads and variadic function templates. A macro isn't the nicest
 // solution, but it beats rewriting these over and over again.
 #define BASE_NUMERIC_ARITHMETIC_VARIADIC(CLASS, CL_ABBR, OP_NAME)       \
   template <typename L, typename R, typename... Args>                   \
-  constexpr CLASS##Numeric<                                             \
-      typename ResultType<CLASS##OP_NAME##Op, L, R, Args...>::type>     \
-      CL_ABBR##OP_NAME(const L lhs, const R rhs, const Args... args) {  \
+  constexpr auto CL_ABBR##OP_NAME(const L lhs, const R rhs,             \
+                                  const Args... args) {                 \
     return CL_ABBR##MathOp<CLASS##OP_NAME##Op, L, R, Args...>(lhs, rhs, \
                                                               args...); \
   }

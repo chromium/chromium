@@ -164,31 +164,13 @@ class CheckedNumeric {
   template <typename U>
   constexpr CheckedNumeric<typename MathWrapper<CheckedMaxOp, T, U>::type> Max(
       const U rhs) const {
-    using R = typename UnderlyingType<U>::type;
-    using result_type = typename MathWrapper<CheckedMaxOp, T, U>::type;
-    // TODO(jschuh): This can be converted to the MathOp version and remain
-    // constexpr once we have C++14 support.
-    return CheckedNumeric<result_type>(
-        static_cast<result_type>(
-            IsGreater<T, R>::Test(state_.value(), Wrapper<U>::value(rhs))
-                ? state_.value()
-                : Wrapper<U>::value(rhs)),
-        state_.is_valid() && Wrapper<U>::is_valid(rhs));
+    return CheckMax(*this, rhs);
   }
 
   template <typename U>
   constexpr CheckedNumeric<typename MathWrapper<CheckedMinOp, T, U>::type> Min(
       const U rhs) const {
-    using R = typename UnderlyingType<U>::type;
-    using result_type = typename MathWrapper<CheckedMinOp, T, U>::type;
-    // TODO(jschuh): This can be converted to the MathOp version and remain
-    // constexpr once we have C++14 support.
-    return CheckedNumeric<result_type>(
-        static_cast<result_type>(
-            IsLess<T, R>::Test(state_.value(), Wrapper<U>::value(rhs))
-                ? state_.value()
-                : Wrapper<U>::value(rhs)),
-        state_.is_valid() && Wrapper<U>::is_valid(rhs));
+    return CheckMin(*this, rhs);
   }
 
   // This function is available only for integral types. It returns an unsigned
@@ -331,8 +313,7 @@ template <template <typename, typename, typename> class M,
           typename L,
           typename R,
           typename... Args>
-constexpr CheckedNumeric<typename ResultType<M, L, R, Args...>::type>
-CheckMathOp(const L lhs, const R rhs, const Args... args) {
+constexpr auto CheckMathOp(const L lhs, const R rhs, const Args... args) {
   return CheckMathOp<M>(CheckMathOp<M>(lhs, rhs), args...);
 }
 
