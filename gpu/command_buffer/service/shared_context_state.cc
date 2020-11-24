@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
@@ -31,10 +32,6 @@
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
-#endif
-
-#if defined(OS_ANDROID)
-#include "gpu/config/gpu_finch_features.h"
 #endif
 
 #if defined(OS_FUCHSIA)
@@ -178,12 +175,10 @@ SharedContextState::SharedContextState(
     case GrContextType::kVulkan:
       if (vk_context_provider_) {
 #if BUILDFLAG(ENABLE_VULKAN)
-        gr_context_ = vk_context_provider_->GetGrContext();
         external_semaphore_pool_ =
             std::make_unique<ExternalSemaphorePool>(this);
 #endif
         use_virtualized_gl_contexts_ = false;
-        DCHECK(gr_context_);
       }
       break;
     case GrContextType::kMetal:
@@ -271,6 +266,16 @@ bool SharedContextState::InitializeGrContext(
   DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
                                             &glyph_cache_max_texture_bytes);
 
+  // If you make any changes to the GrContext::Options here that could
+  // affect text rendering, make sure to match the capabilities initialized
+  // in GetCapabilities and ensuring these are also used by the
+  // PaintOpBufferSerializer.
+  GrContextOptions options = GetDefaultGrContextOptions(gr_context_type_);
+  options.fPersistentCache = cache;
+  options.fShaderErrorHandler = this;
+  if (gpu_preferences.force_max_texture_size)
+    options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
+
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
     bool use_version_es2 = false;
@@ -296,25 +301,32 @@ bool SharedContextState::InitializeGrContext(
             glProgramBinary(program, binaryFormat, binary, length);
           };
     }
-    // If you make any changes to the GrContext::Options here that could
-    // affect text rendering, make sure to match the capabilities initialized
-    // in GetCapabilities and ensuring these are also used by the
-    // PaintOpBufferSerializer.
-    GrContextOptions options = GetDefaultGrContextOptions(GrContextType::kGL);
     options.fDriverBugWorkarounds =
         GrDriverBugWorkarounds(workarounds.ToIntSet());
-    options.fPersistentCache = cache;
     options.fAvoidStencilBuffers = workarounds.avoid_stencil_buffers;
     if (workarounds.disable_program_disk_cache) {
       options.fShaderCacheStrategy =
           GrContextOptions::ShaderCacheStrategy::kBackendSource;
     }
-    options.fShaderErrorHandler = this;
-    if (gpu_preferences.force_max_texture_size)
-      options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
     options.fPreferExternalImagesOverES3 = true;
     owned_gr_context_ = GrDirectContext::MakeGL(std::move(interface), options);
     gr_context_ = owned_gr_context_.get();
+  } else if (gr_context_type_ == GrContextType::kVulkan) {
+#if BUILDFLAG(ENABLE_VULKAN)
+    if (vk_context_provider_) {
+      // TODO(vasilyt): Remove this if there is no problem with caching.
+      if (!base::FeatureList::IsEnabled(
+              features::kEnableGrShaderCacheForVulkan))
+        options.fPersistentCache = nullptr;
+
+      if (!vk_context_provider_->InitializeGrContext(options)) {
+        LOG(ERROR) << "Failed to initialize GrContext for Vulkan.";
+        return false;
+      }
+      gr_context_ = vk_context_provider_->GetGrContext();
+      DCHECK(gr_context_);
+    }
+#endif
   }
 
   if (!gr_context_) {
