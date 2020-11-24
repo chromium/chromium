@@ -40,7 +40,7 @@
     },
 
     bg_color: {
-      light: "#ffffff",
+      light: "$white",
       dark: "$google_grey_900",
     },
 
@@ -73,7 +73,7 @@
     /*
      * Component colors.
      */
-    toolbar_bg_color: "#ffffff",
+    toolbar_bg_color: "$white",
     toolbar_search_bg_color: "$google_grey_100",
 
     // TODO(crbug/1122767): Rename menu_button_* to app sidebar menu items.
@@ -82,17 +82,17 @@
     menu_button_outline_color_focused: "$google_blue_600",
 
     menu_item_bg_color_focus: {
-      light: "rgba(0, 0, 0, 0.06)",
-      dark: "rgba(255, 255, 255, 0.08)",
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.08)",
     },
     menu_item_ripple_color: {
-      light: "rgba(0, 0, 0, 0.06)",
-      dark: "rgba(255, 255, 255, 0.08)",
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.08)",
     },
 
     toggle_color: "$icon_color_prominent",
     toggle_bg_color_inactive: "$google_grey_400",
-    toggle_button_color_inactive: "#ffffff",
+    toggle_button_color_inactive: "$white",
     toggle_ripple_color: "rgba($toggle_color_rgb, .2)",
     toggle_ripple_color_inactive: "rgba($google_grey_600_rgb, .15)",
 
@@ -101,7 +101,7 @@
     radio_button_color_unchecked: "$google_grey_700",
     radio_button_ripple_color_unchecked: "rgba($google_grey_600_rgb, .15)",
 
-    separator_color: "rgba(0, 0, 0, 0.12)",
+    separator_color: "rgba($black_rgb, 0.12)",
 
     link_color: "$google_blue_700",
 
@@ -115,8 +115,8 @@
     /* TODO(calamity): Generate a linear-gradient() to use for compositing
        backgrounds */
     button_background_color_primary_hover_overlay: {
-      light: "rgba(255, 255, 255, 0.08)",
-      dark: "rgba(0, 0, 0, 0.08)",
+      light: "rgba($white_rgb, 0.08)",
+      dark: "rgba($black_rgb, 0.08)",
     },
     /* button-primary[disabled] */
     button_background_color_primary_disabled: {
@@ -150,15 +150,15 @@
     /* textfield */
     textfield_background_color: {
       light: "$google_grey_100",
-      dark: "rgba(0, 0, 0, 0.3)",
+      dark: "rgba($black_rgb, 0.3)",
     },
     textfield_label_color: {
       light: "$google_grey_700",
-      dark: "rgba(255, 255, 255, 0.6)",
+      dark: "rgba($white_rgb, 0.6)",
     },
     textfield_input_color: {
       light: "$google_grey_900",
-      dark: "rgba(255, 255, 255, 0.87)",
+      dark: "rgba($white_rgb, 0.87)",
     },
     /* textfield:focus */
     textfield_label_color_focus: "$icon_color_prominent",
@@ -170,15 +170,15 @@
     /* textfield[disabled] */
     textfield_background_color_disabled: {
       light: "rgba($google_grey_100_rgb, 0.38)",
-      dark: "rgba(0, 0, 0, 0.11)",
+      dark: "rgba($black_rgb, 0.11)",
     },
     textfield_label_color_disabled: {
       light: "rgba($google_grey_700_rgb, 0.38)",
-      dark: "rgba(0, 0, 0, 0.23)",
+      dark: "rgba($black_rgb, 0.23)",
     },
     textfield_input_color_disabled: {
       light: "rgba($google_grey_900_rgb, 0.38)",
-      dark: "rgba(255, 255, 255, 0.33)",
+      dark: "rgba($white_rgb, 0.33)",
     },
 
     /*

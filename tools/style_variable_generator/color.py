@@ -25,9 +25,9 @@ class Color:
         # TODO(calamity): Add opacity-only values
         self.var = None
         self.rgb_var = None
-        self.r = 0
-        self.g = 0
-        self.b = 0
+        self.r = -1
+        self.g = -1
+        self.b = -1
         self.a = 1
         self.Parse(value_str)
 
@@ -38,12 +38,27 @@ class Color:
 
         (self.r, self.g, self.b) = rgb
 
+    # Attempts to parse special variables, returns True if successful.
+    def _ParseWhiteBlack(self, var):
+        if var == 'white':
+            self._AssignRGB([255, 255, 255])
+            return True
+
+        if var == 'black':
+            self._AssignRGB([0, 0, 0])
+            return True
+
+        return False
+
     def _ParseRGBRef(self, rgb_ref):
-        match = re.match('^\$([a-z0-9_]+_rgb)$', rgb_ref)
+        match = re.match('^\$([\w\d_]+)_rgb$', rgb_ref)
         if not match:
             raise ValueError('Expected a reference to an RGB variable')
 
-        self.rgb_var = match.group(1)
+        rgb_var = match.group(1)
+
+        if not self._ParseWhiteBlack(rgb_var):
+            self.rgb_var = rgb_var + '_rgb'
 
     def _ParseAlpha(self, alpha_value):
         self.a = float(alpha_value)
@@ -105,15 +120,20 @@ class Color:
                              '1 reference + alpha, or 3 ints + alpha')
 
         def ParseVariableReference(value):
-            match = re.match('^\$(.*)$', value)
+            match = re.match('^\$([\w\d_]+)$', value)
             if not match:
                 return False
+
+            var = match.group(1)
+
+            if self._ParseWhiteBlack(var):
+                return True
 
             if value.endswith('_rgb'):
                 raise ValueError(
                     'color reference cannot resolve to an rgb reference')
 
-            self.var = match.group(1)
+            self.var = var
             return True
 
         parsers = [

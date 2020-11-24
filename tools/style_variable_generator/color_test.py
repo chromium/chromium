@@ -40,6 +40,19 @@ class ColorTest(unittest.TestCase):
         c = Color('$some_color')
         self.assertEqual(c.var, 'some_color')
 
+    def testWhiteBlackColor(self):
+        c = Color('$white')
+        self.assertEqual((c.r, c.g, c.b, c.a), (255, 255, 255, 1))
+
+        c = Color('rgba($white_rgb, 0.5)')
+        self.assertEqual((c.r, c.g, c.b, c.a), (255, 255, 255, 0.5))
+
+        c = Color('$black')
+        self.assertEqual((c.r, c.g, c.b, c.a), (0, 0, 0, 1))
+
+        c = Color('rgba($black_rgb, 0.5)')
+        self.assertEqual((c.r, c.g, c.b, c.a), (0, 0, 0, 0.5))
+
     def testMalformedColors(self):
         with self.assertRaises(ValueError):
             # #RRGGBBAA not supported.
@@ -74,6 +87,14 @@ class ColorTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             # Color reference points to rgb reference.
             Color('$some_color_rgb')
+
+        with self.assertRaises(ValueError):
+            # Variable reference with accidental space.
+            print(Color('$some_color_rgb '))
+
+        with self.assertRaises(ValueError):
+            # Variable reference with accidental space.
+            Color('rgba($non_ rgb_var, 0.4)')
 
 
 if __name__ == '__main__':

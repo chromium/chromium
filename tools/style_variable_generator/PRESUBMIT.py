@@ -7,7 +7,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-TEST_ALLOWLIST = [r'.+_test.py$']
+TEST_PATTERNS = [r'.+_test.py$']
 STYLE_VAR_GEN_INPUTS = [
     r'^tools[\\\/]style_variable_generator[\\\/].+\.json5$'
 ]
@@ -15,7 +15,7 @@ STYLE_VAR_GEN_INPUTS = [
 
 def _CommonChecks(input_api, output_api):
     results = input_api.canned_checks.RunUnitTestsInDirectory(
-        input_api, output_api, '.', allowlist=TEST_ALLOWLIST)
+        input_api, output_api, '.', files_to_check=TEST_PATTERNS)
     try:
         import sys
         old_sys_path = sys.path[:]

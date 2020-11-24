@@ -7,7 +7,7 @@
   colors: {
     text_color_primary: {
       light: "$google_grey_900",
-      dark: "rgb(255, 255, 255)",
+      dark: "$white",
     },
     toggle_color: {
       light: "rgba($text_color_primary_rgb, 0.1)"
