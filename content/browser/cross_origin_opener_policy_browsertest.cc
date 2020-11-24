@@ -4,6 +4,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -1970,8 +1971,16 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
   EXPECT_NE(group_4, group_1);
 }
 
+// This test is flaky on Win: https://crbug.com/1125998.
+#if defined(OS_WIN)
+#define MAYBE_CrossOriginIsolatedSiteInstance_MainFrame \
+  DISABLED_CrossOriginIsolatedSiteInstance_MainFrame
+#else
+#define MAYBE_CrossOriginIsolatedSiteInstance_MainFrame \
+  CrossOriginIsolatedSiteInstance_MainFrame
+#endif
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       CrossOriginIsolatedSiteInstance_MainFrame) {
+                       MAYBE_CrossOriginIsolatedSiteInstance_MainFrame) {
   GURL isolated_page(
       https_server()->GetURL("a.com",
                              "/set-header?"
