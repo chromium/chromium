@@ -6017,9 +6017,6 @@ crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Pass Failure ]
 crbug.com/1150854 http/tests/devtools/unit/soft-context-menu.js [ Skip ]
 
 #Sheriff 2020-11-23
-crbug.com/1151844 [ Win ] virtual/controls-refresh-hc/fast/forms/color-scheme/calendar-picker/date-picker-disabled-values.html [ Failure ]
-crbug.com/1151844 [ Win ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-overlay-menu.html [ Failure ]
-crbug.com/1151844 [ Win ] virtual/controls-refresh-hc/fast/forms/color-scheme/file/file-appearance-basic.html [ Failure ]
 crbug.com/1151861 external/wpt/workers/semantics/multiple-workers/003.html [ Timeout Crash ]
 crbug.com/1152088 [ Mac10.13 Debug ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
 crbug.com/1149734 http/tests/devtools/sources/source-frame-toolbar-items.js [ Pass Failure ]
