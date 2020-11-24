@@ -603,14 +603,18 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
                              std::max<SkScalar>(area.width(), 150));
   }
 
+  SkRect metrics_area = SkRect::MakeXYWH(
+      std::max<SkScalar>(0, bounds().width() - 150), 0, 150, 0);
   if (debug_state.show_web_vital_metrics) {
-    area = DrawWebVitalMetrics(canvas, 0, area.bottom(),
-                               std::max<SkScalar>(area.width(), 150));
+    metrics_area =
+        DrawWebVitalMetrics(canvas, metrics_area.left(), metrics_area.bottom(),
+                            std::max<SkScalar>(metrics_area.width(), 150));
   }
 
   if (debug_state.show_smoothness_metrics) {
-    area = DrawSmoothnessMetrics(canvas, 0, area.bottom(),
-                                 std::max<SkScalar>(area.width(), 150));
+    metrics_area = DrawSmoothnessMetrics(
+        canvas, metrics_area.left(), metrics_area.bottom(),
+        std::max<SkScalar>(metrics_area.width(), 150));
   }
 
   canvas->restore();
@@ -1085,7 +1089,7 @@ int HeadsUpDisplayLayerImpl::DrawSingleMetric(
 }
 
 SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
-                                                    int right,
+                                                    int left,
                                                     int top,
                                                     int width) const {
   const int kPadding = 4;
@@ -1093,7 +1097,6 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
   const int kFontHeight = 12;
 
   const int height = 3 * kTitleFontHeight + 3 * kFontHeight + 7 * kPadding;
-  const int left = 0;
   const SkRect area = SkRect::MakeXYWH(left, top, width, height);
 
   PaintFlags flags;
@@ -1124,7 +1127,7 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
 }
 
 SkRect HeadsUpDisplayLayerImpl::DrawSmoothnessMetrics(PaintCanvas* canvas,
-                                                      int right,
+                                                      int left,
                                                       int top,
                                                       int width) const {
   std::string avg_smoothness = "-";
@@ -1139,7 +1142,6 @@ SkRect HeadsUpDisplayLayerImpl::DrawSmoothnessMetrics(PaintCanvas* canvas,
   const int kFontHeight = 12;
 
   const int height = kTitleFontHeight + kFontHeight + 3 * kPadding;
-  const int left = 0;
   const SkRect area = SkRect::MakeXYWH(left, top, width, height);
 
   PaintFlags flags;

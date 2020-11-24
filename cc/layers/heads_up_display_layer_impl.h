@@ -141,12 +141,12 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                        const WebVitalMetrics::MetricsInfo& info,
                        double value) const;
   SkRect DrawWebVitalMetrics(PaintCanvas* canvas,
-                             int right,
+                             int left,
                              int top,
                              int width) const;
 
   SkRect DrawSmoothnessMetrics(PaintCanvas* canvas,
-                               int right,
+                               int left,
                                int top,
                                int width) const;
 

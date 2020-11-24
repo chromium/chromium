@@ -39,13 +39,19 @@ void HeadsUpDisplayLayer::UpdateLocationAndSize(
 
   gfx::Size bounds;
 
+  // If the HUD is not displaying full-viewport rects (e.g., it is showing the
+  // Frame Rendering Stats), use a fixed size.
+  constexpr int kDefaultHUDSize = 256;
+  bounds.SetSize(kDefaultHUDSize, kDefaultHUDSize);
+
   if (layer_tree_host()->GetDebugState().ShowDebugRects()) {
     bounds = device_viewport_in_layout_pixels;
-  } else {
-    // If the HUD is not displaying full-viewport rects (e.g., it is showing the
-    // Frame Rendering Stats), use a fixed size.
-    constexpr int kDefaultHUDSize = 256;
-    bounds.SetSize(kDefaultHUDSize, kDefaultHUDSize);
+  } else if (layer_tree_host()->GetDebugState().show_web_vital_metrics ||
+             layer_tree_host()->GetDebugState().show_smoothness_metrics) {
+    // If the HUD is used to display performance metrics (which is on the right
+    // hand side_, make sure the bounds has the correct width, with a fixed
+    // height.
+    bounds.set_width(device_viewport_in_layout_pixels.width());
   }
 
   SetBounds(bounds);

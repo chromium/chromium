@@ -106,8 +106,11 @@ class HeadsUpDisplaySizeWithMetrics : public LayerTreeTest {
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void DidCommit() override {
+    // The metrics should be shown on the right, so the width of the HUD layer
+    // should be the saem as the root layer bounds.
     ASSERT_TRUE(layer_tree_host()->hud_layer());
-    EXPECT_EQ(gfx::Size(256, 256), layer_tree_host()->hud_layer()->bounds());
+    EXPECT_EQ(gfx::Size(layer_tree_host()->root_layer()->bounds().width(), 256),
+              layer_tree_host()->hud_layer()->bounds());
     EndTest();
   }
 };
