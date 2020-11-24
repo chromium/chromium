@@ -3575,6 +3575,7 @@ test("unit_tests") {
     "../browser/password_manager/chrome_password_manager_client_unittest.cc",
     "../browser/performance_hints/performance_hints_observer_unittest.cc",
     "../browser/performance_hints/rewrite_handler_unittest.cc",
+    "../browser/performance_manager/decorators/execution_context_priority/ad_frame_voter_unittest.cc",
     "../browser/performance_manager/decorators/execution_context_priority/frame_visibility_voter_unittest.cc",
     "../browser/performance_manager/decorators/execution_context_priority/root_vote_observer_unittest.cc",
     "../browser/performance_manager/decorators/frozen_frame_aggregator_unittest.cc",

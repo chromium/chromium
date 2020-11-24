@@ -1093,6 +1093,8 @@ static_library("browser") {
     "performance_manager/chrome_browser_main_extra_parts_performance_manager.h",
     "performance_manager/chrome_content_browser_client_performance_manager_part.cc",
     "performance_manager/chrome_content_browser_client_performance_manager_part.h",
+    "performance_manager/decorators/execution_context_priority/ad_frame_voter.cc",
+    "performance_manager/decorators/execution_context_priority/ad_frame_voter.h",
     "performance_manager/decorators/execution_context_priority/frame_visibility_voter.cc",
     "performance_manager/decorators/execution_context_priority/frame_visibility_voter.h",
     "performance_manager/decorators/execution_context_priority/root_vote_observer.cc",
