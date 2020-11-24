@@ -62,7 +62,9 @@ fuchsia::media::EncryptionPattern GetEncryptionPattern(
 
 fuchsia::media::FormatDetails GetClearFormatDetails() {
   fuchsia::media::EncryptedFormat encrypted_format;
-  encrypted_format.set_scheme(fuchsia::media::ENCRYPTION_SCHEME_UNENCRYPTED);
+  encrypted_format.set_scheme(fuchsia::media::ENCRYPTION_SCHEME_UNENCRYPTED)
+      .set_subsamples({})
+      .set_init_vector({});
 
   fuchsia::media::FormatDetails format;
   format.set_format_details_version_ordinal(0);
