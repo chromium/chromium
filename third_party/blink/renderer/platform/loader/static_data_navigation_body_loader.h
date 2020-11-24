@@ -26,7 +26,7 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
   void Write(const SharedBuffer&);
   void Finish();
 
-  void SetDefersLoading(bool defers) override;
+  void SetDefersLoading(WebURLLoader::DeferType defers) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client*,
                         bool use_isolated_code_cache) override;
 
@@ -35,7 +35,8 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
 
   scoped_refptr<SharedBuffer> data_;
   WebNavigationBodyLoader::Client* client_ = nullptr;
-  bool defers_loading_ = false;
+  WebURLLoader::DeferType defers_loading_ =
+      WebURLLoader::DeferType::kNotDeferred;
   bool sent_all_data_ = false;
   bool received_all_data_ = false;
   bool is_in_continue_ = false;

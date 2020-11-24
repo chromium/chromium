@@ -213,8 +213,11 @@ void ThreadableLoader::Detach() {
 }
 
 void ThreadableLoader::SetDefersLoading(bool value) {
-  if (GetResource() && GetResource()->Loader())
-    GetResource()->Loader()->SetDefersLoading(value);
+  if (GetResource() && GetResource()->Loader()) {
+    GetResource()->Loader()->SetDefersLoading(
+        value ? WebURLLoader::DeferType::kDeferred
+              : WebURLLoader::DeferType::kNotDeferred);
+  }
 }
 
 void ThreadableLoader::Clear() {

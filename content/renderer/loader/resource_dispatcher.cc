@@ -240,7 +240,8 @@ void ResourceDispatcher::OnReceivedRedirect(
         ->NotifyResourceRedirectReceived(redirect_info,
                                          std::move(response_head));
 
-    if (!request_info->is_deferred)
+    if (request_info->is_deferred ==
+        blink::WebURLLoader::DeferType::kNotDeferred)
       FollowPendingRedirect(request_info);
   } else {
     Cancel(request_id, std::move(task_runner));
@@ -359,18 +360,22 @@ void ResourceDispatcher::Cancel(
   RemovePendingRequest(request_id, std::move(task_runner));
 }
 
-void ResourceDispatcher::SetDefersLoading(int request_id, bool value) {
+void ResourceDispatcher::SetDefersLoading(
+    int request_id,
+    blink::WebURLLoader::DeferType value) {
   PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
   if (!request_info) {
     DLOG(ERROR) << "unknown request";
     return;
   }
-  if (value) {
+  if (value != blink::WebURLLoader::DeferType::kNotDeferred) {
     request_info->is_deferred = value;
-    request_info->url_loader_client->SetDefersLoading();
-  } else if (request_info->is_deferred) {
-    request_info->is_deferred = false;
-    request_info->url_loader_client->UnsetDefersLoading();
+    request_info->url_loader_client->SetDefersLoading(value);
+  } else if (request_info->is_deferred !=
+             blink::WebURLLoader::DeferType::kNotDeferred) {
+    request_info->is_deferred = blink::WebURLLoader::DeferType::kNotDeferred;
+    request_info->url_loader_client->SetDefersLoading(
+        blink::WebURLLoader::DeferType::kNotDeferred);
 
     FollowPendingRedirect(request_info);
   }

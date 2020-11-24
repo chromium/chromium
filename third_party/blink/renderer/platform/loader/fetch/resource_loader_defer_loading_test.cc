@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 
 #include "base/bind.h"
+#include "base/debug/stack_trace.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -56,7 +57,7 @@ class TestCodeCacheLoader : public WebCodeCacheLoader {
 // A mock WebURLLoader to know the status of defers flag.
 class TestWebURLLoader final : public WebURLLoader {
  public:
-  explicit TestWebURLLoader(bool* const defers_flag_ptr)
+  explicit TestWebURLLoader(WebURLLoader::DeferType* const defers_flag_ptr)
       : defers_flag_ptr_(defers_flag_ptr) {}
   ~TestWebURLLoader() override = default;
 
@@ -87,7 +88,9 @@ class TestWebURLLoader final : public WebURLLoader {
           resource_load_info_notifier_wrapper,
       WebURLLoaderClient*) override {}
 
-  void SetDefersLoading(bool defers) override { *defers_flag_ptr_ = defers; }
+  void SetDefersLoading(WebURLLoader::DeferType defers) override {
+    *defers_flag_ptr_ = defers;
+  }
   void DidChangePriority(WebURLRequest::Priority, int) override {
     NOTREACHED();
   }
@@ -98,13 +101,13 @@ class TestWebURLLoader final : public WebURLLoader {
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::web_url_loader_defers_|.
-  bool* const defers_flag_ptr_;
+  WebURLLoader::DeferType* const defers_flag_ptr_;
 };
 
 class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
  public:
   DeferTestLoaderFactory(
-      bool* const defers_flag,
+      WebURLLoader::DeferType* const defers_flag,
       ProcessCodeCacheRequestCallback process_code_cache_request_callback)
       : defers_flag_(defers_flag),
         process_code_cache_request_callback_(
@@ -127,7 +130,7 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::web_url_loader_defers_|.
-  bool* const defers_flag_;
+  WebURLLoader::DeferType* const defers_flag_;
 
   ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
 };
@@ -167,7 +170,8 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
   WebCodeCacheLoader::FetchCodeCacheCallback code_cache_response_callback_;
   // Passed to TestWebURLLoader (via |platform_|) and updated when its
   // SetDefersLoading method is called.
-  bool web_url_loader_defers_ = false;
+  WebURLLoader::DeferType web_url_loader_defers_ =
+      WebURLLoader::DeferType::kNotDeferred;
   const KURL test_url_ = KURL("http://example.com/");
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
@@ -186,11 +190,11 @@ TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchCheckDefers) {
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
 
   // After code cache fetch it should have deferred WebURLLoader.
-  DCHECK(web_url_loader_defers_);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
   DCHECK(resource);
   std::move(code_cache_response_callback_).Run(base::Time(), {});
   // Once the response is received it should be reset.
-  DCHECK(!web_url_loader_defers_);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kNotDeferred);
 }
 
 TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchSyncReturn) {
@@ -210,7 +214,7 @@ TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchSyncReturn) {
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
   DCHECK(resource);
   // The callback would be called so it should not be deferred.
-  DCHECK(!web_url_loader_defers_);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kNotDeferred);
 }
 
 TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToFalse) {
@@ -223,13 +227,13 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToFalse) {
       FetchParameters::CreateForTest(std::move(request));
 
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
-  DCHECK(web_url_loader_defers_);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 
   // Change Defers loading to false. This should not be sent to
   // WebURLLoader since a code cache request is still pending.
   ResourceLoader* loader = resource->Loader();
-  loader->SetDefersLoading(false);
-  DCHECK(web_url_loader_defers_);
+  loader->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 }
 
 TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToTrue) {
@@ -242,16 +246,16 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToTrue) {
       FetchParameters::CreateForTest(std::move(request));
 
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
-  DCHECK(web_url_loader_defers_);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 
   ResourceLoader* loader = resource->Loader();
-  loader->SetDefersLoading(true);
-  DCHECK(web_url_loader_defers_);
+  loader->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 
   std::move(code_cache_response_callback_).Run(base::Time(), {});
   // Since it was requested to be deferred, it should be reset to the
   // correct value.
-  DCHECK(web_url_loader_defers_);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 }
 
 TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersMultipleTimes) {
@@ -264,17 +268,17 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersMultipleTimes) {
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
-  DCHECK(web_url_loader_defers_);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 
   ResourceLoader* loader = resource->Loader();
-  loader->SetDefersLoading(true);
-  DCHECK(web_url_loader_defers_);
+  loader->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 
-  loader->SetDefersLoading(false);
-  DCHECK(web_url_loader_defers_);
+  loader->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kDeferred);
 
   std::move(code_cache_response_callback_).Run(base::Time(), {});
-  DCHECK(!web_url_loader_defers_);
+  DCHECK_EQ(web_url_loader_defers_, WebURLLoader::DeferType::kNotDeferred);
 }
 
 }  // namespace blink

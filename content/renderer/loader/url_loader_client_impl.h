@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -43,12 +44,9 @@ class CONTENT_EXPORT URLLoaderClientImpl final
                       const GURL& request_url);
   ~URLLoaderClientImpl() override;
 
-  // Sets |is_deferred_|. From now, the received messages are not dispatched
-  // to clients until UnsetDefersLoading is called.
-  void SetDefersLoading();
-
-  // Unsets |is_deferred_|.
-  void UnsetDefersLoading();
+  // Set the defer status. If loading is deferred, received messages are not
+  // dispatched to clients until it is set not deferred.
+  void SetDefersLoading(blink::WebURLLoader::DeferType value);
 
   // Dispatches the messages received after SetDefersLoading is called.
   void FlushDeferredMessages();
@@ -98,7 +96,8 @@ class CONTENT_EXPORT URLLoaderClientImpl final
   bool has_received_response_head_ = false;
   bool has_received_response_body_ = false;
   bool has_received_complete_ = false;
-  bool is_deferred_ = false;
+  blink::WebURLLoader::DeferType deferred_state_ =
+      blink::WebURLLoader::DeferType::kNotDeferred;
   int32_t accumulated_transfer_size_diff_during_deferred_ = 0;
   ResourceDispatcher* const resource_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

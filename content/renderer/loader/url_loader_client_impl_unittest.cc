@@ -270,13 +270,15 @@ TEST_P(URLLoaderClientImplTest, Defer) {
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
 
-  dispatcher_->SetDefersLoading(request_id_, true);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kDeferred);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
 
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
 
@@ -305,14 +307,16 @@ TEST_P(URLLoaderClientImplTest, DeferWithResponseBody) {
   EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
 
-  dispatcher_->SetDefersLoading(request_id_, true);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kDeferred);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
 
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
@@ -326,7 +330,8 @@ TEST_P(URLLoaderClientImplTest, DeferWithResponseBody) {
 TEST_P(URLLoaderClientImplTest, StoppedDeferringBeforeClosing) {
   // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
   // deferred.
-  dispatcher_->SetDefersLoading(request_id_, true);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kDeferred);
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -353,7 +358,8 @@ TEST_P(URLLoaderClientImplTest, StoppedDeferringBeforeClosing) {
 
   // Stop deferring. OnComplete message shouldn't be dispatched yet because
   // we're still waiting for the response body pipe to be closed.
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(request_peer_context_.received_response);
   // When the body is buffered, we'll wait until the pipe is closed before
@@ -383,7 +389,8 @@ TEST_P(URLLoaderClientImplTest, StoppedDeferringBeforeClosing) {
 TEST_P(URLLoaderClientImplTest, DeferBodyWithoutOnComplete) {
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
   // Call OnStartLoadingResponseBody while deferred.
-  dispatcher_->SetDefersLoading(request_id_, true);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kDeferred);
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   ASSERT_EQ(MOJO_RESULT_OK,
@@ -406,7 +413,8 @@ TEST_P(URLLoaderClientImplTest, DeferBodyWithoutOnComplete) {
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
 
   // Stop deferring.
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
@@ -423,7 +431,8 @@ TEST_P(URLLoaderClientImplTest, DeferBodyWithoutOnComplete) {
 TEST_P(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
   // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
   // deferred.
-  dispatcher_->SetDefersLoading(request_id_, true);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kDeferred);
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -468,7 +477,8 @@ TEST_P(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
   producer_handle.reset();
 
   // Stop deferring.
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(request_peer_context_.received_response);
   // When the body is buffered, BodyBuffer shouldn't be finished writing to the
@@ -513,7 +523,8 @@ TEST_P(URLLoaderClientImplTest, DeferWithTransferSizeUpdated) {
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
   EXPECT_EQ(0, request_peer_context_.total_encoded_data_length);
 
-  dispatcher_->SetDefersLoading(request_id_, true);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kDeferred);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(request_peer_context_.received_response);
@@ -521,7 +532,8 @@ TEST_P(URLLoaderClientImplTest, DeferWithTransferSizeUpdated) {
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
   EXPECT_EQ(0, request_peer_context_.total_encoded_data_length);
 
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
@@ -562,7 +574,8 @@ TEST_P(URLLoaderClientImplTest, SetDeferredDuringFlushingDeferredMessage) {
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
   EXPECT_EQ(0, request_peer_context_.total_encoded_data_length);
 
-  dispatcher_->SetDefersLoading(request_id_, true);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kDeferred);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, request_peer_context_.seen_redirects);
@@ -571,7 +584,8 @@ TEST_P(URLLoaderClientImplTest, SetDeferredDuringFlushingDeferredMessage) {
   EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
   EXPECT_EQ(0, request_peer_context_.total_encoded_data_length);
 
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   EXPECT_EQ(0, request_peer_context_.seen_redirects);
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
@@ -586,7 +600,8 @@ TEST_P(URLLoaderClientImplTest, SetDeferredDuringFlushingDeferredMessage) {
   EXPECT_EQ(0, request_peer_context_.total_encoded_data_length);
   EXPECT_FALSE(request_peer_context_.cancelled);
 
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, request_peer_context_.seen_redirects);
   EXPECT_TRUE(request_peer_context_.received_response);
@@ -615,14 +630,16 @@ TEST_P(URLLoaderClientImplTest,
   EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ(0, request_peer_context_.total_encoded_data_length);
 
-  dispatcher_->SetDefersLoading(request_id_, true);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kDeferred);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ(0, request_peer_context_.total_encoded_data_length);
 
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   EXPECT_FALSE(request_peer_context_.received_response);
   EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ(0, request_peer_context_.total_encoded_data_length);
@@ -633,7 +650,8 @@ TEST_P(URLLoaderClientImplTest,
   EXPECT_EQ(4, request_peer_context_.total_encoded_data_length);
   EXPECT_FALSE(request_peer_context_.cancelled);
 
-  dispatcher_->SetDefersLoading(request_id_, false);
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(request_peer_context_.received_response);
   EXPECT_TRUE(request_peer_context_.complete);

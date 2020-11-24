@@ -387,7 +387,7 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
   }
 
   void Cancel();
-  void SetDefersLoading(bool value);
+  void SetDefersLoading(WebURLLoader::DeferType value);
   void DidChangePriority(WebURLRequest::Priority new_priority,
                          int intra_priority_value);
   void Start(
@@ -455,8 +455,7 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
   scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
   mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle_;
-  enum DeferState { NOT_DEFERRING, SHOULD_DEFER };
-  DeferState defers_loading_;
+  blink::WebURLLoader::DeferType defers_loading_;
   int request_id_;
   bool in_two_phase_read_ = false;
   bool is_in_on_body_available_ = false;
@@ -516,7 +515,7 @@ WebURLLoaderImpl::Context::Context(
       unfreezable_task_runner_(
           unfreezable_task_runner_handle_->GetTaskRunner()),
       keep_alive_handle_(std::move(keep_alive_handle)),
-      defers_loading_(NOT_DEFERRING),
+      defers_loading_(blink::WebURLLoader::DeferType::kNotDeferred),
       request_id_(-1),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK(resource_dispatcher_);
@@ -536,14 +535,11 @@ void WebURLLoaderImpl::Context::Cancel() {
   loader_ = nullptr;
 }
 
-void WebURLLoaderImpl::Context::SetDefersLoading(bool value) {
+void WebURLLoaderImpl::Context::SetDefersLoading(
+    WebURLLoader::DeferType value) {
   if (request_id_ != -1)
     resource_dispatcher_->SetDefersLoading(request_id_, value);
-  if (value && defers_loading_ == NOT_DEFERRING) {
-    defers_loading_ = SHOULD_DEFER;
-  } else if (!value && defers_loading_ != NOT_DEFERRING) {
-    defers_loading_ = NOT_DEFERRING;
-  }
+  defers_loading_ = value;
 }
 
 void WebURLLoaderImpl::Context::DidChangePriority(
@@ -640,7 +636,7 @@ void WebURLLoaderImpl::Context::Start(
   }
 
   if (sync_load_response) {
-    DCHECK(defers_loading_ == NOT_DEFERRING);
+    DCHECK(defers_loading_ == blink::WebURLLoader::DeferType::kNotDeferred);
 
     loader_options |= network::mojom::kURLLoadOptionSynchronous;
     request->load_flags |= net::LOAD_IGNORE_LIMITS;
@@ -667,8 +663,9 @@ void WebURLLoaderImpl::Context::Start(
       url_loader_factory_, std::move(throttles),
       std::move(resource_load_info_notifier_wrapper));
 
-  if (defers_loading_ != NOT_DEFERRING)
-    resource_dispatcher_->SetDefersLoading(request_id_, true);
+  if (defers_loading_ != blink::WebURLLoader::DeferType::kNotDeferred)
+    resource_dispatcher_->SetDefersLoading(
+        request_id_, blink::WebURLLoader::DeferType::kDeferred);
 }
 
 void WebURLLoaderImpl::Context::OnUploadProgress(uint64_t position,
@@ -1118,7 +1115,7 @@ void WebURLLoaderImpl::Cancel() {
   context_->Cancel();
 }
 
-void WebURLLoaderImpl::SetDefersLoading(bool value) {
+void WebURLLoaderImpl::SetDefersLoading(DeferType value) {
   context_->SetDefersLoading(value);
 }
 

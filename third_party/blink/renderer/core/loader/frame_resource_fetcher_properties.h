@@ -35,6 +35,7 @@ class CORE_EXPORT FrameResourceFetcherProperties final
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override;
   int64_t ServiceWorkerId() const override;
   bool IsPaused() const override;
+  WebURLLoader::DeferType DeferType() const override;
   bool IsDetached() const override { return false; }
   bool IsLoadDeferred() const override;
   bool IsLoadComplete() const override;

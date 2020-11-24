@@ -108,7 +108,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
         no_mime_sniffing, std::move(resource_load_info_notifier_wrapper),
         WTF::Unretained(client)));
   }
-  void SetDefersLoading(bool value) override {
+  void SetDefersLoading(DeferType value) override {
     if (url_loader_) {
       url_loader_->SetDefersLoading(value);
       return;

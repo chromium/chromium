@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "url/gurl.h"
 
@@ -141,7 +142,8 @@ class CONTENT_EXPORT ResourceDispatcher {
                       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Toggles the is_deferred attribute for the specified request.
-  virtual void SetDefersLoading(int request_id, bool value);
+  virtual void SetDefersLoading(int request_id,
+                                blink::WebURLLoader::DeferType value);
 
   // Indicates the priority of the specified request changed.
   void DidChangePriority(int request_id,
@@ -194,7 +196,8 @@ class CONTENT_EXPORT ResourceDispatcher {
     std::unique_ptr<blink::WebRequestPeer> peer;
     network::mojom::RequestDestination request_destination;
     int render_frame_id;
-    bool is_deferred = false;
+    blink::WebURLLoader::DeferType is_deferred =
+        blink::WebURLLoader::DeferType::kNotDeferred;
     // Original requested url.
     GURL url;
     // The url, method and referrer of the latest response even in case of

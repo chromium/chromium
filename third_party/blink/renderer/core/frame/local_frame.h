@@ -722,6 +722,7 @@ class CORE_EXPORT LocalFrame final
   PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
   void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
 
+  WebURLLoader::DeferType GetLoadDeferType();
   bool IsLoadDeferred();
 
  private:

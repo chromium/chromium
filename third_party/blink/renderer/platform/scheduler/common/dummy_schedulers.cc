@@ -154,6 +154,7 @@ class DummyPageScheduler : public PageScheduler {
   bool OptedOutFromAggressiveThrottlingForTest() const override {
     return false;
   }
+  bool IsInBackForwardCache() const override { return false; }
   bool RequestBeginMainFrameNotExpected(bool) override { return false; }
   WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
       const String& name,

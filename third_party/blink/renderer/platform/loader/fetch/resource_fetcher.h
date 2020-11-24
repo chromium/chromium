@@ -34,6 +34,7 @@
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/preload_key.h"
@@ -63,7 +64,6 @@ class ResourceLoadObserver;
 class ResourceTimingInfo;
 class SubresourceWebBundle;
 class WebCodeCacheLoader;
-class WebURLLoader;
 struct ResourceFetcherInit;
 struct ResourceLoaderOptions;
 
@@ -218,7 +218,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
-  void SetDefersLoading(bool);
+  void SetDefersLoading(WebURLLoader::DeferType);
   void StopFetching();
 
   bool ShouldDeferImageLoad(const KURL&) const;

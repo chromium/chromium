@@ -65,7 +65,7 @@ class InternetDisconnectedWebURLLoader final : public WebURLLoader {
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       WebURLLoaderClient* client) override;
-  void SetDefersLoading(bool defers) override;
+  void SetDefersLoading(DeferType defers) override;
   void DidChangePriority(WebURLRequest::Priority, int) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override;

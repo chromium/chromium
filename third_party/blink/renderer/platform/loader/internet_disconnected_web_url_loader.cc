@@ -76,7 +76,7 @@ void InternetDisconnectedWebURLLoader::LoadAsynchronously(
           WebURLError(net::ERR_INTERNET_DISCONNECTED, KURL(request->url))));
 }
 
-void InternetDisconnectedWebURLLoader::SetDefersLoading(bool defers) {}
+void InternetDisconnectedWebURLLoader::SetDefersLoading(DeferType defers) {}
 
 void InternetDisconnectedWebURLLoader::DidChangePriority(
     WebURLRequest::Priority,

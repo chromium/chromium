@@ -152,7 +152,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
 
   void ApplySandboxFlags(network::mojom::blink::WebSandboxFlags mask);
 
-  void SetDefersLoadingForResourceFetchers(bool defers);
+  void SetDefersLoadingForResourceFetchers(WebURLLoader::DeferType defers);
 
   virtual int GetOutstandingThrottledLimit() const;
 

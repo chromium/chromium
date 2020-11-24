@@ -267,20 +267,18 @@ URLLoaderClientImpl::URLLoaderClientImpl(
 
 URLLoaderClientImpl::~URLLoaderClientImpl() = default;
 
-void URLLoaderClientImpl::SetDefersLoading() {
-  is_deferred_ = true;
-}
-
-void URLLoaderClientImpl::UnsetDefersLoading() {
-  is_deferred_ = false;
-
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&URLLoaderClientImpl::FlushDeferredMessages,
-                                weak_factory_.GetWeakPtr()));
+void URLLoaderClientImpl::SetDefersLoading(
+    blink::WebURLLoader::DeferType value) {
+  deferred_state_ = value;
+  if (value == blink::WebURLLoader::DeferType::kNotDeferred) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&URLLoaderClientImpl::FlushDeferredMessages,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void URLLoaderClientImpl::FlushDeferredMessages() {
-  if (is_deferred_)
+  if (deferred_state_ != blink::WebURLLoader::DeferType::kNotDeferred)
     return;
   std::vector<std::unique_ptr<DeferredMessage>> messages;
   messages.swap(deferred_messages_);
@@ -302,7 +300,7 @@ void URLLoaderClientImpl::FlushDeferredMessages() {
     messages[index]->HandleMessage(resource_dispatcher_, request_id_);
     if (!weak_this)
       return;
-    if (is_deferred_) {
+    if (deferred_state_ != blink::WebURLLoader::DeferType::kNotDeferred) {
       deferred_messages_.insert(
           deferred_messages_.begin(),
           std::make_move_iterator(messages.begin()) + index + 1,
@@ -319,7 +317,7 @@ void URLLoaderClientImpl::FlushDeferredMessages() {
                                                 transfer_size_diff);
     if (!weak_this)
       return;
-    if (is_deferred_) {
+    if (deferred_state_ != blink::WebURLLoader::DeferType::kNotDeferred) {
       if (has_completion_message) {
         DCHECK_GT(messages.size(), 0u);
         DCHECK(messages.back()->IsCompletionMessage());
@@ -492,14 +490,15 @@ void URLLoaderClientImpl::OnComplete(
 }
 
 bool URLLoaderClientImpl::NeedsStoringMessage() const {
-  return is_deferred_ || deferred_messages_.size() > 0 ||
+  return deferred_state_ != blink::WebURLLoader::DeferType::kNotDeferred ||
+         deferred_messages_.size() > 0 ||
          accumulated_transfer_size_diff_during_deferred_ > 0;
 }
 
 void URLLoaderClientImpl::StoreAndDispatch(
     std::unique_ptr<DeferredMessage> message) {
   DCHECK(NeedsStoringMessage());
-  if (is_deferred_) {
+  if (deferred_state_ != blink::WebURLLoader::DeferType::kNotDeferred) {
     deferred_messages_.push_back(std::move(message));
   } else if (deferred_messages_.size() > 0 ||
              accumulated_transfer_size_diff_during_deferred_ > 0) {

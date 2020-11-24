@@ -106,7 +106,7 @@ class CONTENT_EXPORT NavigationBodyLoader
           resource_load_info_notifier_wrapper);
 
   // blink::WebNavigationBodyLoader
-  void SetDefersLoading(bool defers) override;
+  void SetDefersLoading(blink::WebURLLoader::DeferType defers) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client* client,
                         bool use_isolated_code_cache) override;
 
@@ -172,7 +172,8 @@ class CONTENT_EXPORT NavigationBodyLoader
 
   // Deferred body loader does not send any notifications to the client
   // and tries not to read from the body pipe.
-  bool is_deferred_ = false;
+  blink::WebURLLoader::DeferType defer_type_ =
+      blink::WebURLLoader::DeferType::kNotDeferred;
 
   // This protects against reentrancy into OnReadable,
   // which can happen due to nested message loop triggered

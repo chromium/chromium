@@ -762,7 +762,7 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
 
 bool MainThreadSchedulerImpl::IsIpcTrackingEnabledForAllPages() {
   for (auto* scheduler : main_thread_only().page_schedulers) {
-    if (!(scheduler->is_stored_in_back_forward_cache() &&
+    if (!(scheduler->IsInBackForwardCache() &&
           scheduler->has_ipc_detection_enabled())) {
       return false;
     }

@@ -1220,7 +1220,7 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
 }
 
 void FrameSchedulerImpl::SetOnIPCTaskPostedWhileInBackForwardCacheHandler() {
-  DCHECK(parent_page_scheduler_->is_stored_in_back_forward_cache());
+  DCHECK(parent_page_scheduler_->IsInBackForwardCache());
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
     task_queue_and_voter.first->SetOnIPCTaskPosted(base::BindRepeating(
@@ -1270,7 +1270,7 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
         ipc_interface_name);
   }
 
-  DCHECK(parent_page_scheduler_->is_stored_in_back_forward_cache());
+  DCHECK(parent_page_scheduler_->IsInBackForwardCache());
   base::UmaHistogramSparse(
       "BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame."
       "MethodHash",

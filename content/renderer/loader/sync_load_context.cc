@@ -173,7 +173,8 @@ bool SyncLoadContext::OnReceivedRedirect(
   response_->head = std::move(head);
   response_->redirect_info = redirect_info;
   *context_for_redirect_ = this;
-  resource_dispatcher_->SetDefersLoading(request_id_, true);
+  resource_dispatcher_->SetDefersLoading(
+      request_id_, blink::WebURLLoader::DeferType::kDeferred);
   signals_->SignalRedirectOrResponseComplete();
   return true;
 }
@@ -187,7 +188,8 @@ void SyncLoadContext::FollowRedirect() {
   response_->redirect_info = net::RedirectInfo();
   *context_for_redirect_ = nullptr;
 
-  resource_dispatcher_->SetDefersLoading(request_id_, false);
+  resource_dispatcher_->SetDefersLoading(
+      request_id_, blink::WebURLLoader::DeferType::kNotDeferred);
 }
 
 void SyncLoadContext::CancelRedirect() {

@@ -33,7 +33,8 @@ void StaticDataNavigationBodyLoader::Finish() {
   Continue();
 }
 
-void StaticDataNavigationBodyLoader::SetDefersLoading(bool defers) {
+void StaticDataNavigationBodyLoader::SetDefersLoading(
+    WebURLLoader::DeferType defers) {
   defers_loading_ = defers;
   Continue();
 }
@@ -47,7 +48,8 @@ void StaticDataNavigationBodyLoader::StartLoadingBody(
 }
 
 void StaticDataNavigationBodyLoader::Continue() {
-  if (defers_loading_ || !client_ || is_in_continue_)
+  if (defers_loading_ != WebURLLoader::DeferType::kNotDeferred || !client_ ||
+      is_in_continue_)
     return;
 
   // We don't want reentrancy in this method -
@@ -72,7 +74,7 @@ void StaticDataNavigationBodyLoader::Continue() {
           return;
       }
 
-      if (defers_loading_) {
+      if (defers_loading_ != WebURLLoader::DeferType::kNotDeferred) {
         is_in_continue_ = false;
         return;
       }

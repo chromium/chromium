@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -243,6 +244,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) = 0;
 
   bool IsContextPaused() const;
+  WebURLLoader::DeferType DeferType() const;
   bool IsContextDestroyed() const { return is_context_destroyed_; }
   mojom::FrameLifecycleState ContextPauseState() const {
     return lifecycle_state_;

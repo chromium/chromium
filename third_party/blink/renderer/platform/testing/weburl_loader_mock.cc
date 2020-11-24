@@ -135,10 +135,10 @@ void WebURLLoaderMock::Cancel() {
   factory_->CancelLoad(this);
 }
 
-void WebURLLoaderMock::SetDefersLoading(bool deferred) {
-  is_deferred_ = deferred;
+void WebURLLoaderMock::SetDefersLoading(DeferType deferred) {
+  is_deferred_ = (deferred != DeferType::kNotDeferred);
   // Ignores setDefersLoading(false) safely.
-  if (!deferred)
+  if (!is_deferred_)
     return;
 
   // setDefersLoading(true) is not implemented.

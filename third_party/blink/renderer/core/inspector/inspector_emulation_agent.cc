@@ -433,7 +433,7 @@ void InspectorEmulationAgent::ApplyVirtualTimePolicy(
         WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
                   WrapWeakPersistent(this)));
     for (DocumentLoader* loader : pending_document_loaders_)
-      loader->SetDefersLoading(false);
+      loader->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
     pending_document_loaders_.clear();
   }
   if (new_policy.max_virtual_time_task_starvation_count) {
@@ -678,7 +678,7 @@ void InspectorEmulationAgent::WillCommitLoad(LocalFrame*,
       protocol::Emulation::VirtualTimePolicyEnum::Pause) {
     return;
   }
-  loader->SetDefersLoading(true);
+  loader->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
   pending_document_loaders_.push_back(loader);
 }
 

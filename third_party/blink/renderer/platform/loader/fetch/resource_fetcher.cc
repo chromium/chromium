@@ -2072,7 +2072,7 @@ void ResourceFetcher::StopFetching() {
   StopFetchingInternal(StopFetchingTarget::kExcludingKeepaliveLoaders);
 }
 
-void ResourceFetcher::SetDefersLoading(bool defers) {
+void ResourceFetcher::SetDefersLoading(WebURLLoader::DeferType defers) {
   for (const auto& loader : non_blocking_loaders_)
     loader->SetDefersLoading(defers);
   for (const auto& loader : loaders_)

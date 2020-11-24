@@ -1057,7 +1057,7 @@ void DocumentLoader::StopLoading() {
     LoadFailed(ResourceError::CancelledError(Url()));
 }
 
-void DocumentLoader::SetDefersLoading(bool defers) {
+void DocumentLoader::SetDefersLoading(WebURLLoader::DeferType defers) {
   defers_loading_ = defers;
   if (body_loader_)
     body_loader_->SetDefersLoading(defers);
@@ -1257,8 +1257,7 @@ void DocumentLoader::StartLoadingInternal() {
 
   InitializePrefetchedSignedExchangeManager();
 
-  if (defers_loading_)
-    body_loader_->SetDefersLoading(true);
+  body_loader_->SetDefersLoading(defers_loading_);
 }
 
 void DocumentLoader::StartLoadingResponse() {

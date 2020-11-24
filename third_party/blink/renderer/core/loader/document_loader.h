@@ -205,7 +205,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       bool has_event,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
 
-  void SetDefersLoading(bool defers);
+  void SetDefersLoading(WebURLLoader::DeferType defers);
 
   DocumentLoadTiming& GetTiming() { return document_load_timing_; }
 
@@ -518,7 +518,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   scoped_refptr<SharedBuffer> data_buffer_;
   const base::UnguessableToken devtools_navigation_token_;
 
-  bool defers_loading_ = false;
+  WebURLLoader::DeferType defers_loading_ =
+      WebURLLoader::DeferType::kNotDeferred;
 
   // Whether this load request comes with a sitcky user activation.
   const bool had_sticky_activation_ = false;
