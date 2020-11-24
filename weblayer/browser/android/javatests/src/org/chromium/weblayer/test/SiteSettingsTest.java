@@ -79,6 +79,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(84)
+    @DisabledTest(message = "TODO(crbug.com/1150676): Fix flakiness.")
     public void testSingleSiteSoundPopupLaunches() throws InterruptedException {
         mSiteSettingsTestRule.launchSingleSiteSettingsWithProfile(PROFILE_NAME, GOOGLE_URL);
 
@@ -90,6 +91,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(84)
+    @DisabledTest(message = "TODO(crbug.com/1150676): Fix flakiness.")
     public void testSingleSiteClearPopupLaunches() throws InterruptedException {
         mSiteSettingsTestRule.launchSingleSiteSettingsWithProfile(PROFILE_NAME, GOOGLE_URL);
 
