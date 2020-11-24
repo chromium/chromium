@@ -73,7 +73,7 @@ bool operator==(const CompromisedCredentials& lhs,
 }
 
 void CompromisedCredentialsTable::Init(sql::Database* db) {
-    db_ = db;
+  db_ = db;
 }
 
 bool CompromisedCredentialsTable::CreateTableIfNecessary() {

@@ -33,6 +33,7 @@ using TableRow = std::vector<ColumnValue>;
 void CheckTableContent(sql::Database& db,
                        const char table_name[],
                        const std::vector<TableRow>& expected_rows) {
+  SCOPED_TRACE(testing::Message() << "table_name = " << table_name);
   sql::Statement table_check(db.GetUniqueStatement(
       base::StringPrintf("SELECT * FROM %s", table_name).c_str()));
   for (const TableRow& row : expected_rows) {
@@ -53,7 +54,9 @@ void CheckTableContent(sql::Database& db,
 
 class SQLTableBuilderTest : public testing::Test {
  public:
-  SQLTableBuilderTest() : builder_(kMyLoginTable) { Init(); }
+  SQLTableBuilderTest() : builder_(kMyLoginTable), child_builder_(kChildTable) {
+    Init();
+  }
 
   ~SQLTableBuilderTest() override = default;
 
@@ -69,6 +72,7 @@ class SQLTableBuilderTest : public testing::Test {
   sql::Database* db() { return &db_; }
 
   SQLTableBuilder* builder() { return &builder_; }
+  SQLTableBuilder* child_builder() { return &child_builder_; }
 
  private:
   // Part of constructor, needs to be a void-returning function to use ASSERTs.
@@ -80,6 +84,7 @@ class SQLTableBuilderTest : public testing::Test {
 
   sql::Database db_;
   SQLTableBuilder builder_;
+  SQLTableBuilder child_builder_;
 };
 
 bool SQLTableBuilderTest::IsColumnOfType(const std::string& name,
@@ -93,12 +98,11 @@ void SQLTableBuilderTest::SetupChildTable() {
   EXPECT_EQ(0u, builder()->SealVersion());
   EXPECT_TRUE(builder()->CreateTable(db()));
 
-  EXPECT_TRUE(
-      db()->Execute(base::StringPrintf("CREATE TABLE %s (name TEXT, "
-                                       "parent_id INTEGER REFERENCES %s ON "
-                                       "UPDATE CASCADE ON DELETE CASCADE)",
-                                       kChildTable, kMyLoginTable)
-                        .c_str()));
+  child_builder_.AddColumn("name", "TEXT");
+  child_builder_.AddColumnToUniqueKey("parent_id", "INTEGER",
+                                      /*parent_table=*/kMyLoginTable);
+  EXPECT_EQ(0u, child_builder_.SealVersion());
+  EXPECT_TRUE(child_builder_.CreateTable(db()));
 }
 
 void SQLTableBuilderTest::Init() {
@@ -493,6 +497,81 @@ TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_PreventMigration) {
   // The migration doesn't succeed because foreign key doesn't allow referenced
   // entries to be merged.
   EXPECT_FALSE(builder()->MigrateFrom(1, db()));
+}
+
+TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_ChildTable_AddColumn) {
+  SetupChildTable();
+  EXPECT_TRUE(db()->Execute(
+      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
+                         kMyLoginTable)
+          .c_str()));
+  EXPECT_TRUE(db()->Execute(
+      base::StringPrintf(
+          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
+          .c_str()));
+
+  child_builder()->AddColumn("new_column", "TEXT");
+  EXPECT_EQ(1u, child_builder()->SealVersion());
+  EXPECT_TRUE(child_builder()->MigrateFrom(0, db()));
+
+  EXPECT_TRUE(db()->Execute(
+      base::StringPrintf("UPDATE %s SET new_column='value' WHERE parent_id=1",
+                         kChildTable)
+          .c_str()));
+
+  CheckTableContent(*db(), kChildTable, {{"Abc Co.", 1, "value"}});
+  CheckTableContent(*db(), kMyLoginTable, {{"abc.com", 1}});
+
+  // The foreign key still works.
+  EXPECT_FALSE(db()->Execute(
+      "INSERT INTO child_table (name, parent_id) VALUES ('Co.', 15)"));
+}
+
+TEST_F(SQLTableBuilderTest,
+       MigrateFrom_WithForeignKey_ChildTable_RenameColumn) {
+  SetupChildTable();
+  EXPECT_TRUE(db()->Execute(
+      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
+                         kMyLoginTable)
+          .c_str()));
+  EXPECT_TRUE(db()->Execute(
+      base::StringPrintf(
+          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
+          .c_str()));
+
+  child_builder()->RenameColumn("name", "new_name");
+  EXPECT_EQ(1u, child_builder()->SealVersion());
+  EXPECT_TRUE(child_builder()->MigrateFrom(0, db()));
+
+  CheckTableContent(*db(), kChildTable, {{"Abc Co.", 1}});
+  CheckTableContent(*db(), kMyLoginTable, {{"abc.com", 1}});
+
+  // The foreign key still works.
+  EXPECT_FALSE(db()->Execute(
+      "INSERT INTO child_table (new_name, parent_id) VALUES ('Co.', 15)"));
+}
+
+TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_ChildTable_DropColumn) {
+  SetupChildTable();
+  EXPECT_TRUE(db()->Execute(
+      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
+                         kMyLoginTable)
+          .c_str()));
+  EXPECT_TRUE(db()->Execute(
+      base::StringPrintf(
+          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
+          .c_str()));
+
+  child_builder()->DropColumn("name");
+  EXPECT_EQ(1u, child_builder()->SealVersion());
+  EXPECT_TRUE(child_builder()->MigrateFrom(0, db()));
+
+  CheckTableContent(*db(), kChildTable, {{1}});
+  CheckTableContent(*db(), kMyLoginTable, {{"abc.com", 1}});
+
+  // The foreign key still works.
+  EXPECT_FALSE(
+      db()->Execute("INSERT INTO child_table (parent_id) VALUES (15)"));
 }
 
 }  // namespace
