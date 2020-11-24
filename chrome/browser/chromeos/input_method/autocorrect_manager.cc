@@ -22,7 +22,8 @@ namespace {
 enum class AutocorrectActions {
   kWindowShown = 0,
   kUnderlined = 1,
-  kMaxValue = kUnderlined,
+  kReverted = 2,
+  kMaxValue = kReverted,
 };
 
 void LogAssistiveAutocorrectAction(AutocorrectActions action) {
@@ -176,6 +177,7 @@ void AutocorrectManager::UndoAutocorrect() {
       (base::UTF16ToUTF8(
            surrounding_text.surrounding_text.substr(0, range.start())) +
        original_text_));
+  LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
 }
 
 }  // namespace chromeos
