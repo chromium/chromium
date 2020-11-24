@@ -166,9 +166,11 @@ gfx::Size NewTabButton::CalculatePreferredSize() const {
 bool NewTabButton::GetHitTestMask(SkPath* mask) const {
   DCHECK(mask);
 
+  gfx::Point origin = GetContentsBounds().origin();
+  if (base::i18n::IsRTL())
+    origin.set_x(GetInsets().right());
   const float scale = GetWidget()->GetCompositor()->device_scale_factor();
-  // TODO(pkasting): Fitts' Law horizontally when appropriate.
-  SkPath border = GetBorderPath(GetContentsBounds().origin(), scale,
+  SkPath border = GetBorderPath(origin, scale,
                                 tab_strip_->controller()->IsFrameCondensed());
   mask->addPath(border, SkMatrix::Scale(1 / scale, 1 / scale));
   return true;
