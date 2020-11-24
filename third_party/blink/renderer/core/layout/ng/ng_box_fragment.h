@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -67,6 +66,15 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     const NGPhysicalBoxFragment& physical_box_fragment =
         To<NGPhysicalBoxFragment>(physical_fragment_);
     return physical_box_fragment.Padding().ConvertToLogical(writing_direction_);
+  }
+
+  bool HasDescendantsForTableCell() const {
+    const NGPhysicalBoxFragment& box_fragment =
+        To<NGPhysicalBoxFragment>(physical_fragment_);
+    DCHECK(box_fragment.IsTableNGCell());
+    return !box_fragment.Children().empty() ||
+           box_fragment.HasOutOfFlowPositionedFragmentainerDescendants() ||
+           box_fragment.HasOutOfFlowPositionedDescendants();
   }
 };
 

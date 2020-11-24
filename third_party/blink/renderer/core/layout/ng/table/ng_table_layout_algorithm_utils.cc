@@ -568,7 +568,8 @@ void NGRowBaselineTabulator::ProcessCell(
     const bool is_baseline_aligned,
     const bool is_parallel,
     const bool descendant_depends_on_percentage_block_size) {
-  if (is_parallel && is_baseline_aligned) {
+  if (is_parallel && is_baseline_aligned &&
+      fragment.HasDescendantsForTableCell()) {
     max_cell_baseline_depends_on_percentage_block_descendant_ |=
         descendant_depends_on_percentage_block_size;
     const LayoutUnit cell_baseline = fragment.FirstBaselineOrSynthesize();
