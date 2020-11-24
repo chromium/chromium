@@ -14,7 +14,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
-import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
 import org.chromium.components.autofill.EditableOption;
@@ -37,7 +36,6 @@ import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
-import org.chromium.components.payments.Section;
 import org.chromium.components.payments.SkipToGPayHelper;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -220,7 +218,7 @@ public class ChromePaymentRequestService
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onAppListReady(
-                    mPaymentUiService.getPaymentMethodsSection().getItems(), total);
+                    mPaymentUiService.getPaymentApps(), total);
         }
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
@@ -262,7 +260,7 @@ public class ChromePaymentRequestService
         // If we are skipping showing the Payment Request UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
         if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)) {
-            assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
+            assert !mPaymentUiService.getPaymentApps().isEmpty();
             assert mPaymentUiService.getPaymentRequestUI() != null;
 
             if (isMinimalUiApplicable(isUserGestureShow)) {
@@ -282,9 +280,8 @@ public class ChromePaymentRequestService
                 }
             }
 
-            assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
-            PaymentApp selectedApp =
-                    (PaymentApp) mPaymentUiService.getPaymentMethodsSection().getSelectedItem();
+            assert !mPaymentUiService.getPaymentApps().isEmpty();
+            PaymentApp selectedApp = (PaymentApp) mPaymentUiService.getSelectedPaymentApp();
             dimBackgroundIfNotBottomSheetPaymentHandler(selectedApp);
             mDidRecordShowEvent = true;
             mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
@@ -304,13 +301,12 @@ public class ChromePaymentRequestService
      * @return Whether the minimal UI should be shown.
      */
     private boolean isMinimalUiApplicable(boolean isUserGestureShow) {
-        if (!isUserGestureShow || mPaymentUiService.getPaymentMethodsSection() == null
-                || mPaymentUiService.getPaymentMethodsSection().getSize() != 1) {
+        if (!isUserGestureShow || mPaymentUiService.getPaymentApps().isEmpty()
+                || mPaymentUiService.getPaymentApps().size() != 1) {
             return false;
         }
 
-        PaymentApp app =
-                (PaymentApp) mPaymentUiService.getPaymentMethodsSection().getSelectedItem();
+        PaymentApp app = (PaymentApp) mPaymentUiService.getSelectedPaymentApp();
         if (app == null || !app.isReadyForMinimalUI() || TextUtils.isEmpty(app.accountBalance())) {
             return false;
         }
@@ -610,25 +606,10 @@ public class ChromePaymentRequestService
             }
         }
 
-        mPaymentUiService.rankPaymentAppsForPaymentRequestUI(pendingApps);
-
-        // Possibly pre-select the first app on the list.
-        int selection = !pendingApps.isEmpty() && pendingApps.get(0).canPreselect()
-                ? 0
-                : SectionInformation.NO_SELECTION;
-
-        // The list of payment apps is ready to display.
-        mPaymentUiService.setPaymentMethodsSection(
-                new SectionInformation(PaymentRequestUI.DataType.PAYMENT_METHODS, selection,
-                        new ArrayList<>(pendingApps)));
-
-        // Record the number suggested payment methods and whether at least one of them was
-        // complete.
-        mJourneyLogger.setNumberOfSuggestionsShown(Section.PAYMENT_METHOD, pendingApps.size(),
-                !pendingApps.isEmpty() && pendingApps.get(0).isComplete());
+        mPaymentUiService.setPaymentApps(pendingApps);
 
         int missingFields = 0;
-        if (pendingApps.isEmpty()) {
+        if (mPaymentUiService.getPaymentApps().isEmpty()) {
             if (mPaymentUiService.merchantSupportsAutofillCards()) {
                 // Record all fields if basic-card is supported but no card exists.
                 missingFields = AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_EXPIRED
@@ -636,15 +617,16 @@ public class ChromePaymentRequestService
                         | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_NUMBER
                         | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_BILLING_ADDRESS;
             }
-        } else if (pendingApps.get(0).isAutofillInstrument()) {
-            missingFields = ((AutofillPaymentInstrument) (pendingApps.get(0))).getMissingFields();
+        } else {
+            PaymentApp firstApp = (PaymentApp) mPaymentUiService.getPaymentApps().get(0);
+            if (firstApp.isAutofillInstrument()) {
+                missingFields = ((AutofillPaymentInstrument) (firstApp)).getMissingFields();
+            }
         }
         if (missingFields != 0) {
             RecordHistogram.recordSparseHistogram(
                     "PaymentRequest.MissingPaymentFields", missingFields);
         }
-
-        mPaymentUiService.updateAppModifiedTotals();
 
         SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(mPaymentUiService);
     }
@@ -665,8 +647,7 @@ public class ChromePaymentRequestService
     @Override
     public void onInstrumentDetailsReady() {
         // If the payment method was an Autofill credit card with an identifier, record its use.
-        PaymentApp selectedPaymentMethod =
-                (PaymentApp) mPaymentUiService.getPaymentMethodsSection().getSelectedItem();
+        PaymentApp selectedPaymentMethod = (PaymentApp) mPaymentUiService.getSelectedPaymentApp();
         if (selectedPaymentMethod != null
                 && selectedPaymentMethod.getPaymentAppType() == PaymentAppType.AUTOFILL
                 && !selectedPaymentMethod.getIdentifier().isEmpty()) {

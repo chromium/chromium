@@ -344,14 +344,42 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return mMerchantSupportsAutofillCards;
     }
 
-    /** @return Get the PaymentMethodsSection of the PaymentRequest UI. */
-    public SectionInformation getPaymentMethodsSection() {
-        return mPaymentMethodsSection;
+    /** @return Get the payment apps of the PaymentRequest UI. */
+    public List<EditableOption> getPaymentApps() {
+        return mPaymentMethodsSection.getItems();
     }
 
-    /** Set the PaymentMethodsSection of the PaymentRequest UI. */
-    public void setPaymentMethodsSection(SectionInformation paymentMethodsSection) {
-        mPaymentMethodsSection = paymentMethodsSection;
+    /**
+     * Returns the selected payment app, if any.
+     * @return The selected payment app or null if none selected.
+     */
+    @Nullable
+    public EditableOption getSelectedPaymentApp() {
+        return mPaymentMethodsSection.getSelectedItem();
+    }
+
+    /**
+     * Loads the payment apps into the app selector UI (aka, PaymentRequest UI).
+     * @param apps The payment apps to be loaded into the app selector UI.
+     */
+    public void setPaymentApps(List<PaymentApp> apps) {
+        Collections.sort(apps, mPaymentAppComparator);
+        // Possibly pre-select the first app on the list.
+        int selection =
+                !apps.isEmpty() && apps.get(0).canPreselect() ? 0 : SectionInformation.NO_SELECTION;
+
+        // The list of payment apps is ready to display.
+        mPaymentMethodsSection = new SectionInformation(
+                PaymentRequestUI.DataType.PAYMENT_METHODS, selection, new ArrayList<>(apps));
+
+        // Record the number suggested payment methods and whether at least one of them was
+        // complete.
+        // TODO(crbug.com/1152498): move this into PaymentRequestService because the WebLayer
+        // payment request needs to record this as well.
+        mJourneyLogger.setNumberOfSuggestionsShown(
+                Section.PAYMENT_METHOD, apps.size(), !apps.isEmpty() && apps.get(0).isComplete());
+
+        updateAppModifiedTotals();
     }
 
     /** Get the ShippingAddressesSection of the PaymentRequest UI. */
@@ -1256,14 +1284,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
         mShippingAddressesSection = new SectionInformation(
                 PaymentRequestUI.DataType.SHIPPING_ADDRESSES, firstCompleteAddressIndex, addresses);
-    }
-
-    /**
-     * Rank the payment apps for PaymentRequest UI.
-     * @param paymentApps A list of payment apps to be ranked in place.
-     */
-    public void rankPaymentAppsForPaymentRequestUI(List<PaymentApp> paymentApps) {
-        Collections.sort(paymentApps, mPaymentAppComparator);
     }
 
     /**
