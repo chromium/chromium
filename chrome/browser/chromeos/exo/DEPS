@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "chrome_file_helper\.cc": [
+    "+ash/wm/window_util.h",
+  ],
+  "chrome_file_helper_unittest\.cc": [
+    "+ash/wm/window_util.h",
+  ],
+}
