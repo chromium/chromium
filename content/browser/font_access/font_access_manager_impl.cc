@@ -32,7 +32,6 @@ FontAccessManagerImpl::~FontAccessManagerImpl() {
 void FontAccessManagerImpl::BindReceiver(
     const BindingContext& context,
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   receivers_.Add(this, std::move(receiver), context);
@@ -40,6 +39,7 @@ void FontAccessManagerImpl::BindReceiver(
 
 void FontAccessManagerImpl::EnumerateLocalFonts(
     EnumerateLocalFontsCallback callback) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

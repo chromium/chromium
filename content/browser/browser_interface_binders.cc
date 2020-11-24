@@ -538,10 +538,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::FeatureObserver>(base::BindRepeating(
       &RenderFrameHostImpl::GetFeatureObserver, base::Unretained(host)));
 
-  if (base::FeatureList::IsEnabled(blink::features::kFontAccess)) {
-    map->Add<blink::mojom::FontAccessManager>(base::BindRepeating(
-        &RenderFrameHostImpl::GetFontAccessManager, base::Unretained(host)));
-  }
+  map->Add<blink::mojom::FontAccessManager>(base::BindRepeating(
+      &RenderFrameHostImpl::GetFontAccessManager, base::Unretained(host)));
 
   map->Add<blink::mojom::FileSystemManager>(base::BindRepeating(
       &RenderFrameHostImpl::GetFileSystemManager, base::Unretained(host)));
