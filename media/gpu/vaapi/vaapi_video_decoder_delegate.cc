@@ -75,6 +75,7 @@ bool VaapiVideoDecoderDelegate::SetDecryptConfig(
 VaapiVideoDecoderDelegate::ProtectedSessionState
 VaapiVideoDecoderDelegate::SetupDecryptDecode(
     bool full_sample,
+    size_t size,
     VAEncryptionParameters* crypto_params,
     std::vector<VAEncryptionSegmentInfo>* segments,
     const std::vector<SubsampleEntry>& subsamples) {
@@ -105,6 +106,25 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
   }
 
   DCHECK_EQ(protected_session_state_, ProtectedSessionState::kCreated);
+
+  if (decrypt_config_->encryption_scheme() == EncryptionScheme::kCenc) {
+    crypto_params->encryption_type =
+        full_sample_ ? VA_ENCRYPTION_TYPE_CENC_CTR : VA_ENCRYPTION_TYPE_CTR_128;
+  } else {
+    crypto_params->encryption_type = VA_ENCRYPTION_TYPE_CBC;
+  }
+
+  if (subsamples.empty()) {
+    // We still need to specify the crypto params to the driver for some reason
+    // and indicate the entire content is clear.
+    VAEncryptionSegmentInfo segment_info = {};
+    segment_info.segment_length = segment_info.init_byte_length = size;
+    segments->emplace_back(std::move(segment_info));
+    crypto_params->num_segments = 1;
+    crypto_params->segment_info = &segments->back();
+    return protected_session_state_;
+  }
+
   if (full_sample_ != full_sample) {
     LOG(ERROR) << "Cannot switch between full/subsample mid session";
     protected_session_state_ = ProtectedSessionState::kFailed;
@@ -122,14 +142,6 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     // Don't change our state here because we are created, but we just return
     // kInProcess for now to trigger a wait/retry state.
     return ProtectedSessionState::kInProcess;
-  }
-
-  memset(crypto_params, 0, sizeof(*crypto_params));
-  if (decrypt_config_->encryption_scheme() == EncryptionScheme::kCenc) {
-    crypto_params->encryption_type =
-        full_sample_ ? VA_ENCRYPTION_TYPE_CENC_CTR : VA_ENCRYPTION_TYPE_CTR_128;
-  } else {
-    crypto_params->encryption_type = VA_ENCRYPTION_TYPE_CBC;
   }
 
   crypto_params->num_segments = subsamples.size();

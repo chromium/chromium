@@ -78,12 +78,22 @@ class VaapiVideoDecoderDelegate {
   // encryption or not and must remain consistent for a session. If everything
   // is setup for a protected session, it will fill in the |crypto_params|.
   // |segments| must retain its memory until the frame is submitted.
-  // |subsamples| is for the current slice.
-  VaapiVideoDecoderDelegate::ProtectedSessionState SetupDecryptDecode(
+  // |subsamples| is for the current slice. |size| is the size of the slice
+  // data. This should be called if IsProtectedSession() is true even if the
+  // data is not encrypted (i.e. |subsamples| is empty), and in that case the
+  // |full_sample| parameter is ignored.
+  ProtectedSessionState SetupDecryptDecode(
       bool full_sample,
+      size_t size,
       VAEncryptionParameters* crypto_params,
       std::vector<VAEncryptionSegmentInfo>* segments,
       const std::vector<SubsampleEntry>& subsamples);
+
+  // Returns true if we have established a protected session, in which case
+  // SetupDecryptDecode() should be called for every slice after that.
+  bool IsProtectedSession() const {
+    return protected_session_state_ == ProtectedSessionState::kCreated;
+  }
 
   // Both owned by caller.
   DecodeSurfaceHandler<VASurface>* const vaapi_dec_;

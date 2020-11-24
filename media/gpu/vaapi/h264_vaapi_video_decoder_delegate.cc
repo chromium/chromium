@@ -192,13 +192,14 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media,gpu", "H264VaapiVideoDecoderDelegate::SubmitSlice");
   bool uses_crypto = false;
-  VAEncryptionParameters crypto_params;
-  if (!subsamples.empty() && subsamples[0].cypher_bytes) {
+  VAEncryptionParameters crypto_params = {};
+  if ((!subsamples.empty() && subsamples[0].cypher_bytes) ||
+      IsProtectedSession()) {
     // If there is only one clear byte, then this is CENC v1, full sample
     // encryption (i.e. only the NALU header is unencrypted).
-    ProtectedSessionState state =
-        SetupDecryptDecode(subsamples[0].clear_bytes == 1, &crypto_params,
-                           &encryption_segment_info_, subsamples);
+    ProtectedSessionState state = SetupDecryptDecode(
+        !subsamples.empty() && subsamples[0].clear_bytes == 1, size,
+        &crypto_params, &encryption_segment_info_, subsamples);
     if (state == ProtectedSessionState::kFailed) {
       LOG(ERROR) << "SubmitSlice fails because we couldn't setup the protected "
                     "session";

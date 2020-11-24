@@ -89,8 +89,8 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     if (!decrypt_config->subsamples().empty() &&
         decrypt_config->subsamples()[0].cypher_bytes) {
       ProtectedSessionState state = SetupDecryptDecode(
-          false /* full_sample */, &crypto_param, &encryption_segment_info,
-          decrypt_config->subsamples());
+          false /* full_sample */, frame_hdr->frame_size, &crypto_param,
+          &encryption_segment_info, decrypt_config->subsamples());
       if (state == ProtectedSessionState::kFailed) {
         LOG(ERROR)
             << "SubmitDecode fails because we couldn't setup the protected "
