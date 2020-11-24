@@ -9,6 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -37,6 +38,8 @@ class NET_EXPORT SiteForCookies {
 
   SiteForCookies(const SiteForCookies& other);
   SiteForCookies(SiteForCookies&& other);
+
+  explicit SiteForCookies(const SchemefulSite& schemeful_site);
 
   ~SiteForCookies();
 

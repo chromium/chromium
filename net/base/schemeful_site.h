@@ -28,6 +28,8 @@ struct StructTraits;
 
 namespace net {
 
+class SiteForCookies;
+
 // Class which represents a scheme and etld+1 for an origin, as specified by
 // https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site.
 //
@@ -90,6 +92,9 @@ class NET_EXPORT SchemefulSite {
   // Mojo serialization code needs to access internal origin.
   friend struct mojo::StructTraits<network::mojom::SchemefulSiteDataView,
                                    SchemefulSite>;
+
+  // Create SiteForCookies from SchemefulSite needs to access internal origin.
+  friend class SiteForCookies;
 
   // Needed to serialize opaque and non-transient NetworkIsolationKeys, which
   // use opaque origins.

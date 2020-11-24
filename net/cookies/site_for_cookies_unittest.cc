@@ -403,5 +403,27 @@ TEST(SiteForCookiesTest, SameSchemeOpaque) {
   }
 }
 
+TEST_F(SchemefulSiteForCookiesTest, SchemefulSite) {
+  const char* kTestCases[] = {"opaque.com",
+                              "http://a.com",
+                              "https://sub1.example.com:42/something",
+                              "https://a.com",
+                              "ws://a.com",
+                              "wss://a.com",
+                              "file://a.com",
+                              "file://folder1/folder2/file.txt",
+                              "file:///file.txt"};
+
+  for (std::string url : kTestCases) {
+    url::Origin origin = url::Origin::Create(GURL(url));
+    SiteForCookies from_origin = SiteForCookies::FromOrigin(origin);
+    SchemefulSite schemeful_site = SchemefulSite(origin);
+    SiteForCookies from_schemeful_site = SiteForCookies(schemeful_site);
+
+    EXPECT_TRUE(from_origin.IsEquivalent(from_schemeful_site));
+    EXPECT_TRUE(from_schemeful_site.IsEquivalent(from_origin));
+  }
+}
+
 }  // namespace
 }  // namespace net

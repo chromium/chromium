@@ -139,6 +139,11 @@ bool SiteForCookies::IsNull() const {
   return scheme_.empty();
 }
 
+SiteForCookies::SiteForCookies(const net::SchemefulSite& schemeful_site)
+    : scheme_(schemeful_site.site_as_origin_.scheme()),
+      registrable_domain_(schemeful_site.site_as_origin_.host()),
+      schemefully_same_(!scheme_.empty()) {}
+
 SiteForCookies::SiteForCookies(const std::string& scheme,
                                const std::string& host)
     : scheme_(scheme),
