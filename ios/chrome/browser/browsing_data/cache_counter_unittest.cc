@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -239,9 +240,14 @@ class CacheCounterTest : public PlatformTest {
 };
 
 // Tests that for the empty cache, the result is zero.
-// Disabled because this test randomly crashes on Win 7 Tests x64 (1).
-// See: https://crbug.com/1152289
-TEST_F(CacheCounterTest, DISABLED_Empty) {
+// Disabled on Windows because this test randomly crashes on Win 7 Tests x64
+// (1). See: https://crbug.com/1152289
+#if defined(OS_WIN)
+#define MAYBE_Empty DISABLED_Empty
+#else
+#define MAYBE_Empty Empty
+#endif
+TEST_F(CacheCounterTest, MAYBE_Empty) {
   CacheCounter counter(browser_state());
   counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&CacheCounterTest::CountingCallback,
