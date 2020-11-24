@@ -39,6 +39,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -105,6 +106,12 @@ void OobeBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
   if (!needs_background_networking_)
     command_line->AppendSwitch(::switches::kDisableBackgroundNetworking);
   command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+
+  // Blink features are controlled via a command line switch. Disable HTML
+  // imports which are deprecated. OOBE uses a polyfill for imports that will
+  // be replaced once the migration to JS modules is complete.
+  command_line->AppendSwitchASCII(::switches::kDisableBlinkFeatures,
+                                  "HTMLImports");
 
   MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 }

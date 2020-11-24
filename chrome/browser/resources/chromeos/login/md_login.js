@@ -40,60 +40,61 @@ function ensurePinKeyboardLoaded(onLoaded) {
   setTimeout(onLoaded);
 }
 
-cr.define('cr.ui.Oobe', function() {
-  return {
-    /**
-     * Initializes the OOBE flow.  This will cause all C++ handlers to
-     * be invoked to do final setup.
-     */
-    initialize() {
-      cr.ui.login.DisplayManager.initialize();
-      login.AccountPickerScreen.register();
-      login.AutolaunchScreen.register();
-      login.ErrorMessageScreen.register();
-      login.ArcTermsOfServiceScreen.register();
-      login.DiscoverScreen.register();
-      login.MultiDeviceSetupScreen.register();
+HTMLImports.whenReady(() => {
+  cr.define('cr.ui.Oobe', function() {
+    return {
+      /**
+       * Initializes the OOBE flow.  This will cause all C++ handlers to
+       * be invoked to do final setup.
+       */
+      initialize() {
+        cr.ui.login.DisplayManager.initialize();
+        login.AccountPickerScreen.register();
+        login.AutolaunchScreen.register();
+        login.ErrorMessageScreen.register();
+        login.ArcTermsOfServiceScreen.register();
+        login.DiscoverScreen.register();
+        login.MultiDeviceSetupScreen.register();
 
-      cr.ui.Bubble.decorate($('bubble-persistent'));
-      $('bubble-persistent').persistent = true;
-      $('bubble-persistent').hideOnKeyPress = false;
+        cr.ui.Bubble.decorate($('bubble-persistent'));
+        $('bubble-persistent').persistent = true;
+        $('bubble-persistent').hideOnKeyPress = false;
 
-      cr.ui.Bubble.decorate($('bubble'));
+        cr.ui.Bubble.decorate($('bubble'));
 
-      chrome.send('screenStateInitialize');
-    },
+        chrome.send('screenStateInitialize');
+      },
 
-    // Dummy Oobe functions not present with stripped login UI.
-    refreshA11yInfo(data) {},
-    reloadEulaContent(data) {},
+      // Dummy Oobe functions not present with stripped login UI.
+      refreshA11yInfo(data) {},
+      reloadEulaContent(data) {},
 
-    /**
-     * Reloads content of the page.
-     * @param {!Object} data New dictionary with i18n values.
-     */
-    reloadContent(data) {
-      loadTimeData.overrideValues(data);
-      i18nTemplate.process(document, loadTimeData);
-      Oobe.getInstance().updateLocalizedContent_();
-    },
+      /**
+       * Reloads content of the page.
+       * @param {!Object} data New dictionary with i18n values.
+       */
+      reloadContent(data) {
+        loadTimeData.overrideValues(data);
+        i18nTemplate.process(document, loadTimeData);
+        Oobe.getInstance().updateLocalizedContent_();
+      },
 
-    /**
-     * Updates "device in tablet mode" state when tablet mode is changed.
-     * @param {Boolean} isInTabletMode True when in tablet mode.
-     */
-    setTabletModeState(isInTabletMode) {
-      Oobe.getInstance().setTabletModeState_(isInTabletMode);
-    },
+      /**
+       * Updates "device in tablet mode" state when tablet mode is changed.
+       * @param {Boolean} isInTabletMode True when in tablet mode.
+       */
+      setTabletModeState(isInTabletMode) {
+        Oobe.getInstance().setTabletModeState_(isInTabletMode);
+      },
 
-    /**
-     * Updates OOBE configuration when it is loaded.
-     * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
-     */
-    updateOobeConfiguration(configuration) {
-      Oobe.getInstance().updateOobeConfiguration_(configuration);
-    },
-  };
+      /**
+       * Updates OOBE configuration when it is loaded.
+       * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
+       */
+      updateOobeConfiguration(configuration) {
+        Oobe.getInstance().updateOobeConfiguration_(configuration);
+      },
+    };
+  });
+  // <include src="oobe_initialization.js">
 });
-
-// <include src="oobe_initialization.js">

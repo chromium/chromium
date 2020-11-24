@@ -28,6 +28,11 @@ function initializeOobe() {
     // readyForTesting even on failures, just to make test bots happy.
     Oobe.readyForTesting = true;
   }
+
+  // Mark initialization complete and wake any callers that might be waiting
+  // for OOBE to load.
+  cr.ui.Oobe.initializationComplete = true;
+  cr.ui.Oobe.initCallbacks.forEach(resolvePromise => resolvePromise());
 }
 
 // Install a global error handler so stack traces are included in logs.
@@ -40,11 +45,18 @@ window.onerror = function(message, file, line, column, error) {
 console.warn('1082670 : cr_ui loaded');
 
 /**
- * Final initialization performed after DOM and all scripts have loaded.
+ * Final initialization performed after HTML imports are loaded. Loads
+ * common elements used in OOBE (Custom Elements).
  */
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeOobe);
-} else {
-  initializeOobe();
-}
+HTMLImports.whenReady(() => {
+  // TODO(crbug.com/1111387) - Remove excessive logging.
+  console.warn('HTMLImports ready.');
+  loadCommonComponents();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeOobe);
+  } else {
+    initializeOobe();
+  }
+});
 })();

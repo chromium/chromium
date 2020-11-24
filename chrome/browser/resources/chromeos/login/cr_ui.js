@@ -32,6 +32,28 @@ cr.define('cr.ui', function() {
   };
 
   /**
+   * OOBE initialization coordination. Used by tests to wait for OOBE
+   * to fully load when using the HTLImports polyfill.
+   * TODO(crbug.com/1111387) - Remove once migrated to JS modules.
+   * Remove spammy logging when closer to M89 branch point.
+   */
+  Oobe.initializationComplete = false;
+  Oobe.initCallbacks = [];
+  Oobe.waitForOobeToLoad = function() {
+    return new Promise(function(resolve, reject) {
+      if (cr.ui.Oobe.initializationComplete) {
+        // TODO(crbug.com/1111387) - Remove excessive logging.
+        console.warn('OOBE is already initialized. Continuing...');
+        resolve();
+      } else {
+        // TODO(crbug.com/1111387) - Remove excessive logging.
+        console.warn('OOBE not loaded yet. Waiting...');
+        cr.ui.Oobe.initCallbacks.push(resolve);
+      }
+    });
+  };
+
+  /**
    * Called when focus is returned from ash::SystemTray.
    * @param {boolean} reverse Is focus returned in reverse order?
    */

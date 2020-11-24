@@ -33,79 +33,80 @@
 // <include src="multi_tap_detector.js">
 // <include src="web_view_helper.js">
 
-cr.define('cr.ui.Oobe', function() {
-  return {
-    /**
-     * Initializes the OOBE flow.  This will cause all C++ handlers to
-     * be invoked to do final setup.
-     */
-    initialize() {
-      cr.ui.login.DisplayManager.initialize();
-      login.AutoEnrollmentCheckScreen.register();
-      login.AutolaunchScreen.register();
-      login.AccountPickerScreen.register();
-      login.ErrorMessageScreen.register();
-      login.ArcTermsOfServiceScreen.register();
-      login.DiscoverScreen.register();
-      login.MultiDeviceSetupScreen.register();
+HTMLImports.whenReady(() => {
+  cr.define('cr.ui.Oobe', function() {
+    return {
+      /**
+       * Initializes the OOBE flow.  This will cause all C++ handlers to
+       * be invoked to do final setup.
+       */
+      initialize() {
+        cr.ui.login.DisplayManager.initialize();
+        login.AutoEnrollmentCheckScreen.register();
+        login.AutolaunchScreen.register();
+        login.AccountPickerScreen.register();
+        login.ErrorMessageScreen.register();
+        login.ArcTermsOfServiceScreen.register();
+        login.DiscoverScreen.register();
+        login.MultiDeviceSetupScreen.register();
 
-      cr.ui.Bubble.decorate($('bubble-persistent'));
-      $('bubble-persistent').persistent = true;
-      $('bubble-persistent').hideOnKeyPress = false;
+        cr.ui.Bubble.decorate($('bubble-persistent'));
+        $('bubble-persistent').persistent = true;
+        $('bubble-persistent').hideOnKeyPress = false;
 
-      cr.ui.Bubble.decorate($('bubble'));
+        cr.ui.Bubble.decorate($('bubble'));
 
-      chrome.send('screenStateInitialize');
-    },
+        chrome.send('screenStateInitialize');
+      },
 
-    /**
-     * Reloads content of the page (localized strings, options of the select
-     * controls).
-     * @param {!Object} data New dictionary with i18n values.
-     */
-    reloadContent(data) {
-      // Reload global local strings, process DOM tree again.
-      loadTimeData.overrideValues(data);
-      i18nTemplate.process(document, loadTimeData);
+      /**
+       * Reloads content of the page (localized strings, options of the select
+       * controls).
+       * @param {!Object} data New dictionary with i18n values.
+       */
+      reloadContent(data) {
+        // Reload global local strings, process DOM tree again.
+        loadTimeData.overrideValues(data);
+        i18nTemplate.process(document, loadTimeData);
 
-      // Update localized content of the screens.
-      Oobe.updateLocalizedContent();
-    },
+        // Update localized content of the screens.
+        Oobe.updateLocalizedContent();
+      },
 
-    /**
-     * Updates "device in tablet mode" state when tablet mode is changed.
-     * @param {Boolean} isInTabletMode True when in tablet mode.
-     */
-    setTabletModeState(isInTabletMode) {
-      Oobe.getInstance().setTabletModeState_(isInTabletMode);
-    },
+      /**
+       * Updates "device in tablet mode" state when tablet mode is changed.
+       * @param {Boolean} isInTabletMode True when in tablet mode.
+       */
+      setTabletModeState(isInTabletMode) {
+        Oobe.getInstance().setTabletModeState_(isInTabletMode);
+      },
 
-    /**
-     * Reloads localized strings for the eula page.
-     * @param {!Object} data New dictionary with changed eula i18n values.
-     */
-    reloadEulaContent(data) {
-      loadTimeData.overrideValues(data);
-      i18nTemplate.process(document, loadTimeData);
-    },
+      /**
+       * Reloads localized strings for the eula page.
+       * @param {!Object} data New dictionary with changed eula i18n values.
+       */
+      reloadEulaContent(data) {
+        loadTimeData.overrideValues(data);
+        i18nTemplate.process(document, loadTimeData);
+      },
 
-    /**
-     * Updates localized content of the screens.
-     * Should be executed on language change.
-     */
-    updateLocalizedContent() {
-      // Buttons, headers and links.
-      Oobe.getInstance().updateLocalizedContent_();
-    },
+      /**
+       * Updates localized content of the screens.
+       * Should be executed on language change.
+       */
+      updateLocalizedContent() {
+        // Buttons, headers and links.
+        Oobe.getInstance().updateLocalizedContent_();
+      },
 
-    /**
-     * Updates OOBE configuration when it is loaded.
-     * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
-     */
-    updateOobeConfiguration(configuration) {
-      Oobe.getInstance().updateOobeConfiguration_(configuration);
-    },
-  };
+      /**
+       * Updates OOBE configuration when it is loaded.
+       * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
+       */
+      updateOobeConfiguration(configuration) {
+        Oobe.getInstance().updateOobeConfiguration_(configuration);
+      },
+    };
+  });
+  // <include src="oobe_initialization.js">
 });
-
-// <include src="oobe_initialization.js">
