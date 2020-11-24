@@ -5,6 +5,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/unguessable_token.h"
@@ -381,6 +382,9 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
                 << __func__ << ": Bandwidth upgrade attempted to endpoint "
                 << endpoint_id << "over Nearby Connections with result: "
                 << ConnectionsStatusToString(status);
+            base::UmaHistogramBoolean(
+                "Nearby.Share.Medium.InitiateBandwidthUpgradeResult",
+                status == ConnectionsStatus::kSuccess);
           },
           endpoint_id));
 }
@@ -538,7 +542,8 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
 void NearbyConnectionsManagerImpl::OnBandwidthChanged(
     const std::string& endpoint_id,
     Medium medium) {
-  NS_LOG(VERBOSE) << __func__;
+  NS_LOG(VERBOSE) << __func__ << ": Changed to medium " << medium;
+  base::UmaHistogramEnumeration("Nearby.Share.Medium.ChangedToMedium", medium);
   // TODO(crbug/1111458): Support TransferManager.
 }
 

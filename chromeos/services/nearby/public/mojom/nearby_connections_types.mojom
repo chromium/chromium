@@ -244,15 +244,17 @@ enum BandwidthQuality {
   kHigh,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum Medium {
-  kUnknown,
-  kMdns,
-  kBluetooth,
-  kWifiHotspot,
-  kBle,
-  kWifiLan,
-  kWifiAware,
-  kNfc,
-  kWifiDirect,
-  kWebRtc,
+  kUnknown = 0,
+  kMdns = 1,
+  kBluetooth = 2,
+  kWifiHotspot = 3,
+  kBle = 4,
+  kWifiLan = 5,
+  kWifiAware = 6,
+  kNfc = 7,
+  kWifiDirect = 8,
+  kWebRtc = 9,
 };
