@@ -272,7 +272,7 @@ suite('DiscoveryPageTest', function() {
 
     assertEquals(null, discoveryPageElement.selectedShareTarget);
 
-    // Click on fist share target and expect it to be selected.
+    // Click on first share target and expect it to be selected.
     assertTrue(clickOnDevice(0));
     assertShareTargetsEqual(
         targets[0], discoveryPageElement.selectedShareTarget);
@@ -281,6 +281,16 @@ suite('DiscoveryPageTest', function() {
     assertTrue(clickOnDevice(2));
     assertShareTargetsEqual(
         targets[2], discoveryPageElement.selectedShareTarget);
+
+    const shareTarget = discoveryPageElement.selectedShareTarget;
+    const onConnectionClosedPromise = new Promise(
+        (resolve) => listener.onConnectionError.addListener(resolve));
+    discoveryPageElement.fire('view-exit-finish');
+    await onConnectionClosedPromise;
+
+    // Stopping discovery does not clear selected share target.
+    assertShareTargetsEqual(
+        shareTarget, discoveryPageElement.selectedShareTarget);
   });
 
   test('loosing selected device disables next button', async function() {

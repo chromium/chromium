@@ -233,7 +233,6 @@ Polymer({
       this.shareTargetMap_.clear();
     }
     this.lastSelectedShareTarget_ = null;
-    this.selectedShareTarget = null;
     this.shareTargets_ = [];
   },
 
