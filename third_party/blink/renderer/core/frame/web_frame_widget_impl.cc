@@ -65,7 +65,6 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
-#include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
@@ -89,12 +88,12 @@ namespace blink {
 
 // WebFrameWidget ------------------------------------------------------------
 
-static CreateWebViewFrameWidgetFunction g_create_web_view_frame_widget =
-    nullptr;
+static CreateMainFrameWebFrameWidgetFunction
+    g_create_main_frame_web_frame_widget = nullptr;
 
-void InstallCreateWebViewFrameWidgetHook(
-    CreateWebViewFrameWidgetFunction create_widget) {
-  g_create_web_view_frame_widget = create_widget;
+void InstallCreateMainFrameWebFrameWidgetHook(
+    CreateMainFrameWebFrameWidgetFunction create_widget) {
+  g_create_main_frame_web_frame_widget = create_widget;
 }
 
 WebFrameWidget* WebFrameWidget::CreateForMainFrame(
@@ -116,7 +115,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
   DCHECK(!main_frame->Parent());  // This is the main frame.
 
   // Grabs the WebViewImpl associated with the |main_frame|, which will then
-  // be wrapped by the WebViewFrameWidget, with calls being forwarded to the
+  // be wrapped by the WebFrameWidgetImpl, with calls being forwarded to the
   // |main_frame|'s WebViewImpl.
   // Note: this can't DCHECK that the view's main frame points to
   // |main_frame|, as provisional frames violate this precondition.
@@ -124,26 +123,29 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
   DCHECK(main_frame_impl.ViewImpl());
   WebViewImpl& web_view_impl = *main_frame_impl.ViewImpl();
 
-  WebViewFrameWidget* widget = nullptr;
-  if (g_create_web_view_frame_widget) {
-    widget = g_create_web_view_frame_widget(
-        base::PassKey<WebFrameWidget>(), *client, web_view_impl,
+  WebFrameWidgetImpl* widget = nullptr;
+  if (g_create_main_frame_web_frame_widget) {
+    widget = g_create_main_frame_web_frame_widget(
+        base::PassKey<WebFrameWidget>(), *client,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
         main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-        frame_sink_id, is_for_nested_main_frame, hidden, never_composited);
+        frame_sink_id, hidden, never_composited,
+        /*is_for_child_local_root=*/false, is_for_nested_main_frame);
   } else {
     // Note: this isn't a leak, as the object has a self-reference that the
     // caller needs to release by calling Close().
     // TODO(dcheng): Remove the special bridge class for main frame widgets.
-    widget = MakeGarbageCollected<WebViewFrameWidget>(
-        base::PassKey<WebFrameWidget>(), *client, web_view_impl,
+    widget = MakeGarbageCollected<WebFrameWidgetImpl>(
+        base::PassKey<WebFrameWidget>(), *client,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
         main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-        frame_sink_id, is_for_nested_main_frame, hidden, never_composited);
+        frame_sink_id, hidden, never_composited,
+        /*is_for_child_local_root=*/false, is_for_nested_main_frame);
   }
   widget->BindLocalRoot(*main_frame);
+  web_view_impl.SetMainFrameViewWidget(widget);
   return widget;
 }
 
@@ -175,7 +177,8 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
       std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
       std::move(mojo_widget_host), std::move(mojo_widget),
       local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-      frame_sink_id, hidden, never_composited);
+      frame_sink_id, hidden, never_composited, /*is_for_child_local_root=*/true,
+      /*is_for_nested_main_frame=*/false);
   widget->BindLocalRoot(*local_root);
   return widget;
 }
@@ -194,7 +197,9 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const viz::FrameSinkId& frame_sink_id,
     bool hidden,
-    bool never_composited)
+    bool never_composited,
+    bool is_for_child_local_root,
+    bool is_for_nested_main_frame)
     : WebFrameWidgetBase(client,
                          std::move(frame_widget_host),
                          std::move(frame_widget),
@@ -204,8 +209,8 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
                          frame_sink_id,
                          hidden,
                          never_composited,
-                         /*is_for_child_local_root=*/true,
-                         /*is_for_nested_main_frame=*/false) {}
+                         is_for_child_local_root,
+                         is_for_nested_main_frame) {}
 
 WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;
 

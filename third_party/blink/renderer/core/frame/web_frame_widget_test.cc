@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
-#include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
@@ -52,7 +51,7 @@ class TouchMoveEventListener final : public NativeEventListener {
 class WebFrameWidgetSimTest : public SimTest {};
 
 // Tests that if a WebView is auto-resized, the associated
-// WebViewFrameWidget requests a new viz::LocalSurfaceId to be allocated on the
+// WebFrameWidgetImpl requests a new viz::LocalSurfaceId to be allocated on the
 // impl thread.
 TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
   viz::ParentLocalSurfaceIdAllocator allocator;
@@ -78,8 +77,7 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
                    ->new_local_surface_id_request_for_testing());
 
   constexpr gfx::Size size(200, 200);
-  static_cast<WebViewFrameWidget*>(WebView().MainFrameViewWidget())
-      ->DidAutoResize(size);
+  WebView().MainFrameViewWidget()->DidAutoResize(size);
   EXPECT_EQ(allocator.GetCurrentLocalSurfaceId(),
             WebView().MainFrameViewWidget()->LocalSurfaceIdFromParent());
   EXPECT_TRUE(WebView()
@@ -139,9 +137,8 @@ TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
 }
 #endif  // defined(OS_ANDROID)
 
-// A test that forces a RemoteMainFrame to be created and the LocalFrameRoot
-// to be a WebFrameWidgetImpl.
-class WebFrameWidgetImplSimTest : public SimTest {
+// A test that forces a RemoteMainFrame to be created.
+class WebFrameWidgetImplRemoteFrameSimTest : public SimTest {
  public:
   void SetUp() override {
     SimTest::SetUp();
@@ -158,7 +155,7 @@ class WebFrameWidgetImplSimTest : public SimTest {
 // Tests that the value of VisualProperties::is_pinch_gesture_active is
 // propagated to the LayerTreeHost when properties are synced for child local
 // roots.
-TEST_F(WebFrameWidgetImplSimTest,
+TEST_F(WebFrameWidgetImplRemoteFrameSimTest,
        ActivePinchGestureUpdatesLayerTreeHostSubFrame) {
   cc::LayerTreeHost* layer_tree_host = LocalFrameRootWidget()->LayerTreeHost();
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
@@ -223,11 +220,11 @@ class MockHandledEventCallback {
   DISALLOW_COPY_AND_ASSIGN(MockHandledEventCallback);
 };
 
-class MockWebViewFrameWidget : public WebViewFrameWidget {
+class MockWebFrameWidgetImpl : public WebFrameWidgetImpl {
  public:
   template <typename... Args>
-  explicit MockWebViewFrameWidget(Args&&... args)
-      : WebViewFrameWidget(std::forward<Args>(args)...) {}
+  explicit MockWebFrameWidgetImpl(Args&&... args)
+      : WebFrameWidgetImpl(std::forward<Args>(args)...) {}
 
   MOCK_METHOD1(HandleInputEvent,
                WebInputEventResult(const WebCoalescedInputEvent&));
@@ -242,10 +239,9 @@ class MockWebViewFrameWidget : public WebViewFrameWidget {
   MOCK_METHOD1(WillHandleGestureEvent, bool(const WebGestureEvent& event));
 };
 
-WebViewFrameWidget* CreateWebViewFrameWidget(
+WebFrameWidgetImpl* CreateMainFrameWebFrameWidget(
     base::PassKey<WebFrameWidget> pass_key,
     WebWidgetClient& client,
-    WebViewImpl& web_view_impl,
     CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>
         frame_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::FrameWidgetInterfaceBase>
@@ -255,25 +251,26 @@ WebViewFrameWidget* CreateWebViewFrameWidget(
     CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const viz::FrameSinkId& frame_sink_id,
-    bool is_for_nested_main_frame,
     bool hidden,
-    bool never_composited) {
-  return MakeGarbageCollected<MockWebViewFrameWidget>(
-      pass_key, client, web_view_impl, std::move(frame_widget_host),
-      std::move(frame_widget), std::move(widget_host), std::move(widget),
-      std::move(task_runner), frame_sink_id, is_for_nested_main_frame, hidden,
-      never_composited);
+    bool never_composited,
+    bool is_for_child_local_root,
+    bool is_for_nested_main_frame) {
+  return MakeGarbageCollected<MockWebFrameWidgetImpl>(
+      pass_key, client, std::move(frame_widget_host), std::move(frame_widget),
+      std::move(widget_host), std::move(widget), std::move(task_runner),
+      frame_sink_id, hidden, never_composited, is_for_child_local_root,
+      is_for_nested_main_frame);
 }
 
-class WebViewFrameWidgetSimTest : public SimTest {
+class WebFrameWidgetImplSimTest : public SimTest {
  public:
   void SetUp() override {
-    InstallCreateWebViewFrameWidgetHook(CreateWebViewFrameWidget);
+    InstallCreateMainFrameWebFrameWidgetHook(CreateMainFrameWebFrameWidget);
     SimTest::SetUp();
   }
 
-  MockWebViewFrameWidget* MockMainFrameWidget() {
-    return static_cast<MockWebViewFrameWidget*>(MainFrame().FrameWidget());
+  MockWebFrameWidgetImpl* MockMainFrameWidget() {
+    return static_cast<MockWebFrameWidgetImpl*>(MainFrame().FrameWidget());
   }
 
   void SendInputEvent(const WebInputEvent& event,
@@ -305,7 +302,7 @@ class WebViewFrameWidgetSimTest : public SimTest {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(WebViewFrameWidgetSimTest, CursorChange) {
+TEST_F(WebFrameWidgetImplSimTest, CursorChange) {
   ui::Cursor cursor;
 
   MockMainFrameWidget()->SetCursor(cursor);
@@ -329,10 +326,10 @@ TEST_F(WebViewFrameWidgetSimTest, CursorChange) {
   EXPECT_EQ(WebWidgetClient().CursorSetCount(), 2u);
 }
 
-TEST_F(WebViewFrameWidgetSimTest, EventOverscroll) {
+TEST_F(WebFrameWidgetImplSimTest, EventOverscroll) {
   ON_CALL(*MockMainFrameWidget(), WillHandleGestureEvent(_))
       .WillByDefault(testing::Invoke(
-          this, &WebViewFrameWidgetSimTest::OverscrollGestureEvent));
+          this, &WebFrameWidgetImplSimTest::OverscrollGestureEvent));
   EXPECT_CALL(*MockMainFrameWidget(), HandleInputEvent(_))
       .WillRepeatedly(::testing::Return(WebInputEventResult::kNotHandled));
 
@@ -356,7 +353,7 @@ TEST_F(WebViewFrameWidgetSimTest, EventOverscroll) {
   SendInputEvent(scroll, handled_event.GetCallback());
 }
 
-TEST_F(WebViewFrameWidgetSimTest, RenderWidgetInputEventUmaMetrics) {
+TEST_F(WebFrameWidgetImplSimTest, RenderWidgetInputEventUmaMetrics) {
   SyntheticWebTouchEvent touch;
   touch.PressPoint(10, 10);
   touch.touch_start_or_first_touch_move = true;
@@ -421,7 +418,7 @@ TEST_F(WebViewFrameWidgetSimTest, RenderWidgetInputEventUmaMetrics) {
 
 // Ensures that the compositor thread gets sent the gesture event & overscroll
 // amount for an overscroll initiated by a touchpad.
-TEST_F(WebViewFrameWidgetSimTest, SendElasticOverscrollForTouchpad) {
+TEST_F(WebFrameWidgetImplSimTest, SendElasticOverscrollForTouchpad) {
   WebGestureEvent scroll(WebInputEvent::Type::kGestureScrollUpdate,
                          WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
                          WebGestureDevice::kTouchpad);
@@ -441,7 +438,7 @@ TEST_F(WebViewFrameWidgetSimTest, SendElasticOverscrollForTouchpad) {
 
 // Ensures that the compositor thread gets sent the gesture event & overscroll
 // amount for an overscroll initiated by a touchscreen.
-TEST_F(WebViewFrameWidgetSimTest, SendElasticOverscrollForTouchscreen) {
+TEST_F(WebFrameWidgetImplSimTest, SendElasticOverscrollForTouchscreen) {
   WebGestureEvent scroll(WebInputEvent::Type::kGestureScrollUpdate,
                          WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
                          WebGestureDevice::kTouchscreen);
@@ -478,8 +475,8 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     color_layer->SetBackgroundColor(SK_ColorRED);
   }
 
-  WebViewFrameWidget* FrameWidgetBase() {
-    return static_cast<WebViewFrameWidget*>(MainFrame().FrameWidget());
+  WebFrameWidgetImpl* FrameWidgetBase() {
+    return static_cast<WebFrameWidgetImpl*>(MainFrame().FrameWidget());
   }
 
   // |swap_to_presentation| determines how long after swap should presentation

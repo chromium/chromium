@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -53,12 +54,11 @@ namespace blink {
 class WebFrameWidget;
 class WebFrameWidgetImpl;
 
-// Implements WebFrameWidget for a child local root frame (OOPIF). This object
-// is created in the child renderer and attached to the OOPIF's WebLocalFrame.
+// Implements WebFrameWidget for both main frames and child local root frame
+// (OOPIF). The WebFrameWidgetBase class will eventually be combined with this
+// class.
 //
-// For the main frame's WebFrameWidget implementation, see WebViewFrameWidget.
-//
-class WebFrameWidgetImpl final : public WebFrameWidgetBase {
+class CORE_EXPORT WebFrameWidgetImpl : public WebFrameWidgetBase {
  public:
   WebFrameWidgetImpl(
       base::PassKey<WebFrameWidget>,
@@ -74,12 +74,43 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const viz::FrameSinkId& frame_sink_id,
       bool hidden,
-      bool never_composited);
+      bool never_composited,
+      bool is_for_child_local_root,
+      bool is_for_nested_main_frame);
   ~WebFrameWidgetImpl() override;
 
  private:
   friend class WebFrameWidget;  // For WebFrameWidget::create.
 };
+
+// Convenience type for creation method taken by
+// InstallCreateMainFrameWebFrameWidgetHook(). The method signature matches the
+// WebFrameWidgetImpl constructor.
+using CreateMainFrameWebFrameWidgetFunction =
+    WebFrameWidgetImpl* (*)(base::PassKey<WebFrameWidget>,
+                            WebWidgetClient&,
+                            CrossVariantMojoAssociatedRemote<
+                                mojom::blink::FrameWidgetHostInterfaceBase>
+                                frame_widget_host,
+                            CrossVariantMojoAssociatedReceiver<
+                                mojom::blink::FrameWidgetInterfaceBase>
+                                frame_widget,
+                            CrossVariantMojoAssociatedRemote<
+                                mojom::blink::WidgetHostInterfaceBase>
+                                widget_host,
+                            CrossVariantMojoAssociatedReceiver<
+                                mojom::blink::WidgetInterfaceBase> widget,
+                            scoped_refptr<base::SingleThreadTaskRunner>
+                                task_runner,
+                            const viz::FrameSinkId& frame_sink_id,
+                            bool hidden,
+                            bool never_composited,
+                            bool is_for_child_local_root,
+                            bool is_for_nested_main_frame);
+// Overrides the implementation of WebFrameWidget::CreateForMainFrame() function
+// below. Used by tests to override some functionality on WebFrameWidgetImpl.
+void CORE_EXPORT InstallCreateMainFrameWebFrameWidgetHook(
+    CreateMainFrameWebFrameWidgetFunction create_widget);
 
 }  // namespace blink
 

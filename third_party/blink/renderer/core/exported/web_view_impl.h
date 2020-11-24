@@ -94,7 +94,7 @@ class WebLocalFrame;
 class WebLocalFrameImpl;
 class WebSettingsImpl;
 class WebViewClient;
-class WebViewFrameWidget;
+class WebFrameWidgetImpl;
 
 enum class FullscreenRequestType;
 
@@ -480,8 +480,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // limit.
   void SetMaximumLegibleScale(float);
 
-  void SetMainFrameViewWidget(WebViewFrameWidget* widget);
-  WebViewFrameWidget* MainFrameViewWidget();
+  void SetMainFrameViewWidget(WebFrameWidgetImpl* widget);
+  WebFrameWidgetImpl* MainFrameViewWidget();
 
   // Called when hovering over an anchor with the given URL.
   void SetMouseOverURL(const KURL&);
@@ -542,11 +542,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   friend class frame_test_helpers::WebViewHelper;
   friend class SimCompositor;
   friend class WebView;  // So WebView::Create can call our constructor
-  friend class WebViewFrameWidget;
   friend class WTF::RefCounted<WebViewImpl>;
 
-  // These are temporary methods to allow WebViewFrameWidget to delegate to
-  // WebViewImpl. We expect to eventually move these out.
   void ThemeChanged();
 
   // Update the target url locally and tell the browser that the target URL has
@@ -785,7 +782,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // The WebWidget for the main frame. This is expected to be unset when the
   // WebWidget destroys itself. This will be null if the main frame is remote.
-  WeakPersistent<WebViewFrameWidget> web_widget_;
+  WeakPersistent<WebFrameWidgetImpl> web_widget_;
 
   // We defer commits when transitioning to a new page. ChromeClientImpl calls
   // StopDeferringCommits() to release this when a new page is loaded.
