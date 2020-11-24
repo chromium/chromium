@@ -258,8 +258,7 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
   cached_metadata_handler_ = nullptr;
   // Currently we support the metadata caching only for HTTP family.
   if (GetResourceRequest().Url().ProtocolIsInHTTPFamily() &&
-      response.CurrentRequestUrl().ProtocolIsInHTTPFamily() &&
-      response.HttpStatusCode() == 200) {
+      response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
     cached_metadata_handler_ =
         MakeGarbageCollected<ScriptCachedMetadataHandler>(
             Encoding(), CachedMetadataSender::Create(
