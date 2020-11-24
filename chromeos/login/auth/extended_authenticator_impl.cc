@@ -125,6 +125,7 @@ void ExtendedAuthenticatorImpl::OnFingerprintScanComplete(
   if (!reply) {
     std::move(callback).Run(cryptohome::CryptohomeErrorCode::
                                 CRYPTOHOME_ERROR_FINGERPRINT_ERROR_INTERNAL);
+    return;
   }
 
   std::move(callback).Run(reply->error());
