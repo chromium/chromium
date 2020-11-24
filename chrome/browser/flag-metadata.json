@@ -3876,7 +3876,7 @@
       "xinghuilu",
       "chrome-safebrowsing-core@google.com"
     ],
-    "expiry_milestone": 89
+    "expiry_milestone": 90
   },
   {
     "name": "privacy-sandbox-settings",
@@ -4085,7 +4085,7 @@
       "xinghuilu",
       "chrome-safebrowsing-core@google.com"
     ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "safe-browsing-enhanced-protection-message-in-interstitials",
@@ -4113,7 +4113,7 @@
       "xinghuilu",
       "chrome-safebrowsing-core@google.com"
     ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "safety-check-android",
