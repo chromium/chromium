@@ -11,11 +11,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_prefs.h"
@@ -24,12 +21,8 @@
 #include "components/media_router/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/variations/proto/study.pb.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
@@ -42,7 +35,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
 
