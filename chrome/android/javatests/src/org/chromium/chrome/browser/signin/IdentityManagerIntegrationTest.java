@@ -54,8 +54,9 @@ public class IdentityManagerIntegrationTest {
         mAccountManagerTestRule.waitForSeeding();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
-            mIdentityMutator =
-                    IdentityServicesProvider.get().getSigninManager(profile).getIdentityMutator();
+            SigninManagerImpl signinManager =
+                    (SigninManagerImpl) IdentityServicesProvider.get().getSigninManager(profile);
+            mIdentityMutator = signinManager.getIdentityMutatorForTesting();
             mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
         });
     }

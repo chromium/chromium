@@ -65,7 +65,7 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
     public final JniMocker mocker = new JniMocker();
 
     @Mock
-    private SigninManager.Natives mSigninManagerNativeMock;
+    private SigninManagerImpl.Natives mSigninManagerNativeMock;
 
     @Mock
     private SigninManager mSigninManagerMock;
@@ -84,7 +84,7 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
     @Before
     public void setUp() {
         initMocks(this);
-        mocker.mock(SigninManagerJni.TEST_HOOKS, mSigninManagerNativeMock);
+        mocker.mock(SigninManagerImplJni.TEST_HOOKS, mSigninManagerNativeMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);

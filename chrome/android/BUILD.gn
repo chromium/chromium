@@ -3375,7 +3375,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/signin/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/ProfileDownloader.java",
     "java/src/org/chromium/chrome/browser/signin/SigninInvestigator.java",
-    "java/src/org/chromium/chrome/browser/signin/SigninManager.java",
+    "java/src/org/chromium/chrome/browser/signin/SigninManagerImpl.java",
     "java/src/org/chromium/chrome/browser/signin/SigninPromoUtil.java",
     "java/src/org/chromium/chrome/browser/signin/SigninUtils.java",
     "java/src/org/chromium/chrome/browser/signin/UnifiedConsentServiceBridge.java",

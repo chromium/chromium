@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "chrome/android/chrome_jni_headers/SigninManager_jni.h"
+#include "chrome/android/chrome_jni_headers/SigninManagerImpl_jni.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -139,7 +139,7 @@ SigninManagerAndroid::SigninManagerAndroid(
   force_browser_signin_.Init(prefs::kForceBrowserSignin,
                              g_browser_process->local_state());
 
-  java_signin_manager_ = Java_SigninManager_create(
+  java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       identity_manager_->LegacyGetAccountTrackerServiceJavaObject(),
       identity_manager_->GetJavaObject(),
@@ -154,8 +154,8 @@ SigninManagerAndroid::GetJavaObject() {
 SigninManagerAndroid::~SigninManagerAndroid() {}
 
 void SigninManagerAndroid::Shutdown() {
-  Java_SigninManager_destroy(base::android::AttachCurrentThread(),
-                             java_signin_manager_);
+  Java_SigninManagerImpl_destroy(base::android::AttachCurrentThread(),
+                                 java_signin_manager_);
 }
 
 bool SigninManagerAndroid::IsSigninAllowed() const {
@@ -171,7 +171,7 @@ jboolean SigninManagerAndroid::IsForceSigninEnabled(JNIEnv* env) {
 }
 
 void SigninManagerAndroid::OnSigninAllowedPrefChanged() const {
-  Java_SigninManager_onSigninAllowedByPolicyChanged(
+  Java_SigninManagerImpl_onSigninAllowedByPolicyChanged(
       base::android::AttachCurrentThread(), java_signin_manager_,
       IsSigninAllowed());
 }
@@ -311,9 +311,9 @@ void SigninManagerAndroid::WipeData(Profile* profile,
   new ProfileDataRemover(profile, all_data, std::move(callback));
 }
 
-base::android::ScopedJavaLocalRef<jstring> JNI_SigninManager_ExtractDomainName(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_email) {
+base::android::ScopedJavaLocalRef<jstring>
+JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
+                                        const JavaParamRef<jstring>& j_email) {
   std::string email = base::android::ConvertJavaStringToUTF8(env, j_email);
   std::string domain = gaia::ExtractDomainName(email);
   return base::android::ConvertUTF8ToJavaString(env, domain);

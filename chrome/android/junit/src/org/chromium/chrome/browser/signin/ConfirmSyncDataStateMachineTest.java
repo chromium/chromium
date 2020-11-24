@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -24,18 +23,11 @@ import org.mockito.Mock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Tests for {@link ConfirmSyncDataStateMachine}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ConfirmSyncDataStateMachineTest {
-    @Rule
-    public final JniMocker mocker = new JniMocker();
-
-    @Mock
-    private SigninManager.Natives mSigninManagerNativeMock;
-
     @Mock
     private ConfirmSyncDataStateMachineDelegate mDelegateMock;
 
@@ -58,7 +50,6 @@ public class ConfirmSyncDataStateMachineTest {
     @Before
     public void setUp() {
         initMocks(this);
-        mocker.mock(SigninManagerJni.TEST_HOOKS, mSigninManagerNativeMock);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
@@ -116,7 +107,7 @@ public class ConfirmSyncDataStateMachineTest {
     @Test
     public void testManagedAccountDialogShownWhenNewAccountIsManaged() {
         mockSigninManagerIsAccountManaged(true);
-        when(mSigninManagerNativeMock.extractDomainName(anyString())).thenReturn(mNewAccountName);
+        when(mSigninManagerMock.extractDomainName(anyString())).thenReturn(mNewAccountName);
         ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
                 mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock)
@@ -128,7 +119,7 @@ public class ConfirmSyncDataStateMachineTest {
     public void testWhenManagedAccountStatusIsFetchedAfterNewAccountDialog() {
         String newAccountName = "test.account@manageddomain.com";
         String domain = "manageddomain.com";
-        when(mSigninManagerNativeMock.extractDomainName(newAccountName)).thenReturn(domain);
+        when(mSigninManagerMock.extractDomainName(newAccountName)).thenReturn(domain);
         ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
                 mDelegateMock, null, newAccountName, mStateMachineListenerMock);
         verify(mDelegateMock, never())

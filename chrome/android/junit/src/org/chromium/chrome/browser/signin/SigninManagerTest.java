@@ -48,7 +48,7 @@ import org.chromium.components.signin.metrics.SignoutReason;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Tests for {@link SigninManager}. */
+/** Tests for {@link SigninManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
@@ -61,7 +61,7 @@ public class SigninManagerTest {
     private static final AccountInfo ACCOUNT_INFO = new AccountInfo(
             new CoreAccountId("gaia-id-user"), "user@domain.com", "gaia-id-user", null);
 
-    private final SigninManager.Natives mNativeMock = mock(SigninManager.Natives.class);
+    private final SigninManagerImpl.Natives mNativeMock = mock(SigninManagerImpl.Natives.class);
     private final AccountTrackerService mAccountTrackerService = mock(AccountTrackerService.class);
     private final IdentityMutator mIdentityMutator = mock(IdentityMutator.class);
     private final AndroidSyncSettings mAndroidSyncSettings = mock(AndroidSyncSettings.class);
@@ -69,11 +69,11 @@ public class SigninManagerTest {
     private final ProfileSyncService mProfileSyncService = mock(ProfileSyncService.class);
     private IdentityManager mIdentityManager;
 
-    private SigninManager mSigninManager;
+    private SigninManagerImpl mSigninManager;
 
     @Before
     public void setUp() {
-        mocker.mock(SigninManagerJni.TEST_HOOKS, mNativeMock);
+        mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
         ProfileSyncService.overrideForTests(mProfileSyncService);
         doReturn(true).when(mNativeMock).isSigninAllowedByPolicy(anyLong());
         // Pretend Google Play services are available as it is required for the sign-in
@@ -93,7 +93,7 @@ public class SigninManagerTest {
     }
 
     private void createSigninManager() {
-        mSigninManager = new SigninManager(0 /* nativeSigninManagerAndroid */,
+        mSigninManager = new SigninManagerImpl(0 /* nativeSigninManagerAndroid */,
                 mAccountTrackerService, mIdentityManager, mIdentityMutator, mAndroidSyncSettings,
                 mExternalAuthUtils);
     }
