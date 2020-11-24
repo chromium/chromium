@@ -256,7 +256,11 @@ const CGFloat kClearButtonSize = 28.0f;
 - (BOOL)textField:(UITextField*)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString*)newText {
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return YES;
+  }
   self.processingUserEvent = _textChangeDelegate->OnWillChange(range, newText);
   return self.processingUserEvent;
 }
@@ -280,14 +284,22 @@ const CGFloat kClearButtonSize = 28.0f;
   BOOL savedProcessingUserEvent = self.processingUserEvent;
   self.processingUserEvent = NO;
   self.forwardingOnDidChange = YES;
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return;
+  }
   _textChangeDelegate->OnDidChange(savedProcessingUserEvent);
   self.forwardingOnDidChange = NO;
 }
 
 // Delegate method for UITextField, called when user presses the "go" button.
 - (BOOL)textFieldShouldReturn:(UITextField*)textField {
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return YES;
+  }
   _textChangeDelegate->OnAccept();
   return NO;
 }
@@ -309,12 +321,20 @@ const CGFloat kClearButtonSize = 28.0f;
   self.isTextfieldEditing = YES;
 
   self.omniboxInteractedWhileFocused = NO;
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return;
+  }
   _textChangeDelegate->OnDidBeginEditing();
 }
 
 - (BOOL)textFieldShouldEndEditing:(UITextField*)textField {
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return YES;
+  }
   _textChangeDelegate->OnWillEndEditing();
 
   return YES;
@@ -332,7 +352,11 @@ const CGFloat kClearButtonSize = 28.0f;
 }
 
 - (BOOL)textFieldShouldClear:(UITextField*)textField {
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return YES;
+  }
   _textChangeDelegate->ClearText();
   self.processingUserEvent = YES;
   return YES;
@@ -340,17 +364,29 @@ const CGFloat kClearButtonSize = 28.0f;
 
 - (void)onCopy {
   self.omniboxInteractedWhileFocused = YES;
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return;
+  }
   _textChangeDelegate->OnCopy();
 }
 
 - (void)willPaste {
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return;
+  }
   _textChangeDelegate->WillPaste();
 }
 
 - (void)onDeleteBackward {
-  DCHECK(_textChangeDelegate);
+  if (!_textChangeDelegate) {
+    // This can happen when the view controller is still alive but the model is
+    // already deconstructed on shutdown.
+    return;
+  }
   _textChangeDelegate->OnDeleteBackward();
 }
 

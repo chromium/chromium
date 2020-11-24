@@ -110,6 +110,7 @@
 }
 
 - (void)stop {
+  self.viewController.textChangeDelegate = nil;
   _editView.reset();
   self.editController = nil;
   self.viewController = nil;
