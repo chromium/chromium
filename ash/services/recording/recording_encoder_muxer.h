@@ -5,6 +5,8 @@
 #ifndef ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
 #define ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
 
+#include <memory>
+
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
@@ -56,6 +58,8 @@ class RecordingEncoderMuxer {
   // |blocking_task_runner| on which all operations as well as destruction will
   // happen. |video_encoder_options| and |audio_input_params| will be used to
   // initialize the video and audio encoders respectively.
+  // If |audio_input_params| is nullptr, then the service is not recording
+  // audio, and the muxer will be initialized accordingly.
   // |muxer_output_callback| will be called on the same sequence of
   // |blocking_task_runner| to provide the muxer output chunks ready to be sent
   // to the recording service client.
@@ -65,7 +69,7 @@ class RecordingEncoderMuxer {
   static base::SequenceBound<RecordingEncoderMuxer> Create(
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       const media::VideoEncoder::Options& video_encoder_options,
-      const media::AudioParameters& audio_input_params,
+      const media::AudioParameters* audio_input_params,
       media::WebmMuxer::WriteDataCB muxer_output_callback,
       FailureCallback on_failure_callback);
 
@@ -95,7 +99,7 @@ class RecordingEncoderMuxer {
 
   RecordingEncoderMuxer(
       const media::VideoEncoder::Options& video_encoder_options,
-      const media::AudioParameters& audio_input_params,
+      const media::AudioParameters* audio_input_params,
       media::WebmMuxer::WriteDataCB muxer_output_callback,
       FailureCallback on_failure_callback);
   ~RecordingEncoderMuxer();
@@ -136,7 +140,8 @@ class RecordingEncoderMuxer {
 
   media::VpxVideoEncoder video_encoder_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  media::AudioOpusEncoder audio_encoder_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<media::AudioOpusEncoder> audio_encoder_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   media::WebmMuxer webm_muxer_ GUARDED_BY_CONTEXT(sequence_checker_);
 

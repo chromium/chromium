@@ -62,6 +62,11 @@ void CaptureModeTestApi::SetOnCaptureFileSavedCallback(
   controller_->on_file_saved_callback_ = std::move(callback);
 }
 
+void CaptureModeTestApi::SetAudioRecordingEnabled(bool enabled) {
+  DCHECK(!controller_->is_recording_in_progress());
+  controller_->enable_audio_recording_ = enabled;
+}
+
 void CaptureModeTestApi::SetType(bool for_video) {
   controller_->SetType(for_video ? CaptureModeType::kVideo
                                  : CaptureModeType::kImage);

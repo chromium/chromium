@@ -228,6 +228,9 @@ class ASH_EXPORT CaptureModeController
 
   std::unique_ptr<CaptureModeSession> capture_mode_session_;
 
+  // Whether the service should record audio.
+  bool enable_audio_recording_ = true;
+
   // True when video recording is in progress.
   bool is_recording_in_progress_ = false;
 
