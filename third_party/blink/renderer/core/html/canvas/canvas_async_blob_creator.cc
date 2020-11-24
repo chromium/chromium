@@ -481,46 +481,48 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult() {
                              WrapPersistent(result_blob)));
   }
 
-  RecordIdentifiabilityMetric();
-
   RecordScaledDurationHistogram(mime_type_,
                                 base::TimeTicks::Now() - start_time_,
                                 image_->width(), image_->height());
-  // Avoid unwanted retention, see dispose().
-  Dispose();
+
+  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          blink::IdentifiableSurface::Type::kCanvasReadback)) {
+    // Creating this ImageDataBuffer has some overhead, namely getting the
+    // SkImage and computing the pixmap. We need the StaticBitmapImage to be
+    // deleted on the same thread on which it was created, so we use the same
+    // TaskType here in order to get the same TaskRunner.
+
+    // TODO(crbug.com/1143737) WrapPersistent(this) stores more data than is
+    // needed by the function. It would be good to find a way to wrap only the
+    // objects needed (image_, ukm_params_, input_digest_)
+    context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
+        ->PostTask(
+            FROM_HERE,
+            WTF::Bind(&CanvasAsyncBlobCreator::RecordIdentifiabilityMetric,
+                      WrapPersistent(this)));
+  } else {
+    // RecordIdentifiabilityMetric needs a reference to image_, and will run
+    // dispose itself. So here we only call dispose if not recording the metric.
+    Dispose();
+  }
 }
 
 void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSample(
-          blink::IdentifiableSurface::Type::kCanvasReadback)) {
-    return;
+  std::unique_ptr<ImageDataBuffer> data_buffer =
+      ImageDataBuffer::Create(image_);
+
+  if (data_buffer) {
+    blink::IdentifiabilityMetricBuilder(ukm_params_.source_id)
+        .Set(blink::IdentifiableSurface::FromTypeAndToken(
+                 blink::IdentifiableSurface::Type::kCanvasReadback,
+                 input_digest_),
+             blink::IdentifiabilityDigestOfBytes(base::make_span(
+                 data_buffer->Pixels(), data_buffer->ComputeByteSize())))
+        .Record(ukm_params_.ukm_recorder);
   }
-  // Creating this ImageDataBuffer has some overhead, namely getting the SkImage
-  // and computing the pixmap.
-  // We need the StaticBitmapImage to be deleted on the same thread on which it
-  // was created, so we use the same TaskType here in order to get the same
-  // TaskRunner.
-  context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(
-              [](IdentifiableToken input_digest,
-                 scoped_refptr<StaticBitmapImage> image,
-                 UkmParameters ukm_params) {
-                std::unique_ptr<ImageDataBuffer> data_buffer =
-                    ImageDataBuffer::Create(image);
-                if (!data_buffer)
-                  return;
-                blink::IdentifiabilityMetricBuilder(ukm_params.source_id)
-                    .Set(blink::IdentifiableSurface::FromTypeAndToken(
-                             blink::IdentifiableSurface::Type::kCanvasReadback,
-                             input_digest),
-                         blink::IdentifiabilityDigestOfBytes(
-                             base::make_span(data_buffer->Pixels(),
-                                             data_buffer->ComputeByteSize())))
-                    .Record(ukm_params.ukm_recorder);
-              },
-              input_digest_, image_, ukm_params_));
+
+  // Avoid unwanted retention, see dispose().
+  Dispose();
 }
 
 void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
