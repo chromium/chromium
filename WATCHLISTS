@@ -1472,7 +1472,8 @@
                   '^chrome/browser/ui/omnibox/|'\
                   '^chrome/browser/ui/.*/location_bar/|'\
                   '^chrome/browser/ui/.*/omnibox/|'\
-                  '^components/omnibox/'
+                  '^components/omnibox/|'\
+                  '^components/search_engines/'
     },
     'optimization_guide': {
       'filepath': 'optimization_guide|'\
