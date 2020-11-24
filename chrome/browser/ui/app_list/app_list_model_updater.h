@@ -73,6 +73,7 @@ class AppListModelUpdater {
   virtual void SetItemNameAndShortName(const std::string& id,
                                        const std::string& name,
                                        const std::string& short_name) {}
+  virtual void SetAppStatus(const std::string& id, ash::AppStatus app_status) {}
   virtual void SetItemPosition(const std::string& id,
                                const syncer::StringOrdinal& new_position) {}
   virtual void SetItemIsPersistent(const std::string& id, bool is_persistent) {}

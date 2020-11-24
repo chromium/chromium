@@ -52,6 +52,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void SetItemNameAndShortName(const std::string& id,
                                const std::string& name,
                                const std::string& short_name) override;
+  void SetAppStatus(const std::string& id, ash::AppStatus app_status) override;
   void SetItemPosition(const std::string& id,
                        const syncer::StringOrdinal& new_position) override;
   void SetItemIsPersistent(const std::string& id, bool is_persistent) override;

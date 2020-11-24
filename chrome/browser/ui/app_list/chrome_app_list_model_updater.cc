@@ -215,6 +215,18 @@ void ChromeAppListModelUpdater::SetItemNameAndShortName(
   app_list_controller_->SetItemMetadata(id, std::move(data));
 }
 
+void ChromeAppListModelUpdater::SetAppStatus(const std::string& id,
+                                             ash::AppStatus app_status) {
+  if (!app_list_controller_)
+    return;
+  ChromeAppListItem* item = FindItem(id);
+  if (!item)
+    return;
+  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
+  data->app_status = app_status;
+  app_list_controller_->SetItemMetadata(id, std::move(data));
+}
+
 void ChromeAppListModelUpdater::SetItemPosition(
     const std::string& id,
     const syncer::StringOrdinal& new_position) {

@@ -551,12 +551,12 @@ void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     case AppStatus::kBlocked:
       node_data->SetDescription(
           ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_SHELF_ITEM_HAS_BLOCK_BADGE));
+              IDS_SHELF_ITEM_BLOCKED_APP));
       break;
     case AppStatus::kPaused:
       node_data->SetDescription(
           ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_SHELF_ITEM_HAS_PAUSE_BADGE));
+              IDS_SHELF_ITEM_PAUSED_APP));
       break;
     default:
       break;

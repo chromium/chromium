@@ -18,6 +18,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -575,6 +576,30 @@ void AppListItemView::SetItemName(const base::string16& display_name,
                        full_name.empty() ? folder_name_placeholder : full_name)
                  : full_name);
   Layout();
+}
+
+void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  if (!item_weak_)
+    return;
+
+  DCHECK(node_data);
+  Button::GetAccessibleNodeData(node_data);
+
+  auto app_status = item_weak_->app_status();
+  switch (app_status) {
+    case AppStatus::kBlocked:
+      node_data->SetDescription(
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_APP_LIST_BLOCKED_APP));
+      break;
+    case AppStatus::kPaused:
+      node_data->SetDescription(
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_APP_LIST_PAUSED_APP));
+      break;
+    default:
+      break;
+  }
 }
 
 void AppListItemView::OnContextMenuModelReceived(

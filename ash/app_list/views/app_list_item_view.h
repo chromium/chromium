@@ -60,6 +60,8 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   void SetItemName(const base::string16& display_name,
                    const base::string16& full_name);
 
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
   void CancelContextMenu();
 
   void OnDragEnded();

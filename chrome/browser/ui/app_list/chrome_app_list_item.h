@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "ui/gfx/image/image_skia.h"
@@ -59,6 +60,7 @@ class ChromeAppListItem {
   const std::string& folder_id() const { return metadata_->folder_id; }
   const syncer::StringOrdinal& position() const { return metadata_->position; }
   const std::string& name() const { return metadata_->name; }
+  ash::AppStatus app_status() const { return metadata_->app_status; }
   bool is_folder() const { return metadata_->is_folder; }
   bool is_persistent() const { return metadata_->is_persistent; }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
@@ -73,6 +75,7 @@ class ChromeAppListItem {
   void SetName(const std::string& name);
   void SetNameAndShortName(const std::string& name,
                            const std::string& short_name);
+  void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
   void SetPosition(const syncer::StringOrdinal& position);
   void SetIsPageBreak(bool is_page_break);

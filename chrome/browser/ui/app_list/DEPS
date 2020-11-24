@@ -1,3 +1,11 @@
 include_rules = [
   "+components/services/app_service/public",
 ]
+
+specific_include_rules = {
+  "app_service_app_item_browsertest\.cc": [
+    "+ash/app_list/app_list_controller_impl.h",
+    "+ash/app_list/model/app_list_item.h",
+    "+ash/shell.h",
+  ],
+}

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -67,6 +68,17 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
   if (in_constructor || app_update.IsPlatformAppChanged()) {
     is_platform_app_ =
         app_update.IsPlatformApp() == apps::mojom::OptionalBool::kTrue;
+  }
+
+  if (in_constructor || app_update.ReadinessChanged() ||
+      app_update.PausedChanged()) {
+    if (app_update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
+      SetAppStatus(ash::AppStatus::kBlocked);
+    } else if (app_update.Paused() == apps::mojom::OptionalBool::kTrue) {
+      SetAppStatus(ash::AppStatus::kPaused);
+    } else {
+      SetAppStatus(ash::AppStatus::kReady);
+    }
   }
 }
 

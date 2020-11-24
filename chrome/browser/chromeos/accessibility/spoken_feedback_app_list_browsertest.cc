@@ -206,6 +206,76 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
   sm_.Replay();
 }
 
+// Checks that when a paused app list item is focused, an announcement 'Paused'
+// is made.
+IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
+                       AppListItemPausedAppAnnounced) {
+  PopulateApps(1);
+  ash::Shell::Get()
+      ->app_list_controller()
+      ->GetModel()
+      ->FindItem("Item 0")
+      ->UpdateAppStatusForTesting(ash::AppStatus::kPaused);
+
+  EnableChromeVox();
+
+  sm_.Call(
+      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.ExpectSpeech("Shelf");
+  // Press space on the launcher button in shelf, this opens peeking
+  // launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Launcher, partial view");
+  // Move focus to expand all apps button.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_UP); });
+  sm_.ExpectSpeech("Expand to all apps");
+  // Press space on expand arrow to go to fullscreen launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Launcher, all apps");
+
+  // Move focus to 1st app;
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+
+  // Check that the announcmenet for items with a pause badge occurs.
+  sm_.ExpectSpeech("Paused");
+  sm_.Replay();
+}
+
+// Checks that when a blocked app list item is focused, an announcement
+// 'Blocked' is made.
+IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
+                       AppListItemBlockedAppAnnounced) {
+  PopulateApps(1);
+  ash::Shell::Get()
+      ->app_list_controller()
+      ->GetModel()
+      ->FindItem("Item 0")
+      ->UpdateAppStatusForTesting(ash::AppStatus::kBlocked);
+
+  EnableChromeVox();
+
+  sm_.Call(
+      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.ExpectSpeech("Shelf");
+  // Press space on the launcher button in shelf, this opens peeking
+  // launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Launcher, partial view");
+  // Move focus to expand all apps button.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_UP); });
+  sm_.ExpectSpeech("Expand to all apps");
+  // Press space on expand arrow to go to fullscreen launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Launcher, all apps");
+
+  // Move focus to 1st app;
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+
+  // Check that the announcmenet for items with a block badge occurs.
+  sm_.ExpectSpeech("Blocked");
+  sm_.Replay();
+}
+
 // Checks that entering and exiting tablet mode with a browser window open does
 // not generate an accessibility event.
 IN_PROC_BROWSER_TEST_P(

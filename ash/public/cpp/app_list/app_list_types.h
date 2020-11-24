@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/sync/model/string_ordinal.h"
@@ -64,6 +65,9 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   std::string name;        // Corresponding app/folder's name of the item.
   std::string short_name;  // Corresponding app's short name of the item. Empty
                            // if the app doesn't have one or it's a folder.
+
+  AppStatus app_status = AppStatus::kReady;  // App status.
+
   std::string folder_id;   // Id of folder where the item resides.
   syncer::StringOrdinal position;  // Position of the item.
   bool is_folder = false;          // Whether this item is a folder.

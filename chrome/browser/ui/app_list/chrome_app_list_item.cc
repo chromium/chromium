@@ -187,6 +187,13 @@ void ChromeAppListItem::SetNameAndShortName(const std::string& name,
     updater->SetItemNameAndShortName(id(), name, short_name);
 }
 
+void ChromeAppListItem::SetAppStatus(ash::AppStatus app_status) {
+  metadata_->app_status = app_status;
+  AppListModelUpdater* updater = model_updater();
+  if (updater)
+    updater->SetAppStatus(id(), app_status);
+}
+
 void ChromeAppListItem::SetFolderId(const std::string& folder_id) {
   metadata_->folder_id = folder_id;
   AppListModelUpdater* updater = model_updater();
