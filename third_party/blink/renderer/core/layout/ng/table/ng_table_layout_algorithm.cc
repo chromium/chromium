@@ -871,21 +871,24 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
   }
 
   // Section setup.
-  const LogicalSize section_available_size{table_inline_size -
-                                               border_padding.InlineSum() -
-                                               border_spacing.inline_size * 2,
-                                           kIndefiniteSize};
-  DCHECK_GE(section_available_size.inline_size, LayoutUnit());
+  const LayoutUnit section_available_inline_size =
+      table_inline_size - border_padding.InlineSum() -
+      border_spacing.inline_size * 2;
+
+  DCHECK_GE(section_available_inline_size, LayoutUnit());
   auto CreateSectionConstraintSpace = [&table_writing_direction,
-                                       &section_available_size,
-                                       &constraint_space_data](
-                                          wtf_size_t section_index) {
+                                       &section_available_inline_size,
+                                       &constraint_space_data,
+                                       &sections](wtf_size_t section_index) {
     NGConstraintSpaceBuilder section_space_builder(
         table_writing_direction.GetWritingMode(), table_writing_direction,
         /* is_new_fc */ true);
-    section_space_builder.SetAvailableSize(section_available_size);
+    section_space_builder.SetAvailableSize(
+        {section_available_inline_size, sections[section_index].block_size});
     section_space_builder.SetIsFixedInlineSize(true);
-    section_space_builder.SetPercentageResolutionSize(section_available_size);
+    section_space_builder.SetIsFixedBlockSize(true);
+    section_space_builder.SetPercentageResolutionSize(
+        {section_available_inline_size, kIndefiniteSize});
     section_space_builder.SetTableSectionData(constraint_space_data,
                                               section_index);
     return section_space_builder.ToConstraintSpace();
