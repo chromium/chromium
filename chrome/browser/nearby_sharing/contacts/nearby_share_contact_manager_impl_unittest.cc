@@ -38,6 +38,7 @@ const char kTestDefaultDeviceName[] = "Josh's Chromebook";
 const char kTestProfileUserName[] = "test@google.com";
 
 // From nearby_share_contact_manager_impl.cc.
+constexpr base::TimeDelta kContactUploadPeriod = base::TimeDelta::FromHours(24);
 constexpr base::TimeDelta kContactDownloadPeriod =
     base::TimeDelta::FromHours(12);
 constexpr base::TimeDelta kContactDownloadRpcTimeout =
@@ -207,7 +208,7 @@ class NearbyShareContactManagerImplTest
       const std::vector<nearbyshare::proto::ContactRecord>& contacts,
       const std::set<std::string>& expected_allowed_contact_ids,
       bool expect_upload) {
-    TriggerScheduler();
+    TriggerDownloadScheduler();
 
     size_t num_handled_results =
         download_and_upload_scheduler()->handled_results().size();
@@ -243,7 +244,7 @@ class NearbyShareContactManagerImplTest
   }
 
   void FailDownload() {
-    TriggerScheduler();
+    TriggerDownloadScheduler();
 
     // Fail download and verify that the result is sent to the scheduler.
     size_t num_handled_results =
@@ -259,6 +260,11 @@ class NearbyShareContactManagerImplTest
     EXPECT_TRUE(mojo_observer_.on_contacts_download_failed_called_);
   }
 
+  void MakePeriodicUploadRequest() {
+    periodic_upload_scheduler()->InvokeRequestCallback();
+    periodic_upload_scheduler()->SetIsWaitingForResult(true);
+  }
+
   void FinishUpload(
       bool success,
       const std::vector<nearbyshare::proto::Contact>& expected_contacts) {
@@ -272,8 +278,10 @@ class NearbyShareContactManagerImplTest
 
     // Invoke upload callback from local device data manager.
     size_t num_upload_notifications = contacts_uploaded_notifications_.size();
-    size_t num_handled_results =
+    size_t num_download_and_upload_handled_results =
         download_and_upload_scheduler()->handled_results().size();
+    size_t num_periodic_upload_handeled_results =
+        periodic_upload_scheduler()->handled_results().size();
     std::move(call.callback).Run(success);
 
     // Verify upload notification was sent on success.
@@ -281,13 +289,24 @@ class NearbyShareContactManagerImplTest
               contacts_uploaded_notifications_.size());
     if (success) {
       // We only expect uploads to occur if contacts have changed since the last
-      // upload.
+      // upload or is a periodic upload was requested.
       EXPECT_TRUE(contacts_uploaded_notifications_.back()
-                      .did_contacts_change_since_last_upload);
+                      .did_contacts_change_since_last_upload ||
+                  periodic_upload_scheduler()->IsWaitingForResult());
+
+      if (periodic_upload_scheduler()->IsWaitingForResult()) {
+        EXPECT_EQ(num_periodic_upload_handeled_results + 1,
+                  periodic_upload_scheduler()->handled_results().size());
+        EXPECT_TRUE(periodic_upload_scheduler()->handled_results().back());
+        periodic_upload_scheduler()->SetIsWaitingForResult(false);
+      } else {
+        EXPECT_EQ(num_periodic_upload_handeled_results,
+                  periodic_upload_scheduler()->handled_results().size());
+      }
     }
 
     // Verify that result is sent to download/upload scheduler.
-    EXPECT_EQ(num_handled_results + 1,
+    EXPECT_EQ(num_download_and_upload_handled_results + 1,
               download_and_upload_scheduler()->handled_results().size());
     EXPECT_EQ(success,
               download_and_upload_scheduler()->handled_results().back());
@@ -330,14 +349,20 @@ class NearbyShareContactManagerImplTest
     return downloader_factory_.instances().back();
   }
 
+  FakeNearbyShareScheduler* periodic_upload_scheduler() {
+    return scheduler_factory_.pref_name_to_periodic_instance()
+        .at(prefs::kNearbySharingSchedulerPeriodicContactUploadPrefName)
+        .fake_scheduler;
+  }
+
   FakeNearbyShareScheduler* download_and_upload_scheduler() {
     return scheduler_factory_.pref_name_to_periodic_instance()
         .at(prefs::kNearbySharingSchedulerContactDownloadAndUploadPrefName)
         .fake_scheduler;
   }
 
+  // Verify scheduler input parameters.
   void VerifySchedulerInitialization() {
-    // Verify scheduler input parameters.
     FakeNearbyShareSchedulerFactory::PeriodicInstance
         download_and_upload_scheduler_instance =
             scheduler_factory_.pref_name_to_periodic_instance().at(
@@ -349,9 +374,20 @@ class NearbyShareContactManagerImplTest
     EXPECT_TRUE(download_and_upload_scheduler_instance.require_connectivity);
     EXPECT_EQ(&pref_service_,
               download_and_upload_scheduler_instance.pref_service);
+
+    FakeNearbyShareSchedulerFactory::PeriodicInstance
+        periodic_upload_scheduler_instance =
+            scheduler_factory_.pref_name_to_periodic_instance().at(
+                prefs::kNearbySharingSchedulerPeriodicContactUploadPrefName);
+    EXPECT_TRUE(periodic_upload_scheduler_instance.fake_scheduler);
+    EXPECT_EQ(kContactUploadPeriod,
+              periodic_upload_scheduler_instance.request_period);
+    EXPECT_FALSE(periodic_upload_scheduler_instance.retry_failures);
+    EXPECT_TRUE(periodic_upload_scheduler_instance.require_connectivity);
+    EXPECT_EQ(&pref_service_, periodic_upload_scheduler_instance.pref_service);
   }
 
-  void TriggerScheduler() {
+  void TriggerDownloadScheduler() {
     // Fire scheduler and verify downloader creation.
     size_t num_downloaders = downloader_factory_.instances().size();
     download_and_upload_scheduler()->InvokeRequestCallback();
@@ -452,7 +488,7 @@ TEST_F(NearbyShareContactManagerImplTest, SetAllowlist) {
                      /*expect_allowlist_changed=*/false);
 }
 
-TEST_F(NearbyShareContactManagerImplTest, DownloadContacts_WithUpload) {
+TEST_F(NearbyShareContactManagerImplTest, DownloadContacts_WithFirstUpload) {
   std::vector<nearbyshare::proto::ContactRecord> contact_records =
       TestContactRecordList(/*num_contacts=*/3u);
   std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/2u);
@@ -516,6 +552,32 @@ TEST_F(NearbyShareContactManagerImplTest,
   SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
   FinishUpload(/*success=*/true, /*expected_contacts=*/BuildContactListToUpload(
                    allowlist, contact_records));
+}
+
+TEST_F(NearbyShareContactManagerImplTest,
+       DownloadContacts_PeriodicUploadRequest) {
+  std::vector<nearbyshare::proto::ContactRecord> contact_records =
+      TestContactRecordList(/*num_contacts=*/3u);
+  std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/2u);
+  SetAllowedContacts(allowlist, /*expect_allowlist_changed=*/true);
+
+  // Because contacts have never been uploaded, a subsequent upload is
+  // requested, which succeeds.
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
+  FinishUpload(/*success=*/true, /*expected_contacts=*/BuildContactListToUpload(
+                   allowlist, contact_records));
+
+  // Because device records on the server will be removed after a few days if
+  // the device does not contact the server, we ensure that contacts are
+  // uploaded periodically. Make that request now. Contacts will be uploaded
+  // after the next contact download. It will not force a download now, however.
+  MakePeriodicUploadRequest();
+
+  // When contacts are downloaded again, we decect that contacts have not
+  // changed. However, we expect an upload because a periodic request was made.
+  DownloadContacts();
+  SucceedDownload(contact_records, allowlist, /*expect_upload=*/true);
 }
 
 TEST_F(NearbyShareContactManagerImplTest, DownloadContacts_FailDownload) {
