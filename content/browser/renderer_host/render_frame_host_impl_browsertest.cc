@@ -1178,6 +1178,49 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   EXPECT_EQ(main_url, web_contents()->GetLastCommittedURL());
 }
 
+// During a complex WebContents destruction, test resuming a navigation, due to
+// of a beforeunloader. This is a regersion test for: https://crbug.com/1147567.
+// - Start from A(B(C))
+// - C adds a beforeunload handler.
+// - B starts a navigation, waiting for C.
+// - The WebContents is closed, which deletes C, then B, then A.
+// When deleting C, the navigations in B can begin, but this happen while B was
+// destructing itself.
+//
+// Note: This needs 3 nested documents instead of 2, because deletion of the
+// main RenderFrameHost is different from normal RenderFrameHost. This is
+// required to reproduce https://crbug.com/1147567.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
+                       CloseWebContent) {
+  // This test exercises a scenario that's only possible with
+  // --site-per-process.
+  if (!AreAllSitesIsolatedForTesting())
+    return;
+
+  // For unknown reasons, it seems required to start from a "live"
+  // RenderFrameHost. Otherwise creating a new Shell below will crash.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))");
+  Shell* new_shell = Shell::CreateNewWindow(
+      web_contents()->GetController().GetBrowserContext(), url, nullptr,
+      gfx::Size());
+  auto* web_contents = static_cast<WebContentsImpl*>(new_shell->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  RenderFrameHostImpl* rfh_a = web_contents->GetMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+
+  // C has a beforeunload handler, slow to reply.
+  EXPECT_TRUE(ExecJs(rfh_c, "onbeforeunload = () => {while(1);}"));
+  // B navigate elsewhere. This triggers C's beforeunload handler.
+  EXPECT_TRUE(ExecJs(rfh_b, "location.href = 'about:blank';"));
+  // Closing the Shell, this deletes C and causes the navigation above to start.
+  new_shell->Close();
+  // Test pass if this doesn't reach a CHECK.
+}
+
 namespace {
 
 // A helper to execute some script in a frame just before it is deleted, such
