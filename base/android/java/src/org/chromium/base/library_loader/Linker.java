@@ -138,10 +138,6 @@ public abstract class Linker {
     @GuardedBy("sLock")
     protected LibInfo mLibInfo;
 
-    // Becomes true to indicate this process needs to wait for a shared RELRO in LibraryLoad().
-    @GuardedBy("sLock")
-    protected boolean mWaitForSharedRelros;
-
     // Set to true if this runs in the browser process. Disabled by initServiceProcess().
     @GuardedBy("sLock")
     protected boolean mInBrowserProcess = true;
@@ -258,8 +254,7 @@ public abstract class Linker {
         synchronized (sLock) {
             mInBrowserProcess = false;
             ensureInitializedLocked();
-            assert mState == State.INITIALIZED; // Not after the library has been loaded.
-            mWaitForSharedRelros = false;
+            assert mState == State.INITIALIZED;
         }
     }
 
@@ -298,7 +293,7 @@ public abstract class Linker {
      * file. The library must not be the Chromium linker library.
      *
      * @param library The library name to load.
-     * @param isFixesAddressPermitted Whether the library can be loaded at a fixed address for RELRO
+     * @param isFixedAddressPermitted Whether the library can be loaded at a fixed address for RELRO
      * sharing.
      */
     final void loadLibrary(String library, boolean isFixedAddressPermitted) {
@@ -359,11 +354,8 @@ public abstract class Linker {
         if (DEBUG) Log.i(TAG, "initServiceProcess(0x%x) called", baseLoadAddress);
         synchronized (sLock) {
             mInBrowserProcess = false;
-
             ensureInitializedLocked();
             assert mState == State.INITIALIZED;
-
-            mWaitForSharedRelros = true;
             mBaseLoadAddress = baseLoadAddress;
         }
     }
@@ -456,15 +448,7 @@ public abstract class Linker {
     // Used internally to lazily setup the common random base load address.
     @GuardedBy("sLock")
     private void setupBaseLoadAddressLocked() {
-        if (mBaseLoadAddress == -1) {
-            mBaseLoadAddress = getRandomBaseLoadAddress();
-            if (mBaseLoadAddress == 0) {
-                // If the random address is 0 there are issues with finding enough
-                // free address space, so disable RELRO shared / fixed load addresses.
-                Log.w(TAG, "Disabling shared RELROs due address space pressure");
-                mWaitForSharedRelros = false;
-            }
-        }
+        if (mBaseLoadAddress == -1) mBaseLoadAddress = getRandomBaseLoadAddress();
     }
 
     /**
