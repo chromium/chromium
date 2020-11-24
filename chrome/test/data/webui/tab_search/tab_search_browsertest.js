@@ -40,7 +40,8 @@ var TabSearchAppTest = class extends TabSearchBrowserTest {
   }
 };
 
-TEST_F('TabSearchAppTest', 'All', function() {
+// https://crbug.com/1152287
+TEST_F('TabSearchAppTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
