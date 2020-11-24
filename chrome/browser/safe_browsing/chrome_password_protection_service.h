@@ -207,10 +207,10 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   bool HasUnhandledEnterprisePasswordReuse(
       content::WebContents* web_contents) const;
 
-  // If user has clicked through any Safe Browsing interstitial on this given
-  // |web_contents|.
+  // If user has clicked through any Safe Browsing interstitial on |request|'s
+  // web contents.
   bool UserClickedThroughSBInterstitial(
-      content::WebContents* web_contents) override;
+      PasswordProtectionRequest* request) override;
 
   // If |prefs::kPasswordProtectionWarningTrigger| is not managed by enterprise
   // policy, this function should always return PHISHING_REUSE. Otherwise,

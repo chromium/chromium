@@ -181,10 +181,10 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   // (6) Its hostname is a dotless domain.
   static bool CanGetReputationOfURL(const GURL& url);
 
-  // If user has clicked through any Safe Browsing interstitial on this given
-  // |web_contents|.
+  // If user has clicked through any Safe Browsing interstitial for |request|'s
+  // web contents.
   virtual bool UserClickedThroughSBInterstitial(
-      content::WebContents* web_contents) = 0;
+      PasswordProtectionRequest* request) = 0;
 
   // Called when a new navigation is starting. Create throttle if there is a
   // pending sync password reuse ping or if there is a modal warning dialog

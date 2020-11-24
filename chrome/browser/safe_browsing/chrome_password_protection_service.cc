@@ -1637,7 +1637,8 @@ void ChromePasswordProtectionService::
 }
 
 bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
-    content::WebContents* web_contents) {
+    PasswordProtectionRequest* request) {
+  content::WebContents* web_contents = request->web_contents();
   SBThreatType current_threat_type;
   if (!ui_manager_->IsUrlWhitelistedOrPendingForWebContents(
           web_contents->GetLastCommittedURL().GetWithEmptyPath(),

@@ -255,8 +255,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       password_protection_service_->GetStoredVerdictCount(trigger_type_));
 
   bool clicked_through_interstitial =
-      password_protection_service_->UserClickedThroughSBInterstitial(
-          web_contents_);
+      password_protection_service_->UserClickedThroughSBInterstitial(this);
   request_proto_->set_clicked_through_interstitial(
       clicked_through_interstitial);
   request_proto_->set_content_type(web_contents_->GetContentsMimeType());
