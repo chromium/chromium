@@ -433,15 +433,8 @@ template("create_signed_bundle") {
       code_signing_args += [ "--disable-code-signature" ]
     }
     if (defined(invoker.extra_system_frameworks)) {
-      # All framework in extra_system_frameworks are expected to be system
-      # framework and the path to be already system absolute so do not use
-      # rebase_path here unless ios_enable_relative_sdk_path is trued.
       foreach(_framework, invoker.extra_system_frameworks) {
-        if (ios_enable_relative_sdk_path) {
-          _framework_path = rebase_path(_framework, root_build_dir)
-        } else {
-          _framework_path = _framework
-        }
+        _framework_path = rebase_path(_framework, root_build_dir)
         code_signing_args += [ "-F=$_framework_path" ]
       }
     }
@@ -1974,9 +1967,7 @@ template("ios_xcuitest_test_runner_bundle") {
              "-o=" + rebase_path(_output_name, root_build_dir),
            ] + rebase_path(sources, root_build_dir)
 
-    if (ios_use_goma_rbe) {
-      deps = [ "//build/config/ios:copy_xctrunner_app" ]
-    }
+    deps = [ "//build/config/ios:copy_xctrunner_app" ]
   }
 
   ios_info_plist(_info_plist_target) {
@@ -2006,9 +1997,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
     outputs = [ "{{bundle_contents_dir}}/PkgInfo" ]
 
-    if (ios_use_goma_rbe) {
-      public_deps = [ "//build/config/ios:copy_xctrunner_app" ]
-    }
+    public_deps = [ "//build/config/ios:copy_xctrunner_app" ]
   }
 
   _xctest_bundle = invoker.xctest_bundle

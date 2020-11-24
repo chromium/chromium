@@ -58,9 +58,6 @@ declare_args() {
   # You can also pass the value via "--args" parameter for "gn gen" command by
   # using the syntax --args='additional_target_cpus=["arm"] target_cpu="arm64"'.
   additional_target_cpus = []
-
-  # TODO(crbug.com/1015730): remove this flag because ios_use_goma_rbe covers.
-  ios_enable_relative_sdk_path = ios_use_goma_rbe
 }
 
 declare_args() {
@@ -130,18 +127,14 @@ if (ios_sdk_path == "") {
   ios_sdk_info_args = [
     "--get_sdk_info",
     "--get_machine_info",
+    "--create_symlink_at",
+    "sdk/xcode_links",
   ]
   ios_sdk_info_args += [ ios_sdk_name ]
   if (ios_sdk_developer_dir != "") {
     ios_sdk_info_args += [
       "--developer_dir",
       ios_sdk_developer_dir,
-    ]
-  }
-  if (ios_use_goma_rbe) {
-    ios_sdk_info_args += [
-      "--create_symlink_at",
-      "sdk/xcode_links",
     ]
   }
   script_name = "//build/config/mac/sdk_info.py"
