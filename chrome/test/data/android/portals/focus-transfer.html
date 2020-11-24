@@ -12,9 +12,9 @@
         document.body.removeChild(portal);
         window.portalHost.onmessage = e => {
           if (e.data === 'windowBlurred')
-            window.portalHost.postMessage(windowBlurred, '*');
+            window.portalHost.postMessage(windowBlurred);
           if (e.data === 'buttonBlurred')
-            window.portalHost.postMessage(buttonBlurred, '*');
+            window.portalHost.postMessage(buttonBlurred);
         }
       });
     }

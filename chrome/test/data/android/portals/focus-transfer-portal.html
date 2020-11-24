@@ -10,13 +10,13 @@
 
     function windowBlurred() {
       let portal = document.querySelector('portal');
-      portal.postMessage('windowBlurred', '*');
+      portal.postMessage('windowBlurred');
       portal.onmessage = e => domAutomationController.send(e.data);
     }
 
     function buttonBlurred() {
       let portal = document.querySelector('portal');
-      portal.postMessage('buttonBlurred', '*');
+      portal.postMessage('buttonBlurred');
       portal.onmessage = e => domAutomationController.send(e.data);
     }
   </script>

@@ -1403,8 +1403,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
 
   // Get the portal renderer to access the WebContents.
   RenderProcessHostBadIpcMessageWaiter kill_waiter(portal_frame->GetProcess());
-  ExecuteScriptAsync(portal_frame,
-                     "window.portalHost.postMessage('message', '*');");
+  ExecuteScriptAsync(portal_frame, "window.portalHost.postMessage('message');");
   EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
 }
 

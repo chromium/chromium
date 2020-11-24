@@ -60,19 +60,7 @@ void PortalHost::OnPortalActivated() {
 
 void PortalHost::postMessage(ScriptState* script_state,
                              const ScriptValue& message,
-                             const String& target_origin,
-                             HeapVector<ScriptValue>& transfer,
-                             ExceptionState& exception_state) {
-  WindowPostMessageOptions* options = WindowPostMessageOptions::Create();
-  options->setTargetOrigin(target_origin);
-  if (!transfer.IsEmpty())
-    options->setTransfer(transfer);
-  postMessage(script_state, message, options, exception_state);
-}
-
-void PortalHost::postMessage(ScriptState* script_state,
-                             const ScriptValue& message,
-                             const WindowPostMessageOptions* options,
+                             const PostMessageOptions* options,
                              ExceptionState& exception_state) {
   if (!DOMWindowPortalHost::ShouldExposePortalHost(*GetSupplementable())) {
     exception_state.ThrowDOMException(
