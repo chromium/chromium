@@ -43,7 +43,10 @@ class TracingObserverProtoTest : public testing::Test {
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper));
   }
 
-  void TearDown() override { producer_client_.reset(); }
+  void TearDown() override {
+    producer_client_.reset();
+    DisableTraceLog();
+  }
 
   TestProducerClient* GetProducerClient() { return producer_client_.get(); }
 
