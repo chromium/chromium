@@ -36,14 +36,16 @@
 <div id="statusDiv"></div>
 <script>
 function onLoad() {
-  window.setTimeout(() => {
+  window.requestAnimationFrame(() => {
     window.onscroll = function() {
       window.requestAnimationFrame(() => {
         statusDiv.innerText = "done";
       });
     };
-    document.querySelector('button').click();
-  }, 100);
+    window.requestAnimationFrame(() => {
+      document.querySelector('button').click();
+    });
+  });
 }
 
 function clicked() {
