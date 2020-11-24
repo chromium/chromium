@@ -28,11 +28,19 @@ class MessageWrapper {
   MessageWrapper(const MessageWrapper&) = delete;
   MessageWrapper& operator=(const MessageWrapper&) = delete;
 
-  // Methods to set message properties. On Android the values are propagated to
-  // Java and stored in |PropertyModel|.
+  // Methods to manipulate message properties. On Android the values are
+  // propagated to Java and stored in |PropertyModel|.
+  // TODO(pavely): Reevaluate if propagating values to Java immediately is
+  // really necessary. Alternatively we could collect all the values in native
+  // and pass them to Java when enqueueing the message.
+  base::string16 GetTitle();
   void SetTitle(const base::string16& title);
+  base::string16 GetDescription();
   void SetDescription(const base::string16& description);
+  base::string16 GetPrimaryButtonText();
   void SetPrimaryButtonText(const base::string16& primary_button_text);
+
+  int GetIconResourceId();
   // When setting a message icon use ResourceMapper::MapToJavaDrawableId to
   // translate from chromium resource_id to Android drawable resource_id.
   void SetIconResourceId(int resource_id);
