@@ -10,8 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/power_monitor/power_observer.h"
 #include "base/sequenced_task_runner.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 
 namespace blink {
 
@@ -27,16 +27,15 @@ enum class ThermalStateUMA {
   kMaxValue = kCritical,
 };
 
-ThermalStateUMA ToThermalStateUMA(
-    base::PowerObserver::DeviceThermalState state) {
+ThermalStateUMA ToThermalStateUMA(mojom::blink::DeviceThermalState state) {
   switch (state) {
-    case base::PowerObserver::DeviceThermalState::kNominal:
+    case mojom::blink::DeviceThermalState::kNominal:
       return ThermalStateUMA::kNominal;
-    case base::PowerObserver::DeviceThermalState::kFair:
+    case mojom::blink::DeviceThermalState::kFair:
       return ThermalStateUMA::kFair;
-    case base::PowerObserver::DeviceThermalState::kSerious:
+    case mojom::blink::DeviceThermalState::kSerious:
       return ThermalStateUMA::kSerious;
-    case base::PowerObserver::DeviceThermalState::kCritical:
+    case mojom::blink::DeviceThermalState::kCritical:
       return ThermalStateUMA::kCritical;
     default:
       NOTREACHED();
@@ -58,13 +57,13 @@ std::unique_ptr<ThermalUmaListener> ThermalUmaListener::Create(
 ThermalUmaListener::ThermalUmaListener(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)),
-      current_thermal_state_(base::PowerObserver::DeviceThermalState::kUnknown),
+      current_thermal_state_(mojom::blink::DeviceThermalState::kUnknown),
       weak_ptr_factor_(this) {
   DCHECK(task_runner_);
 }
 
 void ThermalUmaListener::OnThermalMeasurement(
-    base::PowerObserver::DeviceThermalState measurement) {
+    mojom::blink::DeviceThermalState measurement) {
   base::AutoLock crit(lock_);
   current_thermal_state_ = measurement;
 }
@@ -79,8 +78,7 @@ void ThermalUmaListener::ScheduleReport() {
 void ThermalUmaListener::ReportStats() {
   {
     base::AutoLock crit(lock_);
-    if (current_thermal_state_ !=
-        base::PowerObserver::DeviceThermalState::kUnknown) {
+    if (current_thermal_state_ != mojom::blink::DeviceThermalState::kUnknown) {
       UMA_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.ThermalState",
                                 ToThermalStateUMA(current_thermal_state_));
     }

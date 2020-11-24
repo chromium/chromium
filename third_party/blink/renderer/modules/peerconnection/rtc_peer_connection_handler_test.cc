@@ -1289,7 +1289,7 @@ TEST_F(RTCPeerConnectionHandlerTest, CheckInsertableStreamsConfig) {
 TEST_F(RTCPeerConnectionHandlerTest, ThermalResourceDefaultValue) {
   EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
   pc_handler_->OnThermalStateChange(
-      base::PowerObserver::DeviceThermalState::kCritical);
+      mojom::blink::DeviceThermalState::kCritical);
 #if defined(OS_MAC)
   bool expect_disabled = false;
 #else
@@ -1308,7 +1308,7 @@ TEST_F(RTCPeerConnectionHandlerTest,
 
   EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
   pc_handler_->OnThermalStateChange(
-      base::PowerObserver::DeviceThermalState::kCritical);
+      mojom::blink::DeviceThermalState::kCritical);
   // A ThermalResource is created in response to the thermal signal.
   EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
 }
@@ -1322,7 +1322,7 @@ TEST_F(RTCPeerConnectionHandlerTest,
   EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
   // ThermalResource is created and injected on the fly.
   pc_handler_->OnThermalStateChange(
-      base::PowerObserver::DeviceThermalState::kCritical);
+      mojom::blink::DeviceThermalState::kCritical);
   auto resources = mock_peer_connection_->adaptation_resources();
   ASSERT_EQ(1u, resources.size());
   auto thermal_resource = resources[0];
@@ -1334,8 +1334,7 @@ TEST_F(RTCPeerConnectionHandlerTest,
   EXPECT_EQ(webrtc::ResourceUsageState::kOveruse,
             resource_listener.latest_measurement());
   // ThermalResource responds to new measurements.
-  pc_handler_->OnThermalStateChange(
-      base::PowerObserver::DeviceThermalState::kNominal);
+  pc_handler_->OnThermalStateChange(mojom::blink::DeviceThermalState::kNominal);
   EXPECT_EQ(2u, resource_listener.measurement_count());
   EXPECT_EQ(webrtc::ResourceUsageState::kUnderuse,
             resource_listener.latest_measurement());

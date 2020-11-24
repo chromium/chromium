@@ -15,8 +15,8 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/power_monitor/power_observer.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_track_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
@@ -211,7 +211,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Invoked when a new thermal state is received from the OS.
   // Virtual for testing purposes.
   virtual void OnThermalStateChange(
-      base::PowerObserver::DeviceThermalState thermal_state);
+      mojom::blink::DeviceThermalState thermal_state);
 
   // Start recording an event log.
   void StartEventLog(int output_period_ms);
@@ -473,8 +473,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   scoped_refptr<ThermalResource> thermal_resource_ = nullptr;
   // ThermalUmaListener is only tracked on peer connection that add a track.
   std::unique_ptr<ThermalUmaListener> thermal_uma_listener_ = nullptr;
-  base::PowerObserver::DeviceThermalState last_thermal_state_ =
-      base::PowerObserver::DeviceThermalState::kUnknown;
+  mojom::blink::DeviceThermalState last_thermal_state_ =
+      mojom::blink::DeviceThermalState::kUnknown;
 
   // Record info about the first SessionDescription from the local and
   // remote side to record UMA stats once both are set.  We only check

@@ -153,7 +153,8 @@ void PeerConnectionTrackerHost::OnSuspend() {
 void PeerConnectionTrackerHost::OnThermalStateChange(
     base::PowerObserver::DeviceThermalState new_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  tracker_->OnThermalStateChange(new_state);
+  tracker_->OnThermalStateChange(
+      static_cast<blink::mojom::DeviceThermalState>(new_state));
 }
 
 void PeerConnectionTrackerHost::StartEventLog(int lid, int output_period_ms) {

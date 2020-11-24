@@ -50,8 +50,7 @@ TEST_F(ThermalResourceTest, NoMeasurementsByDefault) {
 
 TEST_F(ThermalResourceTest, NominalTriggersUnderuse) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kNominal);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kNominal);
   EXPECT_EQ(1u, listener_.measurement_count());
   EXPECT_EQ(webrtc::ResourceUsageState::kUnderuse,
             listener_.latest_measurement());
@@ -59,8 +58,7 @@ TEST_F(ThermalResourceTest, NominalTriggersUnderuse) {
 
 TEST_F(ThermalResourceTest, FairTriggersUnderuse) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kFair);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kFair);
   EXPECT_EQ(1u, listener_.measurement_count());
   EXPECT_EQ(webrtc::ResourceUsageState::kUnderuse,
             listener_.latest_measurement());
@@ -68,8 +66,7 @@ TEST_F(ThermalResourceTest, FairTriggersUnderuse) {
 
 TEST_F(ThermalResourceTest, SeriousTriggersOveruse) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kSerious);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kSerious);
   EXPECT_EQ(1u, listener_.measurement_count());
   EXPECT_EQ(webrtc::ResourceUsageState::kOveruse,
             listener_.latest_measurement());
@@ -77,8 +74,7 @@ TEST_F(ThermalResourceTest, SeriousTriggersOveruse) {
 
 TEST_F(ThermalResourceTest, CriticalTriggersOveruse) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kCritical);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kCritical);
   EXPECT_EQ(1u, listener_.measurement_count());
   EXPECT_EQ(webrtc::ResourceUsageState::kOveruse,
             listener_.latest_measurement());
@@ -86,15 +82,13 @@ TEST_F(ThermalResourceTest, CriticalTriggersOveruse) {
 
 TEST_F(ThermalResourceTest, UnknownDoesNotTriggerUsage) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kUnknown);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kUnknown);
   EXPECT_EQ(0u, listener_.measurement_count());
 }
 
 TEST_F(ThermalResourceTest, MeasurementsRepeatEvery10Seconds) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kSerious);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kSerious);
   size_t expected_count = listener_.measurement_count();
 
   // First Interval.
@@ -130,8 +124,7 @@ TEST_F(ThermalResourceTest, MeasurementsRepeatEvery10Seconds) {
 
 TEST_F(ThermalResourceTest, NewMeasurementInvalidatesInFlightRepetition) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kSerious);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kSerious);
   task_runner_->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kReportIntervalMs));
 
@@ -146,8 +139,7 @@ TEST_F(ThermalResourceTest, NewMeasurementInvalidatesInFlightRepetition) {
   EXPECT_EQ(webrtc::ResourceUsageState::kOveruse,
             listener_.latest_measurement());
   // Trigger kUnderuse.
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kNominal);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kNominal);
   EXPECT_EQ(3u, listener_.measurement_count());
   EXPECT_EQ(webrtc::ResourceUsageState::kUnderuse,
             listener_.latest_measurement());
@@ -169,15 +161,13 @@ TEST_F(ThermalResourceTest, NewMeasurementInvalidatesInFlightRepetition) {
 
 TEST_F(ThermalResourceTest, UnknownStopsRepeatedMeasurements) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kSerious);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kSerious);
   task_runner_->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kReportIntervalMs));
   // The measurement is repeating.
   EXPECT_EQ(2u, listener_.measurement_count());
 
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kUnknown);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kUnknown);
   task_runner_->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kReportIntervalMs));
   // No more measurements.
@@ -186,8 +176,7 @@ TEST_F(ThermalResourceTest, UnknownStopsRepeatedMeasurements) {
 
 TEST_F(ThermalResourceTest, UnregisteringStopsRepeatedMeasurements) {
   resource_->SetResourceListener(&listener_);
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kSerious);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kSerious);
   task_runner_->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kReportIntervalMs));
   // The measurement is repeating.
@@ -201,8 +190,7 @@ TEST_F(ThermalResourceTest, UnregisteringStopsRepeatedMeasurements) {
 }
 
 TEST_F(ThermalResourceTest, RegisteringLateTriggersRepeatedMeasurements) {
-  resource_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kSerious);
+  resource_->OnThermalMeasurement(mojom::blink::DeviceThermalState::kSerious);
   task_runner_->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kReportIntervalMs));
   EXPECT_EQ(0u, listener_.measurement_count());

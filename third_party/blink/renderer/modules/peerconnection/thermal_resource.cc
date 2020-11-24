@@ -35,7 +35,7 @@ ThermalResource::ThermalResource(
     : task_runner_(std::move(task_runner)) {}
 
 void ThermalResource::OnThermalMeasurement(
-    base::PowerObserver::DeviceThermalState measurement) {
+    mojom::blink::DeviceThermalState measurement) {
   base::AutoLock auto_lock(lock_);
   measurement_ = measurement;
   ++measurement_id_;
@@ -50,8 +50,7 @@ void ThermalResource::SetResourceListener(webrtc::ResourceListener* listener) {
   base::AutoLock auto_lock(lock_);
   DCHECK(!listener_ || !listener) << "Must not overwrite existing listener.";
   listener_ = listener;
-  if (listener_ &&
-      measurement_ != base::PowerObserver::DeviceThermalState::kUnknown) {
+  if (listener_ && measurement_ != mojom::blink::DeviceThermalState::kUnknown) {
     ReportMeasurementWhileHoldingLock(measurement_id_);
   }
 }
@@ -68,16 +67,16 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
   if (measurement_id != measurement_id_ || !listener_)
     return;
   switch (measurement_) {
-    case base::PowerObserver::DeviceThermalState::kUnknown:
+    case mojom::blink::DeviceThermalState::kUnknown:
       // Stop repeating measurements.
       return;
-    case base::PowerObserver::DeviceThermalState::kNominal:
-    case base::PowerObserver::DeviceThermalState::kFair:
+    case mojom::blink::DeviceThermalState::kNominal:
+    case mojom::blink::DeviceThermalState::kFair:
       listener_->OnResourceUsageStateMeasured(
           this, webrtc::ResourceUsageState::kUnderuse);
       break;
-    case base::PowerObserver::DeviceThermalState::kSerious:
-    case base::PowerObserver::DeviceThermalState::kCritical:
+    case mojom::blink::DeviceThermalState::kSerious:
+    case mojom::blink::DeviceThermalState::kCritical:
       listener_->OnResourceUsageStateMeasured(
           this, webrtc::ResourceUsageState::kOveruse);
       break;

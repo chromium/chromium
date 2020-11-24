@@ -545,15 +545,6 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.DeviceThermalState"
-          cpp = "::base::PowerObserver::DeviceThermalState"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/peerconnection/peer_connection_tracker_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
           mojom = "blink.mojom.PolicyValue"
           cpp = "::blink::PolicyValue"
         },

@@ -12,11 +12,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/power_monitor/power_observer.h"
 #include "base/stl_util.h"
 #include "base/values.h"
-#include "third_party/blink/public/common/peerconnection/peer_connection_tracker_mojom_traits.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -726,9 +725,7 @@ void PeerConnectionTracker::OnSuspend() {
 void PeerConnectionTracker::OnThermalStateChange(
     mojom::blink::DeviceThermalState thermal_state) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  mojo::EnumTraits<mojom::blink::DeviceThermalState,
-                   base::PowerObserver::DeviceThermalState>::
-      FromMojom(thermal_state, &current_thermal_state_);
+  current_thermal_state_ = thermal_state;
   for (auto& entry : peer_connection_local_id_map_) {
     entry.key->OnThermalStateChange(current_thermal_state_);
   }
@@ -808,8 +805,7 @@ void PeerConnectionTracker::RegisterPeerConnection(
 
   peer_connection_local_id_map_.insert(pc_handler, lid);
 
-  if (current_thermal_state_ !=
-      base::PowerObserver::DeviceThermalState::kUnknown) {
+  if (current_thermal_state_ != mojom::blink::DeviceThermalState::kUnknown) {
     pc_handler->OnThermalStateChange(current_thermal_state_);
   }
 }

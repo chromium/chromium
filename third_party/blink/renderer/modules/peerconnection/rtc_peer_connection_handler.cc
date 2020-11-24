@@ -2066,7 +2066,7 @@ ThermalUmaListener* RTCPeerConnectionHandler::thermal_uma_listener() const {
 }
 
 void RTCPeerConnectionHandler::OnThermalStateChange(
-    base::PowerObserver::DeviceThermalState thermal_state) {
+    mojom::blink::DeviceThermalState thermal_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (is_closed_)
     return;

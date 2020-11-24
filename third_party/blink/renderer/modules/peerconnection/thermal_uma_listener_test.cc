@@ -4,10 +4,10 @@
 
 #include <memory>
 
-#include "base/power_monitor/power_observer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_uma_listener.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
@@ -48,7 +48,7 @@ TEST_F(ThermalUmaListenerTest, NoMeasurementsHasNoHistograms) {
 
 TEST_F(ThermalUmaListenerTest, HistogramAfterSignal) {
   thermal_uma_listener_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kFair);
+      mojom::blink::DeviceThermalState::kFair);
   task_runner_->FastForwardBy(kStatsReportingPeriod);
 
   EXPECT_THAT(histogram_.GetAllSamples("WebRTC.PeerConnection.ThermalState"),
@@ -57,7 +57,7 @@ TEST_F(ThermalUmaListenerTest, HistogramAfterSignal) {
 
 TEST_F(ThermalUmaListenerTest, DeletionCancelsListener) {
   thermal_uma_listener_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kFair);
+      mojom::blink::DeviceThermalState::kFair);
   task_runner_->FastForwardBy(2 * kStatsReportingPeriod);
   EXPECT_THAT(histogram_.GetAllSamples("WebRTC.PeerConnection.ThermalState"),
               testing::ElementsAre(Bucket(1, 2)));
@@ -70,10 +70,10 @@ TEST_F(ThermalUmaListenerTest, DeletionCancelsListener) {
 
 TEST_F(ThermalUmaListenerTest, RecordsMostRecentState) {
   thermal_uma_listener_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kFair);
+      mojom::blink::DeviceThermalState::kFair);
   task_runner_->FastForwardBy(kStatsReportingPeriod / 2);
   thermal_uma_listener_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kSerious);
+      mojom::blink::DeviceThermalState::kSerious);
   task_runner_->FastForwardBy(kStatsReportingPeriod / 2);
 
   EXPECT_THAT(histogram_.GetAllSamples("WebRTC.PeerConnection.ThermalState"),
@@ -82,16 +82,16 @@ TEST_F(ThermalUmaListenerTest, RecordsMostRecentState) {
 
 TEST_F(ThermalUmaListenerTest, HistogramBucketsIncludesPreviousPeriod) {
   thermal_uma_listener_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kNominal);
+      mojom::blink::DeviceThermalState::kNominal);
   task_runner_->FastForwardBy(kStatsReportingPeriod);
   thermal_uma_listener_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kFair);
+      mojom::blink::DeviceThermalState::kFair);
   task_runner_->FastForwardBy(kStatsReportingPeriod);
   thermal_uma_listener_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kSerious);
+      mojom::blink::DeviceThermalState::kSerious);
   task_runner_->FastForwardBy(kStatsReportingPeriod);
   thermal_uma_listener_->OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState::kCritical);
+      mojom::blink::DeviceThermalState::kCritical);
   task_runner_->FastForwardBy(kStatsReportingPeriod);
 
   EXPECT_THAT(histogram_.GetAllSamples("WebRTC.PeerConnection.ThermalState"),

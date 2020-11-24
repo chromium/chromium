@@ -150,7 +150,6 @@ source_set("common") {
     "page/page_zoom.cc",
     "page_state/page_state.cc",
     "page_state/page_state_serialization.cc",
-    "peerconnection/peer_connection_tracker_mojom_traits.cc",
     "peerconnection/webrtc_ip_handling_policy.cc",
     "permissions/permission_utils.cc",
     "renderer_preferences/renderer_preferences.cc",

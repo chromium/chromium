@@ -172,7 +172,6 @@ source_set("headers") {
     "page/page_zoom.h",
     "page_state/page_state.h",
     "page_state/page_state_serialization.h",
-    "peerconnection/peer_connection_tracker_mojom_traits.h",
     "peerconnection/webrtc_ip_handling_policy.h",
     "permissions/permission_utils.h",
     "renderer_preferences/renderer_preferences.h",

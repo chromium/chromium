@@ -7,10 +7,10 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/power_monitor/power_observer.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/webrtc/api/adaptation/resource.h"
 
@@ -46,8 +46,7 @@ class MODULES_EXPORT ThermalResource : public webrtc::Resource {
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~ThermalResource() override = default;
 
-  void OnThermalMeasurement(
-      base::PowerObserver::DeviceThermalState measurement);
+  void OnThermalMeasurement(mojom::blink::DeviceThermalState measurement);
 
   // webrtc::Resource implementation.
   std::string Name() const override;
@@ -61,8 +60,8 @@ class MODULES_EXPORT ThermalResource : public webrtc::Resource {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::Lock lock_;
   webrtc::ResourceListener* listener_ GUARDED_BY(&lock_) = nullptr;
-  base::PowerObserver::DeviceThermalState measurement_ GUARDED_BY(&lock_) =
-      base::PowerObserver::DeviceThermalState::kUnknown;
+  mojom::blink::DeviceThermalState measurement_ GUARDED_BY(&lock_) =
+      mojom::blink::DeviceThermalState::kUnknown;
   size_t measurement_id_ GUARDED_BY(&lock_) = 0u;
 };
 
