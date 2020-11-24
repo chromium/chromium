@@ -1230,30 +1230,6 @@ ci.chromiumos_builder(
     main_console_view = settings.main_console_name,
 )
 
-ci.chromiumos_builder(
-    name = "linux-lacros-builder-rel",
-    branch_selector = branches.STANDARD_RELEASES,
-    console_view_entry = ci.console_view_entry(
-        category = "default",
-        short_name = "lcr",
-    ),
-    cq_mirrors_console_view = settings.cq_mirrors_console_name,
-    main_console_view = settings.main_console_name,
-)
-
-ci.chromiumos_builder(
-    name = "linux-lacros-tester-rel",
-    branch_selector = branches.STANDARD_RELEASES,
-    console_view_entry = ci.console_view_entry(
-        category = "default",
-        short_name = "lcr",
-    ),
-    main_console_view = settings.main_console_name,
-    cq_mirrors_console_view = settings.cq_mirrors_console_name,
-    triggered_by = ["linux-lacros-builder-rel"],
-    tree_closing = False,
-)
-
 ci.clang_builder(
     name = "CFI Linux CF",
     goma_backend = goma.backend.RBE_PROD,
