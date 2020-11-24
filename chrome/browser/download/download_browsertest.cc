@@ -2723,8 +2723,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
 #if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (!defined(NDEBUG) || defined(MEMORY_SANITIZER))
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
-#elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-// Flaking on Windows, macOS, and Linux. https://crbug.com/1141263
+#elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+// Flaking on Windows, macOS, Linux, ChromeOS. https://crbug.com/1141263
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
 #else
 #define MAYBE_SaveLargeImage SaveLargeImage
