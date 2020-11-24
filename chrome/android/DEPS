@@ -19,6 +19,7 @@ include_rules = [
   "+chrome/browser/preferences/android/java",
   "+chrome/browser/safe_browsing/android",
   "+chrome/browser/safety_check/android",
+  "+chrome/browser/signin/services/android/java",
   "+chrome/browser/settings/android",
   "+chrome/browser/ui/android/favicon/java",
   "+chrome/browser/ui/android/native_page",

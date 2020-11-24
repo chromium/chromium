@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninHelper;
-import org.chromium.chrome.browser.signin.SigninPreferencesManager;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 

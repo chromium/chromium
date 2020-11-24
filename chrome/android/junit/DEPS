@@ -8,6 +8,7 @@ include_rules = [
   "+chrome/browser/performance_hints/android/java",
   "+chrome/browser/profiles/android",
   "+chrome/browser/share",
+  "+chrome/browser/signin/services/android/java",
   "+chrome/browser/tab",
   "+chrome/browser/tabmodel",
   "+chrome/browser/thumbnail/generator/android/java",

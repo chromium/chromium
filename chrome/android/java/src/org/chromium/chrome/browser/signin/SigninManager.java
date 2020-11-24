@@ -24,6 +24,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountTrackerService;

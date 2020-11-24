@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 
 import java.util.Arrays;
 import java.util.Collections;

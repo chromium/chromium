@@ -22,6 +22,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncController;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountTrackerService;
