@@ -102,8 +102,8 @@ void HungPagesTableModel::InitForWebContents(
 }
 
 void HungPagesTableModel::Reset() {
-  process_observation_.RemoveObservation();
-  widget_observation_.RemoveObservation();
+  process_observation_.Reset();
+  widget_observation_.Reset();
   tab_observers_.clear();
   render_widget_host_ = nullptr;
 
