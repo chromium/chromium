@@ -127,6 +127,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
   if (status != Status::kSuccess) {
     LOG(ERROR) << "Key locations retrieval failed: " << StatusToString(status);
     std::move(callback).Run(/*corporate=*/false);
+    return;
   }
 
   for (const auto key_location : key_locations) {
