@@ -3995,6 +3995,35 @@ def CheckWATCHLISTS(input_api, output_api):
   return []
 
 
+def CheckGnGlobForward(input_api, output_api):
+  """Checks that forward_variables_from(invoker, "*") follows best practices.
+
+  As documented at //build/docs/writing_gn_templates.md
+  """
+  def gn_files(f):
+    return input_api.FilterSourceFile(f, files_to_check=(r'.+\.gni', ))
+
+  problems = []
+  for f in input_api.AffectedSourceFiles(gn_files):
+    for line_num, line in f.ChangedContents():
+      if 'forward_variables_from(invoker, "*")' in line:
+        problems.append(
+            'Bare forward_variables_from(invoker, "*") in %s:%d' % (
+                f.LocalPath(), line_num))
+
+  if problems:
+    return [output_api.PresubmitPromptWarning(
+        'forward_variables_from("*") without exclusions',
+        items=sorted(problems),
+        long_text=('The variables "visibilty" and "test_only" should be '
+                   'explicitly listed in forward_variables_from(). For more '
+                   'details, see:\n'
+                   'https://chromium.googlesource.com/chromium/src/+/HEAD/'
+                   'build/docs/writing_gn_templates.md'
+                   '#Using-forward_variables_from'))]
+  return []
+
+
 def CheckNewHeaderWithoutGnChangeOnUpload(input_api, output_api):
   """Checks that newly added header files have corresponding GN changes.
   Note that this is only a heuristic. To be precise, run script:

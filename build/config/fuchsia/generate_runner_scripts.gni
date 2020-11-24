@@ -45,7 +45,7 @@ declare_args() {
 #   is_test_exe: If true, the generated script will run the command under
 #       test_env.py and add arguments expected to be passed to test exes.
 template("fuchsia_package_runner") {
-  forward_variables_from(invoker, [ "runner_script" ])
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "runner_script" ])
 
   if (defined(invoker.package_name_override)) {
     _pkg_shortname = invoker.package_name_override
@@ -66,11 +66,7 @@ template("fuchsia_package_runner") {
 
   # Generates a script which installs and runs a test.
   generate_wrapper(_generate_runner_target) {
-    forward_variables_from(invoker,
-                           [
-                             "target",
-                             "testonly",
-                           ])
+    forward_variables_from(invoker, [ "target" ])
 
     _is_test_exe = defined(invoker.is_test_exe) && invoker.is_test_exe
 
@@ -212,8 +208,6 @@ template("fuchsia_package_runner") {
   # Produces a script which installs a package and its dependencies into the
   # Amber repository of a pre-existing Fuchsia build directory.
   generate_wrapper(_generate_installer_target) {
-    forward_variables_from(invoker, [ "testonly" ])
-
     executable = rebase_path("//build/fuchsia/deploy_to_amber_repo.py")
     wrapper_script = generated_install_pkg_script_path
 
@@ -255,7 +249,6 @@ template("fuchsia_package_runner") {
   }
 
   group(target_name) {
-    forward_variables_from(invoker, [ "testonly" ])
     deps = [ ":${_generate_installer_target}" ]
 
     if (!defined(invoker.install_only) || invoker.install_only == false) {

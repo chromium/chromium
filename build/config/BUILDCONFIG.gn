@@ -447,6 +447,18 @@ set_defaults("loadable_module") {
   }
 }
 
+# A helper for forwarding testonly and visibility.
+# Forwarding "*" does not include variables from outer scopes (to avoid copying
+# all globals into each template invocation), so it will not pick up
+# file-scoped or outer-template-scoped variables. Normally this behavior is
+# desired, but "visibility" and "testonly" are commonly defined in outer scopes.
+# Explicitly forwarding them in forward_variables_from() works around this
+# nuance. See //build/docs/writing_gn_templates.md#using-forward_variables_from
+TESTONLY_AND_VISIBILITY = [
+  "testonly",
+  "visibility",
+]
+
 # Sets default dependencies for executable and shared_library targets.
 #
 # Variables
@@ -461,9 +473,13 @@ foreach(_target_type,
           "shared_library",
         ]) {
   template(_target_type) {
+    # Alias "target_name" because it is clobbered by forward_variables_from().
     _target_name = target_name
     target(_target_type, _target_name) {
-      forward_variables_from(invoker, "*", [ "no_default_deps" ])
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [ "no_default_deps" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(deps)) {
         deps = []
       }
@@ -543,15 +559,8 @@ template("component") {
     _component_mode = "static_library"
   }
   target(_component_mode, target_name) {
-    # Explicitly forward visibility, implicitly forward everything else.
-    # Forwarding "*" doesn't recurse into nested scopes (to avoid copying all
-    # globals into each template invocation), so won't pick up file-scoped
-    # variables. Normally this isn't too bad, but visibility is commonly
-    # defined at the file scope. Explicitly forwarding visibility and then
-    # excluding it from the "*" set works around this problem.
-    # See http://crbug.com/594610
-    forward_variables_from(invoker, [ "visibility" ])
-    forward_variables_from(invoker, "*", [ "visibility" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
 }
 

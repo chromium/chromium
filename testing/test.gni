@@ -41,6 +41,7 @@ if (is_android) {
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
 template("test") {
+  testonly = true
   if (!is_ios) {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
            "is_xctest can be set only for iOS builds")
@@ -78,8 +79,8 @@ template("test") {
         data_deps = []
         forward_variables_from(invoker,
                                "*",
-                               _wrapper_script_vars + [ "extra_dist_files" ])
-        testonly = true
+                               TESTONLY_AND_VISIBILITY + _wrapper_script_vars +
+                                   [ "extra_dist_files" ])
 
         # Thanks to the set_defaults() for test(), configs are initialized with
         # the default shared_library configs rather than executable configs.
@@ -94,7 +95,6 @@ template("test") {
       }
 
       create_native_executable_dist(_dist_target) {
-        testonly = true
         dist_dir = "$root_out_dir/$target_name"
         binary = _exec_output
         deps = [ ":$_exec_target" ]
@@ -126,7 +126,6 @@ template("test") {
           invoker.add_unwind_tables_in_apk) {
         _unwind_table_asset_name = "${target_name}_unwind_assets"
         unwind_table_asset(_unwind_table_asset_name) {
-          testonly = true
           library_target = _library_target
           deps = [ ":$_library_target" ]
         }
@@ -136,13 +135,12 @@ template("test") {
         # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
         configs = []  # Prevent list overwriting warning.
         configs = invoker.configs
-        testonly = true
 
         deps = []
         forward_variables_from(
             invoker,
             "*",
-            _apk_specific_vars + _wrapper_script_vars + [ "visibility" ])
+            _apk_specific_vars + _wrapper_script_vars + TESTONLY_AND_VISIBILITY)
 
         if (!defined(invoker.use_default_launcher) ||
             invoker.use_default_launcher) {
@@ -198,7 +196,7 @@ template("test") {
     # directory with the same $target_name.
     # Also - bots run this script directly for "components_perftests".
     generate_wrapper(target_name) {
-      testonly = true
+      forward_variables_from(invoker, [ "visibility" ])
       executable = "$root_build_dir/bin/run_$_output_name"
       wrapper_script = "$root_build_dir/$_output_name"
       deps = [ ":$_test_runner_target" ]
@@ -221,12 +219,12 @@ template("test") {
     _exec_target = "${_output_name}__exec"
 
     fuchsia_package_runner(target_name) {
-      testonly = true
       is_test_exe = true
       forward_variables_from(invoker,
                              [
                                "use_test_server",
                                "package_deps",
+                               "visibility",
                              ])
       runner_script = "//build/fuchsia/test_runner.py"
       package = ":$_pkg_target"
@@ -236,15 +234,13 @@ template("test") {
     }
 
     cr_fuchsia_package(_pkg_target) {
-      testonly = true
       forward_variables_from(invoker, [ "manifest" ])
       binary = ":$_exec_target"
       package_name_override = _output_name
     }
 
     executable(_exec_target) {
-      forward_variables_from(invoker, "*")
-      testonly = true
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
     }
   } else if (is_ios) {
@@ -309,7 +305,7 @@ template("test") {
         xctest_module_target = "//base/test:google_test_runner"
       }
 
-      forward_variables_from(invoker, "*", [ "testonly" ])
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
 
       # Provide sensible defaults in case invoker did not define any of those
       # required variables.
@@ -350,14 +346,14 @@ template("test") {
         "/" + get_label_info(target_name, "name") + ".runtime_deps"
 
     generate_runner_script(_gen_runner_target) {
-      testonly = true
       generated_script = "$root_build_dir/bin/run_" + invoker.target_name
       test_exe = invoker.target_name
       runtime_deps_file = _runtime_deps_file
     }
 
     executable(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, [ "visibility" ])
       if (!defined(deps)) {
         deps = []
       }
@@ -368,7 +364,6 @@ template("test") {
       # We use a special trigger script for CrOS hardware tests.
       data += [ "//testing/trigger_scripts/chromeos_device_trigger.py" ]
 
-      testonly = true
       output_name = target_name
       write_runtime_deps = _runtime_deps_file
       data += [ _runtime_deps_file ]
@@ -393,7 +388,6 @@ template("test") {
     _use_ash_chrome = _use_xvfb
 
     generate_wrapper(_gen_runner_target) {
-      testonly = true
       wrapper_script = "$root_build_dir/bin/run_" + _executable
 
       data = []
@@ -436,7 +430,8 @@ template("test") {
     }
 
     executable(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, [ "visibility" ])
       if (!defined(deps)) {
         deps = []
       }
@@ -445,7 +440,6 @@ template("test") {
         data_deps = []
       }
 
-      testonly = true
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
       if (_use_ash_chrome && also_build_ash_chrome) {
@@ -469,7 +463,6 @@ template("test") {
     }
 
     generate_wrapper(_gen_runner_target) {
-      testonly = true
       wrapper_script = "$root_build_dir/bin/run_" + _executable
 
       data = []
@@ -502,12 +495,14 @@ template("test") {
     }
 
     executable(target_name) {
-      forward_variables_from(invoker, "*", [ "use_xvfb" ])
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [ "use_xvfb" ])
+      forward_variables_from(invoker, [ "visibility" ])
       if (!defined(deps)) {
         deps = []
       }
 
-      testonly = true
       deps += [
         # Give tests the default manifest on Windows (a no-op elsewhere).
         "//build/win:default_exe_manifest",
@@ -523,12 +518,11 @@ template("test") {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb,
            "use_xvfb should not be defined for a non-linux configuration")
     executable(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, [ "visibility" ])
       if (!defined(deps)) {
         deps = []
       }
-
-      testonly = true
     }
   }
 }
@@ -581,13 +575,13 @@ template("script_test") {
 
     forward_variables_from(invoker,
                            [ "*" ],
-                           [
-                             "data",
-                             "data_deps",
-                             "script",
-                             "script_args",
-                             "testonly",
-                           ])
+                           TESTONLY_AND_VISIBILITY + [
+                                 "data",
+                                 "data_deps",
+                                 "script",
+                                 "script_args",
+                               ])
+    forward_variables_from(invoker, [ "visibility" ])
 
     write_runtime_deps = "${root_build_dir}/${target_name}.runtime_deps"
   }

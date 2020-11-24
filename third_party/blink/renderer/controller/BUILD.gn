@@ -9,7 +9,10 @@ import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
-visibility = [ "//third_party/blink/*" ]
+visibility = [
+  "//:gn_all",
+  "//third_party/blink/*",
+]
 
 component("controller") {
   output_name = "blink_controller"

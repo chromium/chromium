@@ -19,6 +19,7 @@ buildflag_header("buildflags") {
 
 visibility = [
   ":*",
+  "//:gn_all",
   "//mojo/public/cpp/bindings/*",
   "//third_party/blink/*",
 ]

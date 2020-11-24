@@ -178,6 +178,33 @@ template("my_template") {
 This scheme ensures that subtargets defined in templates do not conflict with
 top-level targets.
 
+### Visibility for Intermediate Targets
+
+You can restrict what targets can depend on one another using [visibility].
+When writing templates, with multiple intermediate targets, `visibility` should
+only be applied to the final target (the one named `target_name`). Applying only
+to the final target ensures that the invoker-provided visibility does not
+prevent intermediate targets from depending on each other.
+
+[visibility]: https://gn.googlesource.com/gn/+/master/docs/reference.md#var_visibility
+
+Example:
+```python
+template("my_template") {
+  # Do not forward visibility here.
+  action("${target_name}__helper") {
+    # Do not forward visibility here.
+    ...
+  }
+  action(target_name) {
+    # Forward visibility here.
+    forward_variables_from(invoker, [ "visibility" ])
+    deps = [ ":${target_name}__helper" ]
+    ...
+  }
+}
+```
+
 ### Variables
 Prefix variables within templates and targets with an underscore. For example:
 
@@ -235,21 +262,51 @@ template("hello") {
 ```
 
 ### Using forward_variables_from()
-Using `forward_variables_from()` is encouraged, but `testonly` and `visibility`
-should always be listed explicitly in case they are assigned in an enclosing
-scope (applies to the `"*"` variant of `forward_variables_from()`).
-See [this bug](https://bugs.chromium.org/p/chromium/issues/detail?id=862232)
-for more context.
+Using [forward_variables_from()] is encouraged, but special care needs to be
+taken when forwarding `"*"`. The variables `testonly` and `visibility` should
+always be listed explicitly in case they are assigned in an enclosing
+scope.
+See [this bug] for more a full example.
 
+To make this easier, `//build/config/BUILDCONFIG.gn` defines:
+```python
+TESTONLY_AND_VISIBILITY = [ "testonly", "visibility" ]
+```
+
+Example usage:
 ```python
 template("action_wrapper") {
   action(target_name) {
-    forward_variables_from(invoker, "*", [ "testonly", "visibility" ])
-    forward_variables_from(invoker, [ "testonly", "visibility" ])
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     ...
   }
 }
 ```
+
+If your template defines multiple targets, be careful to apply `testonly` to
+both, but `visibility` only to the primary one (so that the primary one is not
+prevented from depending on the other ones).
+
+Example:
+```python
+template("template_with_multiple_targets") {
+  action("${target_name}__helper) {
+    forward_variables_from(invoker, [ "testonly" ])
+    ...
+  }
+  action(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    ...
+  }
+}
+```
+
+An alternative would be to explicitly set `visibility` on all inner targets,
+but doing so tends to be tedious and has little benefit.
+
+[this bug]: https://bugs.chromium.org/p/chromium/issues/detail?id=862232
+[forward_variables_from]: https://gn.googlesource.com/gn/+/master/docs/reference.md#func_forward_variables_from
 
 ## Useful Ninja Flags
 Useful ninja flags when developing build rules:

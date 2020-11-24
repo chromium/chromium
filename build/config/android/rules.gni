@@ -58,7 +58,7 @@ if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
 #     deps = [ ":the_thing_that_makes_foo" ]
 #   }
 template("create_native_executable_dist") {
-  forward_variables_from(invoker, [ "testonly" ])
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
   _libraries_list = "${target_gen_dir}/${target_name}_library_dependencies.list"
 
@@ -149,12 +149,10 @@ if (enable_java_templates) {
       check_includes = false
       script = "//base/android/jni_generator/jni_generator.py"
       forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "public_deps",
-                               "visibility",
-                               "testonly",
-                             ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "public_deps",
+                                 ])
       if (!defined(public_deps)) {
         public_deps = []
       }
@@ -245,7 +243,8 @@ if (enable_java_templates) {
   #   }
   template("generate_jni") {
     generate_jni_impl(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     }
   }
 
@@ -276,7 +275,8 @@ if (enable_java_templates) {
   #   }
   template("generate_jar_jni") {
     generate_jni_impl(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     }
   }
 
@@ -318,7 +318,7 @@ if (enable_java_templates) {
   #   }
   template("generate_jni_registration") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, [ "testonly" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
       script = "//base/android/jni_generator/jni_registration_generator.py"
       inputs = []
@@ -474,12 +474,7 @@ if (enable_java_templates) {
   #   }
   template("java_cpp_enum") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "sources",
-                               "testonly",
-                               "visibility",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "sources" ])
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
@@ -543,12 +538,7 @@ if (enable_java_templates) {
   #   my.java.package.
   template("java_cpp_strings") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "sources",
-                               "testonly",
-                               "visibility",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "sources" ])
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
@@ -617,12 +607,7 @@ if (enable_java_templates) {
   #   my.java.package.
   template("java_cpp_features") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "sources",
-                               "testonly",
-                               "visibility",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "sources" ])
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
@@ -663,12 +648,7 @@ if (enable_java_templates) {
       # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
       run_under_python2 = true
 
-      forward_variables_from(invoker,
-                             [
-                               "visibility",
-                               "deps",
-                               "testonly",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       inputs = [ invoker.input ]
       if (defined(invoker.includes)) {
         inputs += invoker.includes
@@ -725,11 +705,7 @@ if (enable_java_templates) {
     }
 
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "testonly",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       script = "//build/android/gyp/write_native_libraries_java.py"
       outputs = [ _native_libraries_file ]
       args = [
@@ -817,7 +793,7 @@ if (enable_java_templates) {
   #   }
   #
   template("android_generated_resources") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _build_config = "$target_gen_dir/${target_name}.build_config"
 
@@ -869,11 +845,7 @@ if (enable_java_templates) {
       # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
       run_under_python2 = true
 
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "testonly",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       inputs = invoker.resources
       script = "//build/android/gyp/jinja_template.py"
 
@@ -896,11 +868,10 @@ if (enable_java_templates) {
 
     android_generated_resources(target_name) {
       forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "resource_overlay",
-                               "testonly",
-                             ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "resource_overlay",
+                                 ])
       generating_target_name = ":$_generating_target_name"
       generated_resources_zip = _resources_zip
     }
@@ -1014,7 +985,7 @@ if (enable_java_templates) {
   #     ]
   #   }
   template("android_resources") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _base_path = "$target_gen_dir/$target_name"
     if (defined(invoker.v14_skip)) {
@@ -1171,7 +1142,7 @@ if (enable_java_templates) {
   #   renaming_destinations = [ "renamed/asset2.png" ]
   # }
   template("android_assets") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _build_config = "$target_gen_dir/$target_name.build_config"
     _build_config_target_name = "$target_name$build_config_target_suffix"
@@ -1212,11 +1183,7 @@ if (enable_java_templates) {
     }
 
     group(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "visibility",
-                             ])
+      forward_variables_from(invoker, [ "deps" ])
       public_deps = [ ":$_build_config_target_name" ]
     }
   }
@@ -1235,7 +1202,7 @@ if (enable_java_templates) {
       "mergeable_android_manifests",
       "proguard_configs",
     ]
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     write_build_config("$target_name$build_config_target_suffix") {
       forward_variables_from(invoker, _build_config_vars)
       type = "group"
@@ -1257,7 +1224,9 @@ if (enable_java_templates) {
       }
     }
     group(target_name) {
-      forward_variables_from(invoker, "*", _build_config_vars)
+      forward_variables_from(invoker,
+                             "*",
+                             _build_config_vars + TESTONLY_AND_VISIBILITY)
       if (!defined(deps)) {
         deps = []
       }
@@ -1291,7 +1260,8 @@ if (enable_java_templates) {
   #   }
   template("java_binary") {
     java_library_impl(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       type = "java_binary"
       if (!defined(data_deps)) {
         data_deps = []
@@ -1326,7 +1296,8 @@ if (enable_java_templates) {
   #
   template("java_annotation_processor") {
     java_library_impl(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       type = "java_annotation_processor"
     }
   }
@@ -1404,7 +1375,7 @@ if (enable_java_templates) {
     }
 
     java_library_impl(_java_binary_target_name) {
-      forward_variables_from(invoker, "*", [ "deps" ])
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "deps" ])
       type = "junit_binary"
       main_target_name = invoker.target_name
 
@@ -1439,7 +1410,11 @@ if (enable_java_templates) {
     }
 
     group(target_name) {
-      forward_variables_from(invoker, [ "assert_no_deps" ])
+      forward_variables_from(invoker,
+                             [
+                               "assert_no_deps",
+                               "visibility",
+                             ])
       public_deps = [
         ":$_build_config_target_name",
         ":$_java_binary_target_name",
@@ -1520,7 +1495,8 @@ if (enable_java_templates) {
   #   }
   template("java_library") {
     java_library_impl(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       type = "java_library"
     }
   }
@@ -1539,7 +1515,8 @@ if (enable_java_templates) {
   #   }
   template("java_prebuilt") {
     java_library_impl(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       type = "java_library"
     }
   }
@@ -1565,7 +1542,7 @@ if (enable_java_templates) {
   template("dist_jar") {
     # TODO(crbug.com/1042017): Remove.
     not_needed(invoker, [ "no_build_hooks" ])
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _supports_android =
         !defined(invoker.supports_android) || invoker.supports_android
     _use_interface_jars =
@@ -1698,15 +1675,13 @@ if (enable_java_templates) {
 
     dex(target_name) {
       forward_variables_from(invoker,
-                             [
-                               "data",
-                               "data_deps",
-                               "visibility",
-                               "testonly",
-                               "proguard_configs",
-                               "proguard_enabled",
-                               "min_sdk_version",
-                             ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "data",
+                                   "data_deps",
+                                   "proguard_configs",
+                                   "proguard_enabled",
+                                   "min_sdk_version",
+                                 ])
       deps = _deps
       build_config = _build_config
       enable_multidex = false
@@ -1752,7 +1727,7 @@ if (enable_java_templates) {
   #     output = "$root_build_dir/MyLibrary.aar"
   #   }
   template("dist_aar") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _deps = []
     if (defined(invoker.deps)) {
@@ -1875,7 +1850,8 @@ if (enable_java_templates) {
   #   }
   template("android_library") {
     java_library(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
       supports_android = true
       requires_android = true
@@ -1910,13 +1886,15 @@ if (enable_java_templates) {
   #   }
   template("android_java_prebuilt") {
     android_library(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     }
   }
 
   template("android_system_java_prebuilt") {
     java_library_impl(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       supports_android = true
       type = "system_java_library"
     }
@@ -1938,6 +1916,7 @@ if (enable_java_templates) {
   #   isolated_splits_enabled: Value for ISOLATED_SPLITS_ENABLED.
   template("generate_build_config_srcjar") {
     java_cpp_template(target_name) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       sources = [ "//base/android/java/templates/BuildConfig.template" ]
       defines = []
 
@@ -1973,11 +1952,7 @@ if (enable_java_templates) {
       }
 
       if (invoker.use_final_fields) {
-        forward_variables_from(invoker,
-                               [
-                                 "deps",
-                                 "testonly",
-                               ])
+        forward_variables_from(invoker, [ "deps" ])
         defines += [ "USE_FINAL" ]
         if (invoker.enable_multidex) {
           defines += [ "ENABLE_MULTIDEX" ]
@@ -2030,11 +2005,7 @@ if (enable_java_templates) {
         "IS_BUNDLE_VALUE=$_is_bundle",
       ]
       if (defined(invoker.build_config)) {
-        forward_variables_from(invoker,
-                               [
-                                 "deps",
-                                 "testonly",
-                               ])
+        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
         _rebased_build_config =
             rebase_path(invoker.build_config, root_build_dir)
         defines += [
@@ -2168,7 +2139,7 @@ if (enable_java_templates) {
   #   expected_proguard_config_base: Treat expected_proguard_config as a diff
   #     with this file as the base.
   template("android_apk_or_module") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     assert(defined(invoker.android_manifest))
     _base_path = "$target_out_dir/$target_name/$target_name"
     _build_config = "$target_gen_dir/$target_name.build_config"
@@ -3564,6 +3535,7 @@ if (enable_java_templates) {
                                "use_chromium_linker",
                                "version_code",
                                "version_name",
+                               "visibility",
                              ])
       is_bundle_module = false
       name = invoker.apk_name
@@ -3691,6 +3663,7 @@ if (enable_java_templates) {
                                "uses_split",
                                "version_code",
                                "version_name",
+                               "visibility",
                              ])
       is_bundle_module = true
       generate_buildconfig_java = _is_base_module
@@ -3790,6 +3763,7 @@ if (enable_java_templates) {
   #   }
   template("android_test_apk") {
     android_apk(target_name) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       testonly = true
       deps = [ "//testing/android/broker:broker_java" ]
       if (defined(invoker.deps)) {
@@ -3855,12 +3829,12 @@ if (enable_java_templates) {
 
       forward_variables_from(invoker,
                              "*",
-                             [
-                               "data",
-                               "data_deps",
-                               "deps",
-                               "proguard_configs",
-                             ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "data",
+                                   "data_deps",
+                                   "deps",
+                                   "proguard_configs",
+                                 ])
     }
   }
 
@@ -3873,8 +3847,9 @@ if (enable_java_templates) {
   template("instrumentation_test_apk") {
     assert(defined(invoker.apk_name))
     _apk_target_name = "${target_name}__test_apk"
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     android_test_apk(_apk_target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     }
     instrumentation_test_runner(target_name) {
       forward_variables_from(invoker,
@@ -3918,6 +3893,7 @@ if (enable_java_templates) {
   #     shared_library = ":foo_unittests"
   #   }
   template("unittest_apk") {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _use_native_activity =
         defined(invoker.use_native_activity) && invoker.use_native_activity
     _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
@@ -3942,7 +3918,7 @@ if (enable_java_templates) {
 
     android_apk(target_name) {
       data_deps = []
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       testonly = true
       create_apk_script = false
       enable_native_mocks = true
@@ -4001,7 +3977,7 @@ if (enable_java_templates) {
   #   }
   template("android_aidl") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, [ "testonly" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
       script = "//build/android/gyp/aidl.py"
       sources = invoker.sources
@@ -4077,7 +4053,7 @@ if (enable_java_templates) {
   #    sources = [ "$proto_path/foo.proto" ]
   #  }
   template("proto_java_library") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _template_name = target_name
 
@@ -4347,7 +4323,7 @@ if (enable_java_templates) {
       # provides a way to have manifest entries go into the base split while
       # the code goes into a DFM.
       java_group("${target_name}__ignored_manifest") {
-        forward_variables_from(invoker, [ "testonly" ])
+        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
         deps = [ ":$_unpack_target_name" ]
         mergeable_android_manifests = [ "${_output_path}/AndroidManifest.xml" ]
       }
@@ -4357,7 +4333,7 @@ if (enable_java_templates) {
     if (_use_scanned_assets) {
       _assets_target_name = "${target_name}__assets"
       android_assets(_assets_target_name) {
-        forward_variables_from(invoker, [ "testonly" ])
+        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
         renaming_sources = []
         renaming_destinations = []
         foreach(_asset_file, _scanned_files.assets) {
@@ -4440,11 +4416,7 @@ if (enable_java_templates) {
     }
 
     java_group(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "testonly",
-                               "visibility",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       public_deps = [ ":$_unpack_target_name" ]
       deps = []
       if (defined(_jar_target_name)) {
@@ -5170,11 +5142,7 @@ if (enable_java_templates) {
   #   }
   template("create_app_bundle_minimal_apks") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "testonly",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       script = "//build/android/gyp/create_app_bundle_apks.py"
       _dir = get_path_info(invoker.bundle_path, "dir")
       _name = get_path_info(invoker.bundle_path, "name")

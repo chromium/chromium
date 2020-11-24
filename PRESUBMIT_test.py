@@ -1824,6 +1824,37 @@ class CCIncludeTest(unittest.TestCase):
     self.assertEqual(1, len(errors))
 
 
+class GnGlobForwardTest(unittest.TestCase):
+  def testAddBareGlobs(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('base/stuff.gni', [
+          'forward_variables_from(invoker, "*")']),
+      MockAffectedFile('base/BUILD.gn', [
+          'forward_variables_from(invoker, "*")']),
+    ]
+    warnings = PRESUBMIT.CheckGnGlobForward(mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+    msg = '\n'.join(warnings[0].items)
+    self.assertIn('base/stuff.gni', msg)
+    # Should not check .gn files. Local templates don't need to care about
+    # visibility / testonly.
+    self.assertNotIn('base/BUILD.gn', msg)
+
+  def testValidUses(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('base/stuff.gni', [
+          'forward_variables_from(invoker, "*", [])']),
+      MockAffectedFile('base/stuff2.gni', [
+          'forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)']),
+      MockAffectedFile('base/stuff3.gni', [
+          'forward_variables_from(invoker, [ "testonly" ])']),
+    ]
+    warnings = PRESUBMIT.CheckGnGlobForward(mock_input_api, MockOutputApi())
+    self.assertEqual([], warnings)
+
+
 class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeaderWithoutGn(self):
     mock_input_api = MockInputApi()

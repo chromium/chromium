@@ -58,13 +58,12 @@ template("generate_wrapper") {
 
   action(target_name) {
     forward_variables_from(invoker,
-                           [
-                             "data",
-                             "data_deps",
-                             "deps",
-                             "sources",
-                             "testonly",
-                           ])
+                           TESTONLY_AND_VISIBILITY + [
+                                 "data",
+                                 "data_deps",
+                                 "deps",
+                                 "sources",
+                               ])
     script = _generator_script
     if (!defined(data)) {
       data = []

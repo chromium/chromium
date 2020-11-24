@@ -10,9 +10,7 @@ template("unwind_table_asset") {
   _unwind_action = "${target_name}__extract"
 
   action(_unwind_action) {
-    if (defined(invoker.testonly)) {
-      testonly = invoker.testonly
-    }
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _root_dir = "$root_out_dir"
     if (defined(android_secondary_abi_cpu)) {
@@ -38,9 +36,7 @@ template("unwind_table_asset") {
     deps += [ "//third_party/breakpad:dump_syms" ]
   }
   android_assets(target_name) {
-    if (defined(invoker.testonly)) {
-      testonly = invoker.testonly
-    }
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     sources = [ _asset_path ]
     disable_compression = true
     deps = [ ":$_unwind_action" ]

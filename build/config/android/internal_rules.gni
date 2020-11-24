@@ -621,17 +621,8 @@ template("write_build_config") {
 
 template("generate_android_wrapper") {
   generate_wrapper(target_name) {
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     generator_script = "//build/android/gyp/generate_android_wrapper.py"
     sources = [
       "//build/android/gyp/util/build_utils.py",
@@ -646,11 +637,7 @@ template("generate_r_java") {
     # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
     run_under_python2 = true
 
-    forward_variables_from(invoker,
-                           [
-                             "deps",
-                             "testonly",
-                           ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
     if (!defined(deps)) {
       deps = []
     }
@@ -989,7 +976,7 @@ if (enable_java_templates) {
       # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
       run_under_python2 = true
 
-      forward_variables_from(invoker, [ "testonly" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(deps)) {
         deps = []
       }
@@ -1145,12 +1132,11 @@ if (enable_java_templates) {
 
   template("proguard") {
     forward_variables_from(invoker,
-                           [
-                             "data",
-                             "data_deps",
-                             "public_deps",
-                             "testonly",
-                           ])
+                           TESTONLY_AND_VISIBILITY + [
+                                 "data",
+                                 "data_deps",
+                                 "public_deps",
+                               ])
     _script = "//build/android/gyp/proguard.py"
     _deps = invoker.deps
 
@@ -1380,11 +1366,7 @@ if (enable_java_templates) {
       # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
       run_under_python2 = true
 
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "testonly",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
 
       _main_class = invoker.main_class
       _build_config = invoker.build_config
@@ -1481,24 +1463,22 @@ if (enable_java_templates) {
 
       proguard(_proguard_target_name) {
         forward_variables_from(invoker,
-                               [
-                                 "build_config",
-                                 "data",
-                                 "data_deps",
-                                 "deps",
-                                 "disable_r8_outlining",
-                                 "enable_proguard_checks",
-                                 "expected_proguard_config",
-                                 "expected_proguard_config_base",
-                                 "is_static_library",
-                                 "modules",
-                                 "proguard_mapping_path",
-                                 "proguard_sourcefile_suffix",
-                                 "supports_jdk_library_desugaring",
-                                 "testonly",
-                                 "top_target_name",
-                                 "visibiity",
-                               ])
+                               TESTONLY_AND_VISIBILITY + [
+                                     "build_config",
+                                     "data",
+                                     "data_deps",
+                                     "deps",
+                                     "disable_r8_outlining",
+                                     "enable_proguard_checks",
+                                     "expected_proguard_config",
+                                     "expected_proguard_config_base",
+                                     "is_static_library",
+                                     "modules",
+                                     "proguard_mapping_path",
+                                     "proguard_sourcefile_suffix",
+                                     "supports_jdk_library_desugaring",
+                                     "top_target_name",
+                                   ])
         inputs = []
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
@@ -1589,7 +1569,7 @@ if (enable_java_templates) {
           # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
           run_under_python2 = true
 
-          forward_variables_from(invoker, [ "testonly" ])
+          forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
           script = "//build/android/gyp/main_dex_list.py"
           depfile = "$target_gen_dir/$target_name.d"
@@ -1667,12 +1647,10 @@ if (enable_java_templates) {
         run_under_python2 = true
 
         forward_variables_from(invoker,
-                               [
-                                 "data",
-                                 "data_deps",
-                                 "testonly",
-                                 "visibility",
-                               ])
+                               TESTONLY_AND_VISIBILITY + [
+                                     "data",
+                                     "data_deps",
+                                   ])
         script = "//build/android/gyp/dex.py"
         deps = _deps
         depfile = "$target_gen_dir/$target_name.d"
@@ -1841,11 +1819,10 @@ if (enable_java_templates) {
   template("jacoco_instr") {
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "public_deps",
-                               "testonly",
-                             ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "public_deps",
+                                 ])
 
       # The name needs to match the SOURCES_JSON_FILES_SUFFIX in
       # generate_coverage_metadata_for_java.py.
@@ -1885,11 +1862,7 @@ if (enable_java_templates) {
   template("filter_jar") {
     action_with_pydeps(target_name) {
       script = "//build/android/gyp/filter_zip.py"
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "testonly",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       inputs = [ invoker.input_jar ]
       if (defined(invoker.inputs)) {
         inputs += invoker.inputs
@@ -1924,7 +1897,7 @@ if (enable_java_templates) {
   }
 
   template("process_java_prebuilt") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
     not_needed([ "_rebased_build_config" ])
@@ -2116,7 +2089,7 @@ if (enable_java_templates) {
 
   template("bytecode_processor") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, [ "testonly" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       _bytecode_checker_script = "$root_build_dir/bin/helper/bytecode_processor"
       script = "//build/android/gyp/bytecode_processor.py"
       inputs = [
@@ -2160,11 +2133,7 @@ if (enable_java_templates) {
 
   template("merge_manifests") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "testonly",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       script = "//build/android/gyp/merge_manifest.py"
       depfile = "$target_gen_dir/$target_name.d"
 
@@ -2252,12 +2221,10 @@ if (enable_java_templates) {
       run_under_python2 = true
 
       forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "sources",
-                               "testonly",
-                               "visibility",
-                             ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "sources",
+                                 ])
       script = "//build/android/gyp/prepare_resources.py"
 
       depfile = "$target_gen_dir/${invoker.target_name}.d"
@@ -2442,11 +2409,7 @@ if (enable_java_templates) {
   #   proguard_file_main_dex: (optional)
   #
   template("compile_resources") {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _deps = [
       invoker.android_sdk_dep,
@@ -2820,11 +2783,7 @@ if (enable_java_templates) {
       # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
       run_under_python2 = true
 
-      forward_variables_from(invoker,
-                             [
-                               "testonly",
-                               "deps",
-                             ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       script = "//build/android/gyp/create_size_info_files.py"
       _jar_info_path = "$root_build_dir/size-info/${invoker.name}.jar.info"
       _pak_info_path = "$root_build_dir/size-info/${invoker.name}.pak.info"
@@ -2910,11 +2869,7 @@ if (enable_java_templates) {
   #   uncompress_shared_libraries: (optional, default false) Whether to store
   #     native libraries inside the APK uncompressed and page-aligned.
   template("package_apk") {
-    forward_variables_from(invoker,
-                           [
-                             "public_deps",
-                             "testonly",
-                           ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "public_deps" ])
     _deps = invoker.deps
     _native_lib_placeholders = []
     if (defined(invoker.native_lib_placeholders)) {
@@ -3147,7 +3102,7 @@ if (enable_java_templates) {
   # [1] https://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html
   #
   template("compile_java") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _build_config = invoker.build_config
     _chromium_code = invoker.chromium_code
@@ -3363,13 +3318,11 @@ if (enable_java_templates) {
       _ijar_target = "//third_party/ijar:ijar($host_toolchain)"
       _ijar_executable = get_label_info(_ijar_target, "root_out_dir") + "/ijar"
       forward_variables_from(invoker,
-                             [
-                               "data",
-                               "data_deps",
-                               "public_deps",
-                               "testonly",
-                               "visibility",
-                             ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "data",
+                                   "data_deps",
+                                   "public_deps",
+                                 ])
       script = "//build/android/gyp/ijar.py"
       deps = [ _ijar_target ]
       if (defined(invoker.deps)) {
@@ -3893,7 +3846,7 @@ if (enable_java_templates) {
 
       template("compile_java_helper") {
         compile_java(target_name) {
-          forward_variables_from(invoker, "*")
+          forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
           output_jar_path = invoker.output_jar_path
           enable_errorprone =
               defined(invoker.enable_errorprone) && invoker.enable_errorprone
@@ -4236,11 +4189,7 @@ template("create_android_app_bundle_module") {
   _proguard_enabled =
       defined(invoker.proguard_enabled) && invoker.proguard_enabled
 
-  forward_variables_from(invoker,
-                         [
-                           "testonly",
-                           "visibility",
-                         ])
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _deps = invoker.deps
   _script = "//build/android/gyp/apkbuilder.py"
 
