@@ -755,6 +755,11 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
     return layout_object_->CreatePositionWithAffinity(0);
   }
 
+  if (!RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
+    DCHECK(layout_object_->ChildrenInline());
+    return layout_object_->CreatePositionWithAffinity(0);
+  }
+
   NGLink closest_child = {nullptr};
   LayoutUnit shortest_distance = LayoutUnit::Max();
   const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
