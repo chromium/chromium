@@ -16,6 +16,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -2121,7 +2122,7 @@ TEST_PPAPI_NACL(MouseCursor)
 TEST_PPAPI_NACL(NetworkProxy)
 
 // TODO(crbug.com/602875), TODO(crbug.com/602876) Flaky on Win and CrOS.
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 #define MAYBE_VideoDecoder DISABLED_VideoDecoder
 #else
 #define MAYBE_VideoDecoder VideoDecoder

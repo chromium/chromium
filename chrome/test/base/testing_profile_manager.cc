@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_info_cache.h"
@@ -22,7 +23,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #endif
 
@@ -85,7 +86,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
 
   // Create a path for the profile based on the name.
   base::FilePath profile_path(profiles_path_);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile_name != chrome::kInitialProfile &&
       profile_name != chromeos::ProfileHelper::GetLockScreenAppProfileName()) {
     profile_path =

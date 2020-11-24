@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -44,7 +45,7 @@ class MediaRouterIntegrationOneUABrowserTest
 };
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
@@ -68,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
 }
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Fail_SendMessage DISABLED_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
@@ -97,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
 #undef MAYBE_ReconnectSession
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ReconnectSessionSameTab DISABLED_ReconnectSessionSameTab
 #else
 #define MAYBE_ReconnectSessionSameTab ReconnectSessionSameTab
@@ -118,7 +119,7 @@ class MediaRouterIntegrationOneUANoReceiverBrowserTest
 };
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
@@ -130,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 #undef MAYBE_Basic
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Fail_SendMessage DISABLED_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
@@ -142,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 #undef MAYBE_Fail_SendMessage
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ReconnectSession DISABLED_ReconnectSession
 #else
 #define MAYBE_ReconnectSession ReconnectSession
@@ -153,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 }
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ReconnectSessionSameTab DISABLED_ReconnectSessionSameTab
 #else
 #define MAYBE_ReconnectSessionSameTab ReconnectSessionSameTab

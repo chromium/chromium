@@ -10,6 +10,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
@@ -65,7 +66,7 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #endif
 
@@ -227,13 +228,13 @@ TestingBrowserProcess::browser_policy_connector() {
         chrome::DIR_POLICY_FILES, local_policy_path, true, false));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     browser_policy_connector_ =
         std::make_unique<policy::BrowserPolicyConnectorChromeOS>();
 #else
     browser_policy_connector_ =
         std::make_unique<policy::ChromeBrowserPolicyConnector>();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Note: creating the ChromeBrowserPolicyConnector invokes BrowserThread::
     // GetTaskRunnerForThread(), which initializes a base::LazyInstance of
@@ -300,7 +301,7 @@ TestingBrowserProcess::extension_event_router_forwarder() {
 }
 
 NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!notification_ui_manager_.get())
     notification_ui_manager_ = NotificationUIManager::Create();
   return notification_ui_manager_.get();

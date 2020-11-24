@@ -7,6 +7,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,7 +29,7 @@
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "components/constrained_window/constrained_window_views.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "content/public/browser/context_factory.h"
 #endif
@@ -43,7 +44,7 @@ BrowserWithTestWindowTest::~BrowserWithTestWindowTest() {}
 
 void BrowserWithTestWindowTest::SetUp() {
   testing::Test::SetUp();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash_test_helper_.SetUp();
 #endif
 
@@ -103,7 +104,7 @@ void BrowserWithTestWindowTest::TearDown() {
   tablet_state_.reset();
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If initialized, the KioskAppManager will register an observer to
   // CrosSettings and will need to be destroyed before it. Having it destroyed
   // as part of the teardown will avoid unexpected test failures.
@@ -124,7 +125,7 @@ void BrowserWithTestWindowTest::TearDown() {
 }
 
 gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash_test_helper_.GetContext();
 #elif defined(TOOLKIT_VIEWS)
   return views_test_helper_->GetContext();
@@ -207,7 +208,7 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
   return std::unique_ptr<Browser>(Browser::Create(params));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 chromeos::ScopedCrosSettingsTestHelper*
 BrowserWithTestWindowTest::GetCrosSettingsHelper() {
   return &cros_settings_test_helper_;
@@ -217,7 +218,7 @@ chromeos::StubInstallAttributes*
 BrowserWithTestWindowTest::GetInstallAttributes() {
   return GetCrosSettingsHelper()->InstallAttributes();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BrowserWithTestWindowTest::BrowserWithTestWindowTest(
     std::unique_ptr<content::BrowserTaskEnvironment> task_environment,

@@ -94,7 +94,7 @@
 #include "components/storage_monitor/test_storage_monitor.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/system/sys_info.h"
@@ -106,9 +106,9 @@
 #include "components/user_manager/user_names.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/test/event_generator.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_CHROMEOS) && defined(USE_X11)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_X11)
 #include "ui/views/test/test_desktop_screen_x11.h"
 #endif
 
@@ -121,14 +121,14 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls.h"
 #endif
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class FakeDeviceSyncImplFactory
     : public chromeos::device_sync::DeviceSyncImpl::Factory {
  public:
@@ -154,7 +154,7 @@ FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
   static base::NoDestructor<FakeDeviceSyncImplFactory> factory;
   return factory.get();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
 // An observer that returns back to test code after a new profile is
@@ -192,14 +192,14 @@ void InProcessBrowserTest::RunScheduledLayouts() {
 #if defined(TOOLKIT_VIEWS)
   views::Widget::Widgets widgets_to_layout;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // WidgetTest::GetAllWidgets() doesn't work for ChromeOS in a production
   // environment. We must get the Widgets ourself.
   for (aura::Window* root_window : ash::Shell::GetAllRootWindows())
     views::Widget::GetAllChildWidgets(root_window, &widgets_to_layout);
 #else
   widgets_to_layout = views::test::WidgetTest::GetAllWidgets();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   for (views::Widget* widget : widgets_to_layout)
     widget->LayoutRootViewIfNecessary();
@@ -260,7 +260,7 @@ void InProcessBrowserTest::SetUp() {
   ASSERT_TRUE(SetUpUserDataDirectory())
       << "Could not set up user data directory.";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // No need to redirect log for test.
   command_line->AppendSwitch(switches::kDisableLoggingRedirect);
 
@@ -317,7 +317,7 @@ void InProcessBrowserTest::SetUp() {
   chrome_browser_net::NetErrorTabHelper::set_state_for_testing(
       chrome_browser_net::NetErrorTabHelper::TESTING_FORCE_DISABLED);
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Chrome OS, access to files via file: scheme is restricted. Enable
   // access to all files here since browser_tests and interactive_ui_tests
   // rely on the ability to open any files via file: scheme.
@@ -372,7 +372,7 @@ void InProcessBrowserTest::TearDown() {
   OSCryptMocker::TearDown();
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
 #endif
 }
@@ -443,7 +443,7 @@ bool InProcessBrowserTest::SetUpUserDataDirectory() {
 }
 
 void InProcessBrowserTest::SetScreenInstance() {
-#if defined(USE_X11) && !defined(OS_CHROMEOS)
+#if defined(USE_X11) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!features::IsUsingOzonePlatform()) {
     DCHECK(!display::Screen::GetScreen());
     display::Screen::SetScreenInstance(
@@ -579,7 +579,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
 
   SelectFirstBrowser();
   if (browser_) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // There are cases where windows get created maximized by default.
     if (browser_->window()->IsMaximized())
       browser_->window()->Restore();
@@ -594,7 +594,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
     // The ozone implementation of CreateUIControlsAura differs from other
     // implementation in that it requires a WindowTreeHost. Thus, it must be
     // initialized here rather than earlier.
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     BrowserWindow* window = browser_->window();
     CHECK(window);
     ui_controls::InstallUIControlsAura(

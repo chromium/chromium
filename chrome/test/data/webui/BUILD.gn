@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/crypto.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
@@ -108,7 +109,7 @@ if (include_js_tests) {
       "//third_party/axe-core/axe.js",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       gen_include_files += [
         "settings/chromeos/a11y/os_settings_accessibility_test.js",
         "settings/chromeos/a11y/crostini_accessibility_test.js",
@@ -122,11 +123,11 @@ if (include_js_tests) {
       "//chrome/browser/resources/signin/sync_confirmation/sync_confirmation_browser_proxy.js",
     ]
 
-    if (is_chromeos || is_win) {
+    if (is_chromeos_ash || is_win) {
       sources += [ "inline_login/inline_login_browsertest.js" ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../../../browser/resources/chromeos/login/components/oobe_types.js",
         "../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
@@ -257,7 +258,7 @@ if (include_js_tests) {
       ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       data += [
         "$root_gen_dir/chrome/test/data/webui/chromeos/fake_network_config_mojom.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/activation_code_page_test.m.js",
@@ -385,7 +386,7 @@ if (include_js_tests) {
 
     deps = [ "//chrome/browser/ui" ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "chromeos/crostini_installer_browsertest.js",
         "chromeos/crostini_upgrader_browsertest.js",
@@ -456,7 +457,7 @@ if (include_js_tests) {
       "../../../renderer/resources/extensions/notifications_test_util.js",
       "//ui/webui/resources/js/cr.js",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [ "../../../browser/resources/chromeos/machine_learning/machine_learning_internals_utils_unittest.js" ]
       extra_js_files += [ "../../../browser/resources/chromeos/machine_learning/machine_learning_internals_utils.js" ]
     }
@@ -474,7 +475,7 @@ group("modulize") {
     "./settings:modulize",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "./nearby_share/shared:modulize" ]
   }
 }
@@ -510,7 +511,7 @@ group("closure_compile") {
 
     # TODO(crbug.com/1000989): Add page specific targets here.
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "chromeos:closure_compile",
       "nearby_share:closure_compile",

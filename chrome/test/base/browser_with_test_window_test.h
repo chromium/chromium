@@ -21,7 +21,7 @@
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/test/views/chrome_test_views_delegate.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
@@ -137,7 +137,7 @@ class BrowserWithTestWindowTest : public testing::Test {
     return window_.release();
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AshTestHelper* ash_test_helper() { return &ash_test_helper_; }
 #endif
 
@@ -189,7 +189,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
 #if defined(TOOLKIT_VIEWS)
   views::TestViewsDelegate* test_views_delegate() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return test_views_delegate_.get();
 #else
     return views_test_helper_->test_views_delegate();
@@ -197,7 +197,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
   chromeos::StubInstallAttributes* GetInstallAttributes();
 #endif
@@ -213,7 +213,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   // We need to create a MessageLoop, otherwise a bunch of things fails.
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager test_user_manager_;
 #endif
@@ -228,7 +228,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   std::unique_ptr<BrowserWindow> window_;  // Usually a TestBrowserWindow.
   std::unique_ptr<Browser> browser_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AshTestHelper ash_test_helper_;
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate_ =
       std::make_unique<ChromeTestViewsDelegate<ash::AshTestViewsDelegate>>();

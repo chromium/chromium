@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_grit.gni")
 
@@ -86,7 +87,7 @@ js_type_check("closure_compile") {
     #":user_manager_test",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       ":destination_dialog_cros_interactive_test",
       ":destination_dialog_cros_test",
@@ -224,7 +225,7 @@ js_library("destination_settings_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   js_library("destination_dialog_cros_test") {
     deps = [
       ":cloud_print_interface_stub",
@@ -252,7 +253,7 @@ if (is_chromeos) {
   }
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   js_library("destination_dialog_cros_interactive_test") {
     deps = [
       ":cloud_print_interface_stub",
@@ -301,7 +302,7 @@ js_library("destination_item_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   js_library("native_layer_cros_stub") {
     deps = [
       "..:test_browser_proxy.m",

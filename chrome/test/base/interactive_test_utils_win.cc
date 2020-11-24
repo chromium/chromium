@@ -19,6 +19,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/interactive_test_utils_aura.h"
 #include "chrome/test/base/process_lineage_win.h"
 #include "chrome/test/base/save_desktop_snapshot_win.h"
@@ -31,18 +32,18 @@
 namespace ui_test_utils {
 
 void HideNativeWindow(gfx::NativeWindow window) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   HideNativeWindowAura(window);
 #else
   HWND hwnd = window->GetHost()->GetAcceleratedWidget();
   ::ShowWindow(hwnd, SW_HIDE);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool ShowAndFocusNativeWindow(gfx::NativeWindow window) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowAndFocusNativeWindowAura(window);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   window->Show();
   // Always make sure the window hosting ash is visible and focused.
   HWND hwnd = window->GetHost()->GetAcceleratedWidget();

@@ -22,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
@@ -127,7 +128,7 @@
 #include "extensions/browser/extension_system.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
 #include "chrome/browser/chromeos/net/delay_network_call.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
@@ -178,7 +179,7 @@ std::unique_ptr<KeyedService> BuildPersonalDataManagerInstanceFor(
 }  // namespace
 
 // static
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Must be kept in sync with
 // ChromeBrowserMainPartsChromeos::PreEarlyInitialization.
 const char TestingProfile::kTestUserProfileDir[] = "test-user";
@@ -191,8 +192,10 @@ bool TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
     base::test::ScopedFeatureList& scoped_feature_list,
     bool enabled) {
 // This feature is now only supported on Windows, Linux, and Mac.
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
 #if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   if (enabled)
     scoped_feature_list.InitAndEnableFeature(
         features::kEnableEphemeralGuestProfilesOnDesktop);
@@ -202,8 +205,8 @@ bool TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
   return true;
 #else
   return false;
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) &&
-        // !defined(OS_CHROMEOS))
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS))
 }
 
 TestingProfile::TestingProfile() : TestingProfile(base::FilePath()) {}
@@ -252,11 +255,11 @@ TestingProfile::TestingProfile(
     bool allows_browser_windows,
     base::Optional<bool> is_new_profile,
     const std::string& supervised_user_id,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<policy::UserCloudPolicyManagerChromeOS> policy_manager,
 #else
     std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<policy::PolicyService> policy_service,
     TestingFactories testing_factories,
     const std::string& profile_name,
@@ -390,7 +393,7 @@ void TestingProfile::Init() {
   if (!base::PathExists(profile_path_))
     base::CreateDirectory(profile_path_);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initialize |chromeos::AccountManager|.
   chromeos::AccountManagerFactory* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
@@ -866,7 +869,7 @@ TestingProfile::GetPolicySchemaRegistryService() {
   return schema_registry_service_.get();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 policy::UserCloudPolicyManagerChromeOS*
 TestingProfile::GetUserCloudPolicyManagerChromeOS() {
   return user_cloud_policy_manager_.get();
@@ -880,7 +883,7 @@ TestingProfile::GetActiveDirectoryPolicyManager() {
 policy::UserCloudPolicyManager* TestingProfile::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 policy::ProfilePolicyConnector* TestingProfile::GetProfilePolicyConnector() {
   return profile_policy_connector_.get();
@@ -899,7 +902,7 @@ void TestingProfile::set_last_selected_directory(const base::FilePath& path) {
   last_selected_directory_ = path;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TestingProfile::ChangeAppLocale(const std::string& locale,
                                      AppLocaleChangedVia via) {
   requested_locale_ = locale;
@@ -1054,7 +1057,7 @@ void TestingProfile::Builder::SetSupervisedUserId(
   supervised_user_id_ = supervised_user_id;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TestingProfile::Builder::SetUserCloudPolicyManagerChromeOS(
     std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
         user_cloud_policy_manager) {

@@ -4,6 +4,7 @@
 
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/crypto.gni")
 import("//build/config/features.gni")
@@ -78,7 +79,7 @@ group("policy_testserver_pyproto") {
     data += [ "$root_out_dir/pyproto/components/policy/proto/chrome_extension_policy_pb2.py" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     # Used by chrome/browser/policy/test/policy_testserver.py
     data += [ "$root_out_dir/pyproto/components/policy/proto/chrome_device_policy_pb2.py" ]
   }
@@ -198,6 +199,7 @@ static_library("test_support") {
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
   ]
 
@@ -351,7 +353,7 @@ static_library("test_support") {
     libs = [ "runtimeobject.lib" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../browser/chromeos/accessibility/speech_monitor.cc",
       "../browser/chromeos/accessibility/speech_monitor.h",
@@ -400,7 +402,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos)) {
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     public_deps += [ "//ui/base:pixel_diff_test_support" ]
     sources += [
       "pixel/browser_skia_gold_pixel_diff.cc",
@@ -488,7 +490,7 @@ static_library("test_support") {
     public_deps += [ "//ppapi/shared_impl" ]
   }
 
-  if (enable_print_preview && !is_chromeos) {
+  if (enable_print_preview && !is_chromeos_ash) {
     public_deps += [ "//chrome/service" ]
   }
 }
@@ -734,7 +736,7 @@ static_library("browser_tests_runner") {
 
   deps = [ ":test_support" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "base/browser_tests_main_chromeos.cc" ]
   } else {
     sources += [ "base/browser_tests_main.cc" ]
@@ -1617,7 +1619,7 @@ if (!is_android) {
       ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../browser/chrome_main_browsertest.cc",
         "../browser/chromeos/login/saml/test_client_cert_saml_idp_mixin.cc",
@@ -1671,7 +1673,7 @@ if (!is_android) {
       sources += [ "../browser/metrics/power_metrics_provider_mac_unittest.cc" ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       data += [
         # TODO(GYP): figure out which of these things are
         # actually needed and also which should be pulled in via
@@ -1753,7 +1755,7 @@ if (!is_android) {
       ]
     }
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [
         "../browser/policy/native_messaging_policy_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
@@ -1767,7 +1769,7 @@ if (!is_android) {
         "//chrome/test/data/webui:browser_tests_js_mojo_webui",
         "//chrome/test/data/webui:browser_tests_js_webui",
       ]
-      if (is_chromeos) {
+      if (is_chromeos_ash) {
         deps += [
           "//chrome/browser/resources/gaia_auth_host:browser_tests",
           "//chromeos/components/help_app_ui:browser_tests_js",
@@ -1799,7 +1801,7 @@ if (!is_android) {
           [ "../browser/ssl/captive_portal_blocking_page_browsertest.cc" ]
     }
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
@@ -1809,7 +1811,7 @@ if (!is_android) {
       ]
     }
 
-    if (is_win || is_chromeos) {
+    if (is_win || is_chromeos_ash) {
       sources += [ "../browser/webshare/share_service_browsertest.cc" ]
     }
 
@@ -1848,7 +1850,7 @@ if (!is_android) {
         "//ppapi/native_client:irt",
         "//ppapi/tests/extensions",
       ]
-      if (is_chromeos) {
+      if (is_chromeos_ash) {
         sources += [
           "../browser/ui/views/extensions/request_file_system_dialog_browsertest.cc",
           "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
@@ -2135,7 +2137,7 @@ if (!is_android) {
         ]
       }
 
-      if (is_chromeos) {
+      if (is_chromeos_ash) {
         sources += [
           "../browser/accessibility/accessibility_extension_api_browsertest.cc",
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
@@ -2330,7 +2332,7 @@ if (!is_android) {
           "../browser/ui/views/status_bubble_views_browsertest_mac.mm",
         ]
       }
-      if (!is_chromeos) {
+      if (!is_chromeos_ash) {
         sources += [
           "../browser/ui/views/bookmarks/bookmark_bubble_sign_in_delegate_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
@@ -2369,12 +2371,12 @@ if (!is_android) {
 
     # Browser tests for functionality that is only intended to be present in
     # ash-chrome, not lacros-chrome.
-    if (is_chromeos && !chromeos_is_browser_only) {
+    if (is_chromeos_ash && !is_chromeos_lacros) {
       sources +=
           [ "../browser/chromeos/crosapi/screen_manager_ash_browsertest.cc" ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
@@ -2825,14 +2827,14 @@ if (!is_android) {
         "base/interactive_test_utils_views.cc",
       ]
       data += [ "../browser/resources/chromeos/accessibility/switch_access/test_support.js" ]
-      if (is_chromeos && !is_official_build) {
+      if (is_chromeos_ash && !is_official_build) {
         sources += [
           "../browser/chromeos/web_applications/sample_system_web_app_integration_browsertest.cc",
           "../browser/chromeos/web_applications/telemetry_extension_integration_browsertest.cc",
         ]
       }
       if (use_cups) {
-        if (is_chromeos) {
+        if (is_chromeos_ash) {
           sources += [
             "../browser/chromeos/extensions/printing/fake_print_job_controller.cc",
             "../browser/chromeos/extensions/printing/fake_print_job_controller.h",
@@ -2890,7 +2892,7 @@ if (!is_android) {
         "//chromeos/ui/frame:test_support",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
       ]
-    } else {  # !is_chromeos
+    } else {  # !is_chromeos_ash
       sources -= [
         "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
         "../browser/net/nss_context_chromeos_browsertest.cc",
@@ -3021,11 +3023,11 @@ if (!is_android) {
         "../browser/renderer_context_menu/spelling_options_submenu_observer_browsertest.cc",
       ]
     }
-    if (!is_posix || is_chromeos) {
+    if (!is_posix || is_chromeos_ash) {
       sources -= [ "../common/time_format_browsertest.cc" ]
     }
 
-    if (is_mac || is_win || is_linux) {
+    if (is_mac || is_win || (is_linux || is_chromeos_lacros)) {
       sources += [
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
         "../browser/browser_switcher/browser_switcher_browsertest.cc",
@@ -3036,10 +3038,10 @@ if (!is_android) {
         "../browser/profiles/profile_statistics_browsertest.cc",
       ]
     }
-    if (is_mac || is_win || is_chromeos) {
+    if (is_mac || is_win || is_chromeos_ash) {
       sources += [ "../browser/extensions/api/networking_cast_private/networking_cast_private_apitest.cc" ]
     }
-    if ((is_linux && !chromeos_is_browser_only) || is_mac) {
+    if (((is_linux || is_chromeos_lacros) && !is_chromeos_lacros) || is_mac) {
       sources +=
           [ "../browser/first_run/first_run_internal_posix_browsertest.cc" ]
     }
@@ -3095,7 +3097,7 @@ if (!is_android) {
         "../browser/printing/pwg_raster_converter_browsertest.cc",
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",
       ]
-      if (enable_extensions && !is_chromeos) {
+      if (enable_extensions && !is_chromeos_ash) {
         sources += [ "../browser/extensions/api/cloud_print_private/cloud_print_private_apitest.cc" ]
       }
       if (!is_mac && !is_chromeos_ash && !is_chromeos_lacros) {
@@ -3105,7 +3107,7 @@ if (!is_android) {
           "../browser/printing/cloud_print/test/cloud_print_policy_browsertest.cc",
         ]
       }
-      if (!is_chromeos) {
+      if (!is_chromeos_ash) {
         sources += [
           # Not intended to run on ChromeOS.
           "../browser/printing/cloud_print/test/cloud_print_proxy_process_browsertest.cc",
@@ -3150,11 +3152,11 @@ if (!is_android) {
       }
     }
 
-    if (is_chromeos || (is_linux && use_dbus)) {
+    if (is_chromeos_ash || ((is_linux || is_chromeos_lacros) && use_dbus)) {
       sources += [ "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest.cc" ]
     }
 
-    if (toolkit_views && !is_chromeos) {
+    if (toolkit_views && !is_chromeos_ash) {
       sources +=
           [ "../browser/ui/screen_capture_notification_ui_browsertest.cc" ]
     }
@@ -3177,7 +3179,8 @@ if (!is_android) {
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
     }
 
-    if (is_win || is_mac || (is_linux && !chromeos_is_browser_only)) {
+    if (is_win || is_mac ||
+        ((is_linux || is_chromeos_lacros) && !is_chromeos_lacros)) {
       sources +=
           [ "../browser/ui/views/profiles/profile_picker_view_browsertest.cc" ]
     }
@@ -3186,7 +3189,7 @@ if (!is_android) {
   }
 }
 
-if (chromeos_is_browser_only) {
+if (is_chromeos_lacros) {
   # This test target is intended for lacros chrome specific tests that depend
   # on crosapi, for generic tests, please use 'browser_tests' target instead.
   test("lacros_chrome_browsertests") {
@@ -3946,7 +3949,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../browser/notifications/notification_platform_bridge_chromeos_unittest.cc",
       "../browser/performance_manager/policies/dynamic_tcmalloc_policy_chromeos_unittest.cc",
@@ -3988,7 +3991,7 @@ test("unit_tests") {
     }
   }
 
-  if (is_win || is_chromeos) {
+  if (is_win || is_chromeos_ash) {
     sources += [ "../browser/webshare/share_service_unittest.cc" ]
   }
 
@@ -4049,7 +4052,7 @@ test("unit_tests") {
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
     ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../../chromeos/memory/userspace_swap/userspace_swap.cc",
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",
@@ -4061,7 +4064,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos)) {
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     sources += [ "../test/pixel/browser_skia_gold_pixel_diff_unittest.cc" ]
   }
 
@@ -4711,7 +4714,7 @@ test("unit_tests") {
     if (is_posix || is_fuchsia) {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../browser/resource_coordinator/tab_manager_delegate_chromeos_unittest.cc",
         "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
@@ -4773,7 +4776,7 @@ test("unit_tests") {
     if (is_mac) {
       deps += [ ":firefox_importer_interface" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//chrome/services/sharing/public/cpp",
         "//chrome/services/sharing/public/cpp:unit_tests",
@@ -4850,7 +4853,7 @@ test("unit_tests") {
 
     if (include_js_tests) {
       deps += [ "//chrome/test/data/webui:unit_tests_js" ]
-      if (is_chromeos) {
+      if (is_chromeos_ash) {
         deps += [
           "//chrome/browser/resources/chromeos/accessibility:unit_tests_js",
         ]
@@ -4859,8 +4862,8 @@ test("unit_tests") {
   }
 
   if (enable_native_notifications) {
-    # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
-    if (is_linux && !chromeos_is_browser_only) {
+    # TODO(crbug.com/1052397): Rename is_chromeos_lacros to is_chromeos_lacros.
+    if ((is_linux || is_chromeos_lacros) && !is_chromeos_lacros) {
       sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
     }
 
@@ -4889,7 +4892,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources -= [
       "../browser/notifications/notification_ui_manager_unittest.cc",
       "../browser/signin/chrome_signin_status_metrics_provider_delegate_unittest.cc",
@@ -5448,7 +5451,7 @@ test("unit_tests") {
       ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",
         "../browser/extensions/extension_garbage_collector_chromeos_unittest.cc",
@@ -5513,7 +5516,7 @@ test("unit_tests") {
       sources +=
           [ "../browser/ui/startup/mac_system_infobar_delegate_unittest.cc" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../browser/chromeos/extensions/extensions_permissions_tracker_unittest.cc",
         "../browser/chromeos/login/easy_unlock/easy_unlock_auth_attempt_unittest.cc",
@@ -5544,7 +5547,7 @@ test("unit_tests") {
       "//ui/wm",
     ]
   }
-  if (!is_chromeos && is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [
       "../browser/shell_integration_linux_unittest.cc",
       "../browser/ui/global_media_controls/media_notification_device_monitor_unittest.cc",
@@ -5553,7 +5556,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_android || is_chromeos) {
+  if (is_android || is_chromeos_ash) {
     sources += [
       "../browser/installable/digital_asset_links/digital_asset_links_handler_unittest.cc",
       "../browser/media/protected_media_identifier_permission_context_unittest.cc",
@@ -5763,7 +5766,7 @@ test("unit_tests") {
 
       deps += [ "//ipc" ]
 
-      if (!is_chromeos) {
+      if (!is_chromeos_ash) {
         sources += [
           "../browser/printing/cloud_print/cloud_print_proxy_service_unittest.cc",
           "../common/cloud_print/cloud_print_helpers_unittest.cc",
@@ -5798,7 +5801,7 @@ test("unit_tests") {
       "../browser/sessions/tab_loader_unittest.cc",
     ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/chromeos:unit_tests",
       "//chromeos/ime:gencode",
@@ -5881,7 +5884,7 @@ test("unit_tests") {
     sources +=
         [ "../browser/notifications/notification_image_retainer_unittest.cc" ]
   }
-  if (is_win || is_mac || is_chromeos) {
+  if (is_win || is_mac || is_chromeos_ash) {
     sources += [ "../browser/extensions/api/networking_private/networking_private_crypto_unittest.cc" ]
   }
   if (enable_rlz) {
@@ -5940,7 +5943,7 @@ test("unit_tests") {
       ]
     }
   }
-  if (!is_android && !is_chromeos) {
+  if (!is_android && !is_chromeos_ash) {
     sources += [
       "../browser/device_identity/device_oauth2_token_store_desktop_unittest.cc",
       "../browser/enterprise/remote_commands/clear_browsing_data_job_unittest.cc",
@@ -5962,7 +5965,7 @@ test("unit_tests") {
 
     deps += [ "//components/enterprise:test_support" ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../browser/upgrade_detector/installed_version_updater_chromeos_unittest.cc",
       "../browser/upgrade_detector/upgrade_detector_chromeos_unittest.cc",
@@ -6065,7 +6068,7 @@ test("unit_tests") {
       "../browser/ui/views/user_education/feature_promo_controller_views_unittest.cc",
       "../browser/ui/views/window_name_prompt_unittest.cc",
     ]
-    if (is_linux) {
+    if (is_linux || is_chromeos_lacros) {
       sources += [ "../browser/ui/views/frame/desktop_linux_browser_frame_view_layout_unittest.cc" ]
     }
     if (enable_plugins) {
@@ -6082,14 +6085,14 @@ test("unit_tests") {
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_unittest.mm",
       ]
     }
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [
         "../browser/ui/views/frame/opaque_browser_frame_view_layout_unittest.cc",
         "../browser/ui/views/sync/one_click_signin_dialog_view_unittest.cc",
         "../browser/ui/views/sync/profile_signin_confirmation_dialog_views_unittest.cc",
       ]
     }
-    if ((is_linux && !is_chromeos) || is_win) {
+    if (is_linux || is_chromeos_lacros || is_win) {
       sources +=
           [ "../browser/notifications/popups_only_ui_controller_unittest.cc" ]
     }
@@ -6145,7 +6148,7 @@ test("unit_tests") {
     sources += [ "../browser/extensions/blocklist_unittest.cc" ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos)) {
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     sources += [
       "../browser/browser_switcher/alternative_browser_driver_unittest.cc",
       "../browser/browser_switcher/browser_switcher_navigation_throttle_unittest.cc",
@@ -6156,7 +6159,7 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_widevine_cdm_component && is_linux) {
+  if (enable_widevine_cdm_component && (is_linux || is_chromeos_lacros)) {
     sources +=
         [ "../common/media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
   }
@@ -6202,7 +6205,7 @@ static_library("test_support_unit") {
     deps = [ "//chrome/install_static/test:test_support" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "base/chrome_ash_test_base.cc",
       "base/chrome_ash_test_base.h",
@@ -6293,7 +6296,7 @@ if (!is_android) {
       deps += [ "//extensions/browser" ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//ash/public/cpp",
         "//chromeos/services/device_sync",
@@ -6313,7 +6316,7 @@ if (!is_android) {
     sources = [ "../common/safe_browsing/ipc_protobuf_message_test.proto" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     assert(enable_extensions)
 
     # These tests are only meant to run on an FYI bot because they
@@ -6336,6 +6339,7 @@ if (!is_android) {
       deps = [
         ":test_support",
         ":test_support_ui",
+        "//build:chromeos_buildflags",
         "//chrome:packed_resources",
         "//chrome:resources",
         "//chrome:strings",
@@ -6649,7 +6653,7 @@ if (!is_android) {
         "//ui/views:views_interactive_ui_tests",
         "//ui/views/controls/webview:test_support",
       ]
-      if (is_linux && !is_chromeos) {
+      if (is_linux || is_chromeos_lacros) {
         # Desktop linux.
         sources -= [
           # TODO(port): This times out. Attempts have been made to fix the
@@ -6658,7 +6662,7 @@ if (!is_android) {
           "../browser/ui/views/keyboard_access_browsertest.cc",
         ]
       }
-      if (!is_chromeos) {
+      if (!is_chromeos_ash) {
         sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_interactive_browsertest.cc" ]
         deps += [
           "../browser/media/router:test_support",
@@ -6687,7 +6691,7 @@ if (!is_android) {
           [ "../browser/notifications/notification_interactive_uitest_mac.mm" ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//chrome/browser/media/router:test_support",
         "//chromeos/dbus",
@@ -6697,7 +6701,7 @@ if (!is_android) {
           [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
       sources +=
           [ "../browser/ui/app_list/app_list_client_interactive_uitest.cc" ]
-    } else {  # ! is_chromeos
+    } else {  # ! is_chromeos_ash
       # Non-ChromeOS notifications tests.
       sources += [
         "../browser/notifications/notification_interactive_uitest.cc",
@@ -6792,7 +6796,7 @@ if (!is_android) {
       configs += [ "//build/config/linux/atk" ]
     }
 
-    if (is_linux && !is_chromeos) {
+    if (is_linux || is_chromeos_lacros) {
       deps += [ "//ui/base/ime/linux" ]
     }
 
@@ -7020,7 +7024,7 @@ if (!is_fuchsia) {
         "../browser/sync/test/integration/dictionary_load_observer.h",
       ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../browser/sync/test/integration/os_sync_test.cc",
         "../browser/sync/test/integration/os_sync_test.h",
@@ -7168,7 +7172,7 @@ if (!is_fuchsia && !is_android) {
         "//ui/resources",
       ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../browser/sync/test/integration/single_client_app_list_sync_test.cc",
         "../browser/sync/test/integration/single_client_arc_package_sync_test.cc",
@@ -7492,7 +7496,7 @@ if (is_win) {
 }
 
 # Test binary for the ChromeOS usage time limit processor tests.
-if (is_chromeos) {
+if (is_chromeos_ash) {
   test("usage_time_limit_unittests") {
     testonly = true
     sources = [

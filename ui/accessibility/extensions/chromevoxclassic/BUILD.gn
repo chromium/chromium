@@ -522,6 +522,7 @@ test("chromevox_tests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//chrome:browser_tests_pak",
     "//chrome:packed_resources",
     "//chrome:resources",

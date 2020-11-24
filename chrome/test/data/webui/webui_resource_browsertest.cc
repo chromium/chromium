@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -51,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelTest) {
   LoadTestUrl("js/cr/ui/array_data_model_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelModuleTest) {
   LoadTestUrl("?module=js/cr/ui/array_data_model_test.m.js");
 }
@@ -131,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
   LoadTestUrl("js/cr/ui/list_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListModuleTest) {
   LoadTestUrl("?module=js/cr/ui/list_test.m.js");
 }
@@ -149,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelTest) {
   LoadTestUrl("js/cr/ui/list_selection_model_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModeModulelTest) {
   LoadTestUrl("?module=js/cr/ui/list_selection_model_test.m.js");
 }
@@ -159,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSingleSelectionModelTest) {
   LoadTestUrl("js/cr/ui/list_single_selection_model_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest,
                        ListSingleSelectionModelModuleTest) {
   LoadTestUrl("?module=js/cr/ui/list_single_selection_model_test.m.js");
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuTest) {
   LoadTestUrl("js/cr/ui/menu_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuModuleTest) {
   LoadTestUrl("?module=js/cr/ui/menu_test.m.js");
 }
@@ -188,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilTest) {
   LoadTestUrl("js/cr/ui/position_util_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilModuleTest) {
   LoadTestUrl("?module=js/cr/ui/position_util_test.m.js");
 }
@@ -198,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandTest) {
   LoadTestUrl("js/cr/ui/command_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandModuleTest) {
   LoadTestUrl("?module=js/cr/ui/command_test.m.js");
 }
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerTest) {
   LoadTestUrl("js/cr/ui/context_menu_handler_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerModuleTest) {
   LoadTestUrl("?module=js/cr/ui/context_menu_handler_test.m.js");
 }
@@ -218,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonTest) {
   LoadTestUrl("js/cr/ui/menu_button_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonModuleTest) {
   LoadTestUrl("?module=js/cr/ui/menu_button_test.m.js");
 }
@@ -228,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterTest) {
   LoadTestUrl("js/cr/ui/splitter_test.html");
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterModuleTest) {
   LoadTestUrl("?module=js/cr/ui/splitter_test.m.js");
 }

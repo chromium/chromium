@@ -36,6 +36,7 @@
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/server/http_handler.h"
@@ -48,7 +49,9 @@
 
 namespace {
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Ensure that there is a writable shared memory directory. We use
 // network::SimpleURLLoader to connect to Chrome, and it calls
 // base::subtle::PlatformSharedMemoryRegion::Create to get a shared memory
@@ -300,36 +303,38 @@ int main(int argc, char *argv[]) {
   if (cmd_line->HasSwitch("h") || cmd_line->HasSwitch("help")) {
     std::string options;
     const char* const kOptionAndDescriptions[] = {
-        "port=PORT",
-            "port to listen on",
-        "adb-port=PORT",
-            "adb server port",
-        "log-path=FILE",
-            "write server log to file instead of stderr, "
-            "increases log level to INFO",
-        "log-level=LEVEL",
-            "set log level: ALL, DEBUG, INFO, WARNING, SEVERE, OFF",
-        "verbose",
-            "log verbosely (equivalent to --log-level=ALL)",
-        "silent",
-            "log nothing (equivalent to --log-level=OFF)",
-        "append-log",
-            "append log file instead of rewriting",
-        "replayable",
-            "(experimental) log verbosely and don't truncate long "
-            "strings so that the log can be replayed.",
-        "version",
-            "print the version number and exit",
-        "url-base",
-            "base URL path prefix for commands, e.g. wd/url",
-        "readable-timestamp",
-            "add readable timestamps to log",
-        "enable-chrome-logs",
-            "show logs from the browser (overrides other logging options)",
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-        "disable-dev-shm-usage",
-            "do not use /dev/shm "
-            "(add this switch if seeing errors related to shared memory)",
+      "port=PORT",
+      "port to listen on",
+      "adb-port=PORT",
+      "adb server port",
+      "log-path=FILE",
+      "write server log to file instead of stderr, "
+      "increases log level to INFO",
+      "log-level=LEVEL",
+      "set log level: ALL, DEBUG, INFO, WARNING, SEVERE, OFF",
+      "verbose",
+      "log verbosely (equivalent to --log-level=ALL)",
+      "silent",
+      "log nothing (equivalent to --log-level=OFF)",
+      "append-log",
+      "append log file instead of rewriting",
+      "replayable",
+      "(experimental) log verbosely and don't truncate long "
+      "strings so that the log can be replayed.",
+      "version",
+      "print the version number and exit",
+      "url-base",
+      "base URL path prefix for commands, e.g. wd/url",
+      "readable-timestamp",
+      "add readable timestamps to log",
+      "enable-chrome-logs",
+      "show logs from the browser (overrides other logging options)",
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      "disable-dev-shm-usage",
+      "do not use /dev/shm "
+      "(add this switch if seeing errors related to shared memory)",
 #endif
     };
     for (size_t i = 0; i < base::size(kOptionAndDescriptions) - 1; i += 2) {
@@ -436,7 +441,9 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   EnsureSharedMemory(cmd_line);
 #endif
 

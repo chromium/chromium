@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/test_switches.h"
 #include "content/public/browser/tracing_controller.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
@@ -16,7 +17,7 @@
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
@@ -24,13 +25,13 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
 constexpr char kTraceDir[] = "trace-dir";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Watches if the wallpaper has been changed and runs a passed callback if so.
 class TestWallpaperObserver : public ash::WallpaperControllerObserver {
  public:
@@ -72,7 +73,7 @@ void CreateAndSetWallpaper() {
       image, /*preview_mode=*/false);
   run_loop.Run();
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 perf_test::LuciTestResult CreateTestResult(
     const base::FilePath& trace_file,
@@ -191,9 +192,9 @@ bool PerformanceTest::HasHistogram(const std::string& name) {
 
 void UIPerformanceTest::SetUpOnMainThread() {
   PerformanceTest::SetUpOnMainThread();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   CreateAndSetWallpaper();
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 const std::string UIPerformanceTest::GetTracingCategories() const {

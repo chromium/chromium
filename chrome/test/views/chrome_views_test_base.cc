@@ -6,18 +6,19 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "content/public/test/browser_task_environment.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ui/views/test/views_test_helper_aura.h"
 #endif
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<aura::test::AuraTestHelper> MakeTestHelper() {
   return std::make_unique<ash::AshTestHelper>();
 }
@@ -34,7 +35,7 @@ ChromeViewsTestBase::ChromeViewsTestBase()
 ChromeViewsTestBase::~ChromeViewsTestBase() = default;
 
 void ChromeViewsTestBase::SetUp() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   views::ViewsTestHelperAura::SetAuraTestHelperFactory(&MakeTestHelper);
 #endif
 
@@ -48,7 +49,7 @@ void ChromeViewsTestBase::SetUp() {
       ChromeLayoutProvider::CreateLayoutProvider());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeViewsTestBase::TearDown() {
   views::ViewsTestHelperAura::SetAuraTestHelperFactory(nullptr);
 

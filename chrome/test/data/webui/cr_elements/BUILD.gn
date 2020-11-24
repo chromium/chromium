@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../namespace_rewrites.gni")
@@ -44,7 +45,7 @@ js_modulizer("modulize") {
   ]
   namespace_rewrites = test_namespace_rewrites + [ "Polymer.Base|Base" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     input_files += [ "cr_searchable_drop_down_tests.js" ]
   }
 }
@@ -90,7 +91,7 @@ js_type_check("closure_compile") {
     ":iron_list_focus_test.m",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ ":cr_searchable_drop_down_tests.m" ]
   }
 }
@@ -528,7 +529,7 @@ js_library("iron_list_focus_test.m") {
   extra_deps = [ ":modulize" ]
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   js_library("cr_searchable_drop_down_tests.m") {
     sources = [ "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_searchable_drop_down_tests.m.js" ]
     deps = [

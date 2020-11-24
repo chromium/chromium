@@ -312,6 +312,7 @@ executable("chromedriver") {
   deps = [
     ":automation_client_lib",
     ":lib",
+    "//build:chromeos_buildflags",
     "//build/win:default_exe_manifest",
     "//mojo/core/embedder",
     "//net/server:http_server",
@@ -424,6 +425,7 @@ test("chromedriver_unittests") {
     ":lib",
     "//base",
     "//base/test:run_all_unittests",
+    "//build:chromeos_buildflags",
     "//chrome/common",
     "//mojo/core/embedder",
     "//net",

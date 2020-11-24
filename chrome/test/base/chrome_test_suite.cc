@@ -4,7 +4,7 @@
 
 #include "chrome/test/base/chrome_test_suite.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <stdio.h>
 #include <unistd.h>
 #endif
@@ -27,7 +27,7 @@
 #include "media/base/media.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/process/process_metrics.h"
 #include "chromeos/constants/chromeos_paths.h"
 #endif
@@ -46,7 +46,7 @@
 namespace {
 
 bool IsCrosPythonProcess() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   char buf[80];
   int num_read = readlink(base::kProcSelfExe, buf, sizeof(buf) - 1);
   if (num_read == -1)
@@ -56,7 +56,7 @@ bool IsCrosPythonProcess() {
   return !strncmp(strrchr(buf, '/'), kPythonPrefix, sizeof(kPythonPrefix) - 1);
 #else
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace

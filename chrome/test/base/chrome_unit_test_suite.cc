@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
@@ -31,7 +32,7 @@
 #include "ui/base/ui_base_paths.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_paths.h"
 #endif
 
@@ -141,14 +142,14 @@ void ChromeUnitTestSuite::InitializeProviders() {
   content::RegisterPathProvider();
   ui::RegisterPathProvider();
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                                           chromeos::DIR_PREINSTALLED_COMPONENTS,
 #else
                                           chrome::DIR_INTERNAL_PLUGINS,
 #endif
                                           chrome::DIR_USER_DATA);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::RegisterPathProvider();
 #endif
 

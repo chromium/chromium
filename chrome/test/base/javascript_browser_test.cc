@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/js_test_api.h"
 #include "components/nacl/common/buildflags.h"
@@ -38,7 +39,7 @@ void JavaScriptBrowserTest::SetUpOnMainThread() {
 // js2gtest GN template.
 #if (!defined(MEMORY_SANITIZER) && !defined(ADDRESS_SANITIZER) && \
      !defined(LEAK_SANITIZER)) ||                                 \
-    BUILDFLAG(ENABLE_NACL) || defined(OS_CHROMEOS)
+    BUILDFLAG(ENABLE_NACL) || BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath gen_test_data_directory;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA,
                                      &gen_test_data_directory));
