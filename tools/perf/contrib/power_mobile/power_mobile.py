@@ -27,6 +27,8 @@ class PowerMobile(perf_benchmark.PerfBenchmark):
   def CreateCoreTimelineBasedMeasurementOptions(self):
     options = timeline_based_measurement.Options()
     options.config.enable_experimental_system_tracing = True
+    options.config.system_trace_config.EnableChrome(
+        chrome_trace_config=options.config.chrome_trace_config)
     options.config.system_trace_config.EnablePower()
     options.config.system_trace_config.EnableFtraceCpu()
     options.config.system_trace_config.EnableFtraceSched()
