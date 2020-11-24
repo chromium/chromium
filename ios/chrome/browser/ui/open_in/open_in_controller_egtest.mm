@@ -126,7 +126,9 @@ id<GREYMatcher> ShareMenuDismissButton() {
 
 // Tests that the open in bar is correctly displayed when a compatible URL is
 // loaded and tapping on the web view makes it appear or disappear.
-- (void)testOpenInDisplay {
+//
+// Disabled due to flakiness: http://crbug.com/1146303
+- (void)DISABLED_testOpenInDisplay {
   // Check that the open in bar is correctly displayed when a compatible URL is
   // loaded.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
