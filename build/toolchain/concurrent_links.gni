@@ -36,7 +36,7 @@ if (concurrent_links == -1) {
     } else {
       _args += [ "--mem_per_link_gb=10" ]
     }
-  } else if (use_sanitizer_coverage || use_fuzzing_engine) {
+  } else if (use_clang_coverage || use_sanitizer_coverage || use_fuzzing_engine) {
     # Sanitizer coverage instrumentation increases linker memory consumption
     # significantly.
     _args = [ "--mem_per_link_gb=16" ]
