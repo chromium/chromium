@@ -2,35 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//tools/grit/grit_rule.gni")
-
-# generate_about_tracing puts its files in this directory
-tracing_gen_dir = "$root_gen_dir/content/browser/tracing"
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(!is_android)
 
 # The script just writes filename with no dirs to the .grd, so we always need
 # this file to be in the same directory as the inputs.
-tracing_grd = "$tracing_gen_dir/tracing_resources.grd"
+tracing_grd = "$target_gen_dir/tracing_resources.grd"
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("generate_tracing_grd") {
-  visibility = [ ":*" ]  # Depend on ":resources" to get this.
-  script = "generate_trace_viewer_grd.py"
-
-  input_pages = [
-    "$tracing_gen_dir/about_tracing.html",
-    "$tracing_gen_dir/about_tracing.js",
+generate_grd("build_grd") {
+  grd_prefix = "tracing"
+  out_grd = tracing_grd
+  input_files = [
+    "about_tracing.html",
+    "about_tracing.js",
   ]
-  inputs = input_pages
-  outputs = [ tracing_grd ]
-
-  args = rebase_path(input_pages, target_gen_dir) + [
-           "--output",
-           rebase_path(tracing_grd, root_build_dir),
-         ]
-
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   deps = [ "//third_party/catapult/tracing:generate_about_tracing" ]
 }
 
@@ -42,8 +30,10 @@ grit("resources") {
 
   outputs = [
     "grit/tracing_resources.h",
+    "grit/tracing_resources_map.cc",
+    "grit/tracing_resources_map.h",
     "tracing_resources.pak",
   ]
 
-  deps = [ ":generate_tracing_grd" ]
+  deps = [ ":build_grd" ]
 }
