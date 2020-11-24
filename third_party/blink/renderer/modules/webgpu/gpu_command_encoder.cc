@@ -110,7 +110,7 @@ WGPURenderPassDepthStencilAttachmentDescriptor AsDawnType(
 
 WGPUBufferCopyView ValidateAndConvertBufferCopyView(
     const GPUBufferCopyView* webgpu_view,
-    ExceptionState& exception_state) {
+    const char** error) {
   DCHECK(webgpu_view);
   DCHECK(webgpu_view->buffer());
 
@@ -118,17 +118,7 @@ WGPUBufferCopyView ValidateAndConvertBufferCopyView(
   dawn_view.nextInChain = nullptr;
   dawn_view.buffer = webgpu_view->buffer()->GetHandle();
 
-  {
-    const char* error =
-        ValidateTextureDataLayout(webgpu_view, &dawn_view.layout);
-    if (error) {
-      // TODO(crbug.com/dawn/566): This error needs to be injected into the
-      // encoder, instead of thrown as an exception.
-      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                        error);
-    }
-  }
-
+  *error = ValidateTextureDataLayout(webgpu_view, &dawn_view.layout);
   return dawn_view;
 }
 
@@ -262,14 +252,15 @@ void GPUCommandEncoder::copyBufferToBuffer(GPUBuffer* src,
 void GPUCommandEncoder::copyBufferToTexture(
     GPUBufferCopyView* source,
     GPUTextureCopyView* destination,
-    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
-    ExceptionState& exception_state) {
+    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
 
+  const char* error = nullptr;
   WGPUBufferCopyView dawn_source =
-      ValidateAndConvertBufferCopyView(source, exception_state);
-  if (exception_state.HadException()) {
+      ValidateAndConvertBufferCopyView(source, &error);
+  if (error) {
+    GetProcs().commandEncoderInjectValidationError(GetHandle(), error);
     return;
   }
 
@@ -280,14 +271,15 @@ void GPUCommandEncoder::copyBufferToTexture(
 void GPUCommandEncoder::copyTextureToBuffer(
     GPUTextureCopyView* source,
     GPUBufferCopyView* destination,
-    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
-    ExceptionState& exception_state) {
+    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size);
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
 
+  const char* error = nullptr;
   WGPUBufferCopyView dawn_destination =
-      ValidateAndConvertBufferCopyView(destination, exception_state);
-  if (exception_state.HadException()) {
+      ValidateAndConvertBufferCopyView(destination, &error);
+  if (error) {
+    GetProcs().commandEncoderInjectValidationError(GetHandle(), error);
     return;
   }
 
@@ -298,8 +290,7 @@ void GPUCommandEncoder::copyTextureToBuffer(
 void GPUCommandEncoder::copyTextureToTexture(
     GPUTextureCopyView* source,
     GPUTextureCopyView* destination,
-    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
-    ExceptionState& exception_state) {
+    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size);

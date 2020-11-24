@@ -49,18 +49,15 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
   void copyBufferToTexture(
       GPUBufferCopyView* source,
       GPUTextureCopyView* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
-      ExceptionState& exception_state);
+      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
   void copyTextureToBuffer(
       GPUTextureCopyView* source,
       GPUBufferCopyView* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
-      ExceptionState& exception_state);
+      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
   void copyTextureToTexture(
       GPUTextureCopyView* source,
       GPUTextureCopyView* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
-      ExceptionState& exception_state);
+      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
   void pushDebugGroup(String groupLabel);
   void popDebugGroup();
   void insertDebugMarker(String markerLabel);
