@@ -97,6 +97,7 @@ void OnCryptohomedServiceAvailable(int attempt,
   if (attempt > kMaxRetryTimes) {
     LOG(ERROR) << "Could not talk to cryptohomed";
     std::move(result).Run(false);
+    return;
   }
   if (!is_available) {
     const int retry_delay_in_milliseconds = 500 * (1 << attempt);
