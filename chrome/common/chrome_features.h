@@ -213,6 +213,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDownloadsLocationChange;
 #endif
 
+#if defined(OS_ANDROID)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kEarlyLibraryLoad;
+#endif
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnableAllSystemWebApps;
 

@@ -88,6 +88,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &embedder_support::kShowTrustedPublisherURL,
     &features::kClearOldBrowsingData,
     &features::kDownloadsLocationChange,
+    &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
     &features::kInstallableAmbientBadgeInfoBar,
     &features::kMetricsSettingsAndroid,

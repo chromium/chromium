@@ -332,6 +332,12 @@ const base::Feature kDownloadsLocationChange{"DownloadsLocationChange",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID)
+// Enable loading native libraries earlier in startup on Android.
+const base::Feature kEarlyLibraryLoad{"EarlyLibraryLoad",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
 const base::Feature kEnableAllSystemWebApps{"EnableAllSystemWebApps",
