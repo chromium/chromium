@@ -69,13 +69,40 @@ void PlatformThread::SetName(const std::string& name) {
 const Feature kOptimizedRealtimeThreadingMac{"OptimizedRealtimeThreadingMac",
                                              FEATURE_DISABLED_BY_DEFAULT};
 
+// Fine-tuning optimized realt-time thread config:
+// Whether or not the thread should be preeptible.
+const FeatureParam<bool> kOptimizedRealtimeThreadingMacPreemptible{
+    &kOptimizedRealtimeThreadingMac, "preemptible", true};
+// Portion of the time quantum the thread is expected to be busy, (0, 1].
+const FeatureParam<double> kOptimizedRealtimeThreadingMacBusy{
+    &kOptimizedRealtimeThreadingMac, "busy", 0.5};
+// Maximum portion of the time quantum the thread is expected to be busy,
+// (kOptimizedRealtimeThreadingMacBusy, 1].
+const FeatureParam<double> kOptimizedRealtimeThreadingMacBusyLimit{
+    &kOptimizedRealtimeThreadingMac, "busy_limit", 1.0};
+
 namespace {
-// PlatformThread::SetCurrentThreadRealtimePeriodValue() doesn't query the state
-// of kOptimizedRealtimeThreadingMac feature directly because FeatureList
-// initialization is not always synchronized with
-// PlatformThread::SetCurrentThreadRealtimePeriodValue(). The initial value
-// should match the default state of kOptimizedRealtimeThreadingMac.
-std::atomic<bool> g_use_optimized_realtime_threading(false);
+
+struct TimeConstraints {
+  bool preemptible{kOptimizedRealtimeThreadingMacPreemptible.default_value};
+  double busy{kOptimizedRealtimeThreadingMacBusy.default_value};
+  double busy_limit{kOptimizedRealtimeThreadingMacBusyLimit.default_value};
+
+  static TimeConstraints ReadFromFeatureParams() {
+    double busy_limit = kOptimizedRealtimeThreadingMacBusyLimit.Get();
+    return TimeConstraints{
+        kOptimizedRealtimeThreadingMacPreemptible.Get(),
+        std::min(busy_limit, kOptimizedRealtimeThreadingMacBusy.Get()),
+        busy_limit};
+  }
+};
+
+// Use atomics to access FeatureList values when setting up a thread, since
+// there are cases when FeatureList initialization is not synchronized with
+// PlatformThread creation.
+std::atomic<bool> g_use_optimized_realtime_threading(
+    kOptimizedRealtimeThreadingMac.default_state == FEATURE_ENABLED_BY_DEFAULT);
+std::atomic<TimeConstraints> g_time_constraints;
 
 }  // namespace
 
@@ -86,6 +113,7 @@ void PlatformThread::InitializeOptimizedRealtimeThreadingFeature() {
   // tests that call this before initializing the FeatureList, only check the
   // state of the feature if the FeatureList is initialized.
   if (FeatureList::GetInstance()) {
+    g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
     g_use_optimized_realtime_threading.store(
         FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac));
   }
@@ -123,11 +151,14 @@ thread_time_constraint_policy_data_t GetTimeConstraints(
     uint32_t abs_realtime_period =
         saturated_cast<uint32_t>(realtime_period.InNanoseconds() *
                                  (double(tb_info.denom) / tb_info.numer));
-
+    TimeConstraints config = g_time_constraints.load();
     time_constraints.period = abs_realtime_period;
-    time_constraints.computation = abs_realtime_period / 2;
-    time_constraints.constraint = abs_realtime_period;
-    time_constraints.preemptible = YES;
+    time_constraints.constraint = std::min(
+        abs_realtime_period, uint32_t(abs_realtime_period * config.busy_limit));
+    time_constraints.computation =
+        std::min(time_constraints.constraint,
+                 uint32_t(abs_realtime_period * config.busy));
+    time_constraints.preemptible = config.preemptible ? YES : NO;
     return time_constraints;
   }
 
