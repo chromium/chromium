@@ -306,7 +306,8 @@ class PasswordProtectionServiceTest : public ::testing::TestWithParam<bool> {
 
     request_ = new PasswordProtectionRequest(
         web_contents, target_url, GURL(kFormActionUrl), GURL(kPasswordFrameUrl),
-        kUserName, PasswordType::PASSWORD_TYPE_UNKNOWN, {},
+        web_contents->GetContentsMimeType(), kUserName,
+        PasswordType::PASSWORD_TYPE_UNKNOWN, {},
         LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true,
         password_protection_service_.get(), timeout_in_ms);
     request_->Start();
@@ -325,7 +326,8 @@ class PasswordProtectionServiceTest : public ::testing::TestWithParam<bool> {
             Return(match_whitelist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
 
     request_ = new PasswordProtectionRequest(
-        web_contents, target_url, GURL(), GURL(), kUserName, type,
+        web_contents, target_url, GURL(), GURL(),
+        web_contents->GetContentsMimeType(), kUserName, type,
         matching_reused_credentials,
         LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true,
         password_protection_service_.get(), timeout_in_ms);

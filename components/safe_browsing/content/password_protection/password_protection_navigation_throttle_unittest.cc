@@ -55,6 +55,7 @@ class PasswordProtectionNavigationThrottleTest
     scoped_refptr<PasswordProtectionRequest> request =
         new PasswordProtectionRequest(
             RenderViewHostTestHarness::web_contents(), GURL(), GURL(), GURL(),
+            RenderViewHostTestHarness::web_contents()->GetContentsMimeType(),
             "username", PasswordType::PASSWORD_TYPE_UNKNOWN, credentials,
             LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
             /* password_field_exists*/ true, password_protection_service.get(),

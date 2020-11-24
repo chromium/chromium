@@ -331,14 +331,16 @@ class ChromePasswordProtectionServiceTest
         {"somedomain.com"}};
     if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
       request_ = new PasswordProtectionRequest(
-          web_contents(), GURL(kPhishingURL), GURL(), GURL(), kUserName,
+          web_contents(), GURL(kPhishingURL), GURL(), GURL(),
+          web_contents()->GetContentsMimeType(), kUserName,
           PasswordType::PASSWORD_TYPE_UNKNOWN, credentials, trigger_type, true,
           service_.get(), 0);
     } else {
       ASSERT_EQ(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                 trigger_type);
       request_ = new PasswordProtectionRequest(
-          web_contents(), GURL(kPhishingURL), GURL(), GURL(), kUserName,
+          web_contents(), GURL(kPhishingURL), GURL(), GURL(),
+          web_contents()->GetContentsMimeType(), kUserName,
           reused_password_type, credentials, trigger_type,
           /* password_field_exists*/ true, service_.get(),
           /*request_timeout_in_ms=*/0);

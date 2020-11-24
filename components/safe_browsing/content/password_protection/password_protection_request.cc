@@ -103,6 +103,7 @@ PasswordProtectionRequest::PasswordProtectionRequest(
     const GURL& main_frame_url,
     const GURL& password_form_action,
     const GURL& password_form_frame_url,
+    const std::string& mime_type,
     const std::string& username,
     PasswordType password_type,
     const std::vector<password_manager::MatchingReusedCredential>&
@@ -116,6 +117,7 @@ PasswordProtectionRequest::PasswordProtectionRequest(
       main_frame_url_(main_frame_url),
       password_form_action_(password_form_action),
       password_form_frame_url_(password_form_frame_url),
+      mime_type_(mime_type),
       username_(username),
       password_type_(password_type),
       matching_domains_(GetMatchingDomains(matching_reused_credentials)),
@@ -258,7 +260,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       password_protection_service_->UserClickedThroughSBInterstitial(this);
   request_proto_->set_clicked_through_interstitial(
       clicked_through_interstitial);
-  request_proto_->set_content_type(web_contents_->GetContentsMimeType());
+  request_proto_->set_content_type(mime_type_);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   if (password_protection_service_->IsExtendedReporting() &&

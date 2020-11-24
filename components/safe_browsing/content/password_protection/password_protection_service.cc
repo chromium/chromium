@@ -230,9 +230,9 @@ void PasswordProtectionService::StartRequest(
   scoped_refptr<PasswordProtectionRequest> request(
       new PasswordProtectionRequest(
           web_contents, main_frame_url, password_form_action,
-          password_form_frame_url, username, password_type,
-          matching_reused_credentials, trigger_type, password_field_exists,
-          this, GetRequestTimeoutInMS()));
+          password_form_frame_url, web_contents->GetContentsMimeType(),
+          username, password_type, matching_reused_credentials, trigger_type,
+          password_field_exists, this, GetRequestTimeoutInMS()));
   request->Start();
   pending_requests_.insert(std::move(request));
 }

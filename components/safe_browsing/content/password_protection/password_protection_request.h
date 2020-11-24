@@ -77,6 +77,7 @@ class PasswordProtectionRequest
       const GURL& main_frame_url,
       const GURL& password_form_action,
       const GURL& password_form_frame_url,
+      const std::string& mime_type,
       const std::string& username,
       PasswordType password_type,
       const std::vector<password_manager::MatchingReusedCredential>&
@@ -227,6 +228,9 @@ class PasswordProtectionRequest
 
   // Frame url of the detected password form.
   const GURL password_form_frame_url_;
+
+  // The contents MIME type.
+  const std::string& mime_type_;
 
   // The username of the reused password hash. The username can be an email or
   // a username for a non-GAIA or saved-password reuse. No validation has been
