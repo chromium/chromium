@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -66,11 +67,13 @@ void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
     MoveTab();
   } else {
     // TODO(https://crbug.com/1051864): cookie notifications are not triggered
-    // when the account is added by the reconcilor. Force an explicit cookie
-    // update.
+    // when the account is added by the reconcilor. Observe the reconcilor and
+    // re-trigger the cookie update when it completes.
+    reconcilor_observer_.Observe(
+        AccountReconcilorFactory::GetForProfile(profile_));
     identity_manager->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
 
-    accounts_in_cookie_observer_.Add(identity_manager);
+    accounts_in_cookie_observer_.Observe(identity_manager);
     on_cookie_update_timeout_.Reset(base::BindOnce(
         &DiceInterceptedSessionStartupHelper::MoveTab, base::Unretained(this)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -91,9 +94,38 @@ void DiceInterceptedSessionStartupHelper::OnAccountsInCookieUpdated(
   MoveTab();
 }
 
+void DiceInterceptedSessionStartupHelper::OnStateChanged(
+    signin_metrics::AccountReconcilorState state) {
+  if (state == signin_metrics::ACCOUNT_RECONCILOR_ERROR) {
+    reconcile_error_encountered_ = true;
+    return;
+  }
+
+  // TODO(https://crbug.com/1051864): remove this when the cookie updates are
+  // correctly sent after reconciliation.
+  if (state == signin_metrics::ACCOUNT_RECONCILOR_OK) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_);
+    // GetAccountsInCookieJar() automatically re-schedules a /ListAccounts call
+    // if the cookie is not fresh.
+    signin::AccountsInCookieJarInfo cookie_info =
+        identity_manager->GetAccountsInCookieJar();
+    OnAccountsInCookieUpdated(cookie_info,
+                              GoogleServiceAuthError::AuthErrorNone());
+  }
+}
+
 void DiceInterceptedSessionStartupHelper::MoveTab() {
-  accounts_in_cookie_observer_.RemoveAll();
+  if (accounts_in_cookie_observer_.IsObserving())
+    accounts_in_cookie_observer_.RemoveObservation();
+  if (reconcilor_observer_.IsObserving())
+    reconcilor_observer_.RemoveObservation();
   on_cookie_update_timeout_.Cancel();
+
+  // TODO(https://crbug.com/1151313): Remove this histogram when the cause
+  // for the timeouts is understood.
+  base::UmaHistogramBoolean("Signin.Intercept.SessionStartupReconcileError",
+                            reconcile_error_encountered_);
 
   // If the intercepted web contents is still alive, close it now.
   if (web_contents()) {

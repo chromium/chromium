@@ -7,8 +7,9 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -32,7 +33,8 @@ class Profile;
 // in the content area (cookies).
 class DiceInterceptedSessionStartupHelper
     : public content::WebContentsObserver,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public AccountReconcilor::Observer {
  public:
   // |profile| is the new profile that was created after signin interception.
   // |account_id| is the main account for the profile, it's already in the
@@ -58,6 +60,9 @@ class DiceInterceptedSessionStartupHelper
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
+  // AccountReconcilor::Observer:
+  void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
+
  private:
   // Creates a browser with a new tab, and closes the intercepted tab if it's
   // still open.
@@ -66,8 +71,12 @@ class DiceInterceptedSessionStartupHelper
   Profile* const profile_;
   CoreAccountId account_id_;
   base::OnceClosure callback_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
+  bool reconcile_error_encountered_ = false;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
       accounts_in_cookie_observer_{this};
+  base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
+      reconcilor_observer_{this};
   base::TimeTicks session_startup_time_;
   // Timeout while waiting for the account to be added to the cookies in the new
   // profile.
