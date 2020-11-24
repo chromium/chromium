@@ -1840,4 +1840,61 @@ TEST_F(CaptureModeMockTimeTest, ConsecutiveScreenshotsHistograms) {
   histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 2, 1);
 }
 
+// Tests that in Region mode, the capture bar hides and shows itself correctly.
+TEST_F(CaptureModeTest, CaptureBarOpacity) {
+  UpdateDisplay("800x800");
+
+  auto* event_generator = GetEventGenerator();
+  auto* controller = StartImageRegionCapture();
+  EXPECT_TRUE(controller->IsActive());
+
+  ui::Layer* capture_bar_layer = GetCaptureModeBarWidget()->GetLayer();
+
+  // Check to see it starts off opaque.
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+
+  // Make sure that the bar is transparent when selecting a region.
+  const gfx::Rect target_region(gfx::BoundingRect(
+      gfx::Point(0, 0),
+      GetCaptureModeBarView()->GetBoundsInScreen().top_right() +
+          gfx::Vector2d(0, -50)));
+  event_generator->MoveMouseTo(target_region.origin());
+  event_generator->PressLeftButton();
+  EXPECT_EQ(0.f, capture_bar_layer->GetTargetOpacity());
+  event_generator->MoveMouseTo(target_region.bottom_right());
+  EXPECT_EQ(0.f, capture_bar_layer->GetTargetOpacity());
+  event_generator->ReleaseLeftButton();
+
+  // When there is no overlap of the selected region and the bar, the bar should
+  // be opaque.
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+
+  // Bar becomes transparent when the region is being moved.
+  event_generator->MoveMouseTo(target_region.origin() + gfx::Vector2d(50, 50));
+  event_generator->PressLeftButton();
+  EXPECT_EQ(0.f, capture_bar_layer->GetTargetOpacity());
+  event_generator->MoveMouseTo(target_region.bottom_center());
+  EXPECT_EQ(0.f, capture_bar_layer->GetTargetOpacity());
+  event_generator->ReleaseLeftButton();
+
+  // The region overlaps the capture bar, so we set the opacity of the bar to
+  // 0.1f.
+  EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+
+  // When there is overlap, the toolbar turns opaque on mouseover.
+  event_generator->MoveMouseTo(
+      GetCaptureModeBarView()->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+
+  // Capture bar drops back to 0.1 opacity when the mouse is no longer hovering.
+  event_generator->MoveMouseTo(
+      GetCaptureModeBarView()->GetBoundsInScreen().top_center() +
+      gfx::Vector2d(0, -50));
+  EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+
+  // Check that the opacity is reset when we select another region.
+  SelectRegion(target_region);
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+}
+
 }  // namespace ash

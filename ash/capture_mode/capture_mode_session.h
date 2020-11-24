@@ -128,7 +128,8 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
                              bool is_event_on_capture_bar);
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
   void OnLocatedEventReleased(const gfx::Point& location_in_root,
-                              bool is_event_on_capture_bar);
+                              bool is_event_on_capture_bar,
+                              bool region_intersects_capture_bar);
 
   // Updates the capture region and the capture region widgets depending on the
   // value of |is_resizing|.
@@ -196,6 +197,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Returns true if we're using custom image capture icon when |type| is
   // kImage or using custom video capture icon when |type| is kVideo.
   bool IsUsingCustomCursor(CaptureModeType type) const;
+
+  // Updates the capture bar widget with a given opacity. There is a different
+  // animation duration and tween type for mouse/touch release.
+  void UpdateCaptureBarWidgetOpacity(float opacity, bool on_release);
 
   CaptureModeController* const controller_;
 

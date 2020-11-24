@@ -128,6 +128,18 @@ constexpr base::TimeDelta kCaptureShieldFadeOutDuration =
 // widget will shrink down from 120% -> 100% and fade in.
 constexpr float kLabelScaleUpOnCountdown = 1.2;
 
+// Animation parameters for capture bar overlapping the user capture region.
+// The default animation duration for opacity changes to the capture bar.
+constexpr base::TimeDelta kCaptureBarOpacityChangeDuration =
+    base::TimeDelta::FromMilliseconds(100);
+// The animation duration for showing the capture bar on mouse/touch release.
+constexpr base::TimeDelta kCaptureBarOnReleaseOpacityChangeDuration =
+    base::TimeDelta::FromMilliseconds(167);
+// When the capture bar and user capture region overlap and the mouse is not
+// hovering over the capture bar, drop the opacity to this value to make the
+// region easier to see.
+constexpr float kCaptureBarOverlapOpacity = 0.1;
+
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
 bool SetMouseWarpEnabled(bool enable) {
@@ -449,15 +461,15 @@ void CaptureModeSession::StartCountDown(
   label_view->StartCountDown(std::move(countdown_finished_callback));
   UpdateCaptureLabelWidgetBounds(/*animate=*/true);
 
-  // Fade out toolbar.
-  ui::Layer* toolbar_layer = capture_mode_bar_widget_->GetLayer();
-  ui::ScopedLayerAnimationSettings toolbar_settings(
-      toolbar_layer->GetAnimator());
-  toolbar_settings.SetTransitionDuration(kCaptureBarFadeOutDuration);
-  toolbar_settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-  toolbar_settings.SetPreemptionStrategy(
+  // Fade out the capture bar.
+  ui::Layer* capture_bar_layer = capture_mode_bar_widget_->GetLayer();
+  ui::ScopedLayerAnimationSettings capture_bar_settings(
+      capture_bar_layer->GetAnimator());
+  capture_bar_settings.SetTransitionDuration(kCaptureBarFadeOutDuration);
+  capture_bar_settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+  capture_bar_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  toolbar_layer->SetOpacity(0.f);
+  capture_bar_layer->SetOpacity(0.f);
 
   // Fade out the shield if it's recording fullscreen.
   if (controller_->source() == CaptureModeSource::kFullscreen) {
@@ -707,6 +719,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     event->StopPropagation();
   }
 
+  const bool region_intersects_capture_bar =
+      capture_mode_bar_widget_->GetWindowBoundsInScreen().Intersects(
+          controller_->user_capture_region());
+
   switch (event->type()) {
     case ui::ET_MOUSE_PRESSED:
     case ui::ET_TOUCH_PRESSED:
@@ -724,7 +740,15 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
         SetMouseWarpEnabled(*old_mouse_warp_status_);
       old_mouse_warp_status_.reset();
 
-      OnLocatedEventReleased(location, is_event_on_capture_bar);
+      OnLocatedEventReleased(location, is_event_on_capture_bar,
+                             region_intersects_capture_bar);
+      break;
+    case ui::ET_MOUSE_MOVED:
+      if (region_intersects_capture_bar) {
+        UpdateCaptureBarWidgetOpacity(
+            is_event_on_capture_bar ? 1.f : kCaptureBarOverlapOpacity,
+            /*on_release=*/false);
+      }
       break;
     default:
       break;
@@ -775,6 +799,9 @@ void CaptureModeSession::OnLocatedEventPressed(
   // ensure the cursor is aligned with the region.
   is_drag_in_progress_ = true;
   Shell::Get()->UpdateCursorCompositingEnabled();
+
+  if (!is_event_on_capture_bar)
+    UpdateCaptureBarWidgetOpacity(0.f, /*on_release=*/false);
 
   if (is_selecting_region_)
     return;
@@ -866,12 +893,20 @@ void CaptureModeSession::OnLocatedEventDragged(
 
 void CaptureModeSession::OnLocatedEventReleased(
     const gfx::Point& location_in_root,
-    bool is_event_on_capture_bar) {
+    bool is_event_on_capture_bar,
+    bool region_intersects_capture_bar) {
   fine_tune_position_ = FineTunePosition::kNone;
   anchor_points_.clear();
 
   is_drag_in_progress_ = false;
   Shell::Get()->UpdateCursorCompositingEnabled();
+
+  // TODO(richui): update this for tablet mode.
+  UpdateCaptureBarWidgetOpacity(
+      region_intersects_capture_bar && !is_event_on_capture_bar
+          ? kCaptureBarOverlapOpacity
+          : 1.f,
+      /*on_release=*/true);
 
   // Do a repaint to show the affordance circles.
   gfx::Rect damage_region = controller_->user_capture_region();
@@ -1300,6 +1335,28 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
 
 bool CaptureModeSession::IsUsingCustomCursor(CaptureModeType type) const {
   return cursor_setter_->IsUsingCustomCursor(type);
+}
+
+void CaptureModeSession::UpdateCaptureBarWidgetOpacity(float opacity,
+                                                       bool on_release) {
+  DCHECK(capture_mode_bar_view_);
+  DCHECK(capture_mode_bar_widget_->GetLayer());
+
+  ui::Layer* capture_bar_layer = capture_mode_bar_widget_->GetLayer();
+  if (capture_bar_layer->GetTargetOpacity() == opacity)
+    return;
+
+  ui::ScopedLayerAnimationSettings capture_bar_settings(
+      capture_bar_layer->GetAnimator());
+  capture_bar_settings.SetTransitionDuration(
+      on_release ? kCaptureBarOnReleaseOpacityChangeDuration
+                 : kCaptureBarOpacityChangeDuration);
+  capture_bar_settings.SetTweenType(on_release ? gfx::Tween::FAST_OUT_SLOW_IN
+                                               : gfx::Tween::LINEAR);
+  capture_bar_settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+
+  capture_bar_layer->SetOpacity(opacity);
 }
 
 }  // namespace ash
