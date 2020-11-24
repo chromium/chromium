@@ -78,6 +78,9 @@ bool SessionRestoreDelegate::RestoredTab::operator<(
 void SessionRestoreDelegate::RestoreTabs(
     const std::vector<RestoredTab>& tabs,
     const base::TimeTicks& restore_started) {
+  if (tabs.empty())
+    return;
+
   // Restore the favicon for all tabs. Any tab may end up being deferred due
   // to memory pressure so it's best to have some visual indication of its
   // contents.
@@ -88,6 +91,12 @@ void SessionRestoreDelegate::RestoreTabs(
     favicon_driver->FetchFavicon(favicon_driver->GetActiveURL(),
                                  /*is_same_document=*/false);
   }
+
+  SessionRestoreStatsCollector::GetOrCreateInstance(
+      restore_started,
+      std::make_unique<
+          SessionRestoreStatsCollector::UmaStatsReportingDelegate>())
+      ->TrackTabs(tabs);
 
   // Don't start a TabLoader here if background tab loading is done by
   // PerformanceManager.
