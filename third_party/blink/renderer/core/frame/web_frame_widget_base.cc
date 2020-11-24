@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
@@ -1884,6 +1885,13 @@ std::unique_ptr<cc::WebVitalMetrics> WebFrameWidgetBase::GetWebVitalMetrics() {
   if (largest_contentful_paint >= start)
     metrics->largest_contentful_paint = largest_contentful_paint - start;
 
+  double layout_shift = LocalRootImpl()
+                            ->GetFrame()
+                            ->View()
+                            ->GetLayoutShiftTracker()
+                            .WeightedScore();
+  if (layout_shift > 0.f)
+    metrics->layout_shift = layout_shift;
   return metrics;
 }
 

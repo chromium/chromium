@@ -5,6 +5,8 @@
 #ifndef CC_METRICS_WEB_VITAL_METRICS_H_
 #define CC_METRICS_WEB_VITAL_METRICS_H_
 
+#include <string>
+
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 
@@ -14,11 +16,36 @@ namespace cc {
 struct CC_EXPORT WebVitalMetrics {
   base::Optional<base::TimeDelta> largest_contentful_paint;
   base::Optional<base::TimeDelta> first_input_delay;
+  double layout_shift = 0.f;
 
   WebVitalMetrics();
   WebVitalMetrics(const WebVitalMetrics& other);
 
   bool HasValue() const;
+
+  struct MetricsInfo {
+    double green_threshold;
+    double yellow_threshold;
+    enum Unit { kSecond, kMillisecond, kScore };
+    Unit unit;
+    std::string UnitToString() const {
+      switch (unit) {
+        case Unit::kSecond:
+          return " s";
+        case Unit::kMillisecond:
+          return " ms";
+        case Unit::kScore:
+        default:
+          return "";
+      }
+    }
+  };
+  static constexpr MetricsInfo lcp_info = {
+      2.5f, 4.f, WebVitalMetrics::MetricsInfo::Unit::kSecond};
+  static constexpr MetricsInfo fid_info = {
+      100, 300, WebVitalMetrics::MetricsInfo::Unit::kMillisecond};
+  static constexpr MetricsInfo cls_info = {
+      0.1f, 0.25f, WebVitalMetrics::MetricsInfo::Unit::kScore};
 };
 
 }  // namespace cc

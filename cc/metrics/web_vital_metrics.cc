@@ -6,6 +6,10 @@
 
 namespace cc {
 
+constexpr WebVitalMetrics::MetricsInfo WebVitalMetrics::lcp_info;
+constexpr WebVitalMetrics::MetricsInfo WebVitalMetrics::fid_info;
+constexpr WebVitalMetrics::MetricsInfo WebVitalMetrics::cls_info;
+
 WebVitalMetrics::WebVitalMetrics() = default;
 
 WebVitalMetrics::WebVitalMetrics(const WebVitalMetrics& other) = default;
@@ -15,6 +19,9 @@ bool WebVitalMetrics::HasValue() const {
     return true;
 
   if (first_input_delay.has_value())
+    return true;
+
+  if (layout_shift > 0.f)
     return true;
 
   return false;

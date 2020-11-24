@@ -1045,68 +1045,75 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
   }
 }
 
-SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
-                                                    int right,
-                                                    int top,
-                                                    int width) const {
-  std::string largest_contentful_paint = "-";
-  SkColor largest_contentful_paint_color = DebugColors::HUDTitleColor();
-  if (web_vital_metrics_) {
-    if (web_vital_metrics_->largest_contentful_paint.has_value()) {
-      double time = web_vital_metrics_->largest_contentful_paint->InSecondsF();
-      largest_contentful_paint = ToStringTwoDecimalPrecision(time) + " s";
-      if (time < 2.5f)
-        largest_contentful_paint_color = SK_ColorGREEN;
-      else if (time < 4.f)
-        largest_contentful_paint_color = SK_ColorYELLOW;
-      else
-        largest_contentful_paint_color = SK_ColorRED;
-    }
+int HeadsUpDisplayLayerImpl::DrawSingleMetric(
+    PaintCanvas* canvas,
+    int left,
+    int right,
+    int top,
+    std::string name,
+    const WebVitalMetrics::MetricsInfo& info,
+    double value) const {
+  std::string value_str = "-";
+  SkColor metrics_color = DebugColors::HUDTitleColor();
+  if (value >= 0.f) {
+    value_str = ToStringTwoDecimalPrecision(value) + info.UnitToString();
+    if (value < info.green_threshold)
+      metrics_color = SK_ColorGREEN;
+    else if (value < info.yellow_threshold)
+      metrics_color = SK_ColorYELLOW;
+    else
+      metrics_color = SK_ColorRED;
   }
-  std::string first_input_delay = "-";
-  SkColor first_input_delay_color = DebugColors::HUDTitleColor();
-  if (web_vital_metrics_) {
-    if (web_vital_metrics_->first_input_delay.has_value()) {
-      double delay = web_vital_metrics_->first_input_delay->InMillisecondsF();
-      first_input_delay = ToStringTwoDecimalPrecision(delay) + " ms";
-      if (delay < 100.f)
-        first_input_delay_color = SK_ColorGREEN;
-      else if (delay < 300.f)
-        first_input_delay_color = SK_ColorYELLOW;
-      else
-        first_input_delay_color = SK_ColorRED;
-    }
-  }
-
   const int kPadding = 4;
   const int kTitleFontHeight = 13;
   const int kFontHeight = 12;
 
-  const int height = 2 * kTitleFontHeight + 2 * kFontHeight + 5 * kPadding;
+  PaintFlags flags;
+  flags.setColor(DebugColors::HUDTitleColor());
+  DrawText(canvas, flags, name, TextAlign::kLeft, kTitleFontHeight,
+           left + kPadding, top);
+  flags.setColor(metrics_color);
+  DrawText(canvas, flags, value_str, TextAlign::kRight, kFontHeight,
+           right - kPadding, top + kFontHeight + kPadding);
+
+  return top + 2 * kFontHeight + 2 * kPadding;
+}
+
+SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
+                                                    int right,
+                                                    int top,
+                                                    int width) const {
+  const int kPadding = 4;
+  const int kTitleFontHeight = 13;
+  const int kFontHeight = 12;
+
+  const int height = 3 * kTitleFontHeight + 3 * kFontHeight + 7 * kPadding;
   const int left = 0;
   const SkRect area = SkRect::MakeXYWH(left, top, width, height);
 
   PaintFlags flags;
   DrawGraphBackground(canvas, &flags, area);
 
-  SkPoint metrics_pos = SkPoint::Make(left + width - kPadding,
-                                      top + 2 * kFontHeight + 2 * kPadding);
-  flags.setColor(DebugColors::HUDTitleColor());
-  DrawText(canvas, flags, "Largest contentful paint", TextAlign::kLeft,
-           kTitleFontHeight, left + kPadding, top + kFontHeight + kPadding);
-  flags.setColor(largest_contentful_paint_color);
-  DrawText(canvas, flags, largest_contentful_paint, TextAlign::kRight,
-           kFontHeight, metrics_pos);
+  int current_top = top + kFontHeight + kPadding;
+  double lcp_value = -1;
+  if (web_vital_metrics_ &&
+      web_vital_metrics_->largest_contentful_paint.has_value())
+    lcp_value = web_vital_metrics_->largest_contentful_paint->InSecondsF();
+  current_top = DrawSingleMetric(canvas, left, left + width, current_top,
+                                 "Largest contentful paint",
+                                 WebVitalMetrics::lcp_info, lcp_value);
 
-  metrics_pos = SkPoint::Make(left + width - kPadding,
-                              top + 4 * kFontHeight + 4 * kPadding);
-  flags.setColor(DebugColors::HUDTitleColor());
-  DrawText(canvas, flags, "First input delay:", TextAlign::kLeft,
-           kTitleFontHeight, left + kPadding,
-           top + 3 * kFontHeight + 3 * kPadding);
-  flags.setColor(first_input_delay_color);
-  DrawText(canvas, flags, first_input_delay, TextAlign::kRight, kFontHeight,
-           metrics_pos);
+  double fid_value = -1;
+  if (web_vital_metrics_ && web_vital_metrics_->first_input_delay.has_value())
+    fid_value = web_vital_metrics_->first_input_delay->InMillisecondsF();
+  current_top = DrawSingleMetric(canvas, left, left + width, current_top,
+                                 "First input delay", WebVitalMetrics::fid_info,
+                                 fid_value);
+
+  current_top = DrawSingleMetric(
+      canvas, left, left + width, current_top, "Cumulative layout shift",
+      WebVitalMetrics::cls_info,
+      web_vital_metrics_ ? web_vital_metrics_->layout_shift : -1);
 
   return area;
 }
