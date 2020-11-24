@@ -469,3 +469,20 @@ TEST(GoogleUtilTest, GoogleAssociatedDomains) {
       GURL("https://daily0-myapi-pa.sandbox.googleapis.com/v1/"
            "myservice?k1=v1&k2=v2")));
 }
+
+TEST(GoogleUtilTest, AppendToAsyncQueryParam) {
+  // Append to plain URL.
+  EXPECT_EQ(GURL("https://foo.com?async=bar:baz"),
+            google_util::AppendToAsyncQueryParam(GURL("https://foo.com"), "bar",
+                                                 "baz"));
+
+  // Append to async param.
+  EXPECT_EQ(GURL("https://foo.com?async=bar:baz,hello:world"),
+            google_util::AppendToAsyncQueryParam(
+                GURL("https://foo.com?async=bar:baz"), "hello", "world"));
+
+  // Append to same async param.
+  EXPECT_EQ(GURL("https://foo.com?async=bar:baz,bar:buz"),
+            google_util::AppendToAsyncQueryParam(
+                GURL("https://foo.com?async=bar:baz"), "bar", "buz"));
+}

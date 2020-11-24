@@ -56,6 +56,9 @@ enum class RepeatableQueriesInsertPosition {
   kEnd,        // At the end of MV tiles.
 };
 
+// Parameter determining the type of stateful data to request.
+extern const char kNtpStatefulTasksModuleDataParam[];
+
 // Returns the age threshold for local history repeatable queries.
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold();
 // Returns the number of seconds until the recency component of the frecency

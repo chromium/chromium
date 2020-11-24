@@ -13,6 +13,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search/ntp_features.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -31,15 +32,33 @@ const char* GetPath(task_module::mojom::TaskModuleType task_module_type) {
   }
 }
 
+// We return a reference so that base::FeatureList::CheckFeatureIdentity
+// succeeds.
+const base::Feature& GetFeature(
+    task_module::mojom::TaskModuleType task_module_type) {
+  switch (task_module_type) {
+    case task_module::mojom::TaskModuleType::kRecipe:
+      return ntp_features::kNtpRecipeTasksModule;
+    case task_module::mojom::TaskModuleType::kShopping:
+      return ntp_features::kNtpShoppingTasksModule;
+  }
+}
+
 GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
                const std::string& application_locale) {
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
   if (!google_base_url.is_valid()) {
     google_base_url = GURL(google_util::kGoogleHomepageURL);
   }
-  return net::AppendQueryParameter(
+  auto url = net::AppendQueryParameter(
       google_base_url.Resolve(GetPath(task_module_type)), "hl",
       application_locale);
+  if (base::GetFieldTrialParamValueByFeature(
+          GetFeature(task_module_type),
+          ntp_features::kNtpStatefulTasksModuleDataParam) == "fake") {
+    url = google_util::AppendToAsyncQueryParam(url, "fake_data", "1");
+  }
+  return url;
 }
 
 const char* GetTasksKey(task_module::mojom::TaskModuleType task_module_type) {

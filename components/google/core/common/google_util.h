@@ -115,6 +115,19 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url);
 // unregistering themselves.
 const std::vector<std::string>& GetGoogleRegistrableDomains();
 
+// Appends the provided |key| and |value| pair to the "async" query param list,
+// according to the format used by the Google servers:
+//
+//   "async=<other key>:<other value>,<key>:<value>"
+//
+// If |url| does not have an "async" query param list it will be added.
+// Derived from net::AppendOrReplaceQueryParameter, that can't be used because
+// it escapes ":" to "%3A", but the servers requires the colon not to be
+// escaped. See: http://crbug.com/413845.
+GURL AppendToAsyncQueryParam(const GURL& url,
+                             const std::string& key,
+                             const std::string& value);
+
 }  // namespace google_util
 
 #endif  // COMPONENTS_GOOGLE_CORE_COMMON_GOOGLE_UTIL_H_
