@@ -71,9 +71,10 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   ScopedJavaLocalRef<jobject> j_query_tiles =
       query_tiles::TileConversionBridge::CreateJavaTiles(env, query_tiles);
 
-  std::vector<base::string16> navsuggest_titles(navsuggest_tiles.size());
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> navsuggest_urls(
-      navsuggest_tiles.size());
+  std::vector<base::string16> navsuggest_titles;
+  navsuggest_titles.reserve(navsuggest_tiles.size());
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> navsuggest_urls;
+  navsuggest_urls.reserve(navsuggest_tiles.size());
   for (const auto& tile : navsuggest_tiles) {
     navsuggest_titles.push_back(tile.title);
     navsuggest_urls.push_back(url::GURLAndroid::FromNativeGURL(env, tile.url));
