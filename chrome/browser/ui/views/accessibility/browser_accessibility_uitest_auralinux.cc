@@ -16,6 +16,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 class AuraLinuxAccessibilityInProcessBrowserTest : public InProcessBrowserTest {
  public:
@@ -218,4 +220,31 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
   // Closes the DevTools window.
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
   VerifyEmbedRelationships();
+}
+
+// Tests that it doesn't have DCHECK() error when GetIndexInParent() is called
+// with the WebView.
+IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
+                       GetIndexInParent) {
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(nullptr, active_web_contents->GetRenderWidgetHostView()
+                         ->GetNativeViewAccessible());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::WebView* webview = browser_view->contents_web_view();
+  gfx::NativeViewAccessible accessible =
+      webview->GetViewAccessibility().GetNativeObject();
+
+  // Gets the index in its parents for the WebView.
+  base::Optional<int> index =
+      static_cast<ui::AXPlatformNodeBase*>(
+          ui::AXPlatformNode::FromNativeViewAccessible(accessible))
+          ->GetIndexInParent();
+
+  // As the WebView is not exposed in the child list when it has the web
+  // content, it doesn't have the index in its parent.
+  EXPECT_EQ(false, index.has_value());
 }

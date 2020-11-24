@@ -161,6 +161,14 @@ base::Optional<int> AXPlatformNodeBase::GetIndexInParent() {
   if (!parent)
     return base::nullopt;
 
+  // If this is the webview, it is not in the child in the list of its parent's
+  // child.
+  // TODO(jkim): Check if we could remove this after making WebView ignored.
+  if (delegate_ &&
+      delegate_->GetNativeViewAccessible() != GetNativeViewAccessible()) {
+    return base::nullopt;
+  }
+
   int child_count = parent->GetChildCount();
   if (child_count == 0) {
     // |child_count| could be 0 if the parent is IsLeaf.
