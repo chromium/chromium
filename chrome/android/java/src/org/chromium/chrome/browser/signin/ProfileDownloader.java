@@ -65,12 +65,12 @@ public class ProfileDownloader {
         private static PendingProfileDownloads sPendingProfileDownloads;
 
         private final ArrayList<Profile> mProfiles;
-        private final ArrayList<String> mAccountIds;
+        private final ArrayList<String> mAccountEmails;
         private final ArrayList<Integer> mImageSidePixels;
 
         private PendingProfileDownloads() {
             mProfiles = new ArrayList<>();
-            mAccountIds = new ArrayList<>();
+            mAccountEmails = new ArrayList<>();
             mImageSidePixels = new ArrayList<>();
         }
 
@@ -85,22 +85,22 @@ public class ProfileDownloader {
             return sPendingProfileDownloads;
         }
 
-        public void pendProfileDownload(Profile profile, String accountId, int imageSidePixels) {
+        public void pendProfileDownload(Profile profile, String accountEmail, int imageSidePixels) {
             mProfiles.add(profile);
-            mAccountIds.add(accountId);
+            mAccountEmails.add(accountEmail);
             mImageSidePixels.add(imageSidePixels);
         }
 
         @Override
         public void onSystemAccountsSeedingComplete() {
-            int numberOfPendingRequests = mAccountIds.size();
+            int numberOfPendingRequests = mAccountEmails.size();
             while (numberOfPendingRequests > 0) {
                 // Pending requests here must be pre-signin request since SigninManager will wait
                 // system accounts been seeded into AccountTrackerService before finishing sign in.
                 ProfileDownloaderJni.get().startFetchingAccountInfoFor(
-                        mProfiles.get(0), mAccountIds.get(0), mImageSidePixels.get(0), true);
+                        mProfiles.get(0), mAccountEmails.get(0), mImageSidePixels.get(0), true);
                 mProfiles.remove(0);
-                mAccountIds.remove(0);
+                mAccountEmails.remove(0);
                 mImageSidePixels.remove(0);
                 numberOfPendingRequests--;
             }
@@ -109,7 +109,7 @@ public class ProfileDownloader {
         @Override
         public void onSystemAccountsChanged() {
             mProfiles.clear();
-            mAccountIds.clear();
+            mAccountEmails.clear();
             mImageSidePixels.clear();
         }
     }
@@ -117,30 +117,30 @@ public class ProfileDownloader {
     /**
      * Starts fetching the account information for a given account.
      * @param context context associated with the request
-     * @param accountId Account name to fetch the information for
+     * @param accountEmail Account email to fetch the information for
      * @param imageSidePixels Request image side (in pixels)
      */
     public static void startFetchingAccountInfoFor(
-            Context context, String accountId, int imageSidePixels, boolean isPreSignin) {
+            Context context, String accountEmail, int imageSidePixels, boolean isPreSignin) {
         ThreadUtils.assertOnUiThread();
         Profile profile = Profile.getLastUsedRegularProfile();
         if (!IdentityServicesProvider.get()
                         .getAccountTrackerService(profile)
                         .checkAndSeedSystemAccounts()) {
             PendingProfileDownloads.get(context).pendProfileDownload(
-                    profile, accountId, imageSidePixels);
+                    profile, accountEmail, imageSidePixels);
             return;
         }
         ProfileDownloaderJni.get().startFetchingAccountInfoFor(
-                profile, accountId, imageSidePixels, isPreSignin);
+                profile, accountEmail, imageSidePixels, isPreSignin);
     }
 
     @CalledByNative
     private static void onProfileDownloadSuccess(
-            String accountId, String fullName, String givenName, Bitmap bitmap) {
+            String accountEmail, String fullName, String givenName, Bitmap bitmap) {
         ThreadUtils.assertOnUiThread();
         for (Observer observer : sObservers) {
-            observer.onProfileDownloaded(accountId, fullName, givenName, bitmap);
+            observer.onProfileDownloaded(accountEmail, fullName, givenName, bitmap);
         }
     }
 
@@ -171,7 +171,7 @@ public class ProfileDownloader {
     @NativeMethods
     interface Natives {
         void startFetchingAccountInfoFor(
-                Profile profile, String accountId, int imageSidePixels, boolean isPreSignin);
+                Profile profile, String accountEmail, int imageSidePixels, boolean isPreSignin);
         String getCachedFullNameForPrimaryAccount(Profile profile);
         String getCachedGivenNameForPrimaryAccount(Profile profile);
         Bitmap getCachedAvatarForPrimaryAccount(Profile profile);

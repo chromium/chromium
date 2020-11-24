@@ -86,11 +86,11 @@ public interface ProfileDataSource {
     /**
      * Gets ProfileData for single account. There must be at least one active observer when this
      * method is invoked (see {@link #addObserver}).
-     * @param accountId account name to get ProfileData for.
+     * @param accountEmail account email to get ProfileData for.
      * @return ProfileData if there's any profile data for this account name, null otherwise.
      */
     @Nullable
-    ProfileData getProfileDataForAccount(String accountId);
+    ProfileData getProfileDataForAccount(String accountEmail);
 
     /**
      * Adds an observer to get notified about changes to profile data.

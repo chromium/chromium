@@ -31,9 +31,9 @@ public class FakeProfileDataSource implements ProfileDataSource {
     }
 
     @Override
-    public @Nullable ProfileData getProfileDataForAccount(String accountId) {
+    public @Nullable ProfileData getProfileDataForAccount(String accountEmail) {
         ThreadUtils.assertOnUiThread();
-        return mProfileDataMap.get(accountId);
+        return mProfileDataMap.get(accountEmail);
     }
 
     @Override
