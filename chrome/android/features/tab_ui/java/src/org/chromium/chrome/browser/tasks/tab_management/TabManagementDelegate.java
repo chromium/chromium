@@ -120,12 +120,14 @@ public interface TabManagementDelegate {
      * @param sheetController A {@link BottomSheetController} to show content in the bottom sheet.
      * @param parentTabSupplier A {@link Supplier} to provide parent tab for
      *         StartSurface.
+     * @param hadWarmStart Whether the activity had a warm start because the native library was
+     *         already fully loaded and initialized
      * @return the {@link StartSurface}
      */
     StartSurface createStartSurface(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             BottomSheetController sheetController,
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            Supplier<Tab> parentTabSupplier);
+            Supplier<Tab> parentTabSupplier, boolean hadWarmStart);
 
     /**
      * Create a {@link TabGroupModelFilter} for the given {@link TabModel}.

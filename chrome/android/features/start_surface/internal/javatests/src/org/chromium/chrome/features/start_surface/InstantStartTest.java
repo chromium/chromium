@@ -778,12 +778,15 @@ public class InstantStartTest {
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    public void testFeedLoading(boolean isFeedV2) {
+    public void testFeedPlaceholderFromColdStart(boolean isFeedV2) {
         // clang-format on
         setFeedVersion(isFeedV2);
         startMainActivityFromLauncher();
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+
+        // Feed placeholder should be shown from cold start with Instant Start on.
+        StartSurfaceCoordinator startSurfaceCoordinator = getStartSurfaceFromUIThread();
         onView(withId(R.id.placeholders_layout)).check(matches(isDisplayed()));
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
 
@@ -791,6 +794,10 @@ public class InstantStartTest {
         // Feed background should be non-transparent finally.
         ViewUtils.onViewWaiting(
                 AllOf.allOf(withId(R.id.feed_stream_recycler_view), matchesBackgroundAlpha(255)));
+
+        // TODO(spdonghao): Add a test for Feed placeholder from warm start. It's tested in
+        // StartSurfaceMediatorUnitTest#feedPlaceholderFromWarmStart currently because warm start is
+        // hard to simulate here.
     }
 
     @Test
