@@ -392,6 +392,24 @@ bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
   return false;
 }
 
+static bool IsContentVisibilityAutoWithoutFirstIntersection(
+    const LayoutBox& box) {
+  if (!box.GetNode() || !box.GetNode()->IsElementNode())
+    return false;
+
+  auto* display_lock_context =
+      To<Element>(box.GetNode())->GetDisplayLockContext();
+  if (!display_lock_context)
+    return false;
+
+  if (!display_lock_context->IsLocked() ||
+      display_lock_context->HadAnyViewportIntersectionNotifications() ||
+      !display_lock_context->IsAuto())
+    return false;
+
+  return true;
+}
+
 bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
   if (box_.HasVisualOverflow() || box_.HasLayoutOverflow())
     return true;
@@ -412,7 +430,21 @@ bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
 
 void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {
   auto mutable_box = box_.GetMutableForPainting();
-  mutable_box.SavePreviousSize();
+  // If a box has content-visibility:auto and has not yet been deemed to be near
+  // the viewport, then don't save its previous size. This prevents the
+  // LayoutShiftTracker (which computes CLS) from recording a layout shift when
+  // the element's subtree become unskipped for the first time. This is almost
+  // exactly equivalent to the current behavior of CLS computation for offscreen
+  // elements - i.e. those elements are not counted for CLS. The only difference
+  // is the one-frame leeway granted after box_ appears near the screen.
+  //
+  // Note: The downside of this approach is that any change in size of |box_|
+  // up to the time unskipping occurs will cause a full paint invalidation
+  // of |box_|. Since this has no effect on its subtree (which is skipped),
+  // and |box_| is not on-screen, this should not have a significant performance
+  // impact.
+  if (!IsContentVisibilityAutoWithoutFirstIntersection(box_))
+    mutable_box.SavePreviousSize();
 
   if (NeedsToSavePreviousOverflowData())
     mutable_box.SavePreviousOverflowData();
