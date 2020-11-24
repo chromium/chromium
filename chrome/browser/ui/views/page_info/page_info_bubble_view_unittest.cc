@@ -267,7 +267,8 @@ class FlashContentSettingsChangeWaiter : public content_settings::Observer {
 // Each permission selector row is like this: [icon] [label] [selector]
 constexpr size_t kViewsPerPermissionRow = 3;
 
-TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
+// Test is flaky on all platforms: crbug.com/1152528.
+TEST_F(PageInfoBubbleViewTest, DISABLED_NotificationPermissionRevokeUkm) {
   GURL origin_url = GURL(kUrl).GetOrigin();
   TestingProfile* profile =
       static_cast<TestingProfile*>(web_contents_helper_.profile());
