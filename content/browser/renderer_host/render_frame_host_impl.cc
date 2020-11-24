@@ -5509,16 +5509,6 @@ void RenderFrameHostImpl::BeginNavigation(
         GetStoragePartition(), validated_params->url);
   }
 
-  if (NavigationTypeUtils::IsSameDocument(validated_params->navigation_type)) {
-    // TODO(crbug.com/1125106): A same document navigation can not be done
-    // with a provisional frame, and yet it is happening inside a provisional
-    // frame somehow. This path appears to only allow cross-document
-    // navigation as the renderer never constructs a SAME document request to
-    // send to BeginNavigation(). This DumpWithoutCrashing() is to verify that
-    // fact.
-    base::debug::DumpWithoutCrashing();
-  }
-
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(
         std::move(validated_params), std::move(begin_params),
@@ -6486,66 +6476,10 @@ void RenderFrameHostImpl::CommitNavigation(
          subresource_loader_factories);
 
   if (is_same_document) {
-    if (frame_tree_node()->current_frame_host() != this) {
-      // TODO(crbug.com/1125106): A same document navigation can not be done
-      // with a provisional frame, and yet it is happening inside a provisional
-      // frame somehow.
-      RenderFrameHostImpl* current = frame_tree_node()->current_frame_host();
-      std::string from_url;
-      std::string from_site_info;
-      std::string from_process_lock;
-      int64_t from_item_seq_number = -2;
-      int64_t from_document_seq_number = -2;
-      std::string to_url;
-      std::string to_site_info;
-      std::string to_process_lock;
-      int64_t to_item_seq_number;
-      int64_t to_document_seq_number;
-      if (current) {
-        SiteInstanceImpl* current_site = current->GetSiteInstance();
-
-        from_url = current->GetLastCommittedURL().possibly_invalid_spec();
-        from_site_info = current_site->GetSiteInfo().GetDebugString();
-        from_process_lock = current_site->GetProcessLock().ToString();
-        delegate_->GetFrameSequenceNumbersForDebugging(
-            current, from_item_seq_number, from_document_seq_number);
-      }
-      to_url = navigation_request->GetURL().possibly_invalid_spec();
-      to_site_info = GetSiteInstance()->GetSiteInfo().GetDebugString();
-      to_process_lock = GetSiteInstance()->GetProcessLock().ToString();
-      to_item_seq_number = navigation_request->ItemSequenceNumberForDebugging();
-      to_document_seq_number =
-          navigation_request->DocumentSequenceNumberForDebugging();
-
-      bool is_speculative =
-          frame_tree_node()->render_manager()->speculative_frame_host() == this;
-      SCOPED_CRASH_KEY_BOOL(SpecSameDocNav, is_speculative, is_speculative);
-      SCOPED_CRASH_KEY_BOOL(SpecSameDocNav, browser_initiated,
-                            navigation_request->browser_initiated());
-
-      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, from_item_sequence,
-                              from_item_seq_number);
-      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, to_item_sequence,
-                              to_item_seq_number);
-      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, from_document_sequence,
-                              from_document_seq_number);
-      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, to_document_sequence,
-                              to_document_seq_number);
-      SCOPED_CRASH_KEY_STRING256(SpecSameDocNav, from_url, from_url);
-      SCOPED_CRASH_KEY_STRING256(SpecSameDocNav, to_url, to_url);
-      SCOPED_CRASH_KEY_STRING256(SpecSameDocNav, from_site_info,
-                                 from_site_info);
-      SCOPED_CRASH_KEY_STRING256(SpecSameDocNav, to_site_info, to_site_info);
-      SCOPED_CRASH_KEY_STRING256(SpecSameDocNav, from_process_lock,
-                                 from_process_lock);
-      SCOPED_CRASH_KEY_STRING256(SpecSameDocNav, to_process_lock,
-                                 to_process_lock);
-
-      base::debug::DumpWithoutCrashing();
-    }
+    DCHECK_EQ(frame_tree_node()->current_frame_host(), this);
+    DCHECK(same_document_navigation_request_);
     bool should_replace_current_entry =
         common_params->should_replace_current_entry;
-    DCHECK(same_document_navigation_request_);
     GetNavigationControl()->CommitSameDocumentNavigation(
         std::move(common_params), std::move(commit_params),
         base::BindOnce(&RenderFrameHostImpl::OnSameDocumentCommitProcessed,
