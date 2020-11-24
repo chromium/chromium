@@ -2410,9 +2410,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ExtraHeaders.Valid" enum="BooleanValid"
     expires_after="2021-01-14">
-  <obsolete>
-    Removed Nov 2020; experiment is done and the data isn't useful.
-  </obsolete>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -2424,6 +2421,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ExtraHeadersRedirect"
     enum="WebViewExtraHeadersRedirect" expires_after="2021-02-14">
+  <obsolete>
+    Removed Nov 2020; experiment is done and the data isn't useful.
+  </obsolete>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
