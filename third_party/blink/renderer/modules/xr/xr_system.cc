@@ -64,6 +64,9 @@ const char kImmersiveArModeNotValid[] =
     "Failed to execute '%s' on 'XRSystem': The provided value 'immersive-ar' "
     "is not a valid enum value of type XRSessionMode.";
 
+const char kTrackedImageWidthInvalid[] =
+    "trackedImages[%d].widthInMeters invalid, must be a positive number.";
+
 constexpr device::mojom::XRSessionFeature kDefaultImmersiveVrFeatures[] = {
     device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
     device::mojom::XRSessionFeature::REF_SPACE_LOCAL,
@@ -1322,7 +1325,16 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
     DCHECK(session_init->hasTrackedImages());
     DVLOG(3) << __func__ << ": set up trackedImages";
     Vector<device::mojom::blink::XRTrackedImage> images;
+    int index = 0;
     for (auto& image : session_init->trackedImages()) {
+      DCHECK(image->hasImage()) << "required in IDL";
+      DCHECK(image->hasWidthInMeters()) << "required in IDL";
+      if (std::isnan(image->widthInMeters()) ||
+          image->widthInMeters() <= 0.0f) {
+        String message = String::Format(kTrackedImageWidthInvalid, index);
+        query->RejectWithTypeError(message, &exception_state);
+        return promise;
+      }
       // Extract an SkBitmap snapshot for each image.
       scoped_refptr<StaticBitmapImage> static_bitmap_image =
           image->image()->BitmapImage();
@@ -1331,6 +1343,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
       IntSize int_size = static_bitmap_image->Size();
       gfx::Size size(int_size.Width(), int_size.Height());
       images.emplace_back(sk_bitmap, size, image->widthInMeters());
+      ++index;
     }
     query->SetTrackedImages(images);
   }

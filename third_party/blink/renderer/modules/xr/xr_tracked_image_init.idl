@@ -8,6 +8,6 @@
 //   https://github.com/klausw/webxr-image-tracking/blob/main/explainer.md
 
 dictionary XRTrackedImageInit {
-  ImageBitmap image;
-  float widthInMeters;
+  required ImageBitmap image;
+  required float widthInMeters;
 };
