@@ -489,6 +489,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The number of unopened downloads, when one is opened.</summary>
 </histogram>
 
+<histogram name="Download.OverwrittenDownloadRemovedFromHistory"
+    units="downloads" expires_after="2021-06-01">
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records the number of overwritten downloads that are cleaned up from
+    Chrome://downloads history. Recorded after loading all the downloads from
+    history DB.
+  </summary>
+</histogram>
+
 <histogram name="Download.ParallelDownload.CreationEvent"
     enum="ParallelDownloadCreationEvent" expires_after="2020-12-06">
   <obsolete>

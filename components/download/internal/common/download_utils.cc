@@ -51,6 +51,9 @@ const int64_t kInvalidFileWriteOffset = -1;
 // downloads will be deleted after expiration.
 const int kDefaultDownloadExpiredTimeInDays = 90;
 
+// Default time for an overwritten download to be removed from the history.
+const int kDefaultOverwrittenDownloadExpiredTimeInDays = 90;
+
 #if defined(OS_ANDROID)
 // Default maximum length of a downloaded file name on Android.
 const int kDefaultMaxFileNameLengthOnAndroid = 127;
@@ -635,6 +638,14 @@ base::TimeDelta GetExpiredDownloadDeleteTime() {
   int expired_days = base::GetFieldTrialParamByFeatureAsInt(
       features::kDeleteExpiredDownloads, kExpiredDownloadDeleteTimeFinchKey,
       kDefaultDownloadExpiredTimeInDays);
+  return base::TimeDelta::FromDays(expired_days);
+}
+
+base::TimeDelta GetOverwrittenDownloadDeleteTime() {
+  int expired_days = base::GetFieldTrialParamByFeatureAsInt(
+      features::kDeleteOverwrittenDownloads,
+      kOverwrittenDownloadDeleteTimeFinchKey,
+      kDefaultOverwrittenDownloadExpiredTimeInDays);
   return base::TimeDelta::FromDays(expired_days);
 }
 

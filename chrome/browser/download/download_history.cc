@@ -55,6 +55,8 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
 
+using history::DownloadState;
+
 namespace {
 
 // Max data url size to be stored in history DB.
@@ -223,6 +225,52 @@ ShouldUpdateHistoryResult ShouldUpdateHistory(
   return ShouldUpdateHistoryResult::NO_UPDATE;
 }
 
+// Counts how many times a target file path exists in |rows| and stores
+// the result into |file_path_count|.
+void CountFilePathOccurences(const std::vector<history::DownloadRow>& rows,
+                             std::map<std::string, int>* file_path_count) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!base::FeatureList::IsEnabled(
+          download::features::kDeleteOverwrittenDownloads)) {
+    return;
+  }
+
+  for (const history::DownloadRow& row : rows) {
+    if (row.state != DownloadState::COMPLETE || row.target_path.empty())
+      continue;
+    std::string file_path = row.target_path.AsUTF8Unsafe();
+    if (file_path.empty())
+      continue;
+    ++(*file_path_count)[file_path];
+  }
+}
+
+// Checks whether a particular download row should be skipped from loading given
+// the number of times the same target file path appears in |file_path_count|.
+bool ShouldSkipLoadingDownload(const history::DownloadRow& row,
+                               std::map<std::string, int>* file_path_count) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!base::FeatureList::IsEnabled(
+          download::features::kDeleteOverwrittenDownloads)) {
+    return false;
+  }
+
+  if (row.state != DownloadState::COMPLETE && row.target_path.empty())
+    return false;
+  const std::string file_path = row.target_path.AsUTF8Unsafe();
+  if (file_path.empty())
+    return false;
+  auto iter = file_path_count->find(file_path);
+  DCHECK(iter != file_path_count->end());
+  --iter->second;
+  if (iter->second < 1)
+    return false;
+  return base::Time::Now() - row.end_time >=
+         download::GetOverwrittenDownloadDeleteTime();
+}
+
 }  // anonymous namespace
 
 DownloadHistory::HistoryAdapter::HistoryAdapter(
@@ -308,11 +356,21 @@ void DownloadHistory::QueryCallback(std::vector<history::DownloadRow> rows) {
 }
 
 void DownloadHistory::LoadHistoryDownloads(
-    std::vector<history::DownloadRow> rows) {
+    const std::vector<history::DownloadRow>& rows) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(notifier_.GetManager());
 
+  std::map<std::string, int> file_name_count;
+  CountFilePathOccurences(rows, &file_name_count);
+
+  int overwritten_download_removals = 0;
   for (const history::DownloadRow& row : rows) {
+    if (ShouldSkipLoadingDownload(row, &file_name_count)) {
+      ++overwritten_download_removals;
+      ScheduleRemoveDownload(row.id);
+      continue;
+    }
+
     loading_id_ = history::ToContentDownloadId(row.id);
     download::DownloadItem::DownloadState history_download_state =
         history::ToContentDownloadState(row.state);
@@ -359,6 +417,8 @@ void DownloadHistory::LoadHistoryDownloads(
     DCHECK_EQ(DownloadHistoryData::PERSISTED,
               DownloadHistoryData::Get(item)->state());
   }
+  UMA_HISTOGRAM_COUNTS_1000("Download.OverwrittenDownloadRemovedFromHistory",
+                            overwritten_download_removals);
 
   // Indicate that the history db is initialized.
   notifier_.GetManager()->PostInitialization(

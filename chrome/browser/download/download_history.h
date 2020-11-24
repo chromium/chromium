@@ -99,7 +99,7 @@ class DownloadHistory : public download::AllDownloadItemNotifier::Observer {
   void QueryCallback(std::vector<history::DownloadRow> rows);
 
   // Called to create all history downloads.
-  void LoadHistoryDownloads(std::vector<history::DownloadRow> rows);
+  void LoadHistoryDownloads(const std::vector<history::DownloadRow>& rows);
 
   // May add |item| to |history_|.
   void MaybeAddToHistory(download::DownloadItem* item);

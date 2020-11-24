@@ -68,6 +68,10 @@ COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
 // Whether to delete expired download.
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kDeleteExpiredDownloads;
 
+// Whether to delete downloads that are overwritten by others.
+COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
+    kDeleteOverwrittenDownloads;
+
 }  // namespace features
 
 namespace switches {
