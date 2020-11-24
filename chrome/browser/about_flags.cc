@@ -2441,6 +2441,13 @@ const FeatureEntry::FeatureVariation kSubresourceRedirectVariations[] = {
      kSubresourceRedirectLoginRobotsBasedCompression,
      base::size(kSubresourceRedirectLoginRobotsBasedCompression), nullptr}};
 
+#if defined(OS_CHROMEOS)
+const FeatureEntry::FeatureVariation
+    kOmniboxRichEntitiesInLauncherVariations[] = {
+        {"with linked Suggest experiment", {}, 0, "t4461027"},
+};
+#endif  // OS_CHROMEOS
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -6628,7 +6635,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-rich-entities-in-launcher",
      flag_descriptions::kOmniboxRichEntitiesInLauncherName,
      flag_descriptions::kOmniboxRichEntitiesInLauncherDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnableOmniboxRichEntities)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         app_list_features::kEnableOmniboxRichEntities,
+         kOmniboxRichEntitiesInLauncherVariations,
+         "OmniboxRichEntitiesInLauncher")},
 
     {"separate-pointing-stick-settings",
      flag_descriptions::kSeparatePointingStickSettingsName,
