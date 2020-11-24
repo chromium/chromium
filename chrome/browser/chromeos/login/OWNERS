@@ -9,5 +9,3 @@ per-file *wizard_controller.*=file://ash/login/LOGIN_LOCK_OWNERS
 
 per-file *challenge_response*=emaxx@chromium.org
 per-file *security_token*=emaxx@chromium.org
-
-# COMPONENT: UI>Shell>OOBE
