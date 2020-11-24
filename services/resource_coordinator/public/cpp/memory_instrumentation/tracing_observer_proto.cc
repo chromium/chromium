@@ -156,7 +156,11 @@ void TracingObserverProto::StopTracing(
 }
 
 void TracingObserverProto::Flush(
-    base::RepeatingClosure flush_complete_callback) {}
+    base::RepeatingClosure flush_complete_callback) {
+  base::AutoLock lock(producer_lock_);
+  if (trace_writer_)
+    trace_writer_->Flush();
+}
 
 void TracingObserverProto::MemoryMapsAsProtoInto(
     const std::vector<mojom::VmRegionPtr>& memory_maps,
