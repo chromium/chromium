@@ -58,6 +58,14 @@
                 android:layout_width="@dimen/fre_loading_spinner_size"
                 android:visibility="gone"/>
         </FrameLayout>
+
+        <include
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:visibility="gone"
+            layout="@layout/fre_tos_privacy_disclaimer" />
     </FrameLayout>
 
     <org.chromium.components.browser_ui.widget.DualControlLayout

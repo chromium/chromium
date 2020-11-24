@@ -113,6 +113,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     private View mTosText;
     private View mAcceptButton;
     private View mLargeSpinner;
+    private View mPrivacyDisclaimer;
     private CheckBox mUmaCheckBox;
 
     @Before
@@ -425,6 +426,29 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosanduma_nopolicy");
     }
 
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "FirstRun"})
+    public void testRenderWithPolicy() throws Exception {
+        setAppRestrictionsMockInitialized(true);
+        setEnterpriseInfoInitializedWithDeviceOwner(true);
+        launchFirstRunThroughCustomTab();
+        assertUIState(FragmentState.LOADING);
+
+        // Clear the focus on view to avoid unexpected highlight on background.
+        View tosAndUmaFragment =
+                mActivity.getSupportFragmentManager().getFragments().get(0).getView();
+        Assert.assertNotNull(tosAndUmaFragment);
+        TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
+
+        setPolicyServiceMockInitializedWithDialogEnabled(false);
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> Criteria.checkThat(
+                                mPrivacyDisclaimer.getVisibility(), Matchers.is(View.VISIBLE)));
+        renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosanduma_withpolicy");
+    }
+
     /**
      * Launch chrome through custom tab and trigger first run.
      */
@@ -462,11 +486,14 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         mUmaCheckBox = mActivity.findViewById(R.id.send_report_checkbox);
         mAcceptButton = mActivity.findViewById(R.id.terms_accept);
         mLargeSpinner = mActivity.findViewById(R.id.progress_spinner_large);
+        mPrivacyDisclaimer = mActivity.findViewById(R.id.privacy_disclaimer);
     }
 
     private void assertUIState(@FragmentState int fragmentState) {
         int tosVisibility = (fragmentState == FragmentState.NO_POLICY) ? View.VISIBLE : View.GONE;
         int spinnerVisibility = (fragmentState == FragmentState.LOADING) ? View.VISIBLE : View.GONE;
+        int privacyVisibility =
+                (fragmentState == FragmentState.HAS_POLICY) ? View.VISIBLE : View.GONE;
 
         CriteriaHelper.pollUiThread(
                 ()
@@ -480,11 +507,14 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                 tosVisibility, mUmaCheckBox.getVisibility());
         Assert.assertEquals("Visibility of accept button is different than the test setting.",
                 tosVisibility, mAcceptButton.getVisibility());
+        Assert.assertEquals("Visibility of privacy disclaimer is different than the test setting.",
+                privacyVisibility, mPrivacyDisclaimer.getVisibility());
 
         Assert.assertTrue("Uma Check Box should be checked.", mUmaCheckBox.isChecked());
 
         int expectedExitCount = fragmentState == FragmentState.HAS_POLICY ? 1 : 0;
-        Assert.assertEquals(expectedExitCount, mExitCount);
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mExitCount, Matchers.is(expectedExitCount)));
     }
 
     /**

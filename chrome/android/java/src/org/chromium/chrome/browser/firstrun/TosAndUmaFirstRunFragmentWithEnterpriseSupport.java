@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -13,6 +14,7 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
@@ -64,9 +66,13 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     private boolean mViewCreated;
     private View mLoadingSpinnerContainer;
     private LoadingView mLoadingSpinner;
+    private View mPrivacyDisclaimer;
     private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
     private final OneshotSupplierImpl<PolicyService> mPolicyServiceProvider =
             new OneshotSupplierImpl<>();
+
+    private Handler mHandler;
+    private Runnable mExitFreRunnable;
 
     /** The {@link SystemClock} timestamp when onViewCreated is called. */
     private long mViewCreatedTimeMs;
@@ -80,6 +86,10 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         if (mSkipTosDialogPolicyListener != null) {
             mSkipTosDialogPolicyListener.destroy();
             mSkipTosDialogPolicyListener = null;
+        }
+        if (mHandler != null && mExitFreRunnable != null) {
+            mHandler.removeCallbacks(mExitFreRunnable);
+            mHandler = null;
         }
         super.onDestroy();
     }
@@ -101,6 +111,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
 
         mLoadingSpinnerContainer = view.findViewById(R.id.loading_view_container);
         mLoadingSpinner = view.findViewById(R.id.progress_spinner_large);
+        mPrivacyDisclaimer = view.findViewById(R.id.privacy_disclaimer);
         mViewCreated = true;
         mViewCreatedTimeMs = SystemClock.elapsedRealtime();
 
@@ -142,7 +153,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
                 SystemClock.elapsedRealtime() - mViewCreatedTimeMs);
 
         if (mSkipTosDialogPolicyListener.get()) {
-            // TODO(crbug.com/1108564): Show the different UI that has the enterprise disclosure.
             exitCctFirstRun();
         } else {
             // Else, show the UMA as the loading spinner is GONE.
@@ -161,10 +171,18 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     }
 
     private void exitCctFirstRun() {
-        // TODO(crbug.com/1108564): Fire a signal to end this fragment when disclaimer is ready.
         // TODO(crbug.com/1108582): Save a shared pref indicating Enterprise CCT FRE is complete,
         //  and skip waiting for future cold starts.
         Log.d(TAG, "TosAndUmaFirstRunFragmentWithEnterpriseSupport finished.");
-        getPageDelegate().exitFirstRun();
+
+        mPrivacyDisclaimer.setVisibility(View.VISIBLE);
+        mPrivacyDisclaimer.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+
+        mExitFreRunnable = () -> {
+            getPageDelegate().exitFirstRun();
+            mExitFreRunnable = null;
+        };
+        mHandler = new Handler(ThreadUtils.getUiThreadLooper());
+        mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.SKIP_TOS_EXIT_DELAY_MS);
     }
 }

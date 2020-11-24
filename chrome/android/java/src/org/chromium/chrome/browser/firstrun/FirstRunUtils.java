@@ -22,6 +22,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 /** Provides first run related utility functions. */
 public class FirstRunUtils {
     private static Boolean sHasGoogleAccountAuthenticator;
+    static final int SKIP_TOS_EXIT_DELAY_MS = 1000;
 
     /**
      * Synchronizes first run native and Java preferences.

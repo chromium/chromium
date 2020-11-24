@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
@@ -52,11 +54,15 @@ public class LightweightFirstRunActivity
     private LoadingView mLoadingView;
     private View mLoadingViewContainer;
     private View mLightweightFreButtons;
+    private View mPrivacyDisclaimer;
     private boolean mViewCreated;
     private boolean mNativeInitialized;
     private boolean mTriggerAcceptAfterNativeInit;
 
     private long mViewCreatedTimeMs;
+
+    private Handler mHandler;
+    private Runnable mExitFreRunnable;
 
     public static final String EXTRA_ASSOCIATED_APP_NAME =
             "org.chromium.chrome.browser.firstrun.AssociatedAppName";
@@ -147,6 +153,8 @@ public class LightweightFirstRunActivity
         mLoadingView = findViewById(R.id.loading_view);
         mLoadingViewContainer = findViewById(R.id.loading_view_container);
 
+        mPrivacyDisclaimer = findViewById(R.id.privacy_disclaimer);
+
         mViewCreated = true;
         mViewCreatedTimeMs = SystemClock.elapsedRealtime();
 
@@ -227,6 +235,10 @@ public class LightweightFirstRunActivity
         // As first run is complete, we no longer need FirstRunAppRestrictionInfo.
         if (mFirstRunAppRestrictionInfo != null) mFirstRunAppRestrictionInfo.destroy();
         if (mSkipTosDialogPolicyListener != null) mSkipTosDialogPolicyListener.destroy();
+
+        if (mHandler != null && mExitFreRunnable != null) {
+            mHandler.removeCallbacks(mExitFreRunnable);
+        }
     }
 
     private void abortFirstRunExperience() {
@@ -240,9 +252,17 @@ public class LightweightFirstRunActivity
     }
 
     private void skipTosByPolicy() {
-        // TODO(crbug.com/1108564): Show the different UI that has the enterprise disclosure.
-        FirstRunStatus.setEphemeralSkipFirstRun(true);
-        exitLightweightFirstRun();
+        mLoadingViewContainer.setVisibility(View.GONE);
+        mPrivacyDisclaimer.setVisibility(View.VISIBLE);
+        mPrivacyDisclaimer.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+
+        mExitFreRunnable = () -> {
+            FirstRunStatus.setEphemeralSkipFirstRun(true);
+            exitLightweightFirstRun();
+            mExitFreRunnable = null;
+        };
+        mHandler = new Handler(ThreadUtils.getUiThreadLooper());
+        mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.SKIP_TOS_EXIT_DELAY_MS);
     }
 
     private void exitLightweightFirstRun() {

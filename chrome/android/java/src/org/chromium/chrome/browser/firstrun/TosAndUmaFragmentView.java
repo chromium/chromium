@@ -17,6 +17,8 @@ import org.chromium.chrome.R;
 /**
  * Base view for fre_tosanduma.xml. This view may change child view placement when changing screen
  * dimensions (e.g. on rotation).
+ *
+ * See https://crbug.com/1151537 for illustration.
  */
 public class TosAndUmaFragmentView extends FrameLayout {
     private ScrollView mScrollView;
