@@ -31,6 +31,14 @@ Polymer({
       value: null,
     },
 
+    /**
+     * Controls whether the icon should be greyed out.
+     * @type {boolean}
+     */
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -93,5 +101,16 @@ Polymer({
             'No icon defined for share type ' + this.sendPreview.shareType);
         return 'nearbysharetype68:unknown-file';
     }
+  },
+
+  /**
+   * @return {string} The css class to be applied to the icon.
+   * @private
+   */
+  getIconClass_() {
+    if (this.disabled) {
+      return 'disabled';
+    }
+    return '';
   },
 });

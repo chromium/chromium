@@ -132,7 +132,9 @@
         autoplay="true">
     </cr-lottie>
     <div id="process-row">
-      <nearby-preview send-preview="[[sendPreview]]"></nearby-preview>
+      <nearby-preview send-preview="[[sendPreview]]"
+          disabled="[[errorTitle_]]">
+      </nearby-preview>
       <div id="placeholder"
           hidden="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
         $i18n{nearbyShareDiscoveryPagePlaceholder}
