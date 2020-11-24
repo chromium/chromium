@@ -1230,7 +1230,7 @@ class IDLParser(object):
 #
 # BuildError
 #
-# Build and Errror node as part of the recovery process.
+# Build and Error node as part of the recovery process.
 #
 #
   def BuildError(self, p, prod):
