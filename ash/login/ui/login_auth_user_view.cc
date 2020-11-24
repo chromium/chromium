@@ -1070,17 +1070,20 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
     button_message =
         l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_VERIFY_ACCOUNT_MESSAGE);
   }
-  auto online_sign_in_message = std::make_unique<SystemLabelButton>(
+  bool is_login_secondary =
+      Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::LOGIN_SECONDARY;
+  auto online_sign_in_button = std::make_unique<SystemLabelButton>(
       base::BindRepeating(&LoginAuthUserView::OnOnlineSignInMessageTap,
                           base::Unretained(this)),
       button_message, SystemLabelButton::DisplayType::ALERT_WITH_ICON,
       /*multiline*/ false);
-  online_sign_in_message_ = online_sign_in_message.get();
+  // Disable online sign-in on secondary login screen as there is no OOBE there.
+  online_sign_in_button->SetEnabled(!is_login_secondary);
+  online_sign_in_message_ = online_sign_in_button.get();
 
   bool shown_because_of_multiprofile_policy =
-      !user.is_multiprofile_allowed &&
-      Shell::Get()->session_controller()->GetSessionState() ==
-          session_manager::SessionState::LOGIN_SECONDARY;
+      !user.is_multiprofile_allowed && is_login_secondary;
   auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>(
       shown_because_of_multiprofile_policy, user.multiprofile_policy);
   disabled_auth_message_ = disabled_auth_message.get();
@@ -1104,7 +1107,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       login_views_utils::WrapViewForPreferredSize(std::move(password_view));
   auto wrapped_online_sign_in_message_view =
       login_views_utils::WrapViewForPreferredSize(
-          std::move(online_sign_in_message));
+          std::move(online_sign_in_button));
   auto wrapped_disabled_auth_message_view =
       login_views_utils::WrapViewForPreferredSize(
           std::move(disabled_auth_message));
