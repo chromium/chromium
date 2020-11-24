@@ -209,41 +209,4 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
 
 WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;
 
-// WebWidget ------------------------------------------------------------------
-
-WebInputEventResult WebFrameWidgetImpl::HandleGestureEventScaled(
-    const WebGestureEvent& scaled_event,
-    const GestureEventWithHitTestResults&) {
-  base::Optional<ContextMenuAllowedScope> maybe_context_menu_scope;
-  switch (scaled_event.GetType()) {
-    case WebInputEvent::Type::kGestureTap:
-    case WebInputEvent::Type::kGestureTapUnconfirmed:
-    case WebInputEvent::Type::kGestureTapDown:
-      // Touch pinch zoom and scroll on the page (outside of a popup) must hide
-      // the popup. In case of a touch scroll or pinch zoom, this function is
-      // called with GestureTapDown rather than a GSB/GSU/GSE or GPB/GPU/GPE.
-      // WebViewImpl takes additional steps to avoid the following GestureTap
-      // from re-opening the popup being closed here, but since GestureTap will
-      // unconditionally close the current popup here, it is not used/needed.
-      // TODO(wjmaclean): We should maybe mirror what WebViewImpl does, the
-      // HandleGestureEvent() needs to happen inside or before the GestureTap
-      // case to do so.
-      View()->CancelPagePopup();
-      break;
-    case WebInputEvent::Type::kGestureTapCancel:
-    case WebInputEvent::Type::kGestureShowPress:
-      break;
-    case WebInputEvent::Type::kGestureTwoFingerTap:
-    case WebInputEvent::Type::kGestureLongPress:
-    case WebInputEvent::Type::kGestureLongTap:
-      GetPage()->GetContextMenuController().ClearContextMenu();
-      maybe_context_menu_scope.emplace();
-      break;
-    default:
-      NOTREACHED();
-  }
-  LocalFrame* frame = LocalRootImpl()->GetFrame();
-  return frame->GetEventHandler().HandleGestureEvent(scaled_event);
-}
-
 }  // namespace blink

@@ -865,7 +865,75 @@ WebInputEventResult WebFrameWidgetBase::HandleGestureEvent(
     }
   }
 
-  event_result = HandleGestureEventScaled(scaled_event, targeted_event);
+  switch (scaled_event.GetType()) {
+    case WebInputEvent::Type::kGestureTap: {
+      {
+        ContextMenuAllowedScope scope;
+        event_result =
+            frame->GetEventHandler().HandleGestureEvent(targeted_event);
+      }
+
+      if (web_view->GetPagePopup() && last_hidden_page_popup_ &&
+          web_view->GetPagePopup()->HasSamePopupClient(
+              last_hidden_page_popup_.get())) {
+        // The tap triggered a page popup that is the same as the one we just
+        // closed. It needs to be closed.
+        web_view->CancelPagePopup();
+      }
+      // Don't have this value persist outside of a single tap gesture, plus
+      // we're done with it now.
+      last_hidden_page_popup_ = nullptr;
+      break;
+    }
+    case WebInputEvent::Type::kGestureTwoFingerTap:
+    case WebInputEvent::Type::kGestureLongPress:
+    case WebInputEvent::Type::kGestureLongTap:
+      if (scaled_event.GetType() == WebInputEvent::Type::kGestureLongTap) {
+        if (LocalFrame* inner_frame =
+                targeted_event.GetHitTestResult().InnerNodeFrame()) {
+          if (!inner_frame->GetEventHandler().LongTapShouldInvokeContextMenu())
+            break;
+        } else if (!frame->GetEventHandler().LongTapShouldInvokeContextMenu()) {
+          break;
+        }
+      }
+
+      GetPage()->GetContextMenuController().ClearContextMenu();
+      {
+        ContextMenuAllowedScope scope;
+        event_result =
+            frame->GetEventHandler().HandleGestureEvent(targeted_event);
+      }
+
+      break;
+    case WebInputEvent::Type::kGestureTapDown:
+      // Touch pinch zoom and scroll on the page (outside of a popup) must hide
+      // the popup. In case of a touch scroll or pinch zoom, this function is
+      // called with GestureTapDown rather than a GSB/GSU/GSE or GPB/GPU/GPE.
+      // When we close a popup because of a GestureTapDown, we also save it so
+      // we can prevent the following GestureTap from immediately reopening the
+      // same popup.
+      // This value should not persist outside of a gesture, so is cleared by
+      // GestureTap (where it is used) and by GestureCancel.
+      last_hidden_page_popup_ = web_view->GetPagePopup();
+      web_view->CancelPagePopup();
+      event_result =
+          frame->GetEventHandler().HandleGestureEvent(targeted_event);
+      break;
+    case WebInputEvent::Type::kGestureTapCancel:
+      // Don't have this value persist outside of a single tap gesture.
+      last_hidden_page_popup_ = nullptr;
+      event_result =
+          frame->GetEventHandler().HandleGestureEvent(targeted_event);
+      break;
+    case WebInputEvent::Type::kGestureShowPress:
+    case WebInputEvent::Type::kGestureTapUnconfirmed:
+      event_result =
+          frame->GetEventHandler().HandleGestureEvent(targeted_event);
+      break;
+    default:
+      NOTREACHED();
+  }
   DidHandleGestureEvent(event);
   return event_result;
 }

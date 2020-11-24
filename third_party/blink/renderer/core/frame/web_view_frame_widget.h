@@ -10,7 +10,6 @@
 #include "base/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
@@ -60,16 +59,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   ~WebViewFrameWidget() override;
 
  private:
-  // WebFrameWidgetBase overrides:
-  WebInputEventResult HandleGestureEventScaled(
-      const WebGestureEvent&,
-      const GestureEventWithHitTestResults&) override;
-
-  // This stores the last hidden page popup. If a GestureTap attempts to open
-  // the popup that is closed by its previous GestureTapDown, the popup remains
-  // closed.
-  scoped_refptr<WebPagePopupImpl> last_hidden_page_popup_;
-
   DISALLOW_COPY_AND_ASSIGN(WebViewFrameWidget);
 };
 

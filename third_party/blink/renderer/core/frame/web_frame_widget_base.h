@@ -25,6 +25,7 @@
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/page_widget_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
@@ -740,13 +741,6 @@ class CORE_EXPORT WebFrameWidgetBase
   // Returns the current state of synchronous resize mode for testing.
   bool SynchronousResizeModeForTestingEnabled();
 
-  // Handle a gesture event that has already been scaled.
-  // This is temporary to help with reviews of collapsing the complicated
-  // HandleGestureEvent into one implementation.
-  virtual WebInputEventResult HandleGestureEventScaled(
-      const WebGestureEvent&,
-      const GestureEventWithHitTestResults&) = 0;
-
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
 
@@ -960,6 +954,11 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // Whether this widget is for a child local root, or otherwise a main frame.
   const bool is_for_child_local_root_;
+
+  // This stores the last hidden page popup. If a GestureTap attempts to open
+  // the popup that is closed by its previous GestureTapDown, the popup remains
+  // closed.
+  scoped_refptr<WebPagePopupImpl> last_hidden_page_popup_;
 
   SelfKeepAlive<WebFrameWidgetBase> self_keep_alive_;
 
