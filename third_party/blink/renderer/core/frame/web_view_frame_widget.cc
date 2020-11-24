@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
-#include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -71,36 +70,13 @@ WebViewFrameWidget::WebViewFrameWidget(
 WebViewFrameWidget::~WebViewFrameWidget() = default;
 
 WebInputEventResult WebViewFrameWidget::HandleGestureEventScaled(
-    const WebGestureEvent& scaled_event) {
+    const WebGestureEvent& scaled_event,
+    const GestureEventWithHitTestResults& targeted_event) {
   WebViewImpl* web_view = View();
   if (!web_view->MainFrameImpl())
     return WebInputEventResult::kNotHandled;
 
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
-
-  // Hit test across all frames and do touch adjustment as necessary for the
-  // event type.
-  GestureEventWithHitTestResults targeted_event =
-      GetPage()
-          ->DeprecatedLocalMainFrame()
-          ->GetEventHandler()
-          .TargetGestureEvent(scaled_event);
-
-  // Handle link highlighting outside the main switch to avoid getting lost in
-  // the complicated set of cases handled below.
-  switch (scaled_event.GetType()) {
-    case WebInputEvent::Type::kGestureShowPress:
-      // Queue a highlight animation, then hand off to regular handler.
-      web_view->EnableTapHighlightAtPoint(targeted_event);
-      break;
-    case WebInputEvent::Type::kGestureTapCancel:
-    case WebInputEvent::Type::kGestureTap:
-    case WebInputEvent::Type::kGestureLongPress:
-      GetPage()->GetLinkHighlight().StartHighlightAnimationIfNeeded();
-      break;
-    default:
-      break;
-  }
 
   switch (scaled_event.GetType()) {
     case WebInputEvent::Type::kGestureTap: {

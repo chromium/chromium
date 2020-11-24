@@ -212,7 +212,8 @@ WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;
 // WebWidget ------------------------------------------------------------------
 
 WebInputEventResult WebFrameWidgetImpl::HandleGestureEventScaled(
-    const WebGestureEvent& scaled_event) {
+    const WebGestureEvent& scaled_event,
+    const GestureEventWithHitTestResults&) {
   base::Optional<ContextMenuAllowedScope> maybe_context_menu_scope;
   switch (scaled_event.GetType()) {
     case WebInputEvent::Type::kGestureTap:

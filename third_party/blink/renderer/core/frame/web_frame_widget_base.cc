@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/page/drag_controller.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
@@ -840,7 +841,31 @@ WebInputEventResult WebFrameWidgetBase::HandleGestureEvent(
       break;
   }
 
-  event_result = HandleGestureEventScaled(scaled_event);
+  // Hit test across all frames and do touch adjustment as necessary for the
+  // event type.
+  GestureEventWithHitTestResults targeted_event =
+      frame->GetEventHandler().TargetGestureEvent(scaled_event);
+
+  // Link highlight animations are only for the main frame.
+  if (ForMainFrame()) {
+    // Handle link highlighting outside the main switch to avoid getting lost in
+    // the complicated set of cases handled below.
+    switch (scaled_event.GetType()) {
+      case WebInputEvent::Type::kGestureShowPress:
+        // Queue a highlight animation, then hand off to regular handler.
+        web_view->EnableTapHighlightAtPoint(targeted_event);
+        break;
+      case WebInputEvent::Type::kGestureTapCancel:
+      case WebInputEvent::Type::kGestureTap:
+      case WebInputEvent::Type::kGestureLongPress:
+        GetPage()->GetLinkHighlight().StartHighlightAnimationIfNeeded();
+        break;
+      default:
+        break;
+    }
+  }
+
+  event_result = HandleGestureEventScaled(scaled_event, targeted_event);
   DidHandleGestureEvent(event);
   return event_result;
 }

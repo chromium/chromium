@@ -25,6 +25,7 @@
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/page_widget_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -743,7 +744,8 @@ class CORE_EXPORT WebFrameWidgetBase
   // This is temporary to help with reviews of collapsing the complicated
   // HandleGestureEvent into one implementation.
   virtual WebInputEventResult HandleGestureEventScaled(
-      const WebGestureEvent&) = 0;
+      const WebGestureEvent&,
+      const GestureEventWithHitTestResults&) = 0;
 
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
