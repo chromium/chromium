@@ -291,7 +291,7 @@ crbug.com/730267 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligibl
 # Flaky virtual/threaded/fast/scrolling tests
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/absolute-position-behind-scrollbar.html [ Failure Pass ]
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/fixed-position-behind-scrollbar.html [ Failure Pass ]
-crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/listbox-wheel-event.html [ Failure Pass ]
+crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/listbox-wheel-event.html [ Failure Pass Timeout ]
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/same-page-navigate.html [ Failure Pass ]
 
