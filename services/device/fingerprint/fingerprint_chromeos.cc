@@ -251,8 +251,7 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
   for (auto& observer : observers_) {
     observer->OnAuthScanDone(
         casted_scan_result,
-        base::flat_map<std::string, std::vector<std::string>>(
-            std::move(entries)));
+        base::flat_map<std::string, std::vector<std::string>>(entries));
   }
 }
 
