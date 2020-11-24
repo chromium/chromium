@@ -278,7 +278,7 @@ def Main(argv):
       'like key=value (can be passed multiple time to configure '
       'more than one override)')
   parser.add_option('--format',
-                    choices=('binary1', 'xml1', 'json'),
+                    choices=('binary1', 'xml1'),
                     default='xml1',
                     help='Format to use when writing property list '
                     '(default: %(default)s)')

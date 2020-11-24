@@ -178,7 +178,7 @@ class MergeAction(Action):
         '-o', '--output', required=True,
         help='path to the output plist file')
     parser.add_argument(
-        '-f', '--format', required=True, choices=('xml1', 'binary1', 'json'),
+        '-f', '--format', required=True, choices=('xml1', 'binary1'),
         help='format of the plist file to generate')
     parser.add_argument(
         '-x',
@@ -214,7 +214,7 @@ class SubstituteAction(Action):
         '-s', '--substitution', action='append', default=[],
         help='substitution rule in the format key=value')
     parser.add_argument(
-        '-f', '--format', required=True, choices=('xml1', 'binary1', 'json'),
+        '-f', '--format', required=True, choices=('xml1', 'binary1'),
         help='format of the plist file to generate')
     parser.add_argument(
         '-x',
