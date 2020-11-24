@@ -38,15 +38,32 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:visib
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyBufferToBuffer:copy_with_invalid_buffer: [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,primitive_topology:* [ Failure ]
+# Crash with validation layer
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,primitive_topology:* [ Failure Crash ]
 
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,invalidBuffer:* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,offsetAndSizeAlignment,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,offsetAndSizeOOB,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,sizeUnspecifiedOOB,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,state,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,usage,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync_,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,invalidBuffer:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,offsetAndSizeAlignment,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,offsetAndSizeOOB,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,sizeUnspecifiedOOB,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,state,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,usage,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync_,* [ Failure ]
+
+wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="rgba8unorm-srgb";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="bgra8unorm-srgb";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_in_shader:format="rg11b10ufloat";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_in_shader:format="rgb9e5ufloat";* [ Failure ]
+
+# Many formats failing on Mac. Crash with validation layer on Linux. Also slow.
+# TODO: Split, once failures are cleaned up.
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";* [ Slow Failure Crash ]
+
+# All failing, crash with validation layer. Seems also slow.
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Slow Failure Crash ]
+
+# Failing on Mac in a few cases (same as CopyToBuffer).
+# Many cases failing on Windows. May also be slow.
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";* [ Slow Failure ]
 
 # Fails or crashes on numerous combinations of backends, hardware, and validation layers
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:* [ Failure Crash ]
@@ -58,7 +75,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:* [ Fail
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copy_between_linear_data_and_texture,copyBetweenLinearDataAndTexture_dataRelated:* [ Skip ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copy_between_linear_data_and_texture,copyBetweenLinearDataAndTexture_textureRelated:* [ Skip ]
 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:* [ Skip ]
-wpt_internal/webgpu/cts.html?q=webgpu:web-platform,copyImageBitmapToTexture:from_ImageData:* [ Skip ]
+wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyImageBitmapToTexture:from_ImageData:* [ Skip ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,copyBetweenLinearDataAndTexture:* [ Skip ]
 
 # Has many failures but also is very long, will need splitting
@@ -71,15 +88,11 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,textureUsag
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
 # Linux: actual is white/blank - is actually crashing silently
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_clear.html [ Skip ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_clear.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
 # Win: takeScreenshot crashes
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_clear.html [ Skip ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
-
-# These tests were written before the validation rules where settled upon.
-crbug.com/dawn/542 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,setViewport:* [ Failure ]
-crbug.com/dawn/542 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,setScissorRect:* [ Failure ]
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_clear.html [ Skip ]
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
 
 #
 # Platform-independent failures
@@ -87,17 +100,6 @@ crbug.com/dawn/542 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,setSciss
 
 # This test runs first, and is often slow due to some browser startup not being complete.
 crbug.com/953991 wpt_internal/webgpu/000_run_me_first.html [ Slow ]
-
-# Many bugs are contained here.
-# - One of them is crbug.com/dawn/424
-# - Mac: Timeout on worker seen at least once.
-# - Win: Crash seen for r8snorm, rg11b10float, rg8snorm, rgba8snorm.
-# - General: Test takes too long to run, needs to be split up.
-#   (Not really worth implementing until there are fewer actual failures.)
-# - Possibly also slower or hanging with validation layers.
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,copied_texture_clear:* [ Skip ]
-crbug.com/dawn/431 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,sampled_texture_clear:* [ Skip ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,depth_stencil_attachment_clear:* [ Skip ]
 
 crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=0;size=0 [ Failure ]
 crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=256;size=0 [ Failure ]
@@ -125,7 +127,17 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:
 #
 
 # Rendering differs slightly from ref.
-crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_complex_bgra8unorm.html [ Failure ]
+crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Failure ]
+
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="rgb10a2unorm";* [ Failure ]
+
+# Widespread failures with depth32float
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="depth32float";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToTexture";format="depth32float";* [ Failure ]
+
+# Only ...;aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="_StoreOpClear;dimension="2d";sliceCount=1;nonPowerOfTwo=false
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="r8unorm";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="rg8unorm";* [ Failure ]
 
 #
 # Linux (Vulkan) specific
@@ -137,9 +149,15 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 # Nvidia only, worker only, very flaky
 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,command_buffer,render,storeop:* [ Failure ]
 
+# Crash with backend validation.
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,memory_sync,buffer,ww:* [ Failure Crash ]
+
 #
 # Windows (D3D12) specific
 #
 
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
 crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
+
+# Crash with validation layer. May also be slow.
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="StencilTest";* [ Slow Failure Crash ]

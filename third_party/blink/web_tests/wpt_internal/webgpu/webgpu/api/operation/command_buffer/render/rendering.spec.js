@@ -20,43 +20,43 @@ g.test('fullscreen_quad').fn(async t => {
 
   const colorAttachmentView = colorAttachment.createView();
 
-  const vertexModule = t.makeShaderModule('vertex', {
-    glsl: `
-      #version 310 es
-      void main() {
-        const vec2 pos[3] = vec2[3](
-            vec2(-1.f, -3.f), vec2(3.f, 1.f), vec2(-1.f, 1.f));
-        gl_Position = vec4(pos[gl_VertexIndex], 0.f, 1.f);
-      }
-    `,
-  });
-
-  const fragmentModule = t.makeShaderModule('fragment', {
-    glsl: `
-      #version 310 es
-      precision mediump float;
-      layout(location = 0) out vec4 fragColor;
-      void main() {
-        fragColor = vec4(0.0, 1.0, 0.0, 1.0);
-      }
-    `,
-  });
-
-  const pl = t.device.createPipelineLayout({ bindGroupLayouts: [] });
   const pipeline = t.device.createRenderPipeline({
-    vertexStage: { module: vertexModule, entryPoint: 'main' },
-    fragmentStage: { module: fragmentModule, entryPoint: 'main' },
-    layout: pl,
-    primitiveTopology: 'triangle-list',
-    rasterizationState: {
-      frontFace: 'ccw',
+    vertexStage: {
+      module: t.device.createShaderModule({
+        code: `
+          [[builtin(position)]] var<out> Position : vec4<f32>;
+          [[builtin(vertex_idx)]] var<in> VertexIndex : i32;
+
+          [[stage(vertex)]] fn main() -> void {
+            const pos : array<vec2<f32>, 3> = array<vec2<f32>, 3>(
+                vec2<f32>(-1.0, -3.0),
+                vec2<f32>(3.0, 1.0),
+                vec2<f32>(-1.0, 1.0));
+            Position = vec4<f32>(pos[VertexIndex], 0.0, 1.0);
+            return;
+          }
+          `,
+      }),
+
+      entryPoint: 'main',
     },
 
-    colorStates: [{ format: 'rgba8unorm', alphaBlend: {}, colorBlend: {} }],
-    vertexState: {
-      indexFormat: 'uint16',
-      vertexBuffers: [],
+    fragmentStage: {
+      module: t.device.createShaderModule({
+        code: `
+          [[location(0)]] var<out> fragColor : vec4<f32>;
+          [[stage(fragment)]] fn main() -> void {
+            fragColor = vec4<f32>(0.0, 1.0, 0.0, 1.0);
+            return;
+          }
+          `,
+      }),
+
+      entryPoint: 'main',
     },
+
+    primitiveTopology: 'triangle-list',
+    colorStates: [{ format: 'rgba8unorm' }],
   });
 
   const encoder = t.device.createCommandEncoder();
@@ -71,7 +71,7 @@ g.test('fullscreen_quad').fn(async t => {
   });
 
   pass.setPipeline(pipeline);
-  pass.draw(3, 1, 0, 0);
+  pass.draw(3);
   pass.endPass();
   encoder.copyTextureToBuffer(
     { texture: colorAttachment, mipLevel: 0, origin: { x: 0, y: 0, z: 0 } },

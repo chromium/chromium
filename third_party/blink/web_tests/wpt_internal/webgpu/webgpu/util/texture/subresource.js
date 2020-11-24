@@ -42,3 +42,16 @@ export class SubresourceRange {
     }
   }
 }
+
+export function mipSize(size, level) {
+  const rShiftMax1 = s => Math.max(s >> level, 1);
+  if (size instanceof Array) {
+    return size.map(rShiftMax1);
+  } else {
+    return {
+      width: rShiftMax1(size.width),
+      height: rShiftMax1(size.height),
+      depth: rShiftMax1(size.depth),
+    };
+  }
+}

@@ -118,6 +118,10 @@ g.test('gpu,buffers').fn(async t => {
 // One of the following two tests should be skipped on most platforms.
 
 g.test('gpu,with_texture_compression,bc')
+  .desc(
+    `Example of a test using a device descriptor.
+Tests that a BC format passes validation iff the feature is enabled.`
+  )
   .params(pbool('textureCompressionBC'))
   .fn(async t => {
     const { textureCompressionBC } = t.params;
@@ -141,6 +145,11 @@ g.test('gpu,with_texture_compression,bc')
   });
 
 g.test('gpu,with_texture_compression,etc')
+  .desc(
+    `Example of a test using a device descriptor.
+
+TODO: Test that an ETC format passes validation iff the feature is enabled.`
+  )
   .params(pbool('textureCompressionETC'))
   .fn(async t => {
     const { textureCompressionETC } = t.params;
@@ -151,6 +160,5 @@ g.test('gpu,with_texture_compression,etc')
       });
     }
 
-    t.device;
     // TODO: Should actually test createTexture with an ETC format here.
   });

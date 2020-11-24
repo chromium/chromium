@@ -1,7 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `API Operation Tests for RenderPass StoreOp.
-
 Tests a render pass with a resolveTarget resolves correctly for many combinations of:
   - number of color attachments, some with and some without a resolveTarget
   - renderPass storeOp set to {‘store’, ‘clear’}
@@ -35,56 +34,58 @@ g.test('render_pass_resolve')
       .combine(poptions('resolveTargetBaseArrayLayer', [0, 1]))
   )
   .fn(t => {
-    // These shaders will draw a white triangle into a texture. After draw, the top left
-    // half of the texture will be white, and the bottom right half will be unchanged. When this
-    // texture is resolved, there will be two distinct colors in each portion of the texture, as
-    // well as a line between the portions that contain the midpoint color due to the multisample
-    // resolve.
-    const vertexModule = t.makeShaderModule('vertex', {
-      glsl: `
-      #version 450
-      const vec2 pos[3] = vec2[3](vec2(-1.0f, -1.0f), vec2(-1.0f, 1.0), vec2(1.0, 1.0));
-        void main() {
-          gl_Position = vec4(pos[gl_VertexIndex], 0.0f, 1.0f);
-        }
-      `,
-    });
-
-    const fragmentModule = t.makeShaderModule('fragment', {
-      glsl: `
-      #version 450
-        layout(location = 0) out vec4 fragColor0;
-        layout(location = 1) out vec4 fragColor1;
-        layout(location = 2) out vec4 fragColor2;
-        layout(location = 3) out vec4 fragColor3;
-        void main() {
-          fragColor0 = vec4(1.0, 1.0, 1.0, 1.0);
-          fragColor1 = vec4(1.0, 1.0, 1.0, 1.0);
-          fragColor2 = vec4(1.0, 1.0, 1.0, 1.0);
-          fragColor3 = vec4(1.0, 1.0, 1.0, 1.0);
-        }
-      `,
-    });
-
     const colorStateDescriptors = [];
     for (let i = 0; i < t.params.numColorAttachments; i++) {
       colorStateDescriptors.push({ format: kFormat });
     }
 
+    // These shaders will draw a white triangle into a texture. After draw, the top left
+    // half of the texture will be white, and the bottom right half will be unchanged. When this
+    // texture is resolved, there will be two distinct colors in each portion of the texture, as
+    // well as a line between the portions that contain the midpoint color due to the multisample
+    // resolve.
     const pipeline = t.device.createRenderPipeline({
-      vertexStage: { module: vertexModule, entryPoint: 'main' },
-      fragmentStage: { module: fragmentModule, entryPoint: 'main' },
+      vertexStage: {
+        module: t.device.createShaderModule({
+          code: `
+            [[builtin(position)]] var<out> Position : vec4<f32>;
+            [[builtin(vertex_idx)]] var<in> VertexIndex : i32;
+
+            [[stage(vertex)]] fn main() -> void {
+              const pos : array<vec2<f32>, 3> = array<vec2<f32>, 3>(
+                  vec2<f32>(-1.0, -1.0),
+                  vec2<f32>(-1.0,  1.0),
+                  vec2<f32>( 1.0,  1.0));
+              Position = vec4<f32>(pos[VertexIndex], 0.0, 1.0);
+              return;
+            }`,
+        }),
+
+        entryPoint: 'main',
+      },
+
+      fragmentStage: {
+        module: t.device.createShaderModule({
+          code: `
+            [[location(0)]] var<out> fragColor0 : vec4<f32>;
+            [[location(1)]] var<out> fragColor1 : vec4<f32>;
+            [[location(2)]] var<out> fragColor2 : vec4<f32>;
+            [[location(3)]] var<out> fragColor3 : vec4<f32>;
+
+            [[stage(fragment)]] fn main() -> void {
+              fragColor0 = vec4<f32>(1.0, 1.0, 1.0, 1.0);
+              fragColor1 = vec4<f32>(1.0, 1.0, 1.0, 1.0);
+              fragColor2 = vec4<f32>(1.0, 1.0, 1.0, 1.0);
+              fragColor3 = vec4<f32>(1.0, 1.0, 1.0, 1.0);
+              return;
+            }`,
+        }),
+
+        entryPoint: 'main',
+      },
+
       primitiveTopology: 'triangle-list',
-      rasterizationState: {
-        frontFace: 'ccw',
-      },
-
       colorStates: colorStateDescriptors,
-      vertexState: {
-        indexFormat: 'uint32',
-        vertexBuffers: [],
-      },
-
       sampleCount: 4,
     });
 
@@ -157,7 +158,7 @@ g.test('render_pass_resolve')
     });
 
     pass.setPipeline(pipeline);
-    pass.draw(3, 1, 0, 0);
+    pass.draw(3);
     pass.endPass();
     t.device.defaultQueue.submit([encoder.finish()]);
 

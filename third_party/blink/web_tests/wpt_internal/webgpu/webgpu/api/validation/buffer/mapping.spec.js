@@ -3,13 +3,12 @@
  **/ export const description = `
 Validation tests for GPUBuffer.mapAsync, GPUBuffer.unmap and GPUBuffer.getMappedRange.
 `;
-import { pbool, poptions, params } from '../../../common/framework/params_builder.js';
-import { makeTestGroup } from '../../../common/framework/test_group.js';
-import { unreachable } from '../../../common/framework/util/util.js';
-import { kBufferUsages } from '../../capability_info.js';
-import { GPUConst } from '../../constants.js';
-
-import { ValidationTest } from './validation_test.js';
+import { pbool, poptions, params } from '../../../../common/framework/params_builder.js';
+import { makeTestGroup } from '../../../../common/framework/test_group.js';
+import { unreachable } from '../../../../common/framework/util/util.js';
+import { kBufferUsages } from '../../../capability_info.js';
+import { GPUConst } from '../../../constants.js';
+import { ValidationTest } from '../validation_test.js';
 
 class F extends ValidationTest {
   async testMapAsyncCall(success, rejectName, buffer, mode, offset, size) {

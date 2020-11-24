@@ -3,6 +3,8 @@
  **/ export const description = `
 copyImageBitmapToTexture Validation Tests in Queue.
 
+TODO: Split this test plan per-test.
+
 Test Plan:
 - For source.imageBitmap:
   - imageBitmap generated from ImageData:
@@ -422,3 +424,21 @@ g.test('OOB,destination')
       success
     );
   });
+
+g.test('ImageBitmap_sources')
+  .desc(
+    `Test ImageBitmap generated from all possible ImageBitmapSource, relevant ImageBitmapOptions
+    (https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#images-2)
+    and various source filetypes and metadata (weird dimensions, EXIF orientations, video rotations
+    and visible/crop rectangles, etc. (In theory these things are handled inside createImageBitmap,
+    but in theory could affect the internal representation of the ImageBitmap.)`
+  )
+  .unimplemented();
+
+g.test('zero_sized')
+  .desc(
+    `Test valid zero-sized copies.
+
+- copySize { [0,x,x], [x,0,x], [x,x,0], [0,0,0] }`
+  )
+  .unimplemented();

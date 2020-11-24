@@ -15,35 +15,50 @@ class F extends ValidationTest {
     });
   }
 
-  createRenderPipeline(pipelineLayout) {
-    const vertexModule = this.makeShaderModule('vertex', {
-      glsl: `#version 450
-          layout (set = 0, binding = 0) uniform vertexUniformBuffer {
-              mat2 transform;
-          };
-          void main() {
-              const vec2 pos[3] = vec2[3](vec2(-1.f, -1.f), vec2(1.f, -1.f), vec2(-1.f, 1.f));
-              gl_Position = vec4(transform * pos[gl_VertexIndex], 0.f, 1.f);
-          }
-        `,
-    });
-
-    const fragmentModule = this.makeShaderModule('fragment', {
-      glsl: `
-        #version 450
-        layout (set = 1, binding = 0) uniform fragmentUniformBuffer {
-          vec4 color;
-        };
-        layout(location = 0) out vec4 fragColor;
-        void main() {
-        }
-      `,
-    });
-
+  createRenderPipeline() {
     const pipeline = this.device.createRenderPipeline({
-      vertexStage: { module: vertexModule, entryPoint: 'main' },
-      fragmentStage: { module: fragmentModule, entryPoint: 'main' },
-      layout: pipelineLayout,
+      vertexStage: {
+        module: this.device.createShaderModule({
+          code: `
+            [[block]] struct VertexUniforms {
+              [[offset(0)]] transform : mat2x2<f32> ;
+            };
+            [[set(0), binding(0)]] var<uniform> uniforms : VertexUniforms;
+
+            [[builtin(position)]] var<out> Position : vec4<f32>;
+            [[builtin(vertex_idx)]] var<in> VertexIndex : i32;
+            [[stage(vertex)]] fn main() -> void {
+              var pos : array<vec2<f32>, 3> = array<vec2<f32>, 3>(
+                vec2<f32>(-1.0, -1.0),
+                vec2<f32>( 1.0, -1.0),
+                vec2<f32>(-1.0,  1.0)
+              );
+              Position = vec4<f32>(uniforms.transform * pos[VertexIndex], 0.0, 1.0);
+              return;
+            }`,
+        }),
+
+        entryPoint: 'main',
+      },
+
+      fragmentStage: {
+        module: this.device.createShaderModule({
+          code: `
+            [[block]] struct FragmentUniforms {
+              [[offset(0)]] color : vec4<f32>;
+            };
+            [[set(1), binding(0)]] var<uniform> uniforms : FragmentUniforms;
+
+            [[location(0)]] var<out> fragColor : vec4<f32>;
+            [[stage(fragment)]] fn main() -> void {
+              fragColor = uniforms.color;
+              return;
+            }`,
+        }),
+
+        entryPoint: 'main',
+      },
+
       primitiveTopology: 'triangle-list',
       colorStates: [{ format: 'rgba8unorm' }],
     });
@@ -81,16 +96,21 @@ g.test('it_is_invalid_to_draw_in_a_render_pass_with_missing_bind_groups')
   .fn(async t => {
     const { setBindGroup1, setBindGroup2, _success } = t.params;
 
+    const pipeline = t.createRenderPipeline();
+
     const uniformBuffer = t.getUniformBuffer();
 
-    const bindGroupLayout1 = t.device.createBindGroupLayout({
+    const bindGroup0 = t.device.createBindGroup({
       entries: [
         {
           binding: 0,
-          visibility: GPUShaderStage.VERTEX,
-          type: 'uniform-buffer',
+          resource: {
+            buffer: uniformBuffer,
+          },
         },
       ],
+
+      layout: pipeline.getBindGroupLayout(0),
     });
 
     const bindGroup1 = t.device.createBindGroup({
@@ -103,48 +123,19 @@ g.test('it_is_invalid_to_draw_in_a_render_pass_with_missing_bind_groups')
         },
       ],
 
-      layout: bindGroupLayout1,
+      layout: pipeline.getBindGroupLayout(1),
     });
-
-    const bindGroupLayout2 = t.device.createBindGroupLayout({
-      entries: [
-        {
-          binding: 0,
-          visibility: GPUShaderStage.FRAGMENT,
-          type: 'uniform-buffer',
-        },
-      ],
-    });
-
-    const bindGroup2 = t.device.createBindGroup({
-      entries: [
-        {
-          binding: 0,
-          resource: {
-            buffer: uniformBuffer,
-          },
-        },
-      ],
-
-      layout: bindGroupLayout2,
-    });
-
-    const pipelineLayout = t.device.createPipelineLayout({
-      bindGroupLayouts: [bindGroupLayout1, bindGroupLayout2],
-    });
-
-    const pipeline = t.createRenderPipeline(pipelineLayout);
 
     const commandEncoder = t.device.createCommandEncoder();
     const renderPass = t.beginRenderPass(commandEncoder);
     renderPass.setPipeline(pipeline);
     if (setBindGroup1) {
-      renderPass.setBindGroup(0, bindGroup1);
+      renderPass.setBindGroup(0, bindGroup0);
     }
     if (setBindGroup2) {
-      renderPass.setBindGroup(1, bindGroup2);
+      renderPass.setBindGroup(1, bindGroup1);
     }
-    renderPass.draw(3, 1, 0, 0);
+    renderPass.draw(3);
     renderPass.endPass();
     t.expectValidationError(() => {
       commandEncoder.finish();

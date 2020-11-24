@@ -99,35 +99,49 @@ g.test('culling')
     // Draw two triangles with different winding orders:
     // 1. The top-left one is counterclockwise (CCW)
     // 2. The bottom-right one is clockwise (CW)
-    const vertexModule = t.makeShaderModule('vertex', {
-      glsl: `#version 450
-            const vec2 pos[6] = vec2[6](vec2(-1.0f,  1.0f),
-                                        vec2(-1.0f,  0.0f),
-                                        vec2( 0.0f,  1.0f),
-                                        vec2( 0.0f, -1.0f),
-                                        vec2( 1.0f,  0.0f),
-                                        vec2( 1.0f, -1.0f));
-            void main() {
-                gl_Position = vec4(pos[gl_VertexIndex], 0.0, 1.0);
-            }`,
-    });
-
-    const fragmentModule = t.makeShaderModule('fragment', {
-      glsl: `#version 450
-      layout(location = 0) out vec4 fragColor;
-      void main() {
-        if (gl_FrontFacing) {
-          fragColor = vec4(0.0, 1.0, 0.0, 1.0);
-        } else {
-          fragColor = vec4(1.0, 0.0, 0.0, 1.0);
-        }
-      }`,
-    });
-
     pass.setPipeline(
       t.device.createRenderPipeline({
-        vertexStage: { module: vertexModule, entryPoint: 'main' },
-        fragmentStage: { module: fragmentModule, entryPoint: 'main' },
+        vertexStage: {
+          module: t.device.createShaderModule({
+            code: `
+              [[builtin(position)]] var<out> Position : vec4<f32>;
+              [[builtin(vertex_idx)]] var<in> VertexIndex : i32;
+
+              [[stage(vertex)]] fn main() -> void {
+                const pos : array<vec2<f32>, 6> = array<vec2<f32>, 6>(
+                    vec2<f32>(-1.0,  1.0),
+                    vec2<f32>(-1.0,  0.0),
+                    vec2<f32>( 0.0,  1.0),
+                    vec2<f32>( 0.0, -1.0),
+                    vec2<f32>( 1.0,  0.0),
+                    vec2<f32>( 1.0, -1.0));
+                Position = vec4<f32>(pos[VertexIndex], 0.0, 1.0);
+                return;
+              }`,
+          }),
+
+          entryPoint: 'main',
+        },
+
+        fragmentStage: {
+          module: t.device.createShaderModule({
+            code: `
+              [[location(0)]] var<out> fragColor : vec4<f32>;
+              [[builtin(front_facing)]] var<in> FrontFacing : bool;
+
+              [[stage(fragment)]] fn main() -> void {
+                if (FrontFacing) {
+                  fragColor = vec4<f32>(0.0, 1.0, 0.0, 1.0);
+                } else {
+                  fragColor = vec4<f32>(1.0, 0.0, 0.0, 1.0);
+                }
+                return;
+              }`,
+          }),
+
+          entryPoint: 'main',
+        },
+
         primitiveTopology: t.params.primitiveTopology,
         rasterizationState: {
           frontFace: t.params.frontFace,

@@ -117,7 +117,7 @@ export const listing = [
       "operation",
       "copyBetweenLinearDataAndTexture"
     ],
-    "description": "writeTexture + copyBufferToTexture + copyTextureToBuffer operation tests.\n\n* copy_with_various_rows_per_image_and_bytes_per_row: test that copying data with various bytesPerRow (including { ==, > } bytesInACompleteRow) and rowsPerImage (including { ==, > } copyExtent.height) values and minimum required bytes in copy works for every format. Also covers special code paths:\n  - bufferSize - offset < bytesPerImage * copyExtent.depth\n  - when bytesPerRow is not a multiple of 512 and copyExtent.depth > 1: copyExtent.depth % 2 == { 0, 1 }\n  - bytesPerRow == bytesInACompleteCopyImage\n\n* copy_with_various_offsets_and_data_sizes: test that copying data with various offset (including { ==, > } 0 and is/isn't power of 2) values and additional data paddings works for every format with 2d and 2d-array textures. Also covers special code paths:\n  - offset + bytesInCopyExtentPerRow { ==, > } bytesPerRow\n  - offset > bytesInACompleteCopyImage\n\n* copy_with_various_origins_and_copy_extents: test that copying slices of a texture works with various origin (including { origin.x, origin.y, origin.z } { ==, > } 0 and is/isn't power of 2) and copyExtent (including { copyExtent.x, copyExtent.y, copyExtent.z } { ==, > } 0 and is/isn't power of 2) values (also including {origin._ + copyExtent._ { ==, < } the subresource size of textureCopyView) works for all formats. origin and copyExtent values are passed as [number, number, number] instead of GPUExtent3DDict.\n\n* copy_various_mip_levels: test that copying various mip levels works for all formats. Also covers special code paths:\n  - the physical size of the subresouce is not equal to the logical size\n  - bufferSize - offset < bytesPerImage * copyExtent.depth and copyExtent needs to be clamped\n\n* copy_with_no_image_or_slice_padding_and_undefined_values: test that when copying a single row we can set any bytesPerRow value and when copying a single slice we can set rowsPerImage to 0. Also test setting offset, rowsPerImage, mipLevel, origin, origin.{x,y,z} to undefined.\n\n* TODO:\n  - add another initMethod which renders the texture\n  - because of expectContests 4-bytes alignment we don't test CopyT2B with buffer size not divisible by 4\n  - add tests for 1d / 3d textures"
+    "description": "writeTexture + copyBufferToTexture + copyTextureToBuffer operation tests.\n\n* copy_with_various_rows_per_image_and_bytes_per_row: test that copying data with various bytesPerRow (including { ==, > } bytesInACompleteRow) and rowsPerImage (including { ==, > } copyExtent.height) values and minimum required bytes in copy works for every format. Also covers special code paths:\n  - bufferSize - offset < bytesPerImage * copyExtent.depth\n  - when bytesPerRow is not a multiple of 512 and copyExtent.depth > 1: copyExtent.depth % 2 == { 0, 1 }\n  - bytesPerRow == bytesInACompleteCopyImage\n\n* copy_with_various_offsets_and_data_sizes: test that copying data with various offset (including { ==, > } 0 and is/isn't power of 2) values and additional data paddings works for every format with 2d and 2d-array textures. Also covers special code paths:\n  - offset + bytesInCopyExtentPerRow { ==, > } bytesPerRow\n  - offset > bytesInACompleteCopyImage\n\n* copy_with_various_origins_and_copy_extents: test that copying slices of a texture works with various origin (including { origin.x, origin.y, origin.z } { ==, > } 0 and is/isn't power of 2) and copyExtent (including { copyExtent.x, copyExtent.y, copyExtent.z } { ==, > } 0 and is/isn't power of 2) values (also including {origin._ + copyExtent._ { ==, < } the subresource size of textureCopyView) works for all formats. origin and copyExtent values are passed as [number, number, number] instead of GPUExtent3DDict.\n\n* copy_various_mip_levels: test that copying various mip levels works for all formats. Also covers special code paths:\n  - the physical size of the subresouce is not equal to the logical size\n  - bufferSize - offset < bytesPerImage * copyExtent.depth and copyExtent needs to be clamped\n\n* copy_with_no_image_or_slice_padding_and_undefined_values: test that when copying a single row we can set any bytesPerRow value and when copying a single slice we can set rowsPerImage to 0. Also test setting offset, rowsPerImage, mipLevel, origin, origin.{x,y,z} to undefined.\n\n* TODO:\n  - add another initMethod which renders the texture\n  - test copyT2B with buffer size not divisible by 4 (not done because expectContents 4-byte alignment)\n  - add tests for 1d / 3d textures"
   },
   {
     "file": [
@@ -131,10 +131,38 @@ export const listing = [
     "file": [
       "api",
       "operation",
+      "labels"
+    ],
+    "description": "For every create function, the descriptor.label is carried over to the object.label.\n\nTODO: implement"
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "memory_sync",
+      "buffer",
+      "rw_and_wr"
+    ],
+    "description": "Memory Synchronization Tests for Buffer: read before write and read after write.\n\n- Create a single buffer and initialize it to 0, wait on the fence to ensure the data is initialized.\nWrite a number (say 1) into the buffer via render pass, compute pass, copy or writeBuffer.\nRead the data and use it in render, compute, or copy.\nWait on another fence, then call expectContents to verify the written buffer.\nThis is a read-after write test but if the write and read operations are reversed, it will be a read-before-write test.\n  - x= write op: {storage buffer in {compute, render, render-via-bundle}, t2b copy dst, b2b copy dst, writeBuffer}\n  - x= read op: {index buffer, vertex buffer, indirect buffer, uniform buffer, {readonly, readwrite} storage buffer in {compute, render, render-via-bundle}, b2b copy src, b2t copy src}\n  - x= read-write sequence: {read then write, write then read}\n  - if pass type is the same, x= {single pass, separate passes} (note: render has loose guarantees)\n  - if not single pass, x= writes in {same cmdbuf, separate cmdbufs, separate submits, separate queues}"
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "memory_sync",
+      "buffer",
+      "ww"
+    ],
+    "description": "Memory Synchronization Tests for Buffer: write after write.\n\n- Create one single buffer and initialize it to 0. Wait on the fence to ensure the data is initialized.\nWrite a number (say 1) into the buffer via render pass, compute pass, copy or writeBuffer.\nWrite another number (say 2) into the same buffer via render pass, compute pass, copy, or writeBuffer.\nWait on another fence, then call expectContents to verify the written buffer.\n  - x= 1st write type: {storage buffer in {compute, render, render-via-bundle}, t2b-copy, b2b-copy, writeBuffer}\n  - x= 2nd write type: {storage buffer in {compute, render, render-via-bundle}, t2b-copy, b2b-copy, writeBuffer}\n  - if pass type is the same, x= {single pass, separate passes} (note: render has loose guarantees)\n  - if not single pass, x= writes in {same cmdbuf, separate cmdbufs, separate submits, separate queues}"
+  },
+  {
+    "file": [
+      "api",
+      "operation",
       "render_pass",
       "resolve"
     ],
-    "description": "API Operation Tests for RenderPass StoreOp.\n\nTests a render pass with a resolveTarget resolves correctly for many combinations of:\n  - number of color attachments, some with and some without a resolveTarget\n  - renderPass storeOp set to {‘store’, ‘clear’}\n  - resolveTarget mip level set to {‘0’, base mip > ‘0’}\n  - resolveTarget base array layer set to {‘0’, base layer > '0'} for 2D textures\n  TODO: test all renderable color formats\n  TODO: test that any not-resolved attachments are rendered to correctly."
+    "description": "API Operation Tests for RenderPass StoreOp.\nTests a render pass with a resolveTarget resolves correctly for many combinations of:\n  - number of color attachments, some with and some without a resolveTarget\n  - renderPass storeOp set to {‘store’, ‘clear’}\n  - resolveTarget mip level set to {‘0’, base mip > ‘0’}\n  - resolveTarget base array layer set to {‘0’, base layer > '0'} for 2D textures\n  TODO: test all renderable color formats\n  TODO: test that any not-resolved attachments are rendered to correctly."
   },
   {
     "file": [
@@ -168,27 +196,9 @@ export const listing = [
       "api",
       "operation",
       "resource_init",
-      "copied_texture_clear"
+      "texture_zero_init"
     ],
-    "description": "Test uninitialized textures are initialized to zero when copied."
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "resource_init",
-      "depth_stencil_attachment_clear"
-    ],
-    "description": "Test uninitialized textures are initialized to zero when used as a depth/stencil attachment."
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "resource_init",
-      "sampled_texture_clear"
-    ],
-    "description": "Test uninitialized textures are initialized to zero when sampled."
+    "description": "Test uninitialized textures are initialized to zero when read."
   },
   {
     "file": [
@@ -208,9 +218,46 @@ export const listing = [
     "file": [
       "api",
       "validation",
-      "buffer_mapping"
+      "buffer",
+      "create"
+    ],
+    "description": "Tests for validation in createBuffer."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "buffer",
+      "destroy"
+    ],
+    "description": "Destroying a buffer more than once is allowed."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "buffer",
+      "mapping"
     ],
     "description": "Validation tests for GPUBuffer.mapAsync, GPUBuffer.unmap and GPUBuffer.getMappedRange."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "features"
+    ],
+    "readme": "Test every method or option that shouldn't be valid without an feature enabled.\n\n- x= that feature {enabled, disabled}\n\nOne file for each feature name.\n\nTODO: implement"
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits"
+    ],
+    "readme": "Test everything that shouldn't be valid without a higher-than-specified limit.\n\n- x= that limit {default, max supported (if different), lower than default (TODO: if allowed)}\n\nOne file for each limit name.\n\nTODO: implement"
   },
   {
     "file": [
@@ -336,6 +383,16 @@ export const listing = [
       "validation",
       "encoding",
       "cmds",
+      "dynamic_render_state"
+    ],
+    "description": "API validation tests for dynamic state commands (setViewport/ScissorRect/BlendColor...)."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
       "index_access"
     ],
     "description": "indexed draws validation tests."
@@ -346,7 +403,7 @@ export const listing = [
       "validation",
       "error_scope"
     ],
-    "description": "error scope validation tests."
+    "description": "Error scope validation tests.\n\nNote these must create their own device, not use GPUTest (that one already has error scopes on it).\n\nTODO: shorten test names; detail should move to the description.)\n\nTODO: consider slightly revising these tests to make sure they're complete. {\n    - push 0, pop 1\n    - push validation, push oom, pop, pop, pop\n    - push oom, push validation, pop, pop, pop\n    - push validation, pop, pop\n    - push oom, pop, pop\n    - push various x100000 (or some other large number), pop x100000, pop\n    - }"
   },
   {
     "file": [
@@ -354,7 +411,42 @@ export const listing = [
       "validation",
       "fences"
     ],
-    "description": "fences validation tests."
+    "description": "fences validation tests.\n\nTODO: Add some more tests/cases (may replace some existing tests), e.g.:\n  For fence values 0 < x < y < z:\n  - initialValue=0, signal(0)\n  - initialValue=x, signal(x)\n  - initialValue=x, signal(y)\n  - initialValue=y, signal(x)\n  - initialValue=x, signal(y), signal(y)\n  - initialValue=x, signal(y), signal(z), wait(z)\n  - initialValue=x, signal(z), signal(y)\n  - initialValue=x, wait(x)\n  - initialValue=y, wait(x)\n  - initialValue=x, wait(y)\n  - initialValue=x, signal(y), wait(x)\n  - initialValue=x, signal(y), wait(y)\n  - etc."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "initialization",
+      "requestDevice"
+    ],
+    "description": "Test validation conditions for requestDevice."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "query_set",
+      "destroy"
+    ],
+    "description": "Destroying a query set more than once is allowed."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "queue"
+    ],
+    "readme": "Tests for validation that occurs inside queued operations\n(submit, writeBuffer, writeTexture, copyImageBitmapToTexture).\n\nBufferMapStatesToTest = {\n  mapped -> unmapped,\n  mapped at creation -> unmapped,\n  mapping pending -> unmapped,\n  pending -> mapped (await map),\n  unmapped -> pending (noawait map),\n  created mapped-at-creation,\n}\n\nNote writeTexture is tested in copyBetweenLinearDataAndTexture."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "queue",
+      "buffer_mapped"
+    ],
+    "description": "Tests for map-state of mappable buffers used in submitted command buffers.\n\n- x= just before queue op, buffer in {BufferMapStatesToTest}\n- x= in every possible place for mappable buffer:\n  {writeBuffer, copyB2B {src,dst}, copyB2T, copyT2B, ..?}\n\nTODO: implement"
   },
   {
     "file": [
@@ -363,7 +455,46 @@ export const listing = [
       "queue",
       "copyImageBitmapToTexture"
     ],
-    "description": "copyImageBitmapToTexture Validation Tests in Queue.\n\nTest Plan:\n- For source.imageBitmap:\n  - imageBitmap generated from ImageData:\n    - Check that an error is generated when imageBitmap is closed.\n\n- For destination.texture:\n  - For 2d destination textures:\n    - Check that an error is generated when texture is in destroyed state.\n    - Check that an error is generated when texture is an error texture.\n    - Check that an error is generated when texture is created without usage COPY_DST.\n    - Check that an error is generated when sample count is not 1.\n    - Check that an error is generated when mipLevel is too large.\n    - Check that an error is generated when texture format is not valid.\n\n- For copySize:\n  - Noop copy shouldn't throw any exception or return any validation error.\n  - Check that an error is generated when destination.texture.origin + copySize is too large.\n\nTODO: 1d, 3d texture and 2d array textures."
+    "description": "copyImageBitmapToTexture Validation Tests in Queue.\n\nTODO: Split this test plan per-test.\n\nTest Plan:\n- For source.imageBitmap:\n  - imageBitmap generated from ImageData:\n    - Check that an error is generated when imageBitmap is closed.\n\n- For destination.texture:\n  - For 2d destination textures:\n    - Check that an error is generated when texture is in destroyed state.\n    - Check that an error is generated when texture is an error texture.\n    - Check that an error is generated when texture is created without usage COPY_DST.\n    - Check that an error is generated when sample count is not 1.\n    - Check that an error is generated when mipLevel is too large.\n    - Check that an error is generated when texture format is not valid.\n\n- For copySize:\n  - Noop copy shouldn't throw any exception or return any validation error.\n  - Check that an error is generated when destination.texture.origin + copySize is too large.\n\nTODO: 1d, 3d texture and 2d array textures."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "queue",
+      "destroyed",
+      "buffer"
+    ],
+    "description": "Tests using a destroyed buffer on a queue.\n\n- used in {writeBuffer,\n  setBindGroup, copyB2B {src,dst}, copyB2T, copyT2B,\n  setIndexBuffer, {draw,dispatch}Indirect, ..?}\n- x= if applicable, {in pass, in bundle}\n- x= {destroyed, not destroyed (control case)}\n\nTODO: implement. (Search for other places some of these cases may have already been tested.)"
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "queue",
+      "destroyed",
+      "query_set"
+    ],
+    "description": "Tests using a destroyed query set on a queue.\n\n- used in {resolveQuerySet, timestamp {compute, render, non-pass},\n    pipeline statistics {compute, render}, occlusion}\n- x= {destroyed, not destroyed (control case)}\n\nTODO: implement. (Search for other places some of these cases may have already been tested.)"
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "queue",
+      "destroyed",
+      "texture"
+    ],
+    "description": "Tests using a destroyed texture on a queue.\n\n- used in {writeTexture,\n  setBindGroup, copyT2T {src,dst}, copyB2T, copyT2B, copyImageBitmapToTexture,\n  color attachment {0,>0}, {D,S,DS} attachment, ..?}\n- x= if applicable, {in pass, in bundle}\n- x= {destroyed, not destroyed (control case)}\n\nTODO: implement. (Search for other places some of these cases may have already been tested.)"
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "queue",
+      "writeBuffer"
+    ],
+    "description": "Tests writeBuffer validation.\n\n- buffer missing usage flag\n- bufferOffset {ok, too large for buffer}\n- dataOffset {ok, too large for data}\n- size {ok, too large for buffer}\n- size {ok, too large for data}\n- size unspecified; default {ok, too large for buffer}\n\nNote: destroyed buffer is tested in destroyed/.\n\nTODO: implement."
   },
   {
     "file": [
@@ -428,30 +559,6 @@ export const listing = [
     "file": [
       "api",
       "validation",
-      "setBlendColor"
-    ],
-    "description": "setBlendColor validation tests."
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "setScissorRect"
-    ],
-    "description": "setScissorRect validation tests."
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "setStencilReference"
-    ],
-    "description": "setStencilReference validation tests."
-  },
-  {
-    "file": [
-      "api",
-      "validation",
       "setVertexBuffer"
     ],
     "description": "setVertexBuffer validation tests."
@@ -460,9 +567,28 @@ export const listing = [
     "file": [
       "api",
       "validation",
-      "setViewport"
+      "state",
+      "device_lost"
     ],
-    "description": "setViewport validation tests."
+    "readme": "Tests of behavior while the device is lost.\n\n- x= every method in the API.\n\nTODO: implement"
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "state",
+      "device_mismatched"
+    ],
+    "readme": "Tests of behavior on one device using objects from another device.\n\n- x= every place in the API where an object is passed (as this, an arg, or a dictionary member).\n\nTODO: implement"
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "texture",
+      "destroy"
+    ],
+    "description": "Destroying a texture more than once is allowed."
   },
   {
     "file": [
@@ -482,7 +608,7 @@ export const listing = [
     "file": [
       "idl"
     ],
-    "readme": "Tests to check that the WebGPU IDL is correctly implemented, for examples that objects exposed\nexactly the correct members, and that methods throw when passed incomplete dictionaries."
+    "readme": "Tests to check that the WebGPU IDL is correctly implemented, for examples that objects exposed\nexactly the correct members, and that methods throw when passed incomplete dictionaries.\n\nSee https://github.com/gpuweb/cts/issues/332"
   },
   {
     "file": [
@@ -537,13 +663,21 @@ export const listing = [
   },
   {
     "file": [
-      "web-platform"
+      "util",
+      "texture",
+      "texelData"
+    ],
+    "description": "Test helpers for texel data produce the expected data in the shader"
+  },
+  {
+    "file": [
+      "web_platform"
     ],
     "readme": "Tests for Web platform-specific interactions like GPUSwapChain and canvas, WebXR,\nImageBitmaps, and video APIs."
   },
   {
     "file": [
-      "web-platform",
+      "web_platform",
       "canvas",
       "context_creation"
     ],
@@ -551,9 +685,16 @@ export const listing = [
   },
   {
     "file": [
-      "web-platform",
+      "web_platform",
       "copyImageBitmapToTexture"
     ],
     "description": "copy imageBitmap To texture tests."
+  },
+  {
+    "file": [
+      "web_platform",
+      "reftests"
+    ],
+    "readme": "Reference tests (reftests) for WebGPU canvas presentation.\n\nThese render some contents to a canvas using WebGPU, and WPT compares the rendering result with\nthe \"reference\" versions (in `ref/`) which render with 2D canvas.\n\nThis tests things like:\n- The canvas has the correct orientation.\n- The canvas renders with the correct transfer function.\n- The canvas blends and interpolates in the correct color encoding.\n\nTODO: Test all possible output texture formats (currently only testing bgra8unorm).\nTODO: Test all possible ways to write into those formats (currently only testing B2T copy)."
   }
 ];

@@ -27,7 +27,7 @@
 
 * TODO:
   - add another initMethod which renders the texture
-  - because of expectContests 4-bytes alignment we don't test CopyT2B with buffer size not divisible by 4
+  - test copyT2B with buffer size not divisible by 4 (not done because expectContents 4-byte alignment)
   - add tests for 1d / 3d textures
 `;
 import { params, poptions } from '../../../common/framework/params_builder.js';

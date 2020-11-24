@@ -69,9 +69,16 @@ export class TestTree {
 
   static *iterateSubtreeCollapsedQueries(subtree) {
     for (const [, child] of subtree.children) {
-      if ('children' in child && !child.collapsible) {
-        yield* TestTree.iterateSubtreeCollapsedQueries(child);
+      if ('children' in child) {
+        // Is a subtree
+        if (!child.collapsible) {
+          yield* TestTree.iterateSubtreeCollapsedQueries(child);
+        } else if (child.children.size) {
+          // Don't yield empty subtrees (e.g. files with no tests)
+          yield child.query;
+        }
       } else {
+        // Is a leaf
         yield child.query;
       }
     }
@@ -203,8 +210,8 @@ export async function loadTreeForQuery(loader, queryToLoad, subqueriesToExpand) 
     const seen = seenSubqueriesToExpand[i];
     assert(
       seen,
-      `subqueriesToExpand entry did not match anything \
-(can happen due to overlap with another subquery): ${sq.toString()}`
+      `subqueriesToExpand entry did not match anything (can happen if the subquery was larger \
+than one file, or due to overlap with another subquery): ${sq.toString()}`
     );
   }
   assert(foundCase, 'Query does not match any cases');
