@@ -181,6 +181,8 @@ component("network_service") {
     "url_request_context_builder_mojo.h",
     "url_request_context_owner.cc",
     "url_request_context_owner.h",
+    "web_bundle_url_loader_factory.cc",
+    "web_bundle_url_loader_factory.h",
   ]
 
   if (enable_mdns) {
@@ -232,6 +234,7 @@ component("network_service") {
     "//components/network_session_configurator/common",
     "//components/os_crypt",
     "//components/prefs",
+    "//components/web_package",
     "//jingle:fake_ssl_socket",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
@@ -342,6 +345,7 @@ source_set("tests") {
     "udp_socket_unittest.cc",
     "upload_progress_tracker_unittest.cc",
     "url_loader_unittest.cc",
+    "web_bundle_url_loader_factory_unittest.cc",
   ]
 
   if (enable_mdns) {
@@ -382,6 +386,7 @@ source_set("tests") {
     "//components/network_session_configurator/browser",
     "//components/prefs:test_support",
     "//components/variations:test_support",
+    "//components/web_package:test_support",
     "//crypto:test_support",
     "//jingle:fake_ssl_socket",
     "//mojo/public/cpp/bindings",

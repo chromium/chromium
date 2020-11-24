@@ -165,6 +165,7 @@ mojom("url_loader_base") {
     "mutable_network_traffic_annotation_tag.mojom",
     "mutable_partial_network_traffic_annotation_tag.mojom",
     "trust_tokens.mojom",
+    "web_bundle_handle.mojom",
   ]
 
   public_deps = [
