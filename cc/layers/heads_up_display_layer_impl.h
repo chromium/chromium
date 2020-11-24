@@ -145,6 +145,11 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                              int top,
                              int width) const;
 
+  SkRect DrawSmoothnessMetrics(PaintCanvas* canvas,
+                               int right,
+                               int top,
+                               int width) const;
+
   ResourcePool::InUsePoolResource in_flight_resource_;
   std::unique_ptr<ResourcePool> pool_;
   viz::DrawQuad* current_quad_ = nullptr;

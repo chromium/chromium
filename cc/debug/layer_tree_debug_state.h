@@ -53,6 +53,7 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   // This is part of the feature to show performance metrics on HUD. This
   // particular flag is set only in Blink.
   bool show_web_vital_metrics = false;
+  bool show_smoothness_metrics = false;
 
   void SetRecordRenderingStats(bool enabled);
   bool RecordRenderingStats() const;

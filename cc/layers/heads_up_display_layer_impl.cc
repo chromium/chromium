@@ -608,6 +608,11 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
                                std::max<SkScalar>(area.width(), 150));
   }
 
+  if (debug_state.show_smoothness_metrics) {
+    area = DrawSmoothnessMetrics(canvas, 0, area.bottom(),
+                                 std::max<SkScalar>(area.width(), 150));
+  }
+
   canvas->restore();
 }
 
@@ -1115,6 +1120,38 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
       WebVitalMetrics::cls_info,
       web_vital_metrics_ ? web_vital_metrics_->layout_shift : -1);
 
+  return area;
+}
+
+SkRect HeadsUpDisplayLayerImpl::DrawSmoothnessMetrics(PaintCanvas* canvas,
+                                                      int right,
+                                                      int top,
+                                                      int width) const {
+  std::string avg_smoothness = "-";
+  double smoothness_data = layer_tree_impl()
+                               ->dropped_frame_counter()
+                               ->GetMostRecentAverageSmoothness();
+  if (smoothness_data >= 0.f)
+    avg_smoothness = ToStringTwoDecimalPrecision(smoothness_data) + " %";
+
+  const int kPadding = 4;
+  const int kTitleFontHeight = 13;
+  const int kFontHeight = 12;
+
+  const int height = kTitleFontHeight + kFontHeight + 3 * kPadding;
+  const int left = 0;
+  const SkRect area = SkRect::MakeXYWH(left, top, width, height);
+
+  PaintFlags flags;
+  DrawGraphBackground(canvas, &flags, area);
+
+  SkPoint metrics_pos = SkPoint::Make(left + width - kPadding,
+                                      top + 2 * kFontHeight + 2 * kPadding);
+  flags.setColor(DebugColors::HUDTitleColor());
+  DrawText(canvas, flags, "Average Dropped Frame:", TextAlign::kLeft,
+           kTitleFontHeight, left + kPadding, top + kFontHeight + kPadding);
+  DrawText(canvas, flags, avg_smoothness, TextAlign::kRight, kFontHeight,
+           metrics_pos);
   return area;
 }
 

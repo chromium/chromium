@@ -89,6 +89,13 @@ void DroppedFrameCounter::ReportFrames() {
   }
 }
 
+double DroppedFrameCounter::GetMostRecentAverageSmoothness() const {
+  if (ukm_smoothness_data_)
+    return ukm_smoothness_data_->data.avg_smoothness;
+
+  return -1.f;
+}
+
 void DroppedFrameCounter::SetUkmSmoothnessDestination(
     UkmSmoothnessDataShared* smoothness_data) {
   ukm_smoothness_data_ = smoothness_data;

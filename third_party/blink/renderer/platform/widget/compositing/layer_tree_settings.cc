@@ -361,6 +361,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.initial_debug_state.show_web_vital_metrics =
       base::FeatureList::IsEnabled(
           ::features::kHudDisplayForPerformanceMetrics);
+  settings.initial_debug_state.show_smoothness_metrics =
+      base::FeatureList::IsEnabled(
+          ::features::kHudDisplayForPerformanceMetrics);
 
   settings.initial_debug_state.SetRecordRenderingStats(
       cmd.HasSwitch(cc::switches::kEnableGpuBenchmarking));

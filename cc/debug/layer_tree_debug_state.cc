@@ -23,7 +23,8 @@ bool LayerTreeDebugState::RecordRenderingStats() const {
 }
 
 bool LayerTreeDebugState::ShouldCreateHudLayer() const {
-  return show_fps_counter || ShowDebugRects() || show_web_vital_metrics;
+  return show_fps_counter || ShowDebugRects() || show_web_vital_metrics ||
+         show_smoothness_metrics;
 }
 
 bool LayerTreeDebugState::ShowDebugRects() const {
@@ -40,7 +41,7 @@ bool LayerTreeDebugState::ShowMemoryStats() const {
 }
 
 bool LayerTreeDebugState::ShouldDrawHudInfo() const {
-  return show_fps_counter || show_web_vital_metrics;
+  return show_fps_counter || show_web_vital_metrics || show_smoothness_metrics;
 }
 
 bool LayerTreeDebugState::Equal(const LayerTreeDebugState& a,
