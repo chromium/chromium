@@ -121,8 +121,9 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   uint32_t num_ads_in_stack_ = 0;
 
-  // The set of ad scripts detected outside of ad-frame contexts. Scripts with
-  // no name (i.e. URL) use a String created by GenerateFakeUrlFromScriptId().
+  // The set of ad scripts detected outside of ad-frame contexts. Scripts are
+  // identified by name (i.e. resource URL). Scripts with no name (i.e. inline
+  // scripts) use a String created by GenerateFakeUrlFromScriptId() instead.
   HeapHashMap<WeakMember<ExecutionContext>, HashSet<String>> known_ad_scripts_;
 
   // The number of ad-related async tasks currently running in the stack.

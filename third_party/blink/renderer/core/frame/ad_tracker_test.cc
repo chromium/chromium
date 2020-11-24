@@ -1487,6 +1487,80 @@ TEST_F(AdTrackerSimTest, AdModuleScript_ResourceTagged) {
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_image_url));
 }
 
+// A resource fetched with ad script at top of stack is still tagged as an ad
+// when the ad script defines a sourceURL.
+TEST_F(AdTrackerSimTest, AdScriptWithSourceURLAtTopOfStack_StillTagged) {
+  String vanilla_script_url = "https://example.com/script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_image_url = "https://example.com/pixel.png";
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest image(vanilla_image_url, "image/png");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <head><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></head>
+    <body><div>Test</div></body>
+  )HTML");
+
+  // We don't directly fetch in ad script as we aim to test ScriptAtTopOfStack()
+  // not WillExecuteScript().
+  ad_script.Complete(R"SCRIPT(
+    function getImage() { fetch('pixel.png'); }
+    //# sourceURL=source.js
+  )SCRIPT");
+
+  vanilla_script.Complete(R"SCRIPT(
+    getImage();
+  )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(vanilla_image_url);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_image_url));
+}
+
+// A dynamically added script with no src is still tagged as an ad if created
+// by an ad script even if it defines a sourceURL.
+TEST_F(AdTrackerSimTest, InlineAdScriptWithSourceURLAtTopOfStack_StillTagged) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  String vanilla_image_url = "https://example.com/pixel.png";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest image(vanilla_image_url, "image/png");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+        <script src="script.js"></script></body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    let script = document.createElement("script");
+    let text = document.createTextNode(
+        "function getImage() { fetch('pixel.png'); } \n"
+        + "//# sourceURL=source.js");
+    script.appendChild(text);
+    document.body.appendChild(script);
+  )SCRIPT");
+
+  // Fetch a resource using the function defined by dynamically added ad script.
+  vanilla_script.Complete(R"SCRIPT(
+    getImage();
+  )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(vanilla_image_url);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_image_url));
+}
+
 class AdTrackerDisabledSimTest : public SimTest,
                                  private ScopedAdTaggingForTest {
  protected:

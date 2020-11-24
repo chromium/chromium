@@ -112,7 +112,7 @@ String AdTracker::ScriptAtTopOfStack() {
     return String();
 
   v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, 0);
-  v8::Local<v8::String> script_name = frame->GetScriptNameOrSourceURL();
+  v8::Local<v8::String> script_name = frame->GetScriptName();
   if (script_name.IsEmpty() || !script_name->Length())
     return GenerateFakeUrlFromScriptId(frame->GetScriptId());
 
