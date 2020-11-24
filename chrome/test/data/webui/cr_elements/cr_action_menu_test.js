@@ -10,6 +10,7 @@
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
+// #import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 // #import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 // clang-format on
@@ -45,6 +46,7 @@ suite('CrActionMenu', function() {
   });
 
   setup(function() {
+    cr.ui.FocusOutlineManager.forDocument(document).visible = false;
     document.body.innerHTML = `
       <button id="dots">...</button>
       <cr-action-menu>
@@ -607,6 +609,14 @@ suite('CrActionMenu', function() {
           container.offsetLeft + containerWidth - menuWidth, dialog.offsetLeft);
       assertEquals(containerTop, dialog.offsetTop);
       menu.close();
+    });
+
+    test('FocusFirstItemWhenOpenedWithKeyboard', async () => {
+      cr.ui.FocusOutlineManager.forDocument(document).visible = true;
+      menu.showAtPosition({top: 50, left: 50});
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      assertEquals(
+          menu.querySelector('.dropdown-item'), getDeepActiveElement());
     });
   });
 });

@@ -13,6 +13,7 @@ js_library("cr_action_menu") {
   deps = [
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager",
     "//ui/webui/resources/js/cr/ui:focus_row",
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]
@@ -31,6 +32,7 @@ polymer_modulizer("cr_action_menu") {
     "ui/webui/resources/html/polymer.html|dom,html,Polymer",
     "ui/webui/resources/html/assert.html|assert",
     "ui/webui/resources/html/cr.html|isMac, isWindows",
+    "ui/webui/resources/html/cr/ui/focus_outline_manager.html|FocusOutlineManager",
     "ui/webui/resources/html/cr/ui/focus_row.html|FocusRow",
     "ui/webui/resources/html/util.html|getDeepActiveElement, hasKeyModifiers",
   ]
@@ -48,6 +50,7 @@ js_library("cr_action_menu.m") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
     "//ui/webui/resources/js/cr/ui:focus_row.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]

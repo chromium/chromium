@@ -109,6 +109,7 @@ js_library("cr_action_menu_test.m") {
     "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
   extra_deps = [ ":modulize" ]
