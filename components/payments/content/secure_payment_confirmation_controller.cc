@@ -182,7 +182,7 @@ void SecurePaymentConfirmationController::OnCancel() {
     return;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&PaymentRequest::UserCancelled, request_));
+      FROM_HERE, base::BindOnce(&PaymentRequest::OnUserCancelled, request_));
 }
 
 void SecurePaymentConfirmationController::OnConfirm() {
