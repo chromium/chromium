@@ -349,6 +349,12 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
         return false;
       }
 
+      if (flags & FLAGS_LAZY_FILE_HANDLER) {
+        // Ensures the file handler extension's background page closes in a
+        // timely manner to avoid test timeouts.
+        extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
+      }
+
       BackgroundObserver page_complete;
       const Extension* file_handler =
           LoadExtension(test_data_dir_.AppendASCII(filehandler_path));
@@ -808,9 +814,8 @@ IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileBrowserHandlers) {
       FLAGS_USE_FILE_HANDLER)) << message_;
 }
 
-// Failing: http://crbug.com/1150689
 IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest,
-                       DISABLED_FileBrowserHandlersLazy) {
+                       FileBrowserHandlersLazy) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/handler_test_runner",
       FILE_PATH_LITERAL("manifest.json"),
