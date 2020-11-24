@@ -1108,6 +1108,7 @@ void DriveIntegrationService::LocateFilesByItemIds(
     drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback) {
   if (!IsMounted() || !GetDriveFsInterface()) {
     std::move(callback).Run({});
+    return;
   }
   GetDriveFsInterface()->LocateFilesByItemIds(item_ids, std::move(callback));
 }
