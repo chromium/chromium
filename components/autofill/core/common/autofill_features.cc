@@ -212,6 +212,11 @@ const base::Feature kAutofillRestrictUnownedFieldsToFormlessCheckout{
     "AutofillRestrictUnownedFieldsToFormlessCheckout",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether or not overall prediction are retrieved from the cache.
+const base::Feature kAutofillRetrieveOverallPredictionsFromCache{
+    "AutofillRetrieveOverallPredictionsFromCache",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // On Canary and Dev channels only, this feature flag instructs chrome to send
 // rich form/field metadata with queries. This will trigger the use of richer
 // field-type predictions model on the server, for testing/evaluation of those

@@ -1124,6 +1124,14 @@ void FormStructure::RetrieveFromCache(
       }
       field->set_server_type(cached_field->server_type());
       field->set_previously_autofilled(cached_field->previously_autofilled());
+
+      // Only retrieve an overall prediction from cache if a server prediction is
+      // set.
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillRetrieveOverallPredictionsFromCache) &&
+          field->server_type() != NO_SERVER_DATA) {
+        field->SetTypeTo(cached_field->Type());
+      }
     }
   }
 
