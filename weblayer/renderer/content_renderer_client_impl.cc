@@ -19,6 +19,9 @@
 #include "components/no_state_prefetch/renderer/prerender_utils.h"
 #include "components/no_state_prefetch/renderer/prerenderer_client.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
+#include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
+#include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
+#include "components/subresource_filter/core/common/common_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
@@ -85,6 +88,10 @@ void ContentRendererClientImpl::RenderThreadStarted() {
 
   browser_interface_broker_ =
       blink::Platform::Current()->GetBrowserInterfaceBroker();
+
+  subresource_filter_ruleset_dealer_ =
+      std::make_unique<subresource_filter::UnverifiedRulesetDealer>();
+  thread->AddObserver(subresource_filter_ruleset_dealer_.get());
 }
 
 void ContentRendererClientImpl::RenderFrameCreated(
@@ -107,6 +114,11 @@ void ContentRendererClientImpl::RenderFrameCreated(
     agent->SetContentSettingRules(weblayer_observer_->content_setting_rules());
 
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
+
+  // TODO(crbug.com/1116095): Bring up AdResourceTracker?
+  new subresource_filter::SubresourceFilterAgent(
+      render_frame, subresource_filter_ruleset_dealer_.get(),
+      /*ad_resource_tracker=*/nullptr);
 
 #if defined(OS_ANDROID)
   // |SpellCheckProvider| manages its own lifetime (and destroys itself when the
