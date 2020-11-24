@@ -737,29 +737,6 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   EXPECT_EQ(2U, new_bubble_content.media_menus.size());
 }
 
-TEST_F(ContentSettingBubbleModelTest, Plugins) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-  const base::string16 plugin_name = base::ASCIIToUTF16("plugin_name");
-
-  content_settings->OnContentBlocked(ContentSettingsType::PLUGINS);
-
-  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          NULL, web_contents(), ContentSettingsType::PLUGINS));
-  const ContentSettingBubbleModel::BubbleContent& bubble_content =
-      content_setting_bubble_model->bubble_content();
-  EXPECT_FALSE(bubble_content.title.empty());
-  ASSERT_EQ(0U, bubble_content.list_items.size());
-  EXPECT_EQ(0U, bubble_content.radio_group.radio_items.size());
-  EXPECT_FALSE(bubble_content.custom_link_enabled);
-  EXPECT_TRUE(bubble_content.custom_link.empty());
-  EXPECT_FALSE(bubble_content.manage_text.empty());
-  EXPECT_TRUE(bubble_content.show_learn_more);
-}
-
 TEST_F(ContentSettingBubbleModelTest, PepperBroker) {
   WebContentsTester::For(web_contents())->
       NavigateAndCommit(GURL("https://www.example.com"));

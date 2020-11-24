@@ -449,11 +449,6 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
   ContentSetting setting = content_settings->GetContentSetting(
       url(), url(), ContentSettingsType::POPUPS);
   EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  setting = content_settings->GetContentSetting(url(), url(),
-                                                ContentSettingsType::PLUGINS);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
-#endif
   setting = content_settings->GetContentSetting(
       url(), url(), ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
@@ -472,22 +467,12 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
 
 // SetPermissionInfo() is called once initially, and then again every time
 // OnSitePermissionChanged() is called.
-#if !BUILDFLAG(ENABLE_PLUGINS)
-  // SetPermissionInfo for plugins didn't get called.
   EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(6);
-#else
-  EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(7);
-#endif
 
   // Execute code under tests.
   page_info()->OnSitePermissionChanged(ContentSettingsType::POPUPS,
                                        CONTENT_SETTING_ALLOW,
                                        /*is_one_time=*/false);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  page_info()->OnSitePermissionChanged(ContentSettingsType::PLUGINS,
-                                       CONTENT_SETTING_BLOCK,
-                                       /*is_one_time=*/false);
-#endif
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_ALLOW,
                                        /*is_one_time=*/false);
@@ -505,11 +490,6 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
   setting = content_settings->GetContentSetting(url(), url(),
                                                 ContentSettingsType::POPUPS);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  setting = content_settings->GetContentSetting(url(), url(),
-                                                ContentSettingsType::PLUGINS);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
-#endif
   setting = content_settings->GetContentSetting(
       url(), url(), ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);

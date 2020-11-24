@@ -191,10 +191,7 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
 
 void PageSpecificContentSettingsDelegate::OnContentBlocked(
     ContentSettingsType type) {
-  if (type == ContentSettingsType::PLUGINS) {
-    content_settings::RecordPluginsAction(
-        content_settings::PLUGINS_ACTION_DISPLAYED_BLOCKED_ICON_IN_OMNIBOX);
-  } else if (type == ContentSettingsType::POPUPS) {
+  if (type == ContentSettingsType::POPUPS) {
     content_settings::RecordPopupsAction(
         content_settings::POPUPS_ACTION_DISPLAYED_BLOCKED_ICON_IN_OMNIBOX);
   }

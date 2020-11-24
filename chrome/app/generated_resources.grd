@@ -2696,9 +2696,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_BLOCKED_POPUPS_EXPLANATORY_TEXT" desc="Explanatory animated text that appears (and then disappears) in the address line when popup is blocked">
         Pop-up blocked
       </message>
-      <message name="IDS_BLOCKED_PLUGIN_EXPLANATORY_TEXT" desc="Explanatory animated text that appears (and then disappears) in the address line when plugin is blocked">
-        Plugin blocked
-      </message>
       <message name="IDS_BLOCKED_JAVASCRIPT_TITLE" desc="Title for the bubble shown when a page is not allowed to run JavaScript.">
         JavaScript blocked
       </message>
@@ -2710,15 +2707,6 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_BLOCKED_JAVASCRIPT_NO_ACTION" desc="Radio button choice to continue blocking a site from running JavaScript, displayed in bubble when a page tries to run JavaScript.">
         Continue blocking JavaScript
-      </message>
-      <message name="IDS_BLOCKED_PLUGINS_TITLE" desc="Bubble info header text when a page is not allowed to run Flash. 'Flash' is the name of a plugin and should not be translated.">
-        Flash was blocked on this page
-      </message>
-      <message name="IDS_BLOCKED_PLUGINS_MESSAGE" desc="Tooltip on the icon when a page is not allowed to run Flash. 'Flash' is the name of a plugin and should not be translated.">
-        Flash was blocked on this page.
-      </message>
-      <message name="IDS_BLOCKED_PLUGINS_LOAD_ALL" desc="Button to load all blocked plugins on a page, displayed in bubble when a page tries to display plugins. 'Flash' is the name of a plugin and should not be translated.">
-        Run Flash this time
       </message>
       <message name="IDS_BLOCKED_SOUND_TITLE" desc="Tooltip and bubble info header text when a page is not allowed to play sound.">
         Sound was muted on this page

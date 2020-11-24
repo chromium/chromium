@@ -80,7 +80,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::COOKIES, "cookies"},
     {ContentSettingsType::IMAGES, "images"},
     {ContentSettingsType::JAVASCRIPT, "javascript"},
-    {ContentSettingsType::PLUGINS, "plugins"},
     {ContentSettingsType::POPUPS, "popups"},
     {ContentSettingsType::GEOLOCATION, "location"},
     {ContentSettingsType::NOTIFICATIONS, "notifications"},
@@ -150,7 +149,10 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, nullptr},
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, nullptr},
 };
-static_assert(base::size(kContentSettingsTypeGroupNames) ==
+
+// TODO(crbug.com/1149878): After removing ContentSettingsType::PLUGINS, remove
+// +1.
+static_assert(base::size(kContentSettingsTypeGroupNames) + 1 ==
                   // ContentSettingsType starts at -1, so add 1 here.
                   static_cast<int32_t>(ContentSettingsType::NUM_TYPES) + 1,
               "kContentSettingsTypeGroupNames should have "

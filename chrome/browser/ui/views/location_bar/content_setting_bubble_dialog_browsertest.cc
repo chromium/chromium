@@ -225,7 +225,6 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
       {"cookies", ContentSettingsType::COOKIES, ImageType::COOKIES},
       {"images", ContentSettingsType::IMAGES, ImageType::IMAGES},
       {"javascript", ContentSettingsType::JAVASCRIPT, ImageType::JAVASCRIPT},
-      {"plugins", ContentSettingsType::PLUGINS, ImageType::PLUGINS},
       {"popups", ContentSettingsType::POPUPS, ImageType::POPUPS},
       {"geolocation", ContentSettingsType::GEOLOCATION, ImageType::GEOLOCATION},
       {"ppapi_broker", ContentSettingsType::PPAPI_BROKER,
@@ -258,10 +257,6 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest, InvokeUi_images) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest, InvokeUi_javascript) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest, InvokeUi_plugins) {
   ShowAndVerifyUi();
 }
 

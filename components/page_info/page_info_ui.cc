@@ -146,9 +146,6 @@ base::span<const PermissionsUIInfo> GetContentSettingsUIInfo() {
     {ContentSettingsType::IMAGES, IDS_PAGE_INFO_TYPE_IMAGES},
     {ContentSettingsType::JAVASCRIPT, IDS_PAGE_INFO_TYPE_JAVASCRIPT},
     {ContentSettingsType::POPUPS, IDS_PAGE_INFO_TYPE_POPUPS_REDIRECTS},
-#if BUILDFLAG(ENABLE_PLUGINS)
-    {ContentSettingsType::PLUGINS, IDS_PAGE_INFO_TYPE_FLASH},
-#endif
     {ContentSettingsType::GEOLOCATION, IDS_PAGE_INFO_TYPE_LOCATION},
     {ContentSettingsType::NOTIFICATIONS, IDS_PAGE_INFO_TYPE_NOTIFICATIONS},
     {ContentSettingsType::MEDIASTREAM_MIC, IDS_PAGE_INFO_TYPE_MIC},
@@ -666,11 +663,6 @@ const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
     case ContentSettingsType::POPUPS:
       icon = &vector_icons::kLaunchIcon;
       break;
-#if BUILDFLAG(ENABLE_PLUGINS)
-    case ContentSettingsType::PLUGINS:
-      icon = &vector_icons::kExtensionIcon;
-      break;
-#endif
     case ContentSettingsType::GEOLOCATION:
       icon = &vector_icons::kLocationOnIcon;
       break;

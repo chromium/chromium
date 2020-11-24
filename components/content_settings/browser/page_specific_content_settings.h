@@ -260,9 +260,6 @@ class PageSpecificContentSettings
     return weak_factory_.GetWeakPtr();
   }
 
-  // Notifies that a Flash download has been blocked.
-  void FlashDownloadBlocked();
-
   // Changes the |content_blocked_| entry for popups.
   void ClearPopupsBlocked();
 
@@ -331,11 +328,6 @@ class PageSpecificContentSettings
   const browsing_data::LocalSharedObjectsContainer&
   blocked_local_shared_objects() const {
     return blocked_local_shared_objects_;
-  }
-
-  bool load_plugins_link_enabled() { return load_plugins_link_enabled_; }
-  void set_load_plugins_link_enabled(bool enabled) {
-    load_plugins_link_enabled_ = enabled;
   }
 
   // Called to indicate whether access to the Pepper broker was allowed or
@@ -532,9 +524,6 @@ class PageSpecificContentSettings
   // Stores the blocked/allowed cookies.
   browsing_data::LocalSharedObjectsContainer allowed_local_shared_objects_;
   browsing_data::LocalSharedObjectsContainer blocked_local_shared_objects_;
-
-  // Stores whether the user can load blocked plugins on this page.
-  bool load_plugins_link_enabled_;
 
   // The origin of the media stream request. Note that we only support handling
   // settings for one request per tab. The latest request's origin will be

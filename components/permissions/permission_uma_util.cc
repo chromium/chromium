@@ -600,10 +600,6 @@ void PermissionUmaUtil::RecordPermissionAction(
       base::UmaHistogramEnumeration("Permissions.Action.VideoCapture", action,
                                     PermissionAction::NUM);
       break;
-    case ContentSettingsType::PLUGINS:
-      base::UmaHistogramEnumeration("Permissions.Action.Flash", action,
-                                    PermissionAction::NUM);
-      break;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
       base::UmaHistogramEnumeration("Permissions.Action.ClipboardReadWrite",
                                     action, PermissionAction::NUM);

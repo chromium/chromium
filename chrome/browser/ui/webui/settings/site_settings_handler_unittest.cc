@@ -768,7 +768,7 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
         url1, ContentSettingsType::NOTIFICATIONS, false);
 
   clock.Advance(base::TimeDelta::FromHours(2));
-  map->SetContentSettingDefaultScope(url2, url2, ContentSettingsType::PLUGINS,
+  map->SetContentSettingDefaultScope(url2, url2, ContentSettingsType::IMAGES,
                                      CONTENT_SETTING_ALLOW);
   clock.Advance(base::TimeDelta::FromHours(1));
   CreateIncognitoProfile();
@@ -776,7 +776,7 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   incognito_map->SetClockForTesting(&clock);
   incognito_map->SetContentSettingDefaultScope(
-      url1, url1, ContentSettingsType::PLUGINS, CONTENT_SETTING_ALLOW);
+      url1, url1, ContentSettingsType::IMAGES, CONTENT_SETTING_ALLOW);
 
   clock.Advance(base::TimeDelta::FromHours(1));
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =

@@ -333,7 +333,6 @@ PageSpecificContentSettings::PageSpecificContentSettings(
           handler_.web_contents()->GetBrowserContext(),
           delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
-      load_plugins_link_enabled_(true),
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
   observation_.Observe(map_);
 }
@@ -470,7 +469,6 @@ bool PageSpecificContentSettings::IsContentBlocked(
 
   if (content_type == ContentSettingsType::IMAGES ||
       content_type == ContentSettingsType::JAVASCRIPT ||
-      content_type == ContentSettingsType::PLUGINS ||
       content_type == ContentSettingsType::COOKIES ||
       content_type == ContentSettingsType::POPUPS ||
       content_type == ContentSettingsType::MIXEDSCRIPT ||
@@ -787,10 +785,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
   }
 }
 
-void PageSpecificContentSettings::FlashDownloadBlocked() {
-  OnContentBlocked(ContentSettingsType::PLUGINS);
-}
-
 void PageSpecificContentSettings::ClearPopupsBlocked() {
   ContentSettingsStatus& status =
       content_settings_status_[ContentSettingsType::POPUPS];
@@ -854,7 +848,6 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     }
     case ContentSettingsType::IMAGES:
     case ContentSettingsType::JAVASCRIPT:
-    case ContentSettingsType::PLUGINS:
     case ContentSettingsType::COOKIES:
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::MIXEDSCRIPT:

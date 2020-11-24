@@ -260,9 +260,6 @@
     <message name="IDS_PAGE_INFO_TYPE_POPUPS_REDIRECTS" desc="The label used for the popup/redirect permission controls in the Page Info popup.">
       Pop-ups and redirects
     </message>
-    <message name="IDS_PAGE_INFO_TYPE_FLASH" desc="The label used for Flash permissions in the Page Info popup.">
-      Flash
-    </message>
     <message name="IDS_PAGE_INFO_TYPE_LOCATION" desc="The label used for geolocation permission controls in the Page Info popup." meaning="Geolocation">
       Location
     </message>

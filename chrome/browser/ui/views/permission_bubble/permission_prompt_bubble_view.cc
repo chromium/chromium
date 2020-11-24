@@ -125,22 +125,6 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     extra_text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     extra_text_label->SetMultiLine(true);
   }
-
-  if (visible_requests_[0]->GetContentSettingsType() ==
-      ContentSettingsType::PLUGINS) {
-    auto* learn_more_button =
-        SetExtraView(views::CreateVectorImageButtonWithNativeTheme(
-            base::BindRepeating(
-                [](Browser* browser) {
-                  chrome::AddSelectedTabWithURL(
-                      browser, GURL(chrome::kFlashDeprecationLearnMoreURL),
-                      ui::PAGE_TRANSITION_LINK);
-                },
-                base::Unretained(browser)),
-            vector_icons::kHelpOutlineIcon));
-    learn_more_button->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  }
 }
 
 PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;
@@ -316,10 +300,6 @@ PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
 base::Optional<base::string16> PermissionPromptBubbleView::GetExtraText()
     const {
   switch (visible_requests_[0]->GetContentSettingsType()) {
-    case ContentSettingsType::PLUGINS:
-      // TODO(crbug.com/1058401): Remove this warning text once flash is
-      // deprecated.
-      return l10n_util::GetStringUTF16(IDS_FLASH_PERMISSION_WARNING_FRAGMENT);
     case ContentSettingsType::STORAGE_ACCESS:
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION,

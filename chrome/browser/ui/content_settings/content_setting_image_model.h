@@ -35,7 +35,6 @@ class ContentSettingImageModel {
     IMAGES = 1,
     JAVASCRIPT = 2,
     PPAPI_BROKER = 3,
-    PLUGINS = 4,
     POPUPS = 5,
     GEOLOCATION = 6,
     MIXEDSCRIPT = 7,

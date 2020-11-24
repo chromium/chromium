@@ -81,12 +81,6 @@
   <message name="IDS_MIDI_SYSEX_PERMISSION_FRAGMENT" desc="Permission asked in the permission bubble when a URL wants to access MIDI devices with system exclusive messages, along with other permissions requests. Preceded by the prompt 'This site would like to:'">
     Use your MIDI devices
   </message>
-  <message name="IDS_FLASH_PERMISSION_FRAGMENT" desc="Permission asked in the permission bubble when a URL wants to use Flash Plugins on the page. Preceded by the prompt 'This site would like to:'. 'Flash' is the name of a plugin and should not be translated.">
-    Run Flash
-  </message>
-  <message name="IDS_FLASH_PERMISSION_WARNING_FRAGMENT" desc="Warning in the permission bubble when a URL wants to use Flash Plugins on the page.">
-    Flash Player will no longer be supported after December 2020.
-  </message>
   <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's microphone.">
     Use your microphone
   </message>

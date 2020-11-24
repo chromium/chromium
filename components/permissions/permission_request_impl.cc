@@ -84,8 +84,6 @@ PermissionRequest::IconId PermissionRequestImpl::GetIconId() const {
       return vector_icons::kNotificationsIcon;
     case ContentSettingsType::MIDI_SYSEX:
       return vector_icons::kMidiIcon;
-    case ContentSettingsType::PLUGINS:
-      return vector_icons::kExtensionIcon;
     case ContentSettingsType::MEDIASTREAM_MIC:
       return vector_icons::kMicIcon;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
@@ -206,9 +204,6 @@ base::string16 PermissionRequestImpl::GetMessageTextFragment() const {
       message_id = IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT;
       break;
 #endif
-    case ContentSettingsType::PLUGINS:
-      message_id = IDS_FLASH_PERMISSION_FRAGMENT;
-      break;
     case ContentSettingsType::MEDIASTREAM_MIC:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;
       break;

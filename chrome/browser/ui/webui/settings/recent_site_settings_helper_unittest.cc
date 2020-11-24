@@ -23,7 +23,7 @@ ContentSetting kDefault = ContentSetting::CONTENT_SETTING_DEFAULT;
 SiteSettingSource kEmbargo = site_settings::SiteSettingSource::kEmbargo;
 SiteSettingSource kPreference = site_settings::SiteSettingSource::kPreference;
 ContentSettingsType kNotifications = ContentSettingsType::NOTIFICATIONS;
-ContentSettingsType kPlugins = ContentSettingsType::PLUGINS;
+ContentSettingsType kImages = ContentSettingsType::IMAGES;
 ContentSettingsType kPopups = ContentSettingsType::POPUPS;
 ContentSettingsType kLocation = ContentSettingsType::GEOLOCATION;
 
@@ -73,7 +73,7 @@ TEST_F(RecentSiteSettingsHelperTest, IncognitoPermissionTimestamps) {
 TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   const GURL url1("https://example.com");
   const GURL url2("http://example.com");
-  std::vector<ContentSettingsType> content_types = {kNotifications, kPlugins,
+  std::vector<ContentSettingsType> content_types = {kNotifications, kImages,
                                                     kPopups, kLocation};
   clock()->SetNow(base::Time::Now());
 
@@ -98,7 +98,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   }
 
   clock()->Advance(base::TimeDelta::FromHours(2));
-  map->SetContentSettingDefaultScope(url2, url2, kPlugins, kAllowed);
+  map->SetContentSettingDefaultScope(url2, url2, kImages, kAllowed);
   CreateIncognitoProfile();
 
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 10);
@@ -117,7 +117,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
     EXPECT_EQ(kBlocked, url1_permissions[0].content_setting);
     EXPECT_EQ(kEmbargo, url1_permissions[0].setting_source);
 
-    EXPECT_EQ(kPlugins, url2_permissions[0].content_type);
+    EXPECT_EQ(kImages, url2_permissions[0].content_type);
     EXPECT_EQ(kAllowed, url2_permissions[0].content_setting);
     EXPECT_EQ(kPreference, url2_permissions[0].setting_source);
   }
@@ -127,7 +127,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   incognito_map->SetClockForTesting(clock());
-  incognito_map->SetContentSettingDefaultScope(url1, url1, kPlugins, kAllowed);
+  incognito_map->SetContentSettingDefaultScope(url1, url1, kImages, kAllowed);
 
   clock()->Advance(base::TimeDelta::FromHours(1));
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
@@ -159,7 +159,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
     EXPECT_EQ(kBlocked, incognito_url1_permissions[0].content_setting);
     EXPECT_EQ(kEmbargo, incognito_url1_permissions[0].setting_source);
 
-    EXPECT_EQ(kPlugins, incognito_url1_permissions[1].content_type);
+    EXPECT_EQ(kImages, incognito_url1_permissions[1].content_type);
     EXPECT_EQ(kAllowed, incognito_url1_permissions[1].content_setting);
     EXPECT_EQ(kPreference, incognito_url1_permissions[1].setting_source);
   }
@@ -169,7 +169,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   // most recent permission for that source.
   const GURL url3("https://example.com:8443");
   clock()->Advance(base::TimeDelta::FromHours(1));
-  map->SetContentSettingDefaultScope(url1, url1, kPlugins, kBlocked);
+  map->SetContentSettingDefaultScope(url1, url1, kImages, kBlocked);
   clock()->Advance(base::TimeDelta::FromHours(1));
   for (int i = 0; i < 4; ++i) {
     auto_blocker->RecordIgnoreAndEmbargo(url3, kNotifications, false);
@@ -197,7 +197,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
     auto url2_permissions = recent_permissions[1].settings;
     auto url3_permissions = recent_permissions[0].settings;
 
-    EXPECT_EQ(kPlugins, url1_permissions[0].content_type);
+    EXPECT_EQ(kImages, url1_permissions[0].content_type);
     EXPECT_EQ(kBlocked, url1_permissions[0].content_setting);
     EXPECT_EQ(kPreference, url1_permissions[0].setting_source);
 
@@ -245,7 +245,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   // dismissal and confirm this is recorded as a new permission change. Also
   // confirm that sources with no permission changes associated are not
   // considered. I.e. url3 now has an expired embargo and a default setting. It
-  // should not be considered and should allow the plugins setting for url1 to
+  // should not be considered and should allow the images setting for url1 to
   // be included as a recent change.
   clock()->Advance(base::TimeDelta::FromDays(7));
   auto_blocker->RecordDismissAndEmbargo(url1, kNotifications, false);
@@ -264,7 +264,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
     EXPECT_EQ(kBlocked, url1_permissions[0].content_setting);
     EXPECT_EQ(kEmbargo, url1_permissions[0].setting_source);
 
-    EXPECT_EQ(kPlugins, url1_permissions[1].content_type);
+    EXPECT_EQ(kImages, url1_permissions[1].content_type);
     EXPECT_EQ(kBlocked, url1_permissions[1].content_setting);
     EXPECT_EQ(kPreference, url1_permissions[1].setting_source);
   }
@@ -276,7 +276,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   clock()->Advance(base::TimeDelta::FromHours(1));
   map->SetContentSettingDefaultScope(url1, url1, kLocation, kAllowed);
   clock()->Advance(base::TimeDelta::FromHours(1));
-  map->SetContentSettingDefaultScope(url1, url1, kPlugins, kAllowed);
+  map->SetContentSettingDefaultScope(url1, url1, kImages, kAllowed);
 
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 3);
   {
@@ -287,7 +287,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
 
     EXPECT_EQ(kLocation, url1_permissions[0].content_type);
     EXPECT_EQ(kNotifications, url1_permissions[1].content_type);
-    EXPECT_EQ(kPlugins, url1_permissions[2].content_type);
+    EXPECT_EQ(kImages, url1_permissions[2].content_type);
     EXPECT_EQ(kPopups, url1_permissions[3].content_type);
   }
 

@@ -215,18 +215,6 @@ class ContentSettingPopupImageModel : public ContentSettingSimpleImageModel {
 
 namespace {
 
-bool ShouldShowPluginExplanation(content::WebContents* web_contents,
-                                 HostContentSettingsMap* map) {
-  const GURL& url = web_contents->GetURL();
-  ContentSetting setting =
-      map->GetContentSetting(url, url, ContentSettingsType::PLUGINS);
-
-  // For plugins, show the animated explanation in these cases:
-  //  - The plugin is blocked despite the user having content setting ALLOW.
-  //  - The user has disabled Flash using BLOCK.
-  return setting == CONTENT_SETTING_ALLOW || setting == CONTENT_SETTING_BLOCK;
-}
-
 struct ContentSettingsImageDetails {
   ContentSettingsType content_type;
   const gfx::VectorIcon& icon;
@@ -242,8 +230,6 @@ const ContentSettingsImageDetails kImageDetails[] = {
      IDS_BLOCKED_IMAGES_MESSAGE, 0, 0},
     {ContentSettingsType::JAVASCRIPT, vector_icons::kCodeIcon,
      IDS_BLOCKED_JAVASCRIPT_MESSAGE, 0, 0},
-    {ContentSettingsType::PLUGINS, vector_icons::kExtensionIcon,
-     IDS_BLOCKED_PLUGINS_MESSAGE, IDS_BLOCKED_PLUGIN_EXPLANATORY_TEXT, 0},
     {ContentSettingsType::MIXEDSCRIPT, kMixedContentIcon,
      IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT, 0, 0},
     {ContentSettingsType::PPAPI_BROKER, vector_icons::kExtensionIcon,
@@ -297,9 +283,6 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
     case ImageType::PPAPI_BROKER:
       return std::make_unique<ContentSettingBlockedImageModel>(
           ImageType::PPAPI_BROKER, ContentSettingsType::PPAPI_BROKER);
-    case ImageType::PLUGINS:
-      return std::make_unique<ContentSettingBlockedImageModel>(
-          ImageType::PLUGINS, ContentSettingsType::PLUGINS);
     case ImageType::POPUPS:
       return std::make_unique<ContentSettingPopupImageModel>();
     case ImageType::GEOLOCATION:
@@ -460,11 +443,6 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
 
   if (!is_blocked) {
     tooltip_id = image_details->accessed_tooltip_id;
-    explanation_id = 0;
-  }
-
-  if (type == ContentSettingsType::PLUGINS &&
-      !ShouldShowPluginExplanation(web_contents, map)) {
     explanation_id = 0;
   }
 
@@ -1020,7 +998,6 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
       ImageType::IMAGES,
       ImageType::JAVASCRIPT,
       ImageType::PPAPI_BROKER,
-      ImageType::PLUGINS,
       ImageType::POPUPS,
       ImageType::GEOLOCATION,
       ImageType::MIXEDSCRIPT,

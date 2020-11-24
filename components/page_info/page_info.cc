@@ -91,7 +91,6 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::NOTIFICATIONS,
     ContentSettingsType::JAVASCRIPT,
 #if !defined(OS_ANDROID)
-    ContentSettingsType::PLUGINS,
     ContentSettingsType::IMAGES,
 #endif
     ContentSettingsType::POPUPS,
@@ -159,11 +158,6 @@ bool ShouldShowPermission(const PageInfo::PermissionInfo& info,
   if (info.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD)
     return false;
 #else
-  // Flash is deprecated and should never be shown.
-  if (info.type == ContentSettingsType::PLUGINS) {
-    return false;
-  }
-
   // NFC is Android-only at the moment.
   if (info.type == ContentSettingsType::NFC)
     return false;

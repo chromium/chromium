@@ -124,7 +124,6 @@ class PermissionPromptBubbleViewBrowserTest
       const char* name;
       ContentSettingsType type;
     } kNameToType[] = {
-        {"flash", ContentSettingsType::PLUGINS},
         {"geolocation", ContentSettingsType::GEOLOCATION},
         {"protected_media", ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER},
         {"notifications", ContentSettingsType::NOTIFICATIONS},
@@ -165,7 +164,6 @@ class PermissionPromptBubbleViewBrowserTest
       case ContentSettingsType::GEOLOCATION:
       case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:  // ChromeOS only.
       case ContentSettingsType::PPAPI_BROKER:
-      case ContentSettingsType::PLUGINS:  // Flash.
       case ContentSettingsType::STORAGE_ACCESS:
         test_api_->AddSimpleRequest(source_frame, it->type);
         break;
@@ -267,11 +265,6 @@ IN_PROC_BROWSER_TEST_P(
       browser()->tab_strip_model()->GetActiveWebContents());
   browser()->tab_strip_model()->CloseAllTabs();
   web_contents_destroyed_watcher.Wait();
-}
-
-// Host wants to run flash.
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest, InvokeUi_flash) {
-  ShowAndVerifyUi();
 }
 
 // Host wants to know your location.

@@ -3183,39 +3183,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, NoContentSettingsAPI) {
   TestHelper("testPostMessageCommChannel", "web_view/shim", NO_TEST_SERVER);
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-class WebViewPluginTest : public WebViewTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WebViewTest::SetUpCommandLine(command_line);
-    ASSERT_TRUE(ppapi::RegisterTestPlugin(command_line));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WebViewPluginTest, TestLoadPluginEvent) {
-  TestHelper("testPluginLoadPermission", "web_view/shim", NO_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewPluginTest, TestLoadPluginInternalResource) {
-  const char kTestMimeType[] = "application/pdf";
-  const char kTestFileType[] = "pdf";
-  content::WebPluginInfo plugin_info;
-  plugin_info.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
-  plugin_info.mime_types.push_back(
-      content::WebPluginMimeType(kTestMimeType, kTestFileType, std::string()));
-  content::PluginService::GetInstance()->RegisterInternalPlugin(plugin_info,
-                                                                true);
-
-  TestHelper("testPluginLoadInternalResource", "web_view/shim", NO_TEST_SERVER);
-  // Sanity check to ensure no GuestView was created.
-  for (auto* guest_wc : GetEmbedderWebContents()->GetInnerWebContents()) {
-    EXPECT_FALSE(extensions::MimeHandlerViewEmbedder::Get(
-        guest_wc->GetMainFrame()->GetFrameTreeNodeId()));
-  }
-}
-
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 class WebViewCaptureTest : public WebViewTest {
  public:
   WebViewCaptureTest() {}
@@ -3394,15 +3361,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestWebViewInsideFrame) {
 // See http://crbug.com/327035.
 IN_PROC_BROWSER_TEST_F(WebViewCaptureTest, DISABLED_Shim_ScreenshotCapture) {
   TestHelper("testScreenshotCapture", "web_view/shim", NO_TEST_SERVER);
-}
-
-// Tests that browser process does not crash when loading plugin inside
-// <webview> with content settings set to CONTENT_SETTING_BLOCK.
-IN_PROC_BROWSER_TEST_F(WebViewTest, TestPlugin) {
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(ContentSettingsType::PLUGINS,
-                                 CONTENT_SETTING_BLOCK);
-  TestHelper("testPlugin", "web_view/shim", NEEDS_TEST_SERVER);
 }
 
 // Test is disabled because it times out often.

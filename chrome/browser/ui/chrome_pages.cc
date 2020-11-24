@@ -182,8 +182,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // In MD Settings, the exceptions no longer have a separate subpage.
   // This list overrides the group names defined in site_settings_helper for the
   // purposes of URL generation for MD Settings only. We need this because some
-  // of the old group names are no longer appropriate: i.e. "plugins" =>
-  // "flash".
+  // of the old group names are no longer appropriate.
   //
   // TODO(crbug.com/728353): Update the group names defined in
   // site_settings_helper once Options is removed from Chrome. Then this list
@@ -195,7 +194,6 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
            {ContentSettingsType::MEDIASTREAM_MIC, "microphone"},
            {ContentSettingsType::MEDIASTREAM_CAMERA, "camera"},
            {ContentSettingsType::MIDI_SYSEX, "midiDevices"},
-           {ContentSettingsType::PLUGINS, "flash"},
            {ContentSettingsType::ADS, "ads"},
            {ContentSettingsType::PPAPI_BROKER, "unsandboxedPlugins"}});
   const auto it = kSettingsPathOverrides->find(type);

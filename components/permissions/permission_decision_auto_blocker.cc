@@ -342,10 +342,7 @@ bool PermissionDecisionAutoBlocker::RecordDismissAndEmbargo(
   //    does not have a PermissionContextBase available
   // 2. Not calling RecordDismissAndEmbargo means no repeated dismissal metrics
   //    are recorded
-  // For now, only plugins are explicitly opted out. We should think about how
-  // to make this nicer once PermissionQueueController is removed.
-  if (base::FeatureList::IsEnabled(features::kBlockPromptsIfDismissedOften) &&
-      permission != ContentSettingsType::PLUGINS) {
+  if (base::FeatureList::IsEnabled(features::kBlockPromptsIfDismissedOften)) {
     if (current_dismissal_count >= g_dismissals_before_block) {
       PlaceUnderEmbargo(url, permission, kPermissionDismissalEmbargoKey);
       return true;
@@ -375,8 +372,7 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
                                           settings_map_)
           : -1;
 
-  if (base::FeatureList::IsEnabled(features::kBlockPromptsIfIgnoredOften) &&
-      permission != ContentSettingsType::PLUGINS) {
+  if (base::FeatureList::IsEnabled(features::kBlockPromptsIfIgnoredOften)) {
     if (current_ignore_count >= g_ignores_before_block) {
       PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
       return true;

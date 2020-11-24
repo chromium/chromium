@@ -98,28 +98,6 @@ class DeadlockCheckerObserver {
   DISALLOW_COPY_AND_ASSIGN(DeadlockCheckerObserver);
 };
 
-// Synthesizes a plugin content setting exception into |prefs|. Plugin settings
-// are emphemeral as of Chrome M71; this method is used to simulate the scenario
-// where we inherit these legacy values from Chrome versions M70-, when the
-// exceptions were still stored in preferences.
-bool SetLegacyPersistedPluginSetting(
-    PrefService* prefs,
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    std::unique_ptr<base::Value>&& in_value) {
-  auto* registry = ContentSettingsRegistry::GetInstance();
-  auto* content_setting_info = registry->Get(ContentSettingsType::PLUGINS);
-  PrefChangeRegistrar pref_change_registrar;
-  pref_change_registrar.Init(prefs);
-  ContentSettingsPref content_settings_pref(
-      ContentSettingsType::PLUGINS, prefs, &pref_change_registrar,
-      content_setting_info->website_settings_info()->pref_name(),
-      false /* is_incognito */, false /*restore_session*/, base::DoNothing());
-  return content_settings_pref.SetWebsiteSetting(
-      primary_pattern, secondary_pattern, base::Time::Now(),
-      std::move(in_value), {});
-}
-
 class PrefProviderTest : public testing::Test {
  public:
   PrefProviderTest()
