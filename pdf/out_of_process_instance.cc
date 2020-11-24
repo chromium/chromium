@@ -488,6 +488,16 @@ PrivateAccessibilityPageInfoFromAccessibilityPageInfo(
   return pp_page_info;
 }
 
+std::vector<PP_PrivateAccessibilityCharInfo>
+PrivateAccessibilityCharInfoFromAccessibilityCharInfo(
+    const std::vector<AccessibilityCharInfo>& chars) {
+  std::vector<PP_PrivateAccessibilityCharInfo> pp_chars;
+  pp_chars.reserve(chars.size());
+  for (const auto& char_object : chars)
+    pp_chars.push_back({char_object.unicode_character, char_object.char_width});
+  return pp_chars;
+}
+
 }  // namespace
 
 OutOfProcessInstance::OutOfProcessInstance(PP_Instance instance)
@@ -828,18 +838,20 @@ void OutOfProcessInstance::LoadAccessibility() {
 void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
   AccessibilityPageInfo page_info;
   std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> text_runs;
-  std::vector<PP_PrivateAccessibilityCharInfo> chars;
+  std::vector<AccessibilityCharInfo> chars;
   pp::PDF::PrivateAccessibilityPageObjects page_objects;
 
-  if (!GetAccessibilityInfo(engine(), page_index, page_info, &text_runs, &chars,
+  if (!GetAccessibilityInfo(engine(), page_index, page_info, &text_runs, chars,
                             &page_objects)) {
     return;
   }
 
   PP_PrivateAccessibilityPageInfo pp_page_info =
       PrivateAccessibilityPageInfoFromAccessibilityPageInfo(page_info);
+  std::vector<PP_PrivateAccessibilityCharInfo> pp_chars =
+      PrivateAccessibilityCharInfoFromAccessibilityCharInfo(chars);
   pp::PDF::SetAccessibilityPageInfo(GetPluginInstance(), &pp_page_info,
-                                    text_runs, chars, page_objects);
+                                    text_runs, pp_chars, page_objects);
 
   // Schedule loading the next page.
   pp::Module::Get()->core()->CallOnMainThread(

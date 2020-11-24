@@ -186,7 +186,7 @@ bool GetAccessibilityInfo(
     int32_t page_index,
     AccessibilityPageInfo& page_info,
     std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>* text_runs,
-    std::vector<PP_PrivateAccessibilityCharInfo>* chars,
+    std::vector<AccessibilityCharInfo>& chars,
     pp::PDF::PrivateAccessibilityPageObjects* page_objects) {
   int page_count = engine->GetNumberOfPages();
   if (page_index < 0 || page_index >= page_count)
@@ -203,9 +203,9 @@ bool GetAccessibilityInfo(
   page_info.bounds = engine->GetPageBoundsRect(page_index);
   page_info.char_count = char_count;
 
-  chars->resize(page_info.char_count);
+  chars.resize(page_info.char_count);
   for (uint32_t i = 0; i < page_info.char_count; ++i) {
-    (*chars)[i].unicode_character = engine->GetCharUnicode(page_index, i);
+    chars[i].unicode_character = engine->GetCharUnicode(page_index, i);
   }
 
   int char_index = 0;
@@ -231,7 +231,7 @@ bool GetAccessibilityInfo(
     for (uint32_t i = char_index; i < text_run_end - 1; i++) {
       DCHECK_LT(i + 1, static_cast<uint32_t>(char_count));
       gfx::RectF next_char_bounds = engine->GetCharBounds(page_index, i + 1);
-      double& char_width = (*chars)[i].char_width;
+      double& char_width = chars[i].char_width;
       switch (text_run_info.direction) {
         case PP_PRIVATEDIRECTION_NONE:
         case PP_PRIVATEDIRECTION_LTR:
@@ -249,7 +249,7 @@ bool GetAccessibilityInfo(
       }
       char_bounds = next_char_bounds;
     }
-    double& char_width = (*chars)[text_run_end - 1].char_width;
+    double& char_width = chars[text_run_end - 1].char_width;
     if (text_run_info.direction == PP_PRIVATEDIRECTION_BTT ||
         text_run_info.direction == PP_PRIVATEDIRECTION_TTB) {
       char_width = char_bounds.height();

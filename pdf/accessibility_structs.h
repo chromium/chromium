@@ -18,6 +18,11 @@ struct AccessibilityPageInfo {
   uint32_t char_count = 0;
 };
 
+struct AccessibilityCharInfo {
+  uint32_t unicode_character = 0;
+  double char_width = 0.0;
+};
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_ACCESSIBILITY_STRUCTS_H_
