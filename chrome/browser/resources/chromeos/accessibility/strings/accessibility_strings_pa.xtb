@@ -374,7 +374,7 @@
 <translation id="3594207934078151302">ਮੱਧਮ ਸਮੁੰਦਰੀ ਹਰਾ</translation>
 <translation id="3599054940393788245">ਕੋਈ ਅੰਦਰਲਾ ਮੈਥ ਨਹੀਂ</translation>
 <translation id="360241989769010433">ਕਦਰ</translation>
-<translation id="3616016838842055984">ਜੇ ਤੁਸੀਂ ਉਸ ਆਈਟਮ ਤੱਕ ਪਹੁੰਚ ਗਏ ਹੋ ਜਿਸਨੂੰ ਤੁਸੀਂ ਕਲਿੱਕ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ Search + Space ਦਬਾਓ। ਜਾਰੀ ਰੱਖਣ ਲਈ ਹੁਣੇ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
+<translation id="3616016838842055984">ਜੇ ਤੁਸੀਂ ਉਸ ਆਈਟਮ ਤੱਕ ਪਹੁੰਚ ਜਾਂਦੇ ਹੋ ਜਿਸਨੂੰ ਤੁਸੀਂ ਕਲਿੱਕ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ Search + Space ਦਬਾਓ। ਜਾਰੀ ਰੱਖਣ ਲਈ ਹੁਣੇ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
 <translation id="3616113530831147358">ਆਡੀਓ</translation>
 <translation id="3622350485154495700">ਇੱਕ ਉਂਗਲ ਨਾਲ ਡਬਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{ਬੈਕਟਿਕ}one{# ਬੈਕਟਿਕਸ}other{# ਬੈਕਟਿਕਸ}}</translation>
@@ -582,7 +582,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ਸਮਾਪਤੀ</translation>
 <translation id="5302089807023311274">ਪੁਸਤਕ ਮਾਲਾ ਦਾ ਹਵਾਲਾ</translation>
-<translation id="530391007967514163">ਹੇਠਾਂ ਲਿਖਤ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਸਿਰਲੇਖ ਰਾਹੀਂ ਜੰਪ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="530391007967514163">ਹੇਠਾਂ ਲਿਖਤ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਸਿਰਲੇਖ ਰਾਹੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ਟੈਬ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5310788376443009632">ਹਟਾਇਆ:</translation>
@@ -849,7 +849,7 @@
 <translation id="7308519659008003150">ਕੋਈ ਪਿਛਲਾ ਫ਼ਾਰਮ ਖੇਤਰ ਨਹੀਂ</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਚੁਣਿਆ ਗਿਆ</translation>
-<translation id="7344012264516629579">ਵਧੀਕ ਜੰਪ ਆਦੇਸ਼ਾਂ ਵਿੱਚ ਲਿੰਕ, ਬਟਨ ਅਤੇ ਚੈੱਕ-ਬਾਕਸ ਰਾਹੀਂ ਜੰਪ ਕਰਨ ਵਗਗੀਆਂ ਕੁਝ ਚੀਜ਼ਾਂ ਸ਼ਾਮਲ ਹਨ। ਜੰਪ ਆਦੇਸ਼ਾਂ ਦੀ ਪੂਰੀ ਸੂਚੀ ਨੂੰ ChromeVox ਮੀਨੂਆਂ ਵਿੱਚ ਲੱਭਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਜਿਸਨੂੰ Search + Period ਦਬਾ ਕੇ ਖੋਲ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
+<translation id="7344012264516629579">ਵਧੀਕ ਜੰਪ ਆਦੇਸ਼ਾਂ ਵਿੱਚ ਲਿੰਕ, ਬਟਨ ਅਤੇ ਚੈੱਕ-ਬਾਕਸ ਰਾਹੀਂ ਜਾਣ ਵਰਗੀਆਂ ਕੁਝ ਚੀਜ਼ਾਂ ਸ਼ਾਮਲ ਹਨ। ਜੰਪ ਆਦੇਸ਼ਾਂ ਦੀ ਪੂਰੀ ਸੂਚੀ ਨੂੰ ChromeVox ਮੀਨੂਆਂ ਵਿੱਚ ਲੱਭਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਜਿਸਨੂੰ Search + Period ਦਬਾ ਕੇ ਖੋਲ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7356165926712028380">8 ਬਿੰਦੀ ਬ੍ਰੇਲ ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="7356610683936413584">ਵਰਣਨ ਸੂਚੀ ਵੇਰਵਾ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ampersand}one{# ampersands}other{# ampersands}}</translation>
@@ -999,7 +999,7 @@
 <translation id="8473540203671727883">ਮਾਊਸ ਦੇ ਕਰਸਰ ਹੇਠਲੀ ਲਿਖਤ ਬੋਲੋ</translation>
 <translation id="8476408756881832830">ChromeVox ਬੋਲ ਰਿਹਾ ਹੋਵੇ ਉਦੋਂ ਪਲੇਬੈਕ ਨੂੰ ਵਿਰਾਮ ਦਿਓ</translation>
 <translation id="8476508772960940536">ਵਿੰਡੋ ਰੂਪ-ਰੇਖਾ</translation>
-<translation id="8480873377842220259">ਹੁਣ ਤੁਸੀਂ ਕੁਝ ਮੂਲ ਨੈਵੀਗੇਸ਼ਨ ਸਿੱਖੋਗੇ। ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਧਰ-ਉੱਧਰ ਘੁਮਾਉਣ ਲਈ ਤੁਸੀਂ Search ਅਤੇ ਤੀਰ ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਕੇ ਰੱਖ ਸਕਦੇ ਹੋ। ਜਾਰੀ ਰੱਖਣ ਲਈ, Search + ਸੱਜਾ ਤੀਰ ਦਬਾਓ।</translation>
+<translation id="8480873377842220259">ਹੁਣ ਤੁਸੀਂ ਮੂਲ ਨੈਵੀਗੇਸ਼ਨ ਬਾਰੇ ਕੁਝ ਗੱਲਾਂ ਜਾਣੋਗੇ। ਸਕ੍ਰੀਨ 'ਤੇ ਇੱਧਰ-ਉੱਧਰ ਜਾਣ ਲਈ ਤੁਸੀਂ Search ਅਤੇ ਤੀਰ ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਕੇ ਰੱਖ ਸਕਦੇ ਹੋ। ਜਾਰੀ ਰੱਖਣ ਲਈ, Search + ਸੱਜਾ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="8503360654911991865">ਨੈਵੀਗੇਸ਼ਨ ਗ੍ਰੈਨਿਊਲੈਰਿਟੀ ਘਟਾਓ</translation>
 <translation id="8520472399088452386">Spin ਬਟਨ</translation>
 <translation id="8534394844575788431">ਫਾਰਮੈਟਿੰਗ</translation>
@@ -1014,7 +1014,7 @@
 <translation id="8603071050456974042">ChromeVox ਪੈਨਲ</translation>
 <translation id="8606621670302093223">ਤਾਰੀਖ ਕੰਟ੍ਰੋਲ</translation>
 <translation id="8613709718990529335">ਬਿਸਕੁਟੀ</translation>
-<translation id="8614129468475308349">ਬਹੁਤ ਵਧੀਆ! ਤੁਸੀਂ ਮੂਲ ChromeVox ਸਿੱਖ ਚੁੱਕੇ ਹੋ। ਤੁਸੀਂ ਟਿਊਟੋਰੀਅਲ ਨੂੰ ਦੁਬਾਰਾ ਤੋਂ ਦੇਖ ਸਕਦੇ ਹੋ ਜਾਂ ਹੇਠਾਂ ਦਿੱਤੇ ਬਟਨ ਨੂੰ ਲੱਭ ਕੇ ਕਲਿੱਕ ਕਰਨ 'ਤੇ ਇਸ ਟਿਊਟੋਰੀਅਲ ਤੋਂ ਬਾਹਰ ਨਿਕਲ ਸਕਦੇ ਹੋ।</translation>
+<translation id="8614129468475308349">ਬਹੁਤ ਵਧੀਆ! ਤੁਸੀਂ ChromeVox ਬਾਰੇ ਮੂਲ ਗੱਲਾਂ ਜਾਣ ਚੁੱਕੇ ਹੋ। ਤੁਸੀਂ ਟਿਊਟੋਰੀਅਲ ਨੂੰ ਦੁਬਾਰਾ ਤੋਂ ਦੇਖ ਸਕਦੇ ਹੋ ਜਾਂ ਹੇਠਾਂ ਦਿੱਤੇ ਬਟਨ ਨੂੰ ਲੱਭ ਕੇ ਕਲਿੱਕ ਕਰਨ 'ਤੇ ਇਸ ਟਿਊਟੋਰੀਅਲ ਤੋਂ ਬਾਹਰ ਨਿਕਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8625173877182443267">ਕੋਈ ਹੋਰ ਪੱਧਰ 6 ਸਿਰਲੇਖ ਨਹੀਂ</translation>
 <translation id="8628186274519446680">ਟਮਾਟਰੀ</translation>
 <translation id="8638532244051952400">ਮੌਜੂਦਾ ਸੈਲ ਕੋਆਰਡੀਨੇਟਸ ਦੀ ਘੋਸ਼ਣਾ ਕਰੋ</translation>
@@ -1034,7 +1034,7 @@
 <translation id="875769700429317857"><ph name="FILE_NAME" /> ਦਾ ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="8767968232364267681">ਅਗਲਾ ਪੱਧਰ 4 ਸਿਰਲੇਖ</translation>
 <translation id="8770473310765924354">ਢਾਂਚਾਗਤ ਸਮੱਗਰੀ ਤੋਂ ਬਾਹਰ ਜਾਓ, ਜਿਵੇਂ ਕਿ ਸਾਰਨੀ</translation>
-<translation id="8775203254697638994">ਕਈ ਵਾਰ ਤੁਹਾਨੂੰ ਡ੍ਰੌਪ-ਡਾਊਨ ਸੂਚੀ ਵਿੱਚੋਂ ਆਈਟਮ ਦੀ ਚੋਣ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ। ਅਜਿਹਾ ਕਰਨ ਲਈ, Search + Space ਦਬਾਕੇ ਪਹਿਲਾਂ ਸੂਚੀ ਦਾ ਵਿਸਤਾਰ ਕਰੋ। ਫਿਰ ਆਈਟਮ ਦੀ ਚੋਣ ਕਰਨ ਲਈ, ਉੱਪਰ ਅਤੇ ਹੇਠਾਂ ਦੀਆਂ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ। ਅੰਤ ਵਿੱਚ, Search + Space ਦਬਾਕੇ ਸੂਚੀ ਨੂੰ ਸਮੇਟੋ।</translation>
+<translation id="8775203254697638994">ਕਈ ਵਾਰ ਤੁਹਾਨੂੰ ਡ੍ਰੌਪ-ਡਾਊਨ ਸੂਚੀ ਵਿੱਚੋਂ ਕਿਸੇ ਆਈਟਮ ਦੀ ਚੋਣ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ। ਅਜਿਹਾ ਕਰਨ ਲਈ, Search + Space ਦਬਾਕੇ ਪਹਿਲਾਂ ਸੂਚੀ ਦਾ ਵਿਸਤਾਰ ਕਰੋ। ਫਿਰ ਕਿਸੇ ਆਈਟਮ ਦੀ ਚੋਣ ਕਰਨ ਲਈ, ਉੱਪਰ ਅਤੇ ਹੇਠਾਂ ਦੀਆਂ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ। ਅੰਤ ਵਿੱਚ, Search + Space ਦਬਾਕੇ ਸੂਚੀ ਨੂੰ ਸਮੇਟੋ।</translation>
 <translation id="8779057862865475116">ਕੋਈ ਪਿਛਲਾ ਲਿੰਕ ਨਹੀਂ</translation>
 <translation id="8796411681063377102">ਅਗਲਾ ਪੱਧਰ 3 ਦਾ ਹੈਡਿੰਗ</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" /> ਵਿੱਚੋਂ ਪੰਨਾ <ph name="CURRENTPAGE" /></translation>

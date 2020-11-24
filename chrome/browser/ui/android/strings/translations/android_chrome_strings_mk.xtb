@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
 <translation id="4605958867780575332">Отстранета ставка: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Зачувајте ги страниците за подоцна и добијте потсетник</translation>
 <translation id="4616150815774728855">Отвори <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компромитирана лозинка}one{# компромитирана лозинка}other{# компромитирани лозинки}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Проверете подоцна дали има нови статии</translation>
 <translation id="7786595606756654269">„Помошникот на Google“ обезбедува подобро доживување при гласовното пребарување на интернет и интеракцијата со отворените сајтови. „Помошникот на Google“ ќе ги добива URL-адресите и содржините на сајтовите што ги користите со него.</translation>
+<translation id="7790349552933995572">Почетен екран</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780301667611848630">Не, фала</translation>

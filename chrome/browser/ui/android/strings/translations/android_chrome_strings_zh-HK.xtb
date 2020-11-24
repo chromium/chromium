@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">網站</translation>
 <translation id="4594952190837476234">此離線網頁在 <ph name="CREATION_TIME" />建立，且可能與網上版本不同。</translation>
 <translation id="4605958867780575332">移除咗嘅項目：<ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">將頁面儲存至稍後閱讀，並接收提醒</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
 <translation id="7778840695157240389">請稍後回來查看新的報導</translation>
 <translation id="7786595606756654269">當您搜尋網絡及瀏覽已開啟的網站時，「Google 助理」將為您提供更好的語音體驗。系統會將您所在網站的網址及內容傳送給「Google 助理」。</translation>
+<translation id="7790349552933995572">主畫面</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">還原咗 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>

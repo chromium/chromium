@@ -491,6 +491,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="4587589328781138893">Saytlar</translation>
 <translation id="4594952190837476234">Bu səhifə <ph name="CREATION_TIME" /> tarixində yaradılıb və onlayn versiyadan fərqli ola bilər.</translation>
 <translation id="4605958867780575332">Element silindi: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Səhifələri daha sonra baxmaq üçün yadda saxlayın və xatırladıcı qəbul edin</translation>
 <translation id="4616150815774728855">Açın: <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Parol istifadə edin</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 oğurlanmış parol}other{# oğurlanmış parol}}</translation>
@@ -971,6 +972,7 @@ Anomim sessiyadan data yalnız <ph name="BEGIN_BOLD2" />bütün Anonim tabları 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> digəri}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> digəri}}</translation>
 <translation id="7778840695157240389">Yeni hekayələr üçün sonra yenidən yoxlayın</translation>
 <translation id="7786595606756654269">Google Assistent vebdə axtarış etmək və açıq saytlar üzərində işləmək üçün daha yaxşı səs təcrübəsi təmin edir. Google Assistent onunla istifadə etdiyiniz saytların URL və məzmunlarını əldə edəcək.</translation>
+<translation id="7790349552933995572">Əsas ekran</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tab bərpa edilib</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>

@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Гэта пазасеткавая старонка створана <ph name="CREATION_TIME" /> і можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
 <translation id="4605958867780575332">Элемент "<ph name="ITEM_TITLE" />" выдалены</translation>
+<translation id="4614535611158687827">Захоўвайце старонкі, каб праглядаць іх пазней. Вы атрымаеце напамін</translation>
 <translation id="4616150815774728855">Адкрыць <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Выкарыстаць пароль</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Адзін раскрыты пароль}one{# раскрыты пароль}few{# раскрытыя паролі}many{# раскрытых пароляў}other{# раскрытага пароля}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Каб праверыць, ці з'явіліся новыя артыкулы, загляніце сюды пазней</translation>
 <translation id="7786595606756654269">Памочнік Google робіць пошук у інтэрнэце і працу з вэб-старонкамі яшчэ зручнейшымі дзякуючы палепшаным функцыям галасавога пошуку. Памочнік будзе збіраць URL-адрасы і змесціва сайтаў, на якіх ён будзе выкарыстоўвацца.</translation>
+<translation id="7790349552933995572">Галоўны экран</translation>
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="7798392620021911922">Адноўлена ўкладак: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Не, дзякуй</translation>

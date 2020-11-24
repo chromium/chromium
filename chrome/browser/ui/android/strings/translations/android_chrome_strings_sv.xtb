@@ -491,6 +491,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4594952190837476234">Den här offlinesidan sparades <ph name="CREATION_TIME" /> och kan skilja sig från onlineversionen.</translation>
 <translation id="4605958867780575332">Borttaget objekt: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Spara sidor till senare och bli påmind</translation>
 <translation id="4616150815774728855">Öppna <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 utsatt lösenord}other{# utsatta lösenord}}</translation>
@@ -973,6 +974,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}}</translation>
 <translation id="7778840695157240389">Återkom senare för nya berättelser</translation>
 <translation id="7786595606756654269">Med Google Assistent är det lättare att söka på webben och interagera med webbplatser du har öppna med hjälp av rösten. Innehållet på de webbplatser där du använder Google Assistent samt deras webbadresser överförs till assistenten.</translation>
+<translation id="7790349552933995572">Startskärm</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> flikar har återställts</translation>
 <translation id="780301667611848630">Nej tack</translation>

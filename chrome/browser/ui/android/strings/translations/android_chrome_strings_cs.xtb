@@ -491,6 +491,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Tato offline stránka je z <ph name="CREATION_TIME" /> a může se od online verze lišit.</translation>
 <translation id="4605958867780575332">Tato položka byla odstraněna: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Uložit stránky na později a odeslat připomenutí</translation>
 <translation id="4616150815774728855">Do aplikace <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Použít heslo</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Bylo nalezeno jedno prolomené heslo}few{Byla nalezena # prolomená hesla}many{Bylo nalezeno # prolomeného hesla}other{Bylo nalezeno # prolomených hesel}}</translation>
@@ -973,6 +974,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}few{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}many{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}other{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> dalších}}</translation>
 <translation id="7778840695157240389">Brzy tu najdete nové příběhy</translation>
 <translation id="7786595606756654269">Asistent Google nabízí lepší hlasové prostředí k vyhledávání na webu a interakci s otevřenými weby. Asistent Google obdrží adresu URL a obsah webů, které s ním použijete.</translation>
+<translation id="7790349552933995572">Plocha</translation>
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="7798392620021911922">Obnovené karty: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, děkuji</translation>

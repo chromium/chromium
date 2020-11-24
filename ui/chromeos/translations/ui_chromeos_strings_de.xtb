@@ -135,7 +135,7 @@
 <translation id="2484472280211296077">Tamil (phonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> Einträge gelöscht</translation>
-<translation id="2541377937973966830">Inhalte in diesem Ordner sind schreibgeschützt. Einige Aktivitäten werden nicht unterstützt.</translation>
+<translation id="2541377937973966830">Inhalte in diesem Ordner sind schreibgeschützt. Einige Aktionen werden nicht unterstützt.</translation>
 <translation id="2542049655219295786">Google-Tabelle</translation>
 <translation id="2547921442987553570">Zu <ph name="EXTENSION_NAME" /> hinzufügen</translation>
 <translation id="255285553751745003">Vietnamesisch (Telex)</translation>
@@ -209,6 +209,7 @@
 <translation id="3335337277364016868">Aufnahmejahr</translation>
 <translation id="3353984535370177728">Ordner zum Hochladen auswählen</translation>
 <translation id="3356580349448036450">Fertig</translation>
+<translation id="3369522691271417561">Sorani-Tastatur nach arabischem Layout</translation>
 <translation id="3414856743105198592">Durch die Formatierung der Wechselmedien werden alle Daten gelöscht. Möchten Sie fortfahren?</translation>
 <translation id="3437801641691368414">Erstellungszeit</translation>
 <translation id="3466147780910026086">Mediengerät wird durchsucht...</translation>

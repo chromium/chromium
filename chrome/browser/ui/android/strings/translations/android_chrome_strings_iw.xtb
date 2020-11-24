@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">אתרים</translation>
 <translation id="4594952190837476234">הדף האופליין הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגרסה המקוונת שלו שונה.</translation>
 <translation id="4605958867780575332">פריטים שהוסרו: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">שמירת הדפים לקריאה במועד מאוחר יותר והגדרת תזכורת</translation>
 <translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{סיסמה אחת שנחשפה}two{# סיסמאות שנחשפו}many{# סיסמאות שנחשפו}other{# סיסמאות שנחשפו}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוסף}two{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}many{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}}</translation>
 <translation id="7778840695157240389">בהמשך יהיו פה סיפורים חדשים</translation>
 <translation id="7786595606756654269">‏שירות Google Assistant מספק חוויה קולית טובה יותר במהלך חיפוש ברשת והתעניינות באתרים שפתחת. שירות Google Assistant יקבל את כתובת האתרים ואת התוכן של אתרים שהשתמשת בהם.</translation>
+<translation id="7790349552933995572">מסך הבית</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798392620021911922">שוחזרו <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="780301667611848630">לא תודה</translation>

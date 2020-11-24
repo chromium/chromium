@@ -491,6 +491,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4587589328781138893">Tapak</translation>
 <translation id="4594952190837476234">Halaman luar talian ini dari <ph name="CREATION_TIME" /> dan mungkin berbeza daripada versi dalam talian.</translation>
 <translation id="4605958867780575332">Item dialih keluar: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Simpan halaman untuk kemudian dan dapatkan peringatan</translation>
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas}other{# kata laluan yang terjejas}}</translation>
@@ -973,6 +974,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}}</translation>
 <translation id="7778840695157240389">Semak kembali nanti untuk mendapatkan cerita baharu</translation>
 <translation id="7786595606756654269">Google Assistant memberikan pengalaman suara yang lebih baik untuk mencari di web dan berinteraksi dengan laman yang telah anda buka. Google Assistant akan menerima URL dan kandungan bagi laman yang anda gunakan dengan apl ini.</translation>
+<translation id="7790349552933995572">Skrin utama</translation>
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tab dipulihkan</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>

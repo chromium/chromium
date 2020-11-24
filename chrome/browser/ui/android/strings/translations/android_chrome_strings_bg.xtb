@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4594952190837476234">Тази офлайн страница е от <ph name="CREATION_TIME" /> и може да се различава от онлайн версията.</translation>
 <translation id="4605958867780575332">Елементът бе премахнат: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Запазване на страниците за по-късно и получаване на напомняне</translation>
 <translation id="4616150815774728855">Отваряне на <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компрометирана парола}other{# компрометирани пароли}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Проверете отново по-късно за нови истории</translation>
 <translation id="7786595606756654269">Google Асистент предлага по-добра практическа работа с глас при търсене в мрежата и взаимодействие с отворени от вас сайтове. Google Асистент ще получава URL адресите и съдържанието на сайтовете, с които го използвате.</translation>
+<translation id="7790349552933995572">Начален екран</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7798392620021911922">Бяха възстановени <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="780301667611848630">Не, благодаря</translation>

@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">ಈ ಆಫ್‍ಲೈನ್ ಪುಟವನ್ನು <ph name="CREATION_TIME" /> ರಂದು ರಚಿಸಲಾಗಿದೆ ಮತ್ತು ಇದು ಆನ್‌ಲೈನ್ ಆವೃತ್ತಿಗಿಂತ ಭಿನ್ನವಾಗಿರಬಹುದು.</translation>
 <translation id="4605958867780575332">ತೆಗೆದುಹಾಕಲಾಗಿರುವ ಐಟಂ: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">ನಂತರದ ಬಳಕೆಗಾಗಿ ಪುಟಗಳನ್ನು ಉಳಿಸಿ ಹಾಗೂ ರಿಮೈಂಡರ್ ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ತೆರೆಯಿರಿ</translation>
 <translation id="4634124774493850572">ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">ಹೊಸ ಸುದ್ದಿಗಳಿಗಾಗಿ ನಂತರ ಪುನಃ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="7786595606756654269">ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕುವುದಕ್ಕಾಗಿ ಮತ್ತು ನೀವು ತೆರೆದಿರುವ ಸೈಟ್‌ಗಳೊಂದಿಗೆ ತೊಡಗಿಸಿಕೊಳ್ಳುವುದಕ್ಕಾಗಿ Google Assistant ಉತ್ತಮ ಧ್ವನಿ ಅನುಭವವನ್ನು ಒದಗಿಸುತ್ತದೆ. ಇದರೊಂದಿಗೆ ನೀವು ಬಳಸುವ ಸೈಟ್‌ನ URL ಮತ್ತು ಅದರ ಕಂಟೆಂಟ್‌ಗಳನ್ನು Google Assistant ಸ್ವೀಕರಿಸುತ್ತದೆ.</translation>
+<translation id="7790349552933995572">ಹೋಮ್ ಸ್ಕ್ರೀನ್</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>

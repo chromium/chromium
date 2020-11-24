@@ -1697,7 +1697,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="291056154577034373">UNGELESEN</translation>
 <translation id="2910718431259223434">Es gab ein Problem. Bitte noch einmal versuchen oder an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Websites dürfen Cookiedaten speichern und lesen (empfohlen)</translation>
-<translation id="2915016304249900997">Details sind verborgen, während Sie Ihren Bildschirm teilen</translation>
+<translation id="2915016304249900997">Details sind während des Bildschirmteilens verborgen</translation>
 <translation id="2915102088417824677">Aktivitätsprotokoll ansehen</translation>
 <translation id="2915873080513663243">Automatischer Scan</translation>
 <translation id="2915996080311180594">Später neu starten</translation>
@@ -4886,6 +4886,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="671928215901716392">Sperren</translation>
 <translation id="6721678857435001674">Den Hersteller und das Modell Ihres Sicherheitsschlüssels anzeigen</translation>
 <translation id="6721972322305477112">&amp;Ablage</translation>
+<translation id="672208878794563299">Diese Website fragt beim nächsten Mal wieder.</translation>
 <translation id="672213144943476270">Bitte entsperren Sie Ihr Profil, bevor Sie als Gast surfen.</translation>
 <translation id="6723661294526996303">Lesezeichen und Einstellungen importieren...</translation>
 <translation id="6723839937902243910">Leistung</translation>

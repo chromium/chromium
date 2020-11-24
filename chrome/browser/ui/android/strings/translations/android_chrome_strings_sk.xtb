@@ -491,6 +491,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Táto offline stránka je z <ph name="CREATION_TIME" /> a líši sa od online verzie.</translation>
 <translation id="4605958867780575332">Položka bola odstránená: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Uložte si stránky na neskôr a dostávajte pripomenutia</translation>
 <translation id="4616150815774728855">Otvoriť <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Použiť heslo</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 prelomené heslo}few{# prelomené heslá}many{# compromised passwords}other{# prelomených hesiel}}</translation>
@@ -973,6 +974,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalší}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalšie}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalšieho}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalších}}</translation>
 <translation id="7778840695157240389">Neskôr tu nájdete nové príbehy</translation>
 <translation id="7786595606756654269">Asistent Google zaisťuje lepšie prostredie na vyhľadávanie na internete a používanie otvorených webov pomocou hlasu. Získa webové adresy a obsah webov, ktoré s ním použijete.</translation>
+<translation id="7790349552933995572">Plocha</translation>
 <translation id="7791543448312431591">Pridať</translation>
 <translation id="7798392620021911922">Bolo obnovených niekoľko kariet (<ph name="TAB_COUNT" />)</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>

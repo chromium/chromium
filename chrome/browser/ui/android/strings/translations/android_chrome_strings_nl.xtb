@@ -491,6 +491,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Deze offline pagina is van <ph name="CREATION_TIME" /> en kan afwijken van de online versie.</translation>
 <translation id="4605958867780575332">Item verwijderd: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Pagina's opslaan voor later en een herinnering krijgen</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> openen</translation>
 <translation id="4634124774493850572">Wachtwoord gebruiken</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gehackt wachtwoord}other{# gehackte wachtwoorden}}</translation>
@@ -973,6 +974,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}}</translation>
 <translation id="7778840695157240389">Kom later terug voor nieuwe artikelen</translation>
 <translation id="7786595606756654269">De Google Assistent biedt betere spraakfunctionaliteit voor zoeken op internet en gebruikmaken van sites die je hebt geopend. De Google Assistent ontvangt de URL en content van sites die je met de Assistent gebruikt.</translation>
+<translation id="7790349552933995572">Startscherm</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tabbladen hersteld</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>

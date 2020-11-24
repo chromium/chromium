@@ -128,7 +128,7 @@
 <translation id="1136712381129578788">Tumefunga ufunguo wa usalama kwa sababu umeweka PIN isiyo sahihi mara nyingi mno. Ili kuufungua, uondoe kisha uuweke tena.</translation>
 <translation id="1137589305610962734">data ya muda</translation>
 <translation id="1137673463384776352">Fungua kiungo katika <ph name="APP" /></translation>
-<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Arifa mpya}other{Arifa # Mpya}}</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Arifa mpya}other{Arifa # mpya}}</translation>
 <translation id="1139343347646843679">Hitilafu imetokea wakati wa kuweka mipangilio ya Linux. Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="1140351953533677694">Fikia vifaa vyako Tambulishi na Bluetooth</translation>
 <translation id="114036956334641753">Sauti na manukuu</translation>
@@ -2857,7 +2857,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4285498937028063278">Banua</translation>
 <translation id="428565720843367874">Programu ya kingavirusi imeacha kufanya kazi ghafla wakati ilipokuwa inakagua faili hii.</translation>
 <translation id="4287099557599763816">Kisoma skrini</translation>
-<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Onyesha}other{Onyesha Zote}}</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Onyesha}other{Onyesha zote}}</translation>
 <translation id="4289372044984810120">Dhibiti akaunti zako hapa. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Muhtasari</translation>
 <translation id="4295072614469448764">Programu inapatikana kwenye kituo chako. Huenda pia kukawa na aikoni kwenye Kifungua programu chako.</translation>

@@ -508,7 +508,7 @@
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1554390798506296774">Permitir sempre plug-ins sem isolamento de processos em <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Azul</translation>
-<translation id="1556302226221634923">As pessoas que optaram por ficar visíveis para si quando o respetivo ecrã está desbloqueado e os dispositivos perto de si quando a funcionalidade Partilhar com Nearby está aberta.</translation>
+<translation id="1556302226221634923">As pessoas que optaram por ficar visíveis para si quando o respetivo ecrã está desbloqueado e os dispositivos perto de si quando a funcionalidade Partilhar na proximidade está aberta.</translation>
 <translation id="1556537182262721003">Não foi possível mover o directório da extensão para o perfil.</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1562119309884184621">Ao adicionar este contacto, vai memorizá-lo para a próxima vez que partilhar.</translation>
@@ -600,7 +600,7 @@
 <translation id="164936512206786300">Dessincronizar dispositivo Bluetooth</translation>
 <translation id="1650371550981945235">Mostrar opções de introdução</translation>
 <translation id="1651008383952180276">Tem de introduzir a mesma frase de acesso duas vezes</translation>
-<translation id="1652326691684645429">Ativar a funcionalidade Partilhar com Nearby</translation>
+<translation id="1652326691684645429">Ativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Adicione a impressora ao Google Cloud Print para poder imprimir em qualquer local.}other{Adicione # impressoras ao Google Cloud Print para poder imprimir em qualquer local.}}</translation>
 <translation id="1653575510930452864">Copiar link para texto</translation>
 <translation id="1656528038316521561">Opacidade do fundo</translation>
@@ -1430,7 +1430,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2616366145935564096">Ler e alterar os seus dados em <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">O cartão SIM está bloqueado</translation>
-<translation id="2618797463720777311">Configure a funcionalidade Partilhar com Nearby</translation>
+<translation id="2618797463720777311">Configure a funcionalidade Partilhar na proximidade</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Treinar o modelo de voz do Assistente Google</translation>
@@ -1802,7 +1802,7 @@ Pretende pará-lo?</translation>
 <translation id="3022978424994383087">Não entendido.</translation>
 <translation id="3023464535986383522">Selecionar para falar</translation>
 <translation id="3024374909719388945">Utilizar relógio de 24h</translation>
-<translation id="3027296729579831126">Ativar a funcionalidade Partilhar com Nearby</translation>
+<translation id="3027296729579831126">Ativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="3029466929721441205">Mostrar ferramentas da caneta stylus na prateleira</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecione os itens a importar:</translation>
@@ -2534,7 +2534,7 @@ Pretende pará-lo?</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
 <translation id="3873915545594852654">Ocorreu um problema com o ARC++.</translation>
 <translation id="3874164307099183178">Ativar Assistente Google</translation>
-<translation id="3877075909000773256">Definições da funcionalidade Partilhar com Nearby para o dispositivo de <ph name="USER_NAME" />, a partilhar na conta <ph name="USER_EMAIL" />.</translation>
+<translation id="3877075909000773256">Definições da funcionalidade Partilhar na proximidade para o dispositivo de <ph name="USER_NAME" />, a partilhar na conta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3882165008614329320">Vídeo existente da câmara ou do ficheiro</translation>
@@ -3196,7 +3196,7 @@ Pretende pará-lo?</translation>
 <translation id="4673442866648850031">Abra as ferramentas da caneta stylus quando a caneta stylus for removida</translation>
 <translation id="4677772697204437347">Memória de GPU</translation>
 <translation id="4680105648806843642">O som foi desativado nesta página.</translation>
-<translation id="4681453295291708042">Desativar a funcionalidade Partilhar com Nearby</translation>
+<translation id="4681453295291708042">Desativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="4681930562518940301">Abrir &amp;imagem original num novo separador</translation>
 <translation id="4682551433947286597">As imagens de fundo aparecem no Ecrã de início de sessão.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (predefinição)</translation>
@@ -3254,7 +3254,7 @@ Pretende pará-lo?</translation>
 <translation id="4761104368405085019">Utilizar o seu microfone</translation>
 <translation id="4762718786438001384">Espaço em disco do dispositivo criticamente baixo</translation>
 <translation id="4763408175235639573">Foram definidos os seguintes cookies quando viu esta página</translation>
-<translation id="4764368918650455114">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. Se estiver a partilhar com um Chromebook, certifique-se de que tem a funcionalidade Partilhar com Nearby ativada (selecione a hora para abrir a área de estado e, em seguida, selecione Partilhar com Nearby). <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="4764368918650455114">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. Se estiver a partilhar com um Chromebook, certifique-se de que tem a funcionalidade Partilhar na proximidade ativada (selecione a hora para abrir a área de estado e, em seguida, selecione Partilhar na proximidade). <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Permite às Mensagens Android retransmitir as mensagens de texto do telemóvel para o Chromebook.</translation>
 <translation id="4768332406694066911">Tem certificados destas entidades que o identificam</translation>
 <translation id="477647109558161443">Criar um atalho no ambiente de trabalho</translation>
@@ -3749,7 +3749,7 @@ Pretende pará-lo?</translation>
 <translation id="5370819323174483825">&amp;Recarregar</translation>
 <translation id="5372529912055771682">O modo de inscrição fornecido não é suportado por esta versão do sistema operativo. Certifique-se de que está a executar a versão mais recente e tente novamente.</translation>
 <translation id="5372579129492968947">Soltar extensão</translation>
-<translation id="5375318608039113175">Para utilizar a funcionalidade Partilhar com Nearby com estes contactos, adicione o endereço de email associado às respetivas Contas Google aos contactos.</translation>
+<translation id="5375318608039113175">Para utilizar a funcionalidade Partilhar na proximidade com estes contactos, adicione o endereço de email associado às respetivas Contas Google aos contactos.</translation>
 <translation id="5376169624176189338">Clique para retroceder, mantenha premido para ver o histórico</translation>
 <translation id="5376931455988532197">Ficheiro demasiado grande</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> enviado com êxito para <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> enviados com êxito para <ph name="DEVICE_NAME" />}}</translation>
@@ -4068,7 +4068,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5739017626473506901">Inicie sessão para ajudar <ph name="USER_NAME" /> a adicionar uma conta escolar.</translation>
 <translation id="5739235828260127894">A aguardar a validação. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Muito grande</translation>
-<translation id="5740328398383587084">Partilhar com Nearby</translation>
+<translation id="5740328398383587084">Partilhar na proximidade</translation>
 <translation id="5740820643029013514">Utilizar mensagens mais discretas (recomendado)</translation>
 <translation id="574104302965107104">Espelhamento do ecrã</translation>
 <translation id="574209121243317957">Tonalidade</translation>
@@ -4609,7 +4609,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6362853299801475928">&amp;Comunicar um problema...</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Adicionar família e amigos</translation>
-<translation id="6367985768157257101">Pretende receber através da funcionalidade Partilhar com Nearby?</translation>
+<translation id="6367985768157257101">Pretende receber através da funcionalidade Partilhar na proximidade?</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
 <translation id="6370021412472292592">Não foi possível carregar manifesto.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
@@ -4819,7 +4819,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6624687053722465643">Doce</translation>
 <translation id="6628328486509726751">Carregado <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630752851777525409">A extensão <ph name="EXTENSION_NAME" /> pretende um acesso permanente a um certificado para se autenticar automaticamente em seu nome.</translation>
-<translation id="6630956688541588659">Todos os contactos perto de si quando o seu ecrã está desbloqueado e os dispositivos perto de si quando a funcionalidade Partilhar com Nearby está aberta.</translation>
+<translation id="6630956688541588659">Todos os contactos perto de si quando o seu ecrã está desbloqueado e os dispositivos perto de si quando a funcionalidade Partilhar na proximidade está aberta.</translation>
 <translation id="6635944431854494329">O proprietário pode controlar esta funcionalidade em Definições &gt; Avançadas &gt; Enviar automaticamente dados de diagnóstico e de utilização para a Google.</translation>
 <translation id="6635956300022133031">Selecionar e personalizar as vozes para a síntese de voz.</translation>
 <translation id="6636588250634969791">Insira o SIM antes de continuar.</translation>
@@ -5100,7 +5100,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696780070563539690">Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="6968288415730398122">Introduza a sua palavra-passe para configurar o bloqueio de ecrã</translation>
-<translation id="6969047215179982698">Desativar a funcionalidade Partilhar com Nearby</translation>
+<translation id="6969047215179982698">Desativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="6970480684834282392">Tipo de arranque</translation>
 <translation id="6970856801391541997">Imprimir Páginas Específicas</translation>
 <translation id="6972180789171089114">Áudio/Vídeo</translation>
@@ -5289,7 +5289,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182791023900310535">Mova a sua palavra-passe</translation>
-<translation id="7185907299184016376">Os contactos selecionados perto de si quando o seu ecrã está desbloqueado e os dispositivos perto de si quando a funcionalidade Partilhar com Nearby está aberta.</translation>
+<translation id="7185907299184016376">Os contactos selecionados perto de si quando o seu ecrã está desbloqueado e os dispositivos perto de si quando a funcionalidade Partilhar na proximidade está aberta.</translation>
 <translation id="7186088072322679094">Manter na Barra de ferramentas</translation>
 <translation id="7187428571767585875">Entradas de registo a remover ou a alterar:</translation>
 <translation id="7187855807420906517">Depois de sair ou ficar offline, normalmente, os sites continuam a sincronizar para concluir tarefas, como carregar fotos ou enviar uma mensagem de chat.</translation>
@@ -5939,7 +5939,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Adicione palavras que pretende que a verificação ortográfica ignore.</translation>
-<translation id="7924080089023843180">Ninguém, exceto se abrir a funcionalidade Partilhar com Nearby.</translation>
+<translation id="7924080089023843180">Ninguém, exceto se abrir a funcionalidade Partilhar na proximidade.</translation>
 <translation id="7924358170328001543">Ocorreu um erro no encaminhamento de porta.</translation>
 <translation id="792514962475806987">Nível de zoom da lupa ancorada:</translation>
 <translation id="7925247922861151263">A verificação AAA falhou</translation>
