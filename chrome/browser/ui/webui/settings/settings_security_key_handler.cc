@@ -125,6 +125,7 @@ void SecurityKeysPINHandler::OnGatherPIN(uint32_t current_min_pin_length,
     response.emplace("retries", static_cast<int>(*num_retries));
   } else {
     state_ = State::kGatherNewPIN;
+    response.emplace("retries", base::Value::Type::NONE);
   }
 
   ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
