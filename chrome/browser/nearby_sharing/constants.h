@@ -28,6 +28,12 @@ constexpr base::TimeDelta kOutgoingDisconnectionDelay =
 constexpr base::TimeDelta kIncomingRejectionDelay =
     base::TimeDelta::FromSeconds(2);
 
+// The delay before the receiver will disconnect from the sender after canceling
+// an in progress share. The sender is expected to disconnect immediately after
+// reading the rejection frame.
+constexpr base::TimeDelta kIncomingCancelDelay =
+    base::TimeDelta::FromSeconds(5);
+
 // Timeout for reading a frame from remote device.
 constexpr base::TimeDelta kReadFramesTimeout = base::TimeDelta::FromSeconds(15);
 
