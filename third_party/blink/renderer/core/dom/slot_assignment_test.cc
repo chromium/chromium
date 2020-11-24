@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_set_inner_html_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -70,9 +69,7 @@ void SlotAssignmentTest::SetUp() {
 
 void SlotAssignmentTest::SetBody(const char* html) {
   Element* body = GetDocument().body();
-  SetInnerHTMLOptions options;
-  options.setIncludeShadowRoots(true);
-  body->setInnerHTMLWithOptions(String::FromUTF8(html), &options);
+  body->setInnerHTMLWithDeclarativeShadowDOMForTesting(String::FromUTF8(html));
   RemoveWhiteSpaceOnlyTextNode(*body);
 }
 

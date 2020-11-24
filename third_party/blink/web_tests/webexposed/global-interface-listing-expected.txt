@@ -2140,7 +2140,6 @@ interface Element : Node
     method setAttributeNS
     method setAttributeNode
     method setAttributeNodeNS
-    method setInnerHTML
     method setPointerCapture
     method toggleAttribute
     method webkitMatchesSelector
@@ -8066,7 +8065,6 @@ interface ShadowRoot : DocumentFragment
     method getAnimations
     method getInnerHTML
     method getSelection
-    method setInnerHTML
     setter adoptedStyleSheets
     setter fullscreenElement
     setter innerHTML

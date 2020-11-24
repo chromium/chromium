@@ -36,8 +36,7 @@ interface ShadowRoot : DocumentFragment {
     readonly attribute boolean delegatesFocus;
     [RuntimeEnabled=ManualSlotting] readonly attribute SlotAssignmentMode slotAssignment;
 
-    // Declarative Shadow DOM setInnerHTML/getInnerHTML() functions.
-    [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, RuntimeCallStatsCounter=ElementSetInnerHTML, RaisesException, ImplementedAs=setInnerHTMLWithOptions] void setInnerHTML(HTMLString html, optional SetInnerHTMLOptions options = {});
+    // Declarative Shadow DOM getInnerHTML() function.
     [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, RuntimeCallStatsCounter=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
 };
 

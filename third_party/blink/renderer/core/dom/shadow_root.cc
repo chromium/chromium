@@ -28,7 +28,6 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_set_inner_html_options.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -133,30 +132,13 @@ String ShadowRoot::getInnerHTML(const GetInnerHTMLOptions* options) const {
       include_closed_roots);
 }
 
-void ShadowRoot::SetInnerHTMLInternal(const String& html,
-                                      const SetInnerHTMLOptions* options,
-                                      ExceptionState& exception_state) {
-  bool include_shadow_roots =
-      options->hasIncludeShadowRoots() && options->includeShadowRoots();
-  if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-          html, &host(), kAllowScriptingContent, "innerHTML",
-          include_shadow_roots, exception_state)) {
-    ReplaceChildrenWithFragment(this, fragment, exception_state);
-  }
-}
-
 void ShadowRoot::setInnerHTML(const String& html,
                               ExceptionState& exception_state) {
-  const SetInnerHTMLOptions options;
-  SetInnerHTMLInternal(html, &options, exception_state);
-}
-
-void ShadowRoot::setInnerHTMLWithOptions(const String& html,
-                                         const SetInnerHTMLOptions* options,
-                                         ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-      GetExecutionContext()));
-  SetInnerHTMLInternal(html, options, exception_state);
+  if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+          html, &host(), kAllowScriptingContent, "innerHTML",
+          /*include_shadow_roots=*/false, exception_state)) {
+    ReplaceChildrenWithFragment(this, fragment, exception_state);
+  }
 }
 
 void ShadowRoot::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {

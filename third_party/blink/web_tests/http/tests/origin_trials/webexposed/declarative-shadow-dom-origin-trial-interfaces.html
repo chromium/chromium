@@ -9,12 +9,18 @@ generate_token.py --version 3 http://127.0.0.1:8000 DeclarativeShadowDOM --expir
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(t => {
-  // Basic feature detection
   assert_true(HTMLTemplateElement.prototype.hasOwnProperty("shadowRoot"),'Unable to feature detect');
-  // Basic feature use
-  const div = document.createElement('div');
-  div.setInnerHTML('<div id="host"><template shadowroot="open"></template></div>', {includeShadowRoots: true});
-  const host = div.querySelector('#host');
+}, 'Declarative Shadow DOM feature detection for origin-trial enabled document.');
+</script>
+
+<div id=host>
+	<template shadowroot="open"></template>
+</div>
+
+<script>
+test(t => {
+  const host = document.querySelector('#host');
+  assert_true(!!host,"Unable to locate host");
   assert_true(!!host.shadowRoot,"No shadow root found");
 }, 'Declarative Shadow DOM enabled for origin-trial enabled document.');
 </script>

@@ -40,7 +40,6 @@ namespace blink {
 
 class Document;
 class ExceptionState;
-class SetInnerHTMLOptions;
 class GetInnerHTMLOptions;
 class ShadowRootV0;
 class SlotAssignment;
@@ -141,9 +140,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   String innerHTML() const;
   String getInnerHTML(const GetInnerHTMLOptions* options) const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
-  void setInnerHTMLWithOptions(const String&,
-                               const SetInnerHTMLOptions*,
-                               ExceptionState& = ASSERT_NO_EXCEPTION);
 
   Node* Clone(Document&, CloneChildrenFlag) const override;
 
@@ -193,10 +189,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   void ChildrenChanged(const ChildrenChange&) override;
 
   SlotAssignment& EnsureSlotAssignment();
-
-  void SetInnerHTMLInternal(const String&,
-                            const SetInnerHTMLOptions*,
-                            ExceptionState&);
 
   void AddChildShadowRoot() { ++child_shadow_root_count_; }
   void RemoveChildShadowRoot() {

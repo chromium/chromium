@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_set_inner_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -4467,13 +4466,11 @@ String Element::outerHTML() const {
 }
 
 void Element::SetInnerHTMLInternal(const String& html,
-                                   const SetInnerHTMLOptions* options,
+                                   bool include_shadow_roots,
                                    ExceptionState& exception_state) {
   if (html.IsEmpty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
   } else {
-    bool include_shadow_roots =
-        options->hasIncludeShadowRoots() && options->includeShadowRoots();
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
             html, this, kAllowScriptingContent, "innerHTML",
             include_shadow_roots, exception_state)) {
@@ -4493,16 +4490,13 @@ void Element::SetInnerHTMLInternal(const String& html,
 void Element::setInnerHTML(const String& html,
                            ExceptionState& exception_state) {
   probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
-  const SetInnerHTMLOptions options;
-  SetInnerHTMLInternal(html, &options, exception_state);
+  SetInnerHTMLInternal(html, /*include_shadow_roots=*/false, exception_state);
 }
 
-void Element::setInnerHTMLWithOptions(const String& html,
-                                      const SetInnerHTMLOptions* options,
-                                      ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-      GetExecutionContext()));
-  SetInnerHTMLInternal(html, options, exception_state);
+void Element::setInnerHTMLWithDeclarativeShadowDOMForTesting(
+    const String& html) {
+  SetInnerHTMLInternal(html, /*include_shadow_roots=*/true,
+                       ASSERT_NO_EXCEPTION);
 }
 
 String Element::getInnerHTML(const GetInnerHTMLOptions* options) const {

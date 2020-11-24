@@ -308,7 +308,6 @@ namespace http://www.w3.org/1999/xhtml
     property setAttributeNS
     property setAttributeNode
     property setAttributeNodeNS
-    property setInnerHTML
     property setPointerCapture
     property shadowRoot
     property slot
@@ -1494,7 +1493,6 @@ namespace http://www.w3.org/2000/svg
     property setAttributeNS
     property setAttributeNode
     property setAttributeNodeNS
-    property setInnerHTML
     property setPointerCapture
     property shadowRoot
     property slot
