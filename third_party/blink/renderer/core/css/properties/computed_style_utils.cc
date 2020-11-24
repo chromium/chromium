@@ -330,69 +330,42 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionYOrWebkitMaskPositionY(
   return list;
 }
 
+static CSSNumericLiteralValue* ValueForImageSlice(const Length& slice) {
+  // TODO(alancutter): Make this code aware of calc lengths.
+  return CSSNumericLiteralValue::Create(
+      slice.Value(), slice.IsPercentOrCalc()
+                         ? CSSPrimitiveValue::UnitType::kPercentage
+                         : CSSPrimitiveValue::UnitType::kNumber);
+}
+
 cssvalue::CSSBorderImageSliceValue*
 ComputedStyleUtils::ValueForNinePieceImageSlice(const NinePieceImage& image) {
+  const LengthBox& slices = image.ImageSlices();
+
   // Create the slices.
-  CSSPrimitiveValue* top = nullptr;
+  CSSPrimitiveValue* top = ValueForImageSlice(slices.Top());
+
   CSSPrimitiveValue* right = nullptr;
   CSSPrimitiveValue* bottom = nullptr;
   CSSPrimitiveValue* left = nullptr;
-
-  // TODO(alancutter): Make this code aware of calc lengths.
-  if (image.ImageSlices().Top().IsPercentOrCalc()) {
-    top = CSSNumericLiteralValue::Create(
-        image.ImageSlices().Top().Value(),
-        CSSPrimitiveValue::UnitType::kPercentage);
-  } else {
-    top = CSSNumericLiteralValue::Create(image.ImageSlices().Top().Value(),
-                                         CSSPrimitiveValue::UnitType::kNumber);
-  }
-
-  if (image.ImageSlices().Right() == image.ImageSlices().Top() &&
-      image.ImageSlices().Bottom() == image.ImageSlices().Top() &&
-      image.ImageSlices().Left() == image.ImageSlices().Top()) {
+  if (slices.Right() == slices.Top() && slices.Bottom() == slices.Top() &&
+      slices.Left() == slices.Top()) {
     right = top;
     bottom = top;
     left = top;
   } else {
-    if (image.ImageSlices().Right().IsPercentOrCalc()) {
-      right = CSSNumericLiteralValue::Create(
-          image.ImageSlices().Right().Value(),
-          CSSPrimitiveValue::UnitType::kPercentage);
-    } else {
-      right =
-          CSSNumericLiteralValue::Create(image.ImageSlices().Right().Value(),
-                                         CSSPrimitiveValue::UnitType::kNumber);
-    }
+    right = ValueForImageSlice(slices.Right());
 
-    if (image.ImageSlices().Bottom() == image.ImageSlices().Top() &&
-        image.ImageSlices().Right() == image.ImageSlices().Left()) {
+    if (slices.Bottom() == slices.Top() && slices.Right() == slices.Left()) {
       bottom = top;
       left = right;
     } else {
-      if (image.ImageSlices().Bottom().IsPercentOrCalc()) {
-        bottom = CSSNumericLiteralValue::Create(
-            image.ImageSlices().Bottom().Value(),
-            CSSPrimitiveValue::UnitType::kPercentage);
-      } else {
-        bottom = CSSNumericLiteralValue::Create(
-            image.ImageSlices().Bottom().Value(),
-            CSSPrimitiveValue::UnitType::kNumber);
-      }
+      bottom = ValueForImageSlice(slices.Bottom());
 
-      if (image.ImageSlices().Left() == image.ImageSlices().Right()) {
+      if (slices.Left() == slices.Right())
         left = right;
-      } else {
-        if (image.ImageSlices().Left().IsPercentOrCalc()) {
-          left = CSSNumericLiteralValue::Create(
-              image.ImageSlices().Left().Value(),
-              CSSPrimitiveValue::UnitType::kPercentage);
-        } else {
-          left = CSSNumericLiteralValue::Create(
-              image.ImageSlices().Left().Value(),
-              CSSPrimitiveValue::UnitType::kNumber);
-        }
-      }
+      else
+        left = ValueForImageSlice(slices.Left());
     }
   }
 
