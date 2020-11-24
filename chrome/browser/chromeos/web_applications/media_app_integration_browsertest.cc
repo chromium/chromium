@@ -213,7 +213,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
 }
 
 // Test that the MediaApp can load RAW files passed on launch params.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
+// Disabled because it fails randomly on linux-chromeos-chrome.
+// See: https://crbug.com/1152318
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_HandleRawFiles) {
   WaitForTestSystemAppInstall();
 
   content::WebContents* web_ui;
