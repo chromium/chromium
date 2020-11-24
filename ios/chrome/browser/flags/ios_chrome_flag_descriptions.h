@@ -179,6 +179,10 @@ extern const char kEnableCloseAllTabsConfirmationDescription[];
 extern const char kEnableFullPageScreenshotName[];
 extern const char kEnableFullPageScreenshotDescription[];
 
+// Title and description for the flag to enable incognito mode management.
+extern const char kEnableIncognitoModeAvailabilityIOSName[];
+extern const char kEnableIncognitoModeAvailabilityIOSDescription[];
+
 // Title and description for the flag to enable to show a different UI when the
 // setting is managed by an enterprise policy.
 extern const char kEnableIOSManagedSettingsUIName[];

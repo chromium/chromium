@@ -18,6 +18,9 @@ const base::Feature kEditBookmarksIOS{"EditBookmarksIOS",
 const base::Feature kManagedBookmarksIOS{"ManagedBookmarksIOS",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableIncognitoModeAvailabilityIOS{
+    "EnableIncognitoModeAvailabilityIOS", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kURLBlocklistIOS{"URLBlocklistIOS",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -46,6 +49,10 @@ bool IsEditBookmarksIOSEnabled() {
 
 bool IsEnterprisePolicyEnabled() {
   return !IsDisableEnterprisePolicySwitchPresent();
+}
+
+bool IsIncognitoModeAvailable() {
+  return base::FeatureList::IsEnabled(kEnableIncognitoModeAvailabilityIOS);
 }
 
 bool ShouldInstallEnterprisePolicyHandlers() {
