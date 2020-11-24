@@ -1,7 +1,6 @@
-// This file lists metadata for chrome://flags entries. This metadata is not
-// ever used in the built browser or in any compiled code, but is used as part
-// of the review process and to clean up flags that have become obsolete or
-// unused. For more details, see:
+// This file lists metadata for chrome://flags entries. This metadata is used to
+// automatically expire flags, as part of the review process, and to clean up
+// flags that have become obsolete or unused. For more details, see:
 //
 //    https://chromium.googlesource.com/chromium/src/+/master/docs/flag_ownership.md
 //
