@@ -60,7 +60,7 @@ class MockIpcMessageSender : public IPC::Sender {
   DISALLOW_COPY_AND_ASSIGN(MockIpcMessageSender);
 };
 
-class MockRequestPeer : public content::RequestPeer {
+class MockRequestPeer : public blink::WebRequestPeer {
  public:
   MockRequestPeer()
       : body_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
@@ -180,7 +180,7 @@ class ExtensionLocalizationPeerTest : public testing::Test {
 };
 
 TEST_F(ExtensionLocalizationPeerTest, CreateWithWrongMimeType) {
-  std::unique_ptr<content::RequestPeer> peer =
+  std::unique_ptr<blink::WebRequestPeer> peer =
       ExtensionLocalizationPeer::CreateExtensionLocalizationPeer(
           nullptr, sender_.get(), "text/html", GURL(kExtensionUrl_1));
   EXPECT_EQ(nullptr, peer);

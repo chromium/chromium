@@ -35,7 +35,6 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/navigation_policy.h"
-#include "content/public/renderer/request_peer.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/variations_render_thread_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -79,6 +78,7 @@
 #include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_http_load_info.h"
+#include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -469,11 +469,11 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
 // A thin wrapper class for Context to ensure its lifetime while it is
 // handling IPC messages coming from ResourceDispatcher. Owns one ref to
 // Context and held by ResourceDispatcher.
-class WebURLLoaderImpl::RequestPeerImpl : public RequestPeer {
+class WebURLLoaderImpl::RequestPeerImpl : public blink::WebRequestPeer {
  public:
   explicit RequestPeerImpl(Context* context);
 
-  // RequestPeer methods:
+  // blink::WebRequestPeer methods:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr head,

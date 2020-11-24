@@ -87,8 +87,8 @@ class RendererResourceDelegate : public content::ResourceDispatcherDelegate {
     }
   }
 
-  std::unique_ptr<content::RequestPeer> OnReceivedResponse(
-      std::unique_ptr<content::RequestPeer> current_peer,
+  std::unique_ptr<blink::WebRequestPeer> OnReceivedResponse(
+      std::unique_ptr<blink::WebRequestPeer> current_peer,
       const std::string& mime_type,
       const GURL& url) override {
 #if BUILDFLAG(ENABLE_EXTENSIONS)

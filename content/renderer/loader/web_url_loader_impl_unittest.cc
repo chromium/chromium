@@ -19,7 +19,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/renderer/request_peer.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -40,6 +39,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -76,7 +76,7 @@ class TestResourceDispatcher : public ResourceDispatcher {
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
       mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      std::unique_ptr<RequestPeer> peer,
+      std::unique_ptr<blink::WebRequestPeer> peer,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper) override {
     *response = std::move(sync_load_response_);
@@ -88,7 +88,7 @@ class TestResourceDispatcher : public ResourceDispatcher {
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      std::unique_ptr<RequestPeer> peer,
+      std::unique_ptr<blink::WebRequestPeer> peer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
@@ -108,7 +108,7 @@ class TestResourceDispatcher : public ResourceDispatcher {
     canceled_ = true;
   }
 
-  RequestPeer* peer() { return peer_.get(); }
+  blink::WebRequestPeer* peer() { return peer_.get(); }
 
   bool canceled() { return canceled_; }
 
@@ -125,7 +125,7 @@ class TestResourceDispatcher : public ResourceDispatcher {
   }
 
  private:
-  std::unique_ptr<RequestPeer> peer_;
+  std::unique_ptr<blink::WebRequestPeer> peer_;
   bool canceled_;
   bool defers_loading_;
   GURL url_;
@@ -393,7 +393,7 @@ class WebURLLoaderImplTest : public testing::Test {
 
   TestWebURLLoaderClient* client() { return client_.get(); }
   TestResourceDispatcher* dispatcher() { return &dispatcher_; }
-  RequestPeer* peer() { return dispatcher()->peer(); }
+  blink::WebRequestPeer* peer() { return dispatcher()->peer(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;

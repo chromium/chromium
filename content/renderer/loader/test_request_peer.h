@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 #include "base/time/time.h"
-#include "content/public/renderer/request_peer.h"
 #include "net/base/load_timing_info.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/platform/web_request_peer.h"
 
 namespace net {
 struct RedirectInfo;
@@ -25,7 +25,7 @@ class ResourceDispatcher;
 
 // Listens for request response data and stores it so that it can be compared
 // to the reference data.
-class TestRequestPeer : public RequestPeer {
+class TestRequestPeer : public blink::WebRequestPeer {
  public:
   struct Context;
   TestRequestPeer(ResourceDispatcher* dispatcher, Context* context);

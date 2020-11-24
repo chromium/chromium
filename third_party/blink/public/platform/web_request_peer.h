@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_RENDERER_REQUEST_PEER_H_
-#define CONTENT_PUBLIC_RENDERER_REQUEST_PEER_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_REQUEST_PEER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_REQUEST_PEER_H_
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
+#include <vector>
 
-#include "base/task_runner.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace net {
 struct RedirectInfo;
@@ -24,7 +23,7 @@ namespace network {
 struct URLLoaderCompletionStatus;
 }
 
-namespace content {
+namespace blink {
 
 // This is implemented by our custom resource loader within content. The Peer
 // and it's bridge should have identical lifetimes as they represent each end of
@@ -33,7 +32,7 @@ namespace content {
 // These callbacks mirror net::URLRequest::Delegate and the order and
 // conditions in which they will be called are identical. See url_request.h
 // for more information.
-class CONTENT_EXPORT RequestPeer {
+class BLINK_PLATFORM_EXPORT WebRequestPeer {
  public:
   // Called as upload progress is made.
   // note: only for requests with upload progress enabled.
@@ -73,9 +72,9 @@ class CONTENT_EXPORT RequestPeer {
   virtual void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  virtual ~RequestPeer() {}
+  virtual ~WebRequestPeer() {}
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_PUBLIC_RENDERER_REQUEST_PEER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_REQUEST_PEER_H_

@@ -11,9 +11,11 @@
 
 class GURL;
 
-namespace content {
+namespace blink {
+class WebRequestPeer;
+}  // namespace blink
 
-class RequestPeer;
+namespace content {
 
 // Interface that allows observing request events and optionally replacing
 // the peer. Note that if it doesn't replace the peer it must return the
@@ -27,8 +29,8 @@ class CONTENT_EXPORT ResourceDispatcherDelegate {
 
   // Note that |url|, |referrer| and |method| are the final values (e.g. after
   // any redirects).
-  virtual std::unique_ptr<RequestPeer> OnReceivedResponse(
-      std::unique_ptr<RequestPeer> current_peer,
+  virtual std::unique_ptr<blink::WebRequestPeer> OnReceivedResponse(
+      std::unique_ptr<blink::WebRequestPeer> current_peer,
       const std::string& mime_type,
       const GURL& url) = 0;
 };

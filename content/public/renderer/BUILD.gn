@@ -50,7 +50,6 @@ target(link_target_type, "renderer_sources") {
     "render_view_observer.h",
     "render_view_visitor.h",
     "renderer_ppapi_host.h",
-    "request_peer.h",
     "resource_dispatcher_delegate.h",
     "url_loader_throttle_provider.h",
     "v8_value_converter.h",

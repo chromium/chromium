@@ -71,7 +71,7 @@ class MockPendingSharedURLLoaderFactory
 
 class MockResourceDispatcher : public ResourceDispatcher {
  public:
-  int CreatePendingRequest(std::unique_ptr<RequestPeer> peer) {
+  int CreatePendingRequest(std::unique_ptr<blink::WebRequestPeer> peer) {
     peers_.push_back(std::move(peer));
     return peers_.size() - 1;
   }
@@ -86,7 +86,7 @@ class MockResourceDispatcher : public ResourceDispatcher {
   }
 
  private:
-  std::vector<std::unique_ptr<RequestPeer>> peers_;
+  std::vector<std::unique_ptr<blink::WebRequestPeer>> peers_;
 };
 
 }  // namespace

@@ -235,6 +235,7 @@ source_set("blink_headers") {
     "platform/web_prescient_networking.h",
     "platform/web_private_ptr.h",
     "platform/web_rect.h",
+    "platform/web_request_peer.h",
     "platform/web_runtime_features.h",
     "platform/web_scoped_page_pauser.h",
     "platform/web_scroll_anchor_data.h",

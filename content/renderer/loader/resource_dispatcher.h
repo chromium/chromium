@@ -41,6 +41,7 @@ class WaitableEvent;
 }
 
 namespace blink {
+class WebRequestPeer;
 class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
 struct SyncLoadResponse;
@@ -59,7 +60,6 @@ class URLLoaderFactory;
 }
 
 namespace content {
-class RequestPeer;
 class ResourceDispatcherDelegate;
 class URLLoaderClientImpl;
 
@@ -104,7 +104,7 @@ class CONTENT_EXPORT ResourceDispatcher {
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
       mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      std::unique_ptr<RequestPeer> peer,
+      std::unique_ptr<blink::WebRequestPeer> peer,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
 
@@ -123,7 +123,7 @@ class CONTENT_EXPORT ResourceDispatcher {
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      std::unique_ptr<RequestPeer> peer,
+      std::unique_ptr<blink::WebRequestPeer> peer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
@@ -182,7 +182,7 @@ class CONTENT_EXPORT ResourceDispatcher {
   friend class ResourceDispatcherTest;
 
   struct PendingRequestInfo {
-    PendingRequestInfo(std::unique_ptr<RequestPeer> peer,
+    PendingRequestInfo(std::unique_ptr<blink::WebRequestPeer> peer,
                        network::mojom::RequestDestination request_destination,
                        int render_frame_id,
                        const GURL& request_url,
@@ -191,7 +191,7 @@ class CONTENT_EXPORT ResourceDispatcher {
 
     ~PendingRequestInfo();
 
-    std::unique_ptr<RequestPeer> peer;
+    std::unique_ptr<blink::WebRequestPeer> peer;
     network::mojom::RequestDestination request_destination;
     int render_frame_id;
     bool is_deferred = false;

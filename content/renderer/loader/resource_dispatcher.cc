@@ -23,7 +23,6 @@
 #include "build/build_config.h"
 #include "content/common/inter_process_time_ticks_converter.h"
 #include "content/common/navigation_params.h"
-#include "content/public/renderer/request_peer.h"
 #include "content/public/renderer/resource_dispatcher_delegate.h"
 #include "content/renderer/loader/sync_load_context.h"
 #include "content/renderer/loader/url_loader_client_impl.h"
@@ -47,6 +46,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
+#include "third_party/blink/public/platform/web_request_peer.h"
 
 namespace content {
 
@@ -155,9 +155,10 @@ void ResourceDispatcher::OnReceivedResponse(
   ToLocalURLResponseHead(*request_info, *response_head);
   request_info->load_timing_info = response_head->load_timing;
   if (delegate_) {
-    std::unique_ptr<RequestPeer> new_peer = delegate_->OnReceivedResponse(
-        std::move(request_info->peer), response_head->mime_type,
-        request_info->url);
+    std::unique_ptr<blink::WebRequestPeer> new_peer =
+        delegate_->OnReceivedResponse(std::move(request_info->peer),
+                                      response_head->mime_type,
+                                      request_info->url);
     DCHECK(new_peer);
     request_info->peer = std::move(new_peer);
   }
@@ -278,7 +279,7 @@ void ResourceDispatcher::OnRequestComplete(
   request_info->resource_load_info_notifier_wrapper
       ->NotifyResourceLoadCompleted(status);
 
-  RequestPeer* peer = request_info->peer.get();
+  blink::WebRequestPeer* peer = request_info->peer.get();
 
   if (delegate_) {
     delegate_->OnRequestComplete();
@@ -395,7 +396,7 @@ void ResourceDispatcher::OnTransferSizeUpdated(int request_id,
     return;
 
   // TODO(yhirano): Consider using int64_t in
-  // RequestPeer::OnTransferSizeUpdated.
+  // blink::WebRequestPeer::OnTransferSizeUpdated.
   request_info->peer->OnTransferSizeUpdated(transfer_size_diff);
   if (!GetPendingRequestInfo(request_id))
     return;
@@ -409,7 +410,7 @@ void ResourceDispatcher::SetCorsExemptHeaderList(
 }
 
 ResourceDispatcher::PendingRequestInfo::PendingRequestInfo(
-    std::unique_ptr<RequestPeer> peer,
+    std::unique_ptr<blink::WebRequestPeer> peer,
     network::mojom::RequestDestination request_destination,
     int render_frame_id,
     const GURL& request_url,
@@ -437,7 +438,7 @@ void ResourceDispatcher::StartSync(
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
     base::TimeDelta timeout,
     mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-    std::unique_ptr<RequestPeer> peer,
+    std::unique_ptr<blink::WebRequestPeer> peer,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   CheckSchemeForReferrerPolicy(*request);
@@ -503,7 +504,7 @@ int ResourceDispatcher::StartAsync(
     scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
-    std::unique_ptr<RequestPeer> peer,
+    std::unique_ptr<blink::WebRequestPeer> peer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>

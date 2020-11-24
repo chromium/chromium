@@ -11,7 +11,6 @@
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
-#include "content/public/renderer/request_peer.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -19,6 +18,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
+#include "third_party/blink/public/platform/web_request_peer.h"
 
 namespace base {
 class WaitableEvent;
@@ -44,7 +44,7 @@ namespace content {
 //   2) kBlob: body is received on a data pipe passed on
 //      OnStartLoadingResponseBody(), and wraps the data pipe with a
 //      SerializedBlobPtr.
-class CONTENT_EXPORT SyncLoadContext : public RequestPeer {
+class CONTENT_EXPORT SyncLoadContext : public blink::WebRequestPeer {
  public:
   // Begins a new asynchronous request on whatever sequence this method is
   // called on. |completed_event| will be signalled when the request is complete
@@ -97,7 +97,7 @@ class CONTENT_EXPORT SyncLoadContext : public RequestPeer {
       mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const std::vector<std::string>& cors_exempt_header_list);
-  // RequestPeer implementation:
+  // blink::WebRequestPeer implementation:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr head,
