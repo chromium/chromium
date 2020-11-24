@@ -171,6 +171,13 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * The file path of the last scanned page of a successful scan job. Used to
+     * open the Files app with the correct file highlighted.
+     * @private {?mojoBase.mojom.FilePath}
+     */
+    lastScannedFilePath_: Object,
   },
 
   /** @override */
@@ -228,9 +235,11 @@ Polymer({
   /**
    * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
    * @param {boolean} success
+   * @param {!mojoBase.mojom.FilePath} lastScannedFilePath
    */
-  onScanComplete(success) {
+  onScanComplete(success, lastScannedFilePath) {
     if (success) {
+      this.lastScannedFilePath_ = lastScannedFilePath;
       this.setAppState_(AppState.DONE);
       return;
     }

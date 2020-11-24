@@ -97,7 +97,8 @@ TEST_F(DocumentScanScanFunctionTest, ScanImageError) {
 
 TEST_F(DocumentScanScanFunctionTest, Success) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
-  GetLorgnetteScannerManager()->SetScanResponse("PrettyPicture");
+  const std::vector<std::string> scan_data = {"PrettyPicture"};
+  GetLorgnetteScannerManager()->SetScanResponse(scan_data);
   std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
       function_.get(), "[{\"mimeTypes\": [\"image/png\"]}]"));
   ASSERT_NE(nullptr, result.get());

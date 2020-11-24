@@ -101,7 +101,7 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   void OnCancelCompleted(bool success);
 
   // Called once the task runner finishes saving a page of a scan.
-  void OnPageSaved(bool success);
+  void OnPageSaved(const base::FilePath& saved_file_path);
 
   // Called once the task runner finishes saving the last page of a scan.
   void OnAllPagesSaved(bool success);
@@ -141,6 +141,9 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
 
   // The time a scan was started. Used in filenames when saving scanned images.
   base::Time::Exploded start_time_;
+
+  // The file path of the last page scanned in a scan job.
+  base::FilePath last_scanned_file_path_;
 
   // Task runner used to convert and save scanned images.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

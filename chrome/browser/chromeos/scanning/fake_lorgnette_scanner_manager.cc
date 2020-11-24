@@ -36,18 +36,19 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
                                        PageCallback page_callback,
                                        CompletionCallback completion_callback) {
   if (scan_data_.has_value()) {
-    constexpr uint32_t page_number = 1;
-    if (progress_callback) {
-      for (const uint32_t progress : {7, 22, 40, 42, 59, 74, 95}) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(progress_callback, progress, page_number));
+    uint32_t page_number = 1;
+    for (const std::string& page_data : scan_data_.value()) {
+      if (progress_callback) {
+        for (const uint32_t progress : {7, 22, 40, 42, 59, 74, 95}) {
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE,
+              base::BindOnce(progress_callback, progress, page_number));
+        }
       }
-    }
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(page_callback, scan_data_.value(), page_number));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(page_callback, page_data, page_number++));
+    }
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -72,7 +73,7 @@ void FakeLorgnetteScannerManager::SetGetScannerCapabilitiesResponse(
 }
 
 void FakeLorgnetteScannerManager::SetScanResponse(
-    const base::Optional<std::string>& scan_data) {
+    const base::Optional<std::vector<std::string>>& scan_data) {
   scan_data_ = scan_data;
 }
 

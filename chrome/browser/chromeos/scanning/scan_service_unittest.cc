@@ -66,6 +66,23 @@ lorgnette::ScannerCapabilities CreateLorgnetteScannerCapabilities() {
   return caps;
 }
 
+// Returns a vector of FilePaths to mimic saved scans.
+std::vector<base::FilePath> CreateSavedScanPaths(
+    const base::FilePath& dir,
+    const base::Time::Exploded& scan_time,
+    const std::string& type,
+    int num_pages_to_scan) {
+  std::vector<base::FilePath> file_paths;
+  file_paths.reserve(num_pages_to_scan);
+  for (int i = 1; i <= num_pages_to_scan; i++) {
+    file_paths.push_back(dir.Append(base::StringPrintf(
+        "scan_%02d%02d%02d-%02d%02d%02d_%d.%s", scan_time.year, scan_time.month,
+        scan_time.day_of_month, scan_time.hour, scan_time.minute,
+        scan_time.second, i, type.c_str())));
+  }
+  return file_paths;
+}
+
 }  // namespace
 
 class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
@@ -86,7 +103,11 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
     page_complete_ = true;
   }
 
-  void OnScanComplete(bool success) override { scan_success_ = success; }
+  void OnScanComplete(bool success,
+                      const base::FilePath& last_scanned_file_path) override {
+    scan_success_ = success;
+    last_scanned_file_path_ = last_scanned_file_path;
+  }
 
   void OnCancelComplete(bool success) override {
     cancel_scan_success_ = success;
@@ -111,11 +132,17 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
   // Returns true if the cancel scan request completed successfully.
   bool cancel_scan_success() const { return cancel_scan_success_; }
 
+  // Returns the file path of the file saved last.
+  base::FilePath last_scanned_file_path() const {
+    return last_scanned_file_path_;
+  }
+
  private:
   uint32_t progress_ = 0;
   bool page_complete_ = false;
   bool scan_success_ = false;
   bool cancel_scan_success_ = false;
+  base::FilePath last_scanned_file_path_;
   mojo::Receiver<mojo_ipc::ScanJobObserver> receiver_{this};
 };
 
@@ -265,7 +292,8 @@ TEST_F(ScanServiceTest, ScanWithBadScannerId) {
 TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  fake_lorgnette_scanner_manager_.SetScanResponse("TestData");
+  const std::vector<std::string> scan_data = {"TestData"};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -281,7 +309,9 @@ TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
 TEST_F(ScanServiceTest, Scan) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  fake_lorgnette_scanner_manager_.SetScanResponse("TestData");
+  const std::vector<std::string> scan_data = {"TestData1", "TestData2",
+                                              "TestData3"};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -294,18 +324,20 @@ TEST_F(ScanServiceTest, Scan) {
   settings.scan_to_path = temp_dir_.GetPath();
   std::map<std::string, mojo_ipc::FileType> file_types = {
       {"png", mojo_ipc::FileType::kPng}, {"jpg", mojo_ipc::FileType::kJpg}};
-  base::FilePath saved_scan_path;
   for (const auto& type : file_types) {
-    saved_scan_path = temp_dir_.GetPath().Append(base::StringPrintf(
-        "scan_%02d%02d%02d-%02d%02d%02d_1.%s", scan_time.year, scan_time.month,
-        scan_time.day_of_month, scan_time.hour, scan_time.minute,
-        scan_time.second, type.first.c_str()));
-    EXPECT_FALSE(base::PathExists(saved_scan_path));
+    const std::vector<base::FilePath> saved_scan_paths = CreateSavedScanPaths(
+        temp_dir_.GetPath(), scan_time, type.first, scan_data.size());
+    for (const auto& saved_scan_path : saved_scan_paths)
+      EXPECT_FALSE(base::PathExists(saved_scan_path));
 
     settings.file_type = type.second;
     EXPECT_TRUE(Scan(scanners[0]->id, settings.Clone()));
-    EXPECT_TRUE(base::PathExists(saved_scan_path));
+    for (const auto& saved_scan_path : saved_scan_paths)
+      EXPECT_TRUE(base::PathExists(saved_scan_path));
+
     EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+    EXPECT_EQ(saved_scan_paths.back(),
+              fake_scan_job_observer_.last_scanned_file_path());
   }
 }
 
@@ -313,7 +345,8 @@ TEST_F(ScanServiceTest, Scan) {
 TEST_F(ScanServiceTest, CancelScanBeforeScanCompletes) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  fake_lorgnette_scanner_manager_.SetScanResponse("TestData");
+  const std::vector<std::string> scan_data = {"TestData"};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 

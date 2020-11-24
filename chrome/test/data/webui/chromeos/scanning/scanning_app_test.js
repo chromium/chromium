@@ -168,7 +168,7 @@ class FakeScanService {
    * @return {!Promise}
    */
   simulateScanComplete(success) {
-    this.scanJobObserverRemote_.onScanComplete(success);
+    this.scanJobObserverRemote_.onScanComplete(success, {'path': ''});
     return flushTasks();
   }
 

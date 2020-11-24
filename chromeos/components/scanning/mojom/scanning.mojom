@@ -103,8 +103,9 @@ interface ScanJobObserver {
   OnPageComplete(array<uint8> page_data);
 
   // Called when the scan is complete. |success| indicates whether the scan
-  // completed successfully.
-  OnScanComplete(bool success);
+  // completed successfully. |last_scanned_file_path| is the file path of
+  // the last page scanned in a scan job.
+  OnScanComplete(bool success, mojo_base.mojom.FilePath last_scanned_file_path);
 
   // Called when canceling the current scan job is complete. |success|
   // indicates whether the scan job was cancelled successfully.

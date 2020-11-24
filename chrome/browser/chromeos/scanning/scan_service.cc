@@ -52,14 +52,13 @@ std::string PngToJpg(const std::string& png_img) {
   return std::string(jpg_img.begin(), jpg_img.end());
 }
 
-// Saves |scanned_image| to a file after converting it if necessary. Returns
-// true if the save succeeds.
-bool SavePage(const base::FilePath& scan_to_path,
-              const mojo_ipc::FileType file_type,
-              std::string scanned_image,
-              uint32_t page_number,
-              const base::Time::Exploded& start_time) {
-  std::string filename;
+// Saves |scanned_image| to a file after converting it if necessary. Returns the
+// file path to the saved file if the save succeeds.
+base::FilePath SavePage(const base::FilePath& scan_to_path,
+                        const mojo_ipc::FileType file_type,
+                        std::string scanned_image,
+                        uint32_t page_number,
+                        const base::Time::Exploded& start_time) {
   std::string file_ext;
   switch (file_type) {
     case mojo_ipc::FileType::kPng:
@@ -69,25 +68,25 @@ bool SavePage(const base::FilePath& scan_to_path,
       file_ext = "jpg";
       scanned_image = PngToJpg(scanned_image);
       if (scanned_image.empty())
-        return false;
+        return base::FilePath();
 
       break;
     default:
       LOG(ERROR) << "Selected file type not supported.";
-      return false;
+      return base::FilePath();
   }
 
-  filename = base::StringPrintf(
+  const std::string filename = base::StringPrintf(
       "scan_%02d%02d%02d-%02d%02d%02d_%d.%s", start_time.year, start_time.month,
       start_time.day_of_month, start_time.hour, start_time.minute,
       start_time.second, page_number, file_ext.c_str());
   const auto file_path = scan_to_path.Append(filename);
   if (!base::WriteFile(file_path, scanned_image)) {
     LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
-    return false;
+    return base::FilePath();
   }
 
-  return true;
+  return file_path;
 }
 
 }  // namespace
@@ -147,6 +146,7 @@ void ScanService::StartScan(
 
   base::Time::Now().LocalExplode(&start_time_);
   save_failed_ = false;
+  last_scanned_file_path_.clear();
   lorgnette_scanner_manager_->Scan(
       scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
       base::BindRepeating(&ScanService::OnProgressPercentReceived,
@@ -254,13 +254,17 @@ void ScanService::OnCancelCompleted(bool success) {
   scan_job_observer_->OnCancelComplete(success);
 }
 
-void ScanService::OnPageSaved(bool success) {
-  if (!success)
-    save_failed_ = true;
+void ScanService::OnPageSaved(const base::FilePath& saved_file_path) {
+  save_failed_ = save_failed_ || saved_file_path.empty();
+  last_scanned_file_path_ = save_failed_ ? base::FilePath() : saved_file_path;
 }
 
 void ScanService::OnAllPagesSaved(bool success) {
-  scan_job_observer_->OnScanComplete(success && !save_failed_);
+  save_failed_ = !success || save_failed_;
+  if (save_failed_)
+    last_scanned_file_path_.clear();
+
+  scan_job_observer_->OnScanComplete(!save_failed_, last_scanned_file_path_);
 }
 
 bool ScanService::FilePathSupported(const base::FilePath& file_path) {

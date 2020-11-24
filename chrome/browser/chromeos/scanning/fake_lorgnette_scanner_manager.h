@@ -45,12 +45,13 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
           scanner_capabilities);
 
   // Sets the response returned by Scan().
-  void SetScanResponse(const base::Optional<std::string>& scan_data);
+  void SetScanResponse(
+      const base::Optional<std::vector<std::string>>& scan_data);
 
  private:
   std::vector<std::string> scanner_names_;
   base::Optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
-  base::Optional<std::string> scan_data_;
+  base::Optional<std::vector<std::string>> scan_data_;
 };
 
 }  // namespace chromeos
