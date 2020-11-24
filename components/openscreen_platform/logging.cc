@@ -51,7 +51,10 @@ void Break() {
 #if defined(OFFICIAL_BUILD) && defined(NDEBUG)
   IMMEDIATE_CRASH();
 #else
-  ::base::debug::BreakDebugger();
+  // Chrome's base::debug::BreakDebugger is not properly annotated as
+  // [[noreturn]], so we abort instead. This may need to be revisited
+  // if we want MSVC support in the future.
+  std::abort();
 #endif
 }
 
