@@ -305,6 +305,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             new ObservableSupplierImpl<>();
 
     private CallbackController mCallbackController = new CallbackController();
+    private TabbedModeTabDelegateFactory mTabDelegateFactory;
 
     private final IncognitoTabHost mIncognitoTabHost = new IncognitoTabHost() {
         @Override
@@ -1651,15 +1652,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mBookmarkBridgeSupplier, getModalDialogManager());
     }
 
-    @Override
-    protected Pair<ChromeTabCreator, ChromeTabCreator> createTabCreators() {
-        Supplier<TabDelegateFactory> tabDelegateFactorySupplier = () -> {
-            return new TabbedModeTabDelegateFactory(this, getAppBrowserControlsVisibilityDelegate(),
-                    getShareDelegateSupplier(), mEphemeralTabCoordinatorSupplier,
+    private TabDelegateFactory getTabDelegateFactory() {
+        if (mTabDelegateFactory == null) {
+            mTabDelegateFactory = new TabbedModeTabDelegateFactory(this,
+                    getAppBrowserControlsVisibilityDelegate(), getShareDelegateSupplier(),
+                    mEphemeralTabCoordinatorSupplier,
                     ((TabbedRootUiCoordinator) mRootUiCoordinator)::onContextMenuCopyLink,
                     mRootUiCoordinator.getBottomSheetController());
-        };
+        }
+        return mTabDelegateFactory;
+    }
 
+    @Override
+    protected Pair<ChromeTabCreator, ChromeTabCreator> createTabCreators() {
         ChromeTabCreator.OverviewNTPCreator overviewNTPCreator = null;
 
         if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
@@ -1676,10 +1681,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             };
         }
         return Pair.create(new ChromeTabCreator(this, getWindowAndroid(), getStartupTabPreloader(),
-                                   tabDelegateFactorySupplier, false, overviewNTPCreator,
+                                   this::getTabDelegateFactory, false, overviewNTPCreator,
                                    AsyncTabParamsManagerSingleton.getInstance()),
                 new ChromeTabCreator(this, getWindowAndroid(), getStartupTabPreloader(),
-                        tabDelegateFactorySupplier, true, overviewNTPCreator,
+                        this::getTabDelegateFactory, true, overviewNTPCreator,
                         AsyncTabParamsManagerSingleton.getInstance()));
     }
 
@@ -2158,6 +2163,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         ChromeAccessibilityUtil.get().removeObserver(this);
         ChromeAccessibilityUtil.get().removeObserver(mLayoutManager);
 
+        if (mTabDelegateFactory != null) mTabDelegateFactory.destroy();
         super.onDestroyInternal();
     }
 

@@ -156,6 +156,7 @@ public class NewTabPageUma {
     private final Supplier<Long> mLastInteractionTime;
     private final boolean mActivityHadWarmStart;
     private final Supplier<Intent> mActivityIntent;
+    private TabCreationRecorder mTabCreationRecorder;
 
     /**
      * Constructor.
@@ -216,7 +217,8 @@ public class NewTabPageUma {
      * users navigate back to already opened NTPs.
      */
     public void monitorNTPCreation() {
-        mTabModelSelector.addObserver(new TabCreationRecorder());
+        mTabCreationRecorder = new TabCreationRecorder();
+        mTabModelSelector.addObserver(mTabCreationRecorder);
     }
 
     /**
@@ -320,5 +322,10 @@ public class NewTabPageUma {
                 return true;
             }
         });
+    }
+
+    /** Destroy and unhook objects at destruction. */
+    public void destroy() {
+        if (mTabCreationRecorder != null) mTabModelSelector.removeObserver(mTabCreationRecorder);
     }
 }

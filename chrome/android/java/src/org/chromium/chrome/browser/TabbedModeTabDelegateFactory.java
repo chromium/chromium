@@ -85,4 +85,9 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab);
     }
+
+    /** Destroy and unhook objects at destruction. */
+    public void destroy() {
+        if (mNativePageFactory != null) mNativePageFactory.destroy();
+    }
 }

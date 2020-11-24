@@ -229,4 +229,9 @@ public class NativePageFactory {
             return new BrowserControlsMarginSupplier(mBrowserControlsStateProvider);
         }
     }
+
+    /** Destroy and unhook objects at destruction. */
+    public void destroy() {
+        if (mNewTabPageUma != null) mNewTabPageUma.destroy();
+    }
 }
