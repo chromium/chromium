@@ -11,6 +11,10 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 
+namespace language {
+class UrlLanguageHistogram;
+}
+
 namespace language_usage_metrics {
 
 // Methods to record language usage as UMA histograms.
@@ -22,6 +26,13 @@ class LanguageUsageMetrics {
   // country code. Country code is ignored. That is, xx and XX-YY are considered
   // identical and recorded once.
   static void RecordAcceptLanguages(base::StringPiece accept_languages);
+
+  // Records detected page language history as a UMA histogram.
+  // |UrlLanguageHistogram| is a mapping of page language to frequency. Country
+  // codes are ignored for page language. Each language is counted once
+  // regardless of frequency. Languages with a frequency below 0.05 are ignored.
+  static void RecordPageLanguages(
+      const language::UrlLanguageHistogram& language_counts);
 
   // Records the application language as a UMA histogram. |application_locale|
   // is a case-insensitive locale string of either xx, xx-YY, or xx_YY format.

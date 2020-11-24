@@ -60,6 +60,7 @@
 #include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -1533,6 +1534,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
       profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
   language_usage_metrics::LanguageUsageMetrics::RecordApplicationLanguage(
       browser_process_->GetApplicationLocale());
+// On ChromeOS results in a crash. https://crbug.com/1151558
+#if !defined(OS_CHROMEOS)
+  language_usage_metrics::LanguageUsageMetrics::RecordPageLanguages(
+      *UrlLanguageHistogramFactory::GetForBrowserContext(profile_));
+#endif  // defined(OS_CHROMEOS)
 
 // On mobile, need for clean shutdown arises only when the application comes
 // to foreground (i.e. MetricsService::OnAppEnterForeground is called).

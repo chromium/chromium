@@ -7684,25 +7684,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageCode"
     expires_after="2021-04-04">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>frechette@chromium.org</owner>
+  <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
-  <summary>Accept languages.</summary>
+  <summary>
+    Accept languages with country codes removed. Recorded once per profile
+    intitalization. Incognito profiles are ignored.
+  </summary>
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.Count" units="units"
     expires_after="2021-06-01">
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
-  <summary>The number of accepted languages in the user preferences.</summary>
+  <summary>
+    The number of accepted languages in the user preferences recored once per
+    profile initialization. Incognito profiles are ignored.
+  </summary>
 </histogram>
 
 <histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageCode"
     expires_after="2021-04-04">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>frechette@chromium.org</owner>
+  <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
-  <summary>Application languages used for UI.</summary>
+  <summary>
+    Application languages used for UI recorded once per profile initialization.
+    Incognito profiles are ignored.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageCode"
+    expires_after="M90">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Source page language from UrlLanguageHistogram recorded one per profile
+    during initialization. Each language with a frequency over 5% is recorded
+    once. Incognito profiles are ignored and not recorded on ChromeOS.
+  </summary>
 </histogram>
 
 <histogram name="Launch.FlagsAtStartup" enum="LoginCustomFlags"
