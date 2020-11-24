@@ -82,5 +82,6 @@ TEST_F(PolicyTest, PolicyToPrefMappings) {
   policy::VerifyPolicyToPrefMappings(
       policy_test_cases_path_, enterprise_policy_helper_->GetLocalState(),
       enterprise_policy_helper_->GetBrowserState()->GetPrefs(),
+      /* signin_profile_prefs= */ nullptr,
       enterprise_policy_helper_->GetPolicyProvider(), no_skipped_prefix);
 }

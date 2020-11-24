@@ -36,6 +36,9 @@ const char kActionLogout[] = "Logout";
 const char kActionShutdown[]  = "Shutdown";
 const char kActionDoNothing[] = "DoNothing";
 
+// All policies in this list should have a pref mapping test case in
+// chrome/test/data/policy/policy_test_cases.json with location
+// "signin_profile".
 const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenAutoSelectCertificateForUrls,
      key::kAutoSelectCertificateForUrls},

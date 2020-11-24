@@ -28,9 +28,12 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path);
 // JSON file at |test_case_path| and updates policies using the given
 // |provider|.  Does not verify any prefs which start with
 // |skipped_pref_prefix|, if non-empty.
+// |local_state|, |user_prefs| or |signin_profile_prefs| can be nullptr, in
+// which case the mappings into the respective location are skipped.
 void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
                                 PrefService* local_state,
                                 PrefService* user_prefs,
+                                PrefService* signin_profile_prefs,
                                 MockConfigurationPolicyProvider* provider,
                                 const std::string& skipped_pref_prefix);
 

@@ -37,6 +37,7 @@ const char kTemplateSampleTest[] = "-- Template --";
 
 enum class PrefLocation {
   kUserProfile,
+  kSigninProfile,
   kLocalState,
 };
 
@@ -46,6 +47,8 @@ PrefLocation GetPrefLocation(const base::Value& settings) {
     return PrefLocation::kUserProfile;
   if (*location == "local_state")
     return PrefLocation::kLocalState;
+  if (*location == "signin_profile")
+    return PrefLocation::kSigninProfile;
   NOTREACHED() << "Unknown pref location: " << *location;
   return PrefLocation::kUserProfile;
 }
@@ -420,6 +423,7 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
 void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
                                 PrefService* local_state,
                                 PrefService* user_prefs,
+                                PrefService* signin_profile_prefs,
                                 MockConfigurationPolicyProvider* provider,
                                 const std::string& skipped_pref_prefix) {
   Schema chrome_schema = Schema::Wrap(GetChromeSchemaData());
@@ -473,9 +477,26 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           if (!pref_case->check_for_mandatory())
             continue;
 
-          PrefService* prefs =
-              pref_case->location() == PrefLocation::kLocalState ? local_state
-                                                                 : user_prefs;
+          PrefService* prefs = nullptr;
+          switch (pref_case->location()) {
+            case PrefLocation::kUserProfile:
+              prefs = user_prefs;
+              break;
+            case PrefLocation::kSigninProfile:
+              prefs = signin_profile_prefs;
+              break;
+            case PrefLocation::kLocalState:
+              prefs = local_state;
+              break;
+            default:
+              NOTREACHED() << "Unhandled pref location: "
+                           << static_cast<int>(pref_case->location());
+          }
+
+          // Skip preference mapping if required PrefService was not provided.
+          if (!prefs)
+            continue;
+
           // The preference must have been registered.
           const PrefService::Preference* pref =
               prefs->FindPreference(pref_case->pref().c_str());

@@ -27,7 +27,7 @@
             "${pref}": {
               "value": "The value that |pref| should take on.",
               "expect_default": "Whether or not the pref value should be the default one.",
-              "location": "The location where the pref is registered, possible values are ['user_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
+              "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
               "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified.",
               "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified."
             }
@@ -5898,10 +5898,23 @@
       {
         "policies": {
           "DeviceLoginScreenExtensions": [
-            "abcdefghijklmnopabcdefghijklmnop"
+            "abcdefghijklmnopabcdefghijklmnop",
+            "aaabbbcccdddeeefffggghhhiiijjjkk;https://url.com/update_manifest.xml"
           ]
         },
-        "prefs": { "cros.device.login_screen_extensions": {} }
+        "prefs": {
+          "extensions.install.login_screen_extensions": {
+            "value": {
+              "abcdefghijklmnopabcdefghijklmnop": {
+                "external_update_url": "https://clients2.google.com/service/update2/crx"
+              },
+              "aaabbbcccdddeeefffggghhhiiijjjkk": {
+                "external_update_url": "https://url.com/update_manifest.xml"
+              }
+            },
+            "location": "signin_profile"
+          }
+        }
       }
     ]
   },
@@ -7252,8 +7265,15 @@
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "DeviceLoginScreenPrivacyScreenEnabled": true },
-        "note": "TODO(crbug.com/1151251) bring back with mapping to sign-in profile pref"
+        "policies": {
+          "PrivacyScreenEnabled": true
+        },
+        "prefs": {
+          "settings.display.privacy_screen_enabled": {
+            "value": true,
+            "location": "signin_profile"
+          }
+        }
       }
     ]
   },
