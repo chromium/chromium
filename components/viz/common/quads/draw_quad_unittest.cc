@@ -203,7 +203,7 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   gfx::RectF tex_coord_rect(1, 1, 255, 254);
   bool force_anti_aliasing_off = false;
   float backdrop_filter_quality = 1.0f;
-  bool intersects_damage_under = true;
+  bool intersects_damage_under = false;
 
   CompositorRenderPassId copied_render_pass_id{235};
   CREATE_SHARED_STATE();

@@ -921,7 +921,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   gfx::PointF filters_origin(8765.4f, 4567.8f);
   gfx::RectF tex_coord_rect(1.f, 1.f, 1234.f, 5678.f);
   const float backdrop_filter_quality = 1.0f;
-  const bool intersects_damage_under = true;
+  const bool intersects_damage_under = false;
 
   CompositorRenderPassDrawQuad* render_pass_quad =
       render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();

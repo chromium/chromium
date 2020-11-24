@@ -1440,10 +1440,10 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // itself.
       bool intersects_damage_from_surface =
           rect_in_target_space.Intersects(surface_root_rp_damage) &&
-          !render_pass_quad->intersects_damage_under;
+          render_pass_quad->intersects_damage_under;
       if (intersects_current_damage || intersects_damage_from_parent ||
           intersects_damage_from_surface) {
-        render_pass_quad->intersects_damage_under = false;
+        render_pass_quad->intersects_damage_under = true;
 
         if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
           // The damage from under the quad intersects quad render pass output

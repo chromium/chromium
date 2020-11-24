@@ -35,7 +35,7 @@ void AggregatedRenderPassDrawQuad::SetNew(
   DCHECK(render_pass_id);
 
   bool needs_blending = true;
-  bool intersects_damage_under = false;
+  bool intersects_damage_under = true;
   SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass_id,
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
          filters_origin, tex_coord_rect, force_anti_aliasing_off,

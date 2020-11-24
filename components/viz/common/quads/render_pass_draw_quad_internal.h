@@ -43,7 +43,7 @@ class VIZ_COMMON_EXPORT RenderPassDrawQuadInternal : public DrawQuad {
 
   // Indicates if this quad intersects any damage from quads under it rendering
   // to the same target.
-  mutable bool intersects_damage_under;
+  mutable bool intersects_damage_under = true;
 
   ResourceId mask_resource_id() const {
     return resources.ids[kMaskResourceIdIndex];
