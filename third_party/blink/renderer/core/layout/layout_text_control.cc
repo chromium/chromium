@@ -109,7 +109,7 @@ void LayoutTextControl::HitInnerEditorElement(
       hit_test_location.Point() - accumulated_offset -
       inner_editor.GetLayoutObject()->LocalToAncestorPoint(PhysicalOffset(),
                                                            &box);
-  result.SetNodeAndPosition(&inner_editor, local_point);
+  result.OverrideNodeAndPosition(&inner_editor, local_point);
 }
 
 static const char* const kFontFamiliesWithInvalidCharWidth[] = {

@@ -151,6 +151,19 @@ void HitTestResult::SetNodeAndPosition(
   SetNodeAndPosition(node, position);
 }
 
+void HitTestResult::OverrideNodeAndPosition(Node* node,
+                                            PhysicalOffset position) {
+  // We are replacing the inner node. Reset any box fragment previously found.
+  box_fragment_.reset();
+
+  // The new inner node needs to be monolithic.
+  DCHECK(!node->GetLayoutBox() ||
+         node->GetLayoutBox()->PhysicalFragmentCount() <= 1);
+
+  local_point_ = position;
+  SetInnerNode(node);
+}
+
 void HitTestResult::SetBoxFragment(
     scoped_refptr<const NGPhysicalBoxFragment> box_fragment) {
   DCHECK(!box_fragment || !box_fragment->IsInlineBox());
@@ -215,11 +228,13 @@ void HitTestResult::SetToShadowHostIfInRestrictedShadowRoot() {
           IsA<SVGUseElement>(containing_shadow_root->host()))) {
     shadow_host = &containing_shadow_root->host();
     containing_shadow_root = shadow_host->ContainingShadowRoot();
-    SetInnerNode(node->OwnerShadowHost());
+    // TODO(layout-dev): Not updating local_point_ here seems like a mistake?
+    OverrideNodeAndPosition(node->OwnerShadowHost(), local_point_);
   }
 
+  // TODO(layout-dev): Not updating local_point_ here seems like a mistake?
   if (shadow_host)
-    SetInnerNode(shadow_host);
+    OverrideNodeAndPosition(shadow_host, local_point_);
 }
 
 CompositorElementId HitTestResult::GetScrollableContainer() const {
