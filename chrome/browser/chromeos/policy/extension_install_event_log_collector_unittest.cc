@@ -27,6 +27,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/common/extension_builder.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -524,7 +525,9 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
   // One extension failed.
   tracker->ReportSandboxedUnpackerFailureReason(
       kExtensionId1,
-      extensions::SandboxedUnpackerFailureReason::CRX_HEADER_INVALID);
+      extensions::CrxInstallError(
+          extensions::SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
+          base::string16()));
   ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
                                            0 /*expected_add_all_count*/));
   EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,

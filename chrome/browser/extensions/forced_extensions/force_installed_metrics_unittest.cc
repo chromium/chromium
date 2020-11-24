@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension.h"
@@ -520,9 +521,13 @@ TEST_F(ForceInstalledMetricsTest,
        ExtensionsCrxInstallErrorSandboxUnpackFailure) {
   SetupForceList(true /*is_from_store */);
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
-      kExtensionId1, SandboxedUnpackerFailureReason::CRX_FILE_NOT_READABLE);
+      kExtensionId1,
+      CrxInstallError(SandboxedUnpackerFailureReason::CRX_FILE_NOT_READABLE,
+                      base::string16()));
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
-      kExtensionId2, SandboxedUnpackerFailureReason::UNZIP_FAILED);
+      kExtensionId2,
+      CrxInstallError(SandboxedUnpackerFailureReason::UNZIP_FAILED,
+                      base::string16()));
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
@@ -542,7 +547,9 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalidFromCache) {
   install_stage_tracker()->ReportDownloadingCacheStatus(
       kExtensionId1, ExtensionDownloaderDelegate::CacheStatus::CACHE_HIT);
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
-      kExtensionId1, SandboxedUnpackerFailureReason::CRX_HEADER_INVALID);
+      kExtensionId1,
+      CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
+                      base::string16()));
   auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
   registry()->AddEnabled(ext2.get());
   force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
@@ -565,7 +572,9 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalidNotFromCache) {
   install_stage_tracker()->ReportDownloadingCacheStatus(
       kExtensionId1, ExtensionDownloaderDelegate::CacheStatus::CACHE_MISS);
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
-      kExtensionId1, SandboxedUnpackerFailureReason::CRX_HEADER_INVALID);
+      kExtensionId1,
+      CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
+                      base::string16()));
   auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
   registry()->AddEnabled(ext2.get());
   force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
@@ -589,7 +598,9 @@ TEST_F(ForceInstalledMetricsTest,
   install_stage_tracker()->ReportDownloadingCacheStatus(
       kExtensionId1, ExtensionDownloaderDelegate::CacheStatus::CACHE_MISS);
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
-      kExtensionId1, SandboxedUnpackerFailureReason::CRX_HEADER_INVALID);
+      kExtensionId1,
+      CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
+                      base::string16()));
   auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
   registry()->AddEnabled(ext2.get());
   force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());

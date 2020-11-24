@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "net/base/net_errors.h"
 
 #if defined(OS_CHROMEOS)
@@ -43,6 +44,7 @@ InstallStageTracker::UserInfo::UserInfo(user_manager::UserType user_type,
 // InstallStageTracker::InstallationData implementation.
 
 InstallStageTracker::InstallationData::InstallationData() = default;
+InstallStageTracker::InstallationData::~InstallationData() = default;
 
 InstallStageTracker::InstallationData::InstallationData(
     const InstallationData&) = default;
@@ -303,11 +305,18 @@ void InstallStageTracker::ReportCrxInstallError(
 
 void InstallStageTracker::ReportSandboxedUnpackerFailureReason(
     const ExtensionId& id,
-    SandboxedUnpackerFailureReason unpacker_failure_reason) {
+    const CrxInstallError& crx_install_error) {
+  base::Optional<SandboxedUnpackerFailureReason> unpacker_failure_reason =
+      crx_install_error.sandbox_failure_detail();
+  DCHECK(unpacker_failure_reason);
   InstallationData& data = installation_data_map_[id];
   data.failure_reason =
       FailureReason::CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE;
   data.unpacker_failure_reason = unpacker_failure_reason;
+  if (data.unpacker_failure_reason ==
+      SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED) {
+    data.unpacker_client_failed_error = crx_install_error.message();
+  }
   NotifyObserversOfFailure(
       id, FailureReason::CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE, data);
 }

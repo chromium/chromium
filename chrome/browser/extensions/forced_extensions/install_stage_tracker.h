@@ -11,9 +11,9 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
+#include "base/strings/string16.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/install/crx_install_error.h"
-#include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/install_stage.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
@@ -289,6 +289,7 @@ class InstallStageTracker : public KeyedService {
   // installation stage if known.
   struct InstallationData {
     InstallationData();
+    ~InstallationData();
     InstallationData(const InstallationData&);
 
     base::Optional<Stage> install_stage;
@@ -346,6 +347,9 @@ class InstallStageTracker : public KeyedService {
     base::Optional<base::TimeTicks> finalizing_started_time;
     // Time at which the installation process is complete.
     base::Optional<base::TimeTicks> installation_complete_time;
+    // Detailed error description when extension failed to install with
+    // SandboxedUnpackerFailureReason equal to UNPACKER_CLIENT FAILED.
+    base::Optional<base::string16> unpacker_client_failed_error;
   };
 
   class Observer : public base::CheckedObserver {
@@ -436,7 +440,7 @@ class InstallStageTracker : public KeyedService {
                              CrxInstallErrorDetail crx_install_error);
   void ReportSandboxedUnpackerFailureReason(
       const ExtensionId& id,
-      SandboxedUnpackerFailureReason unpacker_failure_reason);
+      const CrxInstallError& crx_install_error);
 
   // Retrieves known information for installation of extension |id|.
   // Returns empty data if not found.
