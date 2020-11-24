@@ -220,8 +220,15 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
   EXPECT_TRUE(got_correct_details.WaitUntilSatisfied());
 }
 
+// Test is flaky on windows and linux: crbug.com/1150017.
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_RemoveListenerAndModifyGallery \
+  DISABLED_RemoveListenerAndModifyGallery
+#else
+#define MAYBE_RemoveListenerAndModifyGallery RemoveListenerAndModifyGallery
+#endif
 IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
-                       RemoveListenerAndModifyGallery) {
+                       MAYBE_RemoveListenerAndModifyGallery) {
   if (!GalleryWatchesSupported())
     return;
 
