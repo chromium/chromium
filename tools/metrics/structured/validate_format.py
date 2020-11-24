@@ -58,56 +58,18 @@ def checkElementsNotDuplicated(config, element_tag):
   return errors
 
 
-def checkMetricNamesWithinEventNotDuplicated(events):
-  errors = []
-
-  for node in events.getElementsByTagName('event'):
-    name = node.getAttribute('name')
-    metrics = set()
-    for metric_node in node.getElementsByTagName('metric'):
-      metric_name = metric_node.getAttribute('name')
-      if metric_name in metrics:
-        errors.append(
-            "duplicate metric name '%s' for event '%s'" % (metric_name, name))
-      metrics.add(metric_name)
-
-  return errors
-
-
-def checkEventsReferenceValidProjects(events, projects):
-  errors = []
-
-  projects = {
-      project.getAttribute('name')
-      for project in projects.getElementsByTagName('project')
-  }
-
-  for node in events.getElementsByTagName('event'):
-    name = node.getAttribute('name')
-    project = node.getAttribute('project')
-
-    # An event's project can either be empty (not specified), or must be a
-    # project listed in the projects section.
-    if project and project not in projects:
-      errors.append(
-          "event '%s' references nonexistent project '%s'" % (name, project))
-
-  return errors
-
-
 def main():
   with open(STRUCTURED_XML, 'r') as config_file:
     document = minidom.parse(config_file)
     [config] = document.getElementsByTagName('structured-metrics')
-    [events] = config.getElementsByTagName('events')
-    [projects] = config.getElementsByTagName('projects')
-
     errors = []
-    errors.extend(checkElementOwners(projects, 'project'))
-    errors.extend(checkElementsNotDuplicated(events, 'event'))
-    errors.extend(checkElementsNotDuplicated(projects, 'project'))
-    errors.extend(checkMetricNamesWithinEventNotDuplicated(events))
-    errors.extend(checkEventsReferenceValidProjects(events, projects))
+
+    errors.extend(checkElementOwners(config, 'project'))
+    errors.extend(checkElementsNotDuplicated(config, 'project'))
+    for project in document.getElementsByTagName('project'):
+      errors.extend(checkElementsNotDuplicated(project, 'event'))
+      for event in project.getElementsByTagName('event'):
+        errors.extend(checkElementsNotDuplicated(event, 'metric'))
 
     if errors:
       return 'ERRORS:' + ''.join('\n  ' + e for e in errors)

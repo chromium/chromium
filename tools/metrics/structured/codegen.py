@@ -8,14 +8,18 @@ import hashlib
 import os
 import re
 import struct
-from model import _EVENT_TYPE, _EVENTS_TYPE
-from model import _PROJECT_TYPE, _PROJECTS_TYPE
+from model import _EVENT_TYPE
+from model import _PROJECT_TYPE
 from model import _METRIC_TYPE
 
 
 def sanitize_name(name):
-  s = re.sub('[^0-9a-zA-Z_]', '_', name)
-  return s
+  return re.sub('[^0-9a-zA-Z_]', '_', name)
+
+
+def camel_to_snake(name):
+  pat = '((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))'
+  return re.sub(pat, r'_\1', name).lower()
 
 
 def HashName(name):
@@ -30,26 +34,30 @@ class FileInfo(object):
     self.guard_path = sanitize_name(os.path.join(relpath, basename)).upper()
 
 
-class EventInfo(object):
-  def __init__(self, event_obj, project_obj):
-    self.raw_name = event_obj['name']
-    self.name = sanitize_name(event_obj['name'])
-    self.name_hash = HashName(event_obj['name'])
-
-    project_name = sanitize_name(project_obj['name'])
-    self.project_name_hash = HashName(project_name)
+class ProjectInfo(object):
+  def __init__(self, project_obj):
+    self.name = sanitize_name(project_obj['name'])
+    self.namespace = camel_to_snake(self.name)
+    self.name_hash = HashName(self.name)
 
     id_type = project_obj['id']['text']
     if id_type == 'uma':
-      self.project_id_type = 'kUmaId'
+      self.id_type = 'kUmaId'
     elif id_type == 'per-project':
-      self.project_id_type = 'kProjectId'
+      self.id_type = 'kProjectId'
     elif id_type == 'none':
-      self.project_id_type = 'kUnidentified'
+      self.id_type = 'kUnidentified'
     else:
       raise Exception(
-          "Structured metrics event '{}' has invalid id field '{}'".format(
+          "Structured metrics project '{}' has invalid id field '{}'".format(
               self.name, id_type))
+
+
+class EventInfo(object):
+  def __init__(self, event_obj):
+    self.raw_name = event_obj['name']
+    self.name = sanitize_name(event_obj['name'])
+    self.name_hash = HashName(event_obj['name'])
 
 
 class MetricInfo(object):
@@ -66,12 +74,15 @@ class MetricInfo(object):
     else:
       raise Exception("Unexpected metric kind: " + json_obj['kind'])
 
+
 class Template(object):
   """Template for producing code from structured.xml."""
 
-  def __init__(self, basename, file_template, event_template, metric_template):
+  def __init__(self, basename, file_template, project_template, event_template,
+               metric_template):
     self.basename = basename
     self.file_template = file_template
+    self.project_template = project_template
     self.event_template = event_template
     self.metric_template = metric_template
 
@@ -83,47 +94,48 @@ class Template(object):
         event=event_info,
         metric=MetricInfo(metric))
 
-  def _StampEventCode(self, file_info, event, project):
+  def _StampEventCode(self, file_info, project_info, event):
     """Stamp an event class by creating a skeleton of the class based on the
     event name, and then stamping code for each metric within it."""
-    event_info = EventInfo(event, project)
+    event_info = EventInfo(event)
     metric_code = ''.join(
         self._StampMetricCode(file_info, event_info, metric)
         for metric in event[_METRIC_TYPE.tag])
-    return self.event_template.format(
-        file=file_info,
-        event=event_info,
-        metric_code=metric_code)
+    return self.event_template.format(file=file_info,
+                                      project=project_info,
+                                      event=event_info,
+                                      metric_code=metric_code)
+
+  def _StampProjectCode(self, file_info, project):
+    """Stamp a project by stamping classes for all constituent events."""
+    project_info = ProjectInfo(project)
+    event_code = ''.join(
+        self._StampEventCode(file_info, project_info, event)
+        for event in project[_EVENT_TYPE.tag])
+    return self.project_template.format(file=file_info,
+                                        project=project_info,
+                                        event_code=event_code)
 
   def _StampFileCode(self, relpath, data):
-    """Stamp a file by creating a class for each event, and a list of all event
-    name hashes."""
+    """Stamp a file by creating a class for each event within each project, and
+    a list of all project name hashes."""
     file_info = FileInfo(relpath, self.basename)
-    event_code = []
 
-    project_name_hashes = set()
-    defined_projects = {
-        project['name']: project
-        for project in data[_PROJECTS_TYPE.tag][_PROJECT_TYPE.tag]
-    }
-    for event in data[_EVENTS_TYPE.tag][_EVENT_TYPE.tag]:
-      defined_project = defined_projects.get(event.get('project'))
-      event_code.append(self._StampEventCode(file_info, event, defined_project))
-      project_name_hashes.add(
-          defined_project['name'] if defined_project else event['name'])
+    project_code = [
+        self._StampProjectCode(file_info, project)
+        for project in data[_PROJECT_TYPE.tag]
+    ]
+    project_code = ''.join(project_code)
 
-    event_code = ''.join(event_code)
-
+    project_names = {project['name'] for project in data[_PROJECT_TYPE.tag]}
     project_name_hashes = [
-        'UINT64_C(%s)' % HashName(name)
-        for name in sorted(list(project_name_hashes))
+        'UINT64_C(%s)' % HashName(name) for name in sorted(list(project_names))
     ]
     project_name_hashes = '{' + ', '.join(project_name_hashes) + '}'
 
-    return self.file_template.format(
-        file=file_info,
-        event_code=event_code,
-        project_name_hashes=project_name_hashes)
+    return self.file_template.format(file=file_info,
+                                     project_code=project_code,
+                                     project_name_hashes=project_name_hashes)
 
   def WriteFile(self, outdir, relpath, data):
     """Generates code and writes it to a file.

@@ -26,8 +26,9 @@ namespace metrics {{
 namespace structured {{
 namespace events {{
 
-constexpr uint64_t kProjectNameHashes[] = {project_name_hashes};\
-{event_code}
+constexpr uint64_t kProjectNameHashes[] = {project_name_hashes};
+
+{project_code}
 
 }}  // namespace events
 }}  // namespace structured
@@ -36,31 +37,38 @@ constexpr uint64_t kProjectNameHashes[] = {project_name_hashes};\
 #endif  // {file.guard_path}\
 """
 
-HEADER_EVENT_TEMPLATE = """
+# TODO(crbug.com/1016655): Add in a namespace based on the project here.
+HEADER_PROJECT_TEMPLATE = """\
+{event_code}
 
+"""
+
+HEADER_EVENT_TEMPLATE = """\
 class {event.name} final : public ::metrics::structured::EventBase {{
  public:
   {event.name}();
   ~{event.name}() override;
 
   static constexpr uint64_t kEventNameHash = UINT64_C({event.name_hash});
-  static constexpr uint64_t kProjectNameHash = UINT64_C({event.project_name_hash});
-  static constexpr IdentifierType kIdType = IdentifierType::{event.project_id_type};\
-{metric_code}
-}};\
+  static constexpr uint64_t kProjectNameHash = UINT64_C({project.name_hash});
+  static constexpr IdentifierType kIdType = IdentifierType::{project.id_type};
+
+{metric_code}\
+}};
+
 """
 
-HEADER_METRIC_TEMPLATE = """
-
+HEADER_METRIC_TEMPLATE = """\
   static constexpr uint64_t k{metric.name}NameHash = UINT64_C({metric.hash});
-  {event.name}& Set{metric.name}(const {metric.type} value);\
+  {event.name}& Set{metric.name}(const {metric.type} value);
+
 """
 
-HEADER = codegen.Template(
-  basename="structured_events.h",
-  file_template=HEADER_FILE_TEMPLATE,
-  event_template=HEADER_EVENT_TEMPLATE,
-  metric_template=HEADER_METRIC_TEMPLATE)
+HEADER = codegen.Template(basename="structured_events.h",
+                          file_template=HEADER_FILE_TEMPLATE,
+                          project_template=HEADER_PROJECT_TEMPLATE,
+                          event_template=HEADER_EVENT_TEMPLATE,
+                          metric_template=HEADER_METRIC_TEMPLATE)
 
 ######
 # IMPL
@@ -74,35 +82,40 @@ IMPL_FILE_TEMPLATE = """\
 
 namespace metrics {{
 namespace structured {{
-namespace events {{\
-{event_code}
-
+namespace events {{
+{project_code}
 }}  // namespace events
 }}  // namespace structured
 }}  // namespace metrics\
 """
 
-IMPL_EVENT_TEMPLATE = """
+# TODO(crbug.com/1016655): Add in a namespace based on the project here.
+IMPL_PROJECT_TEMPLATE = """\
+{event_code}
 
+"""
+
+IMPL_EVENT_TEMPLATE = """\
 {event.name}::{event.name}() :
   ::metrics::structured::EventBase(kEventNameHash, kProjectNameHash) {{}}
-{event.name}::~{event.name}() = default;\
+{event.name}::~{event.name}() = default;
 {metric_code}\
 """
 
-IMPL_METRIC_TEMPLATE = """
-
+IMPL_METRIC_TEMPLATE = """\
 {event.name}& {event.name}::Set{metric.name}(const {metric.type} value) {{
   {metric.setter}(k{metric.name}NameHash, value);
   return *this;
-}}\
+}}
+
 """
 
-IMPL = codegen.Template(
-  basename="structured_events.cc",
-  file_template=IMPL_FILE_TEMPLATE,
-  event_template=IMPL_EVENT_TEMPLATE,
-  metric_template=IMPL_METRIC_TEMPLATE)
+IMPL = codegen.Template(basename="structured_events.cc",
+                        file_template=IMPL_FILE_TEMPLATE,
+                        project_template=IMPL_PROJECT_TEMPLATE,
+                        event_template=IMPL_EVENT_TEMPLATE,
+                        metric_template=IMPL_METRIC_TEMPLATE)
+
 
 def WriteFiles(outdir, relpath, data):
   HEADER.WriteFile(outdir, relpath, data)

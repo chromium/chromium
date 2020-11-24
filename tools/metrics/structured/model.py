@@ -39,17 +39,14 @@ _METRIC_TYPE =  models.ObjectNodeType(
         models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
     ])
 
-_EVENT_TYPE = models.ObjectNodeType(
-    'event',
-    attributes=[
-        ('name', unicode, r'^[A-Z][A-Za-z0-9.]*$'),
-        ('project', unicode, r'^([A-Z][A-Za-z0-9.]*)?$'),
-    ],
+_EVENT_TYPE = models.ObjectNodeType('event',
+    attributes=[('name', unicode, r'^[A-Z][A-Za-z0-9.]*$'),],
     alphabetization=[
         (_OBSOLETE_TYPE.tag, lambda _: 1),
         (_OWNER_TYPE.tag, lambda _: 2),
         (_SUMMARY_TYPE.tag, lambda _: 3),
-        (_METRIC_TYPE.tag, _LOWERCASE_FN('name')),
+        (_METRIC_TYPE.tag,
+         _LOWERCASE_FN('name')),
     ],
     extra_newlines=(1, 1, 1),
     children=[
@@ -59,62 +56,32 @@ _EVENT_TYPE = models.ObjectNodeType(
         models.ChildType(_METRIC_TYPE.tag, _METRIC_TYPE, multiple=True),
     ])
 
-_EVENTS_TYPE = models.ObjectNodeType(
-    'events',
-    alphabetization=[(_EVENT_TYPE.tag, _LOWERCASE_FN('name'))],
-    extra_newlines=(2, 1, 1),
-    indent=False,
+_PROJECT_TYPE = models.ObjectNodeType('project',
+    attributes=[
+        ('name', unicode, r'^[A-Z][A-Za-z0-9.]*$'),
+    ],
+    alphabetization=[
+        (_OBSOLETE_TYPE.tag, lambda _: 1),
+        (_OWNER_TYPE.tag, lambda _: 2),
+        (_ID_TYPE.tag, lambda _: 3),
+        (_SUMMARY_TYPE.tag, lambda _: 4),
+    ],
+    extra_newlines=(1, 1, 1),
     children=[
+        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
+        models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
+        models.ChildType(_ID_TYPE.tag, _ID_TYPE, multiple=False),
+        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
         models.ChildType(_EVENT_TYPE.tag, _EVENT_TYPE, multiple=True),
     ])
 
-_PROJECT_TYPE = models.ObjectNodeType('project',
-                                      attributes=[
-                                          ('name', unicode,
-                                           r'^[A-Z][A-Za-z0-9.]*$'),
-                                      ],
-                                      alphabetization=[
-                                          (_OBSOLETE_TYPE.tag, lambda _: 1),
-                                          (_OWNER_TYPE.tag, lambda _: 2),
-                                          (_ID_TYPE.tag, lambda _: 3),
-                                          (_SUMMARY_TYPE.tag, lambda _: 4),
-                                      ],
-                                      extra_newlines=(1, 1, 1),
-                                      children=[
-                                          models.ChildType(_OBSOLETE_TYPE.tag,
-                                                           _OBSOLETE_TYPE,
-                                                           multiple=False),
-                                          models.ChildType(_OWNER_TYPE.tag,
-                                                           _OWNER_TYPE,
-                                                           multiple=True),
-                                          models.ChildType(_ID_TYPE.tag,
-                                                           _ID_TYPE,
-                                                           multiple=False),
-                                          models.ChildType(_SUMMARY_TYPE.tag,
-                                                           _SUMMARY_TYPE,
-                                                           multiple=False),
-                                      ])
-
-_PROJECTS_TYPE = models.ObjectNodeType(
-    'projects',
+CONFIGURATION_TYPE = models.ObjectNodeType(
+    'structured-metrics',
     alphabetization=[(_PROJECT_TYPE.tag, _LOWERCASE_FN('name'))],
     extra_newlines=(2, 1, 1),
     indent=False,
     children=[
         models.ChildType(_PROJECT_TYPE.tag, _PROJECT_TYPE, multiple=True),
-    ])
-
-CONFIGURATION_TYPE = models.ObjectNodeType(
-    'structured-metrics',
-    alphabetization=[
-        (_EVENTS_TYPE.tag, lambda _: 1),
-        (_PROJECTS_TYPE.tag, lambda _: 2),
-    ],
-    extra_newlines=(2, 1, 1),
-    indent=False,
-    children=[
-        models.ChildType(_EVENTS_TYPE.tag, _EVENTS_TYPE, multiple=False),
-        models.ChildType(_PROJECTS_TYPE.tag, _PROJECTS_TYPE, multiple=False),
     ])
 
 XML_TYPE = models.DocumentType(CONFIGURATION_TYPE)
