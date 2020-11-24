@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAr
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments.PARAMETER_STARTED_WITH_TRIGGER_SCRIPT;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments.PARAMETER_TRIGGER_FIRST_TIME_USER;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments.PARAMETER_TRIGGER_RETURNING_TIME_USER;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments.PARAMETER_TRIGGER_SCRIPTS_BASE64;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments.PARAMETER_TRIGGER_SCRIPT_USED;
 
 import android.content.Context;
@@ -49,9 +50,11 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             boolean isChromeCustomTab, @NonNull String initialUrl, Map<String, String> parameters,
             String experimentIds, @Nullable String callerAccount, @Nullable String userName) {
         if (shouldStartTriggerScript(parameters)) {
-            if (!UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                        AutofillAssistantUiController.getProfile())) {
-                // Opt-out users who have disabled anonymous data collection.
+            if (TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_SCRIPTS_BASE64))
+                    && !UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
+                            AutofillAssistantUiController.getProfile())) {
+                // Opt-out users who have disabled anonymous data collection, unless the trigger
+                // scripts are directly specified in base64 format.
                 return;
             }
 
@@ -62,7 +65,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                                     : LiteScriptStarted.LITE_SCRIPT_RETURNING_USER);
 
             // Start trigger script and transition to regular flow on success.
-            if (TextUtils.equals(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT), "true")) {
+            if (TextUtils.equals(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT), "true")
+                    || !TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_SCRIPTS_BASE64))) {
                 AssistantTriggerScriptBridge triggerScriptBridge =
                         new AssistantTriggerScriptBridge();
                 triggerScriptBridge.start(bottomSheetController, context,
@@ -112,7 +116,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
     /** Whether {@code parameters} indicate that a trigger script should be started. */
     private boolean shouldStartTriggerScript(Map<String, String> parameters) {
         return !TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_FIRST_TIME_USER))
-                || TextUtils.equals(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT), "true");
+                || TextUtils.equals(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT), "true")
+                || !TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_SCRIPTS_BASE64));
     }
     /**
      * Starts a 'lite' autofill assistant script in the background. Does not show the onboarding.

@@ -48,6 +48,7 @@ class TriggerContext {
   base::Optional<std::string> GetOverlayColors() const;
   base::Optional<std::string> GetPasswordChangeUsername() const;
   bool WasStartedByLegacyTriggerScript() const;
+  base::Optional<std::string> GetBase64TriggerScriptsResponseProto() const;
 
   // Returns a comma-separated set of experiment ids.
   virtual std::string experiment_ids() const = 0;
