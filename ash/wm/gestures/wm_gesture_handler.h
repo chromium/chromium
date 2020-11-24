@@ -39,6 +39,11 @@ class ASH_EXPORT WmGestureHandler {
   static constexpr float kVerticalThresholdDp = 300.f;
   static constexpr float kHorizontalThresholdDp = 330.f;
 
+  // The amount in trackpad units the fingers must move in a direction before a
+  // continuous gesture animation is started. This is to minimize accidental
+  // scrolls.
+  static constexpr int kContinuousGestureMoveThresholdDp = 10;
+
   WmGestureHandler();
   WmGestureHandler(const WmGestureHandler&) = delete;
   WmGestureHandler& operator=(const WmGestureHandler&) = delete;
