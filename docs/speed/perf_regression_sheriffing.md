@@ -62,9 +62,10 @@ issues:
 ## Follow up on Performance Regressions
 
 Please spend any spare time driving down bugs from the [regression
-backlog](http://go/triage-backlog). Treat these bugs as you would your own --
-investigate the regressions, find out what the next step should be, and then
-move the bug along. Some possible next steps and questions to answer are:
+backlog](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Performance%3DSheriff+Type%3ABug+modified-before%3Atoday-6&sort=-modified).
+Treat these bugs as you would your own -- investigate the regressions, find out
+what the next step should be, and then move the bug along. Some possible next steps
+and questions to answer are:
 
 * Should the bug be closed?
 * Are there questions that need to be answered?
