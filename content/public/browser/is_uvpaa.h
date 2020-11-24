@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_IS_UVPAA_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 
@@ -30,7 +31,7 @@ CONTENT_EXPORT bool IsUVPlatformAuthenticatorAvailable(
 #elif defined(OS_WIN)
 CONTENT_EXPORT bool IsUVPlatformAuthenticatorAvailable(device::WinWebAuthnApi*);
 
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 CONTENT_EXPORT bool IsUVPlatformAuthenticatorAvailable();
 
 #else

@@ -749,6 +749,7 @@ static_library("browsertest_support") {
     "//base:i18n",
     "//base/test:test_config",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/network_session_configurator/common:common",
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",

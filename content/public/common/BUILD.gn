@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//content/public/common/zygote/features.gni")
@@ -61,7 +62,10 @@ source_set("static_switches") {
   public_configs = [ ":static_switches_defines" ]
 
   # Deps required by the above headers.
-  deps = [ "//media:media_buildflags" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//media:media_buildflags",
+  ]
 }
 
 # This target allows you to use the content_features constants and statically
@@ -75,9 +79,11 @@ source_set("static_features") {
   ]
   public_deps = [ "//base" ]
 
+  deps = [ "//build:chromeos_buildflags" ]
+
   public_configs = [ ":static_switches_defines" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     public_deps += [ "//media/capture/video/chromeos/public" ]
   }
 }
@@ -217,6 +223,7 @@ source_set("common_sources") {
   deps = [
     ":content_descriptor_keys",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
 
     # This looks needless as we have //content/common in public_deps, but it's
     # needed because of allow_circular_includes_from.
@@ -250,7 +257,7 @@ source_set("common_sources") {
     deps += [ "//content/public/android:jni" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     public_deps += [ "//media/capture/video/chromeos/public" ]
   }
 

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -474,7 +475,7 @@ source_set("browser_sources") {
     "//content/browser",
   ]
 
-  if (is_chromeos || is_android || is_chromecast || is_fuchsia) {
+  if (is_chromeos_ash || is_android || is_chromecast || is_fuchsia) {
     defines = [ "ENABLE_PROTECTED_MEDIA_IDENTIFIER_PERMISSION" ]
   }
 
@@ -529,7 +530,7 @@ source_set("browser_sources") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
       "tts_controller_delegate.cc",

@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_factory.h"
 
@@ -88,7 +89,7 @@ AuthenticatorRequestClientDelegate::GetTouchIdAuthenticatorConfig() {
 }
 #endif  // defined(OS_MAC)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 AuthenticatorRequestClientDelegate::ChromeOSGenerateRequestIdCallback
 AuthenticatorRequestClientDelegate::GetGenerateRequestIdCallback(
     RenderFrameHost* render_frame_host) {

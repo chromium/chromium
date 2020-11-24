@@ -81,6 +81,7 @@ android_library("content_java") {
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:jni_java",
+    "//build:chromeos_buildflags",
     "//components/download/public/common:public_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/common:trust_tokens_mojo_bindings_java",

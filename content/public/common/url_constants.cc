@@ -5,6 +5,7 @@
 #include "content/public/common/url_constants.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace content {
 
@@ -16,7 +17,7 @@ const char kChromeUIScheme[] = "chrome";
 const char kChromeUIUntrustedScheme[] = "chrome-untrusted";
 const char kGuestScheme[] = "chrome-guest";
 const char kViewSourceScheme[] = "view-source";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kExternalFileScheme[] = "externalfile";
 #endif
 const char kGoogleChromeScheme[] = "googlechrome";

@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -120,7 +121,7 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.enable_native_gpu_memory_buffers =
       command_line->HasSwitch(switches::kEnableNativeGpuMemoryBuffers);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // The direct VideoDecoder is disallowed on some particular SoC/platforms.
   const bool should_use_direct_video_decoder =
@@ -141,7 +142,7 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 #else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   gpu_preferences.enable_chromeos_direct_video_decoder = false;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
   gpu_preferences.disable_oopr_debug_crash_dump =

@@ -115,7 +115,7 @@
 #include "ui/aura/test/event_generator_delegate_aura.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
@@ -346,14 +346,14 @@ void BrowserTestBase::SetUp() {
   use_software_gl = false;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the test is running on the chromeos envrionment (such as
   // device or vm bots), we use hardware GL.
   if (base::SysInfo::IsRunningOnChromeOS())
     use_software_gl = false;
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If the test is running on the lacros environment, a file descriptor needs
   // to be obtained and used to launch lacros-chrome so that a mojo connection
   // between lacros-chrome and ash-chrome can be established.

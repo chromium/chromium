@@ -10,6 +10,8 @@
 #include "content/common/content_export.h"
 #include "url/url_constants.h"
 
+#include "build/chromeos_buildflags.h"
+
 // Contains constants for known URLs and portions thereof.
 
 namespace content {
@@ -23,7 +25,7 @@ CONTENT_EXPORT extern const char kChromeUIScheme[];  // Used for WebUIs.
 CONTENT_EXPORT extern const char kChromeUIUntrustedScheme[];
 CONTENT_EXPORT extern const char kGuestScheme[];
 CONTENT_EXPORT extern const char kViewSourceScheme[];
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 CONTENT_EXPORT extern const char kExternalFileScheme[];
 #endif
 
