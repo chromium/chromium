@@ -342,6 +342,18 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /**
+     * @return Get the payment apps of the PaymentRequest UI in the form of a {@link PaymentApp}
+     *         list.
+     */
+    public List<PaymentApp> getPaymentAppsInPaymentAppList() {
+        List<PaymentApp> paymentApps = new ArrayList<>();
+        for (EditableOption each : mPaymentMethodsSection.getItems()) {
+            paymentApps.add((PaymentApp) each);
+        }
+        return paymentApps;
+    }
+
+    /**
      * Returns the selected payment app, if any.
      * @return The selected payment app or null if none selected.
      */
@@ -1415,21 +1427,19 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
     /**
      * @param options The payment options specified in the payment request.
+     * @param allApps All available payment apps.
      * @return true when there is exactly one available payment app which can provide all requested
      * information including shipping address and payer's contact information whenever needed.
      */
-    public boolean onlySingleAppCanProvideAllRequiredInformation(PaymentOptions options) {
-        assert mPaymentMethodsSection != null;
-
+    private static boolean onlySingleAppCanProvideAllRequiredInformation(
+            PaymentOptions options, List<PaymentApp> allApps) {
         if (!PaymentOptionsUtils.requestAnyInformation(options)) {
-            return mPaymentMethodsSection.getSize() == 1
-                    && !((PaymentApp) mPaymentMethodsSection.getItem(0)).isAutofillInstrument();
+            return allApps.size() == 1 && !((PaymentApp) allApps.get(0)).isAutofillInstrument();
         }
 
         boolean anAppCanProvideAllInfo = false;
-        int sectionSize = mPaymentMethodsSection.getSize();
-        for (int i = 0; i < sectionSize; i++) {
-            PaymentApp app = (PaymentApp) mPaymentMethodsSection.getItem(i);
+        for (int i = 0; i < allApps.size(); i++) {
+            PaymentApp app = (PaymentApp) allApps.get(i);
             if ((!options.requestShipping || app.handlesShippingAddress())
                     && (!options.requestPayerName || app.handlesPayerName())
                     && (!options.requestPayerPhone || app.handlesPayerPhone())
@@ -1490,14 +1500,13 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      *         based payment method identifiers (e.g., basic-card).
      * @param options The payment options specified in the payment request.
      * @param paymentMethods The payment methods supported by this request.
+     * @param selectedApp The selected payment apps.
+     * @param allApps All available payment apps.
      * @return Whether the browser payment sheet should be skipped directly into the payment app.
      */
-    public boolean shouldSkipShowingPaymentRequestUi(boolean isUserGestureShow,
+    public static boolean shouldSkipShowingPaymentRequestUi(boolean isUserGestureShow,
             boolean skipUiForNonUrlPaymentMethodIdentifiers, PaymentOptions options,
-            Set<String> paymentMethods) {
-        assert mPaymentMethodsSection != null;
-        PaymentApp selectedApp = (PaymentApp) mPaymentMethodsSection.getSelectedItem();
-
+            Set<String> paymentMethods, PaymentApp selectedApp, List<PaymentApp> allApps) {
         boolean urlPaymentMethodIdentifiersSupported =
                 isUrlPaymentMethodIdentifiersSupported(paymentMethods);
 
@@ -1509,8 +1518,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 // This excludes AutofillPaymentInstrument as its UI is rendered inline in
                 // the payment request UI, thus can't be skipped.
                 && (urlPaymentMethodIdentifiersSupported || skipUiForNonUrlPaymentMethodIdentifiers)
-                && mPaymentMethodsSection.getSize() >= 1
-                && onlySingleAppCanProvideAllRequiredInformation(options)
+                && allApps.size() >= 1
+                && onlySingleAppCanProvideAllRequiredInformation(options, allApps)
                 // Skip to payment app only if it can be pre-selected.
                 && selectedApp != null
                 // Skip to payment app only if user gesture is provided when it is required to

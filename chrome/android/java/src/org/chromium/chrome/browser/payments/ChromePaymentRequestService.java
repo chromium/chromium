@@ -237,9 +237,11 @@ public class ChromePaymentRequestService
         if (error != null) return error;
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
-        mShouldSkipShowingPaymentRequestUi = mPaymentUiService.shouldSkipShowingPaymentRequestUi(
+        mShouldSkipShowingPaymentRequestUi = PaymentUiService.shouldSkipShowingPaymentRequestUi(
                 isUserGestureShow, mDelegate.skipUiForBasicCard(), mSpec.getPaymentOptions(),
-                mSpec.getMethodData().keySet());
+                mSpec.getMethodData().keySet(),
+                (PaymentApp) mPaymentUiService.getSelectedPaymentApp(),
+                mPaymentUiService.getPaymentAppsInPaymentAppList());
         if (!mShouldSkipShowingPaymentRequestUi && mSkipToGPayHelper == null) {
             mPaymentUiService.getPaymentRequestUI().show(isShowWaitingForUpdatedDetails);
         }
