@@ -711,14 +711,6 @@ class CONTENT_EXPORT NavigationRequest
     silently_ignore_blocked_by_client_ = true;
   }
 
-  // TODO(crbug.com/1125106):
-  int ItemSequenceNumberForDebugging() const {
-    return frame_entry_item_sequence_number_;
-  }
-  int DocumentSequenceNumberForDebugging() const {
-    return frame_entry_document_sequence_number_;
-  }
-
   // Returns the current url from GetURL() packaged with other state required to
   // properly determine SiteInstances and process allocation.
   UrlInfo GetUrlInfo();

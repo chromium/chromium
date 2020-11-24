@@ -5366,16 +5366,6 @@ void RenderFrameHostImpl::BeginNavigation(
         GetStoragePartition(), validated_params->url);
   }
 
-  if (NavigationTypeUtils::IsSameDocument(validated_params->navigation_type)) {
-    // TODO(crbug.com/1125106): A same document navigation can not be done
-    // with a provisional frame, and yet it is happening inside a provisional
-    // frame somehow. This path appears to only allow cross-document
-    // navigation as the renderer never constructs a SAME document request to
-    // send to BeginNavigation(). This DumpWithoutCrashing() is to verify that
-    // fact.
-    base::debug::DumpWithoutCrashing();
-  }
-
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(
         std::move(validated_params), std::move(begin_params),
@@ -6356,91 +6346,10 @@ void RenderFrameHostImpl::CommitNavigation(
          subresource_loader_factories);
 
   if (is_same_document) {
-    if (frame_tree_node()->current_frame_host() != this) {
-      // TODO(crbug.com/1125106): A same document navigation can not be done
-      // with a provisional frame, and yet it is happening inside a provisional
-      // frame somehow.
-      using base::debug::AllocateCrashKeyString;
-      using base::debug::CrashKeySize;
-      using base::debug::CrashKeyString;
-      using base::debug::ScopedCrashKeyString;
-
-      static CrashKeyString* const to_url_key = AllocateCrashKeyString(
-          "SpecSameDocNav-to-url", CrashKeySize::Size256);
-      static CrashKeyString* const is_speculative_key = AllocateCrashKeyString(
-          "SpecSameDocNav-is-speculative", CrashKeySize::Size32);
-      static CrashKeyString* const dest_rfh_last_committed_url_key =
-          AllocateCrashKeyString("SpecSameDocNav-dest-rfh-last-committed-url",
-                                 CrashKeySize::Size256);
-      static CrashKeyString* const browser_initiated_key =
-          AllocateCrashKeyString("SpecSameDocNav-is-browser-initiated",
-                                 CrashKeySize::Size32);
-      static CrashKeyString* const to_item_sequence_number_key =
-          AllocateCrashKeyString("SpecSameDocNav-to-item-sequence-number",
-                                 CrashKeySize::Size32);
-      static CrashKeyString* const to_document_sequence_number_key =
-          AllocateCrashKeyString("SpecSameDocNav-to-document-sequence-number",
-                                 CrashKeySize::Size32);
-      static CrashKeyString* const from_url_key = AllocateCrashKeyString(
-          "SpecSameDocNav-from-url", CrashKeySize::Size256);
-      static CrashKeyString* from_item_sequence_number_key =
-          AllocateCrashKeyString("SpecSameDocNav-from-item-sequence-number",
-                                 CrashKeySize::Size32);
-      static CrashKeyString* from_document_sequence_number_key =
-          AllocateCrashKeyString("SpecSameDocNav-from-document-sequence-number",
-                                 CrashKeySize::Size32);
-
-      ScopedCrashKeyString to_url_scoper(
-          to_url_key, common_params->url.possibly_invalid_spec());
-
-      const bool is_speculative =
-          frame_tree_node()->render_manager()->speculative_frame_host() == this;
-      ScopedCrashKeyString is_speculative_scoper(
-          is_speculative_key, is_speculative ? "true" : "false");
-
-      ScopedCrashKeyString dest_rfh_last_committed_url_scoper(
-          dest_rfh_last_committed_url_key,
-          GetLastCommittedURL().possibly_invalid_spec());
-
-      const bool browser_initiated = navigation_request->browser_initiated();
-      ScopedCrashKeyString browser_initiated_scoper(
-          browser_initiated_key, browser_initiated ? "true" : "false");
-
-      const std::string& to_item_sequence_number_string = base::NumberToString(
-          navigation_request->ItemSequenceNumberForDebugging());
-      ScopedCrashKeyString to_item_sequence_number_scoper(
-          to_item_sequence_number_key, to_item_sequence_number_string);
-
-      const std::string& to_document_sequence_number_string =
-          base::NumberToString(
-              navigation_request->DocumentSequenceNumberForDebugging());
-      ScopedCrashKeyString to_document_sequence_number_scoper(
-          to_document_sequence_number_key, to_document_sequence_number_string);
-
-      ScopedCrashKeyString from_url_reset(
-          from_url_key, last_committed_url_.possibly_invalid_spec());
-
-      int64_t from_item_sequence_number = -1;
-      int64_t from_document_sequence_number = -1;
-      delegate_->GetFrameSequenceNumbersForDebugging(
-          this, from_item_sequence_number, from_document_sequence_number);
-
-      const std::string& from_item_sequence_number_string =
-          base::NumberToString(from_item_sequence_number);
-      ScopedCrashKeyString from_item_sequence_number_scoper(
-          from_item_sequence_number_key, from_item_sequence_number_string);
-
-      const std::string& from_document_sequence_number_string =
-          base::NumberToString(from_document_sequence_number);
-      ScopedCrashKeyString from_document_sequence_number_scoper(
-          from_document_sequence_number_key,
-          from_document_sequence_number_string);
-
-      base::debug::DumpWithoutCrashing();
-    }
+    DCHECK_EQ(frame_tree_node()->current_frame_host(), this);
+    DCHECK(same_document_navigation_request_);
     bool should_replace_current_entry =
         common_params->should_replace_current_entry;
-    DCHECK(same_document_navigation_request_);
     GetNavigationControl()->CommitSameDocumentNavigation(
         std::move(common_params), std::move(commit_params),
         base::BindOnce(&RenderFrameHostImpl::OnSameDocumentCommitProcessed,

@@ -636,11 +636,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl::LifecycleState old_state,
       RenderFrameHostImpl::LifecycleState new_state) {}
 
-  virtual void GetFrameSequenceNumbersForDebugging(
-      RenderFrameHostImpl* render_frame_host,
-      int64_t& item_sequence_number,
-      int64_t& document_sequence_number) {}
-
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

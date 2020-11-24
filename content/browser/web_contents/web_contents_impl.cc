@@ -8964,21 +8964,4 @@ void WebContentsImpl::RenderFrameHostStateChanged(
   }
 }
 
-void WebContentsImpl::GetFrameSequenceNumbersForDebugging(
-    RenderFrameHostImpl* render_frame_host,
-    int64_t& item_sequence_number,
-    int64_t& document_sequence_number) {
-  NavigationEntryImpl* entry =
-      controller_.GetEntryWithUniqueID(render_frame_host->nav_entry_id());
-  if (!entry)
-    return;
-
-  FrameNavigationEntry* frame_entry =
-      entry->GetFrameEntry(render_frame_host->frame_tree_node());
-  if (frame_entry) {
-    item_sequence_number = frame_entry->item_sequence_number();
-    document_sequence_number = frame_entry->document_sequence_number();
-  }
-}
-
 }  // namespace content
