@@ -23,11 +23,12 @@ const NSSearchPathDirectory kSearchPath = NSLibraryDirectory;
 // so changing this filename will require some care.
 // See https://crbug.com/1097204 for details.
 const char kInitialPreferencesDirectory[] = "Google";
-const char kInitialPreferencesFileName[] = "Google Chrome Master Preferences";
+const char kLegacyInitialPreferencesFileName[] =
+    "Google Chrome Master Preferences";
 #else
 const NSSearchPathDirectory kSearchPath = NSApplicationSupportDirectory;
 const char kInitialPreferencesDirectory[] = "Chromium";
-const char kInitialPreferencesFileName[] = "Chromium Master Preferences";
+const char kLegacyInitialPreferencesFileName[] = "Chromium Master Preferences";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
@@ -50,7 +51,7 @@ base::FilePath InitialPrefsPath() {
   base::FilePath user_application_support_path;
   if (chrome::GetDefaultUserDataDirectory(&user_application_support_path)) {
     user_application_support_path =
-        user_application_support_path.Append(kInitialPreferencesFileName);
+        user_application_support_path.Append(kLegacyInitialPreferencesFileName);
     if (base::PathExists(user_application_support_path))
       return user_application_support_path;
   }
@@ -63,7 +64,7 @@ base::FilePath InitialPrefsPath() {
     return base::FilePath();
 
   return search_path.Append(kInitialPreferencesDirectory)
-      .Append(kInitialPreferencesFileName);
+      .Append(kLegacyInitialPreferencesFileName);
 }
 
 }  // namespace initial_prefs

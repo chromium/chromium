@@ -22,7 +22,7 @@ base::FilePath InitialPrefsPath() {
   base::FilePath initial_prefs;
   if (!base::PathService::Get(base::DIR_EXE, &initial_prefs))
     return base::FilePath();
-  return initial_prefs.AppendASCII(installer::kDefaultInitialPrefs);
+  return initial_prefs.AppendASCII(installer::kLegacyInitialPrefs);
 }
 
 }  // namespace internal

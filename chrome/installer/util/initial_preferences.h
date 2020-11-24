@@ -26,14 +26,14 @@ namespace installer {
 #if !defined(OS_MAC)
 // This is the default name for the initial preferences file used to pre-set
 // values in the user profile at first run.
-const char kDefaultInitialPrefs[] = "master_preferences";
+const char kLegacyInitialPrefs[] = "master_preferences";
 #endif
 
 // The initial preferences is a JSON file with the same entries as the
 // 'Default\Preferences' file. This function parses the distribution
 // section of the preferences file.
 //
-// A prototypical 'master_preferences' file looks like this:
+// A prototypical initial preferences file looks like this:
 //
 // {
 //   "distribution": {
@@ -70,8 +70,6 @@ const char kDefaultInitialPrefs[] = "master_preferences";
 //
 // A reserved "distribution" entry in the file is used to group related
 // installation properties. This entry will be ignored at other times.
-// This function parses the 'distribution' entry and returns a combination
-// of MasterPrefResult.
 
 class InitialPreferences {
  public:
@@ -186,7 +184,7 @@ class InitialPreferences {
   bool InitializeFromString(const std::string& json_data);
 
   // Enforces legacy preferences that should no longer be used, but could be
-  // found in older master_preferences files.
+  // found in older initial preferences files.
   void EnforceLegacyPreferences();
 
   // Removes the specified string pref from the initial preferences and returns
@@ -201,8 +199,6 @@ class InitialPreferences {
  private:
   DISALLOW_COPY_AND_ASSIGN(InitialPreferences);
 };
-
-using InitialPreferences = InitialPreferences;
 
 }  // namespace installer
 
