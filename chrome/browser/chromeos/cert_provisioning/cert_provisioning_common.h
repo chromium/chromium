@@ -75,6 +75,7 @@ using CertProfileId = std::string;
 // with definitions of RequiredClientCertificateForDevice and
 // RequiredClientCertificateForUser policies in policy_templates.json file.
 const char kCertProfileIdKey[] = "cert_profile_id";
+const char kCertProfileNameKey[] = "name";
 const char kCertProfileRenewalPeroidSec[] = "renewal_period_seconds";
 const char kCertProfilePolicyVersionKey[] = "policy_version";
 const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
@@ -82,14 +83,19 @@ const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
 struct CertProfile {
   static base::Optional<CertProfile> MakeFromValue(const base::Value& value);
 
-  CertProfile() = default;
+  CertProfile();
   // For tests.
   CertProfile(CertProfileId profile_id,
+              std::string name,
               std::string policy_version,
               bool is_va_enabled,
               base::TimeDelta renewal_period);
+  CertProfile(const CertProfile& other);
+  ~CertProfile();
 
   CertProfileId profile_id;
+  // Human-readable name (UTF-8).
+  std::string name;
   std::string policy_version;
   bool is_va_enabled = true;
   // Default renewal period 0 means that a certificate will be renewed only
@@ -99,7 +105,7 @@ struct CertProfile {
   // IMPORTANT:
   // Increment this when you add/change any member in CertProfile (and update
   // all functions that fail to compile because of it).
-  static constexpr int kVersion = 4;
+  static constexpr int kVersion = 5;
 
   bool operator==(const CertProfile& other) const;
   bool operator!=(const CertProfile& other) const;

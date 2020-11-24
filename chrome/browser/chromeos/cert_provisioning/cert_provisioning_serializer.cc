@@ -24,6 +24,7 @@ constexpr char kKeyNamePublicKey[] = "public_key";
 constexpr char kKeyNameInvalidationTopic[] = "invalidation_topic";
 
 constexpr char kKeyNameCertProfileId[] = "profile_id";
+constexpr char kKeyNameCertProfileName[] = "name";
 constexpr char kKeyNameCertProfileVersion[] = "policy_version";
 constexpr char kKeyNameCertProfileVaEnabled[] = "va_enabled";
 constexpr char kKeyNameCertProfileRenewalPeriod[] = "renewal_period";
@@ -82,10 +83,11 @@ bool DeserializeRenewalPeriod(const base::Value& parent_value,
 }
 
 base::Value SerializeCertProfile(const CertProfile& profile) {
-  static_assert(CertProfile::kVersion == 4, "This function should be updated");
+  static_assert(CertProfile::kVersion == 5, "This function should be updated");
 
   base::Value result(base::Value::Type::DICTIONARY);
   result.SetStringKey(kKeyNameCertProfileId, profile.profile_id);
+  result.SetStringKey(kKeyNameCertProfileName, profile.name);
   result.SetStringKey(kKeyNameCertProfileVersion, profile.policy_version);
   result.SetBoolKey(kKeyNameCertProfileVaEnabled, profile.is_va_enabled);
 
@@ -100,7 +102,7 @@ base::Value SerializeCertProfile(const CertProfile& profile) {
 bool DeserializeCertProfile(const base::Value& parent_value,
                             const char* value_name,
                             CertProfile* dst) {
-  static_assert(CertProfile::kVersion == 4, "This function should be updated");
+  static_assert(CertProfile::kVersion == 5, "This function should be updated");
 
   const base::Value* serialized_profile =
       parent_value.FindKeyOfType(value_name, base::Value::Type::DICTIONARY);
@@ -113,6 +115,9 @@ bool DeserializeCertProfile(const base::Value& parent_value,
   is_ok = is_ok &&
           DeserializeStringValue(*serialized_profile, kKeyNameCertProfileId,
                                  &(dst->profile_id));
+  is_ok =
+      is_ok && DeserializeStringValue(*serialized_profile,
+                                      kKeyNameCertProfileName, &(dst->name));
   is_ok = is_ok && DeserializeStringValue(*serialized_profile,
                                           kKeyNameCertProfileVersion,
                                           &(dst->policy_version));

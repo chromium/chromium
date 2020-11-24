@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
 
+#include <string>
+
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -90,19 +92,27 @@ bool IsFinalState(CertProvisioningWorkerState state) {
 //===================== CertProfile ============================================
 
 CertProfile::CertProfile(CertProfileId profile_id,
+                         std::string name,
                          std::string policy_version,
                          bool is_va_enabled,
                          base::TimeDelta renewal_period)
     : profile_id(profile_id),
-      policy_version(policy_version),
+      name(std::move(name)),
+      policy_version(std::move(policy_version)),
       is_va_enabled(is_va_enabled),
       renewal_period(renewal_period) {}
 
+CertProfile::CertProfile(const CertProfile& other) = default;
+
+CertProfile::CertProfile() = default;
+CertProfile::~CertProfile() = default;
+
 base::Optional<CertProfile> CertProfile::MakeFromValue(
     const base::Value& value) {
-  static_assert(kVersion == 4, "This function should be updated");
+  static_assert(kVersion == 5, "This function should be updated");
 
   const std::string* id = value.FindStringKey(kCertProfileIdKey);
+  const std::string* name = value.FindStringKey(kCertProfileNameKey);
   const std::string* policy_version =
       value.FindStringKey(kCertProfilePolicyVersionKey);
   base::Optional<bool> is_va_enabled =
@@ -116,6 +126,7 @@ base::Optional<CertProfile> CertProfile::MakeFromValue(
 
   CertProfile result;
   result.profile_id = *id;
+  result.name = name ? *name : std::string();
   result.policy_version = *policy_version;
   result.is_va_enabled = is_va_enabled.value_or(true);
   result.renewal_period =
@@ -125,8 +136,8 @@ base::Optional<CertProfile> CertProfile::MakeFromValue(
 }
 
 bool CertProfile::operator==(const CertProfile& other) const {
-  static_assert(kVersion == 4, "This function should be updated");
-  return ((profile_id == other.profile_id) &&
+  static_assert(kVersion == 5, "This function should be updated");
+  return ((profile_id == other.profile_id) && (name == other.name) &&
           (policy_version == other.policy_version) &&
           (is_va_enabled == other.is_va_enabled) &&
           (renewal_period == other.renewal_period));
@@ -138,8 +149,8 @@ bool CertProfile::operator!=(const CertProfile& other) const {
 
 bool CertProfileComparator::operator()(const CertProfile& a,
                                        const CertProfile& b) const {
-  static_assert(CertProfile::kVersion == 4, "This function should be updated");
-  return ((a.profile_id < b.profile_id) ||
+  static_assert(CertProfile::kVersion == 5, "This function should be updated");
+  return ((a.profile_id < b.profile_id) || (a.name < b.name) ||
           (a.policy_version < b.policy_version) ||
           (a.is_va_enabled < b.is_va_enabled) ||
           (a.renewal_period < b.renewal_period));
