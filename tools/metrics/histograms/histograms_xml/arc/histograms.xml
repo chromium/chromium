@@ -344,7 +344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.ContainerLifetimeEvent" enum="ArcContainerLifetimeEvent"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>elijahtaylor@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>
@@ -680,7 +680,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OptInCancel" enum="ArcOptInCancel"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>Arc OptIn cancelation reason.</summary>

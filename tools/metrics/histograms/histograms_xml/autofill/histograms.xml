@@ -1635,7 +1635,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenServerCardSaved"
-    units="strikes" expires_after="2021-01-31">
+    units="strikes" expires_after="2021-05-23">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>

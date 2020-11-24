@@ -302,7 +302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.FetchEvent.Fallback.Time" units="ms"
-    expires_after="2021-01-31">
+    expires_after="2021-05-23">
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1169,7 +1169,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorkerCache.CacheStorage" units="ms"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>dmurph@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>

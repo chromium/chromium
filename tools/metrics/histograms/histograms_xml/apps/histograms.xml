@@ -964,7 +964,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchBoxActivated"
-    enum="SearchBoxActivationSource" expires_after="2021-03-15">
+    enum="SearchBoxActivationSource" expires_after="2021-05-23">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>newcomer@chromium.org</owner>
@@ -1046,7 +1046,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchResultOpenTypeV2" enum="AppListSearchResult"
-    expires_after="2021-03-15">
+    expires_after="2021-05-23">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>newcomer@chromium.org</owner>
@@ -1581,7 +1581,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.NumberOfFolders" units="folder(s)"
-    expires_after="2021-01-31">
+    expires_after="2021-05-23">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

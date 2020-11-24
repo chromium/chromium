@@ -209,7 +209,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.OfflineAudioContext.Length" units="frames"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>

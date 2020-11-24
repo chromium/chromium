@@ -1047,7 +1047,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Scheduler.RefreshTrigger"
-    enum="RefreshTrigger" expires_after="2021-03-21">
+    enum="RefreshTrigger" expires_after="2021-05-23">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>

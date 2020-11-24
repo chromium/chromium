@@ -695,7 +695,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.SearchExtension.Action" enum="IOSSearchExtensionAction"
-    expires_after="2021-03-07">
+    expires_after="2021-05-23">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The action selected by the user in the Search Extension.</summary>

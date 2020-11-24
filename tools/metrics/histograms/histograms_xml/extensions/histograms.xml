@@ -2480,7 +2480,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.LoadType" enum="ExtensionType"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

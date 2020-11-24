@@ -244,7 +244,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosDockedMagnifier" enum="BooleanEnabled"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -500,7 +500,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.CountDetectionAttempted"
-    units="count" expires_after="2021-03-21">
+    units="count" expires_after="2021-05-23">
   <owner>chrishall@chromium.org</owner>
   <owner>aboxhall@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
@@ -510,7 +510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.CountLabelled" units="count"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>chrishall@chromium.org</owner>
   <owner>aboxhall@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
@@ -533,7 +533,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.PercentageLabelledWithTop"
-    units="%" expires_after="2021-03-21">
+    units="%" expires_after="2021-05-23">
   <owner>chrishall@chromium.org</owner>
   <owner>aboxhall@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
@@ -556,7 +556,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.PercentageOverridden"
-    units="%" expires_after="2021-03-21">
+    units="%" expires_after="2021-05-23">
   <owner>chrishall@chromium.org</owner>
   <owner>aboxhall@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
@@ -790,7 +790,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Shortcuts.CrosDockedMagnifier"
-    enum="BooleanEnabled" expires_after="2021-03-18">
+    enum="BooleanEnabled" expires_after="2021-05-23">
   <owner>amraboelkher@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>
@@ -800,7 +800,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Shortcuts.CrosHighContrast"
-    enum="BooleanEnabled" expires_after="2021-03-18">
+    enum="BooleanEnabled" expires_after="2021-05-23">
   <owner>amraboelkher@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>
@@ -810,7 +810,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Shortcuts.CrosScreenMagnifier"
-    enum="BooleanEnabled" expires_after="2021-03-18">
+    enum="BooleanEnabled" expires_after="2021-05-23">
   <owner>amraboelkher@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>
@@ -820,7 +820,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Shortcuts.CrosSpokenFeedback"
-    enum="BooleanEnabled" expires_after="2021-03-18">
+    enum="BooleanEnabled" expires_after="2021-05-23">
   <owner>amraboelkher@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>

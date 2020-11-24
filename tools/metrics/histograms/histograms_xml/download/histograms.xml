@@ -278,7 +278,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>eugenebut@chromium.org</owner>
   <summary>
     The action that a user takes on a file after it has been successfully
@@ -817,7 +817,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Service.Finish.Type"
-    enum="Download.Service.CompletionType" expires_after="2021-03-21">
+    enum="Download.Service.CompletionType" expires_after="2021-05-23">
   <owner>xingliu@chromium.org</owner>
   <summary>The completion type for downloads in download service.</summary>
 </histogram>

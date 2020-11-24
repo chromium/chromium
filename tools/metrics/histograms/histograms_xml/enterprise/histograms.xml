@@ -472,7 +472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.MissingPolicyMitigated"
-    units="BooleanSuccess" expires_after="2021-01-31">
+    units="BooleanSuccess" expires_after="2021-05-23">
   <owner>poromov@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -483,7 +483,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2021-01-31">
+    enum="DeviceSettingsStatus" expires_after="2021-05-23">
   <owner>poromov@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1101,7 +1101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
-    expires_after="2021-03-15">
+    expires_after="2021-05-23">
   <owner>marcgrimme@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1646,7 +1646,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.Mac.IsCurrentUserDomainUser" enum="Boolean"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>avi@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1656,7 +1656,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.Mac.IsDeviceDomainJoined" enum="Boolean"
-    expires_after="2021-03-21">
+    expires_after="2021-05-23">
   <owner>avi@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1666,7 +1666,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.Mac.IsDeviceMDMEnrolledNew"
-    enum="EnterpriseMacMDMStatusNew" expires_after="2021-03-21">
+    enum="EnterpriseMacMDMStatusNew" expires_after="2021-05-23">
   <owner>avi@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1677,7 +1677,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.Mac.IsDeviceMDMEnrolledOld"
-    enum="EnterpriseMacMDMStatusOld" expires_after="2021-03-21">
+    enum="EnterpriseMacMDMStatusOld" expires_after="2021-05-23">
   <owner>avi@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
