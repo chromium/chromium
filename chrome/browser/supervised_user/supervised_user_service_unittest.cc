@@ -572,7 +572,7 @@ TEST_F(SupervisedUserServiceExtensionTest, InstallContentPacks) {
   SupervisedUserAllowlistService* allowlist_service =
       supervised_user_service->GetAllowlistService();
   base::FilePath allowlist_path =
-      test_data_dir.AppendASCII("whitelists/content_pack/site_list.json");
+      test_data_dir.AppendASCII("allowlists/content_pack/site_list.json");
   allowlist_service->LoadAllowlistForTesting(id1, title1, allowlist_path);
   site_list_observer_.Wait();
 
@@ -589,7 +589,7 @@ TEST_F(SupervisedUserServiceExtensionTest, InstallContentPacks) {
 
   // Load a second allowlist.
   allowlist_path =
-      test_data_dir.AppendASCII("whitelists/content_pack_2/site_list.json");
+      test_data_dir.AppendASCII("allowlists/content_pack_2/site_list.json");
   allowlist_service->LoadAllowlistForTesting(id2, title2, allowlist_path);
   site_list_observer_.Wait();
 

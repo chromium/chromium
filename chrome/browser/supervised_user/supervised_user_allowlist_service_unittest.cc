@@ -197,7 +197,7 @@ TEST_F(SupervisedUserAllowlistServiceTest, MergeExisting) {
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
   base::FilePath allowlist_path =
-      test_data_dir.AppendASCII("whitelists/content_pack/site_list.json");
+      test_data_dir.AppendASCII("allowlists/content_pack/site_list.json");
   installer_->NotifyAllowlistReady("aaaa", base::ASCIIToUTF16("Title"),
                                    base::FilePath(), allowlist_path);
   run_loop.Run();

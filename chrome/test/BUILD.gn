@@ -4107,7 +4107,7 @@ test("unit_tests") {
       "data/offline_pages/",
       "data/osdd/",
       "data/public_offline_pages/",
-      "data/whitelists/content_pack/site_list.json",
+      "data/allowlists/content_pack/site_list.json",
 
       # webapk_installer_unittest
       "data/banners/image-512px-corp.png",
