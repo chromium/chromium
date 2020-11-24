@@ -11,7 +11,7 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -19,14 +19,13 @@ namespace ash {
 namespace {
 
 constexpr int kDialogWidthDp = 400;
-constexpr int kDialogHeightDp = 160;
 constexpr int kDialogContentMarginDp = 13;
 
 constexpr int kBulletRadiusDp = 2;
 constexpr int kBulletContainerSizeDp = 22;
 
-constexpr int kLineHeightDp = 15;
-constexpr int kBetweenLabelPaddingDp = 4;
+constexpr int kLabelMaximumWidth =
+    kDialogWidthDp - kBulletContainerSizeDp - 2 * kDialogContentMarginDp;
 
 class BulletView : public views::View {
  public:
@@ -59,28 +58,30 @@ class BulletView : public views::View {
 
 }  // namespace
 
+// TODO(crbug.com/1142953): Rename to PublicAccountLearnMoreDialog.
 PublicAccountWarningDialog::PublicAccountWarningDialog(
     base::WeakPtr<LoginExpandedPublicAccountView> controller)
     : controller_(controller) {
   SetModalType(ui::MODAL_TYPE_SYSTEM);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kBetweenLabelPaddingDp));
+  auto layout = std::make_unique<views::FlexLayout>();
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
+  SetLayoutManager(std::move(layout));
   SetBorder(views::CreateEmptyBorder(gfx::Insets(kDialogContentMarginDp)));
 
   auto add_bulleted_label = [&](const base::string16& text) {
     auto* container = new views::View();
-    container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal));
-
-    auto* label = new views::Label(text);
+    auto layout = std::make_unique<views::FlexLayout>();
+    // Align the bullet to the top line of multi-line labels.
+    layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+    container->SetLayoutManager(std::move(layout));
+    auto* label = new views::Label(text, views::style::CONTEXT_LABEL);
+    // If text style is set in the constructor, colors will not be updated and
+    // GetEnabledColor will return default color. See crbug.com/1151261.
+    label->SetTextStyle(views::style::STYLE_SECONDARY);
     label->SetMultiLine(true);
+    label->SetMaximumWidth(kLabelMaximumWidth);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label->SetLineHeight(kLineHeightDp);
-    label->SetFontList(views::Label::GetDefaultFontList().Derive(
-        1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
-    label->SetEnabledColor(SK_ColorGRAY);
 
     auto* bullet_view =
         new BulletView(label->GetEnabledColor(), kBulletRadiusDp);
@@ -132,7 +133,7 @@ void PublicAccountWarningDialog::AddedToWidget() {
 }
 
 gfx::Size PublicAccountWarningDialog::CalculatePreferredSize() const {
-  return gfx::Size(kDialogWidthDp, kDialogHeightDp);
+  return {kDialogWidthDp, GetHeightForWidth(kDialogWidthDp)};
 }
 
 }  // namespace ash
