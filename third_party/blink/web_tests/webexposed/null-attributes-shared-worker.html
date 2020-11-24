@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<script src="../resources/js-test.js"></script>
+<script>
+description("This test interface attributes which should be null in SharedWorkerGlobalScope.");
+worker = startWorker("resources/null-attributes-shared-worker.js", "shared");
+worker.port.postMessage({});
+</script>
