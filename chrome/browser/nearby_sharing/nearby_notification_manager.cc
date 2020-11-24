@@ -614,6 +614,10 @@ void NearbyNotificationManager::ShowConnectionRequest(
     const TransferMetadata& transfer_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // If there is an existing notification, close it first otherwise we won't
+  // get a heads-up pop-up.
+  CloseTransfer();
+
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyNotificationId);
   notification.set_title(l10n_util::GetStringUTF16(
@@ -622,6 +626,7 @@ void NearbyNotificationManager::ShowConnectionRequest(
       GetConnectionRequestNotificationMessage(share_target, transfer_metadata));
   notification.set_icon(GetImageFromShareTarget(share_target));
   notification.set_never_timeout(true);
+  notification.set_priority(message_center::NotificationPriority::MAX_PRIORITY);
 
   bool show_accept_button =
       transfer_metadata.status() ==
@@ -667,6 +672,10 @@ void NearbyNotificationManager::ShowOnboarding() {
 
 void NearbyNotificationManager::ShowSuccess(const ShareTarget& share_target) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // If there is an existing notification, close it first otherwise we won't
+  // get a heads-up pop-up.
+  CloseTransfer();
 
   if (!share_target.is_incoming) {
     message_center::Notification notification =
@@ -760,6 +769,10 @@ void NearbyNotificationManager::ShowFailure(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // If there is an existing notification, close it first otherwise we won't
+  // get a heads-up pop-up.
+  CloseTransfer();
 
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyNotificationId);
