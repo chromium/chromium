@@ -15,7 +15,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
-#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "base/check_op.h"
 #include "base/thread_annotations.h"
@@ -252,15 +251,15 @@ ALWAYS_INLINE QuarantineBitmap* SuperPageQuarantineBitmaps(
     char* super_page_base) {
   PA_DCHECK(
       !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
-  return reinterpret_cast<QuarantineBitmap*>(
-      super_page_base + PartitionPageSize() + ReservedTagBitmapSize());
+  return reinterpret_cast<QuarantineBitmap*>(super_page_base +
+                                             PartitionPageSize());
 }
 
 ALWAYS_INLINE char* SuperPagePayloadBegin(char* super_page_base,
                                           bool with_pcscan) {
   PA_DCHECK(
       !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
-  return super_page_base + PartitionPageSize() + ReservedTagBitmapSize() +
+  return super_page_base + PartitionPageSize() +
          (with_pcscan ? ReservedQuarantineBitmapsSize() : 0);
 }
 

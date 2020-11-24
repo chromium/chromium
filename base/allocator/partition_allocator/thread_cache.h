@@ -142,7 +142,8 @@ class BASE_EXPORT ThreadCache {
   // Tries to allocate memory from the cache.
   // Returns nullptr for failure.
   //
-  // Has the same behavior as RawAlloc(), that is: no cookie nor tag handling.
+  // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
+  // handling.
   ALWAYS_INLINE void* GetFromCache(size_t bucket_index);
 
   // Asks this cache to trigger |Purge()| at a later point. Can be called from

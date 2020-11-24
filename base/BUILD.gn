@@ -1806,8 +1806,6 @@ component("base") {
         "allocator/partition_allocator/partition_root.h",
         "allocator/partition_allocator/partition_stats.cc",
         "allocator/partition_allocator/partition_stats.h",
-        "allocator/partition_allocator/partition_tag.h",
-        "allocator/partition_allocator/partition_tag_bitmap.h",
         "allocator/partition_allocator/partition_tls.h",
         "allocator/partition_allocator/pcscan.cc",
         "allocator/partition_allocator/pcscan.h",

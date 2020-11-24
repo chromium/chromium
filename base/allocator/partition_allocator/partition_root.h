@@ -45,7 +45,6 @@
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
-#include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/pcscan.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bits.h"
@@ -91,10 +90,10 @@ struct PartitionOptions {
 
     // In addition to the above alignment enforcement, this option allows using
     // AlignedAlloc() which can align at a larger boundary.  This option comes
-    // at a cost of disallowing cookies on Debug builds and tags/ref-counts for
+    // at a cost of disallowing cookies on Debug builds and ref-count for
     // CheckedPtr. It also causes all allocations to go outside of GigaCage, so
-    // that CheckedPtr can easily tell if a pointer comes with a tag/ref-count
-    // or not.
+    // that CheckedPtr can easily tell if a pointer comes with a ref-count or
+    // not.
     kAlignedAlloc,
   };
 
@@ -137,22 +136,12 @@ struct BASE_EXPORT PartitionRoot {
   // Flags accessed on fast paths.
   bool with_thread_cache = false;
   const bool is_thread_safe = thread_safe;
-  // TODO(bartekn): Consider size of added extras (cookies and/or tag, or
-  // nothing) instead of true|false, so that we can just add or subtract the
-  // size instead of having an if branch on the hot paths.
-  bool allow_extras;
   bool scannable = false;
   bool initialized = false;
 
+  bool allow_extras;
   uint32_t extras_size;
   uint32_t extras_offset;
-
-#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR
-  internal::PartitionTag current_partition_tag = 0;
-#endif
-#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-  char* next_tag_bitmap_page = nullptr;
-#endif
 
   // Bookkeeping.
   // - total_size_of_super_pages - total virtual address space for normal bucket
@@ -289,17 +278,6 @@ struct BASE_EXPORT PartitionRoot {
   }
   size_t get_total_size_of_committed_pages() const {
     return total_size_of_committed_pages.load(std::memory_order_relaxed);
-  }
-
-  ALWAYS_INLINE internal::PartitionTag GetNewPartitionTag() {
-#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR
-    auto tag = ++current_partition_tag;
-    tag += !tag;  // Avoid 0.
-    current_partition_tag = tag;
-    return tag;
-#else
-    return 0;
-#endif
   }
 
   bool UsesGigaCage() const {
@@ -612,11 +590,11 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     void* ptr,
     SlotSpan* slot_span) {
   // The thread cache is added "in the middle" of the main allocator, that is:
-  // - After all the cookie/tag/ref-count management
+  // - After all the cookie/ref-count management
   // - Before the "raw" allocator.
   //
   // On the deallocation side:
-  // 1. Check cookies/tags/ref-count, adjust the pointer
+  // 1. Check cookies/ref-count, adjust the pointer
   // 2. Deallocation
   //   a. Return to the thread cache if possible. If it succeeds, return.
   //   b. Otherwise, call the "raw" allocator <-- Locking
@@ -624,17 +602,17 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   PA_DCHECK(slot_span);
   PA_DCHECK(IsValidSlotSpan(slot_span));
 
-  // |ptr| points after the tag and the cookie.
+  // |ptr| points after the ref-count and the cookie.
   //
   // Layout inside the slot:
-  //  <--------extras------->                  <-extras->
-  //  <----------------utilized_slot_size--------------->
-  //                        <----usable_size--->
-  //  |[tag/refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
-  //                        ^
-  //                       ptr
+  //  <------extras----->                  <-extras->
+  //  <--------------utilized_slot_size------------->
+  //                    <----usable_size--->
+  //  |[refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
+  //                    ^
+  //                   ptr
   //
-  // Note: tag, ref-count and cookie can be 0-sized.
+  // Note: ref-count and cookies can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment below.
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR || DCHECK_IS_ON() || \
@@ -654,19 +632,6 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #endif
 
     if (!slot_span->bucket->is_direct_mapped()) {
-      // PartitionTagIncrementValue and PartitionTagClearValue require that the
-      // size is tag_bitmap::kBytesPerPartitionTag-aligned (currently 16
-      // bytes-aligned) when MTECheckedPtr is enabled. However,
-      // utilized_slot_size may not be aligned for single-slot slot spans. So we
-      // need the bucket's slot_size.
-      size_t slot_size_with_no_extras =
-          AdjustSizeForExtrasSubtract(slot_span->bucket->slot_size);
-#if ENABLE_TAG_FOR_MTE_CHECKED_PTR && MTE_CHECKED_PTR_SET_TAG_AT_FREE
-      internal::PartitionTagIncrementValue(ptr, slot_size_with_no_extras);
-#else
-      internal::PartitionTagClearValue(ptr, slot_size_with_no_extras);
-#endif
-
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
       internal::PartitionRefCount* ref_count =
           internal::PartitionRefCountPointerNoOffset(ptr);
@@ -803,9 +768,9 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
   return size;
 }
 
-// Gets the size of the allocated slot that contains |ptr|, adjusted for cookie
-// and tag (if any). CAUTION! For direct-mapped allocation, |ptr| has to be
-// within the first partition page.
+// Gets the size of the allocated slot that contains |ptr|, adjusted for the
+// cookie and ref-count (if any). CAUTION! For direct-mapped allocation, |ptr|
+// has to be within the first partition page.
 template <bool thread_safe>
 ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetSize(void* ptr) const {
   ptr = AdjustPointerForExtrasSubtract(ptr);
@@ -875,7 +840,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     int flags,
     size_t requested_size) {
   // The thread cache is added "in the middle" of the main allocator, that is:
-  // - After all the cookie/tag management
+  // - After all the cookie/ref-count management
   // - Before the "raw" allocator.
   //
   // That is, the general allocation flow is:
@@ -883,7 +848,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // 2. Allocation:
   //   a. Call to the thread cache, if it succeeds, go to step 3.
   //   b. Otherwise, call the "raw" allocator <-- Locking
-  // 3. Handle cookies/tags, zero allocation if required
+  // 3. Handle cookies/ref-count, zero allocation if required
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
@@ -948,13 +913,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     return nullptr;
 
   // Layout inside the slot:
-  //  |[tag/refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
-  //                        <---(a)---->
-  //                        <-------(b)-------->
-  //  <---------(c)--------->                  <--(c)--->
-  //  <---------------(d)-------------->   +   <--(d)--->
-  //  <-----------------------(e)----------------------->
-  //  <---------------------------(f)---------------------------->
+  //  |[refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
+  //                    <---(a)---->
+  //                    <-------(b)-------->
+  //  <-------(c)------->                  <--(c)--->
+  //  <-------------(d)------------>   +   <--(d)--->
+  //  <---------------------(e)--------------------->
+  //  <-------------------------(f)-------------------------->
   //   (a) requested_size
   //   (b) usable_size
   //   (c) extras
@@ -962,8 +927,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   (e) utilized_slot_size
   //   (f) slot_size
   //
-  // - The tag/ref-count may or may not exist in the slot, depending on
-  //   CheckedPtr implementation.
+  // - Ref-count may or may not exist in the slot, depending on CheckedPtr
+  //   implementation.
   // - Cookies exist only when DCHECK is on.
   // - Think of raw_size as the minimum size required internally to satisfy
   //   the allocation request (i.e. requested_size + extras)
@@ -978,7 +943,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
   size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
-  // The value given to the application is just after the tag and cookie.
+  // The value given to the application is just after the ref-count and cookie.
   ret = AdjustPointerForExtrasAdd(ret);
 
 #if DCHECK_IS_ON()
@@ -1003,19 +968,6 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 
   bool is_direct_mapped = raw_size > kMaxBucketed;
   if (allow_extras && !is_direct_mapped) {
-    // Do not set tag for MTECheckedPtr in the set-tag-at-free case.
-    // It is set only at Free() time and at slot span allocation time.
-#if !ENABLE_TAG_FOR_MTE_CHECKED_PTR || !MTE_CHECKED_PTR_SET_TAG_AT_FREE
-    // PartitionTagSetValue requires that the size is
-    // tag_bitmap::kBytesPerPartitionTag-aligned (currently 16 bytes-aligned)
-    // when MTECheckedPtr is enabled. However, utilized_slot_size may not be
-    // aligned for single-slot slot spans. So we need the bucket's slot_size.
-    size_t slot_size_with_no_extras =
-        AdjustSizeForExtrasSubtract(buckets[bucket_index].slot_size);
-    internal::PartitionTagSetValue(ret, slot_size_with_no_extras,
-                                   GetNewPartitionTag());
-#endif  // !ENABLE_TAG_FOR_MTE_CHECKED_PTR || !MTE_CHECKED_PTR_SET_TAG_AT_FREE
-
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
     internal::PartitionRefCountPointerNoOffset(ret)->Init();
 #endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
@@ -1041,7 +993,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
     size_t alignment,
     size_t size) {
   // Aligned allocation support relies on the natural alignment guarantees of
-  // PartitionAlloc. Since cookies and tags are layered on top of
+  // PartitionAlloc. Since cookies and ref-count are layered on top of
   // PartitionAlloc, they change the guarantees. As a consequence, forbid both.
   PA_DCHECK(!allow_extras);
 

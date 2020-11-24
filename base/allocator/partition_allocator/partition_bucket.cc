@@ -17,8 +17,6 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
-#include "base/allocator/partition_allocator/partition_tag.h"
-#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "build/build_config.h"
@@ -41,8 +39,9 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
 
   char* ptr = nullptr;
   // Allocate from GigaCage, if enabled. However, the exception to this is when
-  // tags aren't allowed, as CheckedPtr assumes that everything inside GigaCage
-  // uses tags (specifically, inside the GigaCage's normal bucket pool).
+  // ref-count isn't allowed, as CheckedPtr assumes that everything inside
+  // GigaCage uses ref-count (specifically, inside the GigaCage's normal bucket
+  // pool).
   if (root->UsesGigaCage()) {
     ptr = internal::AddressPoolManager::GetInstance()->Alloc(
         GetDirectMapPool(), nullptr, reserved_size);
@@ -230,31 +229,6 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     root->next_partition_page += slot_span_reserved_size;
     root->IncreaseCommittedPages(slot_span_committed_size);
 
-#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-    PA_DCHECK(root->next_tag_bitmap_page);
-    char* next_tag_bitmap_page = reinterpret_cast<char*>(
-        bits::Align(reinterpret_cast<uintptr_t>(
-                        PartitionTagPointer(root->next_partition_page)),
-                    SystemPageSize()));
-    if (root->next_tag_bitmap_page < next_tag_bitmap_page) {
-#if DCHECK_IS_ON()
-      char* super_page = reinterpret_cast<char*>(
-          reinterpret_cast<uintptr_t>(ret) & kSuperPageBaseMask);
-      char* tag_bitmap = super_page + PartitionPageSize();
-      PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + ActualTagBitmapSize());
-      PA_DCHECK(next_tag_bitmap_page > tag_bitmap);
-#endif
-      SetSystemPagesAccess(root->next_tag_bitmap_page,
-                           next_tag_bitmap_page - root->next_tag_bitmap_page,
-                           PageReadWrite);
-      root->next_tag_bitmap_page = next_tag_bitmap_page;
-    }
-#if MTE_CHECKED_PTR_SET_TAG_AT_FREE
-    // TODO(tasak): Consider initializing each slot with a different tag.
-    PartitionTagSetValue(ret, slot_span_reserved_size,
-                         root->GetNewPartitionTag());
-#endif
-#endif
     return ret;
   }
 
@@ -265,8 +239,9 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   char* requested_address = root->next_super_page;
   char* super_page = nullptr;
   // Allocate from GigaCage, if enabled. However, the exception to this is when
-  // tags aren't allowed, as CheckedPtr assumes that everything inside GigaCage
-  // uses tags (specifically, inside the GigaCage's normal bucket pool).
+  // ref-count isn't allowed, as CheckedPtr assumes that everything inside
+  // GigaCage uses ref-count (specifically, inside the GigaCage's normal bucket
+  // pool).
   if (root->UsesGigaCage()) {
     super_page = AddressPoolManager::GetInstance()->Alloc(
         GetNormalBucketPool(), requested_address, kSuperPageSize);
@@ -287,10 +262,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   //
   // TODO(ajwong): Introduce a DCHECK.
   root->next_super_page = super_page + kSuperPageSize;
-  // TODO(tasak): Consider starting the bitmap right after metadata to save
-  // space.
-  char* tag_bitmap = super_page + PartitionPageSize();
-  char* quarantine_bitmaps = tag_bitmap + ReservedTagBitmapSize();
+  char* quarantine_bitmaps = super_page + PartitionPageSize();
   size_t quarantine_bitmaps_reserved_size = 0;
   size_t quarantine_bitmaps_size_to_commit = 0;
   if (root->scannable) {
@@ -329,26 +301,6 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   SetSystemPagesAccess(super_page + (SystemPageSize() * 2),
                        PartitionPageSize() - (SystemPageSize() * 2),
                        PageInaccessible);
-#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-  // Make the first |slot_span_reserved_size| region of the tag bitmap
-  // accessible. The rest of the region is set to inaccessible.
-  char* next_tag_bitmap_page = reinterpret_cast<char*>(
-      bits::Align(reinterpret_cast<uintptr_t>(
-                      PartitionTagPointer(root->next_partition_page)),
-                  SystemPageSize()));
-  PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + ActualTagBitmapSize());
-  PA_DCHECK(next_tag_bitmap_page > tag_bitmap);
-  // |ret| points at the end of the tag bitmap.
-  PA_DCHECK(next_tag_bitmap_page <= ret);
-  SetSystemPagesAccess(next_tag_bitmap_page, ret - next_tag_bitmap_page,
-                       PageInaccessible);
-#if MTE_CHECKED_PTR_SET_TAG_AT_FREE
-  // TODO(tasak): Consider initializing each slot with a different tag.
-  PartitionTagSetValue(ret, slot_span_reserved_size,
-                       root->GetNewPartitionTag());
-#endif
-  root->next_tag_bitmap_page = next_tag_bitmap_page;
-#endif
 
   // If PCScan is used, keep the quarantine bitmap committed, just release the
   // unused part of partition page, if any. If PCScan isn't used, release the
@@ -541,7 +493,7 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
     } else {
       PA_DCHECK(slot_span->is_full());
       // If we get here, we found a full slot span. Skip over it too, and also
-      // tag it as full (via a negative value). We need it tagged so that
+      // mark it as full (via a negative value). We need it marked so that
       // free'ing can tell, and move it back into the active list.
       slot_span->num_allocated_slots = -slot_span->num_allocated_slots;
       ++num_full_slot_spans;

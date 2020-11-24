@@ -366,17 +366,15 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     internal::PartitionAddressSpace::Init();
 #endif
 
-  // If alignment needs to be enforced, disallow adding cookies and/or tags at
-  // the beginning of the slot.
+  // If alignment needs to be enforced, disallow adding a cookie and/or
+  // ref-count at the beginning of the slot.
   allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
 
   size_t size = 0, offset = 0;
   if (allow_extras) {
-    size += internal::kPartitionTagSizeAdjustment;
     size += internal::kPartitionCookieSizeAdjustment;
     size += internal::kPartitionRefCountSizeAdjustment;
 
-    offset += internal::kPartitionTagOffsetAdjustment;
     offset += internal::kPartitionCookieOffsetAdjustment;
     offset += internal::kPartitionRefCountOffsetAdjustment;
   }

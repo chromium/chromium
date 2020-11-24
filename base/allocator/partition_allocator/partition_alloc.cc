@@ -23,14 +23,6 @@
 
 namespace base {
 
-#if ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR
-namespace internal {
-BASE_EXPORT PartitionTagWrapper g_checked_ptr_single_tag = {{},
-                                                            kFixedTagValue,
-                                                            {}};
-}
-#endif
-
 void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
   // This is from page_allocator_constants.h and doesn't really fit here, but
   // there isn't a centralized initialization function in page_allocator.cc, so
@@ -63,11 +55,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       "maximum direct mapped allocation");
 
   // Check that some of our zanier calculations worked out as expected.
-#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-  static_assert(kSmallestBucket >= kAlignment, "generic smallest bucket");
-#else
   static_assert(kSmallestBucket == kAlignment, "generic smallest bucket");
-#endif
   static_assert(kMaxBucketed == 983040, "generic max bucketed");
   STATIC_ASSERT_OR_PA_CHECK(
       MaxSystemPagesPerSlotSpan() < (1 << 8),
@@ -135,7 +123,7 @@ BASE_EXPORT size_t PartitionAllocGetSlotOffset(void* ptr) {
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           ptr);
   auto* root = PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span);
-  // The only allocations that don't use tag/ref-count are allocated outside of
+  // The only allocations that don't use ref-count are allocated outside of
   // GigaCage, hence we'd never get here in the `allow_extras = false` case.
   PA_DCHECK(root->allow_extras);
   ptr = root->AdjustPointerForExtrasSubtract(ptr);

@@ -117,7 +117,6 @@ MaxSystemPagesPerSlotSpan() {
 //     | Guard page (4 KiB)    |
 //     | Metadata page (4 KiB) |
 //     | Guard pages (8 KiB)   |
-//     | TagBitmap             |
 //     | QuarantineBitmaps     |
 //     | Slot span             |
 //     | Slot span             |
@@ -126,7 +125,6 @@ MaxSystemPagesPerSlotSpan() {
 //     | Guard pages (16 KiB)  |
 //     +-----------------------+
 //
-// TagBitmap is only present when ENABLE_TAG_FOR_MTE_CHECKED_PTR is defined.
 // QuarantineBitmaps are inserted for partitions that may have PCScan enabled.
 //
 // Each slot span is a contiguous range of one or more `PartitionPage`s. Note
@@ -224,13 +222,8 @@ static_assert(kAlignment <= 16,
 //
 // In practice, this means 8 bytes alignment on 32 bit architectures, and 16
 // bytes on 64 bit ones.
-#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-// MTECheckedPtr requires 16B-alignment because kBytesPerPartitionTag is 16.
-static const size_t kMinBucketedOrder = 5;
-#else
 static const size_t kMinBucketedOrder =
     kAlignment == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
-#endif
 // The largest bucketed order is 1 << (20 - 1), storing [512 KiB, 1 MiB):
 static const size_t kMaxBucketedOrder = 20;
 static const size_t kNumBucketedOrders =

@@ -9,7 +9,6 @@
 
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "build/build_config.h"
 

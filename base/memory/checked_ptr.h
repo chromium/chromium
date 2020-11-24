@@ -14,19 +14,11 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-
-#define ENABLE_CHECKED_PTR2_OR_MTE_IMPL 0
-#if ENABLE_CHECKED_PTR2_OR_MTE_IMPL
-static_assert(ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR ||
-                  ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR,
-              "CheckedPtr2OrMTEImpl can only by used if tags are enabled");
-#endif
 
 #define ENABLE_BACKUP_REF_PTR_IMPL 0
 #if ENABLE_BACKUP_REF_PTR_IMPL
@@ -34,12 +26,6 @@ static_assert(ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR,
               "BackupRefPtrImpl can only by used if PartitionRefCount is "
               "enabled");
 #endif
-
-#define CHECKED_PTR2_USE_NO_OP_WRAPPER 0
-#define CHECKED_PTR2_USE_TRIVIAL_UNWRAPPER 0
-
-// Set it to 1 to avoid branches when dereferencing the pointer.
-#define CHECKED_PTR2_AVOID_BRANCH_WHEN_DEREFERENCING 1
 
 namespace base {
 
@@ -115,211 +101,6 @@ struct CheckedPtrNoOpImpl {
 };
 
 #if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
-
-constexpr int kValidAddressBits = 48;
-constexpr uintptr_t kAddressMask = (1ull << kValidAddressBits) - 1;
-constexpr int kGenerationBits = sizeof(uintptr_t) * 8 - kValidAddressBits;
-constexpr uintptr_t kGenerationMask = ~kAddressMask;
-constexpr int kTopBitShift = 63;
-constexpr uintptr_t kTopBit = 1ull << kTopBitShift;
-static_assert(kTopBit << 1 == 0, "kTopBit should really be the top bit");
-static_assert((kTopBit & kGenerationMask) > 0,
-              "kTopBit bit must be inside the generation region");
-
-#if BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_CHECKED_PTR2_OR_MTE_IMPL
-// This functionality is outside of CheckedPtr2OrMTEImpl, so that it can be
-// overridden by tests.
-struct CheckedPtr2OrMTEImplPartitionAllocSupport {
-  // Checks if the necessary support is enabled in PartitionAlloc for |ptr|.
-  static ALWAYS_INLINE bool EnabledForPtr(void* ptr) {
-    // CheckedPtr2 and MTECheckedPtr algorithms work only when memory is
-    // allocated by PartitionAlloc, from normal buckets pool. CheckedPtr2
-    // additionally requires that the pointer points to the beginning of the
-    // allocated slot.
-    //
-    // TODO(bartekn): Allow direct-map buckets for MTECheckedPtr, once
-    // PartitionAlloc supports it. (Currently not implemented for simplicity,
-    // but there are no technological obstacles preventing it; whereas in case
-    // of CheckedPtr2, PartitionAllocGetSlotOffset won't work with direct-map.)
-    return IsManagedByPartitionAllocNormalBuckets(ptr)
-    // Checking offset is not needed for ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR,
-    // but call it anyway for apples-to-apples comparison with
-    // ENABLE_TAG_FOR_CHECKED_PTR2.
-#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR
-           && base::internal::PartitionAllocGetSlotOffset(ptr) == 0
-#endif
-        ;
-  }
-
-  // Returns pointer to the tag that protects are pointed by |ptr|.
-  static ALWAYS_INLINE void* TagPointer(void* ptr) {
-    return PartitionTagPointer(ptr);
-  }
-};
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_CHECKED_PTR2_OR_MTE_IMPL
-
-template <typename PartitionAllocSupport>
-struct CheckedPtr2OrMTEImpl {
-  // This implementation assumes that pointers are 64 bits long and at least 16
-  // top bits are unused. The latter is harder to verify statically, but this is
-  // true for all currently supported 64-bit architectures (DCHECK when wrapping
-  // will verify that).
-  static_assert(sizeof(void*) >= 8, "Need 64-bit pointers");
-
-  // Wraps a pointer, and returns its uintptr_t representation.
-  static ALWAYS_INLINE uintptr_t WrapRawPtr(const volatile void* cv_ptr) {
-    void* ptr = const_cast<void*>(cv_ptr);
-    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
-#if !CHECKED_PTR2_USE_NO_OP_WRAPPER
-    // Make sure that the address bits that will be used for generation are 0.
-    // If they aren't, they'd fool the unwrapper into thinking that the
-    // protection is enabled, making it try to read and compare the generation.
-    DCHECK_EQ(ExtractGeneration(addr), 0ull);
-
-    // Return a not-wrapped |addr|, if it's either nullptr or if the protection
-    // for this pointer is disabled.
-    if (!PartitionAllocSupport::EnabledForPtr(ptr)) {
-      return addr;
-    }
-
-    // Read the generation and place it in the top bits of the address.
-    // Even if PartitionAlloc's tag has less than kGenerationBits, we'll read
-    // what's given and pad the rest with 0s.
-    static_assert(sizeof(PartitionTag) * 8 <= kGenerationBits, "");
-    uintptr_t generation = *(static_cast<volatile PartitionTag*>(
-        PartitionAllocSupport::TagPointer(ptr)));
-
-    generation <<= kValidAddressBits;
-    addr |= generation;
-#endif  // !CHECKED_PTR2_USE_NO_OP_WRAPPER
-    return addr;
-  }
-
-  // Notifies the allocator when a wrapped pointer is being removed or replaced.
-  // No-op for CheckedPtr2OrMTEImpl.
-  static ALWAYS_INLINE void ReleaseWrappedPtr(uintptr_t) {}
-
-  // Returns equivalent of |WrapRawPtr(nullptr)|. Separated out to make it a
-  // constexpr.
-  static constexpr ALWAYS_INLINE uintptr_t GetWrappedNullPtr() {
-    return kWrappedNullPtr;
-  }
-
-  // Unwraps the pointer's uintptr_t representation, while asserting that memory
-  // hasn't been freed. The function is allowed to crash on nullptr.
-  static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(
-      uintptr_t wrapped_ptr) {
-    uintptr_t ptr_generation = wrapped_ptr >> kValidAddressBits;
-    if (ptr_generation > 0) {
-      // Read the generation provided by PartitionAlloc.
-      //
-      // Cast to volatile to ensure memory is read. E.g. in a tight loop, the
-      // compiler could cache the value in a register and thus could miss that
-      // another thread freed memory and cleared generation.
-      uintptr_t read_generation = *static_cast<volatile PartitionTag*>(
-          PartitionAllocSupport::TagPointer(ExtractPtr(wrapped_ptr)));
-#if CHECKED_PTR2_AVOID_BRANCH_WHEN_DEREFERENCING
-      // Use hardware to detect generation mismatch. CPU will crash if top bits
-      // aren't all 0 (technically it won't if all bits are 1, but that's a
-      // kernel mode address, which isn't allowed either).
-      read_generation <<= kValidAddressBits;
-      return reinterpret_cast<void*>(read_generation ^ wrapped_ptr);
-#else
-      if (UNLIKELY(ptr_generation != read_generation))
-        IMMEDIATE_CRASH();
-      return reinterpret_cast<void*>(wrapped_ptr & kAddressMask);
-#endif  // CHECKED_PTR2_AVOID_BRANCH_WHEN_DEREFERENCING
-    }
-    return reinterpret_cast<void*>(wrapped_ptr);
-  }
-
-  // Unwraps the pointer's uintptr_t representation, while asserting that memory
-  // hasn't been freed. The function must handle nullptr gracefully.
-  static ALWAYS_INLINE void* SafelyUnwrapPtrForExtraction(
-      uintptr_t wrapped_ptr) {
-    // SafelyUnwrapPtrForDereference handles nullptr case well.
-    return SafelyUnwrapPtrForDereference(wrapped_ptr);
-  }
-
-  // Unwraps the pointer's uintptr_t representation, without making an assertion
-  // on whether memory was freed or not.
-  static ALWAYS_INLINE void* UnsafelyUnwrapPtrForComparison(
-      uintptr_t wrapped_ptr) {
-    return ExtractPtr(wrapped_ptr);
-  }
-
-  // Upcasts the wrapped pointer.
-  template <typename To, typename From>
-  static ALWAYS_INLINE uintptr_t Upcast(uintptr_t wrapped_ptr) {
-    static_assert(std::is_convertible<From*, To*>::value,
-                  "From must be convertible to To.");
-
-#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR
-    if (IsPtrUnaffectedByUpcast<To, From>())
-      return wrapped_ptr;
-
-    // CheckedPtr2 doesn't support a pointer pointing in the middle of an
-    // allocated object, so disable the generation tag.
-    //
-    // Clearing tag is not needed for ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR,
-    // but do it anyway for apples-to-apples comparison with
-    // ENABLE_TAG_FOR_CHECKED_PTR2.
-    uintptr_t base_addr = reinterpret_cast<uintptr_t>(
-        static_cast<To*>(reinterpret_cast<From*>(ExtractPtr(wrapped_ptr))));
-    return base_addr;
-#elif ENABLE_TAG_FOR_MTE_CHECKED_PTR
-    // The top-bit generation tag must not affect the result of upcast.
-    return reinterpret_cast<uintptr_t>(
-        static_cast<To*>(reinterpret_cast<From*>(wrapped_ptr)));
-#else
-    static_assert(std::is_void<To>::value,  // Always false.
-                  "Unknown tagging mode");
-    return 0;
-#endif
-  }
-
-  // Advance the wrapped pointer by |delta| bytes.
-  static ALWAYS_INLINE uintptr_t Advance(uintptr_t wrapped_ptr, size_t delta) {
-    // Mask out the generation to disable the protection. It's not supported for
-    // pointers inside an allocation.
-    return ExtractAddress(wrapped_ptr) + delta;
-  }
-
-  // Returns a copy of a wrapped pointer, without making an assertion
-  // on whether memory was freed or not.
-  static ALWAYS_INLINE uintptr_t Duplicate(uintptr_t wrapped_ptr) {
-    return wrapped_ptr;
-  }
-
-  // This is for accounting only, used by unit tests.
-  static ALWAYS_INLINE void IncrementSwapCountForTest() {}
-
- private:
-  static ALWAYS_INLINE uintptr_t ExtractAddress(uintptr_t wrapped_ptr) {
-    return wrapped_ptr & kAddressMask;
-  }
-  static ALWAYS_INLINE void* ExtractPtr(uintptr_t wrapped_ptr) {
-    return reinterpret_cast<void*>(ExtractAddress(wrapped_ptr));
-  }
-  static ALWAYS_INLINE uintptr_t ExtractGeneration(uintptr_t wrapped_ptr) {
-    return wrapped_ptr & kGenerationMask;
-  }
-
-  template <typename To, typename From>
-  static constexpr ALWAYS_INLINE bool IsPtrUnaffectedByUpcast() {
-    static_assert(std::is_convertible<From*, To*>::value,
-                  "From must be convertible to To.");
-    uintptr_t d = 0x10000;
-    From* dp = reinterpret_cast<From*>(d);
-    To* bp = dp;
-    uintptr_t b = reinterpret_cast<uintptr_t>(bp);
-    return b == d;
-  }
-
-  // This relies on nullptr and 0 being equal in the eyes of reinterpret_cast,
-  // which apparently isn't true in some rare environments.
-  static constexpr uintptr_t kWrappedNullPtr = 0;
-};
 
 #if ENABLE_BACKUP_REF_PTR_IMPL
 
@@ -427,16 +208,11 @@ struct BackupRefPtrImpl {
 template <typename T,
 #if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL) && \
     BUILDFLAG(USE_PARTITION_ALLOC)
-
-#if ENABLE_CHECKED_PTR2_OR_MTE_IMPL
-          typename Impl = internal::CheckedPtr2OrMTEImpl<
-              internal::CheckedPtr2OrMTEImplPartitionAllocSupport>>
-#elif ENABLE_BACKUP_REF_PTR_IMPL
+#if ENABLE_BACKUP_REF_PTR_IMPL
           typename Impl = internal::BackupRefPtrImpl>
 #else
           typename Impl = internal::CheckedPtrNoOpImpl>
 #endif
-
 #else  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL) &&
        // BUILDFLAG(USE_PARTITION_ALLOC)
           typename Impl = internal::CheckedPtrNoOpImpl>
@@ -704,21 +480,13 @@ class CheckedPtr {
   // dereferenced. It is allowed to crash on nullptr (it may or may not),
   // because it knows that the caller will crash on nullptr.
   ALWAYS_INLINE T* GetForDereference() const {
-#if CHECKED_PTR2_USE_TRIVIAL_UNWRAPPER
-    return static_cast<T*>(Impl::UnsafelyUnwrapPtrForComparison(wrapped_ptr_));
-#else
     return static_cast<T*>(Impl::SafelyUnwrapPtrForDereference(wrapped_ptr_));
-#endif
   }
   // This getter is meant for situations where the raw pointer is meant to be
   // extracted outside of this class, but not necessarily with an intention to
   // dereference. It mustn't crash on nullptr.
   ALWAYS_INLINE T* GetForExtraction() const {
-#if CHECKED_PTR2_USE_TRIVIAL_UNWRAPPER
-    return static_cast<T*>(Impl::UnsafelyUnwrapPtrForComparison(wrapped_ptr_));
-#else
     return static_cast<T*>(Impl::SafelyUnwrapPtrForExtraction(wrapped_ptr_));
-#endif
   }
   // This getter is meant *only* for situations where the pointer is meant to be
   // compared (guaranteeing no dereference or extraction outside of this class).
