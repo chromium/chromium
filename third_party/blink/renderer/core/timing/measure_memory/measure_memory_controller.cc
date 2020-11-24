@@ -9,8 +9,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_measure_memory.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_measure_memory_breakdown.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_memory_breakdown_entry.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_memory_measurement.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -25,14 +25,6 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-
-static MeasureMemoryController::V8MemoryReporter*
-    g_dedicated_worker_memory_reporter_ = nullptr;
-
-void MeasureMemoryController::SetDedicatedWorkerMemoryReporter(
-    V8MemoryReporter* reporter) {
-  g_dedicated_worker_memory_reporter_ = reporter;
-}
 
 MeasureMemoryController::MeasureMemoryController(
     base::PassKey<MeasureMemoryController>,
@@ -51,8 +43,6 @@ MeasureMemoryController::MeasureMemoryController(
 
 void MeasureMemoryController::Trace(Visitor* visitor) const {
   visitor->Trace(promise_resolver_);
-  visitor->Trace(main_result_);
-  visitor->Trace(worker_result_);
 }
 
 ScriptPromise MeasureMemoryController::StartMeasurement(
@@ -87,57 +77,24 @@ ScriptPromise MeasureMemoryController::StartMeasurement(
           WTF::Bind(&MeasureMemoryController::MainMeasurementComplete,
                     WrapPersistent(impl))),
       execution);
-  if (g_dedicated_worker_memory_reporter_) {
-    g_dedicated_worker_memory_reporter_->GetMemoryUsage(
-        WTF::Bind(&MeasureMemoryController::WorkerMeasurementComplete,
-                  WrapPersistent(impl)),
-
-        execution);
-  } else {
-    HeapVector<Member<MeasureMemoryBreakdown>> result;
-    impl->WorkerMeasurementComplete(result);
-  }
   return ScriptPromise(script_state, promise_resolver->GetPromise());
 }
 
 bool MeasureMemoryController::IsMeasureMemoryAvailable(LocalDOMWindow* window) {
-  // TODO(ulan): We should check for window.crossOriginIsolated when it ships.
-  // Until then we enable the API only for processes locked to a site
-  // similar to the precise mode of the legacy performance.memory API.
-  if (!Platform::Current()->IsLockedToSite()) {
+  if (!window || !window->CrossOriginIsolatedCapability()) {
     return false;
   }
-  // The window.crossOriginIsolated will be true only for the top-level frame.
-  // Until the flag is available we check for the top-level condition manually.
-  if (!window) {
-    return false;
-  }
+  // CrossOriginIsolated is also set for same-agent cross-origin iframe.
+  // Allow only iframes that have the same origin as the main frame.
+  // Note that COOP guarantees that all main frames have the same origin.
   LocalFrame* local_frame = window->GetFrame();
-  if (!local_frame || !local_frame->IsMainFrame()) {
+  if (!local_frame || local_frame->IsCrossOriginToMainFrame()) {
     return false;
   }
   return true;
 }
 
-void MeasureMemoryController::MainMeasurementComplete(Result result) {
-  DCHECK(!main_measurement_completed_);
-  main_result_ = result;
-  main_measurement_completed_ = true;
-  MaybeResolvePromise();
-}
-
-void MeasureMemoryController::WorkerMeasurementComplete(Result result) {
-  DCHECK(!worker_measurement_completed_);
-  worker_result_ = result;
-  worker_measurement_completed_ = true;
-  MaybeResolvePromise();
-}
-
-void MeasureMemoryController::MaybeResolvePromise() {
-  if (!main_measurement_completed_ || !worker_measurement_completed_) {
-    // Wait until we have all results.
-    return;
-  }
+void MeasureMemoryController::MainMeasurementComplete(Result breakdown) {
   if (context_.IsEmpty()) {
     // The context was garbage collected in the meantime.
     return;
@@ -145,9 +102,7 @@ void MeasureMemoryController::MaybeResolvePromise() {
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context = context_.NewLocal(isolate_);
   v8::Context::Scope context_scope(context);
-  MeasureMemory* result = MeasureMemory::Create();
-  auto breakdown = main_result_;
-  breakdown.AppendVector(worker_result_);
+  auto* result = MemoryMeasurement::Create();
   size_t total_size = 0;
   for (auto entry : breakdown) {
     total_size += entry->bytes();

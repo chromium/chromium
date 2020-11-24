@@ -2082,6 +2082,9 @@ virtual/plz-dedicated-worker-cors-rfc1918/http/tests/security/cors-rfc1918/exter
 # Memory measurement tests are run as virtual tests.
 external/wpt/measure-memory/* [ Skip ]
 virtual/force-eager/external/wpt/measure-memory/* [ Pass ]
+crbug.com/1150938 virtual/force-eager/external/wpt/measure-memory/detached.tentative.https.window.html [ Skip ]
+crbug.com/1150938 virtual/force-eager/external/wpt/measure-memory/window-open.mix.tentative.https.window.html [ Skip ]
+crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/main-frame-and-worker.tentative.https.window.html [ Skip ]
 
 # Legacy SameSite cookie tests do not apply when non-legacy behavior is in effect.
 crbug.com/961439 external/wpt/cookies/samesite/fetch.https.html?legacy-samesite [ Skip ]

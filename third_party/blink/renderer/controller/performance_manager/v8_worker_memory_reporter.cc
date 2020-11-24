@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_measure_memory_breakdown.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
@@ -232,52 +231,6 @@ void V8WorkerMemoryReporter::InvokeCallback() {
   DCHECK_EQ(state_, State::kWaiting);
   std::move(callback_).Run(std::move(result_));
   state_ = State::kDone;
-}
-
-namespace {
-
-// Used by the performance.measureMemory Web API. It forwards the incoming
-// memory measurement request to V8WorkerMemoryReporter and adapts the result
-// to match the format of the Web API.
-//
-// It will be removed in the future when performance.measureMemory switches
-// to a mojo-based implementation that queries PerformanceManager in the
-// browser process.
-class WebMemoryReporter : public MeasureMemoryController::V8MemoryReporter {
-  void GetMemoryUsage(MeasureMemoryController::ResultCallback callback,
-                      v8::MeasureMemoryExecution execution) override {
-    V8WorkerMemoryReporter::GetMemoryUsage(
-        WTF::Bind(&WebMemoryReporter::ForwardResults, std::move(callback)),
-        execution);
-  }
-
-  // Adapts the result to match the format expected by MeasureMemoryController.
-  static void ForwardResults(MeasureMemoryController::ResultCallback callback,
-                             const V8WorkerMemoryReporter::Result& result) {
-    HeapVector<Member<MeasureMemoryBreakdown>> new_result;
-    const String kDedicatedWorkerGlobalScope("DedicatedWorkerGlobalScope");
-    const String kJS("JS");
-    const Vector<String> kWorkerMemoryTypes = {kDedicatedWorkerGlobalScope,
-                                               kJS};
-    const Vector<String> kEmptyAttribution = {};
-    for (const auto& worker : result.workers) {
-      if (worker.token.Is<DedicatedWorkerToken>()) {
-        MeasureMemoryBreakdown* entry = MeasureMemoryBreakdown::Create();
-        entry->setBytes(worker.bytes);
-        entry->setUserAgentSpecificTypes(kWorkerMemoryTypes);
-        entry->setAttribution(kEmptyAttribution);
-        new_result.push_back(entry);
-      }
-    }
-    std::move(callback).Run(new_result);
-  }
-};
-
-}  // anonymous namespace
-
-void V8WorkerMemoryReporter::RegisterWebMemoryReporter() {
-  MeasureMemoryController::SetDedicatedWorkerMemoryReporter(
-      new WebMemoryReporter());
 }
 
 }  // namespace blink

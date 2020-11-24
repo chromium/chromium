@@ -3,8 +3,10 @@
 // META: timeout=long
 'use strict';
 
+assert_true(self.crossOriginIsolated);
+
 promise_test(async testCase => {
-  const {iframes} = await build([
+  const {iframes, windows} = await build([
     {
       id: 'cross-site-1',
       children: [
@@ -22,15 +24,29 @@ promise_test(async testCase => {
   ]);
   try {
     const result = await performance.measureMemory();
-    checkMeasureMemory(result, {
-      allowed: [
-        window.location.href,
-        iframes['cross-site-1'].src,
-      ],
-      required: [
-        window.location.href,
-      ],
-    });
+    checkMeasureMemory(result, [
+      {
+        url: window.location.href,
+        scope: 'Window',
+        container: null,
+      },
+      {
+        url: 'cross-origin-url',
+        scope: 'cross-origin-aggregated',
+        container: {
+          id: 'cross-site-1',
+          src: iframes['cross-site-1'].src,
+        },
+      },
+      {
+        url: windows['same-origin-2'].location.href,
+        scope: 'Window',
+        container: {
+          id: 'cross-site-1',
+          src: iframes['cross-site-1'].src,
+        },
+      },
+    ]);
   } catch (error) {
     if (!(error instanceof DOMException)) {
       throw error;

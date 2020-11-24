@@ -17,7 +17,7 @@
 namespace blink {
 
 class LocalDOMWindow;
-class MeasureMemoryBreakdown;
+class MemoryBreakdownEntry;
 class ScriptState;
 class ExceptionState;
 
@@ -30,7 +30,7 @@ class ExceptionState;
 class MeasureMemoryController final
     : public GarbageCollected<MeasureMemoryController> {
  public:
-  using Result = HeapVector<Member<MeasureMemoryBreakdown>>;
+  using Result = HeapVector<Member<MemoryBreakdownEntry>>;
   using ResultCallback = base::OnceCallback<void(Result)>;
 
   // PerformanceManager in blink/renderer/controller uses this interface
@@ -65,18 +65,10 @@ class MeasureMemoryController final
   static bool IsMeasureMemoryAvailable(LocalDOMWindow* window);
   // Invoked when the memory of the main V8 isolate is measured.
   void MainMeasurementComplete(Result);
-  // Invoked when the memory of all dedicated workers is measured.
-  void WorkerMeasurementComplete(Result);
-  // Resolves the JS promise if both pending measurements are done.
-  void MaybeResolvePromise();
 
   v8::Isolate* isolate_;
   ScopedPersistent<v8::Context> context_;
   TraceWrapperV8Reference<v8::Promise::Resolver> promise_resolver_;
-  Result main_result_;
-  Result worker_result_;
-  bool main_measurement_completed_ = false;
-  bool worker_measurement_completed_ = false;
 };
 
 }  // namespace blink

@@ -12,14 +12,14 @@
 
 namespace blink {
 
-class MeasureMemoryBreakdown;
+class MemoryBreakdownEntry;
 
 // Specifies V8 contexts to be measured and invokes the given callback once V8
 // completes the memory measurement.
 class MeasureMemoryDelegate : public v8::MeasureMemoryDelegate {
  public:
   using ResultCallback =
-      base::OnceCallback<void(HeapVector<Member<MeasureMemoryBreakdown>>)>;
+      base::OnceCallback<void(HeapVector<Member<MemoryBreakdownEntry>>)>;
 
   MeasureMemoryDelegate(v8::Isolate* isolate,
                         v8::Local<v8::Context> context,

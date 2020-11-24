@@ -60,9 +60,6 @@ class CONTROLLER_EXPORT V8WorkerMemoryReporter {
   static void NotifyMeasurementFailure(WorkerThread*,
                                        base::WeakPtr<V8WorkerMemoryReporter>);
 
-  // Injects the implementation for the performance.measureMemory Web API.
-  static void RegisterWebMemoryReporter();
-
  private:
   // The initial state is kWaiting.
   // Transition from kWaiting to kDone happens on two events:

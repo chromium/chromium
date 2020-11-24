@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/performance-measure-memory
+// https://wicg.github.io/performance-measure-memory/#dictdef-memorymeasurement
 
 // The result of performance.measureMemory().
-dictionary MeasureMemory {
+dictionary MemoryMeasurement {
   required unsigned long long bytes;
-  required sequence<MeasureMemoryBreakdown> breakdown;
+  required sequence<MemoryBreakdownEntry> breakdown;
 };

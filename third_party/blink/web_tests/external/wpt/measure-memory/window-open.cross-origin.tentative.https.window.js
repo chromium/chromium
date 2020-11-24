@@ -3,8 +3,10 @@
 // META: timeout=long
 'use strict';
 
+assert_true(self.crossOriginIsolated);
+
 promise_test(async testCase => {
-  const {windows, iframes} = await build([
+  const {iframes, windows} = await build([
     {
       id: 'cross-origin-1',
       window_open: true,
@@ -22,20 +24,12 @@ promise_test(async testCase => {
       ]
     },
   ]);
-  try {
-    const result = await performance.measureMemory();
-    checkMeasureMemory(result, {
-      allowed: [
-        window.location.href,
-      ],
-      required: [
-        window.location.href,
-      ],
-    });
-  } catch (error) {
-    if (!(error instanceof DOMException)) {
-      throw error;
-    }
-    assert_equals(error.name, 'SecurityError');
-  }
+  const result = await performance.measureMemory();
+  checkMeasureMemory(result, [
+    {
+      url: window.location.href,
+      scope: 'Window',
+      container: null,
+    },
+  ]);
 }, 'performance.measureMemory does not leak URL of cross-origin window.open.');

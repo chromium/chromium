@@ -3,8 +3,10 @@
 // META: timeout=long
 'use strict';
 
+assert_true(self.crossOriginIsolated);
+
 promise_test(async testCase => {
-  const {windows, iframes} = await build([
+  const {iframes, windows} = await build([
     {
       id: 'same-origin-1',
       children: [
@@ -70,30 +72,64 @@ promise_test(async testCase => {
       ]
     },
   ]);
-  try {
-    const result = await performance.measureMemory();
-    checkMeasureMemory(result, {
-      allowed: [
-        window.location.href,
-        iframes['same-origin-1'].src,
-        windows['same-origin-2'].location.href,
-        windows['same-origin-3'].location.href,
-        iframes['cross-origin-4'].src,
-        iframes['cross-site-6'].src,
-        iframes['same-origin-8'].src,
-      ],
-      required: [
-        window.location.href,
-        iframes['same-origin-1'].src,
-        windows['same-origin-2'].location.href,
-        windows['same-origin-3'].location.href,
-        iframes['same-origin-8'].src,
-      ],
-    });
-  } catch (error) {
-    if (!(error instanceof DOMException)) {
-      throw error;
-    }
-    assert_equals(error.name, 'SecurityError');
-  }
+  const result = await performance.measureMemory();
+  checkMeasureMemory(result, [
+    {
+      url: window.location.href,
+      scope: 'Window',
+      container: null,
+    },
+    {
+      url: windows['same-origin-1'].location.href,
+      scope: 'Window',
+      container: {
+        id: 'same-origin-1',
+        src: iframes['same-origin-1'].src,
+      },
+    },
+    {
+      url: windows['same-origin-2'].location.href,
+      scope: 'Window',
+      container: null,
+    },
+    {
+      url: windows['same-origin-3'].location.href,
+      scope: 'Window',
+      container: null,
+    },
+    {
+      url: 'cross-origin-url',
+      scope: 'cross-origin-aggregated',
+      container: {
+        id: 'cross-origin-4',
+        src: iframes['cross-origin-4'].src,
+      },
+    },
+    {
+      url: windows['same-origin-5'].location.href,
+      scope: 'Window',
+      container: null,
+    },
+    {
+      url: 'cross-origin-url',
+      scope: 'cross-origin-aggregated',
+      container: {
+        id: 'cross-site-6',
+        src: iframes['cross-site-6'].src,
+      },
+    },
+    {
+      url: windows['same-origin-7'].location.href,
+      scope: 'Window',
+      container: null,
+    },
+    {
+      url: windows['same-origin-8'].location.href,
+      scope: 'Window',
+      container: {
+        id: 'same-origin-8',
+        src: iframes['same-origin-8'].src,
+      },
+    },
+  ]);
 }, 'performance.measureMemory does not leak URLs in cross-origin iframes and windows.');
