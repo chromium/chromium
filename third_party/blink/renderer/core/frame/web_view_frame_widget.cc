@@ -78,25 +78,6 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEventScaled(
 
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
 
-  // Special handling for double tap and scroll events as we don't want to
-  // hit test for them.
-  switch (scaled_event.GetType()) {
-    case WebInputEvent::Type::kGestureScrollBegin:
-    case WebInputEvent::Type::kGestureScrollEnd:
-    case WebInputEvent::Type::kGestureScrollUpdate:
-      // Scrolling-related gesture events invoke EventHandler recursively for
-      // each frame down the chain, doing a single-frame hit-test per frame.
-      // This matches handleWheelEvent.  Perhaps we could simplify things by
-      // rewriting scroll handling to work inner frame out, and then unify with
-      // other gesture events.
-      return web_view->MainFrameImpl()
-          ->GetFrame()
-          ->GetEventHandler()
-          .HandleGestureScrollEvent(scaled_event);
-    default:
-      break;
-  }
-
   // Hit test across all frames and do touch adjustment as necessary for the
   // event type.
   GestureEventWithHitTestResults targeted_event =

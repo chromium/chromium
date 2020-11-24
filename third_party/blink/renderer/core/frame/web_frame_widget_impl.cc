@@ -215,9 +215,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEventScaled(
     const WebGestureEvent& scaled_event) {
   base::Optional<ContextMenuAllowedScope> maybe_context_menu_scope;
   switch (scaled_event.GetType()) {
-    case WebInputEvent::Type::kGestureScrollBegin:
-    case WebInputEvent::Type::kGestureScrollEnd:
-    case WebInputEvent::Type::kGestureScrollUpdate:
     case WebInputEvent::Type::kGestureTap:
     case WebInputEvent::Type::kGestureTapUnconfirmed:
     case WebInputEvent::Type::kGestureTapDown:
