@@ -110,9 +110,8 @@ export let RoutineName = {
   kFloatingPoint: 2,
   kPrimeSearch: 3,
   kMemory: 4,
-  kPower: 5,
-  kCharge: 6,
-  kDischarge: 7,
+  kCharge: 5,
+  kDischarge: 6,
 };
 
 /**

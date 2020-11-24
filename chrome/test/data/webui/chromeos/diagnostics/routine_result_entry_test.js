@@ -7,6 +7,7 @@ import 'chrome://diagnostics/routine_result_entry.js';
 import {RoutineName, RoutineResult, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {BadgeType} from 'chrome://diagnostics/text_badge.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -116,8 +117,11 @@ export function routineResultEntryTestSuite() {
     const item = createIncompleteStatus(
         RoutineName.kCpuStress, ExecutionProgress.kNotStarted);
     return initializeEntryWithItem(item).then(() => {
-      // TODO(zentaro): Localize the test.
-      assertEquals(getNameText(), 'kCpuStress');
+      assertEquals(
+          getNameText(),
+          loadTimeData.getStringF(
+              'routineNameText',
+              loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should be empty if the test is not started.
       // TODO(joonbug): Utilize isVisible util function.
@@ -129,8 +133,11 @@ export function routineResultEntryTestSuite() {
     const item = createIncompleteStatus(
         RoutineName.kCpuStress, ExecutionProgress.kRunning);
     return initializeEntryWithItem(item).then(() => {
-      // TODO(zentaro): Localize the test.
-      assertEquals(getNameText(), 'kCpuStress');
+      assertEquals(
+          getNameText(),
+          loadTimeData.getStringF(
+              'routineNameText',
+              loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should be running.
       assertEquals(getStatusBadge().value, 'RUNNING');
@@ -144,8 +151,11 @@ export function routineResultEntryTestSuite() {
           simpleResult: StandardRoutineResult.kTestPassed
         }));
     return initializeEntryWithItem(item).then(() => {
-      // TODO(zentaro): Localize the test.
-      assertEquals(getNameText(), 'kCpuStress');
+      assertEquals(
+          getNameText(),
+          loadTimeData.getStringF(
+              'routineNameText',
+              loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should show the passed result.
       assertEquals(getStatusBadge().value, 'SUCCESS');
@@ -159,8 +169,11 @@ export function routineResultEntryTestSuite() {
           simpleResult: StandardRoutineResult.kTestFailed
         }));
     return initializeEntryWithItem(item).then(() => {
-      // TODO(zentaro): Localize the test.
-      assertEquals(getNameText(), 'kCpuStress');
+      assertEquals(
+          getNameText(),
+          loadTimeData.getStringF(
+              'routineNameText',
+              loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should show the passed result.
       assertEquals(getStatusBadge().value, 'FAILED');
@@ -179,8 +192,11 @@ export function routineResultEntryTestSuite() {
           }
         }));
     return initializeEntryWithItem(item).then(() => {
-      // TODO(joonbug): Localize the test.
-      assertEquals(getNameText(), 'kCharge');
+      assertEquals(
+          getNameText(),
+          loadTimeData.getStringF(
+              'routineNameText',
+              loadTimeData.getString('batteryChargeRoutineText')));
 
       // Status should show the passed result.
       assertEquals(getStatusBadge().value, 'SUCCESS');

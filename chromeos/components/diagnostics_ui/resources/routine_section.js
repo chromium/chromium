@@ -10,12 +10,13 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RoutineName, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
 import {ExecutionProgress, RoutineListExecutor} from './routine_list_executor.js';
-import {lookupEnumValueName} from './routine_result_entry.js';
+import {getRoutineName} from './routine_result_entry.js';
 import {BadgeType} from './text_badge.js';
 
 /**
@@ -111,10 +112,8 @@ Polymer({
           .runRoutines(
               filteredRoutines,
               (status) => {
-                // TODO(joonbug): Update this function to use localized test
-                // name
-                this.currentTestName_ =
-                    lookupEnumValueName(RoutineName, status.routine);
+                this.currentTestName_ = loadTimeData.getStringF(
+                    'routineNameText', getRoutineName(status.routine));
 
                 if (status.result &&
                     status.result.simpleResult !==
@@ -177,9 +176,8 @@ Polymer({
 
   /** @protected */
   getTextStatus_() {
-    // TODO(joonbug): Localize this string.
     if (this.executionStatus_ === ExecutionProgress.kRunning) {
-      return `Running ${this.currentTestName_} test`;
+      return this.currentTestName_;
     }
     return this.hasTestFailure_ ? 'Test failed' : 'Test succeeded';
   },

@@ -7,30 +7,38 @@ import './diagnostics_shared_css.js';
 import './text_badge.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {RoutineName, RoutineResult, StandardRoutineResult} from './diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
 import {BadgeType} from './text_badge.js';
 
 /**
- * Resolves an enum value to the string name. This is used temporarily to
- * provide a human readable string until the final mapping of enum values to
- * localized strings is finalized.
- * TODO(zentaro): Remove this function when strings are finalized.
- * @param {!Object} enumType
- * @param {number} enumValue
+ * Resolves a routine name to its corresponding localized string name.
+ * @param {!RoutineName} routineName
  * @return {string}
  */
-export function lookupEnumValueName(enumType, enumValue) {
-  for (const [key, value] of Object.entries(enumType)) {
-    if (value === enumValue) {
-      return key;
-    }
+export function getRoutineName(routineName) {
+  switch (routineName) {
+    case RoutineName.kCharge:
+      return loadTimeData.getString('batteryChargeRoutineText');
+    case RoutineName.kDischarge:
+      return loadTimeData.getString('batteryDischargeRoutineText');
+    case RoutineName.kCpuCache:
+      return loadTimeData.getString('cpuCacheRoutineText');
+    case RoutineName.kCpuStress:
+      return loadTimeData.getString('cpuStressRoutineText');
+    case RoutineName.kFloatingPoint:
+      return loadTimeData.getString('cpuFloatingPointAccuracyRoutineText');
+    case RoutineName.kPrimeSearch:
+      return loadTimeData.getString('cpuPrimeSearchRoutineText');
+    case RoutineName.kMemory:
+      return loadTimeData.getString('memoryRoutineText');
+    default:
+      // Values should always be found in the enum.
+      assert(false);
+      return '';
   }
-
-  // Values should always be found in the enum.
-  assert(false);
-  return '';
 }
 
 /**
@@ -51,21 +59,17 @@ Polymer({
     /** @private */
     routineName_: {
       type: String,
-      computed: 'getRoutineName_(item.routine)',
+      computed: 'getRunningRoutineString_(item.routine)',
     },
   },
-
   /**
-   * Get the string name for the routine.
-   * TODO(zentaro): Replace with a mapping to localized string when they are
-   * finalized.
+   * Get the localized string name for the routine.
    * @param {!RoutineName} routine
    * @return {string}
    */
-  getRoutineName_(routine) {
-    return lookupEnumValueName(RoutineName, routine);
+  getRunningRoutineString_(routine) {
+    return loadTimeData.getStringF('routineNameText', getRoutineName(routine));
   },
-
   /**
    * @param {!RoutineResult} result
    * @return {!StandardRoutineResult}

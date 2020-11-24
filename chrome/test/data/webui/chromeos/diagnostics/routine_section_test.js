@@ -11,6 +11,7 @@ import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_rout
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {ExecutionProgress} from 'chrome://diagnostics/routine_list_executor.js';
 import {BadgeType} from 'chrome://diagnostics/text_badge.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -340,7 +341,9 @@ export function routineSectionTestSuite() {
 
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);
-          dx_utils.assertElementContainsText(getStatusTextElement(), 'kMemory');
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(),
+              loadTimeData.getString('memoryRoutineText'));
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -389,7 +392,8 @@ export function routineSectionTestSuite() {
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);
           dx_utils.assertElementContainsText(
-              getStatusTextElement(), 'kFloatingPoint');
+              getStatusTextElement(),
+              loadTimeData.getString('cpuFloatingPointAccuracyRoutineText'));
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -407,7 +411,8 @@ export function routineSectionTestSuite() {
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);
           dx_utils.assertElementContainsText(
-              getStatusTextElement(), 'kCpuCache');
+              getStatusTextElement(),
+              loadTimeData.getString('cpuCacheRoutineText'));
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
