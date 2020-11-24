@@ -528,7 +528,7 @@ DOMDataView* NDEFRecord::data() const {
   return DOMDataView::Create(dom_buffer, 0, payload_data_.size());
 }
 
-// https://w3c.github.io/web-nfc/#dfn-convert-ndefrecord-payloaddata-bytes
+// https://w3c.github.io/web-nfc/#dfn-convert-ndefrecord-data-bytes
 base::Optional<HeapVector<Member<NDEFRecord>>> NDEFRecord::toRecords(
     ExceptionState& exception_state) const {
   if (record_type_ != "smart-poster" &&
