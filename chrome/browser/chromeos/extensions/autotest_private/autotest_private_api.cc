@@ -2234,12 +2234,13 @@ AutotestPrivateTakeScreenshotFunction::
 ExtensionFunction::ResponseAction AutotestPrivateTakeScreenshotFunction::Run() {
   DVLOG(1) << "AutotestPrivateTakeScreenshotFunction";
   auto grabber = std::make_unique<ui::ScreenshotGrabber>();
+  auto* const grabber_ptr = grabber.get();
   // TODO(mash): Fix for mash, http://crbug.com/557397
   aura::Window* primary_root = ash::Shell::GetPrimaryRootWindow();
   // Pass the ScreenshotGrabber to the callback so that it stays alive for the
   // duration of the operation, it'll then get deallocated when the callback
   // completes.
-  grabber->TakeScreenshot(
+  grabber_ptr->TakeScreenshot(
       primary_root, primary_root->bounds(),
       base::BindOnce(&AutotestPrivateTakeScreenshotFunction::ScreenshotTaken,
                      this, std::move(grabber)));
@@ -2280,7 +2281,8 @@ AutotestPrivateTakeScreenshotForDisplayFunction::Run() {
     const int64_t display_id =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
     if (display_id == target_display_id) {
-      grabber->TakeScreenshot(
+      auto* const grabber_ptr = grabber.get();
+      grabber_ptr->TakeScreenshot(
           window, window->bounds(),
           base::BindOnce(
               &AutotestPrivateTakeScreenshotForDisplayFunction::ScreenshotTaken,
