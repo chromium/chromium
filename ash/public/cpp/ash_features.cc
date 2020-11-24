@@ -45,7 +45,7 @@ const base::Feature kDragToSnapInClamshellMode{
     "DragToSnapInClamshellMode", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnhancedDeskAnimations{"EnhancedDeskAnimations",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kFullRestore{"FullRestore",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
