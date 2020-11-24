@@ -274,19 +274,6 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
       return;
   }
 
-  // Don't allow the top document to be focused if it has no children and hasn't
-  // finished loading yet. Wait for at least a tiny bit of content, or for the
-  // document to actually finish loading.
-  // Even after the document has loaded, we shouldn't fire a focus event if the
-  // document is completely empty, otherwise the user will be placed inside an
-  // empty container. This would result in user confusion, since none of the
-  // screen reader commands will read anything.
-  if (focus == focus->manager()->GetRoot() &&
-      (focus->PlatformChildCount() == 0 ||
-       !focus->manager()->GetTreeData().loaded)) {
-    return;
-  }
-
   // Wait until navigation is complete or stopped, before attempting to move the
   // accessibility focus.
   if (user_is_navigating_away_)

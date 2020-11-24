@@ -3798,6 +3798,16 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   }
 }
 
+- (id)accessibilityFocusedUIElement {
+  TRACE_EVENT1("accessibility",
+               "BrowserAccessibilityCocoa::accessibilityFocusedUIElement",
+               "role=", ui::ToString([self internalRole]));
+  if (![self instanceActive])
+    return nil;
+
+  return ToBrowserAccessibilityCocoa(_owner->manager()->GetFocus());
+}
+
 // Returns the deepest accessibility child that should not be ignored.
 // It is assumed that the hit test has been narrowed down to this object
 // or one of its children, so this will never return nil unless this
