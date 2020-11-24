@@ -2260,7 +2260,7 @@ TEST_PPAPI_OUT_OF_PROCESS(Flash_GetSetting)
 TEST_PPAPI_OUT_OF_PROCESS(Flash_SetCrashData)
 // http://crbug.com/176822
 #if !defined(OS_WIN) && !defined(OS_MAC)
-TEST_PPAPI_OUT_OF_PROCESS(FlashClipboard)
+TEST_PPAPI_OUT_OF_PROCESS(DISABLED_FlashClipboard)
 #endif
 TEST_PPAPI_OUT_OF_PROCESS(FlashFile)
 // Mac/Aura reach NOTIMPLEMENTED/time out.
