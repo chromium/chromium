@@ -162,8 +162,7 @@ struct RangeData {
     FontOrientation orientation = font->GetFontDescription().Orientation();
     hb_direction_t direction =
         IsVerticalAnyUpright(orientation) &&
-                (canvas_rotation ==
-                 CanvasRotationInVertical::kRotateCanvasUpright)
+                IsCanvasRotationInVerticalUpright(canvas_rotation)
             ? HB_DIRECTION_TTB
             : HB_DIRECTION_LTR;
     return text_direction == TextDirection::kRtl
@@ -305,11 +304,25 @@ void QueueCharacters(RangeData* range_data,
 
 CanvasRotationInVertical CanvasRotationForRun(
     FontOrientation font_orientation,
-    OrientationIterator::RenderOrientation render_orientation) {
-  if (font_orientation == FontOrientation::kVerticalUpright ||
-      (font_orientation == FontOrientation::kVerticalMixed &&
-       render_orientation == OrientationIterator::kOrientationKeep))
-    return CanvasRotationInVertical::kRotateCanvasUpright;
+    OrientationIterator::RenderOrientation render_orientation,
+    const FontDescription& font_description) {
+  if (font_orientation == FontOrientation::kVerticalUpright) {
+    return font_description.IsSyntheticOblique()
+               ? CanvasRotationInVertical::kRotateCanvasUprightOblique
+               : CanvasRotationInVertical::kRotateCanvasUpright;
+  }
+
+  if (font_orientation == FontOrientation::kVerticalMixed) {
+    if (render_orientation == OrientationIterator::kOrientationKeep) {
+      return font_description.IsSyntheticOblique()
+                 ? CanvasRotationInVertical::kRotateCanvasUprightOblique
+                 : CanvasRotationInVertical::kRotateCanvasUpright;
+    }
+    return font_description.IsSyntheticOblique()
+               ? CanvasRotationInVertical::kOblique
+               : CanvasRotationInVertical::kRegular;
+  }
+
   return CanvasRotationInVertical::kRegular;
 }
 
@@ -940,7 +953,7 @@ void HarfBuzzShaper::ShapeSegment(
 
     CanvasRotationInVertical canvas_rotation =
         CanvasRotationForRun(adjusted_font->PlatformData().Orientation(),
-                             segment.render_orientation);
+                             segment.render_orientation, font_description);
 
     CapsFeatureSettingsScopedOverlay caps_overlay(
         &range_data->font_features,

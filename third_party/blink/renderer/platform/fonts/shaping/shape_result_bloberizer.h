@@ -57,7 +57,8 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
       CommitPendingRun();
       pending_font_data_ = font_data;
       pending_canvas_rotation_ = canvas_rotation;
-      DCHECK_EQ(canvas_rotation, CanvasRotationInVertical::kRegular);
+      DCHECK(!IsCanvasRotationInVerticalUpright(canvas_rotation))
+          << static_cast<int>(canvas_rotation);
     }
 
     pending_glyphs_.push_back(glyph);
@@ -77,7 +78,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
       pending_font_data_ = font_data;
       pending_canvas_rotation_ = canvas_rotation;
       pending_vertical_baseline_x_offset_ =
-          canvas_rotation == CanvasRotationInVertical::kRegular
+          !IsCanvasRotationInVerticalUpright(canvas_rotation)
               ? 0
               : font_data->GetFontMetrics().FloatAscent() -
                     font_data->GetFontMetrics().FloatAscent(

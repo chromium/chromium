@@ -228,6 +228,7 @@ class PLATFORM_EXPORT FontDescription {
   UScriptCode GetScript() const { return LocaleOrDefault().GetScript(); }
   bool IsSyntheticBold() const { return fields_.synthetic_bold_; }
   bool IsSyntheticItalic() const { return fields_.synthetic_italic_; }
+  bool IsSyntheticOblique() const { return fields_.synthetic_oblique_; }
   bool UseSubpixelPositioning() const {
     return fields_.subpixel_text_position_;
   }
@@ -273,7 +274,7 @@ class PLATFORM_EXPORT FontDescription {
   void SetAdjustedSize(float s) { adjusted_size_ = clampTo<float>(s); }
   void SetSizeAdjust(float aspect) { size_adjust_ = clampTo<float>(aspect); }
 
-  void SetStyle(FontSelectionValue i) { font_selection_request_.slope = i; }
+  void SetStyle(FontSelectionValue i);
   void SetWeight(FontSelectionValue w) { font_selection_request_.weight = w; }
   void SetStretch(FontSelectionValue s) { font_selection_request_.width = s; }
 
@@ -301,9 +302,7 @@ class PLATFORM_EXPORT FontDescription {
     fields_.text_rendering_ = rendering;
     UpdateTypesettingFeatures();
   }
-  void SetOrientation(FontOrientation orientation) {
-    fields_.orientation_ = static_cast<unsigned>(orientation);
-  }
+  void SetOrientation(FontOrientation orientation);
   void SetWidthVariant(FontWidthVariant width_variant) {
     fields_.width_variant_ = width_variant;
   }
@@ -383,6 +382,8 @@ class PLATFORM_EXPORT FontDescription {
   String ToString() const;
 
  private:
+  void UpdateSyntheticOblique();
+
   FontFamily family_list_;  // The list of font families to be used.
   scoped_refptr<FontFeatureSettings> feature_settings_;
   scoped_refptr<FontVariationSettings> variation_settings_;
@@ -409,6 +410,7 @@ class PLATFORM_EXPORT FontDescription {
 
   // Covers stretch, style, weight.
   FontSelectionRequest font_selection_request_;
+  FontSelectionValue original_slope;
 
   struct BitFields {
     DISALLOW_NEW();
@@ -443,6 +445,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned text_rendering_ : 2;  // TextRenderingMode
     unsigned synthetic_bold_ : 1;
     unsigned synthetic_italic_ : 1;
+    unsigned synthetic_oblique_ : 1;
     unsigned subpixel_text_position_ : 1;
     unsigned typesetting_features_ : 3;
     unsigned variant_numeric_ : 8;

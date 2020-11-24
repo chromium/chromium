@@ -372,6 +372,31 @@ unsigned FontDescription::GetHash() const {
   return hash;
 }
 
+void FontDescription::SetOrientation(FontOrientation orientation) {
+  fields_.orientation_ = static_cast<unsigned>(orientation);
+  UpdateSyntheticOblique();
+}
+
+void FontDescription::SetStyle(FontSelectionValue value) {
+  font_selection_request_.slope = value;
+  original_slope = value;
+  UpdateSyntheticOblique();
+}
+
+void FontDescription::UpdateSyntheticOblique() {
+  // Doing synthetic oblique for vertical writing mode with upright text
+  // orientation when negative angle parameter of "oblique" keyword, e.g.
+  // "font-style: oblique -15deg" for simulating "tts:fontShear"[1][2], we
+  // need to have normal font style instead of italic/oblique.
+  // [1]
+  // https://www.w3.org/TR/2018/REC-ttml2-20181108/#style-attribute-fontShear
+  // [2] See http://crbug.com/1112923
+  fields_.synthetic_oblique_ =
+      IsVerticalAnyUpright() && original_slope < FontSelectionValue(0);
+  font_selection_request_.slope =
+      fields_.synthetic_oblique_ ? NormalSlopeValue() : original_slope;
+}
+
 SkFontStyle FontDescription::SkiaFontStyle() const {
   // FIXME(drott): This is a lossy conversion, compare
   // https://bugs.chromium.org/p/skia/issues/detail?id=6844

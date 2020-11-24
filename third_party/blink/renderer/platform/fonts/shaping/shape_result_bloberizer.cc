@@ -96,8 +96,7 @@ inline void AddEmphasisMark(ShapeResultBloberizer& bloberizer,
 
   bool is_vertical =
       emphasis_font_data->PlatformData().IsVerticalAnyUpright() &&
-      emphasis_data.canvas_rotation ==
-          CanvasRotationInVertical::kRotateCanvasUpright;
+      IsCanvasRotationInVerticalUpright(emphasis_data.canvas_rotation);
 
   if (!is_vertical) {
     bloberizer.Add(emphasis_data.glyph, emphasis_font_data,
@@ -105,8 +104,7 @@ inline void AddEmphasisMark(ShapeResultBloberizer& bloberizer,
                    mid_glyph_offset - glyph_center.X());
   } else {
     bloberizer.Add(
-        emphasis_data.glyph, emphasis_font_data,
-        CanvasRotationInVertical::kRotateCanvasUpright,
+        emphasis_data.glyph, emphasis_font_data, emphasis_data.canvas_rotation,
         FloatPoint(-glyph_center.X(), mid_glyph_offset - glyph_center.Y()));
   }
 }
