@@ -442,7 +442,7 @@ class Profile : public content::BrowserContext {
   // TODO(https://crbug.com/1129543): Implement this method.
   // In Lacros, there is exactly one profile associated with the currently
   // logged in user on ChromeOS.
-  bool IsDefaultProfile() const { return false; }
+  bool IsMainProfile() const { return false; }
 #endif
 
   bool CanUseDiskWhenOffTheRecord() override;
