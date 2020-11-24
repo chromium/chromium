@@ -10,6 +10,7 @@ for cmd in gen-signedexchange gen-certurl; do
     if ! command -v $cmd > /dev/null 2>&1; then
         echo "$cmd is not installed. Please run:"
         echo "  go get -u github.com/WICG/webpackage/go/signedexchange/cmd/..."
+        echo '  export PATH=$PATH:$(go env GOPATH)/bin'
         exit 1
     fi
 done
@@ -81,7 +82,7 @@ gen-signedexchange \
   -content sxg-location.html \
   -certificate $certs_dir/127.0.0.1.sxg.pem \
   -certUrl https://127.0.0.1:8443/loading/sxg/resources/127.0.0.1.sxg.pem.cbor \
-  -validityUrl https://www2.127.0.0.1/loading/sxg/resources/resource.validity.msg \
+  -validityUrl https://127.0.0.1:8444/loading/sxg/resources/resource.validity.msg \
   -privateKey $certs_dir/127.0.0.1.sxg.key \
   -date 2018-04-01T00:00:00Z \
   -expire 168h \
