@@ -659,7 +659,7 @@ CrostiniManager::RestartId
 bool CrostiniManager::is_dev_kvm_present_ = true;
 
 void CrostiniManager::UpdateVmState(std::string vm_name, VmState vm_state) {
-  auto vm_info = running_vms_.find(std::move(vm_name));
+  auto vm_info = running_vms_.find(vm_name);
   if (vm_info != running_vms_.end()) {
     vm_info->second.state = vm_state;
     return;

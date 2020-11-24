@@ -210,8 +210,9 @@ void LaunchApplication(
                                     display_id, std::move(launch_args),
                                     std::move(callback), true, "");
   } else {
+    const auto vm_name = registration.VmName();
     guest_os::GuestOsSharePath::GetForProfile(profile)->SharePaths(
-        registration.VmName(), std::move(paths_to_share), /*persist=*/false,
+        vm_name, std::move(paths_to_share), /*persist=*/false,
         base::BindOnce(OnSharePathForLaunchApplication, profile, app_id,
                        std::move(registration), display_id,
                        std::move(launch_args), std::move(callback)));
