@@ -29,6 +29,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -36,6 +37,8 @@ import org.chromium.chrome.browser.video_tutorials.test.TestImageFetcher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
+
+import java.util.HashMap;
 
 /**
  * Tests for {@link LanguagePickerCoordinator}.
@@ -70,6 +73,7 @@ public class VideoIPHTest {
             TestImageFetcher imageFetcher = new TestImageFetcher(testImage);
             mCoordinator = new VideoIPHCoordinatorImpl(
                     viewStub, imageFetcher, mOnClickListener, mOnDismissListener);
+            ChromeFeatureList.setTestFeatures(new HashMap<>());
         });
     }
 
@@ -90,6 +94,7 @@ public class VideoIPHTest {
         return new Tutorial(FeatureType.DOWNLOAD,
                 "How to use Google Chrome's download functionality",
                 "https://xyz.example.com/xyz.mp4", "https://xyz.example.com/xyz.png",
+                "https://xyz.example.com/xyz.gif", "https://xyz.example.com/xyz.png",
                 "https://xyz.example.com/xyz.vtt", "https://xyz.example.com/xyz.mp4", 335);
     }
 

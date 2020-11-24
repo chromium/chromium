@@ -14,7 +14,7 @@ const char kTestURL[] = "https://www.example.com";
 
 void ResetTutorialEntry(Tutorial* entry) {
   *entry = Tutorial(FeatureType::kTest, kTestTitle, kTestURL, kTestURL,
-                    kTestURL, kTestURL, 60);
+                    kTestURL, kTestURL, kTestURL, kTestURL, 60);
 }
 
 // Verify the copy/assign and compare operators for Tutorial struct.
