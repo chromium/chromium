@@ -15,13 +15,14 @@ void FakeNavigationPolicyProvider::EvaluateRequestedNavigation(
     fuchsia::web::RequestedNavigation requested_navigation,
     EvaluateRequestedNavigationCallback callback) {
   fuchsia::web::NavigationDecision decision;
-  if (should_reject_request_) {
+  if (should_abort_navigation_) {
     callback(decision.WithAbort(fuchsia::web::NoArgumentsAction()));
   } else {
     callback(decision.WithProceed(fuchsia::web::NoArgumentsAction()));
   }
 
   requested_navigation_ = std::move(requested_navigation);
+  num_evaluated_navigations_++;
 }
 
 void FakeNavigationPolicyProvider::NotImplemented_(const std::string& name) {

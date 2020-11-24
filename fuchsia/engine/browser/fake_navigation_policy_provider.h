@@ -18,13 +18,15 @@ class FakeNavigationPolicyProvider
   FakeNavigationPolicyProvider& operator=(const FakeNavigationPolicyProvider&) =
       delete;
 
-  void set_should_reject_request(bool reject) {
-    should_reject_request_ = reject;
+  void set_should_abort_navigation(bool should_abort_navigation) {
+    should_abort_navigation_ = should_abort_navigation;
   }
 
   fuchsia::web::RequestedNavigation* requested_navigation() {
     return &requested_navigation_;
   }
+
+  int num_evaluated_navigations() { return num_evaluated_navigations_; }
 
   // fuchsia::web::NavigationPolicyProvider implementation.
   void EvaluateRequestedNavigation(
@@ -34,7 +36,8 @@ class FakeNavigationPolicyProvider
 
  private:
   fuchsia::web::RequestedNavigation requested_navigation_;
-  bool should_reject_request_ = false;
+  bool should_abort_navigation_ = false;
+  int num_evaluated_navigations_ = 0;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FAKE_NAVIGATION_POLICY_PROVIDER_H_

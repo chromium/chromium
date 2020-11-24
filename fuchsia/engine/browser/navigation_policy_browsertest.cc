@@ -64,17 +64,19 @@ class NavigationPolicyTest : public cr_fuchsia::WebEngineBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationPolicyTest, Proceed) {
-  policy_provider_.set_should_reject_request(false);
+  policy_provider_.set_should_abort_navigation(false);
 
   GURL page_url(embedded_test_server()->GetURL(std::string(kPagePath)));
   ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
       navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
       page_url.spec()));
   navigation_listener_.RunUntilUrlAndTitleEquals(page_url, kPageTitle);
+
+  EXPECT_EQ(page_url.spec(), policy_provider_.requested_navigation()->url());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationPolicyTest, Deferred) {
-  policy_provider_.set_should_reject_request(true);
+  policy_provider_.set_should_abort_navigation(true);
 
   GURL page_url(embedded_test_server()->GetURL(std::string(kPagePath)));
 
@@ -96,4 +98,6 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyTest, Deferred) {
   auto* current_state = navigation_listener_.current_state();
   EXPECT_TRUE(current_state->has_is_main_document_loaded());
   EXPECT_FALSE(current_state->is_main_document_loaded());
+
+  EXPECT_EQ(page_url.spec(), policy_provider_.requested_navigation()->url());
 }
