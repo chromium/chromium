@@ -109,14 +109,13 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaLoginChoiceList(
     base::android::ScopedJavaLocalRef<jstring> jsublabel_accessibility_hint =
         nullptr;
     if (login_choice.sublabel_accessibility_hint.has_value()) {
-      jsublabel_accessibility_hint = base::android::ConvertUTF8ToJavaString(
+      jsublabel_accessibility_hint = ConvertUTF8ToJavaString(
           env, login_choice.sublabel_accessibility_hint.value());
     }
     Java_AssistantCollectUserDataModel_addLoginChoice(
-        env, jlist,
-        base::android::ConvertUTF8ToJavaString(env, login_choice.identifier),
-        base::android::ConvertUTF8ToJavaString(env, login_choice.label),
-        base::android::ConvertUTF8ToJavaString(env, login_choice.sublabel),
+        env, jlist, ConvertUTF8ToJavaString(env, login_choice.identifier),
+        ConvertUTF8ToJavaString(env, login_choice.label),
+        ConvertUTF8ToJavaString(env, login_choice.sublabel),
         jsublabel_accessibility_hint, login_choice.preselect_priority,
         jinfo_popup);
   }
@@ -143,10 +142,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaTextInputsForSection(
         continue;
     }
     Java_AssistantCollectUserDataModel_appendTextInput(
-        env, jinput_list, type,
-        base::android::ConvertUTF8ToJavaString(env, input.hint()),
-        base::android::ConvertUTF8ToJavaString(env, input.value()),
-        base::android::ConvertUTF8ToJavaString(env, input.client_memory_key()));
+        env, jinput_list, type, ConvertUTF8ToJavaString(env, input.hint()),
+        ConvertUTF8ToJavaString(env, input.value()),
+        ConvertUTF8ToJavaString(env, input.client_memory_key()));
   }
   return jinput_list;
 }
@@ -161,15 +159,12 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalSections(
     switch (section.section_case()) {
       case UserFormSectionProto::kStaticTextSection:
         Java_AssistantCollectUserDataModel_appendStaticTextSection(
-            env, jsection_list,
-            base::android::ConvertUTF8ToJavaString(env, section.title()),
-            base::android::ConvertUTF8ToJavaString(
-                env, section.static_text_section().text()));
+            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
+            ConvertUTF8ToJavaString(env, section.static_text_section().text()));
         break;
       case UserFormSectionProto::kTextInputSection: {
         Java_AssistantCollectUserDataModel_appendTextInputSection(
-            env, jsection_list,
-            base::android::ConvertUTF8ToJavaString(env, section.title()),
+            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
             CreateJavaTextInputsForSection(env, section.text_input_section()));
         break;
       }
@@ -183,15 +178,14 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalSections(
                   section.popup_list_section().initial_selection().end(),
                   std::back_inserter(initial_selections));
         Java_AssistantCollectUserDataModel_appendPopupListSection(
-            env, jsection_list,
-            base::android::ConvertUTF8ToJavaString(env, section.title()),
-            base::android::ConvertUTF8ToJavaString(
+            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
+            ConvertUTF8ToJavaString(
                 env, section.popup_list_section().additional_value_key()),
             base::android::ToJavaArrayOfStrings(env, items),
             base::android::ToJavaIntArray(env, initial_selections),
             section.popup_list_section().allow_multiselect(),
             section.popup_list_section().selection_mandatory(),
-            base::android::ConvertUTF8ToJavaString(
+            ConvertUTF8ToJavaString(
                 env,
                 section.popup_list_section().no_selection_error_message()));
         break;
@@ -534,8 +528,7 @@ void UiControllerAndroid::OnFeedbackButtonClicked() {
   JNIEnv* env = AttachCurrentThread();
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
-      base::android::ConvertUTF8ToJavaString(env,
-                                             ui_delegate_->GetDebugContext()));
+      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()));
 }
 
 void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
@@ -570,7 +563,7 @@ void UiControllerAndroid::ShowSnackbar(base::TimeDelta delay,
   snackbar_action_ = std::move(action);
   Java_AutofillAssistantUiController_showSnackbar(
       env, java_object_, static_cast<jint>(delay.InMilliseconds()),
-      base::android::ConvertUTF8ToJavaString(env, message));
+      ConvertUTF8ToJavaString(env, message));
 }
 
 void UiControllerAndroid::SnackbarResult(
@@ -1221,19 +1214,19 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
       env, jmodel, collect_user_data_options->request_login_choice);
   Java_AssistantCollectUserDataModel_setLoginSectionTitle(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
-          env, collect_user_data_options->login_section_title));
+      ConvertUTF8ToJavaString(env,
+                              collect_user_data_options->login_section_title));
   Java_AssistantCollectUserDataModel_setContactSectionTitle(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
+      ConvertUTF8ToJavaString(
           env, collect_user_data_options->contact_details_section_title));
   Java_AssistantCollectUserDataModel_setShippingSectionTitle(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
+      ConvertUTF8ToJavaString(
           env, collect_user_data_options->shipping_address_section_title));
   Java_AssistantCollectUserDataModel_setAcceptTermsAndConditionsText(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
+      ConvertUTF8ToJavaString(
           env, collect_user_data_options->accept_terms_and_conditions_text));
   Java_AssistantCollectUserDataModel_setShowTermsAsCheckbox(
       env, jmodel, collect_user_data_options->show_terms_as_checkbox);
@@ -1241,11 +1234,11 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
       env, jmodel, collect_user_data_options->require_billing_postal_code);
   Java_AssistantCollectUserDataModel_setBillingPostalCodeMissingText(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
+      ConvertUTF8ToJavaString(
           env, collect_user_data_options->billing_postal_code_missing_text));
   Java_AssistantCollectUserDataModel_setCreditCardExpiredText(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
+      ConvertUTF8ToJavaString(
           env, collect_user_data_options->credit_card_expired_text));
   Java_AssistantCollectUserDataModel_setSupportedBasicCardNetworks(
       env, jmodel,
@@ -1275,46 +1268,46 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
         env, jmodel, jmin_date, jmax_date, jtime_slots);
     Java_AssistantCollectUserDataModel_setDateTimeRangeStartDateLabel(
         env, jmodel,
-        base::android::ConvertUTF8ToJavaString(
+        ConvertUTF8ToJavaString(
             env,
             collect_user_data_options->date_time_range.start_date_label()));
     Java_AssistantCollectUserDataModel_setDateTimeRangeStartTimeLabel(
         env, jmodel,
-        base::android::ConvertUTF8ToJavaString(
+        ConvertUTF8ToJavaString(
             env,
             collect_user_data_options->date_time_range.start_time_label()));
     Java_AssistantCollectUserDataModel_setDateTimeRangeEndDateLabel(
         env, jmodel,
-        base::android::ConvertUTF8ToJavaString(
+        ConvertUTF8ToJavaString(
             env, collect_user_data_options->date_time_range.end_date_label()));
     Java_AssistantCollectUserDataModel_setDateTimeRangeEndTimeLabel(
         env, jmodel,
-        base::android::ConvertUTF8ToJavaString(
+        ConvertUTF8ToJavaString(
             env, collect_user_data_options->date_time_range.end_time_label()));
     Java_AssistantCollectUserDataModel_setDateTimeRangeDateNotSetErrorMessage(
         env, jmodel,
-        base::android::ConvertUTF8ToJavaString(
+        ConvertUTF8ToJavaString(
             env,
             collect_user_data_options->date_time_range.date_not_set_error()));
     Java_AssistantCollectUserDataModel_setDateTimeRangeTimeNotSetErrorMessage(
         env, jmodel,
-        base::android::ConvertUTF8ToJavaString(
+        ConvertUTF8ToJavaString(
             env,
             collect_user_data_options->date_time_range.time_not_set_error()));
   }
   Java_AssistantCollectUserDataModel_setTermsRequireReviewText(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
+      ConvertUTF8ToJavaString(
           env, collect_user_data_options->terms_require_review_text));
   Java_AssistantCollectUserDataModel_setInfoSectionText(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
-          env, collect_user_data_options->info_section_text),
+      ConvertUTF8ToJavaString(env,
+                              collect_user_data_options->info_section_text),
       collect_user_data_options->info_section_text_center);
   Java_AssistantCollectUserDataModel_setPrivacyNoticeText(
       env, jmodel,
-      base::android::ConvertUTF8ToJavaString(
-          env, collect_user_data_options->privacy_notice_text));
+      ConvertUTF8ToJavaString(env,
+                              collect_user_data_options->privacy_notice_text));
 
   Java_AssistantCollectUserDataModel_setPrependedSections(
       env, jmodel,
@@ -1582,12 +1575,9 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
           Java_AssistantFormInput_addCounter(
               env, jcounters,
               Java_AssistantFormInput_createCounter(
-                  env,
-                  base::android::ConvertUTF8ToJavaString(env, counter.label()),
-                  base::android::ConvertUTF8ToJavaString(
-                      env, counter.description_line_1()),
-                  base::android::ConvertUTF8ToJavaString(
-                      env, counter.description_line_2()),
+                  env, ConvertUTF8ToJavaString(env, counter.label()),
+                  ConvertUTF8ToJavaString(env, counter.description_line_1()),
+                  ConvertUTF8ToJavaString(env, counter.description_line_2()),
                   result_value.has_value() ? result_value.value()
                                            : counter.initial_value(),
                   counter.min_value(), counter.max_value(),
@@ -1597,13 +1587,9 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
         Java_AssistantFormModel_addInput(
             env, jinput_list,
             Java_AssistantFormInput_createCounterInput(
-                env, i,
-                base::android::ConvertUTF8ToJavaString(env,
-                                                       counter_input.label()),
-                base::android::ConvertUTF8ToJavaString(
-                    env, counter_input.expand_text()),
-                base::android::ConvertUTF8ToJavaString(
-                    env, counter_input.minimize_text()),
+                env, i, ConvertUTF8ToJavaString(env, counter_input.label()),
+                ConvertUTF8ToJavaString(env, counter_input.expand_text()),
+                ConvertUTF8ToJavaString(env, counter_input.minimize_text()),
                 jcounters, counter_input.minimized_count(),
                 counter_input.min_counters_sum(),
                 counter_input.max_counters_sum(),
@@ -1622,12 +1608,9 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
           Java_AssistantFormInput_addChoice(
               env, jchoices,
               Java_AssistantFormInput_createChoice(
-                  env,
-                  base::android::ConvertUTF8ToJavaString(env, choice.label()),
-                  base::android::ConvertUTF8ToJavaString(
-                      env, choice.description_line_1()),
-                  base::android::ConvertUTF8ToJavaString(
-                      env, choice.description_line_2()),
+                  env, ConvertUTF8ToJavaString(env, choice.label()),
+                  ConvertUTF8ToJavaString(env, choice.description_line_1()),
+                  ConvertUTF8ToJavaString(env, choice.description_line_2()),
                   result_value.has_value() ? result_value.value()
                                            : choice.selected()));
         }
@@ -1635,9 +1618,7 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
         Java_AssistantFormModel_addInput(
             env, jinput_list,
             Java_AssistantFormInput_createSelectionInput(
-                env, i,
-                base::android::ConvertUTF8ToJavaString(env,
-                                                       selection_input.label()),
+                env, i, ConvertUTF8ToJavaString(env, selection_input.label()),
                 jchoices, selection_input.allow_multiple(),
                 form_delegate_.GetJavaObject()));
         break;
@@ -1653,8 +1634,7 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
 
   if (form->has_info_label()) {
     Java_AssistantFormModel_setInfoLabel(
-        env, GetFormModel(),
-        base::android::ConvertUTF8ToJavaString(env, form->info_label()));
+        env, GetFormModel(), ConvertUTF8ToJavaString(env, form->info_label()));
   } else {
     Java_AssistantFormModel_clearInfoLabel(env, GetFormModel());
   }
@@ -1695,7 +1675,7 @@ void UiControllerAndroid::OnClientSettingsChanged(
             env, jcontext, image.image_drawable(),
             ui_delegate_->GetUserModel()),
         image_size, top_margin, bottom_margin,
-        base::android::ConvertUTF8ToJavaString(env, image.text()),
+        ConvertUTF8ToJavaString(env, image.text()),
         ui_controller_android_utils::GetJavaColor(env, image.text_color()),
         text_size);
   } else {
@@ -1762,26 +1742,25 @@ void UiControllerAndroid::OnDetailsChanged(const Details* details) {
   base::android::ScopedJavaLocalRef<jstring> jimage_accessibility_hint =
       nullptr;
   if (opt_image_accessibility_hint.has_value()) {
-    jimage_accessibility_hint = base::android::ConvertUTF8ToJavaString(
-        env, opt_image_accessibility_hint.value());
+    jimage_accessibility_hint =
+        ConvertUTF8ToJavaString(env, opt_image_accessibility_hint.value());
   }
   auto jdetails = Java_AssistantDetails_create(
-      env, base::android::ConvertUTF8ToJavaString(env, details->title()),
+      env, ConvertUTF8ToJavaString(env, details->title()),
       details->titleMaxLines(),
-      base::android::ConvertUTF8ToJavaString(env, details->imageUrl()),
+      ConvertUTF8ToJavaString(env, details->imageUrl()),
       jimage_accessibility_hint, details->imageAllowClickthrough(),
-      base::android::ConvertUTF8ToJavaString(env, details->imageDescription()),
-      base::android::ConvertUTF8ToJavaString(env, details->imagePositiveText()),
-      base::android::ConvertUTF8ToJavaString(env, details->imageNegativeText()),
-      base::android::ConvertUTF8ToJavaString(env,
-                                             details->imageClickthroughUrl()),
+      ConvertUTF8ToJavaString(env, details->imageDescription()),
+      ConvertUTF8ToJavaString(env, details->imagePositiveText()),
+      ConvertUTF8ToJavaString(env, details->imageNegativeText()),
+      ConvertUTF8ToJavaString(env, details->imageClickthroughUrl()),
       details->showImagePlaceholder(),
-      base::android::ConvertUTF8ToJavaString(env, details->totalPriceLabel()),
-      base::android::ConvertUTF8ToJavaString(env, details->totalPrice()),
-      base::android::ConvertUTF8ToJavaString(env, details->descriptionLine1()),
-      base::android::ConvertUTF8ToJavaString(env, details->descriptionLine2()),
-      base::android::ConvertUTF8ToJavaString(env, details->descriptionLine3()),
-      base::android::ConvertUTF8ToJavaString(env, details->priceAttribution()),
+      ConvertUTF8ToJavaString(env, details->totalPriceLabel()),
+      ConvertUTF8ToJavaString(env, details->totalPrice()),
+      ConvertUTF8ToJavaString(env, details->descriptionLine1()),
+      ConvertUTF8ToJavaString(env, details->descriptionLine2()),
+      ConvertUTF8ToJavaString(env, details->descriptionLine3()),
+      ConvertUTF8ToJavaString(env, details->priceAttribution()),
       details->userApprovalRequired(), details->highlightTitle(),
       details->highlightLine1(), details->highlightLine2(),
       details->highlightLine3(), details->animatePlaceholders());
@@ -1805,8 +1784,8 @@ void UiControllerAndroid::OnInfoBoxChanged(const InfoBox* info_box) {
 
   const InfoBoxProto& proto = info_box->proto().info_box();
   auto jinfo_box = Java_AssistantInfoBox_create(
-      env, base::android::ConvertUTF8ToJavaString(env, proto.image_path()),
-      base::android::ConvertUTF8ToJavaString(env, proto.explanation()));
+      env, ConvertUTF8ToJavaString(env, proto.image_path()),
+      ConvertUTF8ToJavaString(env, proto.explanation()));
   Java_AssistantInfoBoxModel_setInfoBox(env, jmodel, jinfo_box);
 }
 
