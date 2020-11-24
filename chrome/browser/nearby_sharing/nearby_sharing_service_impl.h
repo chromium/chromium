@@ -291,7 +291,7 @@ class NearbySharingServiceImpl
   void OnPayloadTransferUpdate(ShareTarget share_target,
                                TransferMetadata metadata);
   bool OnIncomingPayloadsComplete(ShareTarget& share_target);
-  void OnPayloadsFailed(ShareTarget share_target);
+  void RemoveIncomingPayloads(ShareTarget share_target);
   void Disconnect(const ShareTarget& share_target, TransferMetadata metadata);
   void OnDisconnectingConnectionTimeout(const std::string& endpoint_id);
   void OnDisconnectingConnectionDisconnected(const ShareTarget& share_target,
@@ -319,6 +319,10 @@ class NearbySharingServiceImpl
       bool used_device_name,
       NearbyConnectionsManager::ConnectionsStatus status);
   void SetInHighVisibility(bool in_high_visibility);
+
+  void DoCancel(const ShareTarget& share_target,
+                StatusCodesCallback status_codes_callback,
+                bool write_cancel_frame);
 
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
