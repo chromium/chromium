@@ -436,6 +436,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sync.Local.ReadPlatformFileError" enum="PlatformFileError"
+    expires_after="2021-05-31">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>igorruvinov@chromium.org</owner>
+  <summary>
+    Error code describing failure to read persisted sync state from local file.
+    Recorded when an error is encountered during opening or reading of the local
+    sync state file.
+  </summary>
+</histogram>
+
 <histogram name="Sync.Local.RequestTypeOnError" enum="SyncRequestType"
     expires_after="2021-05-31">
   <owner>pastarmovj@chromium.org</owner>
