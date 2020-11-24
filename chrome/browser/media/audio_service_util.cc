@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/core/common/policy_map.h"
@@ -20,8 +21,10 @@
 
 bool IsAudioServiceSandboxEnabled() {
   base::Optional<bool> force_enable_audio_sandbox;
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
 #if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   const policy::PolicyMap& policies =
       g_browser_process->browser_policy_connector()
           ->GetPolicyService()

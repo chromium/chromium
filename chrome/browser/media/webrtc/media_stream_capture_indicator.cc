@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
@@ -44,7 +45,7 @@
 #include "extensions/common/extension.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #endif
 
@@ -216,7 +217,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
           devices_, ui_ ? base::OnceClosure() : std::move(stop_callback));
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     policy::DlpContentManager::Get()->OnScreenCaptureStarted(
         label, screen_capture_ids, state_change_callback);
 #endif
@@ -232,7 +233,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 
   void OnDeviceStopped(const std::string& label,
                        const content::DesktopMediaID& media_id) override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     policy::DlpContentManager::Get()->OnScreenCaptureStopped(label, media_id);
 #endif
   }

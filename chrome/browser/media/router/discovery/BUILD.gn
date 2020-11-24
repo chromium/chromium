@@ -9,6 +9,7 @@ static_library("discovery") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/common:constants",
     "//components/cast_channel",

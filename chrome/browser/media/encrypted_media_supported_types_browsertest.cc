@@ -16,6 +16,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -1153,7 +1154,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
   auto result =
       IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense);
 
-#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
   // Persistent license session supported by Widevine key system on Windows and
   // Mac. On ChromeOS, it is supported when the protected media identifier
   // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
@@ -1177,7 +1178,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // "HW_SECURE_ALL" supported on ChromeOS when the protected media identifier
   // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
   // used above.
@@ -1193,7 +1194,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
   EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "Invalid String"));
   EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
@@ -1249,7 +1250,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   // Audio robustness.
   EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
   EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
@@ -1265,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
       IsVideoMp4RobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
   EXPECT_WV_PROPRIETARY(
       IsVideoMp4RobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
@@ -1288,7 +1289,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
       IsAudioMp4RobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
   EXPECT_WV_PROPRIETARY(
       IsAudioMp4RobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
@@ -1334,7 +1335,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
       IsAudioEncryptionSchemeSupported(kWidevine, "cenc", "HW_SECURE_CRYPTO"));
   EXPECT_WV(
       IsVideoEncryptionSchemeSupported(kWidevine, "cenc", "HW_SECURE_ALL"));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_WV(
       IsAudioEncryptionSchemeSupported(kWidevine, "cbcs", "HW_SECURE_CRYPTO"));
   EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9",

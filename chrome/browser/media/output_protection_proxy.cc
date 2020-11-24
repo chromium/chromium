@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -27,12 +28,12 @@ OutputProtectionProxy::OutputProtectionProxy(int render_process_id,
                                              int render_frame_id)
     : render_process_id_(render_process_id),
       render_frame_id_(render_frame_id)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       ,
       output_protection_delegate_(
           // On OS_CHROMEOS, NativeView and NativeWindow are both aura::Window*.
           GetRenderFrameView(render_process_id, render_frame_id))
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 {
 }
 
@@ -44,13 +45,13 @@ void OutputProtectionProxy::QueryStatus(QueryStatusCallback callback) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   output_protection_delegate_.QueryStatus(
       base::BindOnce(&OutputProtectionProxy::ProcessQueryStatusResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-#else  // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   ProcessQueryStatusResult(std::move(callback), true, 0, 0);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void OutputProtectionProxy::EnableProtection(
@@ -59,13 +60,13 @@ void OutputProtectionProxy::EnableProtection(
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   output_protection_delegate_.SetProtection(desired_method_mask,
                                             std::move(callback));
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   NOTIMPLEMENTED();
   std::move(callback).Run(false);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void OutputProtectionProxy::ProcessQueryStatusResult(

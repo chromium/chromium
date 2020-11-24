@@ -41,6 +41,7 @@ static_library("router") {
   if (enable_extensions) {
     deps += [
       "discovery",
+      "//build:chromeos_buildflags",
       "//components/mirroring/mojom:host",
       "//components/mirroring/mojom:service",
 

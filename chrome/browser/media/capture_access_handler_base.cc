@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -20,10 +21,10 @@
 #include "ui/aura/window.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 
@@ -312,7 +313,7 @@ bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
   if (!extension)
     return false;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string hash = base::SHA1HashString(extension->id());
   std::string hex_hash = base::HexEncode(hash.c_str(), hash.length());
 
@@ -323,7 +324,7 @@ bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
          hex_hash == "81986D4F846CEDDDB962643FA501D1780DD441BB";
 #else
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool CaptureAccessHandlerBase::IsBuiltInExtension(const GURL& origin) {

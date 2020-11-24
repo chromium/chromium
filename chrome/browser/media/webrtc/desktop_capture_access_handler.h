@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -21,7 +22,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace aura {
 class Window;
 }
@@ -105,7 +106,7 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
   RequestsQueues pending_requests_;
   content::NotificationRegistrar notifications_registrar_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   aura::Window* primary_root_window_for_testing_ = nullptr;
 #endif
 

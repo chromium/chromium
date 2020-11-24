@@ -8,9 +8,10 @@
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/display/output_protection_delegate.h"
 #endif
 
@@ -51,7 +52,7 @@ class OutputProtectionProxy {
   int render_process_id_;
   int render_frame_id_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::OutputProtectionDelegate output_protection_delegate_;
 #endif
 

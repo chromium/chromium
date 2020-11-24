@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
@@ -30,9 +31,9 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
@@ -265,7 +266,7 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
       request_result =
           blink::mojom::MediaStreamRequestResult::TAB_CAPTURE_FAILURE;
     }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (request_result == blink::mojom::MediaStreamRequestResult::OK) {
       if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(
               media_id)) {

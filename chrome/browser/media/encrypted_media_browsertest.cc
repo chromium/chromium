@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/media_browsertest.h"
 #include "chrome/browser/media/test_license_server.h"
 #include "chrome/browser/media/wv_test_license_server_config.h"
@@ -372,7 +373,7 @@ class ECKEncryptedMediaOutputProtectionTest
     // Make sure the Clear Key CDM is properly registered in CdmRegistry.
     EXPECT_TRUE(IsLibraryCdmRegistered(media::kClearKeyCdmGuid));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // QueryOutputProtectionStatus() is known to fail on Linux Chrome OS builds.
     std::string expected_title = kEmeUnitTestFailure;
 #else

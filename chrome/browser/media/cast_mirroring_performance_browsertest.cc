@@ -25,6 +25,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -1077,7 +1078,7 @@ IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, Performance) {
   AnalyzeLatency(analyzer.get());
 }
 
-#if !defined(OS_CHROMEOS) || !defined(MEMORY_SANITIZER)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) || !defined(MEMORY_SANITIZER)
 // TODO(b/161545049): reenable FPS value features.
 INSTANTIATE_TEST_SUITE_P(All,
                          CastV2PerformanceTest,

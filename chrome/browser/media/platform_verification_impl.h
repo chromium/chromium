@@ -9,11 +9,12 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/frame_service_base.h"
 #include "media/mojo/mojom/platform_verification.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/attestation/platform_verification_flow.h"
 #endif
 
@@ -35,15 +36,15 @@ class PlatformVerificationImpl final
                          const std::string& challenge,
                          ChallengePlatformCallback callback) final;
   void GetStorageId(uint32_t version, GetStorageIdCallback callback) final;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void IsVerifiedAccessEnabled(IsVerifiedAccessEnabledCallback callback) final;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   // |this| can only be destructed as a FrameServiceBase.
   ~PlatformVerificationImpl() final;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using PlatformVerificationResult =
       chromeos::attestation::PlatformVerificationFlow::Result;
 
@@ -57,7 +58,7 @@ class PlatformVerificationImpl final
   void OnStorageIdResponse(GetStorageIdCallback callback,
                            const std::vector<uint8_t>& storage_id);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<chromeos::attestation::PlatformVerificationFlow>
       platform_verification_flow_;
 #endif

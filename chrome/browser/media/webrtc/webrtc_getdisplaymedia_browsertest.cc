@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/web_contents.h"
@@ -18,7 +19,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #endif
@@ -71,13 +72,13 @@ class WebRtcGetDisplayMediaBrowserTestWithPicker
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Display");
 #else
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Entire screen");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 };
 
@@ -96,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
   RunGetDisplayMedia(tab, constraints);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
                        GetDisplayMediaVideoWithDlp) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -129,16 +130,17 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
       tab->GetMainFrame(), "waitVideoUnmuted();", &result));
   EXPECT_EQ(result, "unmuted");
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Real desktop capture is flaky on below platforms.
 #if defined(OS_WIN)
 #define MAYBE_GetDisplayMediaVideoAndAudio DISABLED_GetDisplayMediaVideoAndAudio
 // On linux debug bots, it's flaky as well.
-#elif (defined(OS_LINUX) && !defined(NDEBUG))
+#elif ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(NDEBUG))
 #define MAYBE_GetDisplayMediaVideoAndAudio DISABLED_GetDisplayMediaVideoAndAudio
 // On linux asan bots, it's flaky as well - msan and other rel bot are fine.
-#elif (defined(OS_LINUX) && defined(ADDRESS_SANITIZER))
+#elif ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+       defined(ADDRESS_SANITIZER))
 #define MAYBE_GetDisplayMediaVideoAndAudio DISABLED_GetDisplayMediaVideoAndAudio
 #else
 #define MAYBE_GetDisplayMediaVideoAndAudio GetDisplayMediaVideoAndAudio

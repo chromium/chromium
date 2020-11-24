@@ -15,11 +15,12 @@
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -662,7 +663,7 @@ TEST_F(GzippedLogFileWriterTest,
   EXPECT_FALSE(base::PathExists(path_));  // Errored files deleted by Close().
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 struct DoesProfileDefaultToLoggingEnabledForUserTypeTestCase {
   user_manager::UserType user_type;
@@ -742,6 +743,6 @@ INSTANTIATE_TEST_CASE_P(
             {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
             {user_manager::USER_TYPE_ACTIVE_DIRECTORY, false}}));
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace webrtc_event_logging

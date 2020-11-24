@@ -21,6 +21,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/audio_service_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
@@ -49,7 +50,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/statistics_provider.h"
 #endif
 
@@ -472,7 +473,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   std::string computer_model = "Not available";
 #if defined(OS_MAC)
   computer_model = base::mac::GetModelIdentifier();
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
       chromeos::system::kHardwareClassKey, &computer_model);
 #endif

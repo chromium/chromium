@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -35,7 +36,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/task_runner_util.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -56,7 +57,7 @@ using net::UDPSocket;
 
 namespace media_router {
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void PostSendNetworkList(
     base::WeakPtr<DialServiceImpl> impl,
     const base::Optional<net::NetworkInterfaceList>& networks) {
@@ -65,7 +66,7 @@ void PostSendNetworkList(
       FROM_HERE, base::BindOnce(&DialServiceImpl::SendNetworkList,
                                 std::move(impl), networks));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -126,7 +127,7 @@ std::string BuildRequest() {
   return request;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Finds the IP address of the preferred interface of network type |type|
 // to bind the socket and inserts the address into |bind_address_list|. This
 // ChromeOS version can prioritize wifi and ethernet interfaces.
@@ -175,7 +176,7 @@ void GetNetworkListOnUIThread(base::WeakPtr<DialServiceImpl> impl) {
       net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
       base::BindOnce(&PostSendNetworkList, std::move(impl)));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -432,7 +433,7 @@ void DialServiceImpl::StartDiscovery() {
 
   auto task_runner = content::GetUIThreadTaskRunner({});
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   task_tracker_.PostTaskAndReplyWithResult(
       task_runner.get(), FROM_HERE,
       base::BindOnce(&GetBestBindAddressOnUIThread),

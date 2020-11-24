@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
@@ -43,12 +44,12 @@
 #include "chrome/browser/media/webrtc/display_media_access_handler.h"
 #endif  //  defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
 #include "chrome/browser/media/chromeos_login_media_access_handler.h"
 #include "chrome/browser/media/public_session_media_access_handler.h"
 #include "chrome/browser/media/public_session_tab_capture_access_handler.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/media/extension_media_access_handler.h"
@@ -90,7 +91,7 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
 #endif  //  defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   media_access_handlers_.push_back(
       std::make_unique<ChromeOSLoginMediaAccessHandler>());
   // Wrapper around ExtensionMediaAccessHandler used in Public Sessions.
@@ -102,7 +103,7 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
 #endif
   media_access_handlers_.push_back(
       std::make_unique<DesktopCaptureAccessHandler>());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Wrapper around TabCaptureAccessHandler used in Public Sessions.
   media_access_handlers_.push_back(
       std::make_unique<PublicSessionTabCaptureAccessHandler>());
@@ -401,7 +402,7 @@ void MediaCaptureDevicesDispatcher::UpdateMediaRequestStateOnUIThread(
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsOriginForCasting(security_origin) &&
       blink::IsVideoInputMediaType(stream_type)) {
     // Notify ash that casting state has changed.

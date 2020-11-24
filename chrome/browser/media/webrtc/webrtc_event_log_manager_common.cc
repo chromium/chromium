@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_service.h"
@@ -25,7 +26,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "third_party/zlib/zlib.h"
 
-#if defined OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #endif
 
@@ -1019,7 +1020,7 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
 
 bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
 // For Chrome OS, exclude special profiles and users.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   // We do not log an error here since this can happen in several cases,

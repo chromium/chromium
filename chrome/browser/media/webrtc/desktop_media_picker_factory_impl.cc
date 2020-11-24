@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
@@ -48,10 +49,10 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         if (have_screen_list)
           continue;
         std::unique_ptr<DesktopMediaList> screen_list;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         screen_list = std::make_unique<DesktopMediaListAsh>(
             content::DesktopMediaID::TYPE_SCREEN);
-#else   // !defined(OS_CHROMEOS)
+#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
         // If screen capture is not supported on the platform, then we should
         // not attempt to create an instance of NativeDesktopMediaList. Doing so
         // will hit a DCHECK.
@@ -62,7 +63,7 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
 
         screen_list = std::make_unique<NativeDesktopMediaList>(
             content::DesktopMediaID::TYPE_SCREEN, std::move(capturer));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
         have_screen_list = true;
         source_lists.push_back(std::move(screen_list));
         break;
@@ -71,10 +72,10 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         if (have_window_list)
           continue;
         std::unique_ptr<DesktopMediaList> window_list;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         window_list = std::make_unique<DesktopMediaListAsh>(
             content::DesktopMediaID::TYPE_WINDOW);
-#else   // !defined(OS_CHROMEOS)
+#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
         // If window capture is not supported on the platform, then we should
         // not attempt to create an instance of NativeDesktopMediaList. Doing so
         // will hit a DCHECK.
@@ -84,7 +85,7 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
           continue;
         window_list = std::make_unique<NativeDesktopMediaList>(
             content::DesktopMediaID::TYPE_WINDOW, std::move(capturer));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
         have_window_list = true;
         source_lists.push_back(std::move(window_list));
         break;

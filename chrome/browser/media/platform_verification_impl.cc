@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "media/media_buildflags.h"
@@ -17,15 +18,15 @@
 #include "content/public/browser/render_process_host.h"
 #endif
 
-#if BUILDFLAG(ENABLE_CDM_STORAGE_ID) || defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_CDM_STORAGE_ID) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using media::mojom::PlatformVerification;
 
@@ -84,7 +85,7 @@ void PlatformVerificationImpl::ChallengePlatform(
 // TODO(crbug.com/676224). This should be commented out at the mojom
 // level so that it's only available for ChromeOS.
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!platform_verification_flow_)
     platform_verification_flow_ =
         base::MakeRefCounted<chromeos::attestation::PlatformVerificationFlow>();
@@ -97,10 +98,10 @@ void PlatformVerificationImpl::ChallengePlatform(
 #else
   // Not supported, so return failure.
   std::move(callback).Run(false, std::string(), std::string(), std::string());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PlatformVerificationImpl::OnPlatformChallenged(
     ChallengePlatformCallback callback,
     PlatformVerificationResult result,
@@ -125,7 +126,7 @@ void PlatformVerificationImpl::OnPlatformChallenged(
   std::move(callback).Run(true, signed_data, signature,
                           platform_key_certificate);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PlatformVerificationImpl::GetStorageId(uint32_t version,
                                             GetStorageIdCallback callback) {
@@ -163,7 +164,7 @@ void PlatformVerificationImpl::OnStorageIdResponse(
 }
 #endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PlatformVerificationImpl::IsVerifiedAccessEnabled(
     IsVerifiedAccessEnabledCallback callback) {
   // If we are in guest/incognito mode, then verified access is effectively
@@ -185,4 +186,4 @@ void PlatformVerificationImpl::IsVerifiedAccessEnabled(
   }
   std::move(callback).Run(enabled_for_device);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

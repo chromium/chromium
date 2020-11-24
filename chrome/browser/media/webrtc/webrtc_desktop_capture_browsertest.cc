@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "chrome/browser/ui/browser.h"
@@ -62,7 +63,9 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
 
 // TODO(crbug.com/796889): Enable on Mac when thread check crash is fixed.
 // TODO(sprang): Figure out why test times out on Win 10 and ChromeOS.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_RunsScreenshareFromOneTabToAnother \
   RunsScreenshareFromOneTabToAnother
 #else

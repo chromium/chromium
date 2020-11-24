@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/media/media_engagement_contents_observer.h"
@@ -42,10 +43,10 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -334,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, RecordEngagement) {
 }
 
 // Flaky tests on CrOS: http://crbug.com/1020131.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_RecordEngagement_AudioOnly DISABLED_RecordEngagement_AudioOnly
 #else
 #define MAYBE_RecordEngagement_AudioOnly RecordEngagement_AudioOnly
@@ -356,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DoNotRecordEngagement_NotTime_AudioOnly \
   DISABLED_DoNotRecordEngagement_NotTime_AudioOnly
 #else
@@ -380,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DoNotRecordEngagement_TabMuted_AudioOnly \
   DISABLED_DoNotRecordEngagement_TabMuted_AudioOnly
 #else
@@ -424,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DoNotRecordEngagement_PlaybackStopped_AudioOnly \
   DISABLED_DoNotRecordEngagement_PlaybackStopped_AudioOnly
 #else
@@ -451,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_RecordEngagement_NotVisible_AudioOnly \
   DISABLED_RecordEngagement_NotVisible_AudioOnly
 #else
@@ -543,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DoNotRecordEngagement_SilentAudioTrack_AudioOnly \
   DISABLED_DoNotRecordEngagement_SilentAudioTrack_AudioOnly
 #else
@@ -598,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_MultipleElements DISABLED_MultipleElements
 #else
 #define MAYBE_MultipleElements MultipleElements
@@ -780,12 +781,12 @@ class MediaEngagementSessionRestoreBrowserTest
 
     SessionStartupPref::SetStartupPref(
         profile, SessionStartupPref(SessionStartupPref::LAST));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     SessionServiceTestHelper helper(
         SessionServiceFactory::GetForProfile(profile));
     helper.SetForceBrowserNotAliveWithNoWindows(true);
     helper.ReleaseService();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
         KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
