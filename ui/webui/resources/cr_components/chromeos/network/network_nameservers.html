@@ -106,7 +106,7 @@
             nameserversTypeEnum_.CUSTOM)]]">
           <div class="property-box single-column two-line">
             <template is="dom-repeat" items="[[nameservers_]]">
-              <cr-input id="nameserver[[index]]" value="[[item]]"
+              <cr-input id="nameserver[[index]]" value="{{item}}"
                   aria-label="[[getCustomNameServerInputA11yLabel_(index)]]"
                   on-change="onValueChange_"
                   disabled="[[!canEditCustomNameServers_(nameserversType_,

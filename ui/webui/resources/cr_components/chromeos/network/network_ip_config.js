@@ -203,22 +203,42 @@ Polymer({
     return !ipConfigType || !this.isNetworkPolicyEnforced(ipConfigType);
   },
 
+  /**
+   * Overrides null values of |ipv4| with defaults so |ipv4| passes validation
+   * after being converted to ONC StaticIPConfig.
+   * TODO(https://crbug.com/1148841): Setting defaults here is strange, find
+   * some better way.
+   * @param {!OncMojo.IPConfigUIProperties} ipv4 this will be modified in place
+   * @private
+   */
+  setIpv4Defaults_(ipv4) {
+    if (!ipv4.gateway) {
+      ipv4.gateway = '192.168.1.1';
+    }
+    if (!ipv4.ipAddress) {
+      ipv4.ipAddress = '192.168.1.1';
+    }
+    if (!ipv4.netmask) {
+      ipv4.netmask = '255.255.255.0';
+    }
+    if (!ipv4.type) {
+      ipv4.type = 'IPv4';
+    }
+  },
+
   /** @private */
   onAutomaticChange_() {
     if (!this.automatic_) {
-      const defaultIpv4 = {
-        gateway: '192.168.1.1',
-        ipAddress: '192.168.1.1',
-        netmask: '255.255.255.0',
-        type: 'IPv4',
-      };
-      // Ensure that there is a valid IPConfig object. Copy any set properties
-      // over the default properties to ensure all properties are set.
-      if (this.ipConfig_) {
-        this.ipConfig_.ipv4 = Object.assign(defaultIpv4, this.ipConfig_.ipv4);
-      } else {
-        this.ipConfig_ = {ipv4: defaultIpv4};
+      if (!this.ipConfig_) {
+        this.ipConfig_ = {};
       }
+      if (this.savedStaticIp_) {
+        this.ipConfig_.ipv4 = this.savedStaticIp_;
+      }
+      if (!this.ipConfig_.ipv4) {
+        this.ipConfig_.ipv4 = {};
+      }
+      this.setIpv4Defaults_(this.ipConfig_.ipv4);
       this.sendStaticIpConfig_();
       return;
     }
