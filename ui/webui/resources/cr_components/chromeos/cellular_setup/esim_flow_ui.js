@@ -175,8 +175,6 @@ cr.define('cellular_setup', function() {
     handleProfileInstallResponse_(response) {
       // TODO(crbug.com/1093185) Handle
       // confirmation code if needed.
-      // TODO(crbug.com/1093185) If response.result ===
-      // kErrorInvalidActivationCode, show error in activation code page.
       this.showError_ = response.result !==
           chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess;
       if (response.result ===

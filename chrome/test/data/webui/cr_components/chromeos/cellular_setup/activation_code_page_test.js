@@ -38,19 +38,23 @@ suite('CrComponentsActivationCodePageTest', function() {
     const startScanningContainer =
         activationCodePage.$$('#startScanningContainer');
     const startScanningButton = activationCodePage.$$('#startScanningButton');
-    const scanSuccessContainer = activationCodePage.$$('#scanSuccessContainer');
+    const scanFinishContainer = activationCodePage.$$('#scanFinishContainer');
     const switchCameraButton = activationCodePage.$$('#switchCameraButton');
+    const scanSuccessContainer = activationCodePage.$$('#scanSuccessContainer');
+    const scanFailureContainer = activationCodePage.$$('#scanFailureContainer');
 
     assertTrue(!!video);
     assertTrue(!!startScanningContainer);
     assertTrue(!!startScanningButton);
-    assertTrue(!!scanSuccessContainer);
+    assertTrue(!!scanFinishContainer);
     assertTrue(!!switchCameraButton);
+    assertTrue(!!scanSuccessContainer);
+    assertTrue(!!scanFailureContainer);
 
     // Initial state should only be showing the start scanning UI.
     assertFalse(startScanningContainer.hidden);
     assertTrue(video.hidden);
-    assertTrue(scanSuccessContainer.hidden);
+    assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
 
     // Click the start scanning button.
@@ -60,18 +64,55 @@ suite('CrComponentsActivationCodePageTest', function() {
     // The video should be visible and start scanning UI hidden.
     assertFalse(video.hidden);
     assertTrue(startScanningContainer.hidden);
-    assertTrue(scanSuccessContainer.hidden);
+    assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
 
     // Mock detecting an activation code.
     activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
     await flushAsync();
 
-    // The scanSuccessContainer should now be visible, video and start scanning
-    // UI hidden.
-    assertFalse(scanSuccessContainer.hidden);
+    // The scanFinishContainer and scanSuccessContainer should now be visible,
+    // video, start scanning UI and scanFailureContainer hidden.
+    assertFalse(scanFinishContainer.hidden);
     assertTrue(startScanningContainer.hidden);
     assertTrue(video.hidden);
+    assertFalse(scanSuccessContainer.hidden);
+    assertTrue(scanFailureContainer.hidden);
+
+    // Mock an invalid activation code.
+    activationCodePage.showError = true;
+
+    // The scanFinishContainer and scanFailureContainer should now be visible,
+    // video, start scanning UI and scanSuccessContainer hidden.
+    assertFalse(scanFinishContainer.hidden);
+    assertTrue(startScanningContainer.hidden);
+    assertTrue(video.hidden);
+    assertTrue(scanSuccessContainer.hidden);
+    assertFalse(scanFailureContainer.hidden);
+
+    // Enter a new activation code
+    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE 2';
+    await flushAsync();
+
+    // The scanFinishContainer and scanSuccessContainer should now be visible,
+    // video, start scanning UI and scanFailureContainer hidden.
+    assertFalse(scanFinishContainer.hidden);
+    assertTrue(startScanningContainer.hidden);
+    assertTrue(video.hidden);
+    assertFalse(scanSuccessContainer.hidden);
+    assertTrue(scanFailureContainer.hidden);
+    assertFalse(activationCodePage.showError);
+
+    // Mock another invalid activation code.
+    activationCodePage.showError = true;
+
+    // The scanFinishContainer and scanFailureContainer should now be visible,
+    // video, start scanning UI and scanSuccessContainer hidden.
+    assertFalse(scanFinishContainer.hidden);
+    assertTrue(startScanningContainer.hidden);
+    assertTrue(video.hidden);
+    assertTrue(scanSuccessContainer.hidden);
+    assertFalse(scanFailureContainer.hidden);
   });
 
   test('Switch camera button states', async function() {

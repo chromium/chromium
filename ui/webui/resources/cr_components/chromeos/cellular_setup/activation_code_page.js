@@ -16,14 +16,17 @@ const PageState = {
   SWITCHING_CAM_USER_TO_ENVIRONMENT: 4,
   SWITCHING_CAM_ENVIRONMENT_TO_USER: 5,
   SUCCESS: 6,
+  FAILURE: 7,
 };
 
 /** @enum {number} */
 const UiElement = {
   START_SCANNING: 1,
   VIDEO: 2,
-  SCAN_SUCCESS: 3,
-  SWITCH_CAMERA: 4,
+  SWITCH_CAMERA: 3,
+  SCAN_FINISH: 4,
+  SCAN_SUCCESS: 5,
+  SCAN_FAILURE: 6,
 };
 
 /**
@@ -42,6 +45,12 @@ Polymer({
       observer: 'onActivationCodeChanged_',
     },
 
+    showError: {
+      type: Boolean,
+      notify: true,
+      observer: 'onShowErrorChanged_',
+    },
+
     /**
      * @type {!PageState}
      * @private
@@ -49,6 +58,7 @@ Polymer({
     state_: {
       type: Object,
       value: PageState,
+      observer: 'onStateChanged_',
     },
 
     /** @private */
@@ -225,12 +235,13 @@ Polymer({
   onActivationCodeChanged_() {
     const activationCode = this.validateActivationCode_(this.activationCode);
     this.fire('activation-code-updated', {activationCode: activationCode});
-    // TODO(crbug.com/1093185): Handle if activation code is invalid.
     if (activationCode) {
       if (this.stream_) {
         this.stream_.getTracks()[0].stop();
       }
       this.state_ = PageState.SUCCESS;
+    } else {
+      this.state_ = PageState.FAILURE;
     }
   },
 
@@ -260,6 +271,20 @@ Polymer({
     this.startScanning_();
   },
 
+  /** @private */
+  onShowErrorChanged_() {
+    if (this.showError) {
+      this.state_ = PageState.FAILURE;
+    }
+  },
+
+  /** @private */
+  onStateChanged_() {
+    if (this.state_ !== PageState.FAILURE) {
+      this.showError = false;
+    }
+  },
+
   /**
    * @param {UiElement} uiElement
    * @param {PageState} state
@@ -273,12 +298,16 @@ Polymer({
       case UiElement.VIDEO:
         return state !== PageState.SCANNING_USER_FACING &&
             state !== PageState.SCANNING_ENVIRONMENT_FACING;
-      case UiElement.SCAN_SUCCESS:
-        return state !== PageState.SUCCESS;
       case UiElement.SWITCH_CAMERA:
         const isScanning = state === PageState.SCANNING_USER_FACING ||
             state === PageState.SCANNING_ENVIRONMENT_FACING;
         return !(isScanning && hasMultipleCameras);
+      case UiElement.SCAN_FINISH:
+        return state !== PageState.SUCCESS && state !== PageState.FAILURE;
+      case UiElement.SCAN_SUCCESS:
+        return state !== PageState.SUCCESS;
+      case UiElement.SCAN_FAILURE:
+        return state !== PageState.FAILURE;
     }
   },
 

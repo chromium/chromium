@@ -81,9 +81,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
         eSimPage.selectedESimPageName_ ===
             cellular_setup.ESimPageName.ACTIVATION_CODE &&
         eSimPage.selectedESimPageName_ === activationCodePage.id);
-    // TODO(crbug.com/1093185) We don't have a way to show the error on the DOM
-    // right now. Check internal property for now.
-    assertTrue(eSimPage.showError_);
+    assertTrue(activationCodePage.$$('#scanSuccessContainer').hidden);
+    assertFalse(activationCodePage.$$('#scanFailureContainer').hidden);
   });
 
   test('No eSIM profile flow valid activation code', async function() {

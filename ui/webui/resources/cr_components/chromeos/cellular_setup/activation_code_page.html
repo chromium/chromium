@@ -35,15 +35,6 @@
         background-color: transparent;
       }
 
-      #scanSuccessMessage {
-        color: green;
-        font-size: medium;
-      }
-
-      #scanSuccessMessage:hover {
-        cursor: default;
-      }
-
       .center {
         left: 50%;
         position: absolute;
@@ -61,22 +52,42 @@
         width: 20px;
       }
 
-      #useCameraAgainButton {
-        font-weight: 500;
-        left: 50%;
-        margin-top: 16px;
-        transform: translateX(-50%);
-      }
-
-      #scanSuccessImage {
+      .scan-finish-image {
         height: 20px;
         position: absolute;
         width: 20px;
        }
 
-       #scanSuccessMessage {
+      .scan-finish-message {
         padding-inline-end: 0;
         padding-inline-start: 30px;
+      }
+
+      .scan-finish-message:hover {
+        cursor: default;
+      }
+
+      #scanSuccessContainer {
+        margin-bottom: 8px;
+      }
+
+      #scanSuccessMessage {
+        color: green;
+        font-size: medium;
+      }
+
+      #scanFailureContainer {
+        margin-bottom: 4px;
+      }
+
+      #scanFailureMessage {
+        color: var(--google-red-600);
+      }
+
+      #useCameraAgainButton {
+        display: block;
+        font-weight: 500;
+        text-align: center;
       }
 
       #switchCameraButton {
@@ -124,15 +135,25 @@
               [[i18n('useCamera')]]
             </cr-button>
           </div>
-          <div class="center" id="scanSuccessContainer"
-              hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
+          <div class="center" id="scanFinishContainer"
+              hidden$="[[isUiElementHidden_(UiElement.SCAN_FINISH, state_)]]">
             <div>
-              <img id="scanSuccessImage"
-                  src="activation_code_page_checked.svg"
-                  aria-hidden="true">
-              <span class="label" id="scanSuccessMessage">
-                [[i18n('scanQRCodeSuccess')]]
-              </span>
+              <div id="scanSuccessContainer"
+                  hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
+                <img class="scan-finish-image"
+                    src="activation_code_page_checked.svg">
+                <span class="label scan-finish-message" id="scanSuccessMessage">
+                  [[i18n('scanQRCodeSuccess')]]
+                </span>
+              </div>
+              <div id="scanFailureContainer"
+                  hidden$="[[isUiElementHidden_(UiElement.SCAN_FAILURE, state_)]]">
+                <img class="scan-finish-image"
+                    src="activation_code_page_error.svg">
+                <span class="label scan-finish-message" id="scanFailureMessage">
+                  [[i18n('scanQrCodeInvalid')]]
+                </span>
+              </div>
             </div>
             <cr-button id="useCameraAgainButton"
                 on-click="startScanning_">
