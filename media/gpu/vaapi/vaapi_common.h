@@ -128,7 +128,10 @@ class VaapiAV1Picture : public AV1Picture {
   // it's the decoded frame prior to applying the film grain.
   // When not using film grain synthesis, |reconstruct_va_surface_| is equal to
   // |display_va_surface_|. This is necessary to simplify the reference frame
-  // code when filling the VA-API structures.
+  // code when filling the VA-API structures and to be able to always use
+  // reconstruct_va_surface() when calling ExecuteAndDestroyPendingBuffers()
+  // (the driver expects the reconstructed surface as the target in the case
+  // of film grain synthesis).
   scoped_refptr<VASurface> display_va_surface_;
   scoped_refptr<VASurface> reconstruct_va_surface_;
 };

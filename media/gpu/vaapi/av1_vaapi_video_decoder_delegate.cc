@@ -797,6 +797,6 @@ bool AV1VaapiVideoDecoderDelegate::SubmitDecode(
 
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
   return vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-      vaapi_pic->display_va_surface()->id());
+      vaapi_pic->reconstruct_va_surface()->id());
 }
 }  // namespace media
