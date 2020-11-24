@@ -271,20 +271,9 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
                                       ExceptionState& exception_state) {
   switch (config->codec) {
     case media::kCodecVP8:
-      if (config->acc_pref == AccelerationPreference::kRequire) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                          "Accelerated vp8 is not supported");
-        return false;
-      }
       break;
 
     case media::kCodecVP9:
-      if (config->acc_pref == AccelerationPreference::kRequire) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                          "Accelerated vp9 is not supported");
-        return false;
-      }
-
       // TODO(https://crbug.com/1119636): Implement / call a proper method for
       // detecting support of encoder configs.
       if (config->profile == media::VideoCodecProfile::VP9PROFILE_PROFILE1 ||
