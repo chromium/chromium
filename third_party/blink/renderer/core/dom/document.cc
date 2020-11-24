@@ -1934,6 +1934,13 @@ void Document::SetWasDiscarded(bool was_discarded) {
 }
 
 void Document::DidChangeVisibilityState() {
+  if (load_event_progress_ >= kUnloadVisibilityChangeInProgress) {
+    // It's possible to get here even after we've started unloading the document
+    // and dispatched the visibilitychange event, e.g. when we're closing a tab,
+    // where we would first try to dispatch unload events, and then close the
+    // tab and update the visibility state.
+    return;
+  }
   DispatchEvent(*Event::CreateBubble(event_type_names::kVisibilitychange));
   // Also send out the deprecated version until it can be removed.
   DispatchEvent(

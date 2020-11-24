@@ -30,6 +30,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -614,6 +615,59 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseTabWhenOtherTabHasListener) {
   destroyed_watcher.Wait();
 
   CheckTitle("only_one_unload");
+}
+
+// Tests that visibilitychange is only dispatched once on tab close.
+IN_PROC_BROWSER_TEST_F(UnloadTest, VisibilityChangeOnlyDispatchedOnce) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+  // Start on a.com and open a popup to another page in a.com.
+  GURL opener_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ui_test_utils::NavigateToURL(browser(), opener_url);
+  content::WebContents* opener_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL popup_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  content::TestNavigationObserver popup_observer(nullptr);
+  popup_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecuteScript(opener_contents,
+                            "window.open('" + popup_url.spec() + "');"));
+  popup_observer.Wait();
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  content::WebContents* popup_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(opener_contents, popup_contents);
+  content::RenderFrameHost* popup_rfh = popup_contents->GetMainFrame();
+
+  // In the popup, add a visibilitychange handler that ensures we only see the
+  // visibilitychange event fired once on tab close.
+  EXPECT_TRUE(ExecJs(popup_rfh, R"(
+            localStorage.setItem('visibilitychange_storage', 'not_dispatched');
+            var dispatched_visibilitychange = false;
+            document.onvisibilitychange = function(e) {
+              if (dispatched_visibilitychange) {
+                // We shouldn't dispatch visibilitychange more than once.
+                localStorage.setItem('visibilitychange_storage',
+                  'dispatched_more_than_once');
+              } else if (document.visibilityState != 'hidden') {
+                // We should dispatch the event when the visibilityState is
+                // 'hidden'.
+                localStorage.setItem('visibilitychange_storage', 'not_hidden');
+              } else {
+                localStorage.setItem('visibilitychange_storage',
+                  'dispatched_once');
+              }
+              dispatched_visibilitychange = true;
+            })"));
+
+  // Close the popup.
+  content::WebContentsDestroyedWatcher destroyed_watcher(popup_contents);
+  EXPECT_TRUE(ExecuteScript(popup_contents, "window.close();"));
+  destroyed_watcher.Wait();
+
+  // Check that we've only dispatched visibilitychange once.
+  EXPECT_EQ("dispatched_once",
+            EvalJs(opener_contents,
+                   "localStorage.getItem('visibilitychange_storage')"));
 }
 
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListForceCloseAfterNormalClose) {
