@@ -399,6 +399,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InputMethod.Mojo.Extension.ActivateIMELatency" units="ms"
     expires_after="2019-12-30">
+  <obsolete>
+    Obsolete since Q4 2019. Officially deprecated Nov 2020. This was meant for
+    rule-based input methods via extension and IME service, but as at circa Q4
+    2019, rule-based input methods stopped going through the extension.
+  </obsolete>
   <owner>googleo@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -419,6 +424,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InputMethod.Mojo.Extension.Rulebased.ProcessLatency"
     units="ms" expires_after="2019-12-31">
+  <obsolete>
+    Obsolete since Q4 2019. Officially deprecated Nov 2020. This was meant for
+    rule-based input methods via extension and IME service, but as at circa Q4
+    2019, rule-based input methods stopped going through the extension.
+  </obsolete>
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -429,6 +439,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InputMethod.Mojo.Extension.ServiceInitLatency" units="ms"
     expires_after="2019-12-31">
+  <obsolete>
+    Obsolete since Q4 2019. Officially deprecated Nov 2020. This was meant for
+    rule-based input methods via extension and IME service, but as at circa Q4
+    2019, rule-based input methods stopped going through the extension.
+  </obsolete>
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
