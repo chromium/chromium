@@ -798,8 +798,9 @@ TEST_F(FlocIdProviderUnitTest, MultipleHistoryEntries) {
   EXPECT_EQ(FlocId::CreateFromHistory({"a.test", "b.test"}), floc_id());
 }
 
-TEST_F(FlocIdProviderUnitTest,
-       BlocklistFilteringEnabled_SyncHistoryEnabledFollowedByBlocklistLoaded) {
+TEST_F(
+    FlocIdProviderUnitTest,
+    DISABLED_BlocklistFilteringEnabled_SyncHistoryEnabledFollowedByBlocklistLoaded) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFlocIdBlocklistFiltering);
 
@@ -818,8 +819,9 @@ TEST_F(FlocIdProviderUnitTest,
   EXPECT_TRUE(first_floc_computation_triggered());
 }
 
-TEST_F(FlocIdProviderUnitTest,
-       BlocklistFilteringEnabled_BlocklistLoadedFollowedBySyncHistoryEnabled) {
+TEST_F(
+    FlocIdProviderUnitTest,
+    DISABLED_BlocklistFilteringEnabled_BlocklistLoadedFollowedBySyncHistoryEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFlocIdBlocklistFiltering);
 
