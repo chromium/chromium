@@ -1050,6 +1050,20 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
 void NGBlockLayoutAlgorithm::HandleOutOfFlowPositioned(
     const NGPreviousInflowPosition& previous_inflow_position,
     NGBlockNode child) {
+  if (ConstraintSpace().HasBlockFragmentation()) {
+    // Forced breaks cannot be specified directly on out-of-flow positioned
+    // elements, but if the preceding block has a forced break after, we need to
+    // break before it. Note that we really only need to do this if block-start
+    // offset is auto (but it's harmless to do it also when it's non-auto).
+    EBreakBetween break_between =
+        container_builder_.JoinedBreakBetweenValue(EBreakBetween::kAuto);
+    if (IsForcedBreakValue(ConstraintSpace(), break_between)) {
+      container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
+                                             /* is_forced_break*/ true);
+      return;
+    }
+  }
+
   DCHECK(child.IsOutOfFlowPositioned());
   LogicalOffset static_offset = {BorderScrollbarPadding().inline_start,
                                  previous_inflow_position.logical_block_offset};
