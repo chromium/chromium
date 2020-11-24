@@ -231,6 +231,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, 0);
   registry->RegisterInt64Pref(kGCMChannelLastCheckTime, 0);
 
+  // Register kIncognitoModeAvailability to available.
+  registry->RegisterIntegerPref(prefs::kIncognitoModeAvailability, 0);
+
   registry->RegisterListPref(kInvalidatorSavedInvalidations);
   registry->RegisterStringPref(kInvalidatorInvalidationState, std::string());
   registry->RegisterStringPref(kInvalidatorClientId, std::string());

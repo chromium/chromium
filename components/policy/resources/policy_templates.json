@@ -1760,6 +1760,7 @@
         'chrome_os:14-',
         'android:30-',
       ],
+      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

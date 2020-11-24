@@ -56,6 +56,12 @@ const char kEnableDoNotTrack[] = "enable_do_not_track";
 // Prefs for persisting HttpServerProperties.
 const char kHttpServerProperties[] = "net.http_server_properties";
 
+// Integer that specifies whether Incognito mode is:
+// 0 - Enabled. Default behaviour. Default mode is available on demand.
+// 1 - Disabled. User cannot browse pages in Incognito mode.
+// 2 - Forced. All pages/sessions are forced into Incognito.
+const char kIncognitoModeAvailability[] = "incognito.mode_availability";
+
 // Caches the folder id of user's position in the bookmark hierarchy navigator.
 const char kIosBookmarkCachedFolderId[] = "ios.bookmark.cached_folder_id";
 
