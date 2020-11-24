@@ -314,7 +314,7 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
   if (!culprit_dom_window || !culprit_dom_window->GetFrame() ||
       !culprit_dom_window->GetFrame()->DeprecatedLocalOwner()) {
     AddLongTaskTiming(start_time, end_time, attribution.first, "window",
-                      g_empty_string, g_empty_string, g_empty_string);
+                      g_empty_atom, g_empty_atom, g_empty_atom);
   } else {
     HTMLFrameOwnerElement* frame_owner =
         culprit_dom_window->GetFrame()->DeprecatedLocalOwner();

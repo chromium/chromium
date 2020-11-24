@@ -12,9 +12,9 @@ namespace blink {
 
 TaskAttributionTiming::TaskAttributionTiming(const AtomicString& name,
                                              const AtomicString& container_type,
-                                             const String& container_src,
-                                             const String& container_id,
-                                             const String& container_name)
+                                             const AtomicString& container_src,
+                                             const AtomicString& container_id,
+                                             const AtomicString& container_name)
     : PerformanceEntry(name, 0.0, 0.0),
       container_type_(container_type),
       container_src_(container_src),

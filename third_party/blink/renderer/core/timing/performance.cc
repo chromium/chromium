@@ -672,9 +672,9 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
                                     base::TimeTicks end_time,
                                     const AtomicString& name,
                                     const AtomicString& container_type,
-                                    const String& container_src,
-                                    const String& container_id,
-                                    const String& container_name) {
+                                    const AtomicString& container_src,
+                                    const AtomicString& container_id,
+                                    const AtomicString& container_name) {
   auto* entry = MakeGarbageCollected<PerformanceLongTaskTiming>(
       MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(end_time), name, container_type,

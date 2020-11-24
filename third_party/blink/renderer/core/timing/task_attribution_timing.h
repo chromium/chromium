@@ -28,9 +28,9 @@ class TaskAttributionTiming final : public PerformanceEntry {
 
   TaskAttributionTiming(const AtomicString& type,
                         const AtomicString& container_type,
-                        const String& container_src,
-                        const String& container_id,
-                        const String& container_name);
+                        const AtomicString& container_src,
+                        const AtomicString& container_id,
+                        const AtomicString& container_name);
   ~TaskAttributionTiming() override;
 
  private:

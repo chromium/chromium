@@ -23,9 +23,9 @@ class PerformanceLongTaskTiming final : public PerformanceEntry {
                             double end_time,
                             const AtomicString& name,
                             const AtomicString& culprit_type,
-                            const String& culprit_src,
-                            const String& culprit_id,
-                            const String& culprit_name);
+                            const AtomicString& culprit_src,
+                            const AtomicString& culprit_id,
+                            const AtomicString& culprit_name);
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
