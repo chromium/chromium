@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
@@ -126,8 +127,9 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   void CompleteUpload(bool success) {
     ClearReportDict();
     base::Value context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value events = ConvertArcAppProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
-        ConvertArcAppProtoToValue(&log_, context), std::move(context));
+        std::move(events), std::move(context));
 
     EXPECT_CALL(client_, UploadAppInstallReport_(MatchValue(&value_report_), _))
         .WillOnce(WithArgs<1>(
@@ -139,8 +141,9 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   void CaptureUpload(CloudPolicyClient::StatusCallback* callback) {
     ClearReportDict();
     base::Value context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value events = ConvertArcAppProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
-        ConvertArcAppProtoToValue(&log_, context), std::move(context));
+        std::move(events), std::move(context));
 
     CloudPolicyClient::StatusCallback status_callback;
     EXPECT_CALL(client_, UploadAppInstallReport_(MatchValue(&value_report_), _))

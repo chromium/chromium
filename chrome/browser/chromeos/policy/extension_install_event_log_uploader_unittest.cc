@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
@@ -180,8 +181,9 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
   void CompleteUpload(bool success) {
     ClearReportDict();
     base::Value context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value events = ConvertExtensionProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
-        ConvertExtensionProtoToValue(&log_, context), std::move(context));
+        std::move(events), std::move(context));
 
     waiter_.IncreaseCounterLimit();
 
@@ -208,8 +210,9 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
   void CaptureUpload(reporting::MockReportQueue::EnqueueCallback* callback) {
     ClearReportDict();
     base::Value context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value events = ConvertExtensionProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
-        ConvertExtensionProtoToValue(&log_, context), std::move(context));
+        std::move(events), std::move(context));
 
     EXPECT_CALL(*mock_report_queue_,
                 ValueEnqueue_(MatchEvents(&value_report_), _, _))
