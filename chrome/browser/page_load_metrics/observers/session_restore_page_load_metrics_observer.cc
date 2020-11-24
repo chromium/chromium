@@ -43,10 +43,8 @@ SessionRestorePageLoadMetricsObserver::OnStart(
   }
 
   // The navigation should be from the last session.
-  DCHECK(navigation_handle->GetRestoreType() ==
-             content::RestoreType::LAST_SESSION_EXITED_CLEANLY ||
-         navigation_handle->GetRestoreType() ==
-             content::RestoreType::LAST_SESSION_CRASHED);
+  DCHECK_EQ(content::RestoreType::LAST_SESSION,
+            navigation_handle->GetRestoreType());
 
   return CONTINUE_OBSERVING;
 }

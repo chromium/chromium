@@ -272,8 +272,8 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   EXPECT_FALSE(entry1_->IsRestored());
   EXPECT_EQ(RestoreType::NONE, entry2_->restore_type());
   EXPECT_FALSE(entry2_->IsRestored());
-  entry2_->set_restore_type(RestoreType::LAST_SESSION_EXITED_CLEANLY);
-  EXPECT_EQ(RestoreType::LAST_SESSION_EXITED_CLEANLY, entry2_->restore_type());
+  entry2_->set_restore_type(RestoreType::LAST_SESSION);
+  EXPECT_EQ(RestoreType::LAST_SESSION, entry2_->restore_type());
   EXPECT_TRUE(entry2_->IsRestored());
 
   // Original URL

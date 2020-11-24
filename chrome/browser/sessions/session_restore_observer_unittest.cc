@@ -99,7 +99,7 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
     std::vector<std::unique_ptr<content::NavigationEntry>> entries;
     entries.push_back(content::NavigationEntry::Create());
     test_contents->GetController().Restore(
-        0, content::RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+        0, content::RestoreType::LAST_SESSION, &entries);
     // TabLoadTracker needs the resource_coordinator WebContentsData to be
     // initialized, which is needed by TabLoader.
     resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(

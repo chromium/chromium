@@ -39,14 +39,6 @@ namespace chrome {
 
 namespace {
 
-RestoreType GetRestoreType(Browser* browser, bool from_last_session) {
-  if (!from_last_session)
-    return RestoreType::CURRENT_SESSION;
-  return browser->profile()->GetLastSessionExitType() == Profile::EXIT_CRASHED
-             ? RestoreType::LAST_SESSION_CRASHED
-             : RestoreType::LAST_SESSION_EXITED_CLEANLY;
-}
-
 std::unique_ptr<WebContents> CreateRestoredTab(
     Browser* browser,
     const std::vector<SerializedNavigationEntry>& navigations,
@@ -90,9 +82,11 @@ std::unique_ptr<WebContents> CreateRestoredTab(
   ua_override.ua_metadata_override = blink::UserAgentMetadata::Demarshal(
       user_agent_override.opaque_ua_metadata_override);
   web_contents->SetUserAgentOverride(ua_override, false);
-  web_contents->GetController().Restore(
-      selected_navigation, GetRestoreType(browser, from_last_session),
-      &entries);
+  web_contents->GetController().Restore(selected_navigation,
+                                        from_last_session
+                                            ? RestoreType::LAST_SESSION
+                                            : RestoreType::CURRENT_SESSION,
+                                        &entries);
   DCHECK_EQ(0u, entries.size());
 
   return web_contents;

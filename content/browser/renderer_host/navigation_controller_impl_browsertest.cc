@@ -4226,8 +4226,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationControllerImpl& new_controller =
       static_cast<NavigationControllerImpl&>(
           new_shell->web_contents()->GetController());
-  new_controller.Restore(entries.size() - 1,
-                         RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  new_controller.Restore(entries.size() - 1, RestoreType::LAST_SESSION,
+                         &entries);
   ASSERT_EQ(0u, entries.size());
   {
     TestNavigationObserver restore_observer(new_shell->web_contents());
@@ -4281,8 +4281,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // content injected into it.
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
-  controller.Restore(entries.size() - 1,
-                     RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  controller.Restore(entries.size() - 1, RestoreType::LAST_SESSION, &entries);
   ASSERT_EQ(0u, entries.size());
   {
     TestNavigationObserver restore_observer(shell()->web_contents());
@@ -5236,8 +5235,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationControllerImpl& new_controller =
       static_cast<NavigationControllerImpl&>(
           new_shell->web_contents()->GetController());
-  new_controller.Restore(entries.size() - 1,
-                         RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  new_controller.Restore(entries.size() - 1, RestoreType::LAST_SESSION,
+                         &entries);
   ASSERT_EQ(0u, entries.size());
   {
     TestNavigationObserver restore_observer(new_shell->web_contents());

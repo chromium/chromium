@@ -10,8 +10,7 @@ namespace content {
 // Enumerations of the possible restore types.
 enum class RestoreType {
   // Restore from the previous session.
-  LAST_SESSION_EXITED_CLEANLY,
-  LAST_SESSION_CRASHED,
+  LAST_SESSION,
 
   // The entry has been restored from the current session. This is used when
   // the user issues 'reopen closed tab'.

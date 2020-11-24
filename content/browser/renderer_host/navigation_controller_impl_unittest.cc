@@ -2375,13 +2375,13 @@ TEST_F(NavigationControllerTest, RestoreNavigate) {
   WebContentsImpl* raw_our_contents =
       static_cast<WebContentsImpl*>(our_contents.get());
   NavigationControllerImpl& our_controller = raw_our_contents->GetController();
-  our_controller.Restore(0, RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  our_controller.Restore(0, RestoreType::LAST_SESSION, &entries);
   ASSERT_EQ(0u, entries.size());
 
   // Before navigating to the restored entry, it should have a restore_type
   // and no SiteInstance.
   ASSERT_EQ(1, our_controller.GetEntryCount());
-  EXPECT_EQ(RestoreType::LAST_SESSION_EXITED_CLEANLY,
+  EXPECT_EQ(RestoreType::LAST_SESSION,
             our_controller.GetEntryAtIndex(0)->restore_type());
   EXPECT_FALSE(our_controller.GetEntryAtIndex(0)->site_instance());
 
@@ -2441,7 +2441,7 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
   WebContentsImpl* raw_our_contents =
       static_cast<WebContentsImpl*>(our_contents.get());
   NavigationControllerImpl& our_controller = raw_our_contents->GetController();
-  our_controller.Restore(0, RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  our_controller.Restore(0, RestoreType::LAST_SESSION, &entries);
   ASSERT_EQ(0u, entries.size());
 
   // Ensure the RenderFrame is initialized before simulating events coming from
@@ -2450,7 +2450,7 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
 
   // Before navigating to the restored entry, it should have a restore_type
   // and no SiteInstance.
-  EXPECT_EQ(RestoreType::LAST_SESSION_EXITED_CLEANLY,
+  EXPECT_EQ(RestoreType::LAST_SESSION,
             our_controller.GetEntryAtIndex(0)->restore_type());
   EXPECT_FALSE(our_controller.GetEntryAtIndex(0)->site_instance());
 
@@ -3733,8 +3733,8 @@ TEST_F(NavigationControllerTest, CopyRestoredStateAndNavigate) {
       static_cast<TestWebContents*>(CreateTestWebContents().release()));
   NavigationControllerImpl& source_controller =
       source_contents->GetController();
-  source_controller.Restore(entries.size() - 1,
-                            RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  source_controller.Restore(entries.size() - 1, RestoreType::LAST_SESSION,
+                            &entries);
   ASSERT_EQ(0u, entries.size());
   source_controller.LoadIfNecessary();
   source_contents->CommitPendingNavigation();

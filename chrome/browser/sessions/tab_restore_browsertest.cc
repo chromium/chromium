@@ -1437,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreAfterMultipleRestarts) {
 // Test that it is possible to navigate back to a restored about:blank history
 // entry with a non-null initiator origin.  This test cases covers
 // https://crbug.com/1116320 - a scenario where the restore type is different
-// from LAST_SESSION_EXITED_CLEANLY (e.g. the test below uses CURRENT_SESSION).
+// from LAST_SESSION (e.g. the test below uses CURRENT_SESSION).
 //
 // See also MultiOriginSessionRestoreTest.BackToAboutBlank1
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {

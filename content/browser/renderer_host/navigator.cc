@@ -68,8 +68,7 @@ struct Navigator::NavigationMetricsData {
         is_browser_initiated_before_unload_(
             is_browser_initiated_before_unload) {
     is_restoring_from_last_session_ =
-        (restore_type == RestoreType::LAST_SESSION_EXITED_CLEANLY ||
-         restore_type == RestoreType::LAST_SESSION_CRASHED);
+        (restore_type == RestoreType::LAST_SESSION);
   }
 
   base::TimeTicks start_time_;

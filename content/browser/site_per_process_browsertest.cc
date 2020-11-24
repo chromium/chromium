@@ -7804,8 +7804,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   NavigationControllerImpl& new_controller =
       static_cast<NavigationControllerImpl&>(
           new_shell->web_contents()->GetController());
-  new_controller.Restore(entries.size() - 1,
-                         RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  new_controller.Restore(entries.size() - 1, RestoreType::LAST_SESSION,
+                         &entries);
   ASSERT_EQ(0u, entries.size());
   {
     TestNavigationObserver restore_observer(new_shell->web_contents());
@@ -7911,8 +7911,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   NavigationControllerImpl& new_controller =
       static_cast<NavigationControllerImpl&>(
           new_shell->web_contents()->GetController());
-  new_controller.Restore(entries.size() - 1,
-                         RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  new_controller.Restore(entries.size() - 1, RestoreType::LAST_SESSION,
+                         &entries);
   ASSERT_EQ(0u, entries.size());
   {
     TestNavigationObserver restore_observer(new_shell->web_contents());
@@ -8014,8 +8014,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   NavigationControllerImpl& new_controller =
       static_cast<NavigationControllerImpl&>(
           new_shell->web_contents()->GetController());
-  new_controller.Restore(entries.size() - 1,
-                         RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
+  new_controller.Restore(entries.size() - 1, RestoreType::LAST_SESSION,
+                         &entries);
   ASSERT_EQ(0u, entries.size());
   {
     TestNavigationObserver restore_observer(new_shell->web_contents());
