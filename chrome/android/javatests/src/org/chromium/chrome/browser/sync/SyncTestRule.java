@@ -4,12 +4,6 @@
 
 package org.chromium.chrome.browser.sync;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -19,7 +13,6 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.Nullable;
 import androidx.preference.TwoStatePreference;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 
 import org.junit.Assert;
 import org.junit.runner.Description;
@@ -38,7 +31,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
@@ -418,9 +410,12 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     // UI interaction convenience methods.
     public void togglePreference(final TwoStatePreference pref) {
-        onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.actionOnItem(
-                        hasDescendant(withText(pref.getTitle().toString())), click()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            boolean newValue = !pref.isChecked();
+            pref.getOnPreferenceChangeListener().onPreferenceChange(pref, newValue);
+            pref.setChecked(newValue);
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     /**

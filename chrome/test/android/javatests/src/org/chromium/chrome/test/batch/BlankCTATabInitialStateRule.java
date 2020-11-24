@@ -39,7 +39,6 @@ public class BlankCTATabInitialStateRule implements TestRule {
         super();
         mActivityTestRule = activityTestRule;
         mClearAllTabState = clearAllTabState;
-        mActivityTestRule.setFinishActivity(false);
     }
 
     @Override

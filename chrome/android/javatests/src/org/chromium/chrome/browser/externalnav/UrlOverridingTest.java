@@ -13,7 +13,6 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.lifecycle.Stage;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -29,14 +28,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.ScalableTimeout;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -429,36 +424,24 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    public void testRedirectionFromIntentCold() throws Exception {
-        Context context = ContextUtils.getApplicationContext();
+    public void testRedirectionFromIntent() {
+        // Test cold-start.
         Intent intent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(mTestServer.getURL(NAVIGATION_FROM_JAVA_REDIRECTION_PAGE)));
-        intent.setClassName(context, ChromeLauncherActivity.class.getName());
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        intent.setClassName(targetContext, ChromeLauncherActivity.class.getName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        ChromeTabbedActivity activity = ApplicationTestUtils.waitForActivityWithClass(
-                ChromeTabbedActivity.class, Stage.CREATED, () -> context.startActivity(intent));
-        mActivityTestRule.setActivity(activity);
-
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
-        }, ScalableTimeout.scaleTimeout(10000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        ApplicationTestUtils.waitForActivityState(activity, Stage.STOPPED);
-    }
-
-    @Test
-    @SmallTest
-    public void testRedirectionFromIntentWarm() throws Exception {
-        Context context = ContextUtils.getApplicationContext();
-        mActivityTestRule.startMainActivityOnBlankPage();
-        Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse(mTestServer.getURL(NAVIGATION_FROM_JAVA_REDIRECTION_PAGE)));
-        intent.setClassName(context, ChromeLauncherActivity.class.getName());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
 
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1)));
+
+        // Test warm start.
+        mActivityTestRule.startMainActivityOnBlankPage();
+        targetContext.startActivity(intent);
+
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(2)));
     }
 
     @Test
@@ -506,6 +489,7 @@ public class UrlOverridingTest {
         String originalUrl = mTestServer.getURL(NAVIGATION_TO_FILE_SCHEME_FROM_INTENT_URI);
         loadUrlAndWaitForIntentUrl(originalUrl, true, false, false, null, false, "null_scheme");
     }
+
     @Test
     @LargeTest
     public void testIntentURIWithEmptySchemeDoesNothing() throws TimeoutException {
