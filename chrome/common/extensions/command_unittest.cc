@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -230,10 +231,10 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
 #elif defined(OS_MAC)
   ui::Accelerator accelerator(ui::VKEY_M,
                               ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   ui::Accelerator accelerator(ui::VKEY_C,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ui::Accelerator accelerator(ui::VKEY_L,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
 #else

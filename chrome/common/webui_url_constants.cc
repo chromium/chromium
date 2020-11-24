@@ -6,6 +6,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
+#include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/safe_browsing/core/web_ui/constants.h"
 #include "extensions/buildflags/buildflags.h"
@@ -207,7 +208,7 @@ const char kChromeUIReadLaterHost[] = "read-later";
 const char kChromeUIReadLaterURL[] = "chrome://read-later/";
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Keep alphabetized.
 const char kChromeUIAccountManagerErrorHost[] = "account-manager-error";
 const char kChromeUIAccountManagerErrorURL[] = "chrome://account-manager-error";
@@ -335,7 +336,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
   }
   return false;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 const char kChromeUIWebUIJsErrorHost[] = "webuijserror";
@@ -364,8 +365,10 @@ const char kChromeUILinuxProxyConfigHost[] = "linux-proxy-config";
 const char kChromeUISandboxHost[] = "sandbox";
 #endif
 
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
 #if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 const char kChromeUIBrowserSwitchHost[] = "browser-switch";
 const char kChromeUIBrowserSwitchURL[] = "chrome://browser-switch/";
 const char kChromeUIProfileCustomizationHost[] = "profile-customization";
@@ -456,7 +459,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIComponentsHost,
     kChromeUICrashesHost,
     kChromeUICreditsHost,
-#if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
     kChromeUIDeviceEmulatorHost,
 #endif
     kChromeUIDeviceLogHost,
@@ -514,7 +517,7 @@ const char* const kChromeHostURLs[] = {
     content::kChromeUIUkmHost,
     content::kChromeUIWebRTCInternalsHost,
 #if !defined(OS_ANDROID)
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     kChromeUIAppLauncherPageHost,
 #endif
     kChromeUIBookmarksHost,
@@ -531,7 +534,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUISnippetsInternalsHost,
     kChromeUIWebApksHost,
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     kChromeUICertificateManagerHost,
     kChromeUICrostiniCreditsHost,
     kChromeUICryptohomeHost,

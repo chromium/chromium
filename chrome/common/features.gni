@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
@@ -32,11 +33,11 @@ declare_args() {
 
   # Enables support for background apps.
   enable_background_contents = !is_android && !is_chromecast
-  enable_background_mode = !is_android && !is_chromecast && !is_chromeos
+  enable_background_mode = !is_android && !is_chromecast && !is_chromeos_ash
 
   # Enable the printing system dialog for platforms that support printing
   # and have a system dialog.
-  enable_basic_print_dialog = enable_basic_printing && !is_chromeos
+  enable_basic_print_dialog = enable_basic_printing && !is_chromeos_ash
 
   # Enables the Click to Call feature on desktop platforms.
   enable_click_to_call = is_mac || is_win || is_linux || is_chromeos
@@ -47,10 +48,11 @@ declare_args() {
 
   # Enables usage of the system-provided notification center.
   enable_native_notifications =
-      is_android || is_mac || is_win || (is_linux && use_dbus) || is_chromeos
+      is_android || is_mac || is_win ||
+      ((is_linux || is_chromeos_lacros) && use_dbus) || is_chromeos
 
   enable_one_click_signin =
-      is_win || is_mac || (is_linux && !is_chromeos && !is_chromecast)
+      is_win || is_mac || ((is_linux || is_chromeos_lacros) && !is_chromecast)
 
   enable_service_discovery = (enable_mdns && !is_android) || is_mac
 
@@ -58,16 +60,16 @@ declare_args() {
   # Android stores them separately on the Java side.
   enable_session_service = !is_android && !is_chromecast
 
-  enable_supervised_users = is_chromeos || is_android
+  enable_supervised_users = is_chromeos_ash || is_android
 
   # Indicates if Wayland display server support is enabled.
-  enable_wayland_server = is_chromeos
+  enable_wayland_server = is_chromeos_ash
 
   # optimize_webui was moved to ui/base/ui_features.gni
 }
 
 # Use brlapi from brltty for braille display support.
-use_brlapi = is_chromeos
+use_brlapi = is_chromeos_ash
 
 # Every grit target in //chrome should apply these defines so that the
 # proper build flags can be set.

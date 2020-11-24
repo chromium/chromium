@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/url_constants.h"
 #include "extensions/common/constants.h"
@@ -25,7 +26,7 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/api_permission.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #endif
 
@@ -119,7 +120,7 @@ bool URLOverridesHandler::Parse(Extension* extension, base::string16* error) {
     bool is_allowed_host = page == chrome::kChromeUINewTabHost ||
                            page == chrome::kChromeUIBookmarksHost ||
                            page == chrome::kChromeUIHistoryHost;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     is_allowed_host = is_allowed_host ||
                       page == chrome::kChromeUIActivationMessageHost ||
                       page == keyboard::kKeyboardHost;

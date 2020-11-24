@@ -158,6 +158,7 @@ if (!is_android && !is_mac) {
         ":visual_elements_resources",
         "//base",
         "//build:branding_buildflags",
+        "//build:chromeos_buildflags",
         "//chrome/app/version_assembly:chrome_exe_manifest",
         "//chrome/browser:active_use_util",
         "//chrome/browser:chrome_process_finder",

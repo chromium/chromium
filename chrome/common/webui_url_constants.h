@@ -13,6 +13,7 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
@@ -203,7 +204,7 @@ extern const char kChromeUIReadLaterHost[];
 extern const char kChromeUIReadLaterURL[];
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // NOTE: If you add a URL/host please check if it should be added to
 // IsSystemWebUIHost().
 extern const char kChromeUIAccountManagerErrorHost[];
@@ -289,7 +290,7 @@ extern const char kChromeUIUserImageURL[];
 // systems would be considered part of the OS or window manager.
 bool IsSystemWebUIHost(base::StringPiece host);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 extern const char kChromeUIWebUIJsErrorHost[];
@@ -307,7 +308,7 @@ extern const char kChromeUIHatsURL[];
 #if !defined(OS_ANDROID)
 extern const char kChromeUINearbyShareHost[];
 extern const char kChromeUINearbyShareURL[];
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
 extern const char kChromeUILinuxProxyConfigHost[];
@@ -318,8 +319,10 @@ extern const char kChromeUILinuxProxyConfigHost[];
 extern const char kChromeUISandboxHost[];
 #endif
 
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
 #if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 extern const char kChromeUIBrowserSwitchHost[];
 extern const char kChromeUIBrowserSwitchURL[];
 extern const char kChromeUIProfileCustomizationHost[];

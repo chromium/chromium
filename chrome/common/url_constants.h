@@ -19,6 +19,7 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"
@@ -66,7 +67,7 @@ extern const char kChromeReleaseNotesURL[];
 extern const char kChromeHelpViaKeyboardURL[];
 extern const char kChromeHelpViaMenuURL[];
 extern const char kChromeHelpViaWebUIURL[];
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kChromeOsHelpViaWebUIURL[];
 #endif
 
@@ -254,12 +255,12 @@ extern const char kChromeFlashRoadmapURL[];
 extern const char kAndroidAppScheme[];
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // "Learn more" URL for the enhanced playback notification dialog.
 extern const char kEnhancedPlaybackNotificationLearnMoreURL[];
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Help center URL for Chrome OS Account Manager.
 extern const char kAccountManagerLearnMoreURL[];
 
@@ -386,7 +387,7 @@ extern const char kTabletModeGesturesLearnMoreURL[];
 
 // The URL for the help center article about Wi-Fi sync.
 extern const char kWifiSyncLearnMoreURL[];
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
 // "Learn more" URL for the enterprise sign-in confirmation dialog.

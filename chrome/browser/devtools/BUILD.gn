@@ -110,6 +110,7 @@ static_library("devtools") {
 
   if (!is_android) {
     deps += [
+      "//build:chromeos_buildflags",
       "//chrome:extra_resources",
       "//chrome:resources",
       "//chrome:strings",

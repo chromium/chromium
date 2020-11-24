@@ -47,7 +47,7 @@ TEST(ChromePaths, UserCacheDir) {
   // Verify that a profile in the special platform-specific source
   // location ends up in the special target location. Ignore this assertion on
   // platforms that don't use a special cache directory.
-#if !defined(OS_WIN) && !BUILDFLAG(IS_LACROS)
+#if !defined(OS_WIN) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   GetUserCacheDirectory(test_profile_dir, &cache_dir);
   EXPECT_EQ(expected_cache_dir.value(), cache_dir.value());
 #endif
@@ -64,7 +64,8 @@ TEST(ChromePaths, UserCacheDir) {
 }
 
 // Chrome OS doesn't use any of the desktop linux configuration.
-#if defined(OS_LINUX) && !BUILDFLAG(IS_LACROS) && !BUILDFLAG(IS_ASH)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
+    !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(ChromePaths, DefaultUserDataDir) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   std::string orig_chrome_config_home;
@@ -103,7 +104,7 @@ TEST(ChromePaths, DefaultUserDataDir) {
 }
 #endif
 
-#if BUILDFLAG(IS_LACROS) || BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(ChromePaths, UserMediaDirectories) {
   base::FilePath path;
   // Chrome OS does not support custom media directories.

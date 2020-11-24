@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -95,7 +96,7 @@ TEST_F(CrashKeysTest, IgnoreBoringFlags) {
   command_line.AppendSwitch("--vvv");
   command_line.AppendSwitch("--enable-multi-profiles");
   command_line.AppendSwitch("--device-management-url=https://foo/bar");
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   command_line.AppendSwitch("--user-data-dir=/tmp");
   command_line.AppendSwitch("--default-wallpaper-small=test.png");
 #endif

@@ -11,13 +11,14 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/flags_ui/flags_ui_switches.h"
 #include "content/public/common/content_switches.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/app/crash_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -38,7 +39,7 @@ static bool IsBoringSwitch(const std::string& flag) {
     switches::kVModule,
 #if defined(OS_MAC)
     switches::kMetricsClientID,
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
     // --crash-loop-before is a "boring" switch because it is redundant;
     // crash_reporter separately informs the crash server if it is doing
     // crash-loop handling.

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/extensions/api/api_sources.gni")
@@ -56,7 +57,7 @@ generated_json_strings("generated_api_json_strings") {
     "tts.json",
     "tts_engine.json",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "file_browser_handler.json" ]
   } else {
     # On ChromeOS, input_method_private is fully compiled (as part of

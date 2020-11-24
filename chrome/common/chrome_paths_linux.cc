@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths_internal.h"
 
@@ -35,7 +36,7 @@ const char kVideosDir[] = "Videos";
 bool GetUserMediaDirectory(const std::string& xdg_name,
                            const std::string& fallback_name,
                            base::FilePath* result) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // No local media directories on CrOS.
   return false;
 #else

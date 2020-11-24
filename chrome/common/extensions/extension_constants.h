@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "url/gurl.h"
 
 namespace extension_urls {
@@ -182,7 +183,7 @@ enum AppLaunchBucket {
   APP_LAUNCH_BUCKET_INVALID
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the Assessment Assistant extension.
 extern const char kAssessmentAssistantExtensionId[];
 // The extension id of the Accessibility Common extension.

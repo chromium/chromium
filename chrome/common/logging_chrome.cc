@@ -47,6 +47,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -54,7 +55,7 @@
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_logging.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_switches.h"
 #endif
 
@@ -157,7 +158,7 @@ LoggingDestination DetermineLoggingDestination(
   return kDefaultLoggingMode;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 base::FilePath SetUpSymlinkIfNeeded(const base::FilePath& symlink_path,
                                     bool new_log) {
   DCHECK(!symlink_path.empty());
@@ -261,7 +262,7 @@ base::FilePath GetSessionLogFile(const base::CommandLine& command_line) {
       .Append(GetLogFileName(command_line).BaseName());
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void InitChromeLogging(const base::CommandLine& command_line,
                        OldFileDeletionState delete_old_log_file) {
@@ -270,7 +271,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
   LoggingDestination logging_dest = DetermineLoggingDestination(command_line);
   LogLockingState log_locking_state = LOCK_LOG_FILE;
   base::FilePath log_path;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath target_path;
 #endif
 
@@ -279,7 +280,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
   if ((logging_dest & LOG_TO_FILE) != 0) {
     log_path = GetLogFileName(command_line);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // For BWSI (Incognito) logins, we want to put the logs in the user
     // profile directory that is created for the temporary session instead
     // of in the system log directory, for privacy reasons.
@@ -296,7 +297,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
     // the link, it shouldn't remove the old file in the logging code,
     // since that will remove the newly created link instead.
     delete_old_log_file = APPEND_TO_OLD_LOG_FILE;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     log_locking_state = DONT_LOCK_LOG_FILE;
   }
@@ -308,7 +309,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
   settings.delete_old = delete_old_log_file;
   bool success = InitLogging(settings);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!success) {
     DPLOG(ERROR) << "Unable to initialize logging to " << log_path.value()
                 << " (which should be a link to " << target_path.value() << ")";
@@ -316,13 +317,13 @@ void InitChromeLogging(const base::CommandLine& command_line,
     chrome_logging_failed_ = true;
     return;
   }
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!success) {
     DPLOG(ERROR) << "Unable to initialize logging to " << log_path.value();
     chrome_logging_failed_ = true;
     return;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // We call running in unattended mode "headless", and allow headless mode to
   // be configured either by the Environment Variable or by the Command Line
@@ -417,7 +418,7 @@ bool DialogsAreSuppressed() {
   return dialogs_are_suppressed_;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp) {
   base::Time::Exploded time_deets;
@@ -431,6 +432,6 @@ base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                           time_deets.second);
   return base_path.InsertBeforeExtensionASCII(suffix);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace logging

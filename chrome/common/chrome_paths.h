@@ -7,6 +7,7 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace base {
 class FilePath;
@@ -50,8 +51,12 @@ enum {
                      // to set policies for chrome. This directory
                      // contains subdirectories.
 #endif
-#if defined(OS_CHROMEOS) || \
-    (defined(OS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING)) || defined(OS_MAC)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_CHROMEOS) ||                                  \
+    ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+     BUILDFLAG(CHROMIUM_BRANDING)) ||                        \
+    defined(OS_MAC)
   DIR_USER_EXTERNAL_EXTENSIONS,  // Directory for per-user external extensions
                                  // on Chrome Mac and Chromium Linux.
                                  // On Chrome OS, this path is used for OEM
@@ -90,13 +95,13 @@ enum {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   DIR_BUNDLED_WIDEVINE_CDM,  // Full path to the directory containing the
                              // bundled Widevine CDM.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DIR_COMPONENT_UPDATED_WIDEVINE_CDM,  // Base directory of the Widevine CDM
                                        // downloaded by the component
                                        // updater.
   FILE_COMPONENT_WIDEVINE_CDM_HINT,    // A file in a known location that points
-                                     // to the component updated Widevine CDM.
-#endif                                 // !defined(OS_CHROMEOS)
+                                       // to the component updated Widevine CDM.
+#endif                                 // !BUILDFLAG(IS_CHROMEOS_ASH)
 #endif                  // defined(OS_LINUX) || defined(OS_CHROMEOS)
   FILE_RESOURCES_PACK,  // Full path to the .pak file containing binary data.
                         // This includes data for internal pages (e.g., html
@@ -105,7 +110,7 @@ enum {
   FILE_DEV_UI_RESOURCES_PACK,  // Full path to the .pak file containing
                                // binary data for internal pages (e.g., html
                                // files and images).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DIR_CHROMEOS_WALLPAPERS,            // Directory where downloaded chromeos
                                       // wallpapers reside.
   DIR_CHROMEOS_WALLPAPER_THUMBNAILS,  // Directory where downloaded chromeos
@@ -135,14 +140,14 @@ enum {
   FILE_COMPONENT_FLASH_HINT,  // A file in a known location that points to
                               // the component updated flash plugin.
 #endif                        // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // File containing the location of the updated TPM firmware binary in the file
   // system.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION,
 
   // Flag file indicating SRK ROCA vulnerability status.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
-#endif  // defined(OS_CHROMEOS)
+#endif                                       // BUILDFLAG(IS_CHROMEOS_ASH)
   DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
                                              // downloaded by the Optimization
                                              // Guide are stored.

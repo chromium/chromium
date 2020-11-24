@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/common/constants.h"
 
 namespace extension_urls {
@@ -68,7 +69,7 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kTextEditorAppId,
     kInAppPaymentsSupportAppId,
     kCastExtensionIdRelease,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     kAssessmentAssistantExtensionId,
     kAccessibilityCommonExtensionId,
     kSelectToSpeakExtensionId,
@@ -79,11 +80,11 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kGoogleSpeechSynthesisExtensionId,
     kWallpaperManagerId,
     kZipArchiverExtensionId,
-#endif        // defined(OS_CHROMEOS)
+#endif        // BUILDFLAG(IS_CHROMEOS_ASH)
     nullptr,  // Null-terminated array.
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAssessmentAssistantExtensionId[] =
     "gndmhdcefbhlchkhipcnnbkcmicncehk";
 const char kAccessibilityCommonExtensionId[] =

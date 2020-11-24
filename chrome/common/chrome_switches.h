@@ -9,6 +9,7 @@
 #define CHROME_COMMON_CHROME_SWITCHES_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -195,7 +196,7 @@ extern const char kMarketUrlForTesting[];
 extern const char kWebApkServerUrl[];
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kCroshCommand[];
 extern const char kDisableLoggingRedirect[];
 extern const char kDisableLoginScreenApps[];
@@ -204,9 +205,9 @@ extern const char kSchedulerConfiguration[];
 extern const char kSchedulerConfigurationConservative[];
 extern const char kSchedulerConfigurationPerformance[];
 extern const char kSchedulerConfigurationDefault[];
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_CHROMEOS)
+#if defined(OS_POSIX) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kHelp[];
 extern const char kHelpShort[];
 extern const char kPasswordStore[];
@@ -255,7 +256,7 @@ extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
 #endif
 
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 extern const char kUseSystemDefaultPrinter[];
 #endif
 

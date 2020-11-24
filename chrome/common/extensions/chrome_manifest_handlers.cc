@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/commands/commands_handler.h"
 #include "chrome/common/extensions/api/omnibox/omnibox_handler.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
@@ -29,7 +30,7 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chrome/common/extensions/api/input_ime/input_components_handler.h"
@@ -66,7 +67,7 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<TtsEngineManifestHandler>());
   registry->RegisterHandler(std::make_unique<UrlHandlersParser>());
   registry->RegisterHandler(std::make_unique<URLOverridesHandler>());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterHandler(std::make_unique<FileBrowserHandlerParser>());
   registry->RegisterHandler(
       std::make_unique<FileSystemProviderCapabilitiesHandler>());

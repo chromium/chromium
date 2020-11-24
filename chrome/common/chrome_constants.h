@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace chrome {
 
@@ -95,7 +96,7 @@ extern const wchar_t kUserDataDirname[];
 // installed.
 extern const float kMaxShareOfExtensionProcesses;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Chrome OS profile directories have custom prefix.
 // Profile path format: [user_data_dir]/u-[$hash]
 // Ex.: /home/chronos/u-0123456789

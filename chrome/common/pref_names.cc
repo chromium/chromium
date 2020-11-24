@@ -7,6 +7,7 @@
 #include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_font_webkit_names.h"
 #include "extensions/buildflags/buildflags.h"
@@ -212,7 +213,7 @@ const char kSupervisedUserAllowlists[] = "profile.managed.whitelists";
 const char kRlzPingDelaySeconds[] = "rlz_ping_delay";
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Locale preference of device' owner.  ChromeOS device appears in this locale
 // after startup/wakeup/signout.
 const char kOwnerLocale[] = "intl.owner_locale";
@@ -461,7 +462,7 @@ const char kDefaultAppsInstallState[] = "default_apps_install_state";
 // from the New Tab Page and app launcher.
 const char kHideWebStoreIcon[] = "hide_web_store_icon";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // An integer preference to store the number of times the Chrome OS Account
 // Manager migration flow ran successfully.
 const char kAccountManagerNumTimesMigrationRanSuccessfully[] =
@@ -1060,7 +1061,7 @@ const char kSystemProxyUserTrafficHostAndPort[] =
 const char kEduCoexistenceArcMigrationCompleted[] =
     "account_manager.edu_coexistence_arc_migration_completed";
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A boolean pref set to true if a Home button to open the Home pages should be
 // visible on the toolbar.
@@ -1087,7 +1088,9 @@ const char kForceYouTubeRestrict[] = "settings.force_youtube_restrict";
 // only using an account that belongs to one of the domains from this pref.
 const char kAllowedDomainsForApps[] = "settings.allowed_domains_for_apps";
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Linux specific preference on whether we should match the system theme.
 const char kUsesSystemTheme[] = "extensions.theme.use_system";
 #endif
@@ -1204,7 +1207,7 @@ const char kAccessibilityImageLabelsOnlyOnWifi[] =
     "settings.a11y.enable_accessibility_image_labels_only_on_wifi";
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // A boolean pref which determines whether focus highlighting is enabled.
 const char kAccessibilityFocusHighlightEnabled[] =
     "settings.a11y.focus_highlight";
@@ -1244,7 +1247,9 @@ const char kShowUpdatePromotionInfoBar[] =
     "browser.show_update_promotion_info_bar";
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Boolean that is false if we should show window manager decorations.  If
 // true, we draw a custom chrome frame (thicker title bar and blue border).
 const char kUseCustomChromeFrame[] = "browser.custom_chrome_frame";
@@ -1376,7 +1381,7 @@ const char kPrintPreviewDefaultDestinationSelectionRules[] =
 const char kPrintRasterizationMode[] = "printing.rasterization_mode";
 #endif
 
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 // A pref that sets the default destination in Print Preview to always be the
 // OS default printer instead of the most recently used destination.
 const char kPrintPreviewUseSystemDefaultPrinter[] =
@@ -1390,7 +1395,7 @@ const char kUserDataSnapshotRetentionLimit[] =
     "downgrade.snapshot_retention_limit";
 #endif  // !OS_CHROMEOS && !OS_ANDROID
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // List of print servers ids that are allowed in the user policy. List of
 // strings. Note that this used to be `kExternalPrintServersWhitelist`, hence
 // the difference between the variable name and the string value.
@@ -1469,7 +1474,7 @@ const char kPrintingAPIExtensionsAllowlist[] =
 // deleted.
 const char kDeletePrintJobHistoryAllowed[] =
     "printing.delete_print_job_history_allowed";
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // An integer pref specifying the fallback behavior for sites outside of content
 // packs. One of:
@@ -1777,7 +1782,7 @@ const char kShutdownNumProcessesSlow[] = "shutdown.num_processes_slow";
 const char kRestartLastSessionOnShutdown[] = "restart.last.session.on.shutdown";
 
 #if !defined(OS_ANDROID)
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Pref name for the policy controlling presentation of full-tab promotional
 // and/or educational content.
 const char kPromotionalTabsEnabled[] = "browser.promotional_tabs_enabled";
@@ -1787,7 +1792,7 @@ const char kPromotionalTabsEnabled[] = "browser.promotional_tabs_enabled";
 // CommandLineFlagSecurityWarningsEnabled policy setting.
 const char kCommandLineFlagSecurityWarningsEnabled[] =
     "browser.command_line_flag_security_warnings_enabled";
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Boolean that specifies whether or not showing the unsupported OS warning is
 // suppressed. False by default. Controlled by the SuppressUnsupportedOSWarning
@@ -2053,7 +2058,7 @@ const char kAuthNegotiateDelegateByKdcPolicy[] =
 const char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
 #endif  // defined(OS_POSIX)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean whether Kerberos functionality is enabled.
 const char kKerberosEnabled[] = "kerberos.enabled";
 #endif
@@ -2132,7 +2137,7 @@ const char kVideoCaptureAllowedUrls[] = "hardware.video_capture_allowed_urls";
 // is not allowed and API calls will fail with an error.
 const char kScreenCaptureAllowed[] = "hardware.screen_capture_enabled";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // An integer pref that holds enum value of current demo mode configuration.
 // Values are defined by DemoSession::DemoModeConfig enum.
 const char kDemoModeConfig[] = "demo_mode.config";
@@ -2362,7 +2367,7 @@ const char kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount[] =
 // set for child users only, and kept on the known user storage.
 const char kKnownUserParentAccessCodeConfig[] =
     "child_user.parent_access_code.config";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Whether there is a Flash version installed that supports clearing LSO data.
 const char kClearPluginLSODataEnabled[] = "browser.clear_lso_data_enabled";
@@ -2410,7 +2415,7 @@ const char kDebuggingFeaturesRequested[] = "DebuggingFeaturesRequested";
 // Indicates that the user has requested that ARC APK Sideloading be enabled.
 const char kEnableAdbSideloadingRequested[] = "EnableAdbSideloadingRequested";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // This setting controls initial device timezone that is used before user
 // session started. It is controlled by device owner.
 const char kSigninScreenTimezone[] = "settings.signin_screen_timezone";
@@ -2435,7 +2440,7 @@ const char kResolveDeviceTimezoneByGeolocationMethod[] =
 // SystemTimezoneAutomaticDetectionProto_AutomaticTimezoneDetectionType;
 const char kSystemTimezoneAutomaticDetectionPolicy[] =
     "settings.resolve_device_timezone_by_geolocation_policy";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Pref name for the policy controlling whether to enable Media Router.
 const char kEnableMediaRouter[] = "media_router.enable_media_router";
@@ -2456,12 +2461,12 @@ const char kRelaunchNotificationPeriod[] =
     "browser.relaunch_notification_period";
 #endif  // !defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Pref name for the policy controlling the time period between the first user
 // notification about need to relaunch and the end of the
 // RelaunchNotificationPeriod. Values are in milliseconds.
 const char kRelaunchHeadsUpPeriod[] = "browser.relaunch_heads_up_period";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
@@ -2579,7 +2584,7 @@ const char kMediaGalleriesRememberedGalleries[] =
     "media_galleries.remembered_galleries";
 #endif  // !defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPolicyPinnedLauncherApps[] = "policy_pinned_launcher_apps";
 // Keeps names of rolled default pin layouts for shelf in order not to apply
 // this twice. Names are separated by comma.
@@ -2587,7 +2592,7 @@ const char kShelfDefaultPinLayoutRolls[] = "shelf_default_pin_layout_rolls";
 // Same as kShelfDefaultPinLayoutRolls, but for tablet form factor devices.
 const char kShelfDefaultPinLayoutRollsForTabletFormFactor[] =
     "shelf_default_pin_layout_rolls_for_tablet_form_factor";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
 // Counts how many more times the 'profile on a network share' warning should be
@@ -2603,7 +2608,7 @@ const char kNetworkProfileLastWarningTime[] =
 const char kShortcutMigrationVersion[] = "browser.shortcut_migration_version";
 #endif  // defined(OS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The RLZ brand code, if enabled.
 const char kRLZBrand[] = "rlz.brand";
 // Whether RLZ pings are disabled.
@@ -2945,7 +2950,9 @@ const char kAutoplayWhitelist[] = "media.autoplay_whitelist";
 const char kBlockAutoplayEnabled[] = "media.block_autoplay";
 #endif  // !defined(OS_ANDROID)
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Boolean that indicates if native notifications are allowed to be used in
 // place of Chrome notifications.
 const char kAllowNativeNotifications[] = "native_notifications.allowed";
@@ -2975,7 +2982,7 @@ const char kSignedHTTPExchangeEnabled[] = "web_package.signed_exchange.enabled";
 // TODO(https://crbug.com/1003101): Remove this in Chrome 88.
 const char kAllowSyncXHRInPageDismissal[] = "allow_sync_xhr_in_page_dismissal";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enum that specifies client certificate management permissions for user. It
 // can have one of the following values.
 // 0: Users can manage all certificates.
@@ -3034,7 +3041,7 @@ const char kKnownInterceptionDisclosureInfobarLastShown[] =
     "known_interception_disclosure_infobar_last_shown";
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kRequiredClientCertificateForUser[] =
     "required_client_certificate_for_user";
 const char kRequiredClientCertificateForDevice[] =
@@ -3057,7 +3064,7 @@ const char kMediaFeedsSafeSearchEnabled[] = "media_feeds_safe_search_enabled";
 // TODO(enne): Remove this once AppCache has been removed.
 const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref indicating whether the notification informing the user that
 // adb sideloading had been disabled by their admin was shown.
 const char kAdbSideloadingDisallowedNotificationShown[] =
@@ -3086,14 +3093,14 @@ const char kShowCaretBrowsingDialog[] =
     "settings.a11y.caretbrowsing.show_dialog";
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref indicating whether the Lacros browser is allowed. This is set by
 // a policy, and the default value for managed users is false. Admins willing to
 // give rights to use Lacros can set the policy to true.
 const char kLacrosAllowed[] = "lacros_allowed";
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // String enum pref determining what should happen when a user who authenticates
 // via a security token is removing this token. "IGNORE" - nothing happens
 // (default). "LOGOUT" - The user is logged out. "LOCK" - The session is locked.
@@ -3115,6 +3122,6 @@ const char kSecurityTokenSessionNotificationDisplayed[] =
 // who was logged out, to be used as part of the notification message.
 const char kSecurityTokenSessionNotificationScheduledDomain[] =
     "security_token_session_notification_scheduled";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace prefs

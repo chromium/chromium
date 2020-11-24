@@ -5,6 +5,7 @@
 #include "chrome/common/chrome_switches.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -639,7 +640,7 @@ const char kMarketUrlForTesting[] = "market-url-for-testing";
 const char kWebApkServerUrl[] = "webapk-server-url";
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Custom crosh command.
 const char kCroshCommand[] = "crosh-command";
 
@@ -662,9 +663,9 @@ const char kSchedulerConfigurationPerformance[] = "performance";
 // Specifies what the default scheduler configuration value is if the user does
 // not set one.
 const char kSchedulerConfigurationDefault[] = "scheduler-configuration-default";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_CHROMEOS)
+#if defined(OS_POSIX) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // These flags show the man page on Linux. They are equivalent to each
 // other.
 const char kHelp[]                          = "help";
@@ -802,7 +803,7 @@ const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
 const char kGuest[] = "guest";
 #endif
 
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 // Uses the system default printer as the initially selected destination in
 // print preview, instead of the most recently used destination.
 const char kUseSystemDefaultPrinter[] = "use-system-default-printer";
