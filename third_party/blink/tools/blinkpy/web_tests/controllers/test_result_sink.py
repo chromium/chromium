@@ -127,11 +127,14 @@ class TestResultSink(object):
 
         Args:
             result: The TestResult object to look for the artifacts of.
+            summaries: A list of strings to be included in the summary html.
         Returns:
+            A list of artifact HTML tags to be added into the summary html
             A dict of artifacts, where the key is the artifact ID and
             the value is a dict with the absolute file path.
         """
         ret = {}
+        summaries = []
         base_dir = self._port.results_directory()
         for name, paths in result.artifacts.artifacts.iteritems():
             for p in paths:
@@ -144,8 +147,27 @@ class TestResultSink(object):
                 ret[art_id] = {
                     'filePath': self._port.host.filesystem.join(base_dir, p),
                 }
+                # Web tests generate the same artifact names for text-diff(s)
+                # and image diff(s).
+                # - {actual,expected}_text, {text,pretty_text}_diff
+                # - {actual,expected}_image, {image,pretty_image}_diff
+                # - reference_file_{mismatch,match}
+                #
+                # Milo recognizes the names and auto generates a summary html
+                # to render them with <text-diff-artifact> or
+                # <img-diff-artifact>.
+                #
+                # stderr and crash_log are the only artifact names that are
+                # not included in the auto-generated summary. This uses
+                # <text-artifact> to render them in the summary_html section
+                # of each test.
+                if name in ['stderr', 'crash_log']:
+                    summaries.append(
+                        '<h3>%s</h3>'
+                        '<p><text-artifact artifact-id="%s" /></p>' %
+                        (art_id, art_id))
 
-        return ret
+        return summaries, ret
 
     def sink(self, expected, result):
         """Reports the test result to ResultSink.
@@ -166,9 +188,10 @@ class TestResultSink(object):
 
         # The structure and member definitions of this dict can be found at
         # https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/master/resultdb/proto/sink/v1/test_result.proto
-        locFileName = '//%s%s' % (RELATIVE_WEB_TESTS, result.test_name)
+        loc_file_name = '//%s%s' % (RELATIVE_WEB_TESTS, result.test_name)
+        summaries, artifacts = self._artifacts(result)
         r = {
-            'artifacts': self._artifacts(result),
+            'artifacts': artifacts,
             'duration': '%ss' % result.total_run_time,
             # device failures are never expected.
             'expected': not result.device_failed and expected,
@@ -186,11 +209,14 @@ class TestResultSink(object):
                 # and disabled-test dashboards.
                 'location': {
                     'repo': 'https://chromium.googlesource.com/chromium/src',
-                    'fileName': locFileName,
+                    'fileName': loc_file_name,
                     # skip: 'line'
                 },
             },
         }
+        if summaries:
+            r['summaryHtml'] = '\n'.join(summaries)
+
         self._send({'testResults': [r]})
 
     def close(self):

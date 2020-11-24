@@ -5,6 +5,7 @@
 import contextlib
 import json
 import mock
+import re
 import requests
 import sys
 import unittest
@@ -172,3 +173,15 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                     'filePath': '/tmp/bar'
                 }
             })
+
+    def test_summary_html(self):
+        tr = test_results.TestResult(test_name='test-name')
+        tr.artifacts.AddArtifact('stderr', '/tmp/foo', False)
+        tr.artifacts.AddArtifact('crash_log', '/tmp/bar', False)
+
+        sent_data = self.sink(True, tr)
+        p = re.compile('<text-artifact artifact-id="(stderr|crash_log)" />')
+        self.assertSetEqual(
+            set(p.findall(sent_data['summaryHtml'])),
+            set(['stderr', 'crash_log']),
+        )
