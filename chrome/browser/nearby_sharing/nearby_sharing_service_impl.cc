@@ -359,6 +359,8 @@ void NearbySharingServiceImpl::Shutdown() {
     certificate_manager_->Stop();
   }
 
+  process_shutdown_pending_timer_.Stop();
+
   // |profile_| has now been shut down so we shouldn't use it anymore.
   profile_ = nullptr;
 }
@@ -1262,8 +1264,19 @@ void NearbySharingServiceImpl::InvalidateSurfaceState() {
   InvalidateSendSurfaceState();
   InvalidateReceiveSurfaceState();
   if (ShouldStopNearbyProcess()) {
-    NS_LOG(VERBOSE) << __func__ << ": Stopping process because it's not in use";
-    process_manager_->StopProcess(profile_);
+    // We need to debounce the call to shut down the process in case this state
+    // is temporary (we don't want to the thrash the process). Any advertisment,
+    // scanning or transfering will stop this timer from triggering.
+    NS_LOG(INFO) << __func__
+                 << ": Scheduling process shutdown if not needed in 15 seconds";
+    // NOTE: Using base::Unretained is safe because if shutdown_pending_timer_
+    // goes out of scope the timer will be canceled.
+    process_shutdown_pending_timer_.Start(
+        FROM_HERE, base::TimeDelta::FromSeconds(15),
+        base::BindOnce(&NearbySharingServiceImpl::OnProcessShutdownTimerFired,
+                       base::Unretained(this)));
+  } else {
+    process_shutdown_pending_timer_.Stop();
   }
 }
 
@@ -1294,6 +1307,14 @@ bool NearbySharingServiceImpl::ShouldStopNearbyProcess() {
 
   // We're not using NearbyConnections, should stop the process.
   return true;
+}
+
+void NearbySharingServiceImpl::OnProcessShutdownTimerFired() {
+  if (ShouldStopNearbyProcess()) {
+    NS_LOG(INFO) << __func__
+                 << ": Shutdown Process timer fired, shutting down process";
+    process_manager_->StopProcess(profile_);
+  }
 }
 
 void NearbySharingServiceImpl::InvalidateSendSurfaceState() {
@@ -1365,6 +1386,7 @@ void NearbySharingServiceImpl::InvalidateScanningState() {
     return;
   }
 
+  process_shutdown_pending_timer_.Stop();
   // Screen is on, Bluetooth is enabled, and Nearby Sharing is enabled! Start
   // discovery.
   StartScanning();
@@ -1431,6 +1453,8 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
         << "Failed to advertise FastInitiation. Already advertising.";
     return;
   }
+
+  process_shutdown_pending_timer_.Stop();
 
   StartFastInitiationAdvertising();
 }
@@ -1523,6 +1547,8 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
            "is registered and device is visible to NO_ONE.";
     return;
   }
+
+  process_shutdown_pending_timer_.Stop();
 
   PowerLevel power_level;
   if (foreground_receive_callbacks_.might_have_observers()) {
