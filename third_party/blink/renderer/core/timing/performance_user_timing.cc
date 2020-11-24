@@ -42,11 +42,11 @@ void InsertPerformanceEntry(PerformanceEntryMap& performance_entry_map,
   PerformanceEntryMap::iterator it = performance_entry_map.find(entry.name());
   if (it != performance_entry_map.end()) {
     DCHECK(it->value);
-    it->value->push_back(entry);
+    it->value->push_back(&entry);
   } else {
     PerformanceEntryVector* vector =
         MakeGarbageCollected<PerformanceEntryVector>();
-    vector->push_back(entry);
+    vector->push_back(&entry);
     performance_entry_map.Set(entry.name(), vector);
   }
 }
