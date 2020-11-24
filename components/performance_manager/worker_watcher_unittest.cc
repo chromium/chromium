@@ -1182,6 +1182,57 @@ TEST_F(WorkerWatcherTest, SharedWorkerCrossProcessClient) {
   shared_worker_service()->DestroySharedWorker(shared_worker_token);
 }
 
+TEST_F(WorkerWatcherTest, SharedWorkerDiesAsServiceWorkerClient) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kServiceWorkerRelationshipsInGraph);
+
+  // Create the shared and service workers.
+  int render_process_id = process_node_source()->CreateProcessNode();
+  const blink::SharedWorkerToken& shared_worker_token =
+      shared_worker_service()->CreateSharedWorker(render_process_id);
+  int64_t service_worker_version_id =
+      service_worker_context()->CreateServiceWorker();
+
+  std::string service_worker_client_uuid = service_worker_context()->AddClient(
+      service_worker_version_id,
+      content::ServiceWorkerClientInfo(shared_worker_token));
+  service_worker_context()->StartServiceWorker(service_worker_version_id,
+                                               render_process_id);
+
+  // Check expectations on the graph.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [service_worker_node = GetServiceWorkerNode(service_worker_version_id),
+       shared_worker_node =
+           GetSharedWorkerNode(shared_worker_token)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
+        EXPECT_EQ(service_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_TRUE(graph->NodeInGraph(shared_worker_node));
+        EXPECT_EQ(shared_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kShared);
+        EXPECT_TRUE(IsWorkerClient(service_worker_node, shared_worker_node));
+      }));
+
+  // Destroy the shared worker while it still has a client registration
+  // against the service worker.
+  shared_worker_service()->DestroySharedWorker(shared_worker_token);
+
+  // Check expectations on the graph again.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [service_worker_node =
+           GetServiceWorkerNode(service_worker_version_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
+        EXPECT_EQ(service_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_TRUE(service_worker_node->client_workers().empty());
+      }));
+
+  // Issue the trailing service worker client removal.
+  service_worker_context()->RemoveClient(service_worker_version_id,
+                                         service_worker_client_uuid);
+}
+
 TEST_F(WorkerWatcherTest, OneSharedWorkerTwoClients) {
   int render_process_id = process_node_source()->CreateProcessNode();
 

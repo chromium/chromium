@@ -279,6 +279,14 @@ void WorkerWatcher::OnBeforeWorkerDestroyed(
   DCHECK(it != shared_worker_nodes_.end());
 
   auto worker_node = std::move(it->second);
+
+  // Disconnect all child workers before destroying the node.
+  auto child_it = shared_worker_child_workers_.find(shared_worker_token);
+  if (child_it != shared_worker_child_workers_.end()) {
+    DisconnectClientsOnGraph(child_it->second, worker_node.get());
+    shared_worker_child_workers_.erase(child_it);
+  }
+
 #if DCHECK_IS_ON()
   DCHECK(!base::Contains(detached_frame_count_per_worker_, worker_node.get()));
 #endif  // DCHECK_IS_ON()
@@ -614,16 +622,27 @@ void WorkerWatcher::DisconnectSharedWorkerClient(
     blink::SharedWorkerToken client_shared_worker_token) {
   DCHECK(worker_node);
 
+  // This notification may arrive after the client worker has been deleted,
+  // in which case the relationship has already been cleaned up.
+  auto worker_it = shared_worker_nodes_.find(client_shared_worker_token);
+  if (worker_it == shared_worker_nodes_.end()) {
+    // Make sure there aren't any child relationships for this worker.
+    DCHECK(shared_worker_child_workers_.find(client_shared_worker_token) ==
+           shared_worker_child_workers_.end());
+
+    return;
+  }
+
   // Remove |worker_node| from the set of child workers of this shared worker.
-  auto it = shared_worker_child_workers_.find(client_shared_worker_token);
-  DCHECK(it != shared_worker_child_workers_.end());
-  auto& child_workers = it->second;
+  auto child_it = shared_worker_child_workers_.find(client_shared_worker_token);
+  DCHECK(child_it != shared_worker_child_workers_.end());
+  auto& child_workers = child_it->second;
 
   size_t removed = child_workers.erase(worker_node);
   DCHECK_EQ(removed, 1u);
 
   if (child_workers.empty())
-    shared_worker_child_workers_.erase(it);
+    shared_worker_child_workers_.erase(child_it);
 
   DisconnectClientWorkerOnGraph(
       worker_node, GetSharedWorkerNode(client_shared_worker_token));
