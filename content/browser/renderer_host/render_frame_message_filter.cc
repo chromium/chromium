@@ -13,22 +13,22 @@
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/renderer_host/render_widget_helper.h"
+#include "content/browser/plugin_service_impl.h"
+#include "content/browser/ppapi_plugin_process_host.h"
 #include "content/common/frame_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/plugin_service_filter.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/browser/plugin_service_impl.h"
-#include "content/browser/ppapi_plugin_process_host.h"
-#include "content/public/browser/plugin_service_filter.h"
+#if !BUILDFLAG(ENABLE_PLUGINS)
+#error "RenderFrameMessageFilter is only used for plugin builds."
 #endif
 
 namespace content {
@@ -70,8 +70,6 @@ class RenderMessageCompletionCallback {
 
 }  // namespace
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-
 class RenderFrameMessageFilter::OpenChannelToPpapiPluginCallback
     : public RenderMessageCompletionCallback,
       public PpapiPluginProcessHost::PluginClient {
@@ -100,38 +98,25 @@ class RenderFrameMessageFilter::OpenChannelToPpapiPluginCallback
   bool Incognito() override { return filter()->incognito_; }
 };
 
-#endif  // ENABLE_PLUGINS
-
 RenderFrameMessageFilter::RenderFrameMessageFilter(
     int render_process_id,
     PluginServiceImpl* plugin_service,
     BrowserContext* browser_context,
-    StoragePartition* storage_partition,
-    RenderWidgetHelper* render_widget_helper)
+    StoragePartition* storage_partition)
     : BrowserMessageFilter(FrameMsgStart),
-#if BUILDFLAG(ENABLE_PLUGINS)
       plugin_service_(plugin_service),
       profile_data_directory_(storage_partition->GetPath()),
-#endif  // ENABLE_PLUGINS
-      resource_context_(browser_context->GetResourceContext()),
-      render_widget_helper_(render_widget_helper),
       incognito_(browser_context->IsOffTheRecord()),
-      render_process_id_(render_process_id) {
-}
+      render_process_id_(render_process_id) {}
 
 RenderFrameMessageFilter::~RenderFrameMessageFilter() {
   // This function should be called on the IO thread.
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 }
 
-void RenderFrameMessageFilter::ClearResourceContext() {
-  resource_context_ = nullptr;
-}
-
 bool RenderFrameMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderFrameMessageFilter, message)
-#if BUILDFLAG(ENABLE_PLUGINS)
     IPC_MESSAGE_HANDLER(FrameHostMsg_GetPluginInfo, OnGetPluginInfo)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(FrameHostMsg_OpenChannelToPepperPlugin,
                                     OnOpenChannelToPepperPlugin)
@@ -139,7 +124,6 @@ bool RenderFrameMessageFilter::OnMessageReceived(const IPC::Message& message) {
                         OnDidCreateOutOfProcessPepperInstance)
     IPC_MESSAGE_HANDLER(FrameHostMsg_DidDeleteOutOfProcessPepperInstance,
                         OnDidDeleteOutOfProcessPepperInstance)
-#endif  // ENABLE_PLUGINS
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -153,13 +137,9 @@ void RenderFrameMessageFilter::OnDestruct() const {
 void RenderFrameMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,
     BrowserThread::ID* thread) {
-#if BUILDFLAG(ENABLE_PLUGINS)
   if (message.type() == FrameHostMsg_GetPluginInfo::ID)
     *thread = BrowserThread::UI;
-#endif  // ENABLE_PLUGINS
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
 
 void RenderFrameMessageFilter::OnGetPluginInfo(
     int render_frame_id,
@@ -237,7 +217,5 @@ void RenderFrameMessageFilter::OnDidDeleteOutOfProcessPepperInstance(
                                                           pp_instance);
   }
 }
-
-#endif  // ENABLE_PLUGINS
 
 }  // namespace content

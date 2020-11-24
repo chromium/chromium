@@ -12,6 +12,7 @@
 
 #include "base/optional.h"
 #include "content/common/frame_replication_state.h"
+#include "content/common/pepper_renderer_instance_data.h"
 #include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -20,8 +21,8 @@
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/common/pepper_renderer_instance_data.h"
+#if !BUILDFLAG(ENABLE_PLUGINS)
+#error "RenderFrameMessageFilter is only used for plugin builds."
 #endif
 
 class GURL;
@@ -33,8 +34,6 @@ class Origin;
 namespace content {
 class BrowserContext;
 class PluginServiceImpl;
-class RenderWidgetHelper;
-class ResourceContext;
 class StoragePartition;
 struct WebPluginInfo;
 
@@ -49,8 +48,7 @@ class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
   RenderFrameMessageFilter(int render_process_id,
                            PluginServiceImpl* plugin_service,
                            BrowserContext* browser_context,
-                           StoragePartition* storage_partition,
-                           RenderWidgetHelper* render_widget_helper);
+                           StoragePartition* storage_partition);
 
   // BrowserMessageFilter methods:
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -58,21 +56,14 @@ class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
   void OverrideThreadForMessage(const IPC::Message& message,
                                 BrowserThread::ID* thread) override;
 
-  // Clears |resource_context_| to prevent accessing it after deletion.
-  void ClearResourceContext();
-
  private:
   friend class BrowserThread;
   friend class base::DeleteHelper<RenderFrameMessageFilter>;
 
   class OpenChannelToPpapiPluginCallback;
-  class OpenChannelToPpapiBrokerCallback;
 
   ~RenderFrameMessageFilter() override;
 
-  void OnRenderProcessGone();
-
-#if BUILDFLAG(ENABLE_PLUGINS)
   void OnGetPluginInfo(int render_frame_id,
                        const GURL& url,
                        const url::Origin& main_frame_origin,
@@ -94,24 +85,15 @@ class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
                                              int32_t pp_instance,
                                              bool is_external);
   void OnOpenChannelToPpapiBroker(int routing_id, const base::FilePath& path);
-#endif  // ENABLE_PLUGINS
 
-#if BUILDFLAG(ENABLE_PLUGINS)
   PluginServiceImpl* plugin_service_;
   base::FilePath profile_data_directory_;
 
   // Initialized to 0, accessed on FILE thread only.
   base::TimeTicks last_plugin_refresh_time_;
-#endif  // ENABLE_PLUGINS
-
-  // The ResourceContext which is to be used on the IO thread.
-  ResourceContext* resource_context_;
-
-  // Needed for issuing routing ids and surface ids.
-  scoped_refptr<RenderWidgetHelper> render_widget_helper_;
 
   // Whether this process is used for incognito contents.
-  bool incognito_;
+  const bool incognito_;
 
   const int render_process_id_;
 };

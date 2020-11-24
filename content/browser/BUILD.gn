@@ -1488,8 +1488,6 @@ source_set("browser") {
     "renderer_host/render_frame_host_impl.h",
     "renderer_host/render_frame_host_manager.cc",
     "renderer_host/render_frame_host_manager.h",
-    "renderer_host/render_frame_message_filter.cc",
-    "renderer_host/render_frame_message_filter.h",
     "renderer_host/render_frame_metadata_provider_impl.cc",
     "renderer_host/render_frame_metadata_provider_impl.h",
     "renderer_host/render_frame_proxy_host.cc",
@@ -2369,6 +2367,8 @@ source_set("browser") {
       "renderer_host/pepper/quota_reservation.h",
       "renderer_host/plugin_registry_impl.cc",
       "renderer_host/plugin_registry_impl.h",
+      "renderer_host/render_frame_message_filter.cc",
+      "renderer_host/render_frame_message_filter.h",
     ]
     deps += [
       "//ppapi/host",

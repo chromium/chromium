@@ -120,7 +120,6 @@ class PeerConnectionTrackerHost;
 class PluginRegistryImpl;
 class ProcessLock;
 class PushMessagingManager;
-class RenderFrameMessageFilter;
 class RenderProcessHostCreationObserver;
 class RenderProcessHostFactory;
 class RenderProcessHostTest;
@@ -467,10 +466,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       base::RepeatingCallback<void(RenderProcessHost*, CodeCacheHostImpl*)>;
   static void SetCodeCacheHostReceiverHandlerForTesting(
       CodeCacheHostReceiverHandler handler);
-
-  RenderFrameMessageFilter* render_frame_message_filter_for_testing() const {
-    return render_frame_message_filter_.get();
-  }
 
   void set_is_for_guests_only_for_testing(bool is_for_guests_only) {
     is_for_guests_only_ = is_for_guests_only;
@@ -1033,8 +1028,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Used to allow a RenderWidgetHost to intercept various messages on the
   // IO thread.
   scoped_refptr<RenderWidgetHelper> widget_helper_;
-
-  scoped_refptr<RenderFrameMessageFilter> render_frame_message_filter_;
 
   // Used in single-process mode.
   std::unique_ptr<base::Thread> in_process_renderer_;

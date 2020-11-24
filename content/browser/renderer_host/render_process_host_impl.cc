@@ -125,7 +125,6 @@
 #include "content/browser/renderer_host/pepper/pepper_message_filter.h"
 #include "content/browser/renderer_host/pepper/pepper_renderer_connection.h"
 #include "content/browser/renderer_host/plugin_registry_impl.h"
-#include "content/browser/renderer_host/render_frame_message_filter.h"
 #include "content/browser/renderer_host/render_message_filter.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -266,6 +265,7 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/browser/plugin_service_impl.h"
+#include "content/browser/renderer_host/render_frame_message_filter.h"
 #include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck
 #endif
 
@@ -1948,17 +1948,11 @@ void RenderProcessHostImpl::CreateMessageFilters() {
           GetID(), GetBrowserContext(), widget_helper_.get(), media_internals);
   AddFilter(render_message_filter.get());
 
-  render_frame_message_filter_ = new RenderFrameMessageFilter(
-      GetID(),
 #if BUILDFLAG(ENABLE_PLUGINS)
-      PluginServiceImpl::GetInstance(),
-#else
-      nullptr,
-#endif
-      GetBrowserContext(), storage_partition_impl_, widget_helper_.get());
-  AddFilter(render_frame_message_filter_.get());
+  AddFilter(new RenderFrameMessageFilter(
+      GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
+      storage_partition_impl_));
 
-#if BUILDFLAG(ENABLE_PLUGINS)
   AddFilter(new PepperRendererConnection(GetID()));
 #endif
 
@@ -3808,19 +3802,6 @@ void RenderProcessHostImpl::Cleanup() {
 #endif
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   deleting_soon_ = true;
-
-  if (render_frame_message_filter_) {
-    // RenderFrameMessageFilter is refcounted and can outlive the
-    // ResourceContext. If the BrowserContext is shutting down, after
-    // RenderProcessHostImpl cleanup a task will be posted to the IO thread
-    // that destroys the ResourceContext. Therefore the ClearResourceContext
-    // task must be posted now to ensure it gets ahead of the destruction of
-    // the ResourceContext in the IOThread sequence.
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RenderFrameMessageFilter::ClearResourceContext,
-                       render_frame_message_filter_));
-  }
 
   // Destroy all mojo bindings and IPC channels that can cause calls to this
   // object, to avoid method invocations that trigger usages of profile.
