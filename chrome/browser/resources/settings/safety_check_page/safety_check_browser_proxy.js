@@ -71,6 +71,7 @@ export const SafetyCheckPasswordsStatus = {
   QUOTA_LIMIT: 6,
   ERROR: 7,
   FEATURE_UNAVAILABLE: 8,
+  WEAK_PASSWORDS_EXIST: 9,
 };
 
 /**

@@ -145,6 +145,10 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     compromised_password_count_ = compromised_password_count;
   }
 
+  void SetNumWeakCredentials(int weak_password_count) {
+    weak_password_count_ = weak_password_count;
+  }
+
   void SetPasswordCheckState(
       extensions::api::passwords_private::PasswordCheckState state) {
     state_ = state;
@@ -174,6 +178,16 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     return compromised;
   }
 
+  std::vector<extensions::api::passwords_private::InsecureCredential>
+  GetWeakCredentials() override {
+    std::vector<extensions::api::passwords_private::InsecureCredential> weak(
+        weak_password_count_);
+    for (int i = 0; i < weak_password_count_; ++i) {
+      weak[i].username = "test" + base::NumberToString(i);
+    }
+    return weak;
+  }
+
   extensions::api::passwords_private::PasswordCheckStatus
   GetPasswordCheckStatus() override {
     extensions::api::passwords_private::PasswordCheckStatus status;
@@ -193,6 +207,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
  private:
   password_manager::BulkLeakCheckService* leak_service_ = nullptr;
   int compromised_password_count_ = 0;
+  int weak_password_count_ = 0;
   int done_ = 0;
   int total_ = 0;
   int test_credential_counter_ = 0;
@@ -865,7 +880,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Safe) {
           kPasswords,
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   EXPECT_TRUE(event);
-  VerifyDisplayString(event, "No compromised passwords found");
+  VerifyDisplayString(event, "No security issues found");
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.PasswordsResult",
       SafetyCheckHandler::PasswordsStatus::kSafe, 1);
@@ -956,7 +971,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
   EXPECT_FALSE(event2);
 }
 
-TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedExist) {
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyCompromisedExist) {
   constexpr int kCompromised = 7;
   test_passwords_delegate_.SetNumCompromisedCredentials(kCompromised);
   safety_check_->PerformSafetyCheck();
@@ -980,6 +995,60 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedExist) {
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.PasswordsResult",
       SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
+}
+
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedAndWeakExist) {
+  constexpr int kCompromised = 7;
+  constexpr int kWeak = 13;
+  test_passwords_delegate_.SetNumCompromisedCredentials(kCompromised);
+  test_passwords_delegate_.SetNumWeakCredentials(kWeak);
+  safety_check_->PerformSafetyCheck();
+  // First, a "running" change of state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kRunning);
+  EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
+  // Compromised passwords found state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kIdle);
+  const base::DictionaryValue* event2 =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kPasswords,
+          static_cast<int>(
+              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  ASSERT_TRUE(event2);
+  VerifyDisplayString(
+      event2, base::NumberToString(kCompromised) + " compromised passwords, " +
+                  base::NumberToString(kWeak) + " weak passwords");
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.PasswordsResult",
+      SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
+}
+
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyWeakExist) {
+  constexpr int kWeak = 13;
+  test_passwords_delegate_.SetNumWeakCredentials(kWeak);
+  safety_check_->PerformSafetyCheck();
+  // First, a "running" change of state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kRunning);
+  EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
+  // Compromised passwords found state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kIdle);
+  const base::DictionaryValue* event2 =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kPasswords,
+          static_cast<int>(
+              SafetyCheckHandler::PasswordsStatus::kWeakPasswordsExist));
+  ASSERT_TRUE(event2);
+  VerifyDisplayString(event2, base::NumberToString(kWeak) + " weak passwords");
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.PasswordsResult",
+      SafetyCheckHandler::PasswordsStatus::kWeakPasswordsExist, 1);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error) {

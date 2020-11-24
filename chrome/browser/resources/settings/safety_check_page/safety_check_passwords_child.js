@@ -66,6 +66,7 @@ Polymer({
         SafetyCheckPasswordsStatus.SAFE,
         SafetyCheckPasswordsStatus.QUOTA_LIMIT,
         SafetyCheckPasswordsStatus.ERROR,
+        SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST,
       ]),
     },
   },
@@ -110,6 +111,7 @@ Polymer({
       case SafetyCheckPasswordsStatus.QUOTA_LIMIT:
       case SafetyCheckPasswordsStatus.ERROR:
       case SafetyCheckPasswordsStatus.FEATURE_UNAVAILABLE:
+      case SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST:
         return SafetyCheckIconStatus.INFO;
       default:
         assertNotReached();

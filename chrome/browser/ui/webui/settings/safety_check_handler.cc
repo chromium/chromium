@@ -250,7 +250,7 @@ void SafetyCheckHandler::SendSafetyCheckStartedWebUiUpdates() {
                                     GetStringForUpdates(update_status_));
   FireBasicSafetyCheckWebUiListener(
       kPasswordsEvent, static_cast<int>(passwords_status_),
-      GetStringForPasswords(passwords_status_, Compromised(0), Done(0),
+      GetStringForPasswords(passwords_status_, Compromised(0), Weak(0), Done(0),
                             Total(0)));
   FireBasicSafetyCheckWebUiListener(
       kSafeBrowsingEvent, static_cast<int>(safe_browsing_status_),
@@ -500,12 +500,13 @@ void SafetyCheckHandler::OnUpdateCheckResult(UpdateStatus status) {
 
 void SafetyCheckHandler::OnPasswordsCheckResult(PasswordsStatus status,
                                                 Compromised compromised,
+                                                Weak weak,
                                                 Done done,
                                                 Total total) {
   base::DictionaryValue event;
   event.SetIntKey(kNewState, static_cast<int>(status));
-  event.SetStringKey(kDisplayString,
-                     GetStringForPasswords(status, compromised, done, total));
+  event.SetStringKey(kDisplayString, GetStringForPasswords(status, compromised,
+                                                           weak, done, total));
   FireWebUIListener(kPasswordsEvent, event);
   if (status != PasswordsStatus::kChecking) {
     base::UmaHistogramEnumeration("Settings.SafetyCheck.PasswordsResult",
@@ -634,6 +635,7 @@ base::string16 SafetyCheckHandler::GetStringForSafeBrowsing(
 base::string16 SafetyCheckHandler::GetStringForPasswords(
     PasswordsStatus status,
     Compromised compromised,
+    Weak weak,
     Done done,
     Total total) {
   switch (status) {
@@ -647,11 +649,28 @@ base::string16 SafetyCheckHandler::GetStringForPasswords(
                                         base::FormatNumber(total.value()));
     }
     case PasswordsStatus::kSafe:
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, 0);
+      return l10n_util::GetStringUTF16(
+          IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_SAFE);
     case PasswordsStatus::kCompromisedExist:
+      if (weak.value() == 0) {
+        // Only compromised passwords, no weak passwords.
+        return l10n_util::GetPluralStringFUTF16(
+            IDS_SETTINGS_SAFETY_CHECK_COMPROMISED_PASSWORDS,
+            compromised.value());
+      } else {
+        // Both compromised and weak passwords.
+        return l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_SAFETY_CHECK_STRING_TUPLE_WITH_COMMA,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_SETTINGS_SAFETY_CHECK_COMPROMISED_PASSWORDS,
+                compromised.value()),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_SETTINGS_SAFETY_CHECK_WEAK_PASSWORDS, weak.value()));
+      }
+    case PasswordsStatus::kWeakPasswordsExist:
+      // Only weak passwords.
       return l10n_util::GetPluralStringFUTF16(
-          IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, compromised.value());
+          IDS_SETTINGS_SAFETY_CHECK_WEAK_PASSWORDS, weak.value());
     case PasswordsStatus::kOffline:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CHECK_PASSWORDS_ERROR_OFFLINE);
@@ -848,13 +867,14 @@ void SafetyCheckHandler::DetermineIfNoPasswordsOrSafe(
         passwords) {
   OnPasswordsCheckResult(passwords.empty() ? PasswordsStatus::kNoPasswords
                                            : PasswordsStatus::kSafe,
-                         Compromised(0), Done(0), Total(0));
+                         Compromised(0), Weak(0), Done(0), Total(0));
 }
 
 void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
   size_t num_compromised =
       passwords_delegate_->GetCompromisedCredentials().size();
-  if (num_compromised == 0) {
+  size_t num_weak = passwords_delegate_->GetWeakCredentials().size();
+  if (num_compromised == 0 && num_weak == 0) {
     // If there are no |OnCredentialDone| callbacks with is_leaked = true, no
     // need to wait for InsecureCredentialsManager callbacks any longer, since
     // there should be none for the current password check.
@@ -864,9 +884,16 @@ void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
     passwords_delegate_->GetSavedPasswordsList(
         base::BindOnce(&SafetyCheckHandler::DetermineIfNoPasswordsOrSafe,
                        base::Unretained(this)));
-  } else {
+  } else if (num_compromised > 0) {
+    // At least one compromised password. Treat as compromises.
     OnPasswordsCheckResult(PasswordsStatus::kCompromisedExist,
-                           Compromised(num_compromised), Done(0), Total(0));
+                           Compromised(num_compromised), Weak(num_weak),
+                           Done(0), Total(0));
+  } else {
+    // No compromised but weak passwords. Treat as weak passwords only.
+    OnPasswordsCheckResult(PasswordsStatus::kWeakPasswordsExist,
+                           Compromised(num_compromised), Weak(num_weak),
+                           Done(0), Total(0));
   }
 }
 
@@ -911,29 +938,29 @@ void SafetyCheckHandler::OnStateChanged(
     }
     case BulkLeakCheckService::State::kRunning:
       OnPasswordsCheckResult(PasswordsStatus::kChecking, Compromised(0),
-                             Done(0), Total(0));
+                             Weak(0), Done(0), Total(0));
       // Non-terminal state, so nothing else needs to be done.
       return;
     case BulkLeakCheckService::State::kSignedOut:
       OnPasswordsCheckResult(PasswordsStatus::kSignedOut, Compromised(0),
-                             Done(0), Total(0));
+                             Weak(0), Done(0), Total(0));
       break;
     case BulkLeakCheckService::State::kNetworkError:
-      OnPasswordsCheckResult(PasswordsStatus::kOffline, Compromised(0), Done(0),
-                             Total(0));
+      OnPasswordsCheckResult(PasswordsStatus::kOffline, Compromised(0), Weak(0),
+                             Done(0), Total(0));
       break;
     case BulkLeakCheckService::State::kQuotaLimit:
       OnPasswordsCheckResult(PasswordsStatus::kQuotaLimit, Compromised(0),
-                             Done(0), Total(0));
+                             Weak(0), Done(0), Total(0));
       break;
     case BulkLeakCheckService::State::kTokenRequestFailure:
       OnPasswordsCheckResult(PasswordsStatus::kFeatureUnavailable,
-                             Compromised(0), Done(0), Total(0));
+                             Compromised(0), Weak(0), Done(0), Total(0));
       break;
     case BulkLeakCheckService::State::kHashingFailure:
     case BulkLeakCheckService::State::kServiceError:
-      OnPasswordsCheckResult(PasswordsStatus::kError, Compromised(0), Done(0),
-                             Total(0));
+      OnPasswordsCheckResult(PasswordsStatus::kError, Compromised(0), Weak(0),
+                             Done(0), Total(0));
       break;
   }
 
@@ -959,8 +986,8 @@ void SafetyCheckHandler::OnCredentialDone(
       status.already_processed && status.remaining_in_queue) {
     Done done = Done(*(status.already_processed));
     Total total = Total(*(status.remaining_in_queue) + done.value());
-    OnPasswordsCheckResult(PasswordsStatus::kChecking, Compromised(0), done,
-                           total);
+    OnPasswordsCheckResult(PasswordsStatus::kChecking, Compromised(0), Weak(0),
+                           done, total);
   }
 }
 

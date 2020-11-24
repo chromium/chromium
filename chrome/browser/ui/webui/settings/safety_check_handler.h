@@ -179,6 +179,7 @@ class SafetyCheckHandler
   // These ensure integers are passed in the correct possitions in the extension
   // check methods.
   using Compromised = base::StrongAlias<class CompromisedTag, int>;
+  using Weak = base::StrongAlias<class WeakTag, int>;
   using Done = base::StrongAlias<class DoneTag, int>;
   using Total = base::StrongAlias<class TotalTag, int>;
   using Blocklisted = base::StrongAlias<class BlocklistedTag, int>;
@@ -214,6 +215,7 @@ class SafetyCheckHandler
   void OnUpdateCheckResult(UpdateStatus status);
   void OnPasswordsCheckResult(PasswordsStatus status,
                               Compromised compromised,
+                              Weak weak,
                               Done done,
                               Total total);
   void OnExtensionsCheckResult(ExtensionsStatus status,
@@ -231,6 +233,7 @@ class SafetyCheckHandler
   base::string16 GetStringForSafeBrowsing(SafeBrowsingStatus status);
   base::string16 GetStringForPasswords(PasswordsStatus status,
                                        Compromised compromised,
+                                       Weak weak,
                                        Done done,
                                        Total total);
   base::string16 GetStringForExtensions(ExtensionsStatus status,

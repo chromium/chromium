@@ -639,6 +639,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
           break;
         case SafetyCheckPasswordsStatus.QUOTA_LIMIT:
         case SafetyCheckPasswordsStatus.ERROR:
+        case SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST:
           assertSafetyCheckChild({
             page: page,
             iconStatus: SafetyCheckIconStatus.INFO,

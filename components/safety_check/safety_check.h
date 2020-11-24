@@ -24,6 +24,8 @@ class SafetyCheck {
   enum class PasswordsStatus {
     kChecking = 0,
     kSafe = 1,
+    // Indicates that at least one compromised password exists. Weak passwords
+    // may exist as well.
     kCompromisedExist = 2,
     kOffline = 3,
     kNoPasswords = 4,
@@ -31,8 +33,11 @@ class SafetyCheck {
     kQuotaLimit = 6,
     kError = 7,
     kFeatureUnavailable = 8,
+    // Indicates that no compromised passwords exist, but at least one weak
+    // password.
+    kWeakPasswordsExist = 9,
     // New enum values must go above here.
-    kMaxValue = kFeatureUnavailable,
+    kMaxValue = kWeakPasswordsExist,
   };
 
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.safety_check

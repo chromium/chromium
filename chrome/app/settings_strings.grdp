@@ -1218,6 +1218,18 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_FEATURE_UNAVAILABLE" desc="Explains that the password check feature is not available in this version of the browser.">
     Password check is not available in Chromium
   </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_SAFE" desc="This text explains that the Chrome password check did not find any insecure passwords.">
+    No security issues found
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_COMPROMISED_PASSWORDS" desc="This shows the amount of compromised passwords that the Chrome password check found.">
+    {NUM_COMPROMISED, plural, =0 {} =1 {1 compromised password} other {{NUM_COMPROMISED} compromised passwords}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_WEAK_PASSWORDS" desc="This shows the amount of weak passwords that the Chrome password check found.">
+    {NUM_WEAK, plural, =0 {} =1 {1 weak password} other {{NUM_WEAK} weak passwords}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_STRING_TUPLE_WITH_COMMA" desc="This string lists two elements, via concatenating them with a comma in the English language.">
+    <ph name="TYPE_1">$1<ex>2 compromised passwords</ex></ph>, <ph name="TYPE_2">$2<ex>7 weak passwords</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_BUTTON_ARIA_LABEL" desc="Accessibility text for the button that allows users to review their passwords.">
     Review passwords
   </message>
@@ -1316,7 +1328,7 @@
       Something went wrong. Click for more details.
     </message>
   </if>
-  
+
   <message name="IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_LABEL" desc="In the advanced options tab, the text next to the checkbox that enables prediction of network actions.  Actions include browser-initiated DNS prefetching, TCP and SSL preconnection, and prerendering of webpages.">
     Preload pages for faster browsing and searching
   </message>
