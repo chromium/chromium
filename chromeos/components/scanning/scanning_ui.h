@@ -33,7 +33,8 @@ class ScanningUI : public ui::MojoWebUIController {
              BindScanServiceCallback callback,
              const ScanningHandler::SelectFilePolicyCreator&
                  select_file_policy_creator,
-             std::unique_ptr<ScanningPathsProvider> scanning_paths_provider);
+             std::unique_ptr<ScanningPathsProvider> scanning_paths_provider,
+             const ScanningHandler::OpenFilesAppFunction& open_files_app_fn);
   ~ScanningUI() override;
 
   ScanningUI(const ScanningUI&) = delete;

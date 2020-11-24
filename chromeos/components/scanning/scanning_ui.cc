@@ -103,7 +103,8 @@ ScanningUI::ScanningUI(
     content::WebUI* web_ui,
     BindScanServiceCallback callback,
     const ScanningHandler::SelectFilePolicyCreator& select_file_policy_creator,
-    std::unique_ptr<ScanningPathsProvider> scanning_paths_provider)
+    std::unique_ptr<ScanningPathsProvider> scanning_paths_provider,
+    const ScanningHandler::OpenFilesAppFunction& open_files_app_fn)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       bind_pending_receiver_callback_(std::move(callback)) {
   auto html_source = base::WrapUnique(
@@ -126,7 +127,8 @@ ScanningUI::ScanningUI(
   AddScanningAppStrings(html_source.get());
 
   web_ui->AddMessageHandler(std::make_unique<ScanningHandler>(
-      select_file_policy_creator, std::move(scanning_paths_provider)));
+      select_file_policy_creator, std::move(scanning_paths_provider),
+      open_files_app_fn));
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }

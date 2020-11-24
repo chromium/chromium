@@ -35,10 +35,13 @@ class ScanningHandler : public content::WebUIMessageHandler,
   using SelectFilePolicyCreator =
       base::RepeatingCallback<std::unique_ptr<ui::SelectFilePolicy>(
           content::WebContents*)>;
+  using OpenFilesAppFunction =
+      base::RepeatingCallback<bool(content::WebUI*, const base::FilePath&)>;
 
   ScanningHandler(
       const SelectFilePolicyCreator& select_file_policy_creator,
-      std::unique_ptr<ScanningPathsProvider> scanning_paths_provider);
+      std::unique_ptr<ScanningPathsProvider> scanning_paths_provider,
+      OpenFilesAppFunction open_files_app_fn);
   ~ScanningHandler() override;
 
   ScanningHandler(const ScanningHandler&) = delete;
@@ -65,6 +68,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // completed scans.
   void HandleRequestScanToLocation(const base::ListValue* args);
 
+  // Opens the Files app to the show the saved scan file.
+  void HandleShowFileInLocation(const base::ListValue* args);
+
   SelectFilePolicyCreator select_file_policy_creator_;
 
   std::string scan_location_callback_id_;
@@ -73,6 +79,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
 
   // Provides FilePath util for converting a FilePath base name.
   std::unique_ptr<ScanningPathsProvider> scanning_paths_provider_;
+
+  // Opens Files app to the desired file location.
+  OpenFilesAppFunction open_files_app_fn_;
 };
 
 }  // namespace chromeos

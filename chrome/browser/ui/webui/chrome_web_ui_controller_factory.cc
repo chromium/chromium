@@ -157,6 +157,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
@@ -166,6 +167,7 @@
 #include "chrome/browser/chromeos/scanning/scan_service.h"
 #include "chrome/browser/chromeos/scanning/scan_service_factory.h"
 #include "chrome/browser/chromeos/scanning/scanning_paths_provider_impl.h"
+#include "chrome/browser/chromeos/scanning/scanning_util.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/chromeos/web_applications/chrome_help_app_ui_delegate.h"
@@ -407,10 +409,15 @@ std::unique_ptr<ui::SelectFilePolicy> CreateChromeSelectFilePolicy(
 template <>
 WebUIController* NewWebUI<chromeos::ScanningUI>(WebUI* web_ui,
                                                 const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   return new chromeos::ScanningUI(
-      web_ui, base::BindRepeating(&BindScanService, Profile::FromWebUI(web_ui)),
+      web_ui, base::BindRepeating(&BindScanService, profile),
       base::BindRepeating(&CreateChromeSelectFilePolicy),
-      std::make_unique<chromeos::ScanningPathsProviderImpl>());
+      std::make_unique<chromeos::ScanningPathsProviderImpl>(),
+      base::BindRepeating(
+          &chromeos::scanning::ShowFileInFilesApp,
+          chromeos::scanning::GetDrivePath(profile),
+          file_manager::util::GetMyFilesFolderForProfile(profile)));
 }
 
 void BindMultiDeviceSetup(

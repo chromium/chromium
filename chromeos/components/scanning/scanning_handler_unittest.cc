@@ -27,6 +27,7 @@ namespace chromeos {
 namespace {
 
 constexpr char kHandlerFunctionName[] = "handlerFunctionName";
+constexpr char kTestFilePath[] = "/test/file/path";
 
 }  // namespace
 
@@ -123,6 +124,13 @@ class TestScanningPathsProvider : public ScanningPathsProvider {
   }
 };
 
+bool ShowFileInFilesApp(const base::FilePath& drive_path,
+                        const base::FilePath& my_files_path,
+                        content::WebUI* web_ui,
+                        const base::FilePath& path_to_file) {
+  return kTestFilePath == path_to_file.value();
+}
+
 class ScanningHandlerTest : public testing::Test {
  public:
   ScanningHandlerTest()
@@ -134,7 +142,9 @@ class ScanningHandlerTest : public testing::Test {
   void SetUp() override {
     scanning_handler_ = std::make_unique<ScanningHandler>(
         base::BindRepeating(&CreateTestSelectFilePolicy),
-        std::make_unique<chromeos::TestScanningPathsProvider>());
+        std::make_unique<chromeos::TestScanningPathsProvider>(),
+        base::BindRepeating(&ShowFileInFilesApp, base::FilePath(),
+                            base::FilePath()));
     scanning_handler_->SetWebUIForTest(&web_ui_);
     scanning_handler_->RegisterMessages();
 
@@ -206,6 +216,21 @@ TEST_F(ScanningHandlerTest, CancelDialog) {
   EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
   EXPECT_EQ("", *selected_path_dict->FindStringPath("filePath"));
   EXPECT_EQ("", *selected_path_dict->FindStringPath("baseName"));
+}
+
+// Validates that invoking the showFileInLocation Web UI event calls the
+// OpenFilesAppFunction function and returns the callback with the boolean.
+TEST_F(ScanningHandlerTest, ShowFileInLocation) {
+  const size_t call_data_count_before_call = web_ui_.call_data().size();
+  base::ListValue args;
+  args.Append(kHandlerFunctionName);
+  args.Append(kTestFilePath);
+  web_ui_.HandleReceivedMessage("showFileInLocation", &args);
+
+  const content::TestWebUI::CallData& call_data =
+      GetCallData(call_data_count_before_call);
+  // Expect true from call to ShowFileInFilesApp().
+  EXPECT_TRUE(call_data.arg3()->GetBool());
 }
 
 }  // namespace chromeos.
