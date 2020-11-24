@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -28,15 +29,40 @@ class WaylandWindow;
 class WaylandWindowManager;
 class WaylandShmBuffer;
 
-// WaylandDataDragController implements regular data exchanging between Chromium
-// and other client applications on top of the Wayland Drag and Drop protocol.
-// By implementing both DataDevice::DragDelegate and DataSource::Delegate,
-// it is responsible for handling both DND sessions initiated from Chromium
-// windows as well as those triggered by other clients.
+// WaylandDataDragController implements regular data exchange on top of the
+// Wayland Drag and Drop protocol.  The data can be dragged within the Chromium
+// window, or between Chromium and other application in both directions.
+//
+// The outgoing drag starts via the StartSession() method.  For more context,
+// see WaylandTopLevelWindow::StartDrag().
+//
+// The incoming drag starts with the call to OnDragEnter() from the Wayland side
+// (the data device), and ends up in call to WaylandWindow::OnDragEnter(), but
+// two ways of coming there are possible:
+//
+// 1.  The drag has been initiated by a Chromium window.  In this case, the data
+// that is being dragged is available right away, and therefore the controller
+// can forward the data to the window immediately.
+//
+// 2.  The data is being dragged from another application.  Before notifying the
+// window, the controller requests the data from the source side, which results
+// in a number of requests to Wayland and data transfers from it.  Only after
+// data records of all supported MIME types have been received, the window will
+// be notified.
+//
+// It is possible that further drag events come while the data is still being
+// transferred.  The drag motion event is ignored; the window will first receive
+// OnDragEnter, and any OnDragMotion that comes after that.  The drag leave
+// event stops the transfer and cancels the operation; the window will not
+// receive anything at all.
 class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                   public WaylandDataSource::Delegate {
  public:
-  enum class State { kIdle, kStarted, kTransferring };
+  enum class State {
+    kIdle,          // Doing nothing special
+    kStarted,       // The outgoing drag is in progress.
+    kTransferring,  // The incoming data is transferred from the source.
+  };
 
   WaylandDataDragController(WaylandConnection* connection,
                             WaylandDataDeviceManager* data_device_manager);
@@ -84,6 +110,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnDataTransferFinished(
       std::unique_ptr<ui::OSExchangeData> received_data);
   std::string GetNextUnprocessedMimeType();
+  // Calls the window's OnDragEnter with the given location and data,
+  // then immediately calls OnDragMotion to get the actual operation.
+  void PropagateOnDragEnter(const gfx::PointF& location,
+                            std::unique_ptr<OSExchangeData> data);
 
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;
@@ -92,6 +122,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   State state_ = State::kIdle;
 
+  // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;
 
   // When dragging is started from Chromium, |data_| holds the data to be sent
@@ -115,6 +146,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // Current window under pointer.
   WaylandWindow* window_ = nullptr;
+
+  // The most recent location received while dragging the data.
+  gfx::PointF last_drag_location_;
 
   // The data delivered from Wayland
   std::unique_ptr<ui::OSExchangeData> received_data_;

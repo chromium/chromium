@@ -13,7 +13,6 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/data_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -145,21 +144,34 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     data_offer_->Accept(serial, mime);
   }
 
-  std::unique_ptr<OSExchangeData> dragged_data;
-  // If the DND session was initiated from a Chromium window, |data_| already
-  // holds the data to be exchanged, so no needed to read it through Wayland,
-  // thus just copy it here.
-  if (IsDragSource())
-    dragged_data = std::make_unique<OSExchangeData>(data_->provider().Clone());
-
-  int available_operations =
-      DndActionsToDragOperations(data_offer_->source_actions());
-  window_->OnDragEnter(location, std::move(dragged_data), available_operations);
+  if (IsDragSource()) {
+    // If the DND session was initiated from a Chromium window, |data_| already
+    // holds the data to be exchanged, so we don't need to read it through
+    // Wayland and can just copy it here.
+    DCHECK(data_);
+    PropagateOnDragEnter(
+        location, std::make_unique<OSExchangeData>(data_->provider().Clone()));
+  } else {
+    // Otherwise, we are about to accept data dragged from another application.
+    // Reading the data may take some time so set |state_| to |kTrasferring|,
+    // which will defer sending OnDragEnter to the client until the data
+    // is ready.
+    state_ = State::kTransferring;
+    received_data_ = std::make_unique<OSExchangeData>(
+        std::make_unique<OSExchangeDataProviderNonBacked>());
+    last_drag_location_ = location;
+    HandleUnprocessedMimeTypes();
+  }
 }
 
 void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
   if (!window_)
     return;
+
+  if (state_ == State::kTransferring) {
+    last_drag_location_ = location;
+    return;
+  }
 
   DCHECK(data_offer_);
   int available_operations =
@@ -173,9 +185,8 @@ void WaylandDataDragController::OnDragLeave() {
   if (!window_)
     return;
 
-  // Leave event can arrive while data is being transferred. As it cannot be
-  // handled right away, just mark it to be processed when the data is ready.
   if (state_ == State::kTransferring) {
+    // We cannot leave until the transfer is finished.  Postponing.
     is_leave_pending_ = true;
     return;
   }
@@ -190,21 +201,13 @@ void WaylandDataDragController::OnDragDrop() {
   if (!window_)
     return;
 
-  if (IsDragSource()) {
-    // This means the data is being exchanged between Chromium windows. In this
-    // case, data is supposed to have already been sent to the drop handler
-    // before (see OnDragEnter()), expecting to receive null at this stage.
-    OnDataTransferFinished(nullptr);
-    return;
-  }
+  window_->OnDragDrop();
 
-  // Otherwise, we are about to accept data dragged from another application.
-  // Reading the data may take some time so set |state_| to |kTrasfering|, which
-  // will make final "leave" event handling to be postponed until data is ready.
-  state_ = State::kTransferring;
-  received_data_ = std::make_unique<OSExchangeData>(
-      std::make_unique<OSExchangeDataProviderNonBacked>());
-  HandleUnprocessedMimeTypes();
+  // Offer must be finished and destroyed here as some compositors may delay to
+  // send wl_data_source::finished|cancelled until owning client destroys the
+  // drag offer. e.g: Exosphere.
+  data_offer_->FinishOffer();
+  data_offer_.reset();
 }
 
 void WaylandDataDragController::OnDataSourceFinish(bool completed) {
@@ -223,7 +226,6 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   data_offer_.reset();
   data_.reset();
   data_device_->ResetDragDelegate();
-
   state_ = State::kIdle;
 }
 
@@ -282,7 +284,7 @@ void WaylandDataDragController::CreateIconSurfaceIfNeeded(
 void WaylandDataDragController::HandleUnprocessedMimeTypes() {
   DCHECK_EQ(state_, State::kTransferring);
   std::string mime_type = GetNextUnprocessedMimeType();
-  if (mime_type.empty()) {
+  if (mime_type.empty() || is_leave_pending_) {
     OnDataTransferFinished(std::move(received_data_));
   } else {
     DCHECK(data_offer_);
@@ -309,21 +311,25 @@ void WaylandDataDragController::OnMimeTypeDataTransferred(
 
 void WaylandDataDragController::OnDataTransferFinished(
     std::unique_ptr<OSExchangeData> received_data) {
-  window_->OnDragDrop(std::move(received_data));
-
-  // Offer must be finished and destroyed here as some compositors may delay to
-  // send wl_data_source::finished|cancelled until owning client destroys the
-  // drag offer. e.g: Exosphere.
-  data_offer_->FinishOffer();
-  data_offer_.reset();
-
   unprocessed_mime_types_.clear();
   state_ = State::kIdle;
 
   // If |is_leave_pending_| is set, it means a 'leave' event was fired while
-  // data was on transit, so process it here (See OnDragLeave for more context).
-  if (is_leave_pending_)
-    OnDragLeave();
+  // data was on transit (see OnDragLeave for more context).  Sending
+  // OnDragEnter to the window makes no sense anymore because the drag is no
+  // longer over it.  Reset and exit.
+  if (is_leave_pending_) {
+    if (data_offer_) {
+      data_offer_->FinishOffer();
+      data_offer_.reset();
+    }
+    data_.reset();
+    data_device_->ResetDragDelegate();
+    is_leave_pending_ = false;
+    return;
+  }
+
+  PropagateOnDragEnter(last_drag_location_, std::move(received_data));
 }
 
 // Returns the next MIME type to be received from the source process, or an
@@ -340,6 +346,17 @@ std::string WaylandDataDragController::GetNextUnprocessedMimeType() {
     return mime_type;
   }
   return {};
+}
+
+void WaylandDataDragController::PropagateOnDragEnter(
+    const gfx::PointF& location,
+    std::unique_ptr<OSExchangeData> data) {
+  DCHECK(window_);
+
+  window_->OnDragEnter(
+      location, std::move(data),
+      DndActionsToDragOperations(data_offer_->source_actions()));
+  OnDragMotion(location);
 }
 
 }  // namespace ui

@@ -352,12 +352,12 @@ int WaylandToplevelWindow::OnDragMotion(const gfx::PointF& point,
       /*modifiers=*/0);
 }
 
-void WaylandToplevelWindow::OnDragDrop(std::unique_ptr<OSExchangeData> data) {
+void WaylandToplevelWindow::OnDragDrop() {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
   if (!drop_handler)
     return;
   // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragDrop(std::move(data), /*modifiers=*/0);
+  drop_handler->OnDragDrop({}, /*modifiers=*/0);
 }
 
 void WaylandToplevelWindow::OnDragLeave() {

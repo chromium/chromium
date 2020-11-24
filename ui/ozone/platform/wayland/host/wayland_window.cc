@@ -358,7 +358,7 @@ int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
   return -1;
 }
 
-void WaylandWindow::OnDragDrop(std::unique_ptr<OSExchangeData> data) {}
+void WaylandWindow::OnDragDrop() {}
 
 void WaylandWindow::OnDragLeave() {}
 

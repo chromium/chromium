@@ -78,11 +78,7 @@ class MockDropHandler : public WmDropHandler {
   MockDropHandler() = default;
   ~MockDropHandler() override = default;
 
-  MOCK_METHOD4(OnDragEnter,
-               void(const gfx::PointF& point,
-                    std::unique_ptr<OSExchangeData> data,
-                    int operation,
-                    int modifiers));
+  MOCK_METHOD0(MockOnDragEnter, void());
   MOCK_METHOD3(MockDragMotion,
                int(const gfx::PointF& point, int operation, int modifiers));
   MOCK_METHOD0(MockOnDragDrop, void());
@@ -101,9 +97,15 @@ class MockDropHandler : public WmDropHandler {
   int available_operations() const { return available_operations_; }
 
  protected:
+  void OnDragEnter(const gfx::PointF& point,
+                   std::unique_ptr<ui::OSExchangeData> data,
+                   int operation,
+                   int modifiers) override {
+    dropped_data_ = std::move(data);
+    MockOnDragEnter();
+  }
   void OnDragDrop(std::unique_ptr<OSExchangeData> data,
                   int modifiers) override {
-    dropped_data_ = std::move(data);
     MockOnDragDrop();
     on_drop_closure_.Run();
     on_drop_closure_.Reset();
@@ -302,6 +304,8 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
       1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
       wl_fixed_from_int(entered_point.y()), data_offer);
 
+  Sync();
+
   int64_t time =
       (EventTimeForNow() - base::TimeTicks()).InMilliseconds() & UINT32_MAX;
   gfx::Point motion_point(11, 11);
@@ -339,27 +343,27 @@ TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
       kMimeTypeURIList,
       ToClipboardData(std::string("file:///home/user/file\r\n")));
 
-  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(1);
   gfx::Point entered_point(10, 10);
   data_device_manager_->data_device()->OnEnter(
       1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
       wl_fixed_from_int(entered_point.y()), data_offer);
+  // Here we are expecting three data items, so there will be three roundtrips
+  // to the Wayland and back.  Hence Sync() three times.
   Sync();
-  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  Sync();
+  Sync();
 
   EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
   base::RunLoop loop;
   drop_handler_->SetOnDropClosure(loop.QuitClosure());
   data_device_manager_->data_device()->OnDrop();
 
-  // Here we are expecting three data items, so there will be three roundtrips
-  // to the Wayland and back.  Hence Sync() three times.
-  Sync();
-  Sync();
   Sync();
   loop.Run();
   Mock::VerifyAndClearExpectations(drop_handler_.get());
 
+  ASSERT_NE(drop_handler_->dropped_data(), nullptr);
   EXPECT_TRUE(drop_handler_->dropped_data()->HasString());
   EXPECT_TRUE(drop_handler_->dropped_data()->HasFile());
   EXPECT_TRUE(drop_handler_->dropped_data()->HasURL(kFilenameToURLPolicy));
@@ -386,13 +390,12 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedUriList) {
     auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
     data_offer->OnOffer(kMimeTypeURIList, ToClipboardData(kCase.content));
 
-    EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _, _)).Times(1);
+    EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(1);
     gfx::Point entered_point(10, 10);
     data_device_manager_->data_device()->OnEnter(
         1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
         wl_fixed_from_int(entered_point.y()), data_offer);
     Sync();
-    Mock::VerifyAndClearExpectations(drop_handler_.get());
 
     EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
     base::RunLoop loop;
@@ -441,13 +444,12 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
     data_offer->OnOffer(kMimeTypeMozillaURL,
                         ToClipboardData(base::UTF8ToUTF16(kCase.content)));
 
-    EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _, _)).Times(1);
+    EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(1);
     gfx::Point entered_point(10, 10);
     data_device_manager_->data_device()->OnEnter(
         1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
         wl_fixed_from_int(entered_point.y()), data_offer);
     Sync();
-    Mock::VerifyAndClearExpectations(drop_handler_.get());
 
     EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
     base::RunLoop loop;
@@ -520,6 +522,7 @@ TEST_P(WaylandDataDragControllerTest, ForeignDragHandleAskAction) {
   data_device_manager_->data_device()->OnEnter(
       1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
       wl_fixed_from_int(entered_point.y()), data_offer);
+  Sync();
 
   int64_t time = 1;
   gfx::Point motion_point(11, 11);

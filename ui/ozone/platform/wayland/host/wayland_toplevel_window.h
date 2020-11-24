@@ -74,7 +74,7 @@ class WaylandToplevelWindow : public WaylandWindow,
                    std::unique_ptr<OSExchangeData> data,
                    int operation) override;
   int OnDragMotion(const gfx::PointF& point, int operation) override;
-  void OnDragDrop(std::unique_ptr<OSExchangeData> data) override;
+  void OnDragDrop() override;
   void OnDragLeave() override;
   void OnDragSessionClose(uint32_t dnd_action) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
