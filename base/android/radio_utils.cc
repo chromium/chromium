@@ -29,5 +29,11 @@ Optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
   }
 }
 
+RadioDataActivity RadioUtils::GetCellDataActivity() {
+  JNIEnv* env = AttachCurrentThread();
+  return static_cast<RadioDataActivity>(
+      Java_RadioUtils_getCellDataActivity(env));
+}
+
 }  // namespace android
 }  // namespace base

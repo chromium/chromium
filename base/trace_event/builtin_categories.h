@@ -122,6 +122,7 @@
   X("paint_preview")                                                     \
   X("pepper")                                                            \
   X("PlatformMalloc")                                                    \
+  X("power")                                                             \
   X("ppapi")                                                             \
   X("ppapi proxy")                                                       \
   X("print")                                                             \

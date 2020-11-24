@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POWER_METRICS_ANDROID_BATTERY_METRICS_H_
 #define COMPONENTS_POWER_METRICS_ANDROID_BATTERY_METRICS_H_
 
+#include "base/android/radio_utils.h"
 #include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
@@ -31,6 +32,7 @@ class AndroidBatteryMetrics : public base::PowerObserver {
   void UpdateMetricsEnabled();
   void CaptureAndReportMetrics();
   void UpdateAndReportRadio();
+  void MonitorRadioState();
 
   // Whether or not we've seen at least two consecutive capacity drops while
   // the embedding app was visible. Battery drain reported prior to this could
@@ -42,12 +44,20 @@ class AndroidBatteryMetrics : public base::PowerObserver {
   static constexpr base::TimeDelta kMetricsInterval =
       base::TimeDelta::FromSeconds(30);
 
+  // Radio state is polled with this interval to count radio wakeups.
+  static constexpr base::TimeDelta kRadioStateInterval =
+      base::TimeDelta::FromSeconds(1);
+
   bool app_visible_;
   bool on_battery_power_;
   int last_remaining_capacity_uah_ = 0;
   int64_t last_tx_bytes_ = -1;
   int64_t last_rx_bytes_ = -1;
+  base::android::RadioDataActivity last_activity_ =
+      base::android::RadioDataActivity::kNone;
+  int radio_wakeups_ = 0;
   base::RepeatingTimer metrics_timer_;
+  base::RepeatingTimer radio_state_timer_;
   int skipped_timers_ = 0;
 
   // Number of consecutive charge drops seen while the app has been visible.

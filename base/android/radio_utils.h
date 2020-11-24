@@ -23,11 +23,20 @@ enum class RadioSignalLevel {
   kMaxValue = kGreat,
 };
 
+enum class RadioDataActivity {
+  kNone = 0,
+  kIn = 1,
+  kOut = 2,
+  kInOut = 3,
+  kDormant = 4,
+};
+
 class BASE_EXPORT RadioUtils {
  public:
   static bool IsSupported();
   static bool IsWifiConnected();
   static Optional<RadioSignalLevel> GetCellSignalLevel();
+  static RadioDataActivity GetCellDataActivity();
 };
 
 }  // namespace android

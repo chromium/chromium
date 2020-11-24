@@ -6,18 +6,23 @@
 
 #include "base/android/radio_utils.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/trace_event/trace_event.h"
 #include "net/android/network_library.h"
 #include "net/android/traffic_stats.h"
+
+const base::Feature kForegroundRadioStateCountWakeups{
+    "ForegroundRadioStateCountWakeups", base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace power_metrics {
 namespace {
 
-void Report30SecondRadioUsage(int64_t tx_bytes, int64_t rx_bytes) {
+void Report30SecondRadioUsage(int64_t tx_bytes, int64_t rx_bytes, int wakeups) {
   if (!base::android::RadioUtils::IsSupported())
     return;
 
@@ -59,6 +64,21 @@ void Report30SecondRadioUsage(int64_t tx_bytes, int64_t rx_bytes) {
     UMA_HISTOGRAM_SCALED_ENUMERATION(
         "Power.ForegroundRadio.ReceivedKiB.Cell.30Seconds", cell_level,
         rx_bytes, 1024);
+
+    // Number of radio wakeups during the last 30 seconds.
+    if (base::FeatureList::IsEnabled(kForegroundRadioStateCountWakeups) &&
+        wakeups > 0) {
+      static const int kMaxLevel =
+          static_cast<int>(base::android::RadioSignalLevel::kMaxValue);
+      static const char kWakeupsHistogramName[] =
+          "Power.ForegroundRadio.Wakeups.Cell.30Seconds";
+      STATIC_HISTOGRAM_POINTER_BLOCK(
+          kWakeupsHistogramName,
+          AddCount(static_cast<int>(cell_level), wakeups),
+          base::Histogram::FactoryGet(
+              kWakeupsHistogramName, 0, kMaxLevel, kMaxLevel + 1,
+              base::HistogramBase::kUmaTargetedHistogramFlag));
+    }
   }
 }
 
@@ -115,6 +135,7 @@ void ReportAveragedDrain(int capacity_consumed,
 
 // static
 constexpr base::TimeDelta AndroidBatteryMetrics::kMetricsInterval;
+constexpr base::TimeDelta AndroidBatteryMetrics::kRadioStateInterval;
 
 AndroidBatteryMetrics::AndroidBatteryMetrics()
     : app_visible_(false),
@@ -160,11 +181,29 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
 
     metrics_timer_.Start(FROM_HERE, kMetricsInterval, this,
                          &AndroidBatteryMetrics::CaptureAndReportMetrics);
+    if (base::FeatureList::IsEnabled(kForegroundRadioStateCountWakeups)) {
+      radio_state_timer_.Start(FROM_HERE, kRadioStateInterval, this,
+                               &AndroidBatteryMetrics::MonitorRadioState);
+    }
   } else if (!should_be_enabled && metrics_timer_.IsRunning()) {
     // Capture one last measurement before disabling the timer.
     CaptureAndReportMetrics();
     metrics_timer_.Stop();
+    if (base::FeatureList::IsEnabled(kForegroundRadioStateCountWakeups)) {
+      radio_state_timer_.Stop();
+    }
   }
+}
+
+void AndroidBatteryMetrics::MonitorRadioState() {
+  base::android::RadioDataActivity activity =
+      base::android::RadioUtils::GetCellDataActivity();
+  if (last_activity_ == base::android::RadioDataActivity::kDormant &&
+      activity != base::android::RadioDataActivity::kDormant) {
+    TRACE_EVENT_INSTANT0("power", "RadioWakeup", TRACE_EVENT_SCOPE_GLOBAL);
+    ++radio_wakeups_;
+  }
+  last_activity_ = activity;
 }
 
 void AndroidBatteryMetrics::UpdateAndReportRadio() {
@@ -178,10 +217,11 @@ void AndroidBatteryMetrics::UpdateAndReportRadio() {
   if (last_tx_bytes_ > 0 && tx_bytes > 0 && last_rx_bytes_ > 0 &&
       rx_bytes > 0) {
     Report30SecondRadioUsage(tx_bytes - last_tx_bytes_,
-                             rx_bytes - last_rx_bytes_);
+                             rx_bytes - last_rx_bytes_, radio_wakeups_);
   }
   last_tx_bytes_ = tx_bytes;
   last_rx_bytes_ = rx_bytes;
+  radio_wakeups_ = 0;
 }
 
 void AndroidBatteryMetrics::CaptureAndReportMetrics() {

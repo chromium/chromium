@@ -517,6 +517,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Power.ForegroundRadio.Wakeups.Cell.30Seconds"
+    enum="RadioSignalLevel" expires_after="2021-07-03">
+  <owner>eseckler@chromium.org</owner>
+  <owner>khokhlov@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Counts the number of radio wakeups while Chrome is the foreground app, the
+    device is on battery power and connection type is cellular. Values are
+    distributed across buckets according to the radio signal quality.
+
+    Caveat: signal quality is measured at the end of 30-sec period, so it might
+    not reflect the quality during the entire period.
+
+    Only supported on Android. Disabled by default. Please supply the
+    ForegroundRadioStateCountWakeups feature flag to turn this metric on.
+  </summary>
+</histogram>
+
 <histogram name="Power.ForegroundRadio.{Direction}KiB.{NetworkType}.30Seconds"
     enum="RadioSignalLevel" expires_after="2021-07-03">
   <owner>eseckler@chromium.org</owner>
