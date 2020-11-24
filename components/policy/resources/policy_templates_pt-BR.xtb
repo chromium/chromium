@@ -3492,7 +3492,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se a política não for definida, especifique a opção "Deixar os usuários decidirem" ou defina como "Nenhuma". Assim, os usuários controlarão a detecção automática de fuso horário usando os controles normais em chrome://settings.</translation>
 <translation id="6532769014584932288">Permitir wake locks</translation>
-<translation id="6536444379078076149">Ativar ou desativar a exibição de IUs relacionadas à conexão no computador host quando uma conexão está ativa.</translation>
 <translation id="6536600139108165863">Reinicialização automática no desligamento do dispositivo</translation>
 <translation id="6539246272469751178">Esta política não tem nenhum efeito sobre apps Android. Os apps Android sempre usam o diretório de downloads padrão e não podem acessar nenhum arquivo transferido por download pelo <ph name="PRODUCT_OS_NAME" /> para um diretório de downloads não padrão.</translation>
 <translation id="654303922206238013">Estratégia de migração para eCryptfs</translation>

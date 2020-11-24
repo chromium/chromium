@@ -94,6 +94,7 @@
 <translation id="2163152940313951844">Μη έγκυρος χαρακτήρας: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2198315389084035571">Απλοποιημένα Κινεζικά</translation>
 <translation id="2208158072373999562">Αρχείο Zip</translation>
+<translation id="2208919847696382164">Εγκατάσταση με Linux</translation>
 <translation id="2225536596944493418">Είστε βέβαιοι ότι θέλετε να διαγράψετε <ph name="NUMBER_OF_ITEMS" /> στοιχεία;</translation>
 <translation id="2230062665678605299">Δεν είναι δυνατή η δημιουργία του φακέλου "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Μετακινήθηκε.</translation>
@@ -130,6 +131,7 @@
 <translation id="2664412712123763093">Τοποθεσία αρχείου</translation>
 <translation id="2672394958563893062">Παρουσιάστηκε σφάλμα. Κάντε κλικ για επανεκκίνηση από την αρχή.</translation>
 <translation id="2676946222714718093">Αναπαραγωγή σε</translation>
+<translation id="2718540689505416944">Εγκατάσταση εφαρμογής με Linux</translation>
 <translation id="2735623501230989521">Δώστε άδεια στο Parallels Desktop για πρόσβαση σε αρχεία στον φάκελο <ph name="FOLDER_NAME" />.</translation>
 <translation id="2771816809568414714">Τυρί</translation>
 <translation id="2781645665747935084">Βελγικά</translation>

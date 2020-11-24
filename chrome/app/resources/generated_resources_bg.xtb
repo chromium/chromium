@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Chrome с интелекта на Google</translation>
 <translation id="1147322039136785890">Сега е ред на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">За да поискате достъп, обърнете се към администратора на това устройство.</translation>
+<translation id="1148063863818152153">EID номерът на устройството ви</translation>
 <translation id="1149401351239820326">Месец на валидност</translation>
 <translation id="1149725087019908252">„<ph name="FILE_NAME" />“ се сканира</translation>
 <translation id="1150490752229770117">Това е последната автоматична актуализация на софтуера и сигурността за устройството <ph name="DEVICE_TYPE" />. За да получавате бъдещи актуализации, надстройте до по-нов модел. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -314,6 +315,7 @@
 <translation id="1343865611738742294">Разрешаване на приложенията за Linux да осъществяват достъп до USB устройства. Linux няма да запомни дадено USB устройство, след като бъде премахнато.</translation>
 <translation id="1346630054604077329">Потвърждаване и рестартиране</translation>
 <translation id="1347256498747320987">Инсталиране на актуализации и приложения. С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки. <ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Хранилище за Linux</translation>
 <translation id="1347975661240122359">Актуализацията ще започне, когато нивото на батерията достигне <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: „<ph name="NETWORK_NAME" />“</translation>
 <translation id="1353980523955420967">PPD файлът не може да бъде намерен. Уверете се, че вашият Chromebook е онлайн, и опитайте отново.</translation>
@@ -552,6 +554,7 @@
 <translation id="1608668830839595724">Още действия за избраните елементи</translation>
 <translation id="161042844686301425">синьозелено</translation>
 <translation id="1611432201750675208">Устройството ви е заключено</translation>
+<translation id="1612019740169791082">Контейнерът ви не е конфигуриран да поддържа промени в размера на диска. За да коригирате обема на хранилището, заделено за Linux, създайте резервно копие и след това го възстановете в нов контейнер.</translation>
 <translation id="1614511179807650956">Възможно е да сте изразходвали отпуснатите ви мобилни данни. Посетете портала за активиране на <ph name="NAME" />, за да купите още данни</translation>
 <translation id="161460670679785907">Телефонът ви не може да бъде намерен</translation>
 <translation id="1616206807336925449">Това разширение не изисква специални разрешения.</translation>
@@ -686,6 +689,7 @@
 <translation id="175772926354468439">Активиране на темата</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Преглед в уеб магазина на Chrome</translation>
+<translation id="1761845175367251960">Профилите на <ph name="NAME" /></translation>
 <translation id="176193854664720708">Сензорът за отпечатъци е в бутона за включване/изключване. Докоснете го леко с който и да е пръст.</translation>
 <translation id="1763046204212875858">Създаване на преки пътища към приложението</translation>
 <translation id="1763808908432309942">Отваря се в нов раздел</translation>
@@ -895,6 +899,7 @@
 <translation id="1999115740519098545">При стартиране</translation>
 <translation id="2000419248597011803">Изпраща някои „бисквитки“ и заявките за търсене от адресната лента и полето за търсене до стандартната ви търсеща машина</translation>
 <translation id="2002109485265116295">В реално време</translation>
+<translation id="200217416291116199">Препоръчваме да създадете резервно копие на файловете, в случай че надстройването не може да завърши успешно. Linux ще се изключи при стартиране на надстройването. Преди да продължите, запазете отворените файлове.</translation>
 <translation id="2003130567827682533">За да активирате данните от „<ph name="NAME" />“, първо се свържете с Wi-Fi мрежа</translation>
 <translation id="2005199804247617997">Други потребителски профили</translation>
 <translation id="2006638907958895361">Отваряне на връзката чрез <ph name="APP" /></translation>
@@ -1606,6 +1611,7 @@
 <translation id="2807517655263062534">Тук се показват изтеглените от вас файлове</translation>
 <translation id="2809586584051668049">и още <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">Ако не разпознавате дадено разширение или браузърът ви не работи правилно, оттук можете да изключите или да персонализирате разширенията.</translation>
+<translation id="2811205483104563968">Профили</translation>
 <translation id="2812049959647166806">Thunderbolt не се поддържа</translation>
 <translation id="2812989263793994277">Без показване на изображения</translation>
 <translation id="2813094189969465044">Родителски контроли</translation>
@@ -1644,6 +1650,7 @@
 <translation id="2858138569776157458">Водещи сайтове</translation>
 <translation id="2861301611394761800">Системната актуализация е завършена. Моля, рестартирайте системата.</translation>
 <translation id="2861941300086904918">Диспечер на сигурността за клиенти с директно изпълнение</translation>
+<translation id="2862815659905780618">Премахване на Linux средата на програмиране</translation>
 <translation id="2864601841139725659">Задаване на снимката на потребителския ви профил</translation>
 <translation id="2865919525181940183">Екранна снимка на програмите на екрана</translation>
 <translation id="286674810810214575">Източниците на захранване се проверяват...</translation>
@@ -1757,6 +1764,7 @@
 <translation id="2989123969927553766">Ускоряване на превъртането с мишката</translation>
 <translation id="2989474696604907455">не е свързано</translation>
 <translation id="2989786307324390836">DER кодирано двоично, единичен сертификат</translation>
+<translation id="2990313168615879645">Добавяне на профил в Google</translation>
 <translation id="2992931425024192067">Показване на цялото съдържание от известията</translation>
 <translation id="2993517869960930405">Информация за приложението</translation>
 <translation id="2996286169319737844">Данните са шифровани с пропуска ви за синхронизиране. Това не включва начините на плащане и адресите от Google Pay.</translation>
@@ -2369,6 +2377,7 @@
 <translation id="3706463572498736864">Страници на лист</translation>
 <translation id="370649949373421643">Активиране на Wi-Fi</translation>
 <translation id="370665806235115550">Зарежда се...</translation>
+<translation id="3707163604290651814">Понастоящем сте влезли като <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Браузърът бе изключен, преди изтеглянето да завърши.</translation>
 <translation id="3711931198657368127">Пост&amp;авяне и отваряне на <ph name="URL" /></translation>
 <translation id="3711945201266135623">В сървъра за отпечатване бяха открити <ph name="NUM_PRINTERS" /> принтера</translation>
@@ -2876,6 +2885,7 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ активни)</translation>
 <translation id="4310139701823742692">Файловият формат е неправилен. Проверете PPD файла и опитайте отново.</translation>
 <translation id="431076611119798497">&amp;Подробности</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 профил в Google}other{<ph name="EXTRA_ACCOUNTS" /> профила в Google}}</translation>
 <translation id="4312866146174492540">Блокиране (по подразбиране)</translation>
 <translation id="4314815835985389558">Управление на синхронизирането</translation>
 <translation id="4316850752623536204">Уебсайт на програмиста</translation>
@@ -3255,6 +3265,7 @@
 <translation id="4764368918650455114">Уверете се, че двете устройства са отключени и са близо едно до друго, както и че функцията за Bluetooth е включена. Ако споделяте с Chromebook, не забравяйте да включите „Споделяне наблизо“ (отворете лентата на състоянието, като изберете часа, след което изберете „Споделяне наблизо“). <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Позволява на Android Messages да предава SMS съобщенията от телефона ви към вашия Chromebook</translation>
 <translation id="4768332406694066911">Имате идентифициращи ви сертификати от тези организации</translation>
+<translation id="4773112038801431077">Надстройване на Linux</translation>
 <translation id="477647109558161443">Създаване на пряк път на работния плот</translation>
 <translation id="4776917500594043016">Парола за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Google Play Магазин</translation>
@@ -3748,6 +3759,7 @@
 <translation id="5368720394188453070">Телефонът ви е заключен. Отключете го, за да влезете.</translation>
 <translation id="5368779022775404937">Влизане в домейна <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Активиране на ускоряването на мишката</translation>
+<translation id="5369694795837229225">Настройване на Linux средата на програмиране</translation>
 <translation id="5370819323174483825">&amp;Презареждане</translation>
 <translation id="5372529912055771682">Предоставеният режим за записване не се поддържа от тази версия на операционната система.  Моля, уверете се, че използвате най-новата версия и опитайте отново.</translation>
 <translation id="5372579129492968947">Освобождаване на разширението</translation>
@@ -3773,6 +3785,7 @@
 <translation id="5402815541704507626">Изтегляне на актуализацията посредством мобилни данни</translation>
 <translation id="540296380408672091">„Бисквитките“ от <ph name="HOST" /> да се блокират винаги</translation>
 <translation id="540495485885201800">Размяна с предишния елемент</translation>
+<translation id="5405146885510277940">Нулиране на настройките</translation>
 <translation id="5408750356094797285">Мащаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">От профила ви в Google</translation>
 <translation id="5411472733320185105">Настройките за прокси сървър да не се използват за тези хостове или домейни:</translation>
@@ -4473,6 +4486,8 @@
 <translation id="6212168817037875041">Изключване на екрана</translation>
 <translation id="6212752530110374741">Изпращане на връзката по имейл</translation>
 <translation id="6213230117190778270">Получаване</translation>
+<translation id="6215620815501168899">Затваряне на изскачащия прозорец с EID номера и QR кода</translation>
+<translation id="6216601812881225442">Контейнерът ви не поддържа преоразмеряване. За да промените обема на пространството, предварително заделено за Linux, създайте резервно копие и след това възстановете в нов контейнер.</translation>
 <translation id="6216696360484424239">Автоматично влизане</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> е офлайн. Свържете се с интернет и опитайте отново</translation>
 <translation id="6220413761270491930">Грешка при зареждането на разширението</translation>
@@ -4865,6 +4880,7 @@
 <translation id="6680442031740878064">Свободно място: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Скорост</translation>
 <translation id="6681668084120808868">Снимане</translation>
+<translation id="6683948477137300040">Показване на изскачащ прозорец с EID номера на устройството и QR код</translation>
 <translation id="6684827949542560880">Изтегля се най-новата актуализация</translation>
 <translation id="668599234725812620">Отваряне на Google Play</translation>
 <translation id="6686490380836145850">Затваряне на разделите отдясно</translation>
@@ -5100,6 +5116,7 @@
 <translation id="6955535239952325894">Тази настройка е деактивирана за управлявани браузъри</translation>
 <translation id="6957044667612803194">Този ключ за сигурност не поддържа ПИН кодове</translation>
 <translation id="6957231940976260713">Имe на услугата</translation>
+<translation id="6960507406838246615">Изисква се актуализиране на Linux</translation>
 <translation id="696103774840402661">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> бяха изтрити за постоянно.</translation>
 <translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Премахване от групата</translation>
@@ -5119,6 +5136,7 @@
 <translation id="697312151395002334">Сайтове с разрешение за изпращане на изскачащи прозорци и използване на пренасочвания</translation>
 <translation id="6973611239564315524">Налице е надстройка до Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">Офлайн демонстрационен режим</translation>
+<translation id="697508444536771064">Изключване на Linux</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
 <translation id="6977877318519394148">Инсталиране на Rosetta</translation>
 <translation id="6978121630131642226">Търсещи машини</translation>
@@ -5519,6 +5537,7 @@
 <translation id="7443806024147773267">Осъществявайте достъп до паролите си винаги когато сте влезли в профила си в Google</translation>
 <translation id="7444983668544353857">Деактивиране на <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Автоматично инсталиране на приложения</translation>
+<translation id="7448538354405258275">Представител на екипа за обслужване на клиенти може да използва EID номера, за да ви помогне да активирате услуга.</translation>
 <translation id="7449752890690775568">Да се премахне ли паролата?</translation>
 <translation id="7450761244949417357">Отваря се чрез <ph name="ALTERNATIVE_BROWSER_NAME" /> сега</translation>
 <translation id="7453008956351770337">С избирането на този принтер давате разрешение за достъп до него на следното разширение:</translation>
@@ -6048,6 +6067,7 @@
 <translation id="8032244173881942855">Предаването на раздела не е възможно.</translation>
 <translation id="8033827949643255796">откроени</translation>
 <translation id="8033958968890501070">Времето за изчакване изтече</translation>
+<translation id="8036049989879571495">Настройване на Linux средата на програмиране (бета)</translation>
 <translation id="8037117027592400564">Четене на целия текст, произнесен посредством синтезирания говор</translation>
 <translation id="8037357227543935929">Извеждане на запитване (по подразбиране)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -6214,6 +6234,7 @@
 <translation id="8226619461731305576">Опашка</translation>
 <translation id="8226628635270268143">Изберете любимите си снимки и албуми</translation>
 <translation id="8227119283605456246">Прикачване на файл</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Да се запази ли паролата за <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Моля, помогнете на инженерите ни да отстранят този проблем. Кажете ни какво се случи, точно преди да получите съобщението за грешка в потребителския профил:</translation>
 <translation id="8236917170563564587">Споделяне на този раздел</translation>
@@ -6974,6 +6995,7 @@
 <translation id="909108997331068008">Потребителският профил на <ph name="EXISTING_USER" /> вече се ползва с(ъс) <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Актуализиране на паролата</translation>
 <translation id="9094038138851891550">Потребителското име е невалидно</translation>
+<translation id="9094859731829297286">Наистина ли искате да резервирате диск с фиксиран размер за Linux?</translation>
 <translation id="9094982973264386462">Премахване</translation>
 <translation id="9095253524804455615">Премахване</translation>
 <translation id="909554839118732438">Затваряне на прозореца в режим „инкогнито“</translation>

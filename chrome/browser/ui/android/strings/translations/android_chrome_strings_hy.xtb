@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4594952190837476234">Այս էջը պահվել է <ph name="CREATION_TIME" />-ին, և կարող է տարբերվել առցանց տարբերակից։</translation>
 <translation id="4605958867780575332">Տարրը հեռացվեց՝ <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Պահեք էջերը հետագայի համար և ստացեք հիշեցում</translation>
 <translation id="4616150815774728855">Բացել <ph name="WEBAPK_NAME" /> հավելվածը</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ}one{# կոտրված գաղտնաբառ}other{# կոտրված գաղտնաբառ}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}}</translation>
 <translation id="7778840695157240389">Վերադարձեք ավելի ուշ՝ նոր բովանդակություն տեսնելու համար</translation>
 <translation id="7786595606756654269">Google Օգնականն առաջարկում է ավելի հարմար ձայնային որոնում համացանցում և փոխազդեցություն բացված կայքերի հետ։ Google Օգնականը կստանա այն կայքերի հասցեներն ու բովանդակությունը, որոնցից օգտվում եք իր միջոցով։</translation>
+<translation id="7790349552933995572">Հիմնական էկրան</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7798392620021911922">Վերականգնվել է <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="780301667611848630">Ոչ</translation>

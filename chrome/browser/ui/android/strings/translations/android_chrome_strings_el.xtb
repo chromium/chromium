@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">Ιστότοποι</translation>
 <translation id="4594952190837476234">Αυτή η σελίδα εκτός σύνδεσης δημιουργήθηκε στις <ph name="CREATION_TIME" /> και μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
 <translation id="4605958867780575332">Το στοιχείο καταργήθηκε <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Αποθηκεύστε σελίδες για αργότερα και λάβετε σχετική υπενθύμιση.</translation>
 <translation id="4616150815774728855">Ανοίξτε <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Χρήση κωδικού πρόσβασης</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 παραβιασμένος κωδικός πρόσβασης}other{# παραβιασμένοι κωδικοί πρόσβασης}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7778840695157240389">Ελέγξτε πάλι αργότερα για νέες ιστορίες</translation>
 <translation id="7786595606756654269">Ο Βοηθός Google παρέχει μια βελτιωμένη φωνητική εμπειρία για την αναζήτηση στον ιστό και την αλληλεπίδραση με τους ιστοτόπους που ανοίγετε. Ο Βοηθός Google θα λαμβάνει τα URL και το περιεχόμενο των ιστοτόπων στους οποίους χρησιμοποιείτε τον Βοηθό.</translation>
+<translation id="7790349552933995572">Αρχική οθόνη</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="7798392620021911922">Έγινε επαναφορά <ph name="TAB_COUNT" /> καρτελών</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>

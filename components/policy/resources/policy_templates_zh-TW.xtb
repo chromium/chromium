@@ -3464,7 +3464,6 @@
 
       如果未設定、設為讓使用者決定或設為 None，使用者將可透過 chrome://settings 中的一般控制項來控制自動偵測時區的功能。</translation>
 <translation id="6532769014584932288">允許使用 Wake Lock</translation>
-<translation id="6536444379078076149">連線時，在主機桌面上顯示或不顯示連線相關 UI</translation>
 <translation id="6536600139108165863">裝置關機時自動重新啟動</translation>
 <translation id="6539246272469751178">這項政策對 Android 應用程式沒有影響。Android 應用程式會一律使用預設的下載目錄，無法存取任何由 <ph name="PRODUCT_OS_NAME" />下載到非預設下載目錄的檔案。</translation>
 <translation id="654303922206238013">eCryptfs 遷移策略</translation>

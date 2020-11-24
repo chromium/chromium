@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Magkaroon ng mga smart na feature ng Google sa Chrome</translation>
 <translation id="1147322039136785890">Si <ph name="SUPERVISED_USER_NAME" /> naman</translation>
 <translation id="1147991416141538220">Para humiling ng access, makipag-ugnayan sa administrator ng device na ito.</translation>
+<translation id="1148063863818152153">Ang iyong device EID</translation>
 <translation id="1149401351239820326">Buwan ng pag-expire</translation>
 <translation id="1149725087019908252">Sina-scan ang <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">Ito ang huling pag-update ng software at seguridad para sa ganitong <ph name="DEVICE_TYPE" />. Para makakuha ng mga update sa hinaharap, mag-upgrade sa mas bagong modelo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -315,6 +316,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1343865611738742294">Bugyan ang mga Linux app ng pahintulot na i-access ang mga USB device. Hindi maaalala ng Linux ang isang USB device pagkatapos itong alisin.</translation>
 <translation id="1346630054604077329">Kumpirmahin at i-restart</translation>
 <translation id="1347256498747320987">Mag-install ng mga update at app. Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang maaari ding awtomatikong mag-download at mag-install ang device na ito ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, na posibleng gumamit ng cellular data. Maaaring nag-aalok ang ilan sa mga app na ito ng mga in-app na pagbili. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">storage ng Linux</translation>
 <translation id="1347975661240122359">Magsisimula ang pag-update kapag umabot na ang baterya sa <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Hindi makita ang PPD. Tiyaking online ang iyong Chromebook at subukang muli.</translation>
@@ -556,6 +558,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1608668830839595724">Higit pang pagkilos para sa mga napiling item</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Naka-lock ang iyong device</translation>
+<translation id="1612019740169791082">Hindi naka-configure ang iyong container para suportahan ang mga pag-resize ng disk. Para isaayos ang laki ng espasyong nakareserba para sa Linux, i-back up at pagkatapos ay i-restore ito sa isang bagong container.</translation>
 <translation id="1614511179807650956">Maaaring naubos mo na ang iyong allowance sa mobile data. Bisitahin ang portal sa pag-activate ng <ph name="NAME" /> para bumili ng higit pang data</translation>
 <translation id="161460670679785907">Hindi makita ang iyong telepono</translation>
 <translation id="1616206807336925449">Hindi nangangailangan ang extension na ito ng mga espesyal na pahintulot.</translation>
@@ -690,6 +693,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="175772926354468439">Paganahin ang tema</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Tingnan sa Chrome Web Store</translation>
+<translation id="1761845175367251960">mga account ni <ph name="NAME" /></translation>
 <translation id="176193854664720708">Nasa power button ang sensor para sa fingerprint. Pundutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="1763046204212875858">Gumawa ng mga shortcut ng application</translation>
 <translation id="1763808908432309942">Magbubukas sa bagong tab</translation>
@@ -899,6 +903,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1999115740519098545">Sa startup</translation>
 <translation id="2000419248597011803">Nagpapadala ng ilang cookies at paghahanap mula sa address bar at box para sa paghahanap sa iyong default na search engine</translation>
 <translation id="2002109485265116295">Real-time</translation>
+<translation id="200217416291116199">Inirerekomenda ang pag-back up ng mga file kung sakaling hindi makumpleto ang pag-upgrade. Kapag sinimulan ang pag-upgrade, magsa-shutdown ang Linux. Paki-save ang mga bukas na file bago magpatuloy.</translation>
 <translation id="2003130567827682533">Para i-activate ang data ng '<ph name="NAME" />,' kumonekta muna sa Wi-Fi network</translation>
 <translation id="2005199804247617997">Iba pang profile</translation>
 <translation id="2006638907958895361">Buksan ang Link sa <ph name="APP" /></translation>
@@ -1610,6 +1615,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2807517655263062534">Dito lalabas ang mga file na iyong ida-download</translation>
 <translation id="2809586584051668049">at <ph name="NUMBER_ADDITIONAL_DISABLED" /> pa</translation>
 <translation id="2810390687497823527">Kung hindi mo nakikilala ang isang extension, o kung hindi gumagana ang iyong browser gaya nang inaasahan, puwede mong i-off o i-customize ang mga extension dito.</translation>
+<translation id="2811205483104563968">Mga Account</translation>
 <translation id="2812049959647166806">Hindi sinusuportahan ang thunderbolt</translation>
 <translation id="2812989263793994277">Huwag magpakita ng anumang mga larawan</translation>
 <translation id="2813094189969465044">Mga kontrol ng magulang</translation>
@@ -1648,6 +1654,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2858138569776157458">Top na sites</translation>
 <translation id="2861301611394761800">Kumpleto na ang pag-update ng system. Paki-restart ang system.</translation>
 <translation id="2861941300086904918">Tagapamahala ng seguridad ng Native Client</translation>
+<translation id="2862815659905780618">Alisin ang environment sa pag-develop ng Linux</translation>
 <translation id="2864601841139725659">Itakda ang iyong larawan sa profile</translation>
 <translation id="2865919525181940183">Screenshot ng mga programang kasalukuyang nasa screen</translation>
 <translation id="286674810810214575">Sinusuri ang mga power source...</translation>
@@ -1761,6 +1768,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2989123969927553766">Pag-accelerate ng pag-scroll gamit ang mouse</translation>
 <translation id="2989474696604907455">hindi naka-attach</translation>
 <translation id="2989786307324390836">DER-encoded binary, single certificate</translation>
+<translation id="2990313168615879645">Mag-add ng Google Account</translation>
 <translation id="2992931425024192067">Ipakita ang lahat ng content ng notification</translation>
 <translation id="2993517869960930405">Impormasyon ng App</translation>
 <translation id="2996286169319737844">Ine-encrypt ang data gamit ang iyong passphrase sa pag-sync. Hindi kasama rito ang mga paraan ng pagbabayad at address mula sa Google Pay.</translation>
@@ -2372,6 +2380,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3706463572498736864">Mga page sa bawat sheet</translation>
 <translation id="370649949373421643">Paganahin ang Wi-Fi</translation>
 <translation id="370665806235115550">Naglo-load...</translation>
+<translation id="3707163604290651814">Kasalukuyang naka-sign in bilang <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Nag-shut down ang browser bago makumpleto ang pag-download.</translation>
 <translation id="3711931198657368127">I-pa&amp;ste at Pumunta sa <ph name="URL" /></translation>
 <translation id="3711945201266135623">May nakitang <ph name="NUM_PRINTERS" /> (na) printer mula sa server sa pag-print</translation>
@@ -2878,6 +2887,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
 <translation id="4310139701823742692">Nasa maling format ang file. Tingnan ang PPD file at subukang muli.</translation>
 <translation id="431076611119798497">&amp;Mga Detalye</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Google Account}one{<ph name="EXTRA_ACCOUNTS" /> Google Account}other{<ph name="EXTRA_ACCOUNTS" /> na Google Account}}</translation>
 <translation id="4312866146174492540">I-block (default)</translation>
 <translation id="4314815835985389558">Pamahalaan ang pag-sync</translation>
 <translation id="4316850752623536204">Website ng Developer</translation>
@@ -3257,6 +3267,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4764368918650455114">Tiyaking naka-unlock at magkalapit ang dalawang device, at naka-on ang Bluetooth ng mga ito. Kung nagbabahagi ka sa isang Chromebook, tiyaking naka-on ang Nearby Sharing nito (buksan ang lugar ng status sa pamamagitan ng pagpili sa oras, pagkatapos ay piliin ang Nearby Share). <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Binibigyang-daan ang Android Messages na mag-relay ng mga text mula sa iyong telepono papunta sa Chromebook mo</translation>
 <translation id="4768332406694066911">Mayroon kang mga certificate mula sa mga organisasyong ito na tutukoy sa iyo</translation>
+<translation id="4773112038801431077">I-upgrade ang Linux</translation>
 <translation id="477647109558161443">Gumawa ng desktop shortcut</translation>
 <translation id="4776917500594043016">Password para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3750,6 +3761,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5368720394188453070">Naka-lock ang iyong telepono. I-unlock ito upang makapasok.</translation>
 <translation id="5368779022775404937">Mag-sign in sa <ph name="REALM" /></translation>
 <translation id="5369491905435686894">I-enable ang pag-accelerate ng mouse</translation>
+<translation id="5369694795837229225">I-set up ang environment sa pag-develop ng Linux</translation>
 <translation id="5370819323174483825">I-&amp;reload</translation>
 <translation id="5372529912055771682">Hindi sinusuportahan ng bersyong ito ng operating system ang ibinigay na mode ng pagpapatala.  Pakitiyak na pinapatakbo mo ang pinakabagong bersyon at subukang muli.</translation>
 <translation id="5372579129492968947">I-unpin ang extension</translation>
@@ -3775,6 +3787,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5402815541704507626">I-download ang update gamit ang mobile data</translation>
 <translation id="540296380408672091">Laging i-block ang cookies sa <ph name="HOST" /></translation>
 <translation id="540495485885201800">I-swap sa nakaraan</translation>
+<translation id="5405146885510277940">I-reset ang mga setting</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Mula sa iyong Google Account</translation>
 <translation id="5411472733320185105">Huwag gumamit ng mga setting ng proxy para sa mga host at domain na ito:</translation>
@@ -4474,6 +4487,8 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6212168817037875041">I-off ang display</translation>
 <translation id="6212752530110374741">I-email ang Link</translation>
 <translation id="6213230117190778270">Tanggapin</translation>
+<translation id="6215620815501168899">Isara ang popup ng EID at QR code</translation>
+<translation id="6216601812881225442">Hindi sinusuportahan ng iyong container ang pag-resize rito. Para isaayos ang laki ng espasyo na naka-preallocate sa Linux, i-back up at pagkatapos ay i-restore ito sa isang bagong container.</translation>
 <translation id="6216696360484424239">Awtomatikong mag-sign in</translation>
 <translation id="6218058416316985984">Offline ang <ph name="DEVICE_TYPE" />. Kumonekta sa Internet at subukang muli.</translation>
 <translation id="6220413761270491930">Error sa Paglo-load ng Extension</translation>
@@ -4866,6 +4881,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">I-rate</translation>
 <translation id="6681668084120808868">Kumuha ng larawan</translation>
+<translation id="6683948477137300040">Ipakita ang popup ng device EID at QR code</translation>
 <translation id="6684827949542560880">Dina-download ang pinakabagong update</translation>
 <translation id="668599234725812620">Buksan ang Google Play</translation>
 <translation id="6686490380836145850">Isara ang mga tab sa kanan</translation>
@@ -5101,6 +5117,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6955535239952325894">Naka-disable ang setting na ito sa mga pinapamahalaang browser</translation>
 <translation id="6957044667612803194">Hindi sinusuportahan ng security key na ito ang mga PIN</translation>
 <translation id="6957231940976260713">Pangalan ng serbisyo</translation>
+<translation id="6960507406838246615">Kinakailangang i-update ang Linux</translation>
 <translation id="696103774840402661">Permanenteng na-delete ang lahat ng file at lokal na data para sa lahat ng user sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="6964390816189577014">Bayani</translation>
 <translation id="6964760285928603117">Alisin Sa Grupo</translation>
@@ -5120,6 +5137,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="697312151395002334">Pinapayagang magpadala ng mga pop-up at gumamit ng mga pag-redirect</translation>
 <translation id="6973611239564315524">May available na pag-upgrade sa Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">Offline na demo mode</translation>
+<translation id="697508444536771064">I-shut down ang Linux</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
 <translation id="6977877318519394148">I-install ang Rosetta</translation>
 <translation id="6978121630131642226">Mga Search Engine</translation>
@@ -5520,6 +5538,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7443806024147773267">I-access ang iyong mga password kapag naka-sign in ka sa Google Account mo</translation>
 <translation id="7444983668544353857">Huwag paganahin <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Awtomatikong nag-i-install ng mga app</translation>
+<translation id="7448538354405258275">Puwedeng gamitin ng isang kinatawan ng customer service ang numero ng EID para matulungan kang i-activate ang serbisyo.</translation>
 <translation id="7449752890690775568">Alisin ang password?</translation>
 <translation id="7450761244949417357">Binubuksan ngayon sa <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7453008956351770337">Sa pamamagitan ng pagpili sa printer na ito, binibigyan mo ng pahintulot ang sumusunod na extension upang i-access ang iyong printer:</translation>
@@ -6049,6 +6068,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8032244173881942855">Hindi ma-cast ang tab.</translation>
 <translation id="8033827949643255796">pinili</translation>
 <translation id="8033958968890501070">Time out</translation>
+<translation id="8036049989879571495">I-set up ang environment sa pag-develop ng Linux (Beta)</translation>
 <translation id="8037117027592400564">Basahin ang lahat ng binigkas na text gamit ang naka-synthesize na pagsasalita</translation>
 <translation id="8037357227543935929">Magtanong (default)</translation>
 <translation id="803771048473350947">File</translation>
@@ -6215,6 +6235,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8226619461731305576">I-queue</translation>
 <translation id="8226628635270268143">Piliin ang iyong mga paboritong larawan at album</translation>
 <translation id="8227119283605456246">Mag-attach ng file</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">I-save ang password para sa <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Pakitulungan ang aming mga engineer na ayusin ang problemang ito. Sabihin sa amin kung ano ang nangyari bago mo nakuha ang mensahe ng error sa profile:</translation>
 <translation id="8236917170563564587">Sa halip, ibahagi ang tab na ito</translation>
@@ -6978,6 +6999,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="909108997331068008">Naka-sign in na ang profile ni <ph name="EXISTING_USER" /> sa <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">I-update ang password</translation>
 <translation id="9094038138851891550">Di-wasto ang username</translation>
+<translation id="9094859731829297286">Sigurado ka bang gusto mong magreserba ng fixed na espasyo sa disk para sa Linux?</translation>
 <translation id="9094982973264386462">Alisin</translation>
 <translation id="9095253524804455615">Alisin</translation>
 <translation id="909554839118732438">Isara ang Incognito</translation>

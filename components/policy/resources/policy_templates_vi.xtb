@@ -3533,7 +3533,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn không đặt chính sách, đặt thành Để người dùng quyết định hoặc thành Không, thì người dùng có thể kiểm soát tính năng tự động phát hiện múi giờ bằng các tùy chọn kiểm soát thông thường trong chrome://settings.</translation>
 <translation id="6532769014584932288">Cho phép khóa chế độ thức</translation>
-<translation id="6536444379078076149">Bật hoặc tắt màn hình kết nối liên quan đến giao diện người dùng trên màn hình máy chủ khi đang có kết nối.</translation>
 <translation id="6536600139108165863">Tự động khởi động lại khi tắt thiết bị</translation>
 <translation id="6539246272469751178">Chính sách này không ảnh hưởng đến ứng dụng Android. Ứng dụng Android luôn sử dụng thư mục nội dung tải xuống mặc định và không thể truy cập bất kỳ tệp nào do <ph name="PRODUCT_OS_NAME" /> tải xuống thư mục nội dung tải xuống không phải mặc định.</translation>
 <translation id="654303922206238013">Chiến lược di chuyển cho ecryptfs</translation>

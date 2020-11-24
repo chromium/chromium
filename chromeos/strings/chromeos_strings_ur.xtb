@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">‏بہت زیادہ HTTPS تاخیر</translation>
 <translation id="1413240736185167732">ناکام ہو گیا - فلٹر ناکام ہو گیا</translation>
 <translation id="1468664791493211953">پیشکشیں</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور آپ کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="1478594628797167447">اسکینر</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> اس صارف کا نظم کرتا ہے اور دور سے ترتیبات کا نظم اور صارف کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="150962533380566081">‏غلط PUK۔</translation>
 <translation id="1510238584712386396">لانچر</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز)</translation>
 <translation id="1641857168437328880">دستاویز فیڈر (یک طرفہ)</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="1662989795263954667">رک گیا - سیاہی ختم ہو گئی</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">اس میں اسکین کریں</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="4548483925627140043">سگنل نہیں ملا</translation>
+<translation id="455835558791489930">‏mAh<ph name="CHARGE_VALUE" /> بیٹری</translation>
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
 <translation id="4646949265910132906">‏WiFi کنکشن محفوظ کریں</translation>
@@ -137,8 +141,10 @@
 <translation id="6766275201586212568">‏ناکام DNS ریزولیوشنز</translation>
 <translation id="6768237774506518020">‏DNS ریزولیوشن ناکام ہونے کی زیادہ شرح</translation>
 <translation id="6839141349259399400">اسکینرز کے ساتھ منسلک نہیں کیا جا سکتا؟</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
 <translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
 <translation id="7162487448488904999">گیلری</translation>
+<translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>

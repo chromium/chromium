@@ -3781,6 +3781,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5402815541704507626">Last ned oppdateringen med mobildata</translation>
 <translation id="540296380408672091">Blokkér alltid informasjonskapsler på <ph name="HOST" /></translation>
 <translation id="540495485885201800">Bytt med forrige</translation>
+<translation id="5405146885510277940">Tilbakestill innstillingene</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Fra Google-kontoen din</translation>
 <translation id="5411472733320185105">Ikke bruk proxy-tjenerinnstillinger for følgende tjenere og domener:</translation>
@@ -6228,6 +6229,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8226619461731305576">Kø</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
 <translation id="8227119283605456246">Legg ved fil</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Vil du lagre passord for <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjelp programutviklerne våre med å løse dette problemet. Fortell oss hva som skjedde rett før du fikk profilfeilmeldingen:</translation>
 <translation id="8236917170563564587">Del denne fanen i stedet</translation>

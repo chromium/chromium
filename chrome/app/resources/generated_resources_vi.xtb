@@ -432,6 +432,7 @@
 <translation id="1475502736924165259">Bạn có các chứng chỉ trên tệp không phù hợp với bất kỳ danh mục nào khác</translation>
 <translation id="1476088332184200792">Sao chép vào Thiết bị của bạn</translation>
 <translation id="1476607407192946488">&amp;Cài đặt ngôn ngữ</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.</translation>
 <translation id="1478340334823509079">Chi tiết: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Cài đặt chưa được bật</translation>
 <translation id="1481537595330271162">Lỗi khi thay đổi dung lượng ổ đĩa</translation>
@@ -2030,6 +2031,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3320630259304269485">Tính năng Duyệt web an toàn (bảo vệ trước các trang web nguy hiểm) và các tùy chọn cài đặt bảo mật khác</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Dữ liệu này có chứa nội dung nhạy cảm hoặc nguy hiểm. Hãy xóa nội dung này rồi thử lại.}=1{Tệp này có chứa nội dung nhạy cảm hoặc nguy hiểm. Hãy xóa nội dung này rồi thử lại.}other{Các tệp này có chứa nội dung nhạy cảm hoặc nguy hiểm. Hãy xóa nội dung này rồi thử lại.}}</translation>
 <translation id="3323521181261657960">Phần thưởng! Bạn có thêm thời gian sử dụng thiết bị</translation>
+<translation id="3325804108816646710">Đang tìm hồ sơ có sẵn...</translation>
 <translation id="3325910708063135066">Máy ảnh và micrô đã bị tắt trong System Preferences (Tùy chọn hệ thống) trên máy Mac</translation>
 <translation id="3327050066667856415">Chromebook có thiết kế giúp tăng cường tính bảo mật. Thiết bị của bạn tự động được bảo vệ khỏi phần mềm độc hại mà không cần phải cài đặt phần mềm bổ sung.</translation>
 <translation id="3328489342742826322">Nếu bạn khôi phục từ một bản sao lưu, các dữ liệu và ứng dụng Linux hiện có trong thư mục tệp Linux của bạn sẽ bị xóa.</translation>
@@ -2097,6 +2099,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3412265149091626468">Chuyển tới Phần lựa chọn</translation>
 <translation id="3413122095806433232">Nhà cung cấp CA: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Kích thước:</translation>
+<translation id="3414966631182382431"><ph name="MANAGER" /> <ph name="BEGIN_LINK" />quản lý trình duyệt<ph name="END_LINK" /> của bạn</translation>
 <translation id="3416468988018290825">Luôn hiển thị URL đầy đủ</translation>
 <translation id="3417835166382867856">Tìm kiếm thẻ</translation>
 <translation id="3417836307470882032">Giờ quân đội</translation>
@@ -3171,6 +3174,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4651484272688821107">Không thể tải thành phần trực tuyến có tài nguyên chế độ minh họa.</translation>
 <translation id="4652935475563630866">Bạn cần chạy lại ứng dụng Parallels Desktop để thay đổi tùy chọn cài đặt máy ảnh. Hãy chạy lại ứng dụng Parallels Desktop để tiếp tục.</translation>
 <translation id="4653405415038586100">Lỗi khi định cấu hình Linux</translation>
+<translation id="4657914796247705218">Tốc độ TrackPoint</translation>
 <translation id="465878909996028221">Chỉ hỗ trợ chuyển hướng trình duyệt cho các giao thức http, https và tệp.</translation>
 <translation id="4659077111144409915">Tài khoản chính</translation>
 <translation id="4659126640776004816">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật.</translation>
@@ -3770,6 +3774,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5402815541704507626">Tải xuống bản cập nhật bằng cách dùng dữ liệu di động</translation>
 <translation id="540296380408672091">Luôn chặn cookie trên <ph name="HOST" /></translation>
 <translation id="540495485885201800">Hoán đổi với mục trước</translation>
+<translation id="5405146885510277940">Đặt lại các tùy chọn cài đặt</translation>
 <translation id="5408750356094797285">Thu phóng: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Từ Tài khoản Google của bạn</translation>
 <translation id="5411472733320185105">Không sử dụng cài đặt proxy cho các máy chủ và tên miền này:</translation>
@@ -3831,6 +3836,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5470735824776589490">Bạn cần khởi động lại trước khi có thể đặt lại thiết bị của mình bằng Powerwash. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Chào bạn! Đây là giọng nói của tính năng chuyển văn bản sang lời nói.</translation>
 <translation id="5472627187093107397">Lưu mật khẩu cho trang web này</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Mã PIN phải có ít nhất 1 ký tự}other{Mã PIN phải có ít nhất # ký tự}}</translation>
 <translation id="5473333559083690127">Nhập lại mã PIN mới</translation>
 <translation id="5481273127572794904">Không được phép tự động tải nhiều tệp xuống</translation>
 <translation id="5481941284378890518">Thêm máy in lân cận</translation>
@@ -4369,6 +4375,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6087960857463881712">Khuôn mặt vui nhộn</translation>
 <translation id="6091761513005122595">Đã kết nối thành công với thư mục chia sẻ.</translation>
 <translation id="6093888419484831006">Đang hủy cập nhật...</translation>
+<translation id="6095541101974653012">Bạn đã đăng xuất.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Mở ở dạng phóng to</translation>
 <translation id="6096326118418049043">Tên X.500</translation>
@@ -4702,6 +4709,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6474884162850599008">Ngắt kết nối tài khoản Google Drive</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> muốn chia sẻ nội dung trên màn hình của bạn. Chọn nội dung bạn muốn chia sẻ.</translation>
 <translation id="6478248366783946499">Giữ tệp nguy hiểm?</translation>
+<translation id="6480327114083866287">Do <ph name="MANAGER" /> quản lý</translation>
 <translation id="6483485061007832714">Mở tệp đã tải xuống</translation>
 <translation id="6483805311199035658">Đang mở <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">Chọn ngôn ngữ</translation>
@@ -4890,6 +4898,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="671928215901716392">Khóa màn hình</translation>
 <translation id="6721678857435001674">Xem nhãn hiệu và kiểu Khóa bảo mật của bạn</translation>
 <translation id="6721972322305477112">&amp;Tệp</translation>
+<translation id="672208878794563299">Trang web này sẽ hỏi lại vào lần tới.</translation>
 <translation id="672213144943476270">Vui lòng mở khóa hồ sơ của bạn trước khi duyệt với tư cách khách.</translation>
 <translation id="6723661294526996303">Nhập dấu trang và các mục cài đặt...</translation>
 <translation id="6723839937902243910">Nguồn</translation>
@@ -6206,6 +6215,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8226619461731305576">Hàng đợi</translation>
 <translation id="8226628635270268143">Chọn ảnh và album bạn yêu thích</translation>
 <translation id="8227119283605456246">Đính kèm tệp</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Bạn có muốn lưu mật khẩu cho <ph name="ORIGIN" /> không?</translation>
 <translation id="8234795456569844941">Hãy giúp các kỹ sư của chúng tôi khắc phục sự cố này. Hãy cho chúng tôi biết điều gì đã xảy ra ngay trước khi bạn nhận được thông báo lỗi hồ sơ:</translation>
 <translation id="8236917170563564587">Chia sẻ thẻ này</translation>
@@ -6287,6 +6297,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8317671367883557781">Thêm kết nối mạng</translation>
 <translation id="8319414634934645341">Sử dụng Khoá Mở rộng</translation>
 <translation id="8320459152843401447">Toàn bộ màn hình của bạn</translation>
+<translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> này sẽ do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="8322814362483282060">Trang này đã bị chặn truy cập micrô của bạn.</translation>
 <translation id="8323167517179506834">Nhập URL</translation>
 <translation id="8324784016256120271">Các trang web có thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn để điều chỉnh quảng cáo cho phù hợp với bạn</translation>
@@ -6594,6 +6605,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8698269656364382265">Để quay lại màn hình trước, hãy vuốt từ cạnh trái.</translation>
 <translation id="869884720829132584">Menu ứng dụng</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
+<translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> của bạn đã bị khóa.</translation>
 <translation id="8703346390800944767">Bỏ qua quảng cáo</translation>
 <translation id="8705331520020532516">Số Sê-ri</translation>
 <translation id="8705580154597116082">Wi-Fi khả dụng qua điện thoại</translation>

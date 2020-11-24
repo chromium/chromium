@@ -92,6 +92,7 @@
 <translation id="2163152940313951844">نویسه نامعتبر: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2198315389084035571">چینی ساده</translation>
 <translation id="2208158072373999562">فایل بایگانی زیپ</translation>
+<translation id="2208919847696382164">‏نصب با Linux</translation>
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
 <translation id="2230062665678605299">پوشه «<ph name="FOLDER_NAME" />» را نمی‌توان ایجاد کرد.<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">منتقل شد.</translation>
@@ -128,6 +129,7 @@
 <translation id="2664412712123763093">محل فایل</translation>
 <translation id="2672394958563893062">خطایی رخ داده است. برای شروع مجدد از ابتدا، کلیک کنید.</translation>
 <translation id="2676946222714718093">در حال پخش در</translation>
+<translation id="2718540689505416944">‏نصب برنامه با Linux</translation>
 <translation id="2735623501230989521">‏به Parallels Desktop اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشد</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بلژیکی</translation>

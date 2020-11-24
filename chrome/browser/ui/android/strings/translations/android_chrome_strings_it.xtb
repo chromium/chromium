@@ -491,6 +491,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4587589328781138893">Siti</translation>
 <translation id="4594952190837476234">Questa pagina offline risale al giorno <ph name="CREATION_TIME" /> e potrebbe essere diversa dalla versione online.</translation>
 <translation id="4605958867780575332">Elemento rimosso: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Salva le pagine per un secondo momento e ricevi un promemoria</translation>
 <translation id="4616150815774728855">Apri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Utilizza password</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 password compromessa}other{# password compromesse}}</translation>
@@ -973,6 +974,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Ricontrolla più tardi se ci sono nuove notizie</translation>
 <translation id="7786595606756654269">L'Assistente Google offre un'esperienza vocale migliore per cercare sul Web e utilizzare i siti aperti. L'Assistente Google riceverà gli URL e i contenuti dei siti su cui lo utilizzi.</translation>
+<translation id="7790349552933995572">Schermata Home</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> schede ripristinate</translation>
 <translation id="780301667611848630">No grazie</translation>
@@ -1129,6 +1131,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8920114477895755567">In attesa dei dettagli sui genitori.</translation>
 <translation id="8922289737868596582">Usa il pulsante Altre opzioni per scaricare le pagine da usare offline</translation>
 <translation id="8928626432984354940">Elenco di cartelle di preferiti aperto nella parte inferiore dello schermo</translation>
+<translation id="8937267401510745927">Per aiutarti a completare le attività, Google riceverà gli URL e i contenuti dei siti su cui utilizzi l'assistente, oltre alle informazioni che invii tramite l'assistente. Queste informazioni potrebbero essere memorizzate nel tuo Account Google. Puoi disattivare l'assistente nelle impostazioni di Chrome.</translation>
 <translation id="8937772741022875483">Vuoi rimuovere la tua attività di Chrome da Benessere digitale?</translation>
 <translation id="8942627711005830162">Apri nell'altra finestra</translation>
 <translation id="8951232171465285730">Chrome ti ha fatto risparmiare <ph name="MEGABYTES" /> MB</translation>

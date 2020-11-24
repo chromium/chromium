@@ -424,6 +424,7 @@
 <translation id="5659593005791499971">אימייל</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">גרסה <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5690398455483874150">{count,plural, =1{‏כרגע מוצג חלון Chrome אחד}two{‏כרגע מוצגים {count} חלונות Chrome}many{‏כרגע מוצגים {count} חלונות Chrome}other{‏כרגע מוצגים {count} חלונות Chrome}}</translation>
 <translation id="5706552126692816153">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="5711039611392265845">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדף <ph name="BEGIN_LINK" />סנכרון ושירותי Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">כדי לגלוש באינטרנט בפרטיות צריך להוסיף כרטיסייה חדשה</translation>

@@ -139,6 +139,7 @@
 <translation id="114721135501989771">‏תכונות חכמות של Google</translation>
 <translation id="1147322039136785890">עכשיו התור של <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">כדי לבקש גישה, צריך לפנות למנהל של המכשיר הזה.</translation>
+<translation id="1148063863818152153">‏מספר ה-EID של המכשיר</translation>
 <translation id="1149401351239820326">חודש פקיעת התוקף</translation>
 <translation id="1149725087019908252">מתבצעת סריקה של <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">זהו העדכון האוטומטי האחרון של התוכנה והאבטחה עבור מכשיר ה-<ph name="DEVICE_TYPE" /> הזה. כדי לקבל עדכונים עתידיים, יש לשדרג לדגם חדש יותר. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -316,6 +317,7 @@
 <translation id="1343865611738742294">‏הענקת הרשאה לאפליקציות Linux לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של Linux.</translation>
 <translation id="1346630054604077329">אישור והפעלה מחדש</translation>
 <translation id="1347256498747320987">‏התקנת עדכונים ואפליקציות. המשך משמעו שהסכמת לכך שהמכשיר גם יוריד ויתקין באופן אוטומטי עדכונים ואפליקציות מ-Google, מהספק ומיצרן המכשיר. ייתכן שההורדה תיעשה באמצעות חבילת הגלישה. חלק מהאפליקציות האלה עשויות לכלול אפשרות לרכישות מהאפליקציה. <ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">‏נפח האחסון של Linux</translation>
 <translation id="1347975661240122359">העדכון יתחיל כשהסוללה תיטען ל-%<ph name="BATTERY_LEVEL" />.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">‏אי אפשר למצוא קובץ PPD. יש לוודא כי ה-Chromebook מחובר לרשת ולנסות שוב.</translation>
@@ -554,6 +556,7 @@
 <translation id="1608668830839595724">פעולות נוספות שאפשר לבצע בפריטים שנבחרו</translation>
 <translation id="161042844686301425">ציאן</translation>
 <translation id="1611432201750675208">המכשיר שלך נעול</translation>
+<translation id="1612019740169791082">‏הגדרות הקונטיינר אינן תומכות בשינוי גודל האחסון. כדי לשנות את גודל השטח שמוקצה מראש ל-Linux, יש לגבות את הנתונים ואז לשחזר אותם בקונטיינר חדש.</translation>
 <translation id="1614511179807650956">ייתכן שניצלת את כל חבילת הגלישה שלך. בפורטל ההפעלה של <ph name="NAME" /> ניתן לשלם על הרחבת החבילה</translation>
 <translation id="161460670679785907">לא ניתן לזהות את הטלפון שלך</translation>
 <translation id="1616206807336925449">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה.</translation>
@@ -688,6 +691,7 @@
 <translation id="175772926354468439">הפעלת עיצוב</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">‏הצגה בחנות האינטרנט של Chrome</translation>
+<translation id="1761845175367251960">החשבונות של <ph name="NAME" /></translation>
 <translation id="176193854664720708">חיישן טביעות האצבע נמצא בלחצן ההפעלה. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="1763046204212875858">יצירת קיצורי דרך ליישום</translation>
 <translation id="1763808908432309942">פתיחה בכרטיסייה חדשה</translation>
@@ -897,6 +901,7 @@
 <translation id="1999115740519098545">בעת ההפעלה</translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
 <translation id="2002109485265116295">זמן אמת</translation>
+<translation id="200217416291116199">‏מומלץ לגבות את הקבצים למקרה שלא ניתן יהיה להשלים את השדרוג. הפעלת השדרוג תגרום לכיבוי של Linux. לפני המשך התהליך יש לשמור את הקבצים הפתוחים.</translation>
 <translation id="2003130567827682533">‏כדי להפעיל נתונים של '<ph name="NAME" />', יש להתחבר תחילה לרשת Wi-Fi</translation>
 <translation id="2005199804247617997">פרופילים אחרים</translation>
 <translation id="2006638907958895361">פתיחת הקישור ב-<ph name="APP" /></translation>
@@ -1609,6 +1614,7 @@
 <translation id="2807517655263062534">קבצים שמורידים יופיעו כאן</translation>
 <translation id="2809586584051668049">ועוד <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2810390687497823527">אם לא מזהים תוסף כלשהו או אם הדפדפן לא פועל בצורה תקינה, אפשר להשבית את התוספים או להתאים אותם אישית מכאן.</translation>
+<translation id="2811205483104563968">חשבונות</translation>
 <translation id="2812049959647166806">‏Thunderbolt אינו נתמך</translation>
 <translation id="2812989263793994277">אין להציג אף תמונה</translation>
 <translation id="2813094189969465044">בקרת הורים</translation>
@@ -1647,6 +1653,7 @@
 <translation id="2858138569776157458">אתרים נבחרים</translation>
 <translation id="2861301611394761800">עדכון המערכת הושלם. יש להפעיל מחדש את המערכת.</translation>
 <translation id="2861941300086904918">‏מנהל האבטחה של Native Client</translation>
+<translation id="2862815659905780618">‏הסרה של סביבת הפיתוח של Linux</translation>
 <translation id="2864601841139725659">הגדרת תמונת הפרופיל</translation>
 <translation id="2865919525181940183">צילום מסך של התוכנות שמוצגות כרגע במסך</translation>
 <translation id="286674810810214575">מקורות החשמל בבדיקה…</translation>
@@ -1760,6 +1767,7 @@
 <translation id="2989123969927553766">האצת גלילת עכבר</translation>
 <translation id="2989474696604907455">לא מחובר</translation>
 <translation id="2989786307324390836">‏בינארי בקידוד DER, אישור יחיד</translation>
+<translation id="2990313168615879645">‏הוספת חשבון Google</translation>
 <translation id="2992931425024192067">הצגת כל תוכן ההודעות</translation>
 <translation id="2993517869960930405">מידע על היישום</translation>
 <translation id="2996286169319737844">‏הנתונים מוצפנים באמצעות ביטוי הסיסמה שלך לסינכרון. ההצפנה לא כוללת אמצעי תשלום וכתובות מ-Google Pay.</translation>
@@ -2371,6 +2379,7 @@
 <translation id="3706463572498736864">דפים בכל גיליון</translation>
 <translation id="370649949373421643">‏הפעלת Wi-Fi</translation>
 <translation id="370665806235115550">בטעינה...</translation>
+<translation id="3707163604290651814">החשבון המחובר עכשיו הוא <ph name="NAME" /></translation>
 <translation id="3709244229496787112">הדפדפן נסגר לפני שההורדה הושלמה.</translation>
 <translation id="3711931198657368127">הד&amp;בקה ומעבר אל <ph name="URL" /></translation>
 <translation id="3711945201266135623">נמצאו <ph name="NUM_PRINTERS" /> מדפסות המשויכות לשרת ההדפסה</translation>
@@ -2877,6 +2886,7 @@
 <translation id="4309420042698375243">‏‎<ph name="NUM_KILOBYTES" />K ‏‎(<ph name="NUM_KILOBYTES_LIVE" />K בשימוש)‎‎</translation>
 <translation id="4310139701823742692">‏פורמט הקובץ שגוי. יש לבדוק את קובץ ה-PPD ולנסות שוב.</translation>
 <translation id="431076611119798497">&amp;פרטים</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{‏חשבון Google אחד}two{‏<ph name="EXTRA_ACCOUNTS" /> חשבונות Google}many{‏<ph name="EXTRA_ACCOUNTS" /> חשבונות Google}other{‏<ph name="EXTRA_ACCOUNTS" /> חשבונות Google}}</translation>
 <translation id="4312866146174492540">חסומה (ברירת מחדל)</translation>
 <translation id="4314815835985389558">ניהול הסנכרון</translation>
 <translation id="4316850752623536204">אתר המפתח</translation>
@@ -3256,6 +3266,7 @@
 <translation id="4764368918650455114">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. אם השיתוף נעשה עם Chromebook, יש לוודא שהתכונה 'שיתוף בקרבת מקום' פועלת (פותחים את אזור הסטטוס על ידי בחירה בזמן, ולאחר מכן בוחרים 'שיתוף בקרבת מקום'). <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">‏מאפשר ל-Android Messages להעביר הודעות טקסט מהטלפון אל ה-Chromebook</translation>
 <translation id="4768332406694066911">יש לך אישורים מארגונים אלה שמזהים אותך</translation>
+<translation id="4773112038801431077">‏שדרוג Linux</translation>
 <translation id="477647109558161443">יצירת קיצור דרך בשולחן העבודה</translation>
 <translation id="4776917500594043016">סיסמה עבור <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">‏חנות Play</translation>
@@ -3749,6 +3760,7 @@
 <translation id="5368720394188453070">הטלפון שלך נעול. יש לבטל את הנעילה כדי להיכנס.</translation>
 <translation id="5368779022775404937">כניסה אל <ph name="REALM" /></translation>
 <translation id="5369491905435686894">הפעלת האצה של עכבר</translation>
+<translation id="5369694795837229225">‏הגדרה של סביבת הפיתוח של Linux</translation>
 <translation id="5370819323174483825">&amp;טעינה מחדש</translation>
 <translation id="5372529912055771682">מצב ההרשמה שסופק אינו נתמך על ידי גרסה זו של מערכת ההפעלה. יש לוודא שפועלת הגרסה החדשה ביותר ולנסות שוב.</translation>
 <translation id="5372579129492968947">ביטול הצמדת התוסף</translation>
@@ -3774,6 +3786,7 @@
 <translation id="5402815541704507626">הורדת עדכון דרך חבילת גלישה</translation>
 <translation id="540296380408672091">‏לחסום תמיד קובצי Cookie ב-<ph name="HOST" /></translation>
 <translation id="540495485885201800">החלפה עם הקודם</translation>
+<translation id="5405146885510277940">איפוס הגדרות</translation>
 <translation id="5408750356094797285">שינוי מרחק התצוגה: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">‏מחשבון Google שלך</translation>
 <translation id="5411472733320185105">‏אין להשתמש בהגדרות proxy עבור מארחים ודומיינים אלה:</translation>
@@ -4473,6 +4486,8 @@
 <translation id="6212168817037875041">כיבוי המסך</translation>
 <translation id="6212752530110374741">שליחת קישור באימייל</translation>
 <translation id="6213230117190778270">כן</translation>
+<translation id="6215620815501168899">‏סגירת החלון הקופץ של מספר ה-EID וקוד ה-QR</translation>
+<translation id="6216601812881225442">‏אי אפשר לשנות את הגודל של הקונטיינר. כדי לשנות את הנפח שמוקצה מראש ל-Linux, יש לגבות ולאחר מכן לשחזר בקונטיינר חדש.</translation>
 <translation id="6216696360484424239">כניסה אוטומטית</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> לא מחובר לרשת. צריך להתחבר לאינטרנט ולנסות שוב.</translation>
 <translation id="6220413761270491930">אירעה שגיאה בטעינת תוסף</translation>
@@ -4865,6 +4880,7 @@
 <translation id="6680442031740878064">השטח הזמין: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">קצב</translation>
 <translation id="6681668084120808868">צילום תמונה</translation>
+<translation id="6683948477137300040">‏הצגת החלון הקופץ של מספר ה-EID וקוד ה-QR של המכשיר</translation>
 <translation id="6684827949542560880">המערכת מורידה את העדכון האחרון</translation>
 <translation id="668599234725812620">‏פתיחת Google Play</translation>
 <translation id="6686490380836145850">סגירת הכרטיסיות משמאל</translation>
@@ -5100,6 +5116,7 @@
 <translation id="6955535239952325894">ההגדרה הזו מושבתת בדפדפנים מנוהלים</translation>
 <translation id="6957044667612803194">מפתח האבטחה הזה לא תומך בקודי אימות</translation>
 <translation id="6957231940976260713">שם שירות</translation>
+<translation id="6960507406838246615">‏נדרש עדכון ל-Linux</translation>
 <translation id="696103774840402661">כל הקבצים והנתונים המקומיים של כל המשתמשים במכשיר <ph name="DEVICE_TYPE" /> זה נמחקו באופן סופי.</translation>
 <translation id="6964390816189577014">גיבור</translation>
 <translation id="6964760285928603117">הסרה מהקבוצה</translation>
@@ -5119,6 +5136,7 @@
 <translation id="697312151395002334">מורשים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות</translation>
 <translation id="6973611239564315524">‏קיים עדכון זמין ל-Debian 10 ‏(Buster)</translation>
 <translation id="6974609594866392343">מצב הדגמה לא מקוון</translation>
+<translation id="697508444536771064">‏כיבוי Linux</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
 <translation id="6977877318519394148">‏להתקנת Rosetta</translation>
 <translation id="6978121630131642226">מנועי חיפוש</translation>
@@ -5519,6 +5537,7 @@
 <translation id="7443806024147773267">‏לאחר שנכנסת לחשבון Google, הסיסמאות שלך תמיד זמינות</translation>
 <translation id="7444983668544353857">השבתה של <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">התקנה אוטומטית של אפליקציות</translation>
+<translation id="7448538354405258275">‏נציג של שירות לקוחות יכול להשתמש במספר ה-EID כדי לעזור לך להפעיל את השירות:</translation>
 <translation id="7449752890690775568">האם להסיר את הסיסמה?</translation>
 <translation id="7450761244949417357">נפתח ב-<ph name="ALTERNATIVE_BROWSER_NAME" /> עכשיו</translation>
 <translation id="7453008956351770337">הבחירה במדפסת הזו מעניקה לתוסף הבא את ההרשאה לגשת למדפסת:</translation>
@@ -6047,6 +6066,7 @@
 <translation id="8032244173881942855">לא ניתן להעביר את הכרטיסייה.</translation>
 <translation id="8033827949643255796">מסומן</translation>
 <translation id="8033958968890501070">הזמן שהוקצב תם</translation>
+<translation id="8036049989879571495">‏הגדרה של סביבת הפיתוח של Linux (בטא)</translation>
 <translation id="8037117027592400564">קריאת כל הטקסט הנאמר באמצעות דיבור מסונתז</translation>
 <translation id="8037357227543935929">לשאול (ברירת מחדל)</translation>
 <translation id="803771048473350947">קובץ</translation>
@@ -6215,6 +6235,7 @@
 <translation id="8226619461731305576">תור</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
 <translation id="8227119283605456246">צירוף קובץ</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">האם לשמור את הסיסמה של <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">רוצה לעזור למהנדסים שלנו לפתור את הבעיה הזו? אפשר לספר לנו מה קרה לפני שהוצגה לך הודעת השגיאה לגבי הפרופיל:</translation>
 <translation id="8236917170563564587">שיתוף הכרטיסייה הזו</translation>
@@ -6977,6 +6998,7 @@
 <translation id="909108997331068008">הפרופיל של <ph name="EXISTING_USER" /> כבר מחובר בכתובת <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">עדכון סיסמה</translation>
 <translation id="9094038138851891550">שם משתמש לא חוקי</translation>
+<translation id="9094859731829297286">‏האם להקצות שטח דיסק קבוע בשביל Linux?</translation>
 <translation id="9094982973264386462">הסרה</translation>
 <translation id="9095253524804455615">הסרה</translation>
 <translation id="909554839118732438">סגירת חלונות אנונימיים</translation>

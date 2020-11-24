@@ -491,6 +491,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4594952190837476234">Бул оффлайн режиминдеги баракча <ph name="CREATION_TIME" /> сакталган жана онлайн версиясынан айырмаланышы мүмкүн.</translation>
 <translation id="4605958867780575332">Бул нерсе өчүрүлдү: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">Баракчаларды кийинчерээк көрүү үчүн сактоо жана эскертме алуу</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> колдонмосун ачуу</translation>
 <translation id="4634124774493850572">Сырсөздү колдонуу</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 уурдалган сырсөз бар}other{# уурдалган сырсөз бар}}</translation>
@@ -973,6 +974,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Жаңы окуяларды көрүү үчүн мезгил-мезгили менен баш багып туруңуз</translation>
 <translation id="7786595606756654269">Google Жардамчы менен Интернетте оозеки издеп, ачкан сайттарыңызда иштегенде жакшыраак натыйжаларды аласыз. Google Жардамчы ал аркылуу ачкан сайттарыңыздын URL даректерин жана мазмундарын алып турат.</translation>
+<translation id="7790349552933995572">Башкы экран</translation>
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> өтмөк калыбына келтирилди</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>

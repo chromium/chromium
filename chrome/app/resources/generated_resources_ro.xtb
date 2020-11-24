@@ -3787,6 +3787,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5402815541704507626">Descarcă actualizarea folosind datele mobile</translation>
 <translation id="540296380408672091">Blochează întotdeauna cookie-urile pe <ph name="HOST" /></translation>
 <translation id="540495485885201800">Schimbă cu anteriorul</translation>
+<translation id="5405146885510277940">Resetează browserul</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Din Contul Google</translation>
 <translation id="5411472733320185105">Nu utiliza setările proxy pentru următoarele gazde și domenii:</translation>
@@ -6234,6 +6235,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8226619461731305576">Coadă</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Salvezi parola pentru <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ajută-i pe inginerii noștri să remedieze această problemă. Spune-ne ce s-a întâmplat chiar înainte să primești mesajul de eroare privind profilul:</translation>
 <translation id="8236917170563564587">Distribuie această filă</translation>

@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Fonctionnalités intelligentes Google dans Chrome</translation>
 <translation id="1147322039136785890">C'est maintenant au tour de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Pour demander l'accès, communiquez avec l'administrateur de cet appareil.</translation>
+<translation id="1148063863818152153">Le numéro EID de votre appareil</translation>
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1149725087019908252">Analyse du fichier <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="1150490752229770117">Il s'agit de la dernière mise à jour logicielle et de sécurité pour cet appareil <ph name="DEVICE_TYPE" />. Pour recevoir les mises à jour ultérieures, procurez-vous un modèle plus récent. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -316,6 +317,7 @@
 <translation id="1343865611738742294">Accordez aux applications Linux l'autorisation d'accéder à des appareils USB. Le système Linux ne se souviendra pas d'un appareil USB une fois celui-ci retiré.</translation>
 <translation id="1346630054604077329">Confirmer et redémarrer</translation>
 <translation id="1347256498747320987">Installer des mises à jour et des applications. En continuant, vous acceptez que cet appareil puisse également télécharger et installer automatiquement des mises à jour et des applications de Google, de votre fournisseur de services sans fil et du fabricant de votre appareil, éventuellement en utilisant les réseaux de données cellulaires. Certaines de ces applications peuvent aussi offrir des achats au moyen de l'application. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Espace de stockage de Linux</translation>
 <translation id="1347975661240122359">La mise à jour commencera lorsque la pile atteindra <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" /> : <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Impossible de trouver le PPD. Vérifiez que votre Chromebook est en ligne, puis réessayez.</translation>
@@ -557,6 +559,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1608668830839595724">Plus d'actions pour les éléments sélectionnés</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Votre appareil est verrouillé</translation>
+<translation id="1612019740169791082">Votre conteneur n'est pas configuré pour prendre en charge le redimensionnement de disque. Pour modifier la quantité d'espace allouée à Linux, sauvegardez votre disque et restaurez-le dans un nouveau conteneur.</translation>
 <translation id="1614511179807650956">Il semble que vous ayez atteint votre quota de données mobiles. Veuillez accéder au portail d'activation <ph name="NAME" /> pour acheter des données supplémentaires.</translation>
 <translation id="161460670679785907">Impossible de détecter votre téléphone</translation>
 <translation id="1616206807336925449">Cette extension fonctionne sans autorisation spéciale.</translation>
@@ -691,6 +694,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="175772926354468439">Activer le thème</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Afficher dans la boutique en ligne Chrome Web Store</translation>
+<translation id="1761845175367251960">Comptes de <ph name="NAME" /></translation>
 <translation id="176193854664720708">Le capteur d'empreintes digitales est situé au niveau de l'interrupteur. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="1763046204212875858">Créer des raccourcis vers des applications</translation>
 <translation id="1763808908432309942">S'ouvre dans un nouvel onglet</translation>
@@ -900,6 +904,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1999115740519098545">Au démarrage</translation>
 <translation id="2000419248597011803">Envoie des témoins et des recherches à partir de la barre d'adresse et du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="2002109485265116295">En temps réel</translation>
+<translation id="200217416291116199">Nous vous recommandons de sauvegarder vos fichiers au cas où la mise à niveau ne pourrait pas être effectuée au complet. Lorsque vous démarrerez la mise à niveau, Linux s'éteindra. Veuillez enregistrer vos fichiers avant de continuer.</translation>
 <translation id="2003130567827682533">Pour activer les données « <ph name="NAME" /> », connectez-vous d'abord à un réseau Wi-Fi</translation>
 <translation id="2005199804247617997">Autres profils</translation>
 <translation id="2006638907958895361">Ouvrir le lien dans <ph name="APP" /></translation>
@@ -1612,6 +1617,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2807517655263062534">Les fichiers que vous téléchargez apparaissent ici</translation>
 <translation id="2809586584051668049">et <ph name="NUMBER_ADDITIONAL_DISABLED" /> autres</translation>
 <translation id="2810390687497823527">Si vous ne reconnaissez pas une extension, ou si votre navigateur ne fonctionne pas comme prévu, vous pouvez désactiver ou personnaliser les extensions ici.</translation>
+<translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Les connexions Thunderbolt ne sont pas prises en charge</translation>
 <translation id="2812989263793994277">Ne pas afficher les images</translation>
 <translation id="2813094189969465044">Contrôles parentaux</translation>
@@ -1650,6 +1656,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2858138569776157458">Sites populaires</translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
 <translation id="2861941300086904918">Gestionnaire de sécurité de Native Client</translation>
+<translation id="2862815659905780618">Supprimer l'environnement de conception Linux</translation>
 <translation id="2864601841139725659">Définir votre photo de profil</translation>
 <translation id="2865919525181940183">Capture d'écran des programmes qui sont présentement à l'écran</translation>
 <translation id="286674810810214575">Vérification des sources d'alimentation en cours…</translation>
@@ -1763,6 +1770,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2989123969927553766">Accélération du défilement de la souris</translation>
 <translation id="2989474696604907455">non connecté</translation>
 <translation id="2989786307324390836">Certificat unique binaire codé DER</translation>
+<translation id="2990313168615879645">Ajouter un compte Google</translation>
 <translation id="2992931425024192067">Afficher l'intégralité du contenu des notifications</translation>
 <translation id="2993517869960930405">Détails de l'application</translation>
 <translation id="2996286169319737844">Des données ont été chiffrées à l'aide de votre phrase de passe de synchronisation. Cette méthode ne couvre pas les modes de paiement ni les adresses de Google Pay.</translation>
@@ -2374,6 +2382,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3706463572498736864">Pages par feuille</translation>
 <translation id="370649949373421643">Activer le Wi-Fi</translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
+<translation id="3707163604290651814">Actuellement connecté en tant que <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Le navigateur s'est fermé avant la fin du téléchargement.</translation>
 <translation id="3711931198657368127">Coller et a&amp;ccéder à l'adresse <ph name="URL" /></translation>
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> imprimantes ont été trouvées sur le serveur d'impression</translation>
@@ -2880,6 +2889,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> ko (<ph name="NUM_KILOBYTES_LIVE" /> ko actuellement)</translation>
 <translation id="4310139701823742692">Le format du fichier est incorrect. Vérifiez le fichier PPD et réessayez.</translation>
 <translation id="431076611119798497">&amp;Détails</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 compte Google}one{<ph name="EXTRA_ACCOUNTS" /> compte Google}many{<ph name="EXTRA_ACCOUNTS" /> comptes Google}other{<ph name="EXTRA_ACCOUNTS" /> comptes Google}}</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
 <translation id="4316850752623536204">Site Web du développeur</translation>
@@ -3259,6 +3269,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4764368918650455114">Assurez-vous que les deux appareils sont déverrouillés, à proximité l'un de l'autre, et que le Bluetooth est activé. Si vous effectuez le partage avec un Chromebook, assurez-vous que le partage à proximité est activé sur celui-ci (ouvrez la zone de notifications en sélectionnant l'heure, puis en sélectionnant l'option Partage à proximité). <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Autorise Android Messages à rediriger des messages texte de votre téléphone à votre Chromebook</translation>
 <translation id="4768332406694066911">Vous avez des certificats provenant de ces organisations qui vous identifient</translation>
+<translation id="4773112038801431077">Mettre à niveau Linux</translation>
 <translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
 <translation id="4776917500594043016">Mot de passe pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3752,6 +3763,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5368720394188453070">Votre téléphone est verrouillé. Déverrouillez-le pour entrer.</translation>
 <translation id="5368779022775404937">Connectez-vous à <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Activer l'accélération de la souris</translation>
+<translation id="5369694795837229225">Configurer l'environnement de conception Linux</translation>
 <translation id="5370819323174483825">Actua&amp;liser</translation>
 <translation id="5372529912055771682">Le mode d'inscription fourni n'est pas compatible avec cette version du système d'exploitation. Veuillez vous assurer que vous utilisez bien la dernière version, puis réessayer.</translation>
 <translation id="5372579129492968947">Annuler l'épinglage de l'extension</translation>
@@ -3777,6 +3789,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5402815541704507626">Télécharger des mises à jour en utilisant les données cellulaires</translation>
 <translation id="540296380408672091">Toujours bloquer les témoins sur <ph name="HOST" /></translation>
 <translation id="540495485885201800">Échanger avec le précédent</translation>
+<translation id="5405146885510277940">Réinitialiser les paramètres</translation>
 <translation id="5408750356094797285">Zoom : <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">De votre compte Google</translation>
 <translation id="5411472733320185105">Ne pas utiliser les paramètres de mandataire pour ces hôtes et domaines :</translation>
@@ -4475,6 +4488,8 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6212168817037875041">Désactiver l'écran</translation>
 <translation id="6212752530110374741">Envoyer le lien par courriel</translation>
 <translation id="6213230117190778270">Recevoir</translation>
+<translation id="6215620815501168899">Fermer la fenêtre contextuelle du numéro EID et du code QR</translation>
+<translation id="6216601812881225442">Votre conteneur ne prend pas en charge le redimensionnement. Pour modifier la quantité d'espace allouée à Linux, sauvegardez votre disque et restaurez-le dans un nouveau conteneur.</translation>
 <translation id="6216696360484424239">Se connecter automatiquement</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> est hors connexion. Connectez-vous à Internet et réessayez.</translation>
 <translation id="6220413761270491930">Une erreur s'est produite lors du chargement de l'extension</translation>
@@ -4867,6 +4882,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6680442031740878064">Disponible : <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Vitesse</translation>
 <translation id="6681668084120808868">Prendre une photo</translation>
+<translation id="6683948477137300040">Afficher la fenêtre contextuelle du numéro EID et du code QR de l'appareil</translation>
 <translation id="6684827949542560880">Téléchargement de la dernière mise à jour en cours…</translation>
 <translation id="668599234725812620">Ouvrir Google Play</translation>
 <translation id="6686490380836145850">Fermer les onglets à la droite</translation>
@@ -5102,6 +5118,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6957044667612803194">Cette clé de sécurité ne prend pas en charge les NIP</translation>
 <translation id="6957231940976260713">Nom du service</translation>
+<translation id="6960507406838246615">La mise à jour de Linux est requise</translation>
 <translation id="696103774840402661">Tous les fichiers et toutes les données locales associés à tous les utilisateurs sur cet appareil <ph name="DEVICE_TYPE" /> ont été supprimés définitivement.</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Supprimer du groupe</translation>
@@ -5121,6 +5138,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="697312151395002334">Autorisés à afficher des fenêtres contextuelles et à utiliser des redirections</translation>
 <translation id="6973611239564315524">Une mise à jour de Debian 10 (Buster) est offerte</translation>
 <translation id="6974609594866392343">Mode de démonstration hors connexion</translation>
+<translation id="697508444536771064">Éteindre Linux</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="6977877318519394148">Installer Rosetta</translation>
 <translation id="6978121630131642226">Moteurs de recherche</translation>
@@ -5521,6 +5539,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7443806024147773267">Accédez à vos mots de passe lorsque vous êtes connecté à votre compte Google</translation>
 <translation id="7444983668544353857">Désactiver <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installer automatiquement les applications</translation>
+<translation id="7448538354405258275">Un représentant du service à la clientèle peut utiliser ce numéro EID pour vous aider à activer votre service.</translation>
 <translation id="7449752890690775568">Supprimer le mot de passe?</translation>
 <translation id="7450761244949417357">Ouverture dans <ph name="ALTERNATIVE_BROWSER_NAME" /> en cours…</translation>
 <translation id="7453008956351770337">En sélectionnant cette imprimante, vous permettez à l'extension suivante d'y accéder :</translation>
@@ -6049,6 +6068,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8032244173881942855">Impossible de diffuser l'onglet.</translation>
 <translation id="8033827949643255796">caractère sélectionné</translation>
 <translation id="8033958968890501070">Délai dépassé</translation>
+<translation id="8036049989879571495">Configurer l'environnement de conception Linux (bêta)</translation>
 <translation id="8037117027592400564">Lire tout le texte énoncé à l'aide de la synthèse vocale</translation>
 <translation id="8037357227543935929">Demander (par défaut)</translation>
 <translation id="803771048473350947">Fichier</translation>
@@ -6215,6 +6235,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8226619461731305576">File d'attente</translation>
 <translation id="8226628635270268143">Sélectionnez vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Enregistrer le mot de passe pour <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Veuillez aider nos ingénieurs à corriger ce problème. Dites-nous ce qui s'est passé juste avant que vous receviez le message d'erreur lié au profil :</translation>
 <translation id="8236917170563564587">Partager cet onglet à la place</translation>
@@ -6977,6 +6998,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="909108997331068008">Le profil de <ph name="EXISTING_USER" /> est déjà connecté avec l'adresse <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Mettre à jour le mot de passe</translation>
 <translation id="9094038138851891550">Nom d'utilisateur incorrect</translation>
+<translation id="9094859731829297286">Voulez-vous vraiment réserver une quantité fixe d'espace disque pour Linux?</translation>
 <translation id="9094982973264386462">Supprimer</translation>
 <translation id="9095253524804455615">Supprimer</translation>
 <translation id="909554839118732438">Fermer les fenêtres de navigation privée</translation>

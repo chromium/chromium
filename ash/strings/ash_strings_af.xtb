@@ -238,6 +238,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3236488194889173876">Geen selnetwerk beskikbaar nie</translation>
 <translation id="3249513730522716925">Venster <ph name="WINDOW_TITLE" /> is geskuif van lessenaar <ph name="ACTIVE_DESK" /> af na lessenaar <ph name="TARGET_DESK" /> toe</translation>
 <translation id="3255483164551725916">Wat kan jy doen?</translation>
+<translation id="3269597722229482060">Regsklik</translation>
 <translation id="3289674678944039601">Laai tans deur aansluitprop</translation>
 <translation id="3290356915286466215">Onbeveilig</translation>
 <translation id="3294437725009624529">Gas</translation>
@@ -341,6 +342,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4212472694152630271">Skakel oor na PIN</translation>
 <translation id="4215497585250573029">VPN-instellings</translation>
 <translation id="4217571870635786043">Diktee</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />; geïnstalleerde program; onderbreek</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Skermkiekie</translation>
 <translation id="425364040945105958">Geen SIM nie</translation>
@@ -762,6 +764,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8142699993796781067">Privaat netwerk</translation>
 <translation id="8152092012181020186">Druk Ctrl + W om toe te maak.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Jou administrateur bestuur hierdie instelling.</translation>
+<translation id="8155628902202578800">Maak inligtingdialoog oop vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Gebruik tans <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Selnetwerk. Seinsterkte van <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Kennisgewings word versteek.</translation>
@@ -827,6 +830,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8755498163081687682">Verifieer jou identiteit: <ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
 <translation id="875593634123171288">Wys VPN-instellings</translation>
 <translation id="8759408218731716181">Kan nie veelvuldige aanmelding opstel nie</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />; geïnstalleerde program; geblokkeer</translation>
 <translation id="8785070478575117577">Koppel aan <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

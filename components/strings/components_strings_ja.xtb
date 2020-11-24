@@ -365,6 +365,7 @@
 <translation id="2354430244986887761"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより<ph name="BEGIN_LINK" />有害なアプリが検出<ph name="END_LINK" />されました。</translation>
 <translation id="2355395290879513365">このサイトで目にする画像は、悪意のあるユーザーによって差し替えられたものである可能性があります。</translation>
 <translation id="2356070529366658676">確認する</translation>
+<translation id="2357481397660644965">ご使用のデバイスは <ph name="DEVICE_MANAGER" /> で管理され、アカウントは <ph name="ACCOUNT_MANAGER" /> で管理されています。</translation>
 <translation id="2359629602545592467">複数</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2360873523816792727">お使いのどのデバイスでも同じカードを使用するには、同期を有効にします。</translation>
@@ -542,6 +543,7 @@
 <translation id="3145945101586104090">応答をデコードできませんでした</translation>
 <translation id="3150653042067488994">一時的なサーバー エラーです</translation>
 <translation id="3154506275960390542">このページのフォームは安全に送信されない可能性があります。送信中にデータが他者に閲覧されたり、悪意のあるユーザーによりデータが変更されてサーバーに別の内容が届いたりする可能性があります。</translation>
+<translation id="315504272643575312">あなたのアカウントは <ph name="MANAGER" /> によって管理されています。</translation>
 <translation id="3157931365184549694">復元</translation>
 <translation id="3162559335345991374">ご利用の Wi-Fi ネットワークでは、ログインページへのアクセスが必要な可能性があります。</translation>
 <translation id="3167968892399408617">シークレット タブで表示したページの記録は、シークレット タブをすべて閉じた後、ブラウザの履歴、Cookie の保存場所、検索履歴から消去されます。ただし、ダウンロードしたファイルや作成したブックマークは保存されます。</translation>
@@ -1919,6 +1921,7 @@
 <translation id="8680536109547170164">「<ph name="QUERY" />」に対する答え: 「<ph name="ANSWER" />」</translation>
 <translation id="8681531050781943054">ウェブページ（<ph name="PAGE" />）は次の理由で読み込めませんでした:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8687429322371626002">ご使用のデバイスとアカウントは <ph name="MANAGER" /> で管理されています。</translation>
 <translation id="8688672835843460752">使用可能</translation>
 <translation id="868922510921656628">1 部あたりのページ数</translation>
 <translation id="869891660844655955">有効期限</translation>
@@ -1934,6 +1937,7 @@
 <translation id="8728672262656704056">シークレット モードです</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731544501227493793">パスワードを管理するボタンです。Enter キーを押すと Chrome の設定でパスワードを表示、管理します</translation>
+<translation id="8734529307927223492">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいシークレット ウィンドウを開いてシークレット モードでブラウジングします</translation>
 <translation id="8738058698779197622">安全な接続を確立するには時計が正しく設定されている必要があります。この理由は、本物のウェブサイトであることを示すためにウェブサイトで使用される証明書には、有効期間（発効日時と失効日時）が設定されているためです。デバイスの時計が正しくないため、Chromium ではこれらの証明書を確認できません。</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> の &lt;abbr id="dnsDefinition"&gt;DNS アドレス&lt;/abbr&gt;が見つかりませんでした。問題を診断しています。</translation>
@@ -2023,6 +2027,7 @@
 <translation id="9101630580131696064">トレイ 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> では通常、暗号化して情報を保護しています。今回、Chromium から <ph name="SITE" /> への接続試行時に、このウェブサイトからいつもとは異なる誤った認証情報が返されました。悪意のあるユーザーが <ph name="SITE" /> になりすまそうとしているか、Wi-Fi ログイン画面で接続が中断された可能性があります。データのやり取りが行われる前に Chromium によって接続が停止されたため、情報は引き続き保護されています。</translation>
 <translation id="9106062320799175032">請求先住所の追加</translation>
+<translation id="9107467864910557787">ご使用のブラウザは <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="9114524666733003316">カードを確認しています…</translation>
 <translation id="9114581008513152754">このブラウザは、会社またはその他の組織によって管理されていません。このデバイスでのアクティビティは、Chrome 以外で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">アップロード済み</translation>

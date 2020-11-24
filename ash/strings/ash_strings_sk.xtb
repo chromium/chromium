@@ -238,6 +238,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3236488194889173876">Nie je k dispozícii žiadna mobilná sieť</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> bolo presunuté z plochy <ph name="ACTIVE_DESK" /> na plochu <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Čo dokážeš?</translation>
+<translation id="3269597722229482060">Kliknúť pravým tlačidlom</translation>
 <translation id="3289674678944039601">Nabíja sa cez adaptér</translation>
 <translation id="3290356915286466215">Nezabezpečené</translation>
 <translation id="3294437725009624529">Hosť</translation>
@@ -340,6 +341,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4212472694152630271">Prepnúť na PIN</translation>
 <translation id="4215497585250573029">Nastavenia VPN</translation>
 <translation id="4217571870635786043">Diktovanie</translation>
+<translation id="4221957499226645091">Nainštalovaná aplikácia <ph name="APP_NAME" /> bola pozastavená</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Snímka obrazovky</translation>
 <translation id="425364040945105958">Žiadna SIM karta</translation>
@@ -761,6 +763,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8142699993796781067">Súkromná sieť</translation>
 <translation id="8152092012181020186">Zavriete stlačením kombinácie klávesov Ctrl + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Toto nastavenie ovláda váš správca.</translation>
+<translation id="8155628902202578800">Otvoriť dialógové okno informácií o používateľovi <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Práve sa používa <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Mobilná sieť. Intenzita signálu: <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="8192202700944119416">Upozornenia sú skryté.</translation>
@@ -826,6 +829,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8755498163081687682">Overte svoju totožnosť: <ph name="ORIGIN_NAME" /> chce potvrdiť, že ste to vy</translation>
 <translation id="875593634123171288">Zobraziť nastavenia VPN</translation>
 <translation id="8759408218731716181">Nie je možné nastaviť viacnásobné prihlásenie</translation>
+<translation id="878215960996152260">Nainštalovaná aplikácia <ph name="APP_NAME" /> je blokovaná</translation>
 <translation id="8785070478575117577">Pripojiť k sieti <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi‑Fi</translation>

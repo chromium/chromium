@@ -139,6 +139,7 @@
 <translation id="114721135501989771">Obter tecnoloxía de Google en Chrome</translation>
 <translation id="1147322039136785890">Agora é a quenda de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar acceso, ponte en contacto co administrador deste dispositivo.</translation>
+<translation id="1148063863818152153">O EID do teu dispositivo</translation>
 <translation id="1149401351239820326">Mes de caducidade</translation>
 <translation id="1149725087019908252">Analizando <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">Esta é a última actualización automática de software e seguranza para este dispositivo (<ph name="DEVICE_TYPE" />). Se queres recibir futuras actualizacións, cambia a un modelo máis novo. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -314,6 +315,7 @@
 <translation id="1343865611738742294">Concédelle permiso ás aplicacións de Linux para acceder a dispositivos USB. Linux non recordará un dispositivo USB unha vez que se quite.</translation>
 <translation id="1346630054604077329">Confirmar e reiniciar</translation>
 <translation id="1347256498747320987">Instalar actualizacións e aplicacións. Ao continuar, aceptas que este dispositivo tamén poida descargar e instalar automaticamente actualizacións e aplicacións de Google, do teu operador e do fabricante do teu dispositivo, posiblemente mediante datos móbiles. Algunhas destas aplicacións poden ofrecer compras integradas en aplicacións. <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">Almacenamento de Linux</translation>
 <translation id="1347975661240122359">A actualización comezará cando a batería alcance o <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Non se puido atopar o PPD. Asegúrate de que o dispositivo Chromebook estea en liña e téntao de novo.</translation>
@@ -554,6 +556,7 @@
 <translation id="1608668830839595724">Máis accións para os elementos seleccionados</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611432201750675208">O dispositivo está bloqueado</translation>
+<translation id="1612019740169791082">A configuración do teu contedor non permite realizar cambios no tamaño do disco. Se queres axustar a cantidade de espazo reservado para Linux, fai unha copia de seguranza e restaura os datos nun contedor novo.</translation>
 <translation id="1614511179807650956">É posible que consumises o teu límite de datos móbiles. Visita o portal de activación de <ph name="NAME" /> para comprar máis datos</translation>
 <translation id="161460670679785907">Non se puido detectar o teu teléfono</translation>
 <translation id="1616206807336925449">Esta extensión non necesita permisos especiais.</translation>
@@ -688,6 +691,7 @@
 <translation id="175772926354468439">Activar tema</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
+<translation id="1761845175367251960">Contas de <ph name="NAME" /></translation>
 <translation id="176193854664720708">O sensor de impresión dixital está no botón de acendido. Tócao suavemente con calquera dedo.</translation>
 <translation id="1763046204212875858">Crear atallos de aplicacións</translation>
 <translation id="1763808908432309942">Ábrese nunha nova pestana</translation>
@@ -897,6 +901,7 @@
 <translation id="1999115740519098545">No inicio</translation>
 <translation id="2000419248597011803">Envía buscas e cookies da barra de enderezos e da caixa de busca ao motor de busca predeterminado</translation>
 <translation id="2002109485265116295">Tempo real</translation>
+<translation id="200217416291116199">É recomendable facer unha copia de seguranza dos ficheiros por se acaso non se pode completar a actualización. Cando comece a actualización, pecharase Linux. Antes de continuar, garda os ficheiros que teñas abertos.</translation>
 <translation id="2003130567827682533">Para activar <ph name="NAME" />, primeiro conéctate a unha rede wifi</translation>
 <translation id="2005199804247617997">Outros perfís</translation>
 <translation id="2006638907958895361">Abrir ligazón na aplicación <ph name="APP" /></translation>
@@ -1608,6 +1613,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2807517655263062534">Os ficheiros que descargas aparecen aquí</translation>
 <translation id="2809586584051668049">e <ph name="NUMBER_ADDITIONAL_DISABLED" /> máis</translation>
 <translation id="2810390687497823527">Se non recoñeces unha extensión ou se o navegador non funciona como debería, podes desactivar ou personalizar as extensións aquí.</translation>
+<translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">A tecnoloxía Thunderbolt non é compatible</translation>
 <translation id="2812989263793994277">Non mostrar ningunha imaxe</translation>
 <translation id="2813094189969465044">Controis parentais</translation>
@@ -1646,6 +1652,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2858138569776157458">Populares</translation>
 <translation id="2861301611394761800">Actualización do sistema completada. Reinicia o sistema.</translation>
 <translation id="2861941300086904918">Xestor de seguranza de cliente nativo</translation>
+<translation id="2862815659905780618">Quitar o contorno de programación de Linux</translation>
 <translation id="2864601841139725659">Definir a túa foto do perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla dos programas que se atopan actualmente na pantalla</translation>
 <translation id="286674810810214575">Comprobando fontes de alimentación…</translation>
@@ -1759,6 +1766,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2989123969927553766">Aceleración de desprazamento do rato</translation>
 <translation id="2989474696604907455">non anexado</translation>
 <translation id="2989786307324390836">Binario con codificación DER, un só certificado</translation>
+<translation id="2990313168615879645">Engadir Conta de Google</translation>
 <translation id="2992931425024192067">Mostrar todo o contido das notificacións</translation>
 <translation id="2993517869960930405">Información da aplicación</translation>
 <translation id="2996286169319737844">Os datos encríptanse coa túa frase de acceso de sincronización. Non se inclúen os métodos de pago nin os enderezos de Google Pay.</translation>
@@ -2370,6 +2378,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3706463572498736864">Páxinas por folla</translation>
 <translation id="370649949373421643">Activar wifi</translation>
 <translation id="370665806235115550">Cargando...</translation>
+<translation id="3707163604290651814">Tes a sesión iniciada como <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Pechouse o navegador antes de completar a descarga.</translation>
 <translation id="3711931198657368127">Pegar e ir a <ph name="URL" /></translation>
 <translation id="3711945201266135623">Atopáronse <ph name="NUM_PRINTERS" /> impresoras no servidor de impresión</translation>
@@ -2876,6 +2885,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K activos)</translation>
 <translation id="4310139701823742692">O ficheiro ten un formato que non é válido. Comproba o ficheiro PPD e téntao de novo.</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Conta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas de Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Xestionar sincronización</translation>
 <translation id="4316850752623536204">Sitio web para programadores</translation>
@@ -3255,6 +3265,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4764368918650455114">Asegúrate de que os dous dispositivos estean desbloqueados, preto un do outro e co Bluetooth activado. Se vas compartir contido cun Chromebook, asegúrate de que teña activada a función Compartir por Nearby (abre a área de estado seleccionando a hora e, a continuación, selecciona Compartir por Nearby). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Permite que a aplicación Mensaxes Android transmita as mensaxes do teu teléfono ao Chromebook</translation>
 <translation id="4768332406694066911">Tes certificados destas organizacións que te identifican</translation>
+<translation id="4773112038801431077">Actualizar Linux</translation>
 <translation id="477647109558161443">Crear acceso directo do escritorio</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3748,6 +3759,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5368720394188453070">O teléfono está bloqueado. Desbloquéao para acceder.</translation>
 <translation id="5368779022775404937">Iniciar sesión en <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Activar aceleración do rato</translation>
+<translation id="5369694795837229225">Configurar contorno de programación de Linux</translation>
 <translation id="5370819323174483825">Vo&amp;lver cargar</translation>
 <translation id="5372529912055771682">O modo de inscrición fornecido non é compatible con esta versión do sistema operativo. Asegúrate de dispoñer da versión máis recente e téntao de novo.</translation>
 <translation id="5372579129492968947">Deixar de fixar a extensión</translation>
@@ -3773,6 +3785,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5402815541704507626">Utiliza os datos móbiles para descargar a actualización</translation>
 <translation id="540296380408672091">Bloquear sempre as cookies de <ph name="HOST" /></translation>
 <translation id="540495485885201800">Substituír polo anterior</translation>
+<translation id="5405146885510277940">Restablecer configuración</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Da túa Conta de Google</translation>
 <translation id="5411472733320185105">Non utilizar a configuración de proxy para estes servidores e dominios:</translation>
@@ -4471,6 +4484,8 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6212168817037875041">Desactivar a pantalla</translation>
 <translation id="6212752530110374741">Ligazón de correo electrónico</translation>
 <translation id="6213230117190778270">Recibir</translation>
+<translation id="6215620815501168899">Pechar ventá emerxente co EID e co código QR correspondente</translation>
+<translation id="6216601812881225442">Non se pode cambiar o tamaño do contedor. Se queres axustar a cantidade de espazo asignado previamente a Linux, fai unha copia de seguranza e restaura os datos nun contedor novo.</translation>
 <translation id="6216696360484424239">Iniciar sesión automaticamente</translation>
 <translation id="6218058416316985984">O dispositivo <ph name="DEVICE_TYPE" /> está sen conexión. Conéctate a Internet e téntao de novo.</translation>
 <translation id="6220413761270491930">Erro ao cargar a extensión</translation>
@@ -4863,6 +4878,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6680442031740878064">Espazo dispoñible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidade</translation>
 <translation id="6681668084120808868">Tirar foto</translation>
+<translation id="6683948477137300040">Mostrar ventá emerxente co EID do dispositivo e co código QR correspondente</translation>
 <translation id="6684827949542560880">Descargando última actualización</translation>
 <translation id="668599234725812620">Abrir Google Play</translation>
 <translation id="6686490380836145850">Pechar as pestanas situadas á dereita</translation>
@@ -5098,6 +5114,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6955535239952325894">Esta opción de configuración está desactivada nos navegadores xestionados</translation>
 <translation id="6957044667612803194">Esta chave de seguranza non admite códigos PIN</translation>
 <translation id="6957231940976260713">Nome do servizo</translation>
+<translation id="6960507406838246615">É necesario actualizar Linux</translation>
 <translation id="696103774840402661">Elimináronse permanentemente todos os ficheiros e os datos locais de todos os usuarios deste dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6964390816189577014">Heroe</translation>
 <translation id="6964760285928603117">Quitar do grupo</translation>
@@ -5117,6 +5134,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="697312151395002334">Sitios que poden mostrar ventás emerxentes e usar redireccións</translation>
 <translation id="6973611239564315524">Está dispoñible unha actualización a Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">Modo de demostración sen conexión</translation>
+<translation id="697508444536771064">Pechar Linux</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
 <translation id="6977877318519394148">Instalar Rosetta</translation>
 <translation id="6978121630131642226">Motores de busca</translation>
@@ -5517,6 +5535,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7443806024147773267">Accede aos teus contrasinais sempre que teñas a sesión iniciada na túa Conta de Google</translation>
 <translation id="7444983668544353857">Desactivar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instala aplicacións automaticamente</translation>
+<translation id="7448538354405258275">Un representante do servizo de atención ao cliente pode usar o número EID para axudarche a activar o servizo.</translation>
 <translation id="7449752890690775568">Queres quitar o contrasinal?</translation>
 <translation id="7450761244949417357">Abrindo a páxina no navegador <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
 <translation id="7453008956351770337">Ao seleccionar esta impresora, concédeselle permiso á extensión seguinte para acceder a ela:</translation>
@@ -6045,6 +6064,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8032244173881942855">Non se puido emitir a pestana.</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Tempo de espera esgotado</translation>
+<translation id="8036049989879571495">Configurar o contorno de programación de Linux (beta)</translation>
 <translation id="8037117027592400564">Ler o texto falado coa síntese de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Ficheiro</translation>
@@ -6211,6 +6231,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8226619461731305576">Cola</translation>
 <translation id="8226628635270268143">Escolle as fotos e os álbums que máis che gustan</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Queres gardar o contrasinal de <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Axuda aos nosos enxeñeiros a solucionar este problema. Explícanos o que sucedeu antes de que recibises a mensaxe de erro do perfil.</translation>
 <translation id="8236917170563564587">Mellor compartir esta pestana</translation>
@@ -6971,6 +6992,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="909108997331068008">O perfil de <ph name="EXISTING_USER" /> xa ten a sesión iniciada en <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Actualizar contrasinal</translation>
 <translation id="9094038138851891550">O nome de usuario non é válido</translation>
+<translation id="9094859731829297286">Seguro que queres reservar un disco de tamaño fixo para Linux?</translation>
 <translation id="9094982973264386462">Eliminar</translation>
 <translation id="9095253524804455615">Eliminar</translation>
 <translation id="909554839118732438">Pechar ventás do modo de incógnito</translation>

@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">سایت‌ها</translation>
 <translation id="4594952190837476234">این صفحه آفلاین مربوط به تاریخ <ph name="CREATION_TIME" /> است و ممکن است با نسخه آنلاین متفاوت باشد.</translation>
 <translation id="4605958867780575332">مورد حذف شد: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">ذخیره کردن صفحه‌ها برای خواندن در فرصتی دیگر و دریافت یادآوری</translation>
 <translation id="4616150815774728855">باز کردن <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">استفاده از گذرواژه</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{۱ گذرواژه لورفته}one{# گذرواژه لورفته}other{# گذرواژه لورفته}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}one{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}}</translation>
 <translation id="7778840695157240389">برای خواندن داستان‌های جدید، بعداً دوباره سربزنید</translation>
 <translation id="7786595606756654269">‏«دستیار Google» تجربه گفتاری بهتری در جستجوی وب و تعامل با سایت‌هایی که باز کرده‌اید ارائه می‌دهد. «دستیار Google» نشانی وب و محتوای سایت‌هایی را که در آن استفاده می‌کنید دریافت خواهد کرد.</translation>
+<translation id="7790349552933995572">صفحه اصلی</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> برگه بازیابی شد</translation>
 <translation id="780301667611848630">نه متشکرم</translation>

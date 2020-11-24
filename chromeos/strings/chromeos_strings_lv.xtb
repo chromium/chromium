@@ -30,6 +30,7 @@
 <translation id="1930797645656624981">Chrome OS ievades metodes pakalpojums</translation>
 <translation id="1947737735496445907">Izdrukāts</translation>
 <translation id="1979103255016296513">Paroles maiņa ir nokavēta</translation>
+<translation id="1980044825731880088">Centrālā procesora ātrums</translation>
 <translation id="2049639323467105390">Šo ierīci pārvalda vietne <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -39,6 +40,7 @@
 <translation id="2364498172489649528">Pārbaude izpildīta</translation>
 <translation id="2375079107209812402">Vēl <ph name="ATTEMPTS_LEFT" /> mēģinājumi</translation>
 <translation id="2391082728065870591">Sūtīt atsauksmju pārskatu</translation>
+<translation id="2461822463642141190">Šobrīd</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Atlicis {0} mēģinājums.}zero{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}one{<ph name="ERROR_MESSAGE" />. Atlicis {0} mēģinājums.}other{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> — <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Meklēt</translation>
@@ -46,6 +48,7 @@
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Savienojamības diagnostika</translation>
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
 <translation id="3188257591659621405">Mani faili</translation>
@@ -99,6 +102,7 @@
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
 <translation id="4932733599132424254">Datums</translation>
 <translation id="4985509611418653372">Izpildīt</translation>
+<translation id="5168185087976003268">Akumulatora stāvoklis</translation>
 <translation id="520299634122159966">Nav pieejamu skeneru</translation>
 <translation id="5212543919916444558">Ekrānā neredzu neko, ar ko varētu palīdzēt.
 Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
@@ -114,8 +118,10 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5457599981699367932">Pārlūkot kā viesim</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="5832805196449965646">Pievienot personu</translation>
 <translation id="5895138241574237353">Restartēt</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6048107060512778456">Neizdevās — iestrēdzis papīrs</translation>
 <translation id="6050189528197190982">Pelēktoņi</translation>
@@ -179,6 +185,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8910721771319628100">Noklusējuma tīkla latentums pārsniedza slieksni</translation>
 <translation id="8919837981463578619">Neizdevās — trūkst paliktņa</translation>
 <translation id="8928727111548978589">Neizdevās — beidzies papīrs</translation>
+<translation id="9088306295921699330">Pašreizējais lietojums</translation>
 <translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>
 <translation id="9106415115617144481">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana</translation>
 <translation id="9111102763498581341">Atbloķēt</translation>

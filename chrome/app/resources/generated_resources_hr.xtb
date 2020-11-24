@@ -3788,6 +3788,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5402815541704507626">Preuzimanje ažuriranja putem mobilne mreže</translation>
 <translation id="540296380408672091">Uvijek blokiraj kolačiće na <ph name="HOST" /></translation>
 <translation id="540495485885201800">Zamijeni prethodnim</translation>
+<translation id="5405146885510277940">Vraćanje postavki na zadano</translation>
 <translation id="5408750356094797285">Zumiranje: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">S vašeg Google računa</translation>
 <translation id="5411472733320185105">Ne upotrebljavaj proxy postavke za ove hostove i domene:</translation>
@@ -6235,6 +6236,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8226619461731305576">Redoslijed</translation>
 <translation id="8226628635270268143">Odaberite svoje omiljene fotografije i albume</translation>
 <translation id="8227119283605456246">Priloži datoteku</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Želite li spremiti zaporku za <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Pomognite našim inženjerima da riješe taj problem. Opišite što se dogodilo neposredno prije nego što se prikazala poruka pogreške za profil:</translation>
 <translation id="8236917170563564587">Dijeli ovu karticu</translation>

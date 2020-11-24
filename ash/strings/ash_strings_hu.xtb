@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">Nem áll rendelkezésre mobilhálózat</translation>
 <translation id="3249513730522716925">A(z) „<ph name="WINDOW_TITLE" />” ablak át lett helyezve a(z) „<ph name="ACTIVE_DESK" />” asztalról a(z) „<ph name="TARGET_DESK" />” asztalra</translation>
 <translation id="3255483164551725916">Mit lehet csinálni?</translation>
+<translation id="3269597722229482060">Kattintás jobb egérgombbal</translation>
 <translation id="3289674678944039601">Töltés adapteren keresztül…</translation>
 <translation id="3290356915286466215">Nem bizt.</translation>
 <translation id="3294437725009624529">Vendég</translation>
@@ -341,6 +342,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4212472694152630271">Váltás PIN-kódra</translation>
 <translation id="4215497585250573029">VPN-beállítások</translation>
 <translation id="4217571870635786043">Diktálás</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, telepített alkalmazás, szüneteltetve</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="425364040945105958">Nincs SIM</translation>
@@ -762,6 +764,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8142699993796781067">Privát hálózat</translation>
 <translation id="8152092012181020186">A bezáráshoz nyomja meg a Ctrl + W billentyűkódot.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ezt a beállítást a rendszergazdája kezeli.</translation>
+<translation id="8155628902202578800">Információs párbeszédpanel, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> nyelv használata</translation>
 <translation id="8170567869359129153">Mobilhálózat. Jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Az értesítések el vannak rejtve.</translation>
@@ -827,6 +830,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8755498163081687682">Igazolja személyazonosságát, a következő szeretne meggyőződni a személyazonosságáról: <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">VPN-beállítások megjelenítése</translation>
 <translation id="8759408218731716181">Nem lehet beállítani a többfiókos bejelentkezést</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, telepített alkalmazás, letiltva</translation>
 <translation id="8785070478575117577">Csatlakozás a következőhöz: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -92,7 +92,7 @@
 <translation id="2163152940313951844">Nevažeći znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2198315389084035571">Pojednostavljeni kineski</translation>
 <translation id="2208158072373999562">Zip arhiva</translation>
-<translation id="2208919847696382164">Instaliranje uz Linux</translation>
+<translation id="2208919847696382164">Instaliraj s Linuxom</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati sljedeći broj stavki: <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Kreiranje foldera "<ph name="FOLDER_NAME" />" nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Premješteno.</translation>
@@ -129,7 +129,7 @@
 <translation id="2664412712123763093">Lokacija fajla</translation>
 <translation id="2672394958563893062">Došlo je do greške. Kliknite da ponovo pokrenete od početka.</translation>
 <translation id="2676946222714718093">Reproducira se na</translation>
-<translation id="2718540689505416944">Instaliranje aplikacije uz Linux</translation>
+<translation id="2718540689505416944">Instaliraj aplikaciju s Linuxom</translation>
 <translation id="2735623501230989521">Odobrite da Parallels Desktop pristupa fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijska</translation>

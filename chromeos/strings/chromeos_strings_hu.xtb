@@ -30,6 +30,7 @@
 <translation id="1930797645656624981">Chrome OS beviteli módszere szolgáltatás</translation>
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
 <translation id="1979103255016296513">Esedékes a jelszó frissítése</translation>
+<translation id="1980044825731880088">CPU-sebesség</translation>
 <translation id="2049639323467105390">Ezt az eszközt a(z) <ph name="DOMAIN" /> domain kezeli.</translation>
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -39,6 +40,7 @@
 <translation id="2364498172489649528">Sikeres ellenőrzés</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> próbálkozás maradt</translation>
 <translation id="2391082728065870591">Visszajelzési jelentés küldése</translation>
+<translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} kísérlet maradt}other{<ph name="ERROR_MESSAGE" /> {0} kísérlet maradt}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Keresés</translation>
@@ -46,6 +48,7 @@
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
 <translation id="3091839911843451378">Sikertelen – Leállítva</translation>
 <translation id="3188257591659621405">Saját fájlok</translation>
@@ -99,6 +102,7 @@
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4985509611418653372">Futtatás</translation>
+<translation id="5168185087976003268">Akkumulátor egészsége</translation>
 <translation id="520299634122159966">Nincsenek rendelkezésre álló szkennerek</translation>
 <translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
@@ -114,8 +118,10 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5457599981699367932">Böngészés vendégként</translation>
 <translation id="54609108002486618">Kezelt</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">További információ a Súgóban</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6048107060512778456">Sikertelen – Papírelakadás</translation>
 <translation id="6050189528197190982">Szürkeárnyalat</translation>
@@ -179,6 +185,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8910721771319628100">Az alapértelmezett hálózat túllépi a várakozási idő határértékét</translation>
 <translation id="8919837981463578619">Sikertelen – Hiányzó tálca</translation>
 <translation id="8928727111548978589">Sikertelen – Kifogyott a papír</translation>
+<translation id="9088306295921699330">Jelenleg felhasznált</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
 <translation id="9111102763498581341">Feloldás</translation>

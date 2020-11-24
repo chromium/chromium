@@ -434,6 +434,7 @@
 <translation id="1475502736924165259">Vous disposez de certificats qui n'appartiennent à aucune autre catégorie.</translation>
 <translation id="1476088332184200792">Copier sur votre appareil</translation>
 <translation id="1476607407192946488">&amp;Paramètres linguistiques</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="1478340334823509079">Détails : <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">L'installation n'a pas été activée</translation>
 <translation id="1481537595330271162">Erreur lors du redimensionnement du disque</translation>
@@ -2032,6 +2033,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3320630259304269485">Navigation sécurisée (protection contre les sites dangereux) et autres paramètres de sécurité</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Le contenu de ces données est sensible ou dangereux. Supprimez-le et réessayez.}=1{Le contenu de ce fichier est sensible ou dangereux. Supprimez-le et réessayez.}one{Le contenu de ce fichier est sensible ou dangereux. Supprimez-le et réessayez.}many{These files have sensitive or dangerous content. Remove this content and try again.}other{Le contenu de ces fichiers est sensible ou dangereux. Supprimez-le et réessayez.}}</translation>
 <translation id="3323521181261657960">Super ! Tu as plus de temps d'utilisation</translation>
+<translation id="3325804108816646710">Recherche de profils disponibles…</translation>
 <translation id="3325910708063135066">Caméra et micro désactivés dans les préférences système Mac</translation>
 <translation id="3327050066667856415">Les Chromebooks sont conçus pour une sécurité optimale. Votre appareil est automatiquement protégé contre les logiciels malveillants. Aucun logiciel supplémentaire n'est requis.</translation>
 <translation id="3328489342742826322">La restauration depuis une sauvegarde entraîne la suppression des applications et des données Linux existantes de votre dossier Fichiers Linux.</translation>
@@ -2099,6 +2101,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3412265149091626468">Aller à la sélection</translation>
 <translation id="3413122095806433232">Émetteurs de l'autorité de certification : <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Taille :</translation>
+<translation id="3414966631182382431">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par <ph name="MANAGER" /></translation>
 <translation id="3416468988018290825">Toujours afficher les URL en entier</translation>
 <translation id="3417835166382867856">Rechercher dans les onglets</translation>
 <translation id="3417836307470882032">Système horaire sur 24 heures</translation>
@@ -3173,6 +3176,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4651484272688821107">Impossible de charger le composant en ligne avec les ressources du mode de démonstration.</translation>
 <translation id="4652935475563630866">La modification des paramètres de l'appareil photo nécessite le redémarrage de Parallels Desktop. Relancez Parallels Desktop pour continuer.</translation>
 <translation id="4653405415038586100">Erreur lors de la configuration de Linux</translation>
+<translation id="4657914796247705218">Vitesse</translation>
 <translation id="465878909996028221">Seuls les protocoles http et https, ainsi que les protocoles de fichiers, sont compatibles avec les redirections de navigateur.</translation>
 <translation id="4659077111144409915">Compte principal</translation>
 <translation id="4659126640776004816">Lorsque vous vous connectez à votre compte Google, cette fonctionnalité est activée.</translation>
@@ -3772,6 +3776,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5402815541704507626">Télécharger la mise à jour en utilisant les données mobiles</translation>
 <translation id="540296380408672091">Toujours bloquer les cookies sur <ph name="HOST" /></translation>
 <translation id="540495485885201800">Échanger avec le précédent</translation>
+<translation id="5405146885510277940">Réinitialiser les paramètres</translation>
 <translation id="5408750356094797285">Zoom : <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Celui dans votre compte Google</translation>
 <translation id="5411472733320185105">Ne pas utiliser les paramètres du proxy pour les hôtes et domaines suivants :</translation>
@@ -3833,6 +3838,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5470735824776589490">Vous devez redémarrer votre appareil avant de pouvoir le réinitialiser avec le Powerwash. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Bonjour ! Je suis la voix de votre synthèse vocale.</translation>
 <translation id="5472627187093107397">Enregistrer les mots de passe pour ce site</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Ce code doit comporter au moins 1 caractère}one{Ce code doit comporter au moins # caractère}many{Ce code doit comporter au moins # caractères}other{Ce code doit comporter au moins # caractères}}</translation>
 <translation id="5473333559083690127">Saisir encore le nouveau code</translation>
 <translation id="5481273127572794904">Non autorisé à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
@@ -4372,6 +4378,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6087960857463881712">Visage "Génial"</translation>
 <translation id="6091761513005122595">Le partage a bien été installé.</translation>
 <translation id="6093888419484831006">Annulation de la mise à jour...</translation>
+<translation id="6095541101974653012">Vous avez été déconnecté.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Ouvrir la version agrandie</translation>
 <translation id="6096326118418049043">Nom X.500</translation>
@@ -4705,6 +4712,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6474884162850599008">Déconnecter le compte Google Drive</translation>
 <translation id="6475697075626596525">Une demande de partage du contenu de votre écran a été envoyée depuis <ph name="APP_NAME" />. Sélectionnez ce que vous souhaitez partager.</translation>
 <translation id="6478248366783946499">Conserver le fichier dangereux ?</translation>
+<translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Ouvrir le fichier téléchargé</translation>
 <translation id="6483805311199035658">Ouverture de <ph name="FILE" /> en cours</translation>
 <translation id="6488384360522318064">Sélectionner une langue</translation>
@@ -4893,6 +4901,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="671928215901716392">Verrouillage d'écran</translation>
 <translation id="6721678857435001674">Voir la marque et le modèle de votre clé de sécurité</translation>
 <translation id="6721972322305477112">&amp;Fichier</translation>
+<translation id="672208878794563299">Ce site redemandera votre avis la prochaine fois.</translation>
 <translation id="672213144943476270">Veuillez déverrouiller votre profil avant de naviguer en tant qu'invité.</translation>
 <translation id="6723661294526996303">Importer les favoris et les paramètres...</translation>
 <translation id="6723839937902243910">Alimentation</translation>
@@ -6209,6 +6218,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8226619461731305576">File d'attente</translation>
 <translation id="8226628635270268143">Choisissez vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Enregistrer le mot de passe pour <ph name="ORIGIN" /> ?</translation>
 <translation id="8234795456569844941">Pour aider nos ingénieurs à corriger ce problème, veuillez nous indiquer ce qui s'est passé juste avant de recevoir le message d'erreur concernant le profil :</translation>
 <translation id="8236917170563564587">Partager cet onglet à la place</translation>
@@ -6290,6 +6300,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8317671367883557781">Ajouter une connexion réseau</translation>
 <translation id="8319414634934645341">Utilisation étendue de la clé</translation>
 <translation id="8320459152843401447">L'intégralité de votre écran</translation>
+<translation id="8321837372750396788">Votre <ph name="DEVICE_TYPE" /> sera géré par <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">L'accès à votre micro est bloqué pour cette page</translation>
 <translation id="8323167517179506834">Saisir une URL</translation>
 <translation id="8324784016256120271">Les sites peuvent utiliser des cookies afin de voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces)</translation>
@@ -6597,6 +6608,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8698269656364382265">Pour revenir à l'écran précédent, balayez-le depuis le côté gauche.</translation>
 <translation id="869884720829132584">Menu Applications</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
+<translation id="8702825062053163569">Votre <ph name="DEVICE_TYPE" /> a été verrouillé.</translation>
 <translation id="8703346390800944767">Ignorer l'annonce</translation>
 <translation id="8705331520020532516">Numéro de série</translation>
 <translation id="8705580154597116082">Wi-Fi disponible via le téléphone</translation>

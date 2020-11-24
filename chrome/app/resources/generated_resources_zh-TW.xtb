@@ -3772,6 +3772,7 @@
 <translation id="5402815541704507626">使用行動數據下載更新</translation>
 <translation id="540296380408672091">一律封鎖 <ph name="HOST" /> 的 Cookie</translation>
 <translation id="540495485885201800">與上一個交換</translation>
+<translation id="5405146885510277940">重設設定</translation>
 <translation id="5408750356094797285">縮放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">從 Google 帳戶</translation>
 <translation id="5411472733320185105">不要對以下主機和網域使用 Proxy 設定：</translation>
@@ -6211,6 +6212,7 @@
 <translation id="8226619461731305576">佇列</translation>
 <translation id="8226628635270268143">選擇你最喜愛的相片和相簿</translation>
 <translation id="8227119283605456246">附加檔案</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">要儲存 <ph name="ORIGIN" /> 的密碼嗎？</translation>
 <translation id="8234795456569844941">請告訴我們在你收到設定檔錯誤訊息前執行的動作，以協助工程師修正此問題：</translation>
 <translation id="8236917170563564587">改為分享這個分頁</translation>

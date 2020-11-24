@@ -208,6 +208,7 @@
 <translation id="1393485621820363363">Aktivierte, an Geräte gebundene Unternehmensdrucker</translation>
 <translation id="1397855852561539316">Vorschlags-URL für die Standardsuchmaschine</translation>
 <translation id="1413936351612032792">Informationen zur Nutzung von Linux-Apps senden</translation>
+<translation id="1418387035898607074">Safe Browsing-Überprüfung für den Dateidownload von vertrauenswürdigen Quellen überspringen</translation>
 <translation id="142346659686073702">Nicht verknüpften Nutzern die Verwendung von Crostini gestatten</translation>
 <translation id="1425551776320718592">Nutzer des Geräts daran hindern, ADB-Sideloading zu verwenden, jedoch kein Powerwash für das Gerät erzwingen, was zu einem unklaren Sicherheitszustand des Geräts führen kann</translation>
 <translation id="1426170570389588560">Zeitraum für die Speicherung von Metadaten zu Druckaufträgen festlegen (in Tagen)</translation>
@@ -425,9 +426,15 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Ist sie auf "False" gesetzt, können Nutzer keine Lesezeichen hinzufügen, entfernen oder ändern. Sie können aber weiterhin bestehende Lesezeichen verwenden.</translation>
 <translation id="1715151459541210849">Bedienungshilfe "Spracheingabe" aktivieren</translation>
 <translation id="172374442286684480">Speichern von lokalen Daten für alle Websites zulassen</translation>
+<translation id="1729169799290004131">Wenn die Richtlinie konfiguriert ist, wird die Bildschirmhelligkeit in % festgelegt und Funktionen zur automatischen Anpassung der Bildschirmhelligkeit werden deaktiviert. Die Bildschirmhelligkeit wird anfangs an den Richtlinienwert angepasst, aber der Nutzer kann sie später ändern.
+
+      Wird diese Richtlinie nicht festgelegt, hat dies keine Auswirkungen auf die Steuerung des Bildschirms durch den Nutzer und auf die Funktionen zur automatischen Anpassung der Bildschirmhelligkeit.
+
+      Hinweis: Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen.</translation>
 <translation id="1736269219679256369">Fortfahren von SSL-Hinweisseite erlauben</translation>
 <translation id="174765717426930019">Allen mit dem Ziel <ph name="BLANK_PAGE_NAME" /> geöffneten Pop-ups erlauben, mit der Seite zu interagieren, die das Pop-up geöffnet hat, es sei denn, die öffnende Seite hat dieser Art von Interaktion ausdrücklich nicht zugestimmt </translation>
 <translation id="1750315445671978749">Alle Downloads blockieren</translation>
+<translation id="1755310913456007816">Vorhandene Einstellungen zur Onlinesperrprüfung verwenden</translation>
 <translation id="1760951637494635692">Serial API auf diesen Seiten erlauben</translation>
 <translation id="1765512315997108908">Legt fest, welche Drucker aus <ph name="DEVICE_PRINTERS_POLICY_NAME" /> Nutzern zur Verfügung stehen.
 
@@ -474,6 +481,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1844972978764975668">Anfragen an einen Google-Server zulassen, um einen exakten Zeitstempel abzufragen</translation>
 <translation id="1845405905602899692">Kioskeinstellungen</translation>
 <translation id="1845429996559814839">PIN-Druckmodus einschränken</translation>
+<translation id="1846545322805269573">Nutzer können den Hintergrund der „Neuer Tab“-Seite nicht anpassen</translation>
 <translation id="1847960418907100918">Gibt die Parameter für die Suche im Voraus mit POST an. Sie besteht aus durch Komma getrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie z. B. {searchTerms} im obigen Beispiel ist, wird er durch echte Suchbegriffsdaten ersetzt.
 
           Diese Richtlinie ist optional. Wenn sie nicht festlegt ist, wird die Anfrage für die Suche im Voraus mithilfe der GET-Methode gesendet.
@@ -537,6 +545,37 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1971991630422430420">Wenn die Richtlinie aktiviert ist, wird „Fast Transition“ verwendet, wenn dies vom WLAN-Zugangspunkt unterstützt wird. Sie gilt für alle Nutzer und alle Oberflächen auf diesem Gerät.
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird „Fast Transition“ nicht verwendet.</translation>
+<translation id="197744850608781984">Mit dieser Richtlinie wird die Energieverwaltung bei Inaktivität des Nutzers konfiguriert.
+
+      Es gibt vier Aktionen:
+
+      * Wenn der Nutzer für die unter <ph name="SCREEN_DIM_FIELD_NAME" /> angegebene Zeitdauer inaktiv ist, wird der Bildschirm gedimmt.
+
+      * Wenn der Nutzer für die unter <ph name="SCREEN_OFF_FIELD_NAME" /> angegebene Zeitdauer inaktiv ist, wird der Bildschirm ausgeschaltet.
+
+      * Wenn der Nutzer für die unter <ph name="IDLE_WARNING_FIELD_NAME" /> angegebene Zeitdauer inaktiv ist, wird eine Warnung angezeigt. Dadurch wird der Nutzer darauf hingewiesen, dass die für die Inaktivität festgelegte Aktion ausgeführt wird. Die Warnung wird nur eingeblendet, wenn der Nutzer infolge der Inaktivität abgemeldet oder das Gerät heruntergefahren wird.
+
+      * Wenn der Nutzer für die unter „Idle“ angegebene Zeitdauer inaktiv ist, wird die unter <ph name="IDLE_ACTION_FIELD_NAME" /> angegebene Aktion ausgeführt.
+
+      Die Verzögerungen müssen in Millisekunden angegeben werden und größer als null sein, um die oben jeweils angegebenen Aktionen auszulösen. Wenn für die Verzögerung null festgelegt wird, führt <ph name="PRODUCT_OS_NAME" /> die entsprechende Aktion nicht aus.
+
+      Wenn kein Wert für die Verzögerungen angegeben ist, wird ein Standardwert verwendet.
+
+      Die Werte für <ph name="SCREEN_DIM_FIELD_NAME" /> müssen kleiner als oder gleich dem Wert von <ph name="SCREEN_OFF_FIELD_NAME" /> sein. Die Werte für <ph name="SCREEN_OFF_FIELD_NAME" /> und <ph name="IDLE_WARNING_FIELD_NAME" /> müssen kleiner als oder gleich dem Wert von „Idle“ sein.
+
+      Für <ph name="IDLE_ACTION_FIELD_NAME" /> sind folgende vier Aktionen möglich:
+
+      * <ph name="IDLE_ACTION_ENUM_SUSPEND" />
+
+      * <ph name="IDLE_ACTION_ENUM_LOGOUT" />
+
+      * <ph name="IDLE_ACTION_ENUM_SHUTDOWN" />
+
+      * <ph name="IDLE_ACTION_ENUM_DO_NOTHING" />
+
+      Wenn <ph name="IDLE_ACTION_FIELD_NAME" /> nicht festgelegt wird, wird die Aktion <ph name="IDLE_ACTION_ENUM_SUSPEND" /> ausgeführt.
+
+      Hinweis: Es können außerdem spezifische Einstellungen für den Netz- und Akkubetrieb vorgenommen werden.</translation>
 <translation id="1988345404999458987">Mit dieser Richtlinie können Konfigurationen verfügbarer Druckserver zur Verfügung gestellt werden.
 
       So können Sie <ph name="PRODUCT_OS_NAME" />-Geräten Konfigurationen externer Druckserver als JSON-Datei zur Verfügung stellen.
@@ -605,6 +644,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="209586405398070749">Stabiler Kanal</translation>
 <translation id="2098658257603918882">Berichte mit Nutzungs- und Absturzdaten erstellen</translation>
 <translation id="2104418465060359056">Daten von Erweiterungen und Plug-ins erfassen</translation>
+<translation id="2106166591774188922">SAML-Passwort-Änderungen bei laufender Sitzung für SAML-Nutzer unter chrome://password-change zulassen</translation>
 <translation id="2106627642643925514">Hiermit wird der Standardmodus für den PIN-Druck überschrieben. Wenn der Modus nicht verfügbar ist, wird diese Richtlinie ignoriert.</translation>
 <translation id="2107563874993284076">Wenn die Richtlinie aktiviert ist, können Nutzer Netzwerkfreigaben für <ph name="PRODUCT_NAME" /> verwenden. Ist sie deaktiviert, können Nutzer diese Funktion nicht verwenden.</translation>
 <translation id="2107601598727098402">
@@ -1185,6 +1225,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2957513448235202597">Kontotyp für die <ph name="HTTP_NEGOTIATE" />-Authentifizierung</translation>
 <translation id="2959469725686993410">Beim Auflösen der Zeitzone immer WLAN-Zugangspunkte an den Server senden</translation>
 <translation id="2959898425599642200">Proxy-Umgehungsregeln</translation>
+<translation id="2960013482187484833">Zuletzt genutzten Drucker als Standarddrucker in der Druckvorschau verwenden</translation>
 <translation id="2960128438010718932">Staging-Zeitplan zum Anwenden eines neuen Updates</translation>
 <translation id="2960691910306063964">Authentifizierung ohne PIN für Hosts für den Remotezugriff aktivieren oder deaktivieren</translation>
 <translation id="2964373560810620158">Verhindern, dass Nutzer den <ph name="LACROS_NAME" />-Browser verwenden</translation>
@@ -1282,6 +1323,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3072847235228302527">Nutzungsbedingungen für ein lokales Gerätekonto festlegen</translation>
 <translation id="3086995894968271156">Konfigurieren von Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Lädt den Akku von Geräten auf, die vorwiegend an eine externe Stromquelle angeschlossen werden.</translation>
+<translation id="3092059499596000593">Standarddrucker des Betriebssystems als Standardeinstellung in der Druckvorschau verwenden</translation>
 <translation id="309416443108680956">Legt fest, was passiert, wenn ein Nutzer der sich über ein Sicherheitstoken (z. B. mit einer Smartcard) authentifiziert hat, dieses Token während einer Sitzung entfernt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Es geschieht gar nichts. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Der Bildschirm ist gesperrt, bis der Nutzer noch einmal eine Authentifizierung durchführt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Die Sitzung wird beendet und der Nutzer abgemeldet. Ist die Richtlinie nicht festgelegt, ist standardmäßig <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> ausgewählt.</translation>
 <translation id="3096595567015595053">Liste der aktivierten Plug-ins</translation>
 <translation id="3101501961102569744">Auswählen, wie Proxyserver-Einstellungen angegeben werden</translation>
@@ -1335,6 +1377,11 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3219421230122020860">Inkognitomodus verfügbar</translation>
 <translation id="3220624000494482595">Wenn die Kiosk-App eine Android-App ist, hat sie keine Kontrolle über die <ph name="PRODUCT_OS_NAME" />-Version, auch wenn diese Richtlinie auf <ph name="TRUE" /> gesetzt ist.</translation>
 <translation id="322359555555487980">Verfügbarkeit von Variationen auf <ph name="PRODUCT_OS_NAME" /> festlegen</translation>
+<translation id="3231617925177241750">Wenn die Richtlinie aktiviert ist und <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> sowie <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> konfiguriert sind, ist das Umschalten bei Leistungsspitzen immer aktiviert, sofern die Funktion vom Gerät unterstützt wird. Die Energieverwaltung zum Umschalten bei Leistungsspitzen ist eine Richtlinie, mit der Energie gespart werden kann. Dazu wird die Nutzung des Netzstroms mit Spitzenlasten minimiert. Für jeden Wochentag kann eine Start- und eine Endzeit für den Modus zum Umschalten bei Leistungsspitzen festgelegt werden. Solange der Ladezustand des Akkus einen bestimmten Schwellenwert nicht unterschreitet, wird das System während dieser Zeiträume über den Akku mit Strom versorgt – auch dann, wenn das System an das Stromnetz angeschlossen ist. Nach der angegebenen Endzeit wird das System wieder über Netzstrom versorgt (vorausgesetzt, das System ist an das Stromnetz angeschlossen), der Akku jedoch nicht geladen. Das System wird wieder auf den normalen Betrieb mit Netzstrom umgestellt und der Akku aufgeladen, nachdem die festgelegte Startzeit zum Laden erreicht wurde.
+
+      Wenn die Richtlinie deaktiviert ist, ist das Umschalten bei Leistungsspitzen immer deaktiviert.
+
+      Wenn sie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen erst einmal deaktiviert. Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates konfiguriert.
 
       Geben Sie einzelne Einstellungen in den JSON-Eigenschaften an:
@@ -1708,6 +1755,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> dem Nutzer, das Gerät herunterzufahren.</translation>
 <translation id="3765260570442823273">Dauer der Warnmeldung zur Abmeldung bei Inaktivität</translation>
 <translation id="377044054160169374">Zwingende Maßnahmen bei irreführenden Inhalten</translation>
+<translation id="3778689139323007309">Widerrufsprüfung für Serverzertifikate durchführen, die erfolgreich bestätigt und von lokal installierten CA-Zertifikaten signiert wurden</translation>
 <translation id="3780152581321609624">Nicht-Standard-Port in Kerberos-SPN einschließen</translation>
 <translation id="3788662722837364290">Einstellungen für die Energieverwaltung bei Inaktivität des Nutzers</translation>
 <translation id="3790085888761753785">Wenn diese Einstellung aktiviert ist, können Nutzer sich mit Smart Lock in Ihren Konten anmelden. Sie haben dann mehr Möglichkeiten als mit den üblichen Smart Lock-Einstellungen, mit denen sie lediglich ihre Bildschirme entsperren können.
@@ -2698,6 +2746,7 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
           Wurde "true" oder "not configured" festgelegt, kann dieser Nutzer betreute Nutzer erstellen und verwalten.</translation>
 <translation id="5369937289900051171">Nur Farbdruck</translation>
 <translation id="5370279767682621504">HTTP/0.9-Unterstützung für nicht standardmäßige Ports aktivieren</translation>
+<translation id="5371152055157582429">Nutzer können den Hintergrund der „Neuer Tab“-Seite anpassen</translation>
 <translation id="5377606826822211923">Nutzung von Android-Apps aus nicht vertrauenswürdigen Quellen kontrollieren</translation>
 <translation id="5377668121137111316">Wenn Sie die Richtlinie auf "True" setzen, bleibt die Bildschirmtastatur aktiviert. Wenn die Richtlinie auf "False" gesetzt wird, bleibt die Bildschirmtastatur deaktiviert.
 
@@ -2940,6 +2989,14 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 <translation id="572155275267014074">Android-Einstellungen</translation>
 <translation id="5728154254076636808">Erstellung von Roaming-Kopien für <ph name="PRODUCT_NAME" />-Profildaten aktivieren</translation>
 <translation id="5732972008943405952">Formulardaten zum automatischen Ausfüllen bei erster Ausführung aus Standardbrowser importieren</translation>
+<translation id="5733040281451845496">Wenn die Richtlinie aktiviert ist, wird die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen beim Energiesparmodus und Begrenzungen der Sitzungslänge verwendet.
+
+      Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird der Start der Sitzung als Ausgangspunkt für Verzögerungen beim Energiesparmodus und Begrenzungen der Sitzungslänge verwendet.</translation>
+<translation id="5738766588683307797">Wenn <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> deaktiviert ist und <ph name="USER_ACTIVITY_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> konfiguriert wird, wird der Prozentsatz angegeben, um den die Verzögerung für die Bildschirmabdunkelung skaliert wird, wenn bei abgedunkeltem Bildschirm oder kurz nach dem Abschalten des Bildschirms Nutzeraktivität erkannt wird. Wenn die Verzögerung für die Abdunkelung skaliert wird, werden die Verzögerung für die Abschaltung und Sperre des Bildschirms sowie die Inaktivität so angepasst, dass die Abstände der ursprünglichen Konfiguration proportional beibehalten werden.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, wird ein Standardfaktor für die Skalierung verwendet.
+
+      Hinweis: Der Skalierungsfaktor muss bei mindestens 100 % liegen.</translation>
 <translation id="574098933844699859">Diese Richtlinie legt fest, ob Systeminformationen (z. B. Chrome OS-Version, Seriennummer des Geräts) auf dem Anmeldebildschirm immer angezeigt oder ausgeblendet werden.
 
       Wenn diese Richtlinie auf "true" gesetzt ist, wird erzwungen, dass Systeminformationen angezeigt werden.
@@ -3356,6 +3413,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte Menü für Bedienungshilfen nie angezeigt.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
+<translation id="6424486395812679373">Safe Browsing-Überprüfung für alle Dateidownloads ausführen</translation>
 <translation id="6438364096042399634">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste der USB-Geräte definieren, die vom jeweiligen Kerneltreiber getrennt werden können, um über die chrome.usb API direkt in einer Webanwendung eingesetzt zu werden. Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt-ID, über die die Hardware identifiziert werden kann.
 
       Ist diese Richtlinie nicht konfiguriert, dann bleibt die Liste der trennbaren USB-Geräte leer.
@@ -3435,13 +3493,15 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
       Ist diese Richtlinie nicht konfiguriert oder auf "None" oder "Let users decide" gesetzt, können Nutzer die automatische Zeitzonenerkennung über die normalen Steuerelemente unter chrome://settings verwalten.</translation>
 <translation id="6532769014584932288">Wakelocks zulassen</translation>
-<translation id="6536444379078076149">Anzeigen von Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Host-Computer während einer aktiven Verbindung aktivieren oder deaktivieren.</translation>
 <translation id="6536600139108165863">Automatischer Neustart nach Herunterfahren des Geräts</translation>
 <translation id="6539246272469751178">Diese Richtlinie hat keine Auswirkung auf Android-Apps. Android-Apps verwenden immer das Standardverzeichnis für Downloads und haben keinen Zugriff auf Dateien, die von <ph name="PRODUCT_OS_NAME" /> in ein anderes Verzeichnis als das Standardverzeichnis für Downloads heruntergeladen werden.</translation>
 <translation id="654303922206238013">Migrationsstrategie für eCryptfs</translation>
 <translation id="6553143066970470539">Displayhelligkeit in %</translation>
 <translation id="6558362593755624474">Mit dieser Richtlinie wird der <ph name="PLUGIN_VM_NAME" />-Lizenzschlüssel für dieses Gerät angegeben.</translation>
 <translation id="6559057113164934677">Keine Website darf auf meine Kamera oder mein Mikrofon zugreifen</translation>
+<translation id="6559221564468029245">Wenn die Richtlinie aktiviert wird oder nicht konfiguriert ist, gilt der Nutzer während der Audiowiedergabe nicht als inaktiv. Dadurch wird verhindert, dass das Zeitlimit für die Inaktivität erreicht wird und entsprechende Maßnahmen ergriffen werden. Der Bildschirm wird jedoch unabhängig von den Audioaktivitäten gemäß den konfigurierten Zeitlimits gedimmt, abgeschaltet und gesperrt.
+
+      Wenn die Richtlinie deaktiviert ist, kann das System den Nutzer auch bei Audioaktivitäten als inaktiv ansehen.</translation>
 <translation id="6559475864956112261">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“.
 
        Durch Aktivieren der Richtlinie können Sie angeben, welcher Proxyserver von Chrome verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern. Alle Proxyoptionen, die über die Befehlszeile eingegeben werden, werden von Chrome- und ARC-Apps ignoriert. Die Richtlinie ist nur wirksam, wenn die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ nicht konfiguriert wurde.
@@ -3861,6 +3921,9 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7072208053150563108">Änderungsrate des Computerpassworts</translation>
 <translation id="7072567600438630966">Aktivieren von Phone Hub zulassen.</translation>
 <translation id="7079519252486108041">Pop-ups auf diesen Websites blockieren</translation>
+<translation id="7081784525008938771">Wenn die Richtlinie aktiviert wird oder nicht konfiguriert ist, gilt der Nutzer während der Videowiedergabe nicht als inaktiv. Dadurch wird verhindert, dass der Countdown für Inaktivität sowie zum Dimmen, Abschalten oder Sperren des Bildschirms gestartet wird und nach Ablauf der Zeit entsprechende Maßnahmen ergriffen werden.
+
+      Wenn die Richtlinie deaktiviert ist, kann das System den Nutzer auch bei Videoaktivitäten als inaktiv ansehen.</translation>
 <translation id="7086720321892395256">Mit dieser Richtlinie werden Nutzer- und Geräterichtlinien für den Datenschutzbildschirm festgelegt.</translation>
 <translation id="7091842872805965910">Funktion zum automatischen Senden von PINs auf dem Sperr- und Anmeldebildschirm aktivieren.</translation>
 <translation id="7093294902558672021">Informationen zum Lüfter eines Geräts melden.
@@ -4088,6 +4151,11 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
+<translation id="7476447711788742702">Wenn die Richtlinie konfiguriert ist, wird festgelegt, was <ph name="PRODUCT_OS_NAME" /> tun soll, wenn der Nutzer das Gerät zuklappt.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, wird die Suspend-Aktion ausgeführt.
+
+      Hinweis: Falls das Gerät gesperrt werden soll, kann separat konfiguriert werden, ob <ph name="PRODUCT_OS_NAME" /> den Bildschirm vorher sperren soll oder nicht.</translation>
 <translation id="7476621944304431784">Wenn diese Einstellung aktiviert ist, können Nutzer WLAN-Konfigurationen zwischen <ph name="PRODUCT_OS_NAME" />-Gerät(en) und einem verbundenen Android-Smartphone synchronisieren. Damit die WLAN-Konfigurationen synchronisiert werden können, muss diese Funktion durch die Nutzer eingerichtet und explizit freigeschaltet werden.
 
       Ist diese Einstellung deaktiviert, können Nutzer die WLAN-Konfigurationen nicht synchronisieren.
@@ -4390,6 +4458,11 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7891884447851425349">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />" die URL der Standardsuchmaschine an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Sie können die Such-URL von Google so angeben: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7894185046683379696">Wenn die Richtlinie konfiguriert ist, wird festgelegt, nach welchem Zeitraum ohne Nutzereingabe in Millisekunden der Bildschirm im Netz- oder Akkubetrieb gesperrt wird. Werte müssen kleiner als der Wert für die Inaktivitätsverzögerung in <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> sein.
+
+      Wenn für den Wert null angegeben wird, wird der Bildschirm bei Inaktivität des Nutzers nicht durch <ph name="PRODUCT_OS_NAME" /> gesperrt. Wenn kein Wert angegeben wird, wird ein Standardwert verwendet.
+
+      Die empfohlene Vorgehensweise ist, die Bildschirmsperre im Suspend-Modus zu aktivieren und <ph name="PRODUCT_OS_NAME" /> anzuweisen, nach der Inaktivitätsverzögerung in den Suspend-Modus zu wechseln. Diese Richtlinie sollte nur verwendet werden, wenn die Bildschirmsperre erheblich früher als der Suspend-Modus eintreten oder der Suspend-Modus bei Inaktivität gar nicht erfolgen soll.</translation>
 <translation id="7895553628261067384">Remotezugriff</translation>
 <translation id="7902040092815978832">Numerische Tastatur für Passwort anzeigen</translation>
 <translation id="7904177352786629708">Wenn die Richtlinie aktiviert ist, wird die CNAME-Suche übersprungen. Der Servername wird so wie eingegeben verwendet, wenn der Kerberos-SPN generiert wird.
@@ -4503,6 +4576,9 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
           Ist die Richtlinie aktiviert, wird die Liste der Konten, die durch die Richtlinie definiert ist, den Einstellungen für Kerberos-Konten hinzugefügt.
 
           Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden den Einstellungen für Kerberos-Konten keine Konten hinzugefügt und alle zuvor über diese Richtlinie hinzugefügten Konten werden entfernt. Nutzer können jedoch trotzdem Konten manuell hinzufügen, wenn die Richtlinie "Nutzer können Kerberos-Konten hinzufügen" aktiviert ist.</translation>
+<translation id="8078297389450285582">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das intelligente Dimmmodell verwendet und der Zeitraum bis zum Dimmen des Bildschirms kann verlängert werden. Wenn das Dimmen des Bildschirms durch das Modell verzögert wird, werden die Verzögerungen für das Ausschalten des Bildschirms, die Bildschirmsperre und die Inaktivität entsprechend angepasst, um die ursprünglich konfigurierten Abstände beizubehalten.
+
+      Wenn die Richtlinie deaktiviert ist, wird das Dimmen des Bildschirms durch das intelligente Dimmmodell nicht beeinflusst.</translation>
 <translation id="8099880303030573137">Inaktivitätsverzögerung im Akkubetrieb</translation>
 <translation id="8101381354936029836">Atomische Richtlinien-Gruppe:</translation>
 <translation id="8101937907822293485">Aktiviert das anonyme Senden von Nutzungs- und Absturzdaten für <ph name="PRODUCT_NAME" /> an Google und verhindert, dass Nutzer die Einstellung ändern.
@@ -4636,6 +4712,11 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="8274603902181597201">ecryptfs-Basisverzeichnis des Nutzers löschen und durch ein neues ext4-verschlüsseltes Basisverzeichnis ersetzen.</translation>
 <translation id="8284296539558710573">Ursprungsübergreifende HTTP-Authentifizierungsaufforderungen</translation>
+<translation id="8284527236880877730">Wenn <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> deaktiviert ist und <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> konfiguriert wird, wird damit der Prozentsatz für die Skalierung der Verzögerung für die Bildschirmabdunkelung angegeben, wenn sich das Gerät im Präsentationsmodus befindet. Wenn die Verzögerung für die Abdunkelung skaliert wird, werden die Verzögerung für die Abschaltung und Sperre des Bildschirms sowie die Inaktivität so angepasst, dass die Abstände der ursprünglichen Konfiguration proportional beibehalten werden.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, wird ein Standardfaktor für die Skalierung verwendet.
+
+      Hinweis: Der Skalierungsfaktor muss bei mindestens 100 % liegen.</translation>
 <translation id="8285435910062771358">Vollbildlupe aktiviert</translation>
 <translation id="8288199156259560552">Google-Standortdienst für Android-Geräte aktivieren</translation>
 <translation id="8290875622178450531">Mit dieser Richtlinie können Sie die Bedienungshilfe "Spracheingabe" aktivieren.
@@ -4962,9 +5043,19 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables finden Sie eine Liste der Variablen, die verwendet werden können.</translation>
 <translation id="8777369558049831576">Kästchen für "Immer öffnen" auf Bestätigungsaufforderung anzeigen</translation>
+<translation id="8786409859071107656">Wenn die Richtlinie aktiviert ist, wird die Energieverwaltungsrichtlinie zur gemeinsamen Stromversorgung per USB aktiviert.
+
+      Bestimmte Geräte haben einen speziellen USB-Port, der mit einem Blitz- oder Batteriesymbol gekennzeichnet ist und zum Aufladen von Geräten mithilfe des Systemakkus verwendet werden kann. Diese Richtlinie betrifft das Ladeverhalten dieses Ports, wenn sich das System im Ruhemodus befindet oder heruntergefahren wurde. Sie hat keine Auswirkungen auf die übrigen USB-Ports und das Ladeverhalten, solange das System aktiv ist und die Stromversorgung immer über den USB-Port erfolgt.
+
+      Im Ruhemodus wird Ladestrom hingegen am USB-Port bereitgestellt, wenn das Gerät mit einer Netzsteckdose verbunden oder der Ladestand des Akkus höher als 50 % ist. Ist das Gerät heruntergefahren, dann wird Ladestrom am USB-Port bereitgestellt, wenn das Gerät an eine Netzsteckdose angeschlossen ist.
+
+      Wenn die Richtlinie deaktiviert ist, dann stellt der USB-Port keinen Ladestrom bereit.
+
+      Ist die Richtlinie nicht konfiguriert, ist sie aktiviert und kann von Nutzern nicht deaktiviert werden.</translation>
 <translation id="8798099450830957504">Standardeinstellung</translation>
 <translation id="8800453707696044281">Den Akkuladestand (%) für benutzerdefiniertes Beenden des Ladevorgangs festlegen</translation>
 <translation id="8801680448782904838">Nutzer benachrichtigen, dass ein Neustart des Browsers oder des Geräts empfohlen wird oder erforderlich ist</translation>
+<translation id="8816671955985738552">SAML-Passwort-Änderungen bei laufender Sitzung unter chrome://password-change nicht zulassen</translation>
 <translation id="8817960019535659860">Verhindern, dass Nutzer Angebote über die Chrome OS-Registrierung einlösen</translation>
 <translation id="8818173863808665831">Meldet den Standort des Geräts.
 

@@ -30,6 +30,7 @@
 <translation id="1930797645656624981">Isevisi yendlela yokufaka kwe-Chrome OS</translation>
 <translation id="1947737735496445907">Kuphrintiwe</translation>
 <translation id="1979103255016296513">Ukushintsha iphasiwedi kudlulelwe isikhathi</translation>
+<translation id="1980044825731880088">Ijubane le-CPU</translation>
 <translation id="2049639323467105390">Idivayisi iphethwe yi-<ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Ezinye izilungiselelo</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -39,6 +40,7 @@
 <translation id="2364498172489649528">Kuphumelele</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> imizamo esele</translation>
 <translation id="2391082728065870591">Thumela Umbiko Wempendulo</translation>
+<translation id="2461822463642141190">Okwamanje</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> kusele umzamo ongu-{0}}one{<ph name="ERROR_MESSAGE" /> kusele imizamo engu-{0}}other{<ph name="ERROR_MESSAGE" /> kusele imizamo engu-{0}}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skena</translation>
@@ -46,6 +48,7 @@
 <translation id="2872961005593481000">Cisha</translation>
 <translation id="3008341117444806826">VUSELELA</translation>
 <translation id="3009958530611748826">Khetha ifolda ozolondoloza kuyo</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">Ukuxilongwa Kokuxhumana</translation>
 <translation id="3091839911843451378">Yehlulekile - Imile</translation>
 <translation id="3188257591659621405">Amafayela ami</translation>
@@ -99,6 +102,7 @@
 <translation id="4917889632206600977">Imile - Iphepha liphelile</translation>
 <translation id="4932733599132424254">Idethi</translation>
 <translation id="4985509611418653372">Ukugijima</translation>
+<translation id="5168185087976003268">Impilo yebhethri</translation>
 <translation id="520299634122159966">Awekho amaskena atholakalayo</translation>
 <translation id="5212543919916444558">Angikwazi ukuthola lutho kusikrini sakho engingasiza ngakho. 
 Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
@@ -114,8 +118,10 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5457599981699367932">Dlulisa amehlo njengesihambeli</translation>
 <translation id="54609108002486618">Kuphethwe</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Funda kabanzi Esikhungweni Sosizo</translation>
 <translation id="5832805196449965646">Engeza umuntu</translation>
 <translation id="5895138241574237353">Qalisa kabusha</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, uhlobo <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Vala</translation>
 <translation id="6048107060512778456">Yehlulekile - Ukujema kwephepha</translation>
 <translation id="6050189528197190982">I-Grayscale</translation>
@@ -179,6 +185,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8910721771319628100">Inethiwekhi ezenzakalelayo ingaphezu komkhawulo wokubambezeleka</translation>
 <translation id="8919837981463578619">Yehlulekile - Itreyi alikho</translation>
 <translation id="8928727111548978589">Yehlulekile - Iphepha liphelile</translation>
+<translation id="9088306295921699330">Ukusetshenziswa kwamanje</translation>
 <translation id="910415269708673980">Vuselela ithikithi le-<ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Iskena ikhasi <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Vula</translation>

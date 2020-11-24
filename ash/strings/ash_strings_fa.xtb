@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">هیچ شبکه تلفن همراهی دردسترس نیست</translation>
 <translation id="3249513730522716925">پنجره <ph name="WINDOW_TITLE" /> از میز <ph name="ACTIVE_DESK" /> به میز <ph name="TARGET_DESK" /> منتقل شد</translation>
 <translation id="3255483164551725916">‏What can you do?‎ (چه کاری می‌توانی انجام دهی؟)</translation>
+<translation id="3269597722229482060">کلیک راست</translation>
 <translation id="3289674678944039601">درحال شارژ ازطریق آداپتور</translation>
 <translation id="3290356915286466215">ناامن</translation>
 <translation id="3294437725009624529">مهمان</translation>
@@ -340,6 +341,7 @@
 <translation id="4212472694152630271">رفتن به پین</translation>
 <translation id="4215497585250573029">‏تنظیمات VPN</translation>
 <translation id="4217571870635786043">املا</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />، برنامه نصب‌شده، موقتاً متوقف‌شده</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="425364040945105958">سیم‌کارتی وجود ندارد</translation>
@@ -761,6 +763,7 @@
 <translation id="8142699993796781067">شبکه‌های خصوصی</translation>
 <translation id="8152092012181020186">‏برای بستن برگه، Ctrl + W را فشار دهید.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> این تنظیم را سرپرست شما مدیریت می‌کند.</translation>
+<translation id="8155628902202578800">باز کردن کادر گفتگوی اطلاعات برای <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">درحال استفاده از <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">شبکه تلفن همراه ضربه بزنید؛ قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">اعلان‌ها پنهان شده است.</translation>
@@ -826,6 +829,7 @@
 <translation id="8755498163081687682">هویتتان را به‌تأیید برسانید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
 <translation id="875593634123171288">‏نمایش تنظیمات VPN</translation>
 <translation id="8759408218731716181">تنظیم ورود چندگانه به سیستم ممکن نیست</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />، برنامه نصب‌شده، مسدودشده</translation>
 <translation id="8785070478575117577">اتصال به <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

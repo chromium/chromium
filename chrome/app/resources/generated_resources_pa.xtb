@@ -133,7 +133,7 @@
 <translation id="114036956334641753">ਆਡੀਓ ਅਤੇ ਸੁਰਖੀਆਂ</translation>
 <translation id="1140746652461896221">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਜਾਂਦੇ ਕਿਸੇ ਵੀ ਪੰਨੇ 'ਤੇ ਸਮੱਗਰੀ ਨੂੰ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="1143142264369994168">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਾਈਨਰ</translation>
-<translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • 1 ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_MINS} ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_MINS} ਮਿੰਟਾਂ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
+<translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • 1 ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_MINS} ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_MINS} ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="1145292499998999162">ਪਲੱਗਇਨ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1145593918056169051">ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
 <translation id="114721135501989771">Chrome ਵਿੱਚ Google ਸਮਾਰਟ ਲਓ</translation>
@@ -177,9 +177,9 @@
 <translation id="11901918071949011">{NUM_FILES,plural, =1{ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਸਟੋਰ ਕੀਤੀ ਫ਼ਾਈਲ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ}one{ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਸਟੋਰ ਕੀਤੀ # ਫ਼ਾਈਲ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ}other{ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਸਟੋਰ ਕੀਤੀਆਂ # ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ}}</translation>
 <translation id="119092896208640858">ਆਪਣੇ 'Google ਖਾਤੇ' ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਰੱਖਦੇ ਹੋਏ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="1192706927100816598">{0,plural, =1{ਤੁਹਾਨੂੰ # ਸਕਿੰਟ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।
-<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}one{ਤੁਹਾਨੂੰ # ਸਕਿੰਟ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।
-<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}other{ਤੁਹਾਨੂੰ # ਸਕਿੰਟਾਂ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।
-<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}}</translation>
+<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਪਾਈ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ।}one{ਤੁਹਾਨੂੰ # ਸਕਿੰਟ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।
+<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਪਾਈ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ।}other{ਤੁਹਾਨੂੰ # ਸਕਿੰਟਾਂ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।
+<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਪਾਈ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ।}}</translation>
 <translation id="1193273168751563528">ਪ੍ਰਬੰਧਿਤ ਸੈਸ਼ਨ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="1193927020065025187">ਇਹ ਸਾਈਟ ਸ਼ਾਇਦ ਦਖਲਅੰਦਾਜ਼ੀ ਵਾਲੀਆਂ ਸੂਚਨਾਵਾਂ ਦੀ ਇਜਾਜ਼ਤ ਲਈ ਤੁਹਾਨੂੰ ਧੋਖਾ ਦੇਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="1195447618553298278">ਅਗਿਆਤ ਗੜਬੜ।</translation>
@@ -1463,7 +1463,7 @@
 <translation id="265390580714150011">ਖੇਤਰ ਦਾ ਮੁੱਲ</translation>
 <translation id="2654166010170466751">ਸਾਈਟਾਂ ਨੂੰ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਨ ਦਿਓ</translation>
 <translation id="2654553774144920065">ਪ੍ਰਿੰਟ ਦੀ ਬੇਨਤੀ</translation>
-<translation id="2657807507504044638">ਕੋਈ ਉਪਲਬਧ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਇੱਥੇ<ph name="END_LINK" /> ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
+<translation id="2657807507504044638">ਕੋਈ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਇੱਥੇ<ph name="END_LINK" /> ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਡੀਵਾਈਸ ਮੁਤਾਬਕ ਵੱਖ-ਵੱਖ ਹੁੰਦੀਆਂ ਹਨ</translation>
 <translation id="2659971421398561408">Crostini ਡਿਸਕ ਦਾ ਆਕਾਰ ਬਦਲਣਾ</translation>
 <translation id="2660779039299703961">ਇਵੈਂਟ</translation>
@@ -1703,7 +1703,7 @@
 <translation id="2916745397441987255">ਐਕਸਟੈਂਸ਼ਨਾਂ ਖੋਜੋ</translation>
 <translation id="2921081876747860777">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਇੱਕ ਪਾਸਵਰਡ ਬਣਾਓ।</translation>
 <translation id="2923006468155067296">ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਹੁਣੇ ਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ।
-<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
+<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਪਾਈ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="2923234477033317484">ਇਸ ਖਾਤੇ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="2926085873880284723">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="2927017729816812676">ਕੈਸ਼ੇ ਸਟੋਰੇਜ</translation>
@@ -2448,7 +2448,7 @@
 <translation id="379082410132524484">ਤੁਹਾਡੇ ਕਾਰਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋਈ</translation>
 <translation id="3792890930871100565">ਪ੍ਰਿੰਟਰਾਂ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="3793395331556663376">ਬਹੁਤ ਸਾਰੇ ਫ਼ਾਈਲ ਸਿਸਟਮ ਖੋਲ੍ਹੇ ਗਏ।</translation>
-<translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • 1 ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_DAYS} ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_DAYS} ਦਿਨਾਂ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
+<translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • 1 ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_DAYS} ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_DAYS} ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="379509625511193653">ਬੰਦ</translation>
 <translation id="3796648294839530037">ਮਨਪਸੰਦ ਨੈਟਵਰਕ:</translation>
 <translation id="3797739167230984533">ਤੁਹਾਡੇ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
@@ -2973,7 +2973,7 @@
 <translation id="4434045419905280838">ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ</translation>
 <translation id="443454694385851356">ਵਿਰਾਸਤੀ (ਅਸੁਰੱਖਿਅਤ)</translation>
 <translation id="443475966875174318">ਗੈਰ-ਅਨੁਰੂਪ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਜਾਂ ਹਟਾਓ</translation>
-<translation id="4436063104263971834">ਕੋਈ ਉਪਲਬਧ ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਇੱਥੇ<ph name="END_LINK" /> ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ।</translation>
+<translation id="4436063104263971834">ਕੋਈ ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਇੱਥੇ<ph name="END_LINK" /> ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ।</translation>
 <translation id="4438043733494739848">ਪਾਰਦਰਸ਼ੀ</translation>
 <translation id="4439427728133035643">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="4441124369922430666">ਕੀ ਤੁਸੀਂ ਇਸ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ ਜਦੋਂ ਮਸ਼ੀਨ ਚਾਲੂ ਹੁੰਦੀ ਹੈ?</translation>
@@ -3579,7 +3579,7 @@
 <translation id="5160634252433617617">ਭੌਤਿਕ ਕੀ-ਬੋਰਡ</translation>
 <translation id="5160857336552977725">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
-<translation id="5163910114647549394">ਟੈਬ ਨੂੰ ਟੈਬਸਟ੍ਰੀਪ ਦੇ ਅੰਤ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ</translation>
+<translation id="5163910114647549394">ਟੈਬ ਨੂੰ ਟੈਬ ਪੱਟੀ ਦੇ ਅੰਤ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="5166596762332123936">ਪੁਰਾਣਾ ਹੋਣ ਦੇ ਕਾਰਨ <ph name="PLUGIN_NAME" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="5171045022955879922">ਖੋਜੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
@@ -3773,6 +3773,7 @@
 <translation id="5402815541704507626">ਮੋਬਾਈਲ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="540296380408672091">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਤੇ ਕੁਕੀਜ਼ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="540495485885201800">ਪਿਛਲੇ ਨਾਲ ਬਦਲੋ</translation>
+<translation id="5405146885510277940">ਸੈਟਿੰਗਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="5408750356094797285">ਜ਼ੂਮ: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ</translation>
 <translation id="5411472733320185105">ਇਹਨਾਂ ਹੋਸਟਾਂ ਅਤੇ ਡੋਮੇਨਾਂ ਲਈ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਨਾ ਵਰਤੋ:</translation>
@@ -4542,7 +4543,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ ਦੀ ਸੀਮਾ ਨੂੰ ਪਾਰ ਕਰਦੀ ਹੈ}one{{COUNT} ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ ਦੀ ਸੀਮਾ ਨੂੰ ਪਾਰ ਕਰਦੀ ਹੈ}other{{COUNT} ਕਾਗਜ਼ ਦੀਆਂ ਸ਼ੀਟਾਂ ਦੀ ਸੀਮਾ ਨੂੰ ਪਾਰ ਕਰਦੀ ਹੈ}}</translation>
 <translation id="6283438600881103103">ਤੁਹਾਨੂੰ ਹੁਣ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।
-<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
+<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਪਾਈ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="628352644014831790">4 ਸਕਿੰਟ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ਆਮ ਤੌਰ 'ਤੇ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ ਅਤੇ ਇਹ ਹਾਨੀਕਾਰਕ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵਾਂ ਪ੍ਰਿੰਟਰ}one{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵੇਂ ਪ੍ਰਿੰਟਰ}other{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵੇਂ ਪ੍ਰਿੰਟਰ}}</translation>
@@ -4866,7 +4867,7 @@
 <translation id="6684827949542560880">ਨਵੀਨਤਮ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="668599234725812620">Google Play ਖੋਲ੍ਹੋ</translation>
 <translation id="6686490380836145850">ਟੈਬਸ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਬੰਦ ਕਰੋ</translation>
-<translation id="6686665106869989887">Tab ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
+<translation id="6686665106869989887">ਟੈਬ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="6686817083349815241">ਆਪਣਾ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6688285987813868112">ਇਸ ਚਿੱਤਰ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="6690659332373509948">ਫਾਈਲ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ: <ph name="FILE_NAME" /></translation>
@@ -5131,7 +5132,7 @@
 <translation id="698524779381350301">ਅੱਗੇ ਦਿੱਤੀਆਂ ਸਾਈਟਾਂ ਤੱਕ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਹੁੰਚ ਕਰਨ ਦਿਓ</translation>
 <translation id="6985607387932385770">ਪ੍ਰਿੰਟਰ</translation>
 <translation id="6988094684494323731">Linux ਕੰਟੇਨਰ ਨੂੰ ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="6988403677482707277">ਟੈਬ ਨੂੰ ਟੈਬਸਟ੍ਰੀਪ ਦੀ ਸ਼ੁਰੂਆਤ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ</translation>
+<translation id="6988403677482707277">ਟੈਬ ਨੂੰ ਟੈਬ ਪੱਟੀ ਦੀ ਸ਼ੁਰੂਆਤ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="6990778048354947307">ਗੂੜ੍ਹਾ ਥੀਮ</translation>
 <translation id="6991665348624301627">ਇੱਕ ਡੈਸਟੀਨੇਸ਼ਨ ਚੁਣੋ</translation>
 <translation id="6992554835374084304">ਵਿਸਤ੍ਰਿਤ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਚਾਲੂ ਕਰੋ</translation>
@@ -6209,6 +6210,7 @@
 <translation id="8226619461731305576">ਕਤਾਰ</translation>
 <translation id="8226628635270268143">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਫ਼ੋਟੋਆਂ ਅਤੇ ਐਲਬਮਾਂ ਚੁਣੋ</translation>
 <translation id="8227119283605456246">ਫ਼ਾਈਲ ਨੱਥੀ ਕਰੋ</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">ਕੀ <ph name="ORIGIN" /> ਲਈ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8234795456569844941">ਕਿਰਪਾ ਕਰਕੇ ਸਾਡੇ ਇੰਜੀਨੀਅਰਾਂ ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਦਾ ਹੱਲ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰੋ। ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਤੁਹਾਨੂੰ ਪ੍ਰੋਫਾਈਲ ਗੜਬੜ ਸੁਨੇਹਾ ਮਿਲਣ ਤੋਂ ਠੀਕ ਪਹਿਲਾਂ ਕੀ ਹੋਇਆ ਸੀ:</translation>
 <translation id="8236917170563564587">ਇਸਦੀ ਬਜਾਏ ਇਹ ਟੈਬ ਸਾਂਝੀ ਕਰੋ</translation>
@@ -6678,9 +6680,9 @@
 <translation id="8775144690796719618">ਅਵੈਧ URL</translation>
 <translation id="8775163630211761057">ਆਪਣੇ Android ਫ਼ੋਨ ਦੇ ਬਿਹਤਰੀਨ ਅਨੁਭਵ ਦਾ ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="8775653927968399786">{0,plural, =1{ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ # ਸਕਿੰਟ ਵਿੱਚ ਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ।
-<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}one{ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ # ਸਕਿੰਟ ਵਿੱਚ ਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ।
-<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}other{ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ # ਸਕਿੰਟਾਂ ਵਿੱਚ ਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ।
-<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}}</translation>
+<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਪਾਈ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ।}one{ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ # ਸਕਿੰਟ ਵਿੱਚ ਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ।
+<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਪਾਈ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ।}other{ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ # ਸਕਿੰਟਾਂ ਵਿੱਚ ਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ।
+<ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣਾ ਸਮਾਰਟ ਕਾਰਡ ਪਾਈ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ।}}</translation>
 <translation id="8777628254805677039">ਰੂਟ ਪਾਸਵਰਡ</translation>
 <translation id="8780123805589053431">Google ਤੋਂ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8780443667474968681">ਅਵਾਜ਼ੀ ਖੋਜ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
@@ -6950,7 +6952,7 @@
 <translation id="9066782832737749352">ਲਿਖਤ ਤੋਂ ਬੋਲੀ</translation>
 <translation id="9068849894565669697">ਰੰਗ ਚੁਣੋ</translation>
 <translation id="9068878141610261315">ਅਸਮਰਥਿਤ ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ</translation>
-<translation id="9070342919388027491">Tab ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
+<translation id="9070342919388027491">ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{1 ਪਤਾ}one{# ਪਤਾ}other{# ਪਤੇ}}</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>

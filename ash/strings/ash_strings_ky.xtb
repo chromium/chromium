@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">Бир да мобилдик тармак жок</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезеси <ph name="ACTIVE_DESK" /> иш тактасынан <ph name="TARGET_DESK" /> иш тактасына жылдырылды</translation>
 <translation id="3255483164551725916">Эмне кыла аласыз?</translation>
+<translation id="3269597722229482060">Оң баскычын чыкылдатуу</translation>
 <translation id="3289674678944039601">Адаптер аркылуу кубатталууда</translation>
 <translation id="3290356915286466215">Корголгон эмес</translation>
 <translation id="3294437725009624529">Конок</translation>
@@ -340,6 +341,7 @@
 <translation id="4212472694152630271">PIN кодго которулуу</translation>
 <translation id="4215497585250573029">VPN жөндөөлөрү</translation>
 <translation id="4217571870635786043">Үн менен жазуу</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, Орнотулган колдонмо, Тындырылды</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="425364040945105958">SIM-карта жок</translation>
@@ -761,6 +763,7 @@
 <translation id="8142699993796781067">Жеке тармак</translation>
 <translation id="8152092012181020186">Жабуу үчүн Ctrl + W баскычтарын басыңыз.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Бул жөндөөнү администраторуңуз башкарат.</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> үчүн маалымат диалогун ачуу</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> колдонулууда</translation>
 <translation id="8170567869359129153">Мобилдик тармак. Сигналдын күчү: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Билдирмелер жашырылды.</translation>
@@ -826,6 +829,7 @@
 <translation id="8755498163081687682">Өздүгүңүздү ырастаңыз: <ph name="ORIGIN_NAME" /> өздүгүңүздү ырастоону суранып жатат</translation>
 <translation id="875593634123171288">VPN жөндөөлөрүн көрсөтүү</translation>
 <translation id="8759408218731716181">Бир нече профиль менен кирүүнү орнотууга болбойт</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, Орнотулган колдонмо, Бөгөттөлдү</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> түзмөгүнө туташуу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

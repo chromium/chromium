@@ -3773,6 +3773,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5402815541704507626">Descargar la actualización con datos móviles</translation>
 <translation id="540296380408672091">Bloquear siempre cookies en <ph name="HOST" /></translation>
 <translation id="540495485885201800">Intercambiar con el anterior</translation>
+<translation id="5405146885510277940">Restablecer configuración</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">De tu cuenta de Google</translation>
 <translation id="5411472733320185105">No utilizar la configuración de proxy para estos hosts y dominios:</translation>
@@ -6213,6 +6214,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8226619461731305576">Cola</translation>
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
 <translation id="8227119283605456246">Adjuntar archivo</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" /> o <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">¿Quieres guardar la contraseña de <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ayuda a nuestros ingenieros a solucionar este problema. Indícanos lo que ha ocurrido justo antes de que apareciera el mensaje de error del perfil:</translation>
 <translation id="8236917170563564587">Compartir esta pestaña</translation>

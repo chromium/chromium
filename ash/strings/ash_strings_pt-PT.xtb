@@ -238,6 +238,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3236488194889173876">Nenhuma rede móvel disponível</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o espaço de trabalho <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">O que podes fazer?</translation>
+<translation id="3269597722229482060">Clicar com o botão direito do rato</translation>
 <translation id="3289674678944039601">A carregar através de adaptador…</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3294437725009624529">Convidado</translation>
@@ -340,6 +341,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4212472694152630271">Mudar para PIN</translation>
 <translation id="4215497585250573029">Definições da VPN</translation>
 <translation id="4217571870635786043">Ditado</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, app instalada, em pausa</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Captura de ecrã</translation>
 <translation id="425364040945105958">Sem cartão SIM</translation>
@@ -501,7 +503,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
 <translation id="5710450975648804523">Modo Não incomodar ativado</translation>
 <translation id="573413375004481890">Este dispositivo não conseguiu suportar todos os seus ecrãs, pelo que um foi desligado.</translation>
-<translation id="5740328398383587084">Partilhar com Nearby</translation>
+<translation id="5740328398383587084">Partilhar na proximidade</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5744083938413354016">Arrastamento através do toque</translation>
 <translation id="5745612484876805746">A Luz noturna ativa-se automaticamente ao pôr do sol</translation>
@@ -697,7 +699,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7607002721634913082">Em pausa</translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Mostre as definições da funcionalidade Partilhar com Nearby.</translation>
+<translation id="7633755430369750696">Mostre as definições da funcionalidade Partilhar na proximidade.</translation>
 <translation id="7641938616688887143">Gravar</translation>
 <translation id="7642647758716480637">Abrir as definições da rede <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
@@ -761,6 +763,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8142699993796781067">Rede privada</translation>
 <translation id="8152092012181020186">Prima Ctrl + W para fechar.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Esta definição é gerida pelo seu administrador.</translation>
+<translation id="8155628902202578800">Abrir a caixa de diálogo de informações de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">A utilizar <ph name="LOCALE_NAME" />...</translation>
 <translation id="8170567869359129153">Rede móvel. Intensidade do sinal de <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">As notificações estão ocultas.</translation>
@@ -826,6 +829,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8755498163081687682">Valide a sua identidade: <ph name="ORIGIN_NAME" /> pretende confirmar a sua identidade.</translation>
 <translation id="875593634123171288">Mostrar definições da VPN</translation>
 <translation id="8759408218731716181">Não é possível configurar o início de sessão integrado</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, app instalada, bloqueada</translation>
 <translation id="8785070478575117577">Ligar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -873,7 +877,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="9092749890156285613">Transferências e capturas de ecrã recentes</translation>
 <translation id="9098969848082897657">Silenciar telemóvel</translation>
 <translation id="9151726767154816831">Reiniciar e efetuar um Powerwash para atualizar</translation>
-<translation id="9166331175924255663">Ative/desative a alta visibilidade da funcionalidade Partilhar com Nearby.</translation>
+<translation id="9166331175924255663">Ative/desative a alta visibilidade da funcionalidade Partilhar na proximidade.</translation>
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
 <translation id="9179259655489829027">Esta funcionalidade permite-lhe aceder rapidamente a qualquer utilizador com a sessão iniciada sem ser necessária uma palavra-passe. Utilize esta funcionalidade apenas com contas fidedignas.</translation>
 <translation id="9183456764293710005">Lupa de ecrã inteiro</translation>

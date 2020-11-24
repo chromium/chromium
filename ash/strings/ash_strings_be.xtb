@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">Няма даступных мабільных сетак</translation>
 <translation id="3249513730522716925">Акно "<ph name="WINDOW_TITLE" />" было перанесена са Стала <ph name="ACTIVE_DESK" /> на Стол <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Што ты ўмееш?</translation>
+<translation id="3269597722229482060">Націснуць правай кнопкай мышы</translation>
 <translation id="3289674678944039601">Ідзе зарадка праз адаптар</translation>
 <translation id="3290356915286466215">Не абаронена</translation>
 <translation id="3294437725009624529">Госць</translation>
@@ -340,6 +341,7 @@
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
 <translation id="4215497585250573029">Налады VPN</translation>
 <translation id="4217571870635786043">Дыктаванне</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, усталяваная праграма, прыпынена</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
 <translation id="425364040945105958">Няма SIM-карты</translation>
@@ -761,6 +763,7 @@
 <translation id="8142699993796781067">Прыватная сетка</translation>
 <translation id="8152092012181020186">Каб закрыць, націсніце Ctrl + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
+<translation id="8155628902202578800">Адкрыць дыялогавае акно інфармацыі аб уліковым запісе <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Выкарыстоўваецца <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Мабільная сетка. Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Апавяшчэнні схаваны.</translation>
@@ -826,6 +829,7 @@
 <translation id="8755498163081687682">Спраўдзіце сваю асобу: <ph name="ORIGIN_NAME" /> хоча ўпэўніцца, што гэта вы</translation>
 <translation id="875593634123171288">Паказаць налады VPN</translation>
 <translation id="8759408218731716181">Не ўдалося наладзіць уваход у некалькі ўліковых запісаў</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, усталяваная праграма, заблакіравана</translation>
 <translation id="8785070478575117577">Падключыцца да сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -185,6 +185,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2718395828230677721">Ánh sáng đêm</translation>
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
+<translation id="2778650143428714839"><ph name="MANAGER" /> quản lý <ph name="DEVICE_TYPE" /></translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
 <translation id="28232023175184696">Không thể kết nối Internet. Hãy nhấp để thử lại.</translation>
@@ -564,6 +565,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6297287540776456956">Sử dụng bút cảm ứng để chọn một vùng</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> đã được xoay vòng sang <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Thoại</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> là phiên do <ph name="MANAGER" /> quản lý</translation>
 <translation id="6376931439017688372">Bluetooth đang bật</translation>
 <translation id="6381109794406942707">Để mở khóa thiết bị, hãy nhập mã PIN của bạn.</translation>
 <translation id="639644700271529076">CAPS LOCK tắt</translation>

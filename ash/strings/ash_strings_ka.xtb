@@ -238,6 +238,7 @@
 <translation id="3236488194889173876">მობილური ქსელი მიუწვდომელია</translation>
 <translation id="3249513730522716925">ფანჯარა <ph name="WINDOW_TITLE" /> გადატანილია სამუშაო მაგიდიდან <ph name="ACTIVE_DESK" /> სამუშაო მაგიდაზე <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">რისი გაკეთება შეგიძლია?</translation>
+<translation id="3269597722229482060">მარჯვენა დაწკაპუნება</translation>
 <translation id="3289674678944039601">იტენება ადაპტერის მეშვეობით</translation>
 <translation id="3290356915286466215">დაუცველი</translation>
 <translation id="3294437725009624529">სტუმარი</translation>
@@ -340,6 +341,7 @@
 <translation id="4212472694152630271">PIN-კოდზე გადართვა</translation>
 <translation id="4215497585250573029">VPN-ის პარამეტრები</translation>
 <translation id="4217571870635786043">კარნახი</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, დაინსტალირებული აპი, დაპაუზებული</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
 <translation id="425364040945105958">SIM-ბარათი არ არის</translation>
@@ -761,6 +763,7 @@
 <translation id="8142699993796781067">პირადი ქსელი</translation>
 <translation id="8152092012181020186">დასახურად დააჭირეთ კლავიშთა კომბინაციას: Ctrl + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
+<translation id="8155628902202578800">საინფორმაციო დიალოგის გახსნა <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
 <translation id="8167567890448493835">გამოიყენება <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">მობილური ქსელი. სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">შეტყობინებები დამალულია.</translation>
@@ -826,6 +829,7 @@
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>
 <translation id="8759408218731716181">მრავლობითი შესვლის დაყენება შეუძლებელია</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, დაინსტალირებული აპი, დაბლოკილი</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-თან დაკავშირება</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

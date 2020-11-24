@@ -185,6 +185,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
 <translation id="2727175239389218057">Rispondi</translation>
 <translation id="2727977024730340865">Collegato a un caricabatterie a basso consumo. La carica della batteria potrebbe non essere affidabile.</translation>
+<translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt+tasto per la ricerca</translation>
 <translation id="2819276065543622893">Verrai disconnesso ora.</translation>
 <translation id="28232023175184696">Impossibile connettersi a Internet. Fai clic per riprovare.</translation>
@@ -237,6 +238,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3236488194889173876">Nessuna rete mobile disponibile</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> è stata spostata dalla scrivania <ph name="ACTIVE_DESK" /> alla scrivania <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Cosa sai fare?</translation>
+<translation id="3269597722229482060">Clic con il pulsante destro</translation>
 <translation id="3289674678944039601">Carica tramite adattatore</translation>
 <translation id="3290356915286466215">Non protetta</translation>
 <translation id="3294437725009624529">Ospite</translation>
@@ -340,6 +342,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4212472694152630271">Passa al PIN</translation>
 <translation id="4215497585250573029">Impostazioni VPN</translation>
 <translation id="4217571870635786043">Dettatura</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, app installata, messa in pausa</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Nessuna SIM rilevata</translation>
@@ -565,6 +568,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6297287540776456956">Utilizza lo stilo per selezionare un'area</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> è stato ruotato a <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voce</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> è una sessione gestita da <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth attivo.</translation>
 <translation id="6381109794406942707">Per sbloccare il dispositivo, inserisci il PIN.</translation>
 <translation id="639644700271529076">Funzione BLOC MAIUSC non attiva</translation>
@@ -760,6 +764,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8142699993796781067">Rete privata</translation>
 <translation id="8152092012181020186">Premi CTRL + W per chiudere.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Questa impostazione è gestita dall'amministratore.</translation>
+<translation id="8155628902202578800">Apri la finestra di dialogo delle informazioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">In uso: <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Rete mobile. Intensità segnale di <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Le notifiche sono nascoste.</translation>
@@ -825,6 +830,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8755498163081687682">Verifica la tua identità come richiesto da <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>
 <translation id="8759408218731716181">Impossibile impostare l'accesso simultaneo</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8785070478575117577">Connetti a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

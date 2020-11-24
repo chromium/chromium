@@ -185,6 +185,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2718395828230677721">Nachtlicht</translation>
 <translation id="2727175239389218057">Antworten</translation>
 <translation id="2727977024730340865">Das Gerät ist an ein Schwachstrom-Ladegerät angeschlossen. Möglicherweise kann der Akku nicht zuverlässig aufgeladen werden.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt+Suchtaste</translation>
 <translation id="2819276065543622893">Sie werden jetzt abgemeldet.</translation>
 <translation id="28232023175184696">Keine Verbindung zum Internet. Zum Wiederholen klicken.</translation>
@@ -564,6 +565,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6297287540776456956">Eingabestift verwenden, um einen Bereich auszuwählen</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> wurde zu <ph name="ROTATION" /> gedreht.</translation>
 <translation id="6315170314923504164">Sprache</translation>
+<translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ ist eine verwaltete Sitzung, die von <ph name="MANAGER" /> verwaltet wird</translation>
 <translation id="6376931439017688372">Bluetooth ist aktiviert</translation>
 <translation id="6381109794406942707">Geben Sie Ihre PIN ein, um das Gerät zu entsperren.</translation>
 <translation id="639644700271529076">Feststelltaste Aus</translation>

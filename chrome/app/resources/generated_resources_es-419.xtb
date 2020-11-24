@@ -3771,6 +3771,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5402815541704507626">Descargar la actualización a través de datos móviles</translation>
 <translation id="540296380408672091">Siempre bloquear las cookies en <ph name="HOST" /></translation>
 <translation id="540495485885201800">Cambiar con el elemento anterior</translation>
+<translation id="5405146885510277940">Restablecer configuración</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">De tu cuenta de Google</translation>
 <translation id="5411472733320185105">No usar la configuración proxy para estos dominios y hosts:</translation>
@@ -6211,6 +6212,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8226619461731305576">Cola</translation>
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
 <translation id="8227119283605456246">Adjuntar un archivo</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">¿Quieres guardar la contraseña para <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ayuda a nuestros ingenieros a corregir este problema. Cuéntanos lo que pasó justo antes de recibir el mensaje de error de perfil:</translation>
 <translation id="8236917170563564587">Compartir esta pestaña en su lugar</translation>

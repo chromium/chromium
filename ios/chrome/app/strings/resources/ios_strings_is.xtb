@@ -424,6 +424,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5659593005791499971">Netfang</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Útgáfa <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5690398455483874150">{count,plural, =1{Sýnir núna 1 Chrome glugga}one{Sýnir núna {count} Chrome glugga}other{Sýnir núna {count} Chrome glugga}}</translation>
 <translation id="5706552126692816153">Virkt fyrir 1 degi</translation>
 <translation id="5711039611392265845">Frekari upplýsingar sem tengjast persónuvernd, öryggi og gagnasöfnun má finna í <ph name="BEGIN_LINK" />Samstilling og þjónusta Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Opnaðu nýjan flipa til að vafra leynilega</translation>

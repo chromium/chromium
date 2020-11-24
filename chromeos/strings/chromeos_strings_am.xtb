@@ -30,6 +30,7 @@
 <translation id="1930797645656624981">የ Chrome OS ግቤት ዘዴ አገልግሎት</translation>
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1979103255016296513">የይለፍ ቃል ለውጥ ማድረጊያ ጊዜው አልፏል</translation>
+<translation id="1980044825731880088">የሲፒዩ ፍጥነት</translation>
 <translation id="2049639323467105390">ይህ መሣሪያ በ<ph name="DOMAIN" /> ነው የሚቀናበረው።</translation>
 <translation id="2080070583977670716">ተጨማሪ ቅንብሮች</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -39,6 +40,7 @@
 <translation id="2364498172489649528">አልፏል</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ሙከራዎች ቀርተዋል</translation>
 <translation id="2391082728065870591">የግብረመልስ ሪፖርት ላክ</translation>
+<translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ሙከራ ቀርቷል}one{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}other{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ቃኝ</translation>
@@ -46,6 +48,7 @@
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ሚአ</translation>
 <translation id="3083667275341675831">የግንኙነት ምርመራዎች</translation>
 <translation id="3091839911843451378">አልተሳካም - ተቋርጧል</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
@@ -99,6 +102,7 @@
 <translation id="4917889632206600977">ቆሟል - ወረቀት አልቋል</translation>
 <translation id="4932733599132424254">ቀን</translation>
 <translation id="4985509611418653372">አሂድ</translation>
+<translation id="5168185087976003268">የባትሪ ጤንነት</translation>
 <translation id="520299634122159966">ምንም ቃኚዎች አይገኙም</translation>
 <translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
 ማንኛውም ነገር እኔን ለመጠየቅ ማይክሮፎኑን መታ አድርገው ይሞክሩ።</translation>
@@ -114,8 +118,10 @@
 <translation id="5457599981699367932">እንደ እንግዳ ያስሱ</translation>
 <translation id="54609108002486618">የተቀናበረ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />፦ <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
 <translation id="5832805196449965646">ሰው አክል</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />፣ ስሪት <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6048107060512778456">አልተሳካም - የወረቀት መታጨቅ</translation>
 <translation id="6050189528197190982">ግራጫማ ምጥጥን</translation>
@@ -179,6 +185,7 @@
 <translation id="8910721771319628100">ነባሪ አውታረ መረብ ከስርዓተ ምላሽ ጊዜ ገደብ በላይ ነው</translation>
 <translation id="8919837981463578619">አልተሳካም - መሳቢያ ይጎድላል</translation>
 <translation id="8928727111548978589">አልተሳካም - ወረቀት አልቋል</translation>
+<translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9106415115617144481">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>
 <translation id="9111102763498581341">ክፈት</translation>

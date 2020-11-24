@@ -432,6 +432,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1475502736924165259">Einige Ihrer gespeicherten Zertifikate passen zu keiner der anderen Kategorien</translation>
 <translation id="1476088332184200792">Auf mein Gerät kopieren</translation>
 <translation id="1476607407192946488">&amp;Spracheinstellungen</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> erfordert, dass Ihre Smartcard eingesteckt ist.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Die Installation ist nicht aktiviert</translation>
 <translation id="1481537595330271162">Fehler bei der Größenanpassung des Laufwerks</translation>
@@ -1691,7 +1692,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="291056154577034373">UNGELESEN</translation>
 <translation id="2910718431259223434">Es gab ein Problem. Bitte noch einmal versuchen oder an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Websites dürfen Cookiedaten speichern und lesen (empfohlen)</translation>
-<translation id="2915016304249900997">Details sind verborgen, während Sie Ihren Bildschirm teilen</translation>
+<translation id="2915016304249900997">Details sind während des Bildschirmteilens verborgen</translation>
 <translation id="2915102088417824677">Aktivitätsprotokoll ansehen</translation>
 <translation id="2915873080513663243">Automatischer Scan</translation>
 <translation id="2915996080311180594">Später neu starten</translation>
@@ -2026,6 +2027,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3320630259304269485">Safe Browsing (Schutz vor schädlichen Websites) und andere Sicherheitseinstellungen</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Diese Daten enthalten vertrauliche oder schädliche Inhalte. Entfernen Sie diese Inhalte und versuchen Sie es noch einmal.}=1{Diese Datei enthält vertrauliche oder schädliche Inhalte. Entfernen Sie diese Inhalte und versuchen Sie es noch einmal.}other{Diese Dateien enthalten vertrauliche oder schädliche Inhalte. Entfernen Sie diese Inhalte und versuchen Sie es noch einmal.}}</translation>
 <translation id="3323521181261657960">Bonus! Gerätenutzungsdauer verlängert</translation>
+<translation id="3325804108816646710">Es wird nach verfügbaren Profilen gesucht…</translation>
 <translation id="3325910708063135066">Kamera und Mikrofon wurden in den Mac-Systemeinstellungen ausgeschaltet</translation>
 <translation id="3327050066667856415">Chromebooks sind auf Sicherheit ausgelegt. Ihr Gerät ist automatisch vor Malware geschützt – ganz ohne zusätzliche Software.</translation>
 <translation id="3328489342742826322">Bei der Wiederherstellung aus einer Sicherung werden bestehende Linux-Anwendungen und -Daten in Ihren Linux-Dateiordnern gelöscht.</translation>
@@ -2093,6 +2095,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3412265149091626468">Auswahl anzeigen</translation>
 <translation id="3413122095806433232">Aussteller von Zertifizierungsstellen: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Größe:</translation>
+<translation id="3414966631182382431"><ph name="BEGIN_LINK" />Ihr Browser wird von <ph name="MANAGER" /> verwaltet<ph name="END_LINK" /></translation>
 <translation id="3416468988018290825">Immer vollständige URLs anzeigen</translation>
 <translation id="3417835166382867856">Tabs suchen</translation>
 <translation id="3417836307470882032">24-Stunden-Format</translation>
@@ -3167,6 +3170,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4651484272688821107">Die Onlinekomponente konnte mit den Ressourcen des Demomodus nicht geladen werden.</translation>
 <translation id="4652935475563630866">Nach dem Ändern der Kameraeinstellung muss Parallels Desktop neu gestartet werden. Starten Sie Parallels Desktop neu, um fortzufahren.</translation>
 <translation id="4653405415038586100">Fehler bei der Konfiguration von Linux</translation>
+<translation id="4657914796247705218">TrackPoint-Geschwindigkeit</translation>
 <translation id="465878909996028221">Nur HTTP-, HTTPS- und Dateiprotokolle werden für Browserweiterleitungen unterstützt.</translation>
 <translation id="4659077111144409915">Primäres Konto</translation>
 <translation id="4659126640776004816">Wenn Sie sich in Ihrem Google-Konto anmelden, ist diese Funktion eingeschaltet.</translation>
@@ -3766,6 +3770,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5402815541704507626">Update über mobile Daten herunterladen</translation>
 <translation id="540296380408672091">Cookies auf <ph name="HOST" /> immer blockieren</translation>
 <translation id="540495485885201800">Mit vorherigem tauschen</translation>
+<translation id="5405146885510277940">Einstellungen zurücksetzen</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Aus Ihrem Google-Konto</translation>
 <translation id="5411472733320185105">Proxy-Einstellungen nicht für diese Hosts und Domains verwenden:</translation>
@@ -3827,6 +3832,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5470735824776589490">Für das Zurücksetzen Ihres Geräts mit Powerwash ist ein Neustart erforderlich. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hallo! Ich bin die Stimme Ihrer Sprachausgabe.</translation>
 <translation id="5472627187093107397">Passwörter für diese Website speichern</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Die PIN muss aus mindestens 1 Zeichen bestehen}other{Die PIN muss aus mindestens # Zeichen bestehen}}</translation>
 <translation id="5473333559083690127">Neue PIN noch einmal eingeben</translation>
 <translation id="5481273127572794904">Dürfen nicht automatisch mehrere Dateien herunterladen</translation>
 <translation id="5481941284378890518">Drucker in der Nähe hinzufügen</translation>
@@ -4365,6 +4371,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6087960857463881712">Cooles Gesicht</translation>
 <translation id="6091761513005122595">Freigabe wurde erfolgreich bereitgestellt.</translation>
 <translation id="6093888419484831006">Aktualisierung wird abgebrochen...</translation>
+<translation id="6095541101974653012">Sie waren abgemeldet.</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Maximiert öffnen</translation>
 <translation id="6096326118418049043">X.500-Name</translation>
@@ -4698,6 +4705,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6474884162850599008">Verbindung zu Google Drive-Konto aufheben</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms teilen. Wählen Sie aus, was geteilt werden soll.</translation>
 <translation id="6478248366783946499">Schädliche Datei beibehalten?</translation>
+<translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">Heruntergeladene Datei öffnen</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> wird geöffnet...</translation>
 <translation id="6488384360522318064">Sprache auswählen</translation>
@@ -4886,6 +4894,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="671928215901716392">Sperren</translation>
 <translation id="6721678857435001674">Den Hersteller und das Modell Ihres Sicherheitsschlüssels anzeigen</translation>
 <translation id="6721972322305477112">&amp;Ablage</translation>
+<translation id="672208878794563299">Diese Website fragt beim nächsten Mal wieder.</translation>
 <translation id="672213144943476270">Bitte entsperren Sie Ihr Profil, bevor Sie als Gast surfen.</translation>
 <translation id="6723661294526996303">Lesezeichen und Einstellungen importieren...</translation>
 <translation id="6723839937902243910">Leistung</translation>
@@ -6201,6 +6210,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8226619461731305576">Warteschlange</translation>
 <translation id="8226628635270268143">Hier können Sie Ihre bevorzugten Fotos und Alben auswählen</translation>
 <translation id="8227119283605456246">Datei anhängen</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Passwort für <ph name="ORIGIN" /> speichern?</translation>
 <translation id="8234795456569844941">Bitte helfen Sie unseren Entwicklern bei der Lösung dieses Problems. Beschreiben Sie genau, was passiert ist, bevor Sie die Profilfehlermeldung erhalten haben:</translation>
 <translation id="8236917170563564587">Stattdessen diesen Tab teilen</translation>
@@ -6282,6 +6292,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8317671367883557781">Netzwerkverbindung hinzufügen</translation>
 <translation id="8319414634934645341">Erweiterte Schlüsselverwendung</translation>
 <translation id="8320459152843401447">Gesamter Bildschirm</translation>
+<translation id="8321837372750396788">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="8322814362483282060">Diese Seite darf nicht auf Ihr Mikrofon zugreifen.</translation>
 <translation id="8323167517179506834">URL eingeben</translation>
 <translation id="8324784016256120271">Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Websites aufzuzeichnen und damit zum Beispiel Werbung zu personalisieren</translation>
@@ -6589,6 +6600,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8698269656364382265">Sie gelangen zum vorherigen Bildschirm, indem Sie von der linken Seite zur Mitte wischen.</translation>
 <translation id="869884720829132584">Apps-Menü</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
+<translation id="8702825062053163569">Ihr <ph name="DEVICE_TYPE" /> war gesperrt.</translation>
 <translation id="8703346390800944767">Werbung überspringen</translation>
 <translation id="8705331520020532516">Seriennummer</translation>
 <translation id="8705580154597116082">WLAN über Smartphone verfügbar</translation>

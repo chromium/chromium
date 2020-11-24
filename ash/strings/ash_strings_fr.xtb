@@ -185,6 +185,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2718395828230677721">Écl. nocturne</translation>
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> géré par <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
 <translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
@@ -564,6 +565,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6297287540776456956">Utilisez le stylet pour sélectionner une zone</translation>
 <translation id="6310121235600822547">L'écran "<ph name="DISPLAY_NAME" />" a effectué une rotation de <ph name="ROTATION" />.</translation>
 <translation id="6315170314923504164">Voix</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth activé</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, saisissez votre code.</translation>
 <translation id="639644700271529076">La touche de verrouillage des majuscules est désactivée.</translation>

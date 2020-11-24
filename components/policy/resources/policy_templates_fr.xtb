@@ -214,6 +214,7 @@
 <translation id="1393485621820363363">Imprimantes d'appareils d'entreprise activées</translation>
 <translation id="1397855852561539316">URL de suggestions de recherche du moteur de recherche par défaut</translation>
 <translation id="1413936351612032792">Transmettre des informations sur l'utilisation des applications Linux</translation>
+<translation id="1418387035898607074">Ignorer les vérifications de la navigation sécurisée visant à autoriser ou non le téléchargement de fichiers provenant d'une source fiable</translation>
 <translation id="142346659686073702">Autoriser les utilisateurs non affiliés à utiliser Crostini</translation>
 <translation id="1425551776320718592">Empêche les utilisateurs de cet appareil de recourir au téléchargement indépendant adb, mais sans imposer la réinitialisation Powerwash. Cela peut remettre en question la sécurité de l'appareil.</translation>
 <translation id="1426170570389588560">Définir un délai en jours pour le stockage des métadonnées liées aux tâches d'impression</translation>
@@ -442,9 +443,15 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est définie sur "False", les utilisateurs ne peuvent pas ajouter, supprimer ni modifier des favoris. En revanche, ils peuvent utiliser les favoris déjà disponibles.</translation>
 <translation id="1715151459541210849">Activer la fonctionnalité d'accessibilité de dictée</translation>
 <translation id="172374442286684480">Autoriser tous les sites à définir des données locales</translation>
+<translation id="1729169799290004131">Cette règle permet de définir le niveau de luminosité de l'écran (en pourcentage), ce qui désactive les fonctionnalités de réglage automatique de la luminosité. En outre, le niveau initial de luminosité de l'écran est ajusté à la valeur définie dans cette règle. Toutefois, les utilisateurs peuvent modifier ce paramètre.
+
+      Si cette règle n'est pas configurée, les réglages de l'utilisateur concernant l'écran ou les fonctionnalités de réglage automatique de la luminosité ne sont pas affectés.
+
+      Remarque : La valeur de cette règle doit être comprise entre 0 et 100 %.</translation>
 <translation id="1736269219679256369">Autoriser la poursuite de la navigation depuis une page d'avertissement SSL</translation>
 <translation id="174765717426930019">Autoriser tous les pop-ups avec une cible "<ph name="BLANK_PAGE_NAME" />" à interagir avec la page sur laquelle ils ont été ouverts, sauf si celle-ci interdit explicitement ce type d'interaction </translation>
 <translation id="1750315445671978749">Bloquer tous les téléchargements</translation>
+<translation id="1755310913456007816">Utiliser les paramètres existants de vérification en ligne de la révocation</translation>
 <translation id="1760951637494635692">Autoriser l'API Serial sur ces sites</translation>
 <translation id="1765512315997108908">Permet de déterminer quelles imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /> sont accessibles aux utilisateurs.
 
@@ -495,6 +502,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1844972978764975668">Autoriser l'envoi de requêtes à un serveur Google visant à récupérer un horodatage précis</translation>
 <translation id="1845405905602899692">Paramètres de kiosque</translation>
 <translation id="1845429996559814839">Limiter le mode d'impression par code</translation>
+<translation id="1846545322805269573">Les utilisateurs ne peuvent pas personnaliser l'arrière-plan de la page "Nouvel onglet"</translation>
 <translation id="1847960418907100918">Spécifie les paramètres utilisés pour la recherche instantanée avec POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur est équivalente à un paramètre modèle, comme "{searchTerms}" dans l'exemple ci-dessus, elle est remplacée par des termes de recherche réels.
 
           Cette règle est facultative. Si elle n'est pas définie, la requête de recherche instantanée sera envoyée à l'aide la méthode GET.
@@ -558,6 +566,37 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1971991630422430420">Si cette règle est activée, la transition rapide est utilisée lorsque le point d'accès sans fil accepte cette fonctionnalité. Elle s'applique à l'ensemble des utilisateurs et des interfaces de l'appareil.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, la transition rapide n'est pas utilisée.</translation>
+<translation id="197744850608781984">Cette règle permet de contrôler la stratégie de gestion de l'alimentation lorsque l'utilisateur est inactif.
+
+      On distingue quatre actions :
+
+      * L'écran s'assombrit si l'utilisateur est toujours inactif au terme du délai défini dans le champ "<ph name="SCREEN_DIM_FIELD_NAME" />".
+
+      * L'écran s'éteint si l'utilisateur est toujours inactif au terme du délai défini dans le champ "<ph name="SCREEN_OFF_FIELD_NAME" />".
+
+      * Un avertissement s'affiche si l'utilisateur est toujours inactif au terme du délai défini dans le champ "<ph name="IDLE_WARNING_FIELD_NAME" />". Il vise à prévenir l'utilisateur que cette inactivité va entraîner une action. Toutefois, il ne s'affiche que si l'action en question consiste à déconnecter l'utilisateur ou à arrêter l'appareil.
+
+      * L'action spécifiée dans le champ "<ph name="IDLE_ACTION_FIELD_NAME" />" est exécutée si l'utilisateur est toujours inactif au terme du délai défini.
+
+      Pour chacune des actions ci-dessus, le délai doit être indiqué en millisecondes et supérieur à zéro pour déclencher l'action correspondante. Si le délai est défini sur zéro, <ph name="PRODUCT_OS_NAME" /> n'exécute pas l'action correspondante.
+
+      Si aucune valeur n'est définie dans les champs ci-dessus, une valeur par défaut est utilisée.
+
+      La valeur du champ "<ph name="SCREEN_DIM_FIELD_NAME" />" doit être inférieure ou égale à celle du champ "<ph name="SCREEN_OFF_FIELD_NAME" />". Les valeurs des champs "<ph name="SCREEN_OFF_FIELD_NAME" />" et "<ph name="IDLE_WARNING_FIELD_NAME" />" doivent être inférieures ou égales au délai d'inactivité.
+
+      L'action spécifiée dans le champ "<ph name="IDLE_ACTION_FIELD_NAME" />" peut être l'une des quatre suivantes :
+
+      * <ph name="IDLE_ACTION_ENUM_SUSPEND" />
+
+      * <ph name="IDLE_ACTION_ENUM_LOGOUT" />
+
+      * <ph name="IDLE_ACTION_ENUM_SHUTDOWN" />
+
+      * <ph name="IDLE_ACTION_ENUM_DO_NOTHING" />
+
+      Si aucune action n'est définie dans le champ "<ph name="IDLE_ACTION_FIELD_NAME" />", l'action "<ph name="IDLE_ACTION_ENUM_SUSPEND" />" est exécutée.
+
+      Remarque : Il est possible de définir des paramètres différents selon que l'appareil est relié à l'alimentation secteur ou qu'il fonctionne sur batterie.</translation>
 <translation id="1988345404999458987">Fournit les configurations des serveurs d'impression disponibles.
 
       Cette règle vous permet de fournir aux appareils <ph name="PRODUCT_OS_NAME" /> une configuration pour les serveurs d'impression externes sous forme de fichier JSON.
@@ -637,6 +676,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="209586405398070749">Version stable</translation>
 <translation id="2098658257603918882">Autoriser l'envoi de statistiques d'utilisation et de rapports d'erreur</translation>
 <translation id="2104418465060359056">Enregistrer les informations des extensions et des plug-ins</translation>
+<translation id="2106166591774188922">Autoriser les utilisateurs SAML à changer leur mot de passe SAML en cours de session sur la page chrome://password-change</translation>
 <translation id="2106627642643925514">Remplace le mode d'impression par code défini par défaut. Si le mode est indisponible, cette règle est ignorée.</translation>
 <translation id="2107563874993284076">Si cette règle est activée, les utilisateurs peuvent utiliser des partages de fichiers en réseau pour <ph name="PRODUCT_NAME" />. Si elle est désactivée, les utilisateurs n'y sont pas autorisés.</translation>
 <translation id="2107601598727098402">
@@ -1221,6 +1261,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2957513448235202597">Type de compte pour l'authentification <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Toujours transmettre les points d'accès Wi-Fi au serveur tout en mettant à jour le fuseau horaire</translation>
 <translation id="2959898425599642200">Règles de contournement de proxy</translation>
+<translation id="2960013482187484833">Définir la dernière imprimante utilisée comme celle par défaut dans l'aperçu avant impression</translation>
 <translation id="2960128438010718932">Calendrier d'échelonnement pour l'application d'une nouvelle mise à jour</translation>
 <translation id="2960691910306063964">Activer ou désactiver l'authentification sans code d'accès pour les hôtes d'accès à distance</translation>
 <translation id="2964373560810620158">Empêcher les utilisateurs de se servir du navigateur <ph name="LACROS_NAME" /></translation>
@@ -1318,6 +1359,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3072847235228302527">Définir les conditions d'utilisation d'un compte local de l'appareil</translation>
 <translation id="3086995894968271156">Configurer le récepteur Cast dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Recharge de la batterie des appareils connectés principalement à une source d'alimentation externe.</translation>
+<translation id="3092059499596000593">Définir l'imprimante système par défaut comme celle par défaut dans l'aperçu avant impression</translation>
 <translation id="309416443108680956">Indique ce qu'il se passe lorsqu'un utilisateur qui s'authentifie au moyen d'un jeton de sécurité (carte à puce, par exemple) retire ce jeton alors qu'il est connecté. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> : rien ne se passe. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> : l'écran se verrouille jusqu'à ce que l'utilisateur s'authentifie à nouveau. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> : la session prend fin, et l'utilisateur est déconnecté. Si cette règle n'est pas configurée, elle est définie par défaut sur <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Liste des plug-ins activés</translation>
 <translation id="3101501961102569744">Sélectionner le mode de spécification des paramètres de serveur proxy</translation>
@@ -1371,6 +1413,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3219421230122020860">Mode navigation privée disponible</translation>
 <translation id="3220624000494482595">Si l'application kiosque est une application Android, elle ne contrôlera pas la version <ph name="PRODUCT_OS_NAME" /> même si cette règle est définie sur "<ph name="TRUE" />".</translation>
 <translation id="322359555555487980">Déterminer la disponibilité des variantes de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3231617925177241750">Si cette règle est activée, et que les règles <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> et <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> sont configurées, le mode d'alimentation alternée en heures pleines est activé (s'il est disponible sur l'appareil). Ce mode permet d'économiser l'énergie en faisant fonctionner autant que possible l'appareil sur batterie plutôt que sur secteur pendant les heures pleines. Vous pouvez définir l'heure de début et de fin de ce mode pour chaque jour de la semaine. Tant que le niveau de charge de la batterie reste au-dessus du seuil spécifié, l'appareil fonctionne sur batterie en heures pleines (même s'il est branché sur une prise électrique). Passée l'heure de fin définie, l'appareil repasse sur secteur (s'il est branché sur une prise), mais il ne recharge pas la batterie. Il fonctionnera de nouveau normalement sur secteur et rechargera la batterie à l'heure de début définie pour ce mode.
+
+      Si cette règle est désactivée, le mode d'alimentation alternée en heures pleines l'est également.
+
+      Si cette règle n'est pas configurée, ce mode est désactivé par défaut. Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
 <translation id="3231837273069128027">Cette règle permet de configurer la disponibilité et le comportement des mises à jour du micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Spécifiez les paramètres individuels dans les propriétés JSON :
@@ -1738,6 +1785,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est désactivée ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> laisse l'utilisateur éteindre l'appareil.</translation>
 <translation id="3765260570442823273">Durée du message d'avertissement avant la déconnexion pour cause d'inactivité</translation>
 <translation id="377044054160169374">Application de l'intervention en cas d'expérience abusive</translation>
+<translation id="3778689139323007309">Procéder à des vérifications de la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement</translation>
 <translation id="3780152581321609624">Inclure un port non standard dans le SPN Kerberos</translation>
 <translation id="3788662722837364290">Paramètres de gestion de l'alimentation en cas d'inactivité de l'utilisateur</translation>
 <translation id="3790085888761753785">Si ce paramètre est activé, les utilisateurs seront autorisés à se connecter à leur compte avec Smart Lock. Ce paramètre est plus permissif que le comportement normal de Smart Lock qui permet seulement aux utilisateurs de déverrouiller leur écran.
@@ -2726,6 +2774,7 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
           Si elle est associée à la valeur "true" ou si elle n'est pas configurée, cet utilisateur peut créer et gérer des comptes utilisateur supervisés.</translation>
 <translation id="5369937289900051171">Impression couleur seulement</translation>
 <translation id="5370279767682621504">Activer la compatibilité avec HTTP 0.9 sur les ports non utilisés par défaut</translation>
+<translation id="5371152055157582429">Les utilisateurs peuvent personnaliser l'arrière-plan de la page "Nouvel onglet"</translation>
 <translation id="5377606826822211923">Contrôler l'accès par l'utilisateur aux applications Android provenant de sources non approuvées</translation>
 <translation id="5377668121137111316">Définissez cette règle sur "True" pour maintenir le clavier virtuel activé. Définissez cette règle sur "False" pour le maintenir désactivé.
 
@@ -2971,6 +3020,14 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="572155275267014074">Paramètres Android</translation>
 <translation id="5728154254076636808">Permet de créer des copies itinérantes pour les données de profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5732972008943405952">Importer les données de saisie automatique du navigateur par défaut à la première exécution</translation>
+<translation id="5733040281451845496">Si cette règle est activée, les délais liés à la gestion de l'alimentation et les limites relatives à la durée de session ne sont activés que lorsque l'utilisateur a effectué une première activité au cours d'une session.
+
+      Si la règle est désactivée ou qu'elle n'est pas configurée, ces délais et limites sont activés dès le lancement de la session.</translation>
+<translation id="5738766588683307797">Si la règle <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> est désactivée, la règle <ph name="USER_ACTIVITY_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> permet de définir le pourcentage d'adaptation du délai d'assombrissement de l'écran en cas d'activité de l'utilisateur lors de la réduction de la luminosité ou peu de temps après que l'écran s'éteigne. L'adaptation de ce délai décale d'autant le moment où l'écran doit s'éteindre, se verrouiller et se mettre en veille, ceci afin de maintenir l'intervalle initialement configuré.
+
+      Si cette règle n'est pas configurée, le facteur d'adaptation par défaut est utilisé.
+
+      Remarque : Le facteur d'adaptation doit être de 100 % ou plus.</translation>
 <translation id="574098933844699859">Indiquer si les informations système (par exemple, la version de Chrome OS ou le numéro de série de l'appareil) sont toujours affichées (ou masquées) sur l'écran de connexion.
 
       Si la règle est définie sur "True", l'affichage des informations système est forcé.
@@ -3383,6 +3440,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si elle est désactivée ou n'est pas définie, le menu d'accessibilité flottant ne sera jamais affiché.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" /> :</translation>
+<translation id="6424486395812679373">Procéder aux vérifications de la navigation sécurisée pour tous les fichiers téléchargés</translation>
 <translation id="6438364096042399634">Permet d'établir la liste des appareils USB que les utilisateurs peuvent dissocier de leur pilote de noyau pour s'en servir via l'API chrome.usb directement au sein d'une application Web. Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un code produit associé à un appareil spécifique.
 
       Si cette règle n'est pas configurée, la liste des appareils USB amovibles est vide.
@@ -3462,13 +3520,15 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si cette règle n'est pas configurée, ou qu'elle est définie sur "Choix laissé aux utilisateurs" ou "Aucun", les utilisateurs peuvent gérer la détection automatique du fuseau horaire à l'aide des commandes classiques disponibles dans chrome://settings.</translation>
 <translation id="6532769014584932288">Autoriser les wakelocks</translation>
-<translation id="6536444379078076149">Activer ou désactiver l'affichage de l'interface utilisateur liée à la connexion sur le bureau hôte lorsqu'une connexion est active</translation>
 <translation id="6536600139108165863">Redémarrer automatiquement à l'arrêt de l'appareil</translation>
 <translation id="6539246272469751178">Cette règle n'a aucun effet sur les applications Android. Celles-ci se servent toujours du répertoire de téléchargements par défaut. Elles ne peuvent pas accéder aux fichiers téléchargés par <ph name="PRODUCT_OS_NAME" /> dans un autre répertoire de téléchargements.</translation>
 <translation id="654303922206238013">Stratégie de migration pour eCryptfs</translation>
 <translation id="6553143066970470539">Niveau de luminosité de l'écran (%)</translation>
 <translation id="6558362593755624474">Cette règle permet de spécifier la clé de licence <ph name="PLUGIN_VM_NAME" /> pour cet appareil.</translation>
 <translation id="6559057113164934677">Interdire à tous les sites d'accéder à la caméra et au microphone</translation>
+<translation id="6559221564468029245">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur n'est pas considéré comme inactif pendant la lecture audio. Le délai d'inactivité ne peut ainsi pas être atteint, et l'action à effectuer en cas d'inactivité n'est pas appliquée. Toutefois, l'écran peut quand même s'assombrir, s'éteindre ou se verrouiller au terme des délais configurés, malgré l'activité audio.
+
+      Si cette règle est désactivée, le système peut considérer que l'utilisateur est inactif malgré l'activité audio.</translation>
 <translation id="6559475864956112261">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
 
        Si elle est activée, vous pouvez définir le serveur proxy que Chrome utilise et les utilisateurs ne sont pas en mesure de modifier les paramètres de proxy. Chrome et les applications ARC ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande. Cette règle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée.
@@ -3881,6 +3941,9 @@ Si vous sélectionnez les options suivantes :
 <translation id="7072208053150563108">Fréquence de modification du mot de passe machine</translation>
 <translation id="7072567600438630966">Autorisez l'activation de Phone Hub.</translation>
 <translation id="7079519252486108041">Bloquer les fenêtres pop-up sur ces sites</translation>
+<translation id="7081784525008938771">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur n'est pas considéré comme inactif pendant la lecture vidéo. Les délais d'inactivité, d'assombrissement, d'arrêt ou de verrouillage de l'écran ne peuvent donc pas être atteints, et aucune des actions correspondantes n'est effectuée.
+
+      Si cette règle est désactivée, le système peut considérer que l'utilisateur est inactif malgré l'activité vidéo.</translation>
 <translation id="7086720321892395256">Contrôle les règles relatives aux utilisateurs et aux appareils pour la fonctionnalité d'écran de confidentialité.</translation>
 <translation id="7091842872805965910">Permet d'activer la fonctionnalité d'envoi automatique du code PIN sur l'écran de connexion et de verrouillage.</translation>
 <translation id="7093294902558672021">Transmet des informations sur le ventilateur de l'appareil.
@@ -4110,6 +4173,11 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 
       Si cette règle n'est pas configurée, la règle <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="747275827471712187">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur ces sites</translation>
+<translation id="7476447711788742702">Cette règle permet de définir l'action que <ph name="PRODUCT_OS_NAME" /> effectue lorsque l'utilisateur rabat l'écran de l'appareil.
+
+      Si cette règle n'est pas configurée, l'action exécutée est un arrêt temporaire.
+
+      Remarque : Dans ce cas, <ph name="PRODUCT_OS_NAME" /> peut être configuré séparément pour verrouiller ou non l'écran avant l'arrêt provisoire.</translation>
 <translation id="7476621944304431784">Si ce paramètre est activé, les utilisateurs seront autorisés à synchroniser les configurations du réseau Wi-Fi entre leurs appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté. Pour pouvoir synchroniser les configurations du réseau Wi-Fi, les utilisateurs doivent au préalable activer explicitement cette fonctionnalité en suivant une procédure de configuration.
 
       Si ce paramètre est désactivé, les utilisateurs ne seront pas autorisés à synchroniser les configurations du réseau Wi-Fi.
@@ -4416,6 +4484,11 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7891884447851425349">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche utilisé lors d'une recherche par défaut. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7894185046683379696">Cette règle permet de définir, en millisecondes, le délai d'inactivité au terme duquel l'écran est verrouillé lorsque l'appareil fonctionne sur secteur ou sur batterie. Ce délai doit être inférieur au délai d'inactivité spécifié dans la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
+
+      Si cette règle est définie sur zéro, <ph name="PRODUCT_OS_NAME" /> ne verrouille pas l'écran en cas d'inactivité de l'utilisateur. Si cette règle n'est pas configurée, un délai par défaut est utilisé.
+
+      Recommandation : Pour verrouiller l'écran en cas d'inactivité, activez le verrouillage de l'écran lors de l'arrêt temporaire, et de configurer l'arrêt temporaire de <ph name="PRODUCT_OS_NAME" /> au terme du délai d'inactivité. N'utilisez cette règle que lorsque le verrouillage de l'écran doit intervenir bien avant l'arrêt temporaire de l'appareil ou lorsque vous ne voulez pas que l'appareil soit arrêté temporairement en cas d'inactivité.</translation>
 <translation id="7895553628261067384">Accès à distance</translation>
 <translation id="7902040092815978832">Afficher le clavier numérique pour la saisie du mot de passe</translation>
 <translation id="7904177352786629708">Si cette règle est activée, la recherche du CNAME est ignorée. Le nom du serveur est utilisé tel qu'il a été saisi lors de la génération du SPN Kerberos.
@@ -4534,6 +4607,9 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
           Si cette règle est activée, la liste des comptes qu'elle définit est ajoutée aux paramètres de comptes Kerberos.
 
           Si cette règle est désactivée ou si elle n'est pas définie, aucun compte n'est ajouté aux paramètres de comptes Kerberos, et tous ceux déjà ajoutés avec cette règle sont supprimés. Les utilisateurs peuvent toujours ajouter des comptes manuellement si la règle KerberosAddAccountsAllowed est activée.</translation>
+<translation id="8078297389450285582">Si cette règle est activée ou qu'elle n'est pas configurée, le modèle de réduction intelligente de la luminosité est activé, et le délai d'assombrissement de l'écran peut être augmenté. L'ajustement de ce délai décale d'autant le moment où l'écran doit s'éteindre, se verrouiller et se mettre en veille, ceci afin de maintenir l'intervalle initialement configuré.
+
+      Si cette règle est désactivée, le modèle de réduction intelligente de la luminosité n'influe pas sur l'assombrissement de l'écran.</translation>
 <translation id="8099880303030573137">Délai d'inactivité (batterie)</translation>
 <translation id="8101381354936029836">Groupe atomique de la règle :</translation>
 <translation id="8101937907822293485">Permet d'envoyer à Google des rapports anonymes sur les données relatives à l'utilisation et aux plantages concernant <ph name="PRODUCT_NAME" />, et d'empêcher les utilisateurs de modifier ce paramètre.
@@ -4669,6 +4745,11 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="8274603902181597201">Nettoyer le répertoire d'accueil eCryptfs de l'utilisateur et employer un nouveau répertoire d'accueil chiffré avec ext4.</translation>
 <translation id="8284296539558710573">Commandes d'authentification HTTP multi-domaines</translation>
+<translation id="8284527236880877730">Si la règle <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> est désactivée, la règle <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> permet de définir le pourcentage d'adaptation du délai d'assombrissement lorsque l'appareil effectue la présentation. L'adaptation de ce délai décale d'autant le moment où l'écran doit s'éteindre, se verrouiller et se mettre en veille, ceci afin de maintenir l'intervalle initialement configuré.
+
+      Si cette règle n'est pas configurée, le facteur d'adaptation par défaut est utilisé.
+
+      Remarque : Le facteur d'adaptation doit être de 100 % ou plus.</translation>
 <translation id="8285435910062771358">Loupe plein écran activée</translation>
 <translation id="8288199156259560552">Activer le service de localisation Google pour Android</translation>
 <translation id="8290875622178450531">Activer la fonctionnalité d'accessibilité de dictée.
@@ -4995,9 +5076,19 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Remarque : Pour savoir quelles variables vous pouvez utiliser, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="8777369558049831576">Afficher une case "Toujours ouvrir" dans une boîte de dialogue de protocole externe.</translation>
+<translation id="8786409859071107656">Si cette règle est activée, la règle de gestion du partage d'alimentation USB l'est également.
+
+      Certains appareils sont équipés d'un port USB spécifique (identifié par une icône représentant un éclair ou une batterie) qui permet de les recharger à l'aide de la batterie du système. Cette règle concerne la recharge via ce port lorsque le système est en veille ou éteint. En revanche, elle n'affecte pas les autres ports USB ni la recharge lorsque le système est activé (quand ce port USB spécifique fournit toujours l'alimentation).
+
+      Lorsque le système est en veille, le port USB est alimenté quand l'appareil est branché sur le chargeur mural ou si le niveau de charge de la batterie est supérieur à 50 %. Lorsque le système est éteint, le port USB est alimenté quand l'appareil est branché sur le chargeur mural.
+
+      Si cette règle est désactivée, le port USB n'est pas alimenté.
+
+      Si cette règle n'est pas configurée, elle est activée, et les utilisateurs ne peuvent pas la désactiver.</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8800453707696044281">Personnaliser le pourcentage auquel la recharge de la batterie doit s'arrêter</translation>
 <translation id="8801680448782904838">Avertir un utilisateur qu'un redémarrage du navigateur ou de l'appareil est recommandé ou exigé</translation>
+<translation id="8816671955985738552">Ne pas autoriser le changement de mot de passe SAML en cours de session sur la page chrome://password-change</translation>
 <translation id="8817960019535659860">Empêcher les utilisateurs de profiter des offres via le service d'enregistrement Chrome OS</translation>
 <translation id="8818173863808665831">Permet d'indiquer l'emplacement géographique de l'appareil.
 

@@ -92,6 +92,7 @@
 <translation id="2163152940313951844">ልክ ያልሆነ ቁምፊ፦ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2198315389084035571">ቀላል ቻይንኛ</translation>
 <translation id="2208158072373999562">የZip ማህደር</translation>
+<translation id="2208919847696382164">በLinux ይጫኑ</translation>
 <translation id="2225536596944493418">እርግጠኛ ነዎት <ph name="NUMBER_OF_ITEMS" /> ንጥሎችን መሰረዝ ይፈልጋሉ?</translation>
 <translation id="2230062665678605299">የ«<ph name="FOLDER_NAME" />» አቃፊን መፍጠር አልተቻለም። <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">ተወስደዋል።</translation>
@@ -128,6 +129,7 @@
 <translation id="2664412712123763093">የፋይል ቦታ</translation>
 <translation id="2672394958563893062">አንድ ስህተት ተከስቷል። ከመጀመሪያው ጀምሮ ዳግም ለማስጀመር ጠቅ ያድርጉ።</translation>
 <translation id="2676946222714718093">እየተጫወተ ያለው በ፦</translation>
+<translation id="2718540689505416944">መተግበሪያ በLinux ጫን</translation>
 <translation id="2735623501230989521">Parallels ዴስክቶፕ በ<ph name="FOLDER_NAME" /> አቃፊው ውስጥ ያሉ ፋይሎችን እንዲደርስ ፈቃድ ይስጡት</translation>
 <translation id="2771816809568414714">ቺዝ</translation>
 <translation id="2781645665747935084">የቤልጂየም</translation>

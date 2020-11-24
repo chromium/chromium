@@ -432,6 +432,7 @@
 <translation id="1475502736924165259">他のどのカテゴリにも適合しない証明書がファイルに格納されています</translation>
 <translation id="1476088332184200792">デバイスにコピー</translation>
 <translation id="1476607407192946488">言語設定(&amp;L)</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
 <translation id="1478340334823509079">詳細: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">インストールが有効になっていません</translation>
 <translation id="1481537595330271162">ディスクのサイズ変更中にエラーが発生しました</translation>
@@ -2030,6 +2031,7 @@
 <translation id="3320630259304269485">セーフ ブラウジング（危険なサイトからの保護機能）などのセキュリティ設定</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{このデータにはデリケートなコンテンツまたは危険なコンテンツが含まれています。このコンテンツを削除してから、もう一度お試しください。}=1{このファイルにはデリケートなコンテンツまたは危険なコンテンツが含まれています。このコンテンツを削除してから、もう一度お試しください。}other{これらのファイルにはデリケートなコンテンツまたは危険なコンテンツが含まれています。このコンテンツを削除してから、もう一度お試しください。}}</translation>
 <translation id="3323521181261657960">ボーナスタイムが加算されました</translation>
+<translation id="3325804108816646710">使用可能なプロファイルを検出しています...</translation>
 <translation id="3325910708063135066">Mac のシステム環境設定でカメラとマイクがオフになっています</translation>
 <translation id="3327050066667856415">Chromebook はセキュリティを重視して設計されています。デバイスはマルウェアから自動的に保護され、追加のソフトウェアは必要ありません。</translation>
 <translation id="3328489342742826322">バックアップから復元すると、Linux ファイル フォルダの既存の Linux アプリケーションとデータは削除されます。</translation>
@@ -2097,6 +2099,7 @@
 <translation id="3412265149091626468">選択部分へジャンプ</translation>
 <translation id="3413122095806433232">認証局発行元: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">サイズ:</translation>
+<translation id="3414966631182382431">ご使用の<ph name="BEGIN_LINK" />ブラウザは <ph name="MANAGER" /> によって管理されています<ph name="END_LINK" /></translation>
 <translation id="3416468988018290825">URL 全体を常に表示</translation>
 <translation id="3417835166382867856">タブを検索</translation>
 <translation id="3417836307470882032">24 時制</translation>
@@ -3171,6 +3174,7 @@
 <translation id="4651484272688821107">デモモード リソースでオンライン コンポーネントを読み込めませんでした。</translation>
 <translation id="4652935475563630866">カメラの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
 <translation id="4653405415038586100">Linux の設定中にエラーが発生しました</translation>
+<translation id="4657914796247705218">トラック ポイントの速度</translation>
 <translation id="465878909996028221">ブラウザのリダイレクトでは、http、https、file プロトコルのみサポートされています。</translation>
 <translation id="4659077111144409915">メイン アカウント</translation>
 <translation id="4659126640776004816">この機能は Google アカウントにログインすると有効になります。</translation>
@@ -3770,6 +3774,7 @@
 <translation id="5402815541704507626">モバイルデータ接続でのアップデートのダウンロード</translation>
 <translation id="540296380408672091"><ph name="HOST" /> の Cookie を常にブロックする</translation>
 <translation id="540495485885201800">前と交換</translation>
+<translation id="5405146885510277940">設定のリセット</translation>
 <translation id="5408750356094797285">ズーム: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google アカウントから削除</translation>
 <translation id="5411472733320185105">以下のホストとドメインにはプロキシ設定を使用しない:</translation>
@@ -3831,6 +3836,7 @@
 <translation id="5470735824776589490">デバイスを Powerwash でリセットするにはまず再起動が必要です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">こんにちは。テキスト読み上げの音声です。</translation>
 <translation id="5472627187093107397">このサイトのパスワードを保存する</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN は 1 文字以上で入力してください}other{PIN は # 文字以上で入力してください}}</translation>
 <translation id="5473333559083690127">新しい PIN を再入力</translation>
 <translation id="5481273127572794904">複数のファイルの自動ダウンロードを許可しないサイト</translation>
 <translation id="5481941284378890518">近くのプリンタを追加</translation>
@@ -4369,6 +4375,7 @@
 <translation id="6087960857463881712">エピック スマイリー</translation>
 <translation id="6091761513005122595">共有フォルダが正常にマウントされました。</translation>
 <translation id="6093888419484831006">更新をキャンセルしています...</translation>
+<translation id="6095541101974653012">ログアウトしました。</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">最大化して開く</translation>
 <translation id="6096326118418049043">X.500 名</translation>
@@ -4702,6 +4709,7 @@
 <translation id="6474884162850599008">Google ドライブ アカウントを切断する</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> が画面コンテンツの共有をリクエストしています。共有する部分を選択してください。</translation>
 <translation id="6478248366783946499">危険なファイルを保存しますか？</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> によって管理されています</translation>
 <translation id="6483485061007832714">ダウンロードしたファイルを開く</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> を開いています...</translation>
 <translation id="6488384360522318064">言語を選択</translation>
@@ -4890,6 +4898,7 @@
 <translation id="671928215901716392">画面をロック</translation>
 <translation id="6721678857435001674">セキュリティ キーのメーカーとモデルの読み取り</translation>
 <translation id="6721972322305477112">ファイル(&amp;F)</translation>
+<translation id="672208878794563299">次回、このサイトからもう一度許可を求められます。</translation>
 <translation id="672213144943476270">ゲストとしてブラウジングするにはまずプロフィールのロックを解除してください。</translation>
 <translation id="6723661294526996303">ブックマークと設定をインポート...</translation>
 <translation id="6723839937902243910">電源</translation>
@@ -6206,6 +6215,7 @@
 <translation id="8226619461731305576">キュー</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
 <translation id="8227119283605456246">添付ファイル</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> のパスワードを保存しますか？</translation>
 <translation id="8234795456569844941">問題解決の手がかりとして、具体的にどのような操作を行ったときにプロフィール エラーのメッセージが表示されたかをお知らせください。</translation>
 <translation id="8236917170563564587">代わりにこのタブを共有</translation>
@@ -6287,6 +6297,7 @@
 <translation id="8317671367883557781">ネットワーク接続を追加</translation>
 <translation id="8319414634934645341">拡張キーの用途</translation>
 <translation id="8320459152843401447">あなたの全画面</translation>
+<translation id="8321837372750396788">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> で管理されます。</translation>
 <translation id="8322814362483282060">このページはマイクへのアクセスを禁止されています。</translation>
 <translation id="8323167517179506834">URL を入力してください</translation>
 <translation id="8324784016256120271">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できます（広告のカスタマイズなどが行えます）</translation>
@@ -6594,6 +6605,7 @@
 <translation id="8698269656364382265">前の画面に戻るには、左端から中央にスワイプします。</translation>
 <translation id="869884720829132584">アプリケーション メニュー</translation>
 <translation id="869891660844655955">有効期限</translation>
+<translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> がロックされました。</translation>
 <translation id="8703346390800944767">広告をスキップ</translation>
 <translation id="8705331520020532516">シリアル番号</translation>
 <translation id="8705580154597116082">スマートフォンから Wi-Fi に接続できます</translation>

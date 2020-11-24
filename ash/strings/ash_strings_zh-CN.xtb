@@ -185,6 +185,7 @@
 <translation id="2718395828230677721">护眼模式</translation>
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
+<translation id="2778650143428714839">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2792498699870441125">Alt + 搜索键</translation>
 <translation id="2819276065543622893">您将立即退出。</translation>
 <translation id="28232023175184696">无法连接到互联网。点击即可重试。</translation>
@@ -564,6 +565,7 @@
 <translation id="6297287540776456956">使用触控笔选择一个区域</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" />已旋转为<ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">语音</translation>
+<translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>
 <translation id="6376931439017688372">蓝牙已开启</translation>
 <translation id="6381109794406942707">要解锁此设备，请输入您的 PIN 码。</translation>
 <translation id="639644700271529076">CAPS LOCK 已关闭</translation>

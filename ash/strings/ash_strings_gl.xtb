@@ -238,6 +238,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3236488194889173876">Non hai ningunha rede móbil dispoñible</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
+<translation id="3269597722229482060">Facer clic co botón dereito</translation>
 <translation id="3289674678944039601">Cargando cun adaptador</translation>
 <translation id="3290356915286466215">Sen protección</translation>
 <translation id="3294437725009624529">Invitado</translation>
@@ -341,6 +342,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4212472694152630271">Cambiar ao PIN</translation>
 <translation id="4215497585250573029">Configuración de VPN</translation>
 <translation id="4217571870635786043">Ditado</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, aplicación instalada, en pausa</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425364040945105958">Sen SIM</translation>
@@ -762,6 +764,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8142699993796781067">Rede privada</translation>
 <translation id="8152092012181020186">Preme Ctrl+W para pechar.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> O teu administrador xestiona esta opción de configuración.</translation>
+<translation id="8155628902202578800">Abrir cadro de diálogo de información para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Usando: <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Rede de telefonía móbil. Intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">As notificacións están ocultas.</translation>
@@ -827,6 +830,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8755498163081687682">Verificar identidade: <ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="875593634123171288">Mostrar a configuración da VPN</translation>
 <translation id="8759408218731716181">Erro ao configurar o inicio de sesión múltiple</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, aplicación instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar con <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wifi</translation>

@@ -3786,6 +3786,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5402815541704507626">Download update using mobile data</translation>
 <translation id="540296380408672091">Always block cookies on <ph name="HOST" /></translation>
 <translation id="540495485885201800">Swap with previous</translation>
+<translation id="5405146885510277940">Reset settings</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">From your Google Account</translation>
 <translation id="5411472733320185105">Do not use the proxy settings for these hosts and domains:</translation>
@@ -6233,6 +6234,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8226619461731305576">Queue</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
 <translation id="8227119283605456246">Attach file</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">Save password for <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:</translation>
 <translation id="8236917170563564587">Share this tab instead</translation>

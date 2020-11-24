@@ -424,6 +424,7 @@
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5690398455483874150">{count,plural, =1{Показва се 1 прозорец на Chrome}other{Показват се {count} прозореца на Chrome}}</translation>
 <translation id="5706552126692816153">Активно преди 1 ден</translation>
 <translation id="5711039611392265845">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Синхронизиране и услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">За да сърфирате в мрежата частно, добавете нов раздел</translation>

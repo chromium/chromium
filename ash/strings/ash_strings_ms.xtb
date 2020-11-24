@@ -238,6 +238,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3236488194889173876">Tiada rangkaian mudah alih tersedia</translation>
 <translation id="3249513730522716925">Tetingkap <ph name="WINDOW_TITLE" /> dialihkan daripada Meja <ph name="ACTIVE_DESK" /> ke Meja <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Apakah yang boleh anda lakukan?</translation>
+<translation id="3269597722229482060">Klik Kanan</translation>
 <translation id="3289674678944039601">Mengecas melalui penyesuai</translation>
 <translation id="3290356915286466215">Tidak selamat</translation>
 <translation id="3294437725009624529">Tetamu</translation>
@@ -341,6 +342,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4212472694152630271">Tukar kepada PIN</translation>
 <translation id="4215497585250573029">Tetapan VPN</translation>
 <translation id="4217571870635786043">Pengimlakan</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, Apl yang Dipasang, Dijeda</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="425364040945105958">Tiada SIM</translation>
@@ -762,6 +764,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8142699993796781067">Rangkaian persendirian</translation>
 <translation id="8152092012181020186">Tekan Ctrl + W untuk tutup.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Tetapan ini diurus oleh pentadbir anda.</translation>
+<translation id="8155628902202578800">Buka dialog maklumat untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Rangkaian mudah alih. Kekuatan isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Pemberitahuan disembunyikan.</translation>
@@ -827,6 +830,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8755498163081687682">Sahkan identiti anda: <ph name="ORIGIN_NAME" /> ingin mengesahkan orang itu ialah anda</translation>
 <translation id="875593634123171288">Tunjukkan tetapan VPN</translation>
 <translation id="8759408218731716181">Tidak dapat menyediakan berbilang log masuk</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, Apl yang Dipasang, Disekat</translation>
 <translation id="8785070478575117577">Sambung kepada <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

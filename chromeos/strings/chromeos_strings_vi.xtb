@@ -14,9 +14,12 @@
 <translation id="1398634363027580500">Yêu cầu HTTPS có độ trễ rất cao</translation>
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> quản lý thiết bị này và có thể giám sát hoạt động của bạn.</translation>
 <translation id="1478594628797167447">Máy quét</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng)</translation>
 <translation id="1641857168437328880">Khay nạp tài liệu (1 mặt)</translation>
 <translation id="1644574205037202324">Lịch sử</translation>
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
@@ -80,6 +83,7 @@
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
 <translation id="4548483925627140043">Không tìm thấy tín hiệu</translation>
+<translation id="455835558791489930">Pin <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Không phân giải được một số máy chủ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Hãy nhấn để hủy lệnh in.</translation>
 <translation id="4646949265910132906">Kết nối Wi-Fi an toàn</translation>
@@ -138,8 +142,10 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6766275201586212568">Quá trình phân giải DNS không thành công</translation>
 <translation id="6768237774506518020">Tỷ lệ lỗi cao trong quá trình phân giải DNS</translation>
 <translation id="6839141349259399400">Không thể kết nối với các máy quét?</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>
 <translation id="7162487448488904999">Thư viện</translation>
+<translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Loại tệp</translation>
 <translation id="7561454561030345039">Quản trị viên của bạn quản lý thao tác này</translation>

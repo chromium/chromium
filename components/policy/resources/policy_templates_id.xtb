@@ -3527,7 +3527,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika tidak ditetapkan, ditetapkan ke Biarkan pengguna menentukan (Let user decide), atau ditetapkan ke Tidak Ada (None), pengguna akan mengontrol deteksi zona waktu otomatis menggunakan kontrol normal di chrome://setelan.</translation>
 <translation id="6532769014584932288">Izinkan penguncian layar saat aktif</translation>
-<translation id="6536444379078076149">Aktifkan atau nonaktifkan tampilan UI terkait koneksi pada desktop host saat koneksi aktif.</translation>
 <translation id="6536600139108165863">Booting ulang otomatis saat mematikan perangkat</translation>
 <translation id="6539246272469751178">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi Android selalu menggunakan direktori download default dan tidak dapat mengakses file apa pun yang didownload oleh <ph name="PRODUCT_OS_NAME" /> ke direktori download non-default.</translation>
 <translation id="654303922206238013">Strategi migrasi untuk ecryptfs</translation>

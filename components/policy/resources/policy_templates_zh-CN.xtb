@@ -212,6 +212,7 @@
 <translation id="1393485621820363363">已启用企业设备打印机</translation>
 <translation id="1397855852561539316">默认搜索服务提供商建议网址</translation>
 <translation id="1413936351612032792">报告有关 Linux 应用使用情况的信息</translation>
+<translation id="1418387035898607074">不对从可信来源下载的文件执行安全浏览检查</translation>
 <translation id="142346659686073702">允许独立用户使用 Crostini</translation>
 <translation id="1425551776320718592">禁止此设备的用户使用 ADB 旁加载，但不对设备强制执行 Powerwash。使用此设置可能会导致设备处于不安全的状态。</translation>
 <translation id="1426170570389588560">设置打印任务元数据的存储时间段（天）</translation>
@@ -424,9 +425,15 @@
       如果此政策设为 False，用户无法添加、移除或修改书签，但仍能使用现有书签。</translation>
 <translation id="1715151459541210849">启用“语音输入”无障碍功能</translation>
 <translation id="172374442286684480">允许所有网站设置本地数据</translation>
+<translation id="1729169799290004131">通过设置此政策，您可以指定屏幕亮度百分比（关闭自动调节亮度功能）。系统会根据政策值调整初始屏幕亮度，但用户可以更改相关设置。
+
+      如果此政策未设置，用户对屏幕的控制能力以及自动调节亮度功能都不会受到影响。
+
+      注意：此政策的值应以百分比（介于 0-100 之间）的形式指定。</translation>
 <translation id="1736269219679256369">允许关闭 SSL 警告页面并继续操作</translation>
 <translation id="174765717426930019">允许所有以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与请求打开窗口的网页互动，除非这些网页已明确拒绝此类互动 </translation>
 <translation id="1750315445671978749">拦截所有下载内容</translation>
+<translation id="1755310913456007816">使用现有的在线撤消检查设置</translation>
 <translation id="1760951637494635692">允许在这些网站上使用 Serial API</translation>
 <translation id="1765512315997108908">控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
 
@@ -473,6 +480,7 @@
 <translation id="1844972978764975668">允许向 Google 服务器发送查询以检索准确的时间戳</translation>
 <translation id="1845405905602899692">自助服务终端设置</translation>
 <translation id="1845429996559814839">限制 PIN 码打印模式</translation>
+<translation id="1846545322805269573">用户无法自定义“新标签页”页面背景</translation>
 <translation id="1847960418907100918">指定通过 POST 执行“即搜即得”搜索时使用的参数。该参数由以英文逗号分隔的名称/值对组成。如果值为模板参数（例如上例中的 {searchTerms}），那么系统会将其替换成真正的搜索字词数据。
 
           此为可选政策。如果未设置此政策，系统将使用 GET 方法发送“即搜即得”搜索请求。
@@ -536,6 +544,37 @@
 <translation id="1971991630422430420">如果此政策已启用，系统会使用快速切换功能（如果无线接入点支持该功能的话）。此设置适用于相应设备上的所有用户和所有界面。
 
       如果此政策已停用或未设置，系统便不会使用快速切换功能。</translation>
+<translation id="197744850608781984">通过设置此政策，您可以控制设备闲置时的电源管理策略。
+
+      系统可执行以下四种闲置操作：
+
+      * 当设备闲置时长达到 <ph name="SCREEN_DIM_FIELD_NAME" /> 指定的值后，屏幕将变暗。
+
+      * 当设备闲置时长达到 <ph name="SCREEN_OFF_FIELD_NAME" /> 指定的值后，屏幕将关闭。
+
+      * 当设备闲置时长达到 <ph name="IDLE_WARNING_FIELD_NAME" /> 指定的值后，屏幕上将显示一个警告对话框。该警告消息旨在让用户知道系统将执行闲置操作，仅会在闲置操作是退出登录或关机时显示。
+
+      * 当设备闲置时长达到 Idle 指定的值后，系统将执行 <ph name="IDLE_ACTION_FIELD_NAME" /> 指定的操作。
+
+      对于上述各项操作，延迟时间均应以毫秒为单位指定，并且必须设为大于 0 的值才能触发相应操作。如果延迟时间设为 0，<ph name="PRODUCT_OS_NAME" />将不会执行相应操作。
+
+      对于上述各个延迟时间，如果您未设置时间值，系统会使用默认值。
+
+      <ph name="SCREEN_DIM_FIELD_NAME" /> 的值不得大于 <ph name="SCREEN_OFF_FIELD_NAME" /> 的值，否则会被强制修改。<ph name="SCREEN_OFF_FIELD_NAME" /> 和 <ph name="IDLE_WARNING_FIELD_NAME" /> 的值不得大于 Idle 的值，否则会被强制修改。
+
+      <ph name="IDLE_ACTION_FIELD_NAME" /> 可以是下列四种操作之一：
+
+      * <ph name="IDLE_ACTION_ENUM_SUSPEND" />
+
+      * <ph name="IDLE_ACTION_ENUM_LOGOUT" />
+
+      * <ph name="IDLE_ACTION_ENUM_SHUTDOWN" />
+
+      * <ph name="IDLE_ACTION_ENUM_DO_NOTHING" />
+
+      如果 <ph name="IDLE_ACTION_FIELD_NAME" /> 未设置，系统将执行 <ph name="IDLE_ACTION_ENUM_SUSPEND" />。
+
+      注意：交流电源和电池各有对应的设置。</translation>
 <translation id="1988345404999458987">提供可用打印服务器的配置。
 
       此政策让您能够以 JSON 文件的形式向 <ph name="PRODUCT_OS_NAME" />设备提供外部打印服务器的配置。
@@ -605,6 +644,7 @@
 <translation id="209586405398070749">稳定版</translation>
 <translation id="2098658257603918882">启用关于使用情况和崩溃相关数据的报告</translation>
 <translation id="2104418465060359056">报告扩展程序和插件信息</translation>
+<translation id="2106166591774188922">允许 SAML 用户通过 chrome://password-change 在会话期间更改 SAML 密码</translation>
 <translation id="2106627642643925514">替换默认 PIN 码打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="2107563874993284076">如果此政策已启用，用户便可在 <ph name="PRODUCT_NAME" />中使用网络文件共享功能。如果此政策已停用，用户便无法使用此功能。</translation>
 <translation id="2107601598727098402">
@@ -1185,6 +1225,7 @@
 <translation id="2957513448235202597">进行 <ph name="HTTP_NEGOTIATE" />身份验证时使用的帐号类型</translation>
 <translation id="2959469725686993410">解析时区时一律将 Wi-Fi 接入点发送给服务器</translation>
 <translation id="2959898425599642200">代理绕过规则</translation>
+<translation id="2960013482187484833">在打印预览中使用最近用过的打印机作为默认选项</translation>
 <translation id="2960128438010718932">分阶段应用新更新的时间表</translation>
 <translation id="2960691910306063964">针对远程访问主机启用或停用无 PIN 码身份验证</translation>
 <translation id="2964373560810620158">阻止用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
@@ -1282,6 +1323,7 @@
 <translation id="3072847235228302527">为设备本地帐号设置服务条款</translation>
 <translation id="3086995894968271156">在 <ph name="PRODUCT_NAME" />中配置 Cast 接收器。</translation>
 <translation id="3091832372132789233">为主要连接到外部电源的设备的电池充电。</translation>
+<translation id="3092059499596000593">在打印预览中使用系统默认打印机作为默认选项</translation>
 <translation id="309416443108680956">此政策用于指定：当通过安全令牌（例如使用智能卡）验证身份的用户在会话过程中移除该令牌时，会发生什么情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不会发生任何情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：屏幕会被锁定，直到用户重新验证身份为止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：会话会被结束，并且用户会被强制退出。如果此政策未设置，它将默认等同于已设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">已启用插件的列表</translation>
 <translation id="3101501961102569744">选择如何指定代理服务器设置</translation>
@@ -1335,6 +1377,11 @@
 <translation id="3219421230122020860">隐身模式已启用</translation>
 <translation id="3220624000494482595">如果自助服务终端应用是一款 Android 应用，它将无法控制 <ph name="PRODUCT_OS_NAME" />版本，即使此政策设为 <ph name="TRUE" /> 也是如此。</translation>
 <translation id="322359555555487980">确定变体在 <ph name="PRODUCT_OS_NAME" />中的可用情况</translation>
+<translation id="3231617925177241750">如果此政策已启用，且 <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> 和 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> 均已设置，“用电高峰期切换电源”功能会保持开启状态（如果相应设备支持的话）。“用电高峰期切换电源”电源管理政策是一种节电政策，可在用电高峰期间尽可能少用交流电。对于每个工作日，您都可设置开始时间和结束时间以运行“用电高峰期切换电源”模式。在您所设定的时段内，只要电池电量高于指定阈值，即使连接了交流电，系统也会仅使用电池来维持运行。待指定的结束时间过后，系统会使用交流电（如果已连接）来维持运行，但不会为电池充电。待指定的开始时间过后，系统会再次使用交流电来维持正常运行，并会为电池充电。
+
+      如果此政策已停用，“用电高峰期切换电源”功能会保持关闭状态。
+
+      如果此政策未设置，“用电高峰期切换电源”功能最初会处于关闭状态。用户无法更改相关设置。</translation>
 <translation id="3231837273069128027">通过设置此政策，您可以配置 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新的可用性和行为。
 
       请在 JSON 属性中指定各项设置：
@@ -1698,6 +1745,7 @@
       如果此政策已停用或未设置，<ph name="PRODUCT_OS_NAME" />会允许用户将设备关机。</translation>
 <translation id="3765260570442823273">待机退出警告讯息的持续时间</translation>
 <translation id="377044054160169374">针对误导性体验的强制干预政策</translation>
+<translation id="3778689139323007309">对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，一律执行撤消检查</translation>
 <translation id="3780152581321609624">在 Kerberos SPN 中加入非标准端口</translation>
 <translation id="3788662722837364290">设备闲置时的电源管理设置</translation>
 <translation id="3790085888761753785">如果此设置处于启用状态，用户将能够使用 Smart Lock 登录他们的帐号。一般情况下 Smart Lock 只允许用户解锁屏幕，相较之下，这是限制性更低的设置。
@@ -2684,6 +2732,7 @@
           如果此政策的值设置为 True 或未配置，这位用户即可创建并管理受监管用户。</translation>
 <translation id="5369937289900051171">仅限彩色打印</translation>
 <translation id="5370279767682621504">在非默认端口上启用 HTTP/0.9 支持</translation>
+<translation id="5371152055157582429">用户可以自定义“新标签页”页面背景</translation>
 <translation id="5377606826822211923">控制用户对来源不受信任的 Android 应用的使用</translation>
 <translation id="5377668121137111316">将此政策设为 True 会使屏幕键盘保持开启状态。将此政策设为 False 会使屏幕键盘保持关闭状态。
 
@@ -2925,6 +2974,14 @@
 <translation id="572155275267014074">Android 设置</translation>
 <translation id="5728154254076636808">允许创建 <ph name="PRODUCT_NAME" /> 个人资料数据的漫游副本</translation>
 <translation id="5732972008943405952">首次运行时，从默认浏览器导入自动填充表单数据</translation>
+<translation id="5733040281451845496">如果此政策已启用，仅当在会话内察觉到首项用户活动后，系统才会开始应用电源管理延迟时间和会话时长限制。
+
+      如果此政策已停用或未设置，系统会在会话启动后立即开始应用电源管理延迟时间和时长限制。</translation>
+<translation id="5738766588683307797">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 已停用，您可以通过设置 <ph name="USER_ACTIVITY_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 来指定：若在屏幕变暗或屏幕关闭后不久察觉到用户活动，系统应该对屏幕变暗延迟时间应用的调整幅度（百分比）。调整屏幕变暗延迟时间时，系统也会调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
+
+      如果此政策未设置，系统会使用默认的调整因子。
+
+      注意：调整因子不得小于 100%。</translation>
 <translation id="574098933844699859">指定系统信息（例如 Chrome 操作系统版本、设备序列号）是否会在登录屏幕上始终显示（或隐藏）。
 
       如果此政策设为 true，系统信息将会被强制显示。
@@ -3337,6 +3394,7 @@
 
       如果此政策设为停用或未设置，系统将始终不显示悬浮无障碍功能菜单。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
+<translation id="6424486395812679373">对所有已下载的文件执行安全浏览检查</translation>
 <translation id="6438364096042399634">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
 
       如果您未设置此政策，可分离式 USB 设备的列表便会是空的。
@@ -3416,13 +3474,15 @@
 
       如果此政策未设置、设为“由用户决定”或设为“无”，用户便可使用 chrome://settings 页面中的常规控件来控制“自动检测时区”功能。</translation>
 <translation id="6532769014584932288">允许使用唤醒锁定</translation>
-<translation id="6536444379078076149">允许或禁止主机桌面在处于连接状态时显示与连接相关的界面。</translation>
 <translation id="6536600139108165863">设备关机后自动重新启动</translation>
 <translation id="6539246272469751178">此政策对 Android 应用没有任何影响。Android 应用始终都会使用默认下载目录，并且无法访问由 <ph name="PRODUCT_OS_NAME" />下载到非默认下载目录中的任何文件。</translation>
 <translation id="654303922206238013">ecryptfs 迁移策略</translation>
 <translation id="6553143066970470539">屏幕亮度百分比</translation>
 <translation id="6558362593755624474">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。</translation>
 <translation id="6559057113164934677">不允许任何网站使用摄像头和麦克风</translation>
+<translation id="6559221564468029245">如果此政策已启用或未设置，播放音频时设备不会被视为闲置。这样就不会导致闲置超时，系统也不会执行闲置操作。不过，在达到配置的超时值后，尽管存在音频活动，屏幕仍会变暗、关闭和锁定。
+
+          如果此政策已停用，尽管存在音频活动，系统仍会将设备视为闲置。</translation>
 <translation id="6559475864956112261">此政策已被弃用，请改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
        如果此政策已启用，您便可指定 Chrome 使用的代理服务器，并禁止用户更改代理设置。Chrome 和 ARC 应用会忽略通过命令行指定的所有与代理有关的选项。此政策仅在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未被指定时生效。
@@ -3839,6 +3899,9 @@
 <translation id="7072208053150563108">设备密码更改率</translation>
 <translation id="7072567600438630966">允许启用 Phone Hub。</translation>
 <translation id="7079519252486108041">在这些网站上阻止弹出式窗口</translation>
+<translation id="7081784525008938771">如果此政策已启用或未设置，播放视频时设备不会被视为闲置。这样，系统就不会开始应用闲置延迟时间、屏幕变暗延迟时间、屏幕关闭延迟时间和锁定延迟时间，也不会执行相应的操作。
+
+          如果此政策已停用，尽管存在视频活动，系统仍会将设备视为闲置。</translation>
 <translation id="7086720321892395256">控制“隐私保护屏”功能的用户和设备政策。</translation>
 <translation id="7091842872805965910">在锁定屏幕和登录屏幕上启用 PIN 码自动提交功能。</translation>
 <translation id="7093294902558672021">报告设备的风扇信息。
@@ -4066,6 +4129,11 @@
 
       如果此政策未设置，则意味着 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
 <translation id="747275827471712187">将这些网站上的 Cookie 恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>
+<translation id="7476447711788742702">通过设置此政策，您可以指定当用户合上设备盖时 <ph name="PRODUCT_OS_NAME" />会执行的操作。
+
+      如果您未设置此政策，系统会执行暂停操作。
+
+      注意：如果需要执行的操作是暂停，您还可另行设置 <ph name="PRODUCT_OS_NAME" />在暂停前是否锁定屏幕。</translation>
 <translation id="7476621944304431784">如果此设置已启用，用户将能够在其 <ph name="PRODUCT_OS_NAME" />设备和一部已连接的 Android 手机之间同步 Wi-Fi 网络配置。不过，用户必须通过完成一个设置流程来明确选择启用这项功能，才能同步 Wi-Fi 网络配置。
 
       如果此设置已停用，用户将无法同步 Wi-Fi 网络配置。
@@ -4368,6 +4436,11 @@
 <translation id="7891884447851425349">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 来指定在默认搜索期间使用的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。
 
       您可按以下格式指定 Google 的搜索网址：<ph name="GOOGLE_SEARCH_URL" />。</translation>
+<translation id="7894185046683379696">通过设置此政策，您可以指定：当使用交流电源或电池供电时，系统应在设备闲置多久（以毫秒为单位）后锁定屏幕。该值必须小于 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> 中的闲置延迟时间，否则会被强制修改。
+
+      如果您将此时间值设为 0，那么当设备闲置时，<ph name="PRODUCT_OS_NAME" />不会锁定屏幕。如果您未设置此政策，系统将使用默认的时间值。
+
+      建议：若要在设备闲置时锁定屏幕，您可让系统在进入暂停状态时锁定屏幕，并指示 <ph name="PRODUCT_OS_NAME" />在闲置延迟时间过后进入暂停状态。只有在以下情况下才应使用此政策：屏幕锁定时间应显著早于系统进入暂停状态的时间，或者您不需要在设备闲置时暂停系统。</translation>
 <translation id="7895553628261067384">远程访问</translation>
 <translation id="7902040092815978832">在用户输入密码时显示数字键盘</translation>
 <translation id="7904177352786629708">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
@@ -4481,6 +4554,9 @@
           如果启用了此政策，则系统会将此政策定义的一系列帐号添加到 Kerberos 帐号设置。
 
           如果停用了或未设置此政策，则系统不但不会将任何帐号添加到 Kerberos 帐号设置，还会移除先前通过此政策添加的所有帐号。如果启用了“用户可以添加 Kerberos 帐号”政策，则用户仍可手动添加帐号。</translation>
+<translation id="8078297389450285582">如果此政策已启用或未设置，系统会开启智能调暗模式，并可最大限度地推迟屏幕变暗时间。倘若屏幕变暗时间推迟了，系统亦会调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
+
+          如果此政策已停用，智能调暗模式将不会影响屏幕变暗时间。</translation>
 <translation id="8099880303030573137">使用电池供电时的闲置延迟时间</translation>
 <translation id="8101381354936029836">政策原子组：</translation>
 <translation id="8101937907822293485">允许向 Google 报告与 <ph name="PRODUCT_NAME" /> 的使用情况和崩溃情况相关的匿名数据，并禁止用户更改此设置。
@@ -4614,6 +4690,11 @@
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="8274603902181597201">清空用户的 ecryptfs 主目录，并改用全新的 ext4 加密主目录。</translation>
 <translation id="8284296539558710573">跨域 HTTP 身份验证提示</translation>
+<translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 已停用，您可以通过设置 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 来指定：当设备处于演示模式时，系统应该对屏幕变暗延迟时间应用的调整幅度（百分比）。调整屏幕变暗延迟时间时，系统也会调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
+
+      如果此政策未设置，系统会使用默认的调整因子。
+
+      注意：调整因子不得小于 100%。</translation>
 <translation id="8285435910062771358">已启用全屏放大镜</translation>
 <translation id="8288199156259560552">启用 Android Google 位置信息服务</translation>
 <translation id="8290875622178450531">启用“语音输入”无障碍功能。
@@ -4940,9 +5021,19 @@
 
       注意：查看您可以使用哪些变量 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables )。</translation>
 <translation id="8777369558049831576">在外部协议对话框中显示“始终打开”复选框。</translation>
+<translation id="8786409859071107656">如果此政策已启用，系统会开启“USB 电源共享”电源管理政策。
+
+      某些设备自带标有闪电/电池图标的特定 USB 端口，这种端口可利用系统电池为设备充电。当系统处于休眠和关机模式时，此政策会影响该端口的充电行为。此政策不会影响其他 USB 端口，也不会影响系统处于唤醒状态时（在此期间，USB 端口会一直供电）的充电行为。
+
+      当系统处于休眠状态时，如果设备已插接到壁式充电器或者电池电量高于 50%，USB 端口就会获得供电。当系统处于关机状态时，只要设备已插接到壁式充电器，USB 端口就会获得供电。
+
+      如果此政策已停用，USB 端口将无法获得供电。
+
+      如果未设置，此政策会处于开启状态，而且无法被用户关闭。</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8800453707696044281">设置电池充电自定义停止充电值（以百分比表示）</translation>
 <translation id="8801680448782904838">系统建议或要求重新启动浏览器或重启设备时，通知用户</translation>
+<translation id="8816671955985738552">不允许通过 chrome://password-change 在会话期间更改 SAML 密码</translation>
 <translation id="8817960019535659860">阻止用户通过注册 Chrome 操作系统来兑换优惠</translation>
 <translation id="8818173863808665831">报告设备的地理位置。
 

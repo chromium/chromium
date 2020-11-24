@@ -30,6 +30,7 @@
 <translation id="1930797645656624981">Chrome OS matn kiritish xizmati</translation>
 <translation id="1947737735496445907">Chop etildi</translation>
 <translation id="1979103255016296513">Parolni almashtirish muddati tugadi</translation>
+<translation id="1980044825731880088">CPU tezligi</translation>
 <translation id="2049639323467105390">Bu qurilma <ph name="DOMAIN" /> tomonidan boshqariladi</translation>
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -39,6 +40,7 @@
 <translation id="2364498172489649528">Tugadi</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ta urinish qoldi</translation>
 <translation id="2391082728065870591">Fikr va mulohaza hisobotini yuborish</translation>
+<translation id="2461822463642141190">Ayni vaqtda</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}other{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Qidiruv</translation>
@@ -46,6 +48,7 @@
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
 <translation id="3009958530611748826">Saqlash uchun jild tanlang</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">Aloqa diagnostikasi</translation>
 <translation id="3091839911843451378">Bajarilmadi - Toʻxtatildi</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
@@ -99,6 +102,7 @@
 <translation id="4917889632206600977">Toʻxtatildi – Qogʻoz tugadi</translation>
 <translation id="4932733599132424254">Sana</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
+<translation id="5168185087976003268">Quvvat darajasi</translation>
 <translation id="520299634122159966">Skanerlar topilmadi</translation>
 <translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
 Mikrofon ustiga bosing va savolni ayting.</translation>
@@ -114,8 +118,10 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5457599981699367932">Mehmon sifatida kezish</translation>
 <translation id="54609108002486618">Boshqariladigan</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Batafsil axborotni Yordam markazidan oling</translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versiya: <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6048107060512778456">Bajarilmadi - Qogʻoz tiqilib qoldi</translation>
 <translation id="6050189528197190982">Kulrang tuslari</translation>
@@ -179,6 +185,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8910721771319628100">Birlamchi tarmoq kutish vaqti baland</translation>
 <translation id="8919837981463578619">Bajarilmadi - Tarnov joyida emas</translation>
 <translation id="8928727111548978589">Bajarilmadi - Qogʻoz tugadi</translation>
+<translation id="9088306295921699330">Joriy faollik</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>
 <translation id="9111102763498581341">Qulfdan yechish</translation>

@@ -139,6 +139,7 @@
 <translation id="114721135501989771">‏الحصول على ميزات Google الذكية في Chrome</translation>
 <translation id="1147322039136785890">يستطيع <ph name="SUPERVISED_USER_NAME" /> الآن استخدام الجهاز</translation>
 <translation id="1147991416141538220">لطلب إذن الوصول إلى التطبيق، يُرجى التواصل مع مشرف هذا الجهاز.</translation>
+<translation id="1148063863818152153">‏رقم EID لجهازك</translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1149725087019908252">جارٍ فحص ملف <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">هذا هو التحديث التلقائي الأخير للبرنامج والأمان على الجهاز<ph name="DEVICE_TYPE" />. للحصول على التحديثات المستقبلية، يُرجى الترقية إلى طراز أحدث. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -318,6 +319,7 @@
 <translation id="1343865611738742294">‏يمنح Linux أذونات التطبيق للوصول إلى أجهزة USB. لن يتذكر Linux جهاز USB بعد إزالته.</translation>
 <translation id="1346630054604077329">التأكيد وإعادة التشغيل</translation>
 <translation id="1347256498747320987">‏يمكنك تثبيت التحديثات والتطبيقات. وبالمتابعة، أنت توافق على تنزيل هذا الجهاز للتحديثات والتطبيقات وتثبيتها تلقائيًا من Google ومشغِّل شبكة الجوَّال والشركة المصنِّعة للجهاز، وأنّ ذلك قد يتم باستخدام بيانات شبكة الجوَّال. وقد توفّر بعض هذه التطبيقات ميزة الشراء داخل التطبيق. <ph name="BEGIN_LINK1" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
+<translation id="1347512539447549782">‏مساحة تخزين نظام التشغيل Linux</translation>
 <translation id="1347975661240122359">سيبدأ التحديث عندما يصل مستوى البطارية إلى <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">‏يتعذّر العثور على ملف PPD. تأكد من اتصال Chromebook بالإنترنت وأعد المحاولة.</translation>
@@ -559,6 +561,7 @@
 <translation id="1608668830839595724">المزيد من الإجراءات للعناصر المختارة</translation>
 <translation id="161042844686301425">سماوي</translation>
 <translation id="1611432201750675208">تم قفل جهازك</translation>
+<translation id="1612019740169791082">‏لا تتيح الحاوية الخاصة بك تغيير حجم القرص. لضبط مقدار المساحة المخصّصة لنظام Linux، يُرجى الاحتفاظ بنسخة احتياطية ثم استعادتها في حاوية جديدة.</translation>
 <translation id="1614511179807650956">يبدو أنك قد استنفدت القدر المتاح لك من بيانات الجوّال. يُمكنك الانتقال إلى منفذ تفعيل <ph name="NAME" /> لشراء مزيد من البيانات.</translation>
 <translation id="161460670679785907">يتعذَّر رصد هاتفك.</translation>
 <translation id="1616206807336925449">لا تتطلب هذه الإضافة أذونات خاصة.</translation>
@@ -693,6 +696,7 @@
 <translation id="175772926354468439">تفعيل المظهر</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="17584710573359123">‏العرض في سوق Chrome الإلكتروني</translation>
+<translation id="1761845175367251960">حسابات <ph name="NAME" /></translation>
 <translation id="176193854664720708">يتوفَّر مستشعر بصمات الإصبع في زر التشغيل. يمكنك لمسه برفقٍ بأي إصبع.</translation>
 <translation id="1763046204212875858">إنشاء اختصارات للتطبيق</translation>
 <translation id="1763808908432309942">تفتح الصفحة في علامة تبويب جديدة</translation>
@@ -902,6 +906,7 @@
 <translation id="1999115740519098545">عند بدء التشغيل</translation>
 <translation id="2000419248597011803">يُرسِل بعض ملفات تعريف الارتباط وعمليات البحث من شريط العناوين ومربّع البحث إلى محرِّك البحث التلقائي.</translation>
 <translation id="2002109485265116295">الوقت الفعلي</translation>
+<translation id="200217416291116199">‏ننصحك بالاحتفاظ بنسخة احتياطية من الملفات في حال تعذُّر اكتمال عملية الترقية. وسيؤدي بدء الترقية إلى إيقاف تشغيل نظام التشغيل Linux. يُرجى حفظ الملفات المفتوحة قبل المتابعة.</translation>
 <translation id="2003130567827682533">‏لتفعيل بيانات "<ph name="NAME" />"، يمكنك أولاً الاتصال بشبكة Wi-Fi.</translation>
 <translation id="2005199804247617997">الملفات الشخصية الأخرى</translation>
 <translation id="2006638907958895361">فتح الرابط في <ph name="APP" /></translation>
@@ -1614,6 +1619,7 @@
 <translation id="2807517655263062534">هنا تظهر الملفات التي تم تنزيلها</translation>
 <translation id="2809586584051668049">و<ph name="NUMBER_ADDITIONAL_DISABLED" /> من الإضافات الأخرى</translation>
 <translation id="2810390687497823527">في حال عدم التعرُّف على إحدى الإضافات أو في حال كان متصفّحك لا يعمل كما هو متوقع، يمكنك إيقاف الإضافات أو تخصيصها هنا.</translation>
+<translation id="2811205483104563968">الحسابات</translation>
 <translation id="2812049959647166806">‏Thunderbolt غير متوافق.</translation>
 <translation id="2812989263793994277">عدم عرض أي صور</translation>
 <translation id="2813094189969465044">أدوات الرقابة الأبوية</translation>
@@ -1652,6 +1658,7 @@
 <translation id="2858138569776157458">أهم المواقع</translation>
 <translation id="2861301611394761800">اكتمل تحديث النظام. يُرجى إعادة تشغيل النظام.</translation>
 <translation id="2861941300086904918">‏إدارة الأمان لـ Native Client</translation>
+<translation id="2862815659905780618">‏إزالة بيئة تطوير نظام التشغيل Linux</translation>
 <translation id="2864601841139725659">تعيين صورة الملف الشخصي</translation>
 <translation id="2865919525181940183">لقطة شاشة للبرامج التي تظهر على الشاشة حاليًا</translation>
 <translation id="286674810810214575">جارٍ التحقق من مصادر الطاقة...</translation>
@@ -1700,7 +1707,7 @@
 <translation id="2910318910161511225">الاتصال بالشبكة وإعادة المحاولة</translation>
 <translation id="291056154577034373">غير مقروءة</translation>
 <translation id="2910718431259223434">حدث خطأ. يُرجى إعادة المحاولة أو التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
-<translation id="2913331724188855103">السماح للمواقع الإلكترونية بحفظ بيانات ملفات تعريف الارتباط وقراءتها (موصى به)</translation>
+<translation id="2913331724188855103">ألسماح للمواقع الإلكترونية بحفظ بيانات ملفات تعريف الارتباط وقراءتها (يُنصح به)</translation>
 <translation id="2915016304249900997">يتم إخفاء محتوى الإشعارات أثناء مشاركة الشاشة.</translation>
 <translation id="2915102088417824677">عرض سِجلّ الأنشطة</translation>
 <translation id="2915873080513663243">المسح التلقائي</translation>
@@ -1765,6 +1772,7 @@
 <translation id="2989123969927553766">تسريع التمرير عبر الماوس</translation>
 <translation id="2989474696604907455">غير متصل</translation>
 <translation id="2989786307324390836">‏حفظ شهادة واحدة بتشفير DER ثنائي</translation>
+<translation id="2990313168615879645">‏إضافة حساب Google</translation>
 <translation id="2992931425024192067">عرض كل محتوى الإشعارات</translation>
 <translation id="2993517869960930405">معلومات التطبيق</translation>
 <translation id="2996286169319737844">‏تم ترميز بياناتك باستخدام عبارة مرور المزامنة. لا يتضمّن ذلك طرق الدفع والعناوين من Google Pay.</translation>
@@ -2376,6 +2384,7 @@
 <translation id="3706463572498736864">عدد الصفحات في كل جدول بيانات</translation>
 <translation id="370649949373421643">‏تفعيل Wi-Fi</translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
+<translation id="3707163604290651814">تم تسجيل الدخول حاليًا باسم <ph name="NAME" /></translation>
 <translation id="3709244229496787112">تم إيقاف المتصفح قبل انتهاء التنزيل.</translation>
 <translation id="3711931198657368127">ل&amp;صق والانتقال إلى <ph name="URL" /></translation>
 <translation id="3711945201266135623">تم العثور على <ph name="NUM_PRINTERS" /> طابعة من خادم الطباعة.</translation>
@@ -2879,6 +2888,7 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />كيلوبايت (<ph name="NUM_KILOBYTES_LIVE" />كيلوبايت مباشرة)</translation>
 <translation id="4310139701823742692">‏الملف بتنسيق خاطئ. تحقق من ملف PPD وأعد المحاولة.</translation>
 <translation id="431076611119798497">&amp;التفاصيل</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{‏حساب Google واحد}zero{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}two{‏حسابا Google (<ph name="EXTRA_ACCOUNTS" />)}few{‏<ph name="EXTRA_ACCOUNTS" /> حسابات Google}many{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}other{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}}</translation>
 <translation id="4312866146174492540">حظر (تلقائي)</translation>
 <translation id="4314815835985389558">إدارة المزامنة</translation>
 <translation id="4316850752623536204">الموقع الإلكتروني لمطوّر البرامج</translation>
@@ -3258,6 +3268,7 @@
 <translation id="4764368918650455114">‏تأكَّد من فتح قفل كلا الجهازَين وقرِّبهما من بعضهما وفعِّل البلوتوث فيهما. وإذا كنت تشارك الملفات مع Chromebook، تأكَّد من تفعيل ميزة "المشاركة عن قرب" (افتح منطقة الحالة من خلال اختيار الوقت، ثم اختَر "المشاركة عن قرب"). <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">‏للسماح لتطبيق "رسائل Android" بترحيل الرسائل النصية من هاتفك إلى جهاز Chromebook</translation>
 <translation id="4768332406694066911">لديك شهادات تحدد هويتك من هذه المؤسسات</translation>
+<translation id="4773112038801431077">‏ترقية نظام التشغيل Linux</translation>
 <translation id="477647109558161443">إنشاء اختصار على سطح المكتب</translation>
 <translation id="4776917500594043016">كلمة مرور <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">‏متجر Play</translation>
@@ -3751,6 +3762,7 @@
 <translation id="5368720394188453070">هاتفك مغلق. ألغ قفله للدخول.</translation>
 <translation id="5368779022775404937">تسجيل الدخول إلى <ph name="REALM" /></translation>
 <translation id="5369491905435686894">تفعيل تسريع الماوس</translation>
+<translation id="5369694795837229225">‏إعداد بيئة تطوير نظام التشغيل Linux</translation>
 <translation id="5370819323174483825">&amp;إعادة تحميل</translation>
 <translation id="5372529912055771682">لا يتيح هذا الإصدار من نظام التشغيل استخدام وضع التسجيل المزود. يُرجى التأكد من تشغيل أحدث إصدار وإعادة المحاولة.</translation>
 <translation id="5372579129492968947">إزالة تثبيت الإضافة</translation>
@@ -3776,6 +3788,7 @@
 <translation id="5402815541704507626">تنزيل التحديث باستخدام بيانات الجوّال</translation>
 <translation id="540296380408672091">حظر ملفات تعريف الارتباط على <ph name="HOST" /> دومًا</translation>
 <translation id="540495485885201800">تبديل العنصر المختار مع العنصر السابق</translation>
+<translation id="5405146885510277940">إعادة ضبط الإعدادات</translation>
 <translation id="5408750356094797285">تكبير/تصغير: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">‏من حسابك على Google</translation>
 <translation id="5411472733320185105">عدم استخدام إعدادات الخادم الوكيل لهذه المضيفات والنطاقات:</translation>
@@ -4477,6 +4490,8 @@
 <translation id="6212168817037875041">إيقاف الشاشة</translation>
 <translation id="6212752530110374741">إرسال الرابط عبر البريد الإلكتروني</translation>
 <translation id="6213230117190778270">استلام</translation>
+<translation id="6215620815501168899">‏إغلاق النافذة المنبثقة لرقم EID للجهاز ورمز الاستجابة السريعة</translation>
+<translation id="6216601812881225442">‏لا يُسمح بتغيير حجم الحاوية. لضبط مقدار المساحة التي تم تخصيصها مسبقًا لنظام Linux، يُرجى الاحتفاظ بنسخة احتياطية ثم استعادتها في حاوية جديدة.</translation>
 <translation id="6216696360484424239">تسجيل الدخول تلقائيًا</translation>
 <translation id="6218058416316985984">جهاز <ph name="DEVICE_TYPE" /> غير متّصل بالإنترنت. يُرجى الاتصال بالإنترنت وإعادة المحاولة.</translation>
 <translation id="6220413761270491930">خطأ في تحميل الإضافة</translation>
@@ -4869,6 +4884,7 @@
 <translation id="6680442031740878064">المساحة المتاحة: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">تقييم</translation>
 <translation id="6681668084120808868">التقاط صورة</translation>
+<translation id="6683948477137300040">‏عرض رقم EID للجهاز ورمز الاستجابة السريعة في نافذة منبثقة</translation>
 <translation id="6684827949542560880">جارٍ تنزيل آخر تحديث</translation>
 <translation id="668599234725812620">‏فتح Google Play</translation>
 <translation id="6686490380836145850">إغلاق علامات  التبويب في الجهة  اليسرى.</translation>
@@ -5104,6 +5120,7 @@
 <translation id="6955535239952325894">لقد تم إيقاف هذا الإعداد على متصفّحات مُدارة.</translation>
 <translation id="6957044667612803194">لا يوفّر مفتاح الأمان هذا أرقام التعريف الشخصية</translation>
 <translation id="6957231940976260713">اسم الخدمة</translation>
+<translation id="6960507406838246615">‏يجب تحديث نظام التشغيل Linux.</translation>
 <translation id="696103774840402661">تم حذف جميع الملفات والبيانات المحلّية لكلّ المستخدمين على الجهاز <ph name="DEVICE_TYPE" /> نهائيًا.</translation>
 <translation id="6964390816189577014">بطل</translation>
 <translation id="6964760285928603117">الإزالة من مجموعة</translation>
@@ -5123,6 +5140,7 @@
 <translation id="697312151395002334">المواقع الإلكترونية التي يُسمح لها بإرسال النوافذ المنبثقة واستخدام عمليات إعادة التوجيه</translation>
 <translation id="6973611239564315524">‏تتوفّر ترقية إلى Debian 10 (Buster).</translation>
 <translation id="6974609594866392343">وضع تجريبي بلا اتصال بالإنترنت</translation>
+<translation id="697508444536771064">‏إيقاف نظام التشغيل Linux</translation>
 <translation id="6977381486153291903">مراجعة البرامج الثابتة</translation>
 <translation id="6977877318519394148">‏تثبيت برنامج Rosetta</translation>
 <translation id="6978121630131642226">محرّكات البحث</translation>
@@ -5523,6 +5541,7 @@
 <translation id="7443806024147773267">‏يمكنك الوصول إلى كلمات المرور عند تسجيل الدخول إلى حسابك على Google.</translation>
 <translation id="7444983668544353857">إيقاف <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">يمكنك تثبيت التطبيقات تلقائيًا.</translation>
+<translation id="7448538354405258275">‏يمكن أن يستخدم ممثل خدمة العملاء رقم EID لمساعدتك على تفعيل الخدمة.</translation>
 <translation id="7449752890690775568">هل تريد إزالة كلمة المرور؟</translation>
 <translation id="7450761244949417357">سيتم الفتح في <ph name="ALTERNATIVE_BROWSER_NAME" /> الآن.</translation>
 <translation id="7453008956351770337">عند تحديد الطابعة، فإنك تمنح الإضافة التالية الإذن للدخول إلى الطابعة.</translation>
@@ -6052,6 +6071,7 @@
 <translation id="8032244173881942855">يتعذّر إرسال علامة التبويب.</translation>
 <translation id="8033827949643255796">تم التحديد</translation>
 <translation id="8033958968890501070">انتهاء المهلة</translation>
+<translation id="8036049989879571495">‏إعداد بيئة تطوير نظام التشغيل Linux (الإصدار التجريبي)</translation>
 <translation id="8037117027592400564">قراءة جميع النصوص المنطوقة باستخدام الكلام المركب</translation>
 <translation id="8037357227543935929">الطلب (تلقائي)</translation>
 <translation id="803771048473350947">ملف</translation>
@@ -6218,6 +6238,7 @@
 <translation id="8226619461731305576">اللائحة</translation>
 <translation id="8226628635270268143">اختيار صورك وألبوماتك المفضَّلة</translation>
 <translation id="8227119283605456246">إرفاق ملف</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">هل تريد حفظ كلمة المرور لـ <ph name="ORIGIN" />؟</translation>
 <translation id="8234795456569844941">يُرجى مساعدة مهندسينا في حل هذه المشكلة. أخبرنا بما حدث مباشرة قبل ظهور رسالة خطأ الملف الشخصي:</translation>
 <translation id="8236917170563564587">مشاركة علامة التبويب هذه بدلاً من ذلك</translation>
@@ -6982,6 +7003,7 @@
 <translation id="909108997331068008">الحساب <ph name="NEW_USER" /> مستخدَم حاليًا مع ملف <ph name="EXISTING_USER" /> الشخصي.</translation>
 <translation id="9094033019050270033">تحديث كلمة المرور</translation>
 <translation id="9094038138851891550">اسم المستخدم غير صالح</translation>
+<translation id="9094859731829297286">‏هل تريد فعلاً حجز قرص بحجم ثابت لنظام التشغيل Linux؟</translation>
 <translation id="9094982973264386462">إزالة</translation>
 <translation id="9095253524804455615">إزالة</translation>
 <translation id="909554839118732438">إغلاق جميع النوافذ في وضع "التصفُّح المتخفي"</translation>

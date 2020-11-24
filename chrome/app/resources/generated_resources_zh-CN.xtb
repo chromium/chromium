@@ -432,6 +432,7 @@
 <translation id="1475502736924165259">您有一些证书不属于前面的任何类别</translation>
 <translation id="1476088332184200792">复制到您的设备</translation>
 <translation id="1476607407192946488">语言设置(&amp;L)</translation>
+<translation id="1477446329585670721"><ph name="DOMAIN" /> 要求您使智能卡保持插入状态。</translation>
 <translation id="1478340334823509079">详细信息：<ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">未启用安装功能</translation>
 <translation id="1481537595330271162">调整磁盘大小时出错</translation>
@@ -2026,6 +2027,7 @@
 <translation id="3320630259304269485">安全浏览（保护您免受危险网站的侵害）和其他安全设置</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{此数据包含敏感或危险内容。请移除此内容，然后重试。}=1{这个文件包含敏感或危险内容。请移除此内容，然后重试。}other{这些文件包含敏感或危险内容。请移除此内容，然后重试。}}</translation>
 <translation id="3323521181261657960">恭喜！您获得了更多的设备使用时间</translation>
+<translation id="3325804108816646710">正在查找可用的配置文件…</translation>
 <translation id="3325910708063135066">已在 Mac 系统偏好设置中关闭摄像头和麦克风</translation>
 <translation id="3327050066667856415">Chromebook 旨在确保安全。您的设备会自动防范恶意软件 - 无需安装其他软件。</translation>
 <translation id="3328489342742826322">使用备份进行恢复会致使系统删除您“Linux 文件”文件夹中的现有 Linux 应用和数据。</translation>
@@ -2093,6 +2095,7 @@
 <translation id="3412265149091626468">跳到所选部分</translation>
 <translation id="3413122095806433232">CA 证书颁发者：<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">大小：</translation>
+<translation id="3414966631182382431">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由 <ph name="MANAGER" /> 管理</translation>
 <translation id="3416468988018290825">总是显示完整网址</translation>
 <translation id="3417835166382867856">搜索标签页</translation>
 <translation id="3417836307470882032">24 小时制</translation>
@@ -3166,6 +3169,7 @@
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
 <translation id="4652935475563630866">重新启动 Parallels Desktop 后，对摄像头设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
+<translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="465878909996028221">浏览器重定向仅支持 http、https 和文件协议。</translation>
 <translation id="4659077111144409915">主帐号</translation>
 <translation id="4659126640776004816">当您登录自己的 Google 帐号后，系统即会启用此功能。</translation>
@@ -3765,6 +3769,7 @@
 <translation id="5402815541704507626">使用移动数据网络下载更新</translation>
 <translation id="540296380408672091">始终禁止在 <ph name="HOST" /> 上设置 Cookie</translation>
 <translation id="540495485885201800">与前一项调换</translation>
+<translation id="5405146885510277940">重置设置</translation>
 <translation id="5408750356094797285">缩放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">保存在您的 Google 帐号中的密码</translation>
 <translation id="5411472733320185105">不要对以下主机和域使用代理设置：</translation>
@@ -3826,6 +3831,7 @@
 <translation id="5470735824776589490">必须先重启设备，然后才能通过 Powerwash 重置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">您好！这是文字转语音的语音。</translation>
 <translation id="5472627187093107397">为此网站保存密码</translation>
+<translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
 <translation id="5473333559083690127">请重新输入新的 PIN 码</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
@@ -4364,6 +4370,7 @@
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
+<translation id="6095541101974653012">您已退出。</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">以最大化模式打开</translation>
 <translation id="6096326118418049043">X.500 名称</translation>
@@ -4697,6 +4704,7 @@
 <translation id="6474884162850599008">取消与 Google 云端硬盘帐号的关联</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" />想要共享您屏幕上的内容。请选择您希望共享哪些内容。</translation>
 <translation id="6478248366783946499">要保留危险文件吗？</translation>
+<translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6483485061007832714">打开下载的文件</translation>
 <translation id="6483805311199035658">正在打开 <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">选择语言</translation>
@@ -4885,6 +4893,7 @@
 <translation id="671928215901716392">锁定屏幕</translation>
 <translation id="6721678857435001674">查看您的安全密钥的品牌和型号</translation>
 <translation id="6721972322305477112">文件(&amp;F)</translation>
+<translation id="672208878794563299">此网站下次仍会请求您授权。</translation>
 <translation id="672213144943476270">在以访客身份浏览前，请先解锁您的个人资料。</translation>
 <translation id="6723661294526996303">导入书签和设置...</translation>
 <translation id="6723839937902243910">电源</translation>
@@ -6200,6 +6209,7 @@
 <translation id="8226619461731305576">队列</translation>
 <translation id="8226628635270268143">选择您喜爱的照片和影集</translation>
 <translation id="8227119283605456246">附上文件</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8230134520748321204">要保存 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="8234795456569844941">请告诉我们在您收到个人资料错误消息之前发生的情况，以帮助我们的工程师解决此问题：</translation>
 <translation id="8236917170563564587">改为分享此标签页</translation>
@@ -6281,6 +6291,7 @@
 <translation id="8317671367883557781">添加网络连接</translation>
 <translation id="8319414634934645341">扩展密钥用法</translation>
 <translation id="8320459152843401447">您的整个屏幕</translation>
+<translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 将由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8322814362483282060">系统已阻止此网页使用您的麦克风。</translation>
 <translation id="8323167517179506834">输入网址</translation>
 <translation id="8324784016256120271">网站可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）</translation>
@@ -6588,6 +6599,7 @@
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
 <translation id="869884720829132584">应用菜单</translation>
 <translation id="869891660844655955">截止日期</translation>
+<translation id="8702825062053163569">您的 <ph name="DEVICE_TYPE" /> 已锁定。</translation>
 <translation id="8703346390800944767">跳过广告</translation>
 <translation id="8705331520020532516">序列号</translation>
 <translation id="8705580154597116082">可通过手机使用 Wi-Fi</translation>

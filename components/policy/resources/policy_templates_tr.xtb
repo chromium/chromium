@@ -3495,7 +3495,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Ayarlanmazsa Kullanıcıların karar vermesine izin ver veya Yok olarak ayarlandığında kullanıcılar otomatik saat dilimi algılama seçeneğini chrome://settings sayfasındaki normal kontrolleri kullanarak ayarlar.</translation>
 <translation id="6532769014584932288">Uyanık kalma kilitlerine izin ver</translation>
-<translation id="6536444379078076149">Bir bağlantı etkin olduğunda ana makine masaüstünde bağlantıyla ilgili kullanıcı arayüzünün görüntülenmesini etkinleştir veya devre dışı bırak.</translation>
 <translation id="6536600139108165863">Cihaz kapandığında otomatik olarak yenide başlat</translation>
 <translation id="6539246272469751178">Bu politikanın Android uygulamaları üzerinde hiçbir etkisi yoktur. Android uygulamaları daima varsayılan indirme dizinini kullanır ve <ph name="PRODUCT_OS_NAME" /> tarafından, varsayılan olmayan indirme dizinine indirilen dosyalara erişemez.</translation>
 <translation id="654303922206238013">ecryptfs için taşıma stratejisi</translation>

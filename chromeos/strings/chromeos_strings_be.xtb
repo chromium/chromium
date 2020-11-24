@@ -30,6 +30,7 @@
 <translation id="1930797645656624981">Сэрвіс метадаў уводу Chrome OS</translation>
 <translation id="1947737735496445907">Надрукавана</translation>
 <translation id="1979103255016296513">Пратэрмінавана змена пароля</translation>
+<translation id="1980044825731880088">Хуткасць ЦП</translation>
 <translation id="2049639323467105390">Гэта прылада знаходзіцца пад кіраваннем <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Іншыя налады</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -39,6 +40,7 @@
 <translation id="2364498172489649528">Пройдзена</translation>
 <translation id="2375079107209812402">Засталося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Адправіць справаздачу з водгукам</translation>
+<translation id="2461822463642141190">Цяпер</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}many{<ph name="ERROR_MESSAGE" /> Засталося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Пошук</translation>
@@ -46,6 +48,7 @@
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="3008341117444806826">АБНАВІЦЬ</translation>
 <translation id="3009958530611748826">Выберыце папку для захавання</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3083667275341675831">Дыягностыка падключэння</translation>
 <translation id="3091839911843451378">Збой: работа спынена</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
@@ -99,6 +102,7 @@
 <translation id="4917889632206600977">Спынена: скончылася папера</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Запусціць</translation>
+<translation id="5168185087976003268">Стан акумулятара</translation>
 <translation id="520299634122159966">Няма даступных сканераў</translation>
 <translation id="5212543919916444558">Я не магу знайсці на экране нічога, з чым я мог бы вам дапамагчы.
 Каб спытаць мяне аб чым-небудзь, паспрабуйце дакрануцца да мікрафона.</translation>
@@ -114,8 +118,10 @@
 <translation id="5457599981699367932">Праглядаць як госць</translation>
 <translation id="54609108002486618">Пад кіраваннем</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Даведацца больш у Даведачным цэнтры</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6048107060512778456">Збой: захрасла папера</translation>
 <translation id="6050189528197190982">Адценні шэрага</translation>
@@ -179,6 +185,7 @@
 <translation id="8910721771319628100">Затрымка ў стандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>
 <translation id="8928727111548978589">Збой: скончылася папера</translation>
+<translation id="9088306295921699330">Бягучае выкарыстанне</translation>
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканіруецца старонка <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблакіраваць</translation>

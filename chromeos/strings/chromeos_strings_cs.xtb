@@ -30,6 +30,7 @@
 <translation id="1930797645656624981">Služba metod zadávání systému Chrome OS</translation>
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
+<translation id="1980044825731880088">Rychlost procesoru</translation>
 <translation id="2049639323467105390">Zařízení je spravováno doménou <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -39,6 +40,7 @@
 <translation id="2364498172489649528">V pořádku</translation>
 <translation id="2375079107209812402">Zbývající pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Odeslat zpětnou vazbu</translation>
+<translation id="2461822463642141190">Aktuální</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}many{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusu}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhledat</translation>
@@ -46,6 +48,7 @@
 <translation id="2872961005593481000">Vypnout</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnostika připojení</translation>
 <translation id="3091839911843451378">Tisk selhal – zastaveno</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
@@ -99,6 +102,7 @@
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Spustit</translation>
+<translation id="5168185087976003268">Opotřebení baterie</translation>
 <translation id="520299634122159966">Nejsou k dispozici žádné skenery</translation>
 <translation id="5212543919916444558">Na obrazovce nevidím nic, s čím vám můžu pomoct.
 Zkuste klepnout na mikrofon a zeptat se.</translation>
@@ -114,8 +118,10 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5457599981699367932">Použít jako host</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Další informace v centru nápovědy</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="5895138241574237353">Restartovat</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6048107060512778456">Tisk selhal – zasekl se papír</translation>
 <translation id="6050189528197190982">Stupně šedé</translation>
@@ -179,6 +185,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8910721771319628100">Výchozí síť má latenci nad prahovou hodnotou</translation>
 <translation id="8919837981463578619">Tisk selhal – chybí zásobník</translation>
 <translation id="8928727111548978589">Tisk selhal – došel papír</translation>
+<translation id="9088306295921699330">Současné využití</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>
