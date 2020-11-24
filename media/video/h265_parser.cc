@@ -670,6 +670,7 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     TRUE_OR_RETURN(sps->pcm_sample_bit_depth_chroma_minus1 + 1 <=
                    sps->bit_depth_c);
     READ_UE_OR_RETURN(&sps->log2_min_pcm_luma_coding_block_size_minus3);
+    IN_RANGE_OR_RETURN(sps->log2_min_pcm_luma_coding_block_size_minus3, 0, 2);
     int log2_min_ipcm_cb_size_y =
         sps->log2_min_pcm_luma_coding_block_size_minus3 + 3;
     IN_RANGE_OR_RETURN(log2_min_ipcm_cb_size_y, std::min(min_cb_log2_size_y, 5),
