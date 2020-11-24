@@ -298,6 +298,9 @@
   "chrome/test/data/webui_test_resources.grd": {
     "includes": [2420],
   },
+  "chrome/test/data/chrome_test_resources.grd": {
+    "messages": [2440],
+  },
   # END chrome/ miscellaneous section.
 
   # START chromeos/ section.

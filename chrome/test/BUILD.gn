@@ -5974,6 +5974,7 @@ test("unit_tests") {
   }
   if (toolkit_views) {
     deps += [
+      "//chrome:unit_tests_pak",
       "//components/media_router/browser:test_support",
       "//components/web_modal:test_support",
       "//content/test:test_support",
@@ -5981,6 +5982,9 @@ test("unit_tests") {
       "//ui/views:test_support",
       "//ui/web_dialogs:test_support",
     ]
+
+    data_deps += [ "//chrome:unit_tests_pak" ]
+
     sources += [
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",

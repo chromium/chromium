@@ -97,6 +97,7 @@
     "chrome/app/resources/locale_settings_linux.grd": "Not UI strings; localized separately",
     "chrome/app/resources/locale_settings_mac.grd": "Not UI strings; localized separately",
     "chrome/app/resources/locale_settings_win.grd": "Not UI strings; localized separately",
+    "chrome/test/data/chrome_test_resources.grd": "Test data",
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
     "cloud_print/virtual_driver/win/install/virtual_driver_setup_resources.grd": "Separate release process",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",

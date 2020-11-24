@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
+#include "chrome/test/data/grit/chrome_test_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -41,7 +41,7 @@ class FeaturePromoBubbleViewTest : public TestWithBrowserView {
  protected:
   FeaturePromoBubbleParams GetBubbleParams(bool snoozable) {
     FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_REOPEN_TAB_PROMO;
+    params.body_string_specifier = IDS_FEATURE_PROMO_BODY;
     params.anchor_view = browser_view()->contents_container();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
     params.allow_focus = snoozable;
