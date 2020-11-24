@@ -3005,25 +3005,16 @@ void Internals::setShouldRevealPassword(Element* element,
 
 namespace {
 
-class AddOneFunction : public ScriptFunction {
+class AddOneFunction : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    AddOneFunction* self = MakeGarbageCollected<AddOneFunction>(script_state);
-    return self->BindToV8Function();
-  }
-
-  explicit AddOneFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
-
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     v8::Local<v8::Value> v8_value = value.V8Value();
     DCHECK(v8_value->IsNumber());
     int32_t int_value =
         static_cast<int32_t>(v8_value.As<v8::Integer>()->Value());
     return ScriptValue(
-        GetScriptState()->GetIsolate(),
-        v8::Integer::New(GetScriptState()->GetIsolate(), int_value + 1));
+        script_state->GetIsolate(),
+        v8::Integer::New(script_state->GetIsolate(), int_value + 1));
   }
 };
 
@@ -3047,7 +3038,8 @@ ScriptPromise Internals::createRejectedPromise(ScriptState* script_state,
 
 ScriptPromise Internals::addOneToPromise(ScriptState* script_state,
                                          ScriptPromise promise) {
-  return promise.Then(AddOneFunction::CreateFunction(script_state));
+  return promise.Then(MakeGarbageCollected<NewScriptFunction>(
+      script_state, MakeGarbageCollected<AddOneFunction>()));
 }
 
 ScriptPromise Internals::promiseCheck(ScriptState* script_state,
