@@ -3030,7 +3030,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, AppCacheRequests) {
 
 // Regression test for http://crbug.com/996940. Requests that redirected to an
 // appcache handled URL could have request ID collisions.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, RedirectToAppCacheRequest) {
+// This test is flaky on Linux: https://crbug.com/1094834.
+#if defined(OS_LINUX)
+#define MAYBE_RedirectToAppCacheRequest DISABLED_RedirectToAppCacheRequest
+#else
+#define MAYBE_RedirectToAppCacheRequest RedirectToAppCacheRequest
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       MAYBE_RedirectToAppCacheRequest) {
   // Use the embedded test server to support server-redirect, but serve
   // appcache from a fixed port using the url loader interceptor below
   // so that the appcache origin trial works.
