@@ -4,6 +4,7 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 
 <link rel="import" href="/components/common_styles.html">
@@ -27,31 +28,47 @@ The dialog provides two properties that can be set directly from HTML.
 -->
 <dom-module id="oobe-help-dialog">
   <template>
-    <style include="oobe-common"></style>
-    <link rel="stylesheet" href="oobe_help_dialog.css">
-    <dialog id="helpDialog" part="dialog" aria-labelledby="helpDialogTitle">
+    <style include="oobe-common">
+      :host {
+        flex: 1 1 auto;
+        --cr-dialog-title-slot-padding-bottom: 8px;
+        --cr-dialog-width: 552px;
+        --cr-primary-text-color: var(--oobe-header-text-color);
+        --cr-secondary-text-color: var(--oobe-text-color);
+      }
+
+      #helpDialogTitle {
+        @apply --oobe-help-dialog-header-font;
+        margin: 0;
+        user-select: none;
+      }
+
+      #contentContainer {
+        @apply --oobe-default-font;
+        padding-bottom: 12px;
+      }
+    </style>
+    <cr-dialog id="helpDialog">
       <!-- Title -->
-      <div id="helpDialogTitle">
+      <div id="helpDialogTitle" slot="title">
         <slot name="title">[[i18nDynamic(locale, titleKey)]]</slot>
       </div>
       <!-- Content to be shown -->
-      <div id="contentContainer"
+      <div id="contentContainer" slot="body"
           class="flex-grow layout vertical not-resizable">
         <slot name="content">
           [[i18nDynamic(locale, contentKey)]]
         </slot>
       </div>
       <!-- Close Button -->
-      <div id="buttonContainer" class="layout horizontal">
+      <div id="buttonContainer" slot="button-container"
+          class="layout horizontal">
         <slot name="buttons">
           <oobe-text-button inverse id="closeButton" on-click="hideDialog"
             text-key="oobeModalDialogClose">
           </oobe-text-button>
         </slot>
       </div>
-    </dialog>
+    </cr-dialog>
   </template>
 </dom-module>
-
-
-
