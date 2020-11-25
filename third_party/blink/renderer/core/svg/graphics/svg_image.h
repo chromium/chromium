@@ -133,8 +133,6 @@ class CORE_EXPORT SVGImage final : public Image {
 
   String FilenameExtension() const override;
 
-  LayoutSize ContainerSize() const;
-
   SizeAvailability DataChanged(bool all_data_received) override;
 
   // FIXME: SVGImages are underreporting decoded sizes and will be unable
@@ -150,12 +148,17 @@ class CORE_EXPORT SVGImage final : public Image {
    public:
     DrawInfo(const FloatSize& container_size, float zoom, const KURL& url);
 
+    FloatSize CalculateResidualScale() const;
     float Zoom() const { return zoom_; }
     const FloatSize& ContainerSize() const { return container_size_; }
+    const LayoutSize& RoundedContainerSize() const {
+      return rounded_container_size_;
+    }
     const KURL& Url() const { return url_; }
 
    private:
     const FloatSize container_size_;
+    const LayoutSize rounded_container_size_;
     const float zoom_;
     const KURL& url_;
   };
@@ -190,11 +193,7 @@ class CORE_EXPORT SVGImage final : public Image {
                     cc::PaintCanvas*,
                     const cc::PaintFlags&,
                     const FloatRect& dst_rect,
-                    const FloatRect& src_rect);
-
-  template <typename Func>
-  void ForContainer(const DrawInfo&, Func&&);
-
+                    const FloatRect& unzoomed_src_rect);
   bool ApplyShader(cc::PaintFlags&, const SkMatrix& local_matrix) override;
   bool ApplyShaderForContainer(const DrawInfo&,
                                cc::PaintFlags&,

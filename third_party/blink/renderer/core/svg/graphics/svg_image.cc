@@ -268,23 +268,6 @@ bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
   return true;
 }
 
-LayoutSize SVGImage::ContainerSize() const {
-  const LayoutSVGRoot* layout_root = LayoutRoot();
-  if (!layout_root)
-    return LayoutSize();
-
-  // If a container size is available it has precedence.
-  LayoutSize container_size = layout_root->ContainerSize();
-  if (!container_size.IsEmpty())
-    return container_size;
-
-  // Assure that a container size is always given for a non-identity zoom level.
-  DCHECK_EQ(layout_root->StyleRef().EffectiveZoom(), 1);
-
-  // No set container size; use concrete object size.
-  return intrinsic_size_;
-}
-
 IntSize SVGImage::Size() const {
   return RoundedIntSize(intrinsic_size_);
 }
@@ -375,25 +358,14 @@ FloatSize SVGImage::ConcreteObjectSize(
 SVGImage::DrawInfo::DrawInfo(const FloatSize& container_size,
                              float zoom,
                              const KURL& url)
-    : container_size_(container_size), zoom_(zoom), url_(url) {}
+    : container_size_(container_size),
+      rounded_container_size_(RoundedLayoutSize(container_size)),
+      zoom_(zoom),
+      url_(url) {}
 
-template <typename Func>
-void SVGImage::ForContainer(const DrawInfo& draw_info, Func&& func) {
-  if (!page_)
-    return;
-
-  // Temporarily disable the image observer to prevent changeInRect() calls due
-  // re-laying out the image.
-  ImageObserverDisabler image_observer_disabler(this);
-
-  FloatSize container_size = draw_info.ContainerSize();
-  LayoutSize rounded_container_size = RoundedLayoutSize(container_size);
-
-  if (LayoutSVGRoot* layout_root = LayoutRoot())
-    layout_root->SetContainerSize(rounded_container_size);
-
-  func(FloatSize(rounded_container_size.Width() / container_size.Width(),
-                 rounded_container_size.Height() / container_size.Height()));
+FloatSize SVGImage::DrawInfo::CalculateResidualScale() const {
+  return FloatSize(rounded_container_size_.Width() / container_size_.Width(),
+                   rounded_container_size_.Height() / container_size_.Height());
 }
 
 void SVGImage::DrawForContainer(const DrawInfo& draw_info,
@@ -401,17 +373,15 @@ void SVGImage::DrawForContainer(const DrawInfo& draw_info,
                                 const PaintFlags& flags,
                                 const FloatRect& dst_rect,
                                 const FloatRect& src_rect) {
-  ForContainer(draw_info, [&](const FloatSize& residual_scale) {
-    FloatRect scaled_src = src_rect;
-    scaled_src.Scale(1 / draw_info.Zoom());
+  FloatRect unzoomed_src = src_rect;
+  unzoomed_src.Scale(1 / draw_info.Zoom());
 
-    // Compensate for the container size rounding by adjusting the source rect.
-    FloatSize adjusted_src_size = scaled_src.Size();
-    adjusted_src_size.Scale(residual_scale.Width(), residual_scale.Height());
-    scaled_src.SetSize(adjusted_src_size);
+  // Compensate for the container size rounding by adjusting the source rect.
+  FloatSize residual_scale = draw_info.CalculateResidualScale();
+  unzoomed_src.SetSize(unzoomed_src.Size().ScaledBy(residual_scale.Width(),
+                                                    residual_scale.Height()));
 
-    DrawInternal(draw_info, canvas, flags, dst_rect, scaled_src);
-  });
+  DrawInternal(draw_info, canvas, flags, dst_rect, unzoomed_src);
 }
 
 PaintImage SVGImage::PaintImageForCurrentFrame() {
@@ -473,13 +443,6 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
 void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
     const DrawInfo& draw_info,
     PaintImageBuilder& builder) {
-  builder.set_completion_state(
-      load_state_ == LoadState::kLoadCompleted
-          ? PaintImage::CompletionState::DONE
-          : PaintImage::CompletionState::PARTIALLY_DONE);
-  if (!page_)
-    return;
-
   PaintRecorder recorder;
   const FloatSize size(draw_info.ContainerSize().ScaledBy(draw_info.Zoom()));
   const IntRect dest_rect(IntPoint(), RoundedIntSize(size));
@@ -488,31 +451,34 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
                    FloatRect(FloatPoint(), size));
   builder.set_paint_record(recorder.finishRecordingAsPicture(), dest_rect,
                            PaintImage::GetNextContentId());
+
+  builder.set_completion_state(
+      load_state_ == LoadState::kLoadCompleted
+          ? PaintImage::CompletionState::DONE
+          : PaintImage::CompletionState::PARTIALLY_DONE);
 }
 
 bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
                                    PaintFlags& flags,
                                    const SkMatrix& local_matrix) {
-  const FloatSize size(ContainerSize());
-  if (size.IsEmpty())
+  if (draw_info.ContainerSize().IsEmpty())
+    return false;
+  sk_sp<PaintRecord> record = PaintRecordForCurrentFrame(draw_info);
+  if (!record)
     return false;
 
-  FloatRect bounds(FloatPoint(), size);
+  const FloatRect bounds(FloatPoint(), draw_info.ContainerSize());
   flags.setShader(PaintShader::MakePaintRecord(
-      PaintRecordForCurrentFrame(draw_info), bounds, SkTileMode::kRepeat,
-      SkTileMode::kRepeat, &local_matrix));
+      std::move(record), bounds, SkTileMode::kRepeat, SkTileMode::kRepeat,
+      &local_matrix));
 
-  // Animation is normally refreshed in draw() impls, which we don't reach when
+  // Animation is normally refreshed in Draw() impls, which we don't reach when
   // painting via shaders.
   StartAnimation();
-
   return true;
 }
 
 bool SVGImage::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
-  // TODO(fs): Passing |intrinsic_size_| even though it shouldn't be used in
-  // this code-path ATM. (It'll read the currently set container size from the
-  // SVG root which is a bit iffy/non-deterministic.)
   const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL());
   return ApplyShaderInternal(draw_info, flags, local_matrix);
 }
@@ -520,18 +486,13 @@ bool SVGImage::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
 bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
                                        PaintFlags& flags,
                                        const SkMatrix& local_matrix) {
-  bool result = false;
-  ForContainer(draw_info, [&](const FloatSize& residual_scale) {
-    FloatSize zoomed_residual_scale = residual_scale.ScaledBy(draw_info.Zoom());
-    // Compensate for the container size rounding.
-    auto adjusted_local_matrix = local_matrix;
-    adjusted_local_matrix.preScale(zoomed_residual_scale.Width(),
-                                   zoomed_residual_scale.Height());
-
-    result = ApplyShaderInternal(draw_info, flags, adjusted_local_matrix);
-  });
-
-  return result;
+  // Compensate for the container size rounding.
+  FloatSize residual_scale =
+      draw_info.CalculateResidualScale().ScaledBy(draw_info.Zoom());
+  auto adjusted_local_matrix = local_matrix;
+  adjusted_local_matrix.preScale(residual_scale.Width(),
+                                 residual_scale.Height());
+  return ApplyShaderInternal(draw_info, flags, adjusted_local_matrix);
 }
 
 void SVGImage::Draw(cc::PaintCanvas* canvas,
@@ -541,20 +502,23 @@ void SVGImage::Draw(cc::PaintCanvas* canvas,
                     RespectImageOrientationEnum,
                     ImageClampingMode,
                     ImageDecodingMode) {
-  if (!page_)
-    return;
-  // TODO(fs): Passing |intrinsic_size_| even though it shouldn't be used in
-  // this code-path ATM. (It'll read the currently set container size from the
-  // SVG root which is a bit iffy/non-deterministic.)
   const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL());
   DrawInternal(draw_info, canvas, flags, dst_rect, src_rect);
 }
 
 sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
     const DrawInfo& draw_info) {
-  DCHECK(page_);
+  if (!page_)
+    return nullptr;
+  // Temporarily disable the image observer to prevent ChangeInRect() calls due
+  // re-laying out the image.
+  ImageObserverDisabler disable_image_observer(this);
+
+  const LayoutSize layout_container_size = draw_info.RoundedContainerSize();
+  if (LayoutSVGRoot* layout_root = LayoutRoot())
+    layout_root->SetContainerSize(layout_container_size);
   LocalFrameView* view = GetFrame()->View();
-  IntSize rounded_container_size = RoundedIntSize(ContainerSize());
+  const IntSize rounded_container_size = RoundedIntSize(layout_container_size);
   view->Resize(rounded_container_size);
   page_->GetVisualViewport().SetSize(rounded_container_size);
 
@@ -596,7 +560,11 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
                             cc::PaintCanvas* canvas,
                             const PaintFlags& flags,
                             const FloatRect& dst_rect,
-                            const FloatRect& src_rect) {
+                            const FloatRect& unzoomed_src_rect) {
+  sk_sp<PaintRecord> record = PaintRecordForCurrentFrame(draw_info);
+  if (!record)
+    return;
+
   {
     PaintCanvasAutoRestore ar(canvas, false);
     if (DrawNeedsLayer(flags)) {
@@ -608,9 +576,9 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
     // without clipping, and translate accordingly.
     canvas->save();
     canvas->clipRect(EnclosingIntRect(dst_rect));
-    canvas->concat(SkMatrix::MakeRectToRect(src_rect, dst_rect,
+    canvas->concat(SkMatrix::MakeRectToRect(unzoomed_src_rect, dst_rect,
                                             SkMatrix::kFill_ScaleToFit));
-    canvas->drawPicture(PaintRecordForCurrentFrame(draw_info));
+    canvas->drawPicture(std::move(record));
     canvas->restore();
   }
 

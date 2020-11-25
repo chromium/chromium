@@ -74,10 +74,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     needs_boundaries_or_transform_update_ = true;
   }
 
-  LayoutSize ContainerSize() const {
-    NOT_DESTROYED();
-    return container_size_;
-  }
   void SetContainerSize(const LayoutSize& container_size) {
     NOT_DESTROYED();
     // SVGImage::draw() does a view layout prior to painting,
