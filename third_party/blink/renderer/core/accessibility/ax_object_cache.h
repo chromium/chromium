@@ -63,6 +63,12 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual void Dispose() = 0;
 
+  // A Freeze() occurs during a serialization run.
+  // Used here as a hint for DCHECKS to enforce the following behavior:
+  // objects in the ax hierarchy should not be destroyed during serialization.
+  virtual void Freeze() = 0;
+  virtual void Thaw() = 0;
+
   // Register/remove popups
   virtual void InitializePopup(Document* document) = 0;
   virtual void DisposePopup(Document* document) = 0;

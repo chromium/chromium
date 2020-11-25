@@ -44,6 +44,7 @@ async_test((t) => {
   requestAnimationFrame(() => requestAnimationFrame(() => {
     // The ax object for #target got replaced since the layout object changed, so use the new ax object.
     axTarget = axElementById("target");
+    axTarget.childrenCount;  // Touch children to cause invalidations. Only necessary in web tests. Normally serializer does this.
     t.step(() => { assert_false(axTarget.isIgnored); });
     // Note that when locked, the ignored text nodes don't show up as children; so we expect 2.
     t.step(() => { assert_equals(axTarget.childrenCount, 2, "When locked, nodes in hidden subtree are visible"); });

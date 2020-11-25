@@ -465,6 +465,8 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   if (role_ == ax::mojom::blink::Role::kRootWebArea)
     return false;
 
+  // TODO(accessibility) In the case of display locking, might we have a stale
+  // pointer to a layout object? Should the display locking case be first?
   if (GetLayoutObject()) {
     if (role_ == ax::mojom::blink::Role::kUnknown) {
       if (ignored_reasons)
@@ -3184,11 +3186,7 @@ void AXNodeObject::AddImageMapChildren() {
     if (obj) {
       auto* area_object = To<AXImageMapLink>(obj);
       DCHECK_NE(area_object->AXObjectID(), 0U);
-      if (area_object->AccessibilityIsIncludedInTree()) {
-        children_.push_back(area_object);
-      } else {
-        AXObjectCache().Remove(area_object->AXObjectID());
-      }
+      children_.push_back(area_object);
     }
   }
 }

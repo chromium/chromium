@@ -275,10 +275,13 @@ void BlinkAXTreeSource::Freeze() {
     focus_ = WebAXObject::FromWebDocumentFocused(document_);
   else
     focus_ = WebAXObject();
+
+  WebAXObject::Freeze(document_);
 }
 
 void BlinkAXTreeSource::Thaw() {
   CHECK(frozen_);
+  WebAXObject::Thaw(document_);
   frozen_ = false;
 }
 

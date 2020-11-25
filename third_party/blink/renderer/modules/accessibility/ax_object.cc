@@ -595,6 +595,11 @@ void AXObject::Init() {
 }
 
 void AXObject::Detach() {
+  DCHECK(ax_object_cache_);
+  DCHECK(!ax_object_cache_->IsFrozen())
+      << "Do not detach children while the tree is frozen, in order to avoid "
+         "an object detaching itself in the middle of computing its own "
+         "accessibility properties.";
   // Clear any children and call detachFromParent on them so that
   // no children are left with dangling pointers to their parent.
   ClearChildren();
@@ -1534,10 +1539,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
   last_modification_count_ = cache.ModificationCount();
 
   cached_background_color_ = ComputeBackgroundColor();
-  // TODO(aleventhal) Temporary crash fix until CL:2485519 lands.
-  if (IsDetached())
-    return;
-
   cached_is_hidden_via_style = ComputeIsHiddenViaStyle();
   cached_is_inert_or_aria_hidden_ = ComputeIsInertOrAriaHidden();
   cached_is_descendant_of_leaf_node_ = !!LeafNodeAncestor();
@@ -1547,6 +1548,19 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
   cached_is_ignored_ = ComputeAccessibilityIsIgnored();
   cached_is_ignored_but_included_in_tree_ =
       cached_is_ignored_ && ComputeAccessibilityIsIgnoredButIncludedInTree();
+#if DCHECK_IS_ON()
+  // Ensure that display-locked text is pruned from the tree. This means that
+  // they will be missed in the virtual buffer; therefore, it may be a rule
+  // subject to change. Note that changing the rule would potentially cause a
+  // lot of display-locked whitespace to be exposed.
+  if (cached_is_ignored_ &&
+      RoleValue() == ax::mojom::blink::Role::kStaticText && GetNode() &&
+      DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode())) {
+    DCHECK(!cached_is_ignored_but_included_in_tree_)
+        << "Display locked text should not be included in the tree (subject to "
+           "future rule change)";
+  }
+#endif
   cached_is_editable_root_ = ComputeIsEditableRoot();
   // Compute live region root, which can be from any ARIA live value, including
   // "off", or from an automatic ARIA live value, e.g. from role="status".

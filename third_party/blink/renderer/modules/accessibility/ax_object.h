@@ -1085,6 +1085,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AXObject* RawNextSibling() const { return nullptr; }
 
   virtual void AddChildren() {}
+  // For some nodes, only LayoutBuilderTraversal visits the necessary children.
+  virtual bool ShouldUseLayoutBuilderTraversal() const { return false; }
   virtual bool CanHaveChildren() const { return true; }
   bool HasChildren() const { return have_children_; }
   virtual void UpdateChildrenIfNecessary();

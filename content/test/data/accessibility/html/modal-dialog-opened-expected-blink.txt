@@ -9,5 +9,6 @@ rootWebArea
 ++++++++++++staticText name='Link inside the dialog.'
 ++++++++++++++inlineTextBox name='Link inside the dialog.'
 ++++++++popUpButton collapsed ignored invisible value='This should be pruned out of the tree.'
+++++++++++menuListPopup ignored invisible
 ++++++button ignored invisible name='No file chosen, Choose File' value='No file chosen'
 ++++++dialog ignored invisible

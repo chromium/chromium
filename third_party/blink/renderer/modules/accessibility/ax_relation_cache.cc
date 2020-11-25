@@ -29,6 +29,7 @@ void AXRelationCache::DoInitialDocumentScan() {
     // Defers adding aria-owns targets as children of their new parents,
     // and to the relation cache, until the appropriate document lifecycle.
     if (element.FastHasAttribute(html_names::kAriaOwnsAttr)) {
+      // FIXME(accessibility) This can be a dangerous time to GetOrCreate().
       if (AXObject* owner = GetOrCreate(&element)) {
         owner_ids_to_update_.insert(owner->AXObjectID());
       }

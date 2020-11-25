@@ -312,13 +312,12 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   void AddInlineTextBoxChildren(bool force);
   void AddImageMapChildren();
-  void AddHiddenChildren();
   void AddPopupChildren();
   void AddRemoteSVGChildren();
   void AddTableChildren();
   void AddValidationMessageChild();
   // For some nodes, only LayoutBuilderTraversal visits the necessary children.
-  bool ShouldUseLayoutBuilderTraversal() const;
+  bool ShouldUseLayoutBuilderTraversal() const override;
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
 
   DISALLOW_COPY_AND_ASSIGN(AXNodeObject);

@@ -240,7 +240,6 @@ bool WebAXObject::CanSetValueAttribute() const {
 unsigned WebAXObject::ChildCount() const {
   if (IsDetached())
     return 0;
-
   return private_->ChildCountIncludingIgnored();
 }
 
@@ -1569,6 +1568,22 @@ bool WebAXObject::MaybeUpdateLayoutAndCheckValidity(
   }
 
   return true;
+}
+
+// static
+void WebAXObject::Freeze(const WebDocument& web_document) {
+  const Document* doc = web_document.ConstUnwrap<Document>();
+  auto* cache = To<AXObjectCacheImpl>(doc->ExistingAXObjectCache());
+  if (cache)
+    cache->Freeze();
+}
+
+// static
+void WebAXObject::Thaw(const WebDocument& web_document) {
+  const Document* doc = web_document.ConstUnwrap<Document>();
+  auto* cache = To<AXObjectCacheImpl>(doc->ExistingAXObjectCache());
+  if (cache)
+    cache->Thaw();
 }
 
 }  // namespace blink
