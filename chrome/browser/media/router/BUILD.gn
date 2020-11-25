@@ -166,6 +166,8 @@ if (!is_android) {
     ]
     public_deps = [ ":router" ]
     sources = [
+      "providers/test/test_media_route_provider.cc",
+      "providers/test/test_media_route_provider.h",
       "test/media_router_mojo_test.cc",
       "test/media_router_mojo_test.h",
       "test/mock_dns_sd_registry.cc",

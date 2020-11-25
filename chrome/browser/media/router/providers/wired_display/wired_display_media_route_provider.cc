@@ -28,13 +28,6 @@ namespace media_router {
 
 namespace {
 
-bool IsPresentationSource(const std::string& media_source) {
-  const GURL source_url(media_source);
-  return source_url.is_valid() && source_url.SchemeIsHTTPOrHTTPS() &&
-         !base::StartsWith(source_url.spec(), kLegacyCastPresentationUrlPrefix,
-                           base::CompareCase::INSENSITIVE_ASCII);
-}
-
 MediaSinkInternal CreateSinkForDisplay(const Display& display,
                                        int display_index) {
   const std::string sink_id =
@@ -201,7 +194,7 @@ void WiredDisplayMediaRouteProvider::SendRouteBinaryMessage(
 
 void WiredDisplayMediaRouteProvider::StartObservingMediaSinks(
     const std::string& media_source) {
-  if (!IsPresentationSource(media_source))
+  if (!IsValidStandardPresentationSource(media_source))
     return;
 
   // Start observing displays if |this| isn't already observing.
@@ -251,7 +244,7 @@ void WiredDisplayMediaRouteProvider::EnableMdnsDiscovery() {}
 
 void WiredDisplayMediaRouteProvider::UpdateMediaSinks(
     const std::string& media_source) {
-  if (IsPresentationSource(media_source))
+  if (IsValidStandardPresentationSource(media_source))
     media_router_->OnSinksReceived(kProviderId, media_source, GetSinks(), {});
 }
 

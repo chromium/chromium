@@ -54,6 +54,13 @@ bool IsValidPresentationUrl(const GURL& url) {
   return url.is_valid() && IsSchemeAllowed(url);
 }
 
+bool IsValidStandardPresentationSource(const std::string& media_source) {
+  const GURL source_url(media_source);
+  return source_url.is_valid() && source_url.SchemeIsHTTPOrHTTPS() &&
+         !base::StartsWith(source_url.spec(), kLegacyCastPresentationUrlPrefix,
+                           base::CompareCase::INSENSITIVE_ASCII);
+}
+
 bool IsAutoJoinPresentationId(const std::string& presentation_id) {
   return presentation_id == kAutoJoinPresentationId;
 }

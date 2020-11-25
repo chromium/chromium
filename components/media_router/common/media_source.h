@@ -45,6 +45,9 @@ bool IsLegacyCastPresentationUrl(const GURL& url);
 // Returns true if |url| is a valid presentation URL.
 bool IsValidPresentationUrl(const GURL& url);
 
+// Returns true if |media_source| has a valid presentation URL.
+bool IsValidStandardPresentationSource(const std::string& media_source);
+
 // Returns true if |presentation_id| is an ID used by auto-join requests.
 bool IsAutoJoinPresentationId(const std::string& presentation_id);
 
