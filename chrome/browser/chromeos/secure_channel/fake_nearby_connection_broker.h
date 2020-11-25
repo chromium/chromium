@@ -21,7 +21,7 @@ class FakeNearbyConnectionBroker : public NearbyConnectionBroker {
   ~FakeNearbyConnectionBroker() override;
 
   using NearbyConnectionBroker::bluetooth_public_address;
-  using NearbyConnectionBroker::Disconnect;
+  using NearbyConnectionBroker::InvokeDisconnectedCallback;
   using NearbyConnectionBroker::NotifyConnected;
   using NearbyConnectionBroker::NotifyMessageReceived;
 
