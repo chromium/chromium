@@ -41,6 +41,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/posix/eintr_wrapper.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/wayland_display_output.h"
@@ -61,7 +62,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
 #include "components/exo/wayland/wl_shell.h"
 #include "components/exo/wayland/xdg_shell.h"
@@ -179,7 +180,7 @@ Server::Server(Display* display)
   }
   wl_global_create(wl_display_.get(), &zaura_shell_interface,
                    kZAuraShellVersion, display_, bind_aura_shell);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   wl_global_create(wl_display_.get(), &wl_shell_interface, 1, display_,
                    bind_shell);
   wl_global_create(wl_display_.get(), &zcr_cursor_shapes_v1_interface, 1,
@@ -256,7 +257,7 @@ std::unique_ptr<Server> Server::Create(Display* display) {
   }
 
   const base::FilePath runtime_dir(runtime_dir_str);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On debugging chromeos-chrome on linux platform,
   // try to ensure the directory if missing.
   if (!base::SysInfo::IsRunningOnChromeOS()) {
@@ -264,7 +265,7 @@ std::unique_ptr<Server> Server::Create(Display* display) {
           base::CreateDirectory(runtime_dir))
         << "Failed to create XDG_RUNTIME_DIR";
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::string socket_name(kSocketName);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

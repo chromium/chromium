@@ -7,12 +7,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
 #include "components/exo/test/exo_test_base_views.h"
 #include "components/exo/wayland/fuzzer/actions.pb.h"
 #include "components/exo/wayland/server.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/exo/test/exo_test_base.h"
 #endif
 
@@ -23,7 +24,7 @@ namespace {
 // Use ExoTestBase on Chrome OS because Server starts to depends on ash::Shell,
 // which is unavailable on other platforms so then ExoTestBaseViews instead.
 using TestBase =
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     test::ExoTestBase
 #else
     test::ExoTestBaseViews

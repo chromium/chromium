@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/permission.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/surface.h"
@@ -20,9 +21,9 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ui/base/window_properties.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Permission*)
 
@@ -105,13 +106,13 @@ const std::string* GetShellStartupId(aura::Window* window) {
 }
 
 void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   window->SetProperty(chromeos::kImmersiveImpliedByFullscreen, value);
 
   // Ensure the shelf is fully hidden in plain fullscreen, but shown
   // (auto-hides based on mouse movement) when in immersive fullscreen.
   window->SetProperty(chromeos::kHideShelfWhenFullscreenKey, !value);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SetShellClientAccessibilityId(aura::Window* window,

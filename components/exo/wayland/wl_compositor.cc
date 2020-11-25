@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/surface.h"
@@ -17,7 +18,7 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/display/types/display_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/exo/wayland/zwp_linux_explicit_synchronization.h"
 #endif
 
@@ -132,7 +133,7 @@ void surface_set_input_region(wl_client* client,
 void surface_commit(wl_client* client, wl_resource* resource) {
   Surface* surface = GetUserDataAs<Surface>(resource);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!linux_surface_synchronization_validate_commit(surface))
     return;
 #endif

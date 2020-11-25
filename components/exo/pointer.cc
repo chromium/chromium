@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/pointer_delegate.h"
@@ -41,7 +42,7 @@
 #include "ui/gfx/transform_util.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -95,7 +96,7 @@ display::ManagedDisplayInfo GetCaptureDisplayInfo() {
 }
 
 int GetContainerIdForMouseCursor() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::kShellWindowId_MouseCursorContainer;
 #else
   NOTIMPLEMENTED();
@@ -239,7 +240,7 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
   // Pointer lock is a chromeos-only feature (i.e. the chromeos::features
   // namespace only exists in chromeos builds). So we do not compile pointer
   // lock support unless we are on chromeos.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Surface* constrained_surface = delegate->GetConstrainedSurface();
   // Pointer lock should be enabled for ARC by default. The kExoPointerLock
   // should only apply to Crostini windows.
@@ -419,7 +420,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     // TODO(b/161755250): the ifdef is only necessary because of the feature
     // flag. This code should work fine on non-cros.
     base::Optional<gfx::Vector2dF> ordinal_motion = base::nullopt;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (event->flags() & ui::EF_UNADJUSTED_MOUSE &&
         base::FeatureList::IsEnabled(chromeos::features::kExoOrdinalMotion)) {
       ordinal_motion = event->movement();

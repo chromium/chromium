@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
@@ -76,6 +77,7 @@ static_library("exo") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//cc",
     "//components/viz/host",
     "//device/gamepad",
@@ -119,7 +121,7 @@ static_library("exo") {
     "//ui/base/dragdrop/mojom:mojom_headers",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//ash",
       "//ash/keyboard/ui",
@@ -221,7 +223,7 @@ source_set("test_support") {
     "//ui/wm",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "test/exo_test_base.cc",
       "test/exo_test_base.h",
@@ -275,7 +277,7 @@ source_set("unit_tests") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../../ui/events/ozone/gamepad/gamepad_event.cc",
       "buffer_unittest.cc",
@@ -311,6 +313,7 @@ source_set("unit_tests") {
       "//ash:test_support",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
+      "//build:chromeos_buildflags",
       "//chromeos/constants",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
@@ -336,6 +339,7 @@ test("exo_unittests") {
     ":unit_tests",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//components/viz/test:test_support",
     "//device/gamepad:test_helpers",
@@ -355,7 +359,7 @@ test("exo_unittests") {
     deps += [ "//components/exo/wayland:unit_tests" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../../ash/test/ash_test_suite.cc",
       "../../ash/test/ash_test_suite.h",

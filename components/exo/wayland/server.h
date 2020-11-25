@@ -14,6 +14,8 @@
 #include "components/exo/wayland/scoped_wl.h"
 #include "ui/display/display_observer.h"
 
+#include "build/chromeos_buildflags.h"
+
 struct wl_resource;
 struct wl_client;
 
@@ -74,7 +76,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_data_;
   std::unique_ptr<WaylandSeat> seat_data_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<WaylandTextInputManager> zwp_text_manager_data_;
   std::unique_ptr<WaylandZxdgShell> zxdg_shell_data_;
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;

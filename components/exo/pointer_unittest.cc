@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
@@ -41,7 +42,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -1115,7 +1116,7 @@ TEST_F(PointerTest, OrdinalMotionOverridesRelativeMotion) {
   //
   // TODO(b/161755250): the ifdef is only necessary because of the feature
   // flag. This code should work fine on non-cros.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   new_location = new_location + gfx::Vector2d(1, 1);
   ui::MouseEvent ev2(ui::ET_MOUSE_MOVED, new_location, new_location,
                      ui::EventTimeForNow(), generator.flags(), 0);
@@ -1133,7 +1134,7 @@ TEST_F(PointerTest, OrdinalMotionOverridesRelativeMotion) {
   pointer->UnregisterRelativePointerDelegate(&relative_delegate);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerTest, ConstrainPointer) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
@@ -1200,7 +1201,7 @@ TEST_F(PointerTest, ConstrainPointer) {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotFocused) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
@@ -1262,7 +1263,7 @@ TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotFocused) {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerTest, UnconstrainPointerWhenSurfaceIsDestroyed) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
@@ -1306,7 +1307,7 @@ TEST_F(PointerTest, UnconstrainPointerWhenSurfaceIsDestroyed) {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerTest, UnconstrainPointerWhenWindowLosesFocus) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(

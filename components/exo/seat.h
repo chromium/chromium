@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/data_source_observer.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -19,7 +20,7 @@
 #include "ui/events/keycodes/dom/dom_codes.h"
 #include "ui/events/platform/platform_event_observer.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/ime/ime_controller_impl.h"
 #include "components/exo/ui_lock_controller.h"
 #endif
@@ -47,7 +48,7 @@ class Seat : public aura::client::FocusChangeObserver,
              public ui::PlatformEventObserver,
              public ui::EventHandler,
              public ui::ClipboardObserver,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
              public ash::ImeControllerImpl::Observer,
 #endif
              public DataSourceObserver {
@@ -69,7 +70,7 @@ class Seat : public aura::client::FocusChangeObserver,
     return pressed_keys_;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const XkbTracker* xkb_tracker() const { return xkb_tracker_.get(); }
 #endif
 
@@ -111,7 +112,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // Overridden from DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Overridden from ash::ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
@@ -149,11 +150,11 @@ class Seat : public aura::client::FocusChangeObserver,
                    base::OnceClosure callback,
                    const std::string& mime_type,
                    const std::vector<uint8_t>& data);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnImageDecoded(base::OnceClosure callback,
                       scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       const SkBitmap& bitmap);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void OnFilenamesRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                        base::OnceClosure callback,
                        const std::string& mime_type,
@@ -181,10 +182,10 @@ class Seat : public aura::client::FocusChangeObserver,
 
   bool shutdown_ = false;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<UILockController> ui_lock_controller_;
   std::unique_ptr<XkbTracker> xkb_tracker_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<Seat> weak_ptr_factory_{this};
 

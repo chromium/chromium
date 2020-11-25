@@ -16,11 +16,12 @@
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
 #include "components/exo/test/exo_test_base_views.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/exo/test/exo_test_base.h"
 #endif
 
@@ -38,7 +39,7 @@ std::string GetUniqueSocketName() {
 // Use ExoTestBase on Chrome OS because Server starts to depends on ash::Shell,
 // which is unavailable on other platforms so then ExoTestBaseViews instead.
 using TestBase =
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     test::ExoTestBase
 #else
     test::ExoTestBaseViews

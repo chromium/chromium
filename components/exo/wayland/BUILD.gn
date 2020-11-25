@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -63,6 +64,7 @@ source_set("wayland") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/exo",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//device/gamepad",
@@ -118,7 +120,7 @@ source_set("wayland") {
       "//ui/ozone",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//ash",
         "//ash/public/cpp",
@@ -140,7 +142,7 @@ source_set("wayland") {
     deps += [ "//third_party/wayland-protocols:fullscreen_shell_protocol" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "wayland_keyboard_delegate.cc",
       "wayland_keyboard_delegate.h",
@@ -195,6 +197,7 @@ source_set("unit_tests") {
   deps = [
     ":wayland",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/exo",
     "//components/exo:test_support",
     "//components/exo/wayland/fuzzer:unit_tests",
@@ -205,7 +208,7 @@ source_set("unit_tests") {
     "//third_party/wayland:wayland_client",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "wayland_keyboard_delegate_unittest.cc",
       "wayland_positioner_unittest.cc",
@@ -447,7 +450,7 @@ source_set("wayland_client_test_helper") {
 
   data_deps = []
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     data_deps += [
       "//ash/resources:ash_test_resources_100_percent",
       "//ash/resources:ash_test_resources_200_percent",
@@ -493,7 +496,7 @@ test("wayland_client_perftests") {
 
   data_deps = []
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../../../ash/test/ash_test_suite.cc",
       "../../../ash/test/ash_test_suite.h",
@@ -539,7 +542,7 @@ test("wayland_client_compatibility_tests") {
     "//ui/gl:test_support",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//ash:test_support" ]
   }
 

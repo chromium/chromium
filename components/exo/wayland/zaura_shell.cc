@@ -17,6 +17,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wl_output.h"
@@ -31,12 +32,12 @@
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "components/exo/wm_helper_chromeos.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
 namespace wayland {
@@ -329,7 +330,7 @@ void AuraSurface::SendOcclusionFraction(float occlusion_fraction) {
 void AuraSurface::ComputeAndSendOcclusionFraction(
     const aura::Window::OcclusionState occlusion_state,
     const SkRegion& occluded_region) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Should re-write in locked case - we don't want to trigger PIP upon
   // locking the screen.
   // TODO(afakhry): We may also want to have special behaviour here for virtual
@@ -338,7 +339,7 @@ void AuraSurface::ComputeAndSendOcclusionFraction(
     SendOcclusionFraction(0.0f);
     return;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   auto* window = surface_->window();
   float fraction_occluded = 0.0f;
@@ -469,7 +470,7 @@ class AuraOutput : public WaylandDisplayObserver {
 ////////////////////////////////////////////////////////////////////////////////
 // aura_shell_interface:
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Implements aura shell interface and monitors workspace state needed
 // for the aura shell interface.
 class WaylandAuraShell : public ash::TabletModeObserver {
@@ -512,7 +513,7 @@ class WaylandAuraShell : public ash::TabletModeObserver {
   // The aura shell resource associated with observer.
   wl_resource* const aura_shell_resource_;
 };
-#endif  // OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
 
 void aura_shell_get_aura_surface(wl_client* client,
                                  wl_resource* resource,
@@ -563,7 +564,7 @@ void bind_aura_shell(wl_client* client,
       wl_resource_create(client, &zaura_shell_interface,
                          std::min(version, kZAuraShellVersion), id);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetImplementation(resource, &aura_shell_implementation,
                     std::make_unique<WaylandAuraShell>(resource));
 #else

@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/buffer.h"
 #include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/shell_surface_util.h"
@@ -53,10 +54,10 @@
 #include "ui/gfx/transform_util.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/display/output_protection_delegate.h"
 #include "ash/wm/desks/desks_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Surface*)
 
@@ -117,11 +118,11 @@ gfx::Size ToTransformedSize(const gfx::Size& size, Transform transform) {
 }
 
 bool IsDeskContainer(aura::Window* container) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::desks_util::IsDeskContainer(container);
 #else
   return container->id() == ash::kShellWindowId_DefaultContainerDeprecated;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 class CustomWindowDelegate : public aura::WindowDelegate {
@@ -691,11 +692,11 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         cached_state_.basic_state.buffer_transform !=
             state_.basic_state.buffer_transform;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     bool needs_output_protection =
         cached_state_.basic_state.only_visible_on_secure_output !=
         state_.basic_state.only_visible_on_secure_output;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     bool cached_invert_y = false;
 
@@ -721,7 +722,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       window_->TrackOcclusionState();
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (needs_output_protection) {
       if (!output_protection_) {
         output_protection_ =
@@ -735,7 +736,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
 
       output_protection_->SetProtection(protection_mask, base::DoNothing());
     }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // We update contents if Attach() has been called since last commit.
     if (has_cached_contents_) {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/data_source_observer.h"
@@ -17,7 +18,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point_f.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/exo/extended_drag_source.h"
 #endif
 
@@ -50,7 +51,7 @@ class ScopedSurface;
 // or if another drag operation races with this one to start and wins.
 class DragDropOperation : public DataSourceObserver,
                           public SurfaceObserver,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                           public ExtendedDragSource::Observer,
 #endif
                           public aura::client::DragDropClientObserver {
@@ -76,7 +77,7 @@ class DragDropOperation : public DataSourceObserver,
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;
   void OnDragEnded() override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnDragActionsChanged(int actions) override;
 
   // ExtendedDragSource::Observer:
@@ -111,7 +112,7 @@ class DragDropOperation : public DataSourceObserver,
   // directly. Use ScheduleStartDragDropOperation instead.
   void StartDragDropOperation();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ResetExtendedDragSource();
 #endif
 
@@ -120,11 +121,11 @@ class DragDropOperation : public DataSourceObserver,
   std::unique_ptr<ScopedSurface> origin_;
   gfx::PointF drag_start_point_;
   std::unique_ptr<ui::OSExchangeData> os_exchange_data_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::DragDropController* drag_drop_controller_;
 #else
   aura::client::DragDropClient* drag_drop_controller_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::RepeatingClosure counter_;
 
@@ -142,7 +143,7 @@ class DragDropOperation : public DataSourceObserver,
 
   ui::mojom::DragEventSource event_source_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ExtendedDragSource* extended_drag_source_;
 #endif
 
