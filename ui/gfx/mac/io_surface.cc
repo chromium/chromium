@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
@@ -23,6 +24,9 @@
 namespace gfx {
 
 namespace {
+
+const base::Feature kIOSurfaceUseNamedSRGBForREC709{
+    "IOSurfaceUseNamedSRGBForREC709", base::FEATURE_ENABLED_BY_DEFAULT};
 
 void AddIntegerValue(CFMutableDictionaryRef dictionary,
                      const CFStringRef key,
@@ -135,7 +139,8 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   CFStringRef color_space_name = nullptr;
   if (__builtin_available(macos 10.12, *)) {
     if (color_space == ColorSpace::CreateSRGB() ||
-        color_space == ColorSpace::CreateREC709()) {
+        (base::FeatureList::IsEnabled(kIOSurfaceUseNamedSRGBForREC709) &&
+         color_space == ColorSpace::CreateREC709())) {
       color_space_name = kCGColorSpaceSRGB;
     } else if (color_space == ColorSpace::CreateDisplayP3D65()) {
       color_space_name = kCGColorSpaceDisplayP3;
