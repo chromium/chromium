@@ -47,7 +47,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/mock_client_cert_verifier.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -358,7 +357,6 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
         cert_verifier_(new MockCertVerifier()),
         client_cert_verifier_(new MockClientCertVerifier()),
         transport_security_state_(new TransportSecurityState),
-        ct_verifier_(new DoNothingCTVerifier),
         ct_policy_enforcer_(new MockCTPolicyEnforcer),
         ssl_client_session_cache_(
             new SSLClientSessionCache(SSLClientSessionCache::Config())) {}
@@ -386,8 +384,8 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
 
     client_context_ = std::make_unique<SSLClientContext>(
         ssl_config_service_.get(), cert_verifier_.get(),
-        transport_security_state_.get(), ct_verifier_.get(),
-        ct_policy_enforcer_.get(), ssl_client_session_cache_.get(), nullptr);
+        transport_security_state_.get(), ct_policy_enforcer_.get(),
+        ssl_client_session_cache_.get(), nullptr);
   }
 
  protected:
@@ -513,7 +511,6 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   std::unique_ptr<MockClientCertVerifier> client_cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  std::unique_ptr<DoNothingCTVerifier> ct_verifier_;
   std::unique_ptr<MockCTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SSLClientSessionCache> ssl_client_session_cache_;
   std::unique_ptr<SSLClientContext> client_context_;

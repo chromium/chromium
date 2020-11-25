@@ -26,7 +26,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/mock_host_resolver.h"
@@ -239,7 +238,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                       false),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         cert_verifier_(std::make_unique<MockCertVerifier>()),
-        cert_transparency_verifier_(std::make_unique<DoNothingCTVerifier>()),
         scoped_mock_network_change_notifier_(nullptr),
         factory_(nullptr),
         host_port_pair_(kDefaultServerHostName, kDefaultServerPort),
@@ -265,7 +263,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         net_log_.net_log(), host_resolver_.get(), ssl_config_service_.get(),
         socket_factory_.get(), http_server_properties_.get(),
         cert_verifier_.get(), &ct_policy_enforcer_, &transport_security_state_,
-        cert_transparency_verifier_.get(), /*sct_auditing_delegate=*/nullptr,
+        /*sct_auditing_delegate=*/nullptr,
         /*SocketPerformanceWatcherFactory*/ nullptr,
         &crypto_client_stream_factory_, &context_);
   }
@@ -915,7 +913,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::unique_ptr<CertVerifier> cert_verifier_;
   TransportSecurityState transport_security_state_;
-  std::unique_ptr<CTVerifier> cert_transparency_verifier_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
   std::unique_ptr<ScopedMockNetworkChangeNotifier>
       scoped_mock_network_change_notifier_;

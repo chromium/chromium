@@ -165,9 +165,6 @@ void OffTheRecordChromeBrowserStateIOData::InitializeInternal(
       io_thread_globals->http_auth_handler_factory.get());
   main_context->set_proxy_resolution_service(proxy_resolution_service());
 
-  main_context->set_cert_transparency_verifier(
-      io_thread_globals->cert_transparency_verifier.get());
-
   // For incognito, we use the default non-persistent HttpServerProperties.
   set_http_server_properties(std::make_unique<net::HttpServerProperties>());
   main_context->set_http_server_properties(http_server_properties());

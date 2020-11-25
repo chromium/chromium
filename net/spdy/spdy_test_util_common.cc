@@ -19,7 +19,6 @@
 #include "net/base/http_user_agent_settings.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/dns/host_resolver.h"
@@ -328,7 +327,6 @@ SpdySessionDependencies::SpdySessionDependencies(
     : host_resolver(std::make_unique<MockCachingHostResolver>()),
       cert_verifier(std::make_unique<MockCertVerifier>()),
       transport_security_state(std::make_unique<TransportSecurityState>()),
-      cert_transparency_verifier(std::make_unique<DoNothingCTVerifier>()),
       ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>()),
       proxy_resolution_service(std::move(proxy_resolution_service)),
       ssl_config_service(std::make_unique<SSLConfigServiceDefaults>()),
@@ -419,8 +417,6 @@ HttpNetworkSession::Context SpdySessionDependencies::CreateSessionContext(
   context.cert_verifier = session_deps->cert_verifier.get();
   context.transport_security_state =
       session_deps->transport_security_state.get();
-  context.cert_transparency_verifier =
-      session_deps->cert_transparency_verifier.get();
   context.ct_policy_enforcer = session_deps->ct_policy_enforcer.get();
   context.proxy_resolution_service =
       session_deps->proxy_resolution_service.get();
@@ -448,8 +444,6 @@ SpdyURLRequestContext::SpdyURLRequestContext() : storage_(this) {
   storage_.set_proxy_resolution_service(
       ConfiguredProxyResolutionService::CreateDirect());
   storage_.set_ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>());
-  storage_.set_cert_transparency_verifier(
-      std::make_unique<DoNothingCTVerifier>());
   storage_.set_ssl_config_service(std::make_unique<SSLConfigServiceDefaults>());
   storage_.set_http_auth_handler_factory(
       HttpAuthHandlerFactory::CreateDefault());
@@ -466,7 +460,6 @@ SpdyURLRequestContext::SpdyURLRequestContext() : storage_(this) {
   session_context.transport_security_state = transport_security_state();
   session_context.proxy_resolution_service = proxy_resolution_service();
   session_context.ct_policy_enforcer = ct_policy_enforcer();
-  session_context.cert_transparency_verifier = cert_transparency_verifier();
   session_context.ssl_config_service = ssl_config_service();
   session_context.http_auth_handler_factory = http_auth_handler_factory();
   session_context.http_server_properties = http_server_properties();

@@ -47,7 +47,6 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/multi_log_ct_verifier.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
@@ -356,8 +355,6 @@ void ChromeBrowserStateIOData::Init(
       io_thread_globals->cert_verifier.get());
   main_request_context_->set_ct_policy_enforcer(
       io_thread_globals->ct_policy_enforcer.get());
-  main_request_context_->set_cert_transparency_verifier(
-      io_thread_globals->cert_transparency_verifier.get());
   main_request_context_->set_quic_context(
       io_thread_globals->quic_context.get());
 

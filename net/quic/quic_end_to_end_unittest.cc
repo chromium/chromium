@@ -88,7 +88,6 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   QuicEndToEndTest()
       : host_resolver_impl_(CreateResolverImpl()),
         host_resolver_(std::move(host_resolver_impl_)),
-        cert_transparency_verifier_(new MultiLogCTVerifier()),
         ssl_config_service_(new SSLConfigServiceDefaults),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
@@ -106,8 +105,6 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     session_context_.host_resolver = &host_resolver_;
     session_context_.cert_verifier = &cert_verifier_;
     session_context_.transport_security_state = &transport_security_state_;
-    session_context_.cert_transparency_verifier =
-        cert_transparency_verifier_.get();
     session_context_.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context_.proxy_resolution_service = proxy_resolution_service_.get();
     session_context_.ssl_config_service = ssl_config_service_.get();
@@ -218,7 +215,6 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   MappedHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  std::unique_ptr<CTVerifier> cert_transparency_verifier_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;

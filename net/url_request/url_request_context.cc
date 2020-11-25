@@ -42,7 +42,6 @@ URLRequestContext::URLRequestContext()
       http_user_agent_settings_(nullptr),
       cookie_store_(nullptr),
       transport_security_state_(nullptr),
-      cert_transparency_verifier_(nullptr),
       ct_policy_enforcer_(nullptr),
       sct_auditing_delegate_(nullptr),
       http_transaction_factory_(nullptr),

@@ -48,7 +48,6 @@ class GURL;
 
 namespace net {
 
-class CTVerifier;
 class CTPolicyEnforcer;
 class HashValue;
 class HostPortPair;
@@ -210,7 +209,6 @@ struct SpdySessionDependencies {
   std::unique_ptr<HostResolver> alternate_host_resolver;
   std::unique_ptr<CertVerifier> cert_verifier;
   std::unique_ptr<TransportSecurityState> transport_security_state;
-  std::unique_ptr<CTVerifier> cert_transparency_verifier;
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service;
   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings;

@@ -13,7 +13,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/multi_log_ct_verifier.h"
 #include "net/http/transport_security_state.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
@@ -39,8 +38,6 @@ DEFINE_QUIC_COMMAND_LINE_FLAG(std::string,
                               "Path to the pkcs8 private key.");
 
 using net::CertVerifier;
-using net::CTVerifier;
-using net::MultiLogCTVerifier;
 using net::ProofVerifierChromium;
 
 namespace quic {
@@ -64,7 +61,6 @@ class ProofVerifierChromiumWithOwnership : public net::ProofVerifierChromium {
       : net::ProofVerifierChromium(cert_verifier.get(),
                                    &ct_policy_enforcer_,
                                    &transport_security_state_,
-                                   &ct_verifier_,
                                    /*sct_auditing_delegate=*/nullptr,
                                    UnknownRootAllowlistForHost(host),
                                    // Fine to use an empty NetworkIsolationKey
@@ -76,7 +72,6 @@ class ProofVerifierChromiumWithOwnership : public net::ProofVerifierChromium {
   std::unique_ptr<net::CertVerifier> cert_verifier_;
   net::DefaultCTPolicyEnforcer ct_policy_enforcer_;
   net::TransportSecurityState transport_security_state_;
-  net::MultiLogCTVerifier ct_verifier_;
 };
 
 std::unique_ptr<ProofVerifier> CreateDefaultProofVerifierImpl(

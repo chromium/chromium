@@ -23,7 +23,6 @@ namespace net {
 
 class CTPolicyEnforcer;
 class CertVerifier;
-class CTVerifier;
 class HostPortPair;
 class SCTAuditingDelegate;
 class SSLClientSessionCache;
@@ -103,7 +102,6 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   SSLClientContext(SSLConfigService* ssl_config_service,
                    CertVerifier* cert_verifier,
                    TransportSecurityState* transport_security_state,
-                   CTVerifier* cert_transparency_verifier,
                    CTPolicyEnforcer* ct_policy_enforcer,
                    SSLClientSessionCache* ssl_client_session_cache,
                    SCTAuditingDelegate* sct_auditing_delegate);
@@ -115,9 +113,6 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   CertVerifier* cert_verifier() { return cert_verifier_; }
   TransportSecurityState* transport_security_state() {
     return transport_security_state_;
-  }
-  CTVerifier* cert_transparency_verifier() {
-    return cert_transparency_verifier_;
   }
   CTPolicyEnforcer* ct_policy_enforcer() { return ct_policy_enforcer_; }
   SSLClientSessionCache* ssl_client_session_cache() {
@@ -186,7 +181,6 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   SSLConfigService* ssl_config_service_;
   CertVerifier* cert_verifier_;
   TransportSecurityState* transport_security_state_;
-  CTVerifier* cert_transparency_verifier_;
   CTPolicyEnforcer* ct_policy_enforcer_;
   SSLClientSessionCache* ssl_client_session_cache_;
   SCTAuditingDelegate* sct_auditing_delegate_;

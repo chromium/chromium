@@ -97,10 +97,6 @@ void TestURLRequestContext::Init() {
     context_storage_.set_transport_security_state(
         std::make_unique<TransportSecurityState>());
   }
-  if (!cert_transparency_verifier()) {
-    context_storage_.set_cert_transparency_verifier(
-        std::make_unique<DoNothingCTVerifier>());
-  }
   if (!ct_policy_enforcer()) {
     context_storage_.set_ct_policy_enforcer(
         std::make_unique<DefaultCTPolicyEnforcer>());
@@ -145,7 +141,6 @@ void TestURLRequestContext::Init() {
     session_context.client_socket_factory = client_socket_factory();
     session_context.host_resolver = host_resolver();
     session_context.cert_verifier = cert_verifier();
-    session_context.cert_transparency_verifier = cert_transparency_verifier();
     session_context.ct_policy_enforcer = ct_policy_enforcer();
     session_context.transport_security_state = transport_security_state();
     session_context.proxy_resolution_service = proxy_resolution_service();

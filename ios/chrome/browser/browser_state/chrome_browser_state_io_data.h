@@ -19,7 +19,6 @@
 #include "components/prefs/pref_member.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/chrome/browser/net/net_types.h"
-#include "net/cert/ct_verifier.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
@@ -243,7 +242,6 @@ class ChromeBrowserStateIOData {
       proxy_resolution_service_;
   mutable std::unique_ptr<net::TransportSecurityState>
       transport_security_state_;
-  mutable std::unique_ptr<net::CTVerifier> cert_transparency_verifier_;
   mutable std::unique_ptr<net::HttpServerProperties> http_server_properties_;
   mutable std::unique_ptr<net::TransportSecurityPersister>
       transport_security_persister_;

@@ -148,7 +148,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   static ssl_verify_result_t VerifyCertCallback(SSL* ssl, uint8_t* out_alert);
   ssl_verify_result_t VerifyCert();
   ssl_verify_result_t HandleVerifyResult();
-  int VerifyCT();
+  int CheckCTCompliance();
 
   // Callback from the SSL layer that indicates the remote server is requesting
   // a certificate for this client.

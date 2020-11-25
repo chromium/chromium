@@ -51,7 +51,6 @@ class CertVerifier;
 class ClientSocketFactory;
 class ClientSocketPool;
 class ClientSocketPoolManager;
-class CTVerifier;
 class HostResolver;
 class HttpAuthHandlerFactory;
 class HttpNetworkSessionPeer;
@@ -165,7 +164,6 @@ class NET_EXPORT HttpNetworkSession {
     HostResolver* host_resolver;
     CertVerifier* cert_verifier;
     TransportSecurityState* transport_security_state;
-    CTVerifier* cert_transparency_verifier;
     CTPolicyEnforcer* ct_policy_enforcer;
     SCTAuditingDelegate* sct_auditing_delegate;
     ProxyResolutionService* proxy_resolution_service;

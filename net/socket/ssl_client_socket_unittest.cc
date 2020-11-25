@@ -40,6 +40,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/cert_and_ct_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/ct_verifier.h"
@@ -707,7 +708,6 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
             std::make_unique<TestSSLConfigService>(SSLContextConfig())),
         cert_verifier_(std::make_unique<MockCertVerifier>()),
         transport_security_state_(std::make_unique<TransportSecurityState>()),
-        ct_verifier_(std::make_unique<DoNothingCTVerifier>()),
         ct_policy_enforcer_(std::make_unique<MockCTPolicyEnforcer>()),
         ssl_client_session_cache_(std::make_unique<SSLClientSessionCache>(
             SSLClientSessionCache::Config())),
@@ -715,7 +715,6 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
             std::make_unique<SSLClientContext>(ssl_config_service_.get(),
                                                cert_verifier_.get(),
                                                transport_security_state_.get(),
-                                               ct_verifier_.get(),
                                                ct_policy_enforcer_.get(),
                                                ssl_client_session_cache_.get(),
                                                nullptr)) {
@@ -880,7 +879,6 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  std::unique_ptr<DoNothingCTVerifier> ct_verifier_;
   std::unique_ptr<MockCTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SSLClientSessionCache> ssl_client_session_cache_;
   std::unique_ptr<SSLClientContext> context_;
@@ -1541,8 +1539,7 @@ TEST_P(SSLClientSocketVersionTest, SocketDestroyedDuringVerify) {
   HangingCertVerifier verifier;
   context_ = std::make_unique<SSLClientContext>(
       ssl_config_service_.get(), &verifier, transport_security_state_.get(),
-      ct_verifier_.get(), ct_policy_enforcer_.get(),
-      ssl_client_session_cache_.get(), nullptr);
+      ct_policy_enforcer_.get(), ssl_client_session_cache_.get(), nullptr);
 
   TestCompletionCallback callback;
   auto transport = std::make_unique<TCPClientSocket>(addr(), nullptr, nullptr,
@@ -2786,17 +2783,21 @@ TEST_F(SSLClientSocketTest, ConnectSignedCertTimestampsTLSExtension) {
   ssl_options.signed_cert_timestamps_tls_ext = sct_ext.as_string();
   ASSERT_TRUE(StartTestServer(ssl_options));
 
-  MockCTVerifier ct_verifier;
-  context_ = std::make_unique<SSLClientContext>(
-      ssl_config_service_.get(), cert_verifier_.get(),
-      transport_security_state_.get(), &ct_verifier, ct_policy_enforcer_.get(),
-      ssl_client_session_cache_.get(), nullptr);
+  auto ct_verifier = std::make_unique<MockCTVerifier>();
 
   // Check that the SCT list is extracted from the TLS extension as expected,
   // while also simulating that it was an unparsable response.
   SignedCertificateTimestampAndStatusList sct_list;
-  EXPECT_CALL(ct_verifier, Verify(_, _, _, sct_ext, _, _))
+  EXPECT_CALL(*ct_verifier, Verify(_, _, _, sct_ext, _, _))
       .WillOnce(testing::SetArgPointee<4>(sct_list));
+
+  auto cert_and_ct_verifier = std::make_unique<CertAndCTVerifier>(
+      std::move(cert_verifier_), std::move(ct_verifier));
+
+  context_ = std::make_unique<SSLClientContext>(
+      ssl_config_service_.get(), cert_and_ct_verifier.get(),
+      transport_security_state_.get(), ct_policy_enforcer_.get(),
+      ssl_client_session_cache_.get(), nullptr);
 
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
@@ -4543,9 +4544,8 @@ TEST_P(SSLClientSocketVersionTest, SCTAuditingReportCollected) {
   MockSCTAuditingDelegate sct_auditing_delegate;
   context_ = std::make_unique<SSLClientContext>(
       ssl_config_service_.get(), cert_verifier_.get(),
-      transport_security_state_.get(), ct_verifier_.get(),
-      ct_policy_enforcer_.get(), ssl_client_session_cache_.get(),
-      &sct_auditing_delegate);
+      transport_security_state_.get(), ct_policy_enforcer_.get(),
+      ssl_client_session_cache_.get(), &sct_auditing_delegate);
 
   EXPECT_CALL(sct_auditing_delegate, IsSCTAuditingEnabled())
       .WillRepeatedly(Return(true));

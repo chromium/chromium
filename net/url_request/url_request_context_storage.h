@@ -18,7 +18,6 @@ namespace net {
 class CertVerifier;
 class CookieStore;
 class CTPolicyEnforcer;
-class CTVerifier;
 class FtpAuthCache;
 class HostResolver;
 class HttpAuthHandlerFactory;
@@ -71,8 +70,6 @@ class NET_EXPORT URLRequestContextStorage {
   void set_cookie_store(std::unique_ptr<CookieStore> cookie_store);
   void set_transport_security_state(
       std::unique_ptr<TransportSecurityState> transport_security_state);
-  void set_cert_transparency_verifier(
-      std::unique_ptr<CTVerifier> cert_transparency_verifier);
   void set_ct_policy_enforcer(
       std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer);
   void set_sct_auditing_delegate(
@@ -124,7 +121,6 @@ class NET_EXPORT URLRequestContextStorage {
   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings_;
   std::unique_ptr<CookieStore> cookie_store_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  std::unique_ptr<CTVerifier> cert_transparency_verifier_;
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;

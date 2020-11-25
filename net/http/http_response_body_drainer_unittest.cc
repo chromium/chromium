@@ -23,7 +23,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
-#include "net/cert/multi_log_ct_verifier.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream.h"
@@ -249,7 +248,6 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
     context.http_server_properties = http_server_properties_.get();
     context.cert_verifier = &cert_verifier_;
     context.transport_security_state = &transport_security_state_;
-    context.cert_transparency_verifier = &ct_verifier_;
     context.ct_policy_enforcer = &ct_policy_enforcer_;
     context.quic_context = &quic_context_;
     return new HttpNetworkSession(HttpNetworkSession::Params(), context);
@@ -260,7 +258,6 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  MultiLogCTVerifier ct_verifier_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
   QuicContext quic_context_;
   const std::unique_ptr<HttpNetworkSession> session_;

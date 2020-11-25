@@ -30,7 +30,6 @@
 #include "net/base/test_proxy_delegate.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
-#include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_network_session.h"
@@ -317,7 +316,6 @@ class QuicNetworkTransactionTest
                       quic::Perspective::IS_SERVER,
                       false),
         quic_task_runner_(new TestTaskRunner(context_.mock_clock())),
-        cert_transparency_verifier_(new MultiLogCTVerifier()),
         ssl_config_service_(new SSLConfigServiceDefaults),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
@@ -642,8 +640,6 @@ class QuicNetworkTransactionTest
     session_context_.host_resolver = &host_resolver_;
     session_context_.cert_verifier = &cert_verifier_;
     session_context_.transport_security_state = &transport_security_state_;
-    session_context_.cert_transparency_verifier =
-        cert_transparency_verifier_.get();
     session_context_.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context_.socket_performance_watcher_factory =
         &test_socket_performance_watcher_factory_;
@@ -980,7 +976,6 @@ class QuicNetworkTransactionTest
   MockHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  std::unique_ptr<CTVerifier> cert_transparency_verifier_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
   TestSocketPerformanceWatcherFactory test_socket_performance_watcher_factory_;
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
@@ -7049,7 +7044,6 @@ class QuicNetworkTransactionWithDestinationTest
             GetParam().client_headers_include_h2_stream_dependency),
         supported_versions_(quic::test::SupportedVersions(version_)),
         destination_type_(GetParam().destination_type),
-        cert_transparency_verifier_(new MultiLogCTVerifier()),
         ssl_config_service_(new SSLConfigServiceDefaults),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
@@ -7083,8 +7077,6 @@ class QuicNetworkTransactionWithDestinationTest
     session_context.host_resolver = &host_resolver_;
     session_context.cert_verifier = &cert_verifier_;
     session_context.transport_security_state = &transport_security_state_;
-    session_context.cert_transparency_verifier =
-        cert_transparency_verifier_.get();
     session_context.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context.socket_performance_watcher_factory =
         &test_socket_performance_watcher_factory_;
@@ -7261,7 +7253,6 @@ class QuicNetworkTransactionWithDestinationTest
   MockHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  std::unique_ptr<CTVerifier> cert_transparency_verifier_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
   TestSocketPerformanceWatcherFactory test_socket_performance_watcher_factory_;
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;

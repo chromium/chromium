@@ -32,7 +32,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/ct_verifier.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log.h"
@@ -1068,7 +1067,6 @@ QuicStreamFactory::QuicStreamFactory(
     CertVerifier* cert_verifier,
     CTPolicyEnforcer* ct_policy_enforcer,
     TransportSecurityState* transport_security_state,
-    CTVerifier* cert_transparency_verifier,
     SCTAuditingDelegate* sct_auditing_delegate,
     SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
     QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
@@ -1082,7 +1080,6 @@ QuicStreamFactory::QuicStreamFactory(
       cert_verifier_(cert_verifier),
       ct_policy_enforcer_(ct_policy_enforcer),
       transport_security_state_(transport_security_state),
-      cert_transparency_verifier_(cert_transparency_verifier),
       sct_auditing_delegate_(sct_auditing_delegate),
       quic_crypto_client_stream_factory_(quic_crypto_client_stream_factory),
       random_generator_(quic_context->random_generator()),
@@ -2143,7 +2140,7 @@ QuicStreamFactory::CreateCryptoConfigHandle(
       std::make_unique<QuicCryptoClientConfigOwner>(
           std::make_unique<ProofVerifierChromium>(
               cert_verifier_, ct_policy_enforcer_, transport_security_state_,
-              cert_transparency_verifier_, sct_auditing_delegate_,
+              sct_auditing_delegate_,
               HostsFromOrigins(params_.origins_to_force_quic_on),
               actual_network_isolation_key),
           std::make_unique<QuicClientSessionCache>(), this);

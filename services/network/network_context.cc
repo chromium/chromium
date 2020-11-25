@@ -119,6 +119,7 @@
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 #include "components/certificate_transparency/chrome_require_ct_delegate.h"
 #include "components/certificate_transparency/ct_known_logs.h"
+#include "net/cert/cert_and_ct_verifier.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "services/network/expect_ct_reporter.h"
@@ -1886,6 +1887,25 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       cert_verifier = CreateCertVerifier(creation_params, cert_net_fetcher_);
     }
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+    std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
+    if (!params_->ct_logs.empty()) {
+      for (const auto& log : params_->ct_logs) {
+        scoped_refptr<const net::CTLogVerifier> log_verifier =
+            net::CTLogVerifier::Create(log->public_key, log->name);
+        if (!log_verifier) {
+          // TODO: Signal bad configuration (such as bad key).
+          continue;
+        }
+        ct_logs.push_back(std::move(log_verifier));
+      }
+      auto ct_verifier = std::make_unique<net::MultiLogCTVerifier>();
+      ct_verifier->AddLogs(ct_logs);
+      cert_verifier = std::make_unique<net::CertAndCTVerifier>(
+          std::move(cert_verifier), std::move(ct_verifier));
+    }
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
+
     // Whether the cert verifier is remote or in-process, we should wrap it in
     // caching and coalescing layers to avoid extra verifications and IPCs.
     cert_verifier = std::make_unique<net::CachingCertVerifier>(
@@ -1906,6 +1926,38 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
   builder.SetCertVerifier(IgnoreErrorsCertVerifier::MaybeWrapCertVerifier(
       *command_line, nullptr, std::move(cert_verifier)));
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  if (params_->enforce_chrome_ct_policy) {
+    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+    std::vector<std::string> operated_by_google_logs;
+    if (!params_->ct_logs.empty()) {
+      for (const auto& log : params_->ct_logs) {
+        if (log->operated_by_google || log->disqualified_at) {
+          std::string log_id = crypto::SHA256HashString(log->public_key);
+          if (log->operated_by_google)
+            operated_by_google_logs.push_back(log_id);
+          if (log->disqualified_at) {
+            disqualified_logs.push_back(
+                std::make_pair(log_id, log->disqualified_at.value()));
+          }
+        }
+      }
+    }
+
+    std::sort(std::begin(operated_by_google_logs),
+              std::end(operated_by_google_logs));
+    std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
+
+    builder.set_ct_policy_enforcer(
+        std::make_unique<certificate_transparency::ChromeCTPolicyEnforcer>(
+            params_->ct_log_update_time, disqualified_logs,
+            operated_by_google_logs));
+  }
+
+  builder.set_sct_auditing_delegate(
+      std::make_unique<SCTAuditingDelegate>(weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
   std::unique_ptr<NetworkServiceNetworkDelegate> network_delegate =
       std::make_unique<NetworkServiceNetworkDelegate>(
@@ -2136,50 +2188,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         return std::make_unique<ThrottlingNetworkTransactionFactory>(session);
       }));
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
-  std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
-  std::vector<std::string> operated_by_google_logs;
-
-  if (!params_->ct_logs.empty()) {
-    for (const auto& log : params_->ct_logs) {
-      if (log->operated_by_google || log->disqualified_at) {
-        std::string log_id = crypto::SHA256HashString(log->public_key);
-        if (log->operated_by_google)
-          operated_by_google_logs.push_back(log_id);
-        if (log->disqualified_at) {
-          disqualified_logs.push_back(
-              std::make_pair(log_id, log->disqualified_at.value()));
-        }
-      }
-      scoped_refptr<const net::CTLogVerifier> log_verifier =
-          net::CTLogVerifier::Create(log->public_key, log->name);
-      if (!log_verifier) {
-        // TODO: Signal bad configuration (such as bad key).
-        continue;
-      }
-      ct_logs.push_back(std::move(log_verifier));
-    }
-    auto ct_verifier = std::make_unique<net::MultiLogCTVerifier>();
-    ct_verifier->AddLogs(ct_logs);
-    builder.set_ct_verifier(std::move(ct_verifier));
-  }
-
-  if (params_->enforce_chrome_ct_policy) {
-    std::sort(std::begin(operated_by_google_logs),
-              std::end(operated_by_google_logs));
-    std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
-
-    builder.set_ct_policy_enforcer(
-        std::make_unique<certificate_transparency::ChromeCTPolicyEnforcer>(
-            params_->ct_log_update_time, disqualified_logs,
-            operated_by_google_logs));
-  }
-
-  builder.set_sct_auditing_delegate(
-      std::make_unique<SCTAuditingDelegate>(weak_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
   builder.set_host_mapping_rules(
       command_line->GetSwitchValueASCII(switches::kHostResolverRules));
 
@@ -2389,13 +2397,6 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(int cert_verify_id,
   if (result == net::OK) {
     net::X509Certificate* verified_cert =
         pending_cert_verify->result->verified_cert.get();
-    url_request_context_->cert_transparency_verifier()->Verify(
-        pending_cert_verify->url.host(), verified_cert,
-        pending_cert_verify->ocsp_result, pending_cert_verify->sct_list,
-        &pending_cert_verify->result->scts,
-        net::NetLogWithSource::Make(
-            network_service_ ? url_request_context_->net_log() : nullptr,
-            net::NetLogSourceType::CERT_VERIFIER_JOB));
 
     net::ct::SCTList verified_scts;
     for (const auto& sct_and_status : pending_cert_verify->result->scts) {

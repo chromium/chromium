@@ -40,8 +40,6 @@
 #include "net/base/logging_network_change_observer.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_verifier.h"
-#include "net/cert/multi_log_ct_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store.h"
@@ -247,7 +245,6 @@ void IOSIOThread::Init() {
 
   globals_->transport_security_state.reset(new net::TransportSecurityState());
 
-  globals_->cert_transparency_verifier.reset(new net::MultiLogCTVerifier());
   globals_->ct_policy_enforcer.reset(new net::DefaultCTPolicyEnforcer());
 
   globals_->ssl_config_service.reset(new net::SSLConfigServiceDefaults());
@@ -352,8 +349,6 @@ net::URLRequestContext* IOSIOThread::ConstructSystemRequestContext(
   context->set_cert_verifier(globals->cert_verifier.get());
   context->set_transport_security_state(
       globals->transport_security_state.get());
-  context->set_cert_transparency_verifier(
-      globals->cert_transparency_verifier.get());
   context->set_ssl_config_service(globals->ssl_config_service.get());
   context->set_http_auth_handler_factory(
       globals->http_auth_handler_factory.get());

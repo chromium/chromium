@@ -53,7 +53,6 @@ namespace net {
 class CertVerifier;
 class CookieStore;
 class CTPolicyEnforcer;
-class CTVerifier;
 class HttpAuthHandlerFactory;
 class HttpTransactionFactory;
 class HttpUserAgentSettings;
@@ -275,7 +274,6 @@ class NET_EXPORT URLRequestContextBuilder {
     throttling_enabled_ = throttling_enabled;
   }
 
-  void set_ct_verifier(std::unique_ptr<CTVerifier> ct_verifier);
   void set_ct_policy_enforcer(
       std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer);
   void set_sct_auditing_delegate(
@@ -367,7 +365,6 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<CookieStore> cookie_store_;
   std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
   std::unique_ptr<CertVerifier> cert_verifier_;
-  std::unique_ptr<CTVerifier> ct_verifier_;
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;

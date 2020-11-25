@@ -12,7 +12,6 @@
 #include "net/base/proxy_delegate.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cookies/cookie_store.h"
 #include "net/dns/host_resolver.h"
@@ -102,12 +101,6 @@ void URLRequestContextStorage::set_transport_security_state(
     std::unique_ptr<TransportSecurityState> transport_security_state) {
   context_->set_transport_security_state(transport_security_state.get());
   transport_security_state_ = std::move(transport_security_state);
-}
-
-void URLRequestContextStorage::set_cert_transparency_verifier(
-    std::unique_ptr<CTVerifier> cert_transparency_verifier) {
-  context_->set_cert_transparency_verifier(cert_transparency_verifier.get());
-  cert_transparency_verifier_ = std::move(cert_transparency_verifier);
 }
 
 void URLRequestContextStorage::set_ct_policy_enforcer(

@@ -64,7 +64,6 @@ namespace net {
 class CTPolicyEnforcer;
 class CertVerifier;
 class ClientSocketFactory;
-class CTVerifier;
 class HostResolver;
 class HttpServerProperties;
 class NetLog;
@@ -242,7 +241,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
       CertVerifier* cert_verifier,
       CTPolicyEnforcer* ct_policy_enforcer,
       TransportSecurityState* transport_security_state,
-      CTVerifier* cert_transparency_verifier,
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
       QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
@@ -500,7 +498,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   CertVerifier* const cert_verifier_;
   CTPolicyEnforcer* const ct_policy_enforcer_;
   TransportSecurityState* const transport_security_state_;
-  CTVerifier* const cert_transparency_verifier_;
   SCTAuditingDelegate* const sct_auditing_delegate_;
   QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory_;
   quic::QuicRandom* random_generator_;  // Unowned.

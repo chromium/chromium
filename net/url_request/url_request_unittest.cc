@@ -5472,9 +5472,7 @@ TEST_F(URLRequestTestHTTP, PreloadExpectCTHeader) {
   verify_result.is_issued_by_known_root = true;
   cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
 
-  // Set up a DoNothingCTVerifier and MockCTPolicyEnforcer to trigger an Expect
-  // CT violation.
-  DoNothingCTVerifier ct_verifier;
+  // Set up a MockCTPolicyEnforcer to trigger an Expect CT violation.
   MockCTPolicyEnforcer ct_policy_enforcer;
   ct_policy_enforcer.set_default_result(
       ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
@@ -5489,7 +5487,6 @@ TEST_F(URLRequestTestHTTP, PreloadExpectCTHeader) {
   context.set_transport_security_state(&transport_security_state);
   context.set_network_delegate(&network_delegate);
   context.set_cert_verifier(&cert_verifier);
-  context.set_cert_transparency_verifier(&ct_verifier);
   context.set_ct_policy_enforcer(&ct_policy_enforcer);
   context.Init();
 
@@ -5533,9 +5530,7 @@ TEST_F(URLRequestTestHTTP, ExpectCTHeader) {
   verify_result.is_issued_by_known_root = true;
   cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
 
-  // Set up a DoNothingCTVerifier and MockCTPolicyEnforcer to simulate CT
-  // compliance.
-  DoNothingCTVerifier ct_verifier;
+  // Set up a MockCTPolicyEnforcer to simulate CT compliance.
   MockCTPolicyEnforcer ct_policy_enforcer;
   ct_policy_enforcer.set_default_result(
       ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS);
@@ -5549,7 +5544,6 @@ TEST_F(URLRequestTestHTTP, ExpectCTHeader) {
   context.set_transport_security_state(&transport_security_state);
   context.set_network_delegate(&network_delegate);
   context.set_cert_verifier(&cert_verifier);
-  context.set_cert_transparency_verifier(&ct_verifier);
   context.set_ct_policy_enforcer(&ct_policy_enforcer);
   context.Init();
 
@@ -5595,8 +5589,7 @@ TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
   verify_result.is_issued_by_known_root = true;
   cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
 
-  // Set up a DoNothingCTVerifier and MockCTPolicyEnforcer to simulate CT
-  // compliance.
+  // Set up a MockCTPolicyEnforcer to simulate CT compliance.
   DoNothingCTVerifier ct_verifier;
   MockCTPolicyEnforcer ct_policy_enforcer;
   ct_policy_enforcer.set_default_result(
@@ -5611,7 +5604,6 @@ TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
   context.set_transport_security_state(&transport_security_state);
   context.set_network_delegate(&network_delegate);
   context.set_cert_verifier(&cert_verifier);
-  context.set_cert_transparency_verifier(&ct_verifier);
   context.set_ct_policy_enforcer(&ct_policy_enforcer);
   context.Init();
 
@@ -9423,8 +9415,6 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
   session_context.cert_verifier = default_context_.cert_verifier();
   session_context.transport_security_state =
       default_context_.transport_security_state();
-  session_context.cert_transparency_verifier =
-      default_context_.cert_transparency_verifier();
   session_context.ct_policy_enforcer = default_context_.ct_policy_enforcer();
   session_context.proxy_resolution_service =
       default_context_.proxy_resolution_service();

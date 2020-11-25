@@ -190,8 +190,6 @@ void URLRequestContextBuilder::SetHttpNetworkSessionComponents(
   session_context->cert_verifier = request_context->cert_verifier();
   session_context->transport_security_state =
       request_context->transport_security_state();
-  session_context->cert_transparency_verifier =
-      request_context->cert_transparency_verifier();
   session_context->ct_policy_enforcer = request_context->ct_policy_enforcer();
   session_context->sct_auditing_delegate =
       request_context->sct_auditing_delegate();
@@ -250,11 +248,6 @@ void URLRequestContextBuilder::SetSpdyAndQuicEnabled(bool spdy_enabled,
                                                      bool quic_enabled) {
   http_network_session_params_.enable_http2 = spdy_enabled;
   http_network_session_params_.enable_quic = quic_enabled;
-}
-
-void URLRequestContextBuilder::set_ct_verifier(
-    std::unique_ptr<CTVerifier> ct_verifier) {
-  ct_verifier_ = std::move(ct_verifier);
 }
 
 void URLRequestContextBuilder::set_ct_policy_enforcer(
@@ -468,12 +461,6 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
         CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr));
   }
 
-  if (ct_verifier_) {
-    storage->set_cert_transparency_verifier(std::move(ct_verifier_));
-  } else {
-    storage->set_cert_transparency_verifier(
-        std::make_unique<MultiLogCTVerifier>());
-  }
   if (ct_policy_enforcer_) {
     storage->set_ct_policy_enforcer(std::move(ct_policy_enforcer_));
   } else {

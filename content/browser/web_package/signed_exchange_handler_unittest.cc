@@ -32,7 +32,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -66,15 +65,8 @@ const int kOutputBufferSize = 4096;
 
 constexpr char kTestSxgInnerURL[] = "https://test.example.org/test/";
 
-// "wildcard_example.org.public.pem.cbor" has these dummy data in "ocsp" and
-// "sct" fields.
+// "wildcard_example.org.public.pem.cbor" has dummy data in its "ocsp" field.
 constexpr base::StringPiece kDummyOCSPDer = "OCSP";
-constexpr char kDummySCTBytes[] = {
-    0x00, 0x05,                // Length of the sct list
-    0x00, 0x03, 'S', 'C', 'T'  // List entry: length and body
-};
-constexpr base::StringPiece kDummySCTList(kDummySCTBytes,
-                                          sizeof(kDummySCTBytes));
 
 // ExpectCTReporter implementation that logs a single report.
 class MockExpectCTReporter
@@ -183,17 +175,6 @@ class GMockCertVerifier : public net::CertVerifier {
                    std::unique_ptr<net::CertVerifier::Request>* out_req,
                    const net::NetLogWithSource& net_log));
   MOCK_METHOD1(SetConfig, void(const net::CertVerifier::Config& config));
-};
-
-class MockCTVerifier : public net::CTVerifier {
- public:
-  MOCK_METHOD6(Verify,
-               void(base::StringPiece hostname,
-                    net::X509Certificate* cert,
-                    base::StringPiece stapled_ocsp_response,
-                    base::StringPiece sct_list_from_tls_extension,
-                    net::SignedCertificateTimestampAndStatusList* output_scts,
-                    const net::NetLogWithSource& net_log));
 };
 
 class MockCTPolicyEnforcer : public net::CTPolicyEnforcer {
@@ -433,7 +414,6 @@ class SignedExchangeHandlerTest
   const base::HistogramTester histogram_tester_;
   MockSignedExchangeCertFetcherFactory* mock_cert_fetcher_factory_;
   std::unique_ptr<net::CertVerifier> cert_verifier_;
-  std::unique_ptr<MockCTVerifier> mock_ct_verifier_;
   std::unique_ptr<MockCTPolicyEnforcer> mock_ct_policy_enforcer_;
   std::unique_ptr<MockSCTAuditingDelegate> mock_sct_auditing_delegate_;
   net::MockSourceStream* source_;
@@ -1089,8 +1069,8 @@ TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
   EXPECT_EQ(static_cast<int>(expected_payload.size()), rv);
 }
 
-// Test that SignedExchangeHandler calls CTVerifier and CTPolicyEnforcer
-// with appropriate arguments.
+// Test that SignedExchangeHandler calls CTPolicyEnforcer with appropriate
+// arguments.
 TEST_P(SignedExchangeHandlerTest, CTVerifierParams) {
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
@@ -1110,23 +1090,17 @@ TEST_P(SignedExchangeHandlerTest, CTVerifierParams) {
       .WillOnce(
           Return(net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
-  mock_ct_verifier_ = std::make_unique<MockCTVerifier>();
-  EXPECT_CALL(*mock_ct_verifier_,
-              Verify(base::StringPiece("test.example.org"),
-                     CertEqualsIncludingChain(original_cert), kDummyOCSPDer,
-                     kDummySCTList, _ /* output_scts */, _ /* net_log */))
-      .WillOnce(SetArgPointee<4>(fake_sct_list));
-
   auto test_url_request_context = std::make_unique<net::TestURLRequestContext>(
       true /* delay_initialization */);
   test_url_request_context->set_ct_policy_enforcer(
       mock_ct_policy_enforcer_.get());
-  test_url_request_context->set_cert_transparency_verifier(
-      mock_ct_verifier_.get());
   test_url_request_context->Init();
 
-  SetupMockCertVerifier("prime256v1-sha256.public.pem",
-                        CreateCertVerifyResult());
+  // Mock a verify result including the SCTs.
+  auto verify_result = CreateCertVerifyResult();
+  verify_result.scts = fake_sct_list;
+  SetupMockCertVerifier("prime256v1-sha256.public.pem", verify_result);
+
   std::string contents = GetTestFileContents("test.example.org_test.sxg");
   source_->AddReadResult(contents.data(), contents.size(), net::OK,
                          net::MockSourceStream::ASYNC);

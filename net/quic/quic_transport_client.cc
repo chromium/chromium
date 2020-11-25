@@ -39,8 +39,7 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
   if (parameters.server_certificate_fingerprints.empty()) {
     return std::make_unique<ProofVerifierChromium>(
         context->cert_verifier(), context->ct_policy_enforcer(),
-        context->transport_security_state(),
-        context->cert_transparency_verifier(), context->sct_auditing_delegate(),
+        context->transport_security_state(), context->sct_auditing_delegate(),
         HostsFromOrigins(
             context->quic_context()->params()->origins_to_force_quic_on),
         isolation_key);
