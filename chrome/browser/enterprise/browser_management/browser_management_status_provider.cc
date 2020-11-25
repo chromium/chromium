@@ -22,8 +22,13 @@ BrowserCloudManagementStatusProvider::~BrowserCloudManagementStatusProvider() =
     default;
 
 bool BrowserCloudManagementStatusProvider::IsManaged() {
-#if !defined(OS_ANDROID)
+#if defined(OS_CHROMEOS)
   return policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
+#elif !defined(OS_ANDROID)
+  // A machine level user cloud policy manager is only created if the browser is
+  // managed by CBCM.
+  return g_browser_process->browser_policy_connector()
+             ->machine_level_user_cloud_policy_manager() != nullptr;
 #else
   return false;
 #endif
