@@ -8556,4 +8556,38 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SandboxedFramesNotCached) {
       FROM_HERE);
 }
 
+class BackForwardCacheBrowserTestWithFileSystemAPISupported
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kBackForwardCache,
+                              "file_system_api_supported", "true");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFileSystemAPISupported,
+                       CacheWithFileSystemAPI) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("/fileapi/request_test.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to a page with WebFileSystem usage.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver deleted(rfh_a);
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_FALSE(deleted.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Go back to the page with WebFileSystem.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(rfh_a, current_frame_host());
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
+}
+
 }  // namespace content
