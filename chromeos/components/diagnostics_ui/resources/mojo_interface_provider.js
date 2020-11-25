@@ -10,8 +10,8 @@ import './system_routine_controller.mojom-lite.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {BatteryRateRoutineResult, RoutineName, StandardRoutineResult, SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryRoutineResults, fakeCpuUsage, fakeMemoryUsage, fakeRoutineResults, fakeSystemInfo} from './fake_data.js';
+import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo} from './fake_data.js';
 import {FakeSystemDataProvider} from './fake_system_data_provider.js';
 import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
 
@@ -20,61 +20,6 @@ import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
  * Provides singleton access to mojo interfaces with the ability
  * to override them with test/fake implementations.
  */
-
-/**
- * Sets up a FakeSystemDataProvider to be used at runtime.
- * TODO(zentaro): Remove once mojo bindings are implemented.
- */
-function setupFakeSystemDataProvider_() {
-  // Create provider.
-  let provider = new FakeSystemDataProvider();
-
-  // Setup fake method data.
-  provider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
-  provider.setFakeBatteryHealth(fakeBatteryHealth);
-  provider.setFakeBatteryInfo(fakeBatteryInfo);
-  provider.setFakeCpuUsage(fakeCpuUsage);
-  provider.setFakeMemoryUsage(fakeMemoryUsage);
-  provider.setFakeSystemInfo(fakeSystemInfo);
-
-  // Start the timers to generate some observations.
-  provider.startTriggerIntervals();
-
-  // Set the fake provider.
-  setSystemDataProviderForTesting(provider);
-}
-
-/**
- * Sets up a FakeSystemRoutineController to be used at runtime.
- * TODO(zentaro): Remove once mojo bindings are implemented.
- */
-function setupFakeSystemRoutineController_() {
-  // Create controller.
-  let controller = new FakeSystemRoutineController();
-
-  // Add a small delay while running fake routines.
-  controller.setDelayTimeInMillisecondsForTesting(2000);
-
-  // Add fake results for routines.
-  for (const [routine, result] of fakeRoutineResults.entries()) {
-    controller.setFakeStandardRoutineResult(
-        /** @type{!RoutineName} */ (routine),
-        /** @type{!StandardRoutineResult} */ (result));
-  }
-
-  for (const [routine, result] of fakeBatteryRoutineResults.entries()) {
-    controller.setFakeBatteryRateRoutineResult(
-        /** @type {!RoutineName} */ (routine),
-        /** @type {!BatteryRateRoutineResult} */ (result));
-  }
-
-  // Enable fake set of routines.
-  controller.setFakeSupportedRoutines(
-      [...fakeRoutineResults.keys(), ...fakeBatteryRoutineResults.keys()]);
-
-  // Set the fake controller.
-  setSystemRoutineControllerForTesting(controller);
-}
 
 /**
  * @type {?SystemDataProviderInterface}
@@ -118,8 +63,8 @@ export function setSystemRoutineControllerForTesting(testController) {
  */
 export function getSystemRoutineController() {
   if (!systemRoutineController) {
-    // TODO(zentaro): Instantiate a real mojo interface here.
-    setupFakeSystemRoutineController_();
+    systemRoutineController =
+        chromeos.diagnostics.mojom.SystemRoutineController.getRemote();
   }
 
   assert(!!systemRoutineController);

@@ -14,7 +14,7 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MemoryUsage, RoutineName, SystemDataProviderInterface} from './diagnostics_types.js'
+import {MemoryUsage, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js'
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 /**
@@ -41,12 +41,12 @@ Polymer({
   memoryUsageObserverReceiver_: null,
 
   properties: {
-    /** @private {!Array<!RoutineName>} */
+    /** @private {!Array<!RoutineType>} */
     routines_: {
       type: Array,
       value: () => {
         return [
-          RoutineName.kMemory,
+          chromeos.diagnostics.mojom.RoutineType.kMemory,
         ];
       }
     },

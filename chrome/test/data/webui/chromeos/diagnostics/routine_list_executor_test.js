@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryRateRoutineResult, RoutineName, RoutineResultInfo, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {PowerRoutineResult, RoutineResultInfo, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor} from 'chrome://diagnostics/routine_list_executor.js';
 
@@ -33,38 +33,40 @@ export function fakeRoutineListExecutorTestSuite() {
    */
   function runRoutinesAndAssertResults(routines) {
     let expectedCallbacks = [];
-    let routineNames = [];
+    let routineTypes = [];
     routines.forEach((routine) => {
       // Set the result into the fake.
       assertNotEquals(undefined, routine);
       assertNotEquals(undefined, routine.result);
 
-      // simpleResult or batteryRateResult must exist.
+      // simpleResult or powerResult must exist.
       assertTrue(
           routine.result.hasOwnProperty('simpleResult') ||
-          routine.result.hasOwnProperty('batteryRateResult'));
+          routine.result.hasOwnProperty('powerResult'));
 
       if (routine.result.hasOwnProperty('simpleResult')) {
         controller.setFakeStandardRoutineResult(
-            routine.name, /** @type {!StandardRoutineResult} */
+            /** @type {!RoutineType} */ (routine.type),
+            /** @type {!StandardRoutineResult} */
             (routine.result.simpleResult));
       } else {
-        assertTrue(routine.result.batteryRateResult.hasOwnProperty('result'));
-        controller.setFakeBatteryRateRoutineResult(
-            routine.name, /** @type {!BatteryRateRoutineResult} */
-            (routine.result.batteryRateResult));
+        assertTrue(routine.result.powerResult.hasOwnProperty('simpleResult'));
+        controller.setFakePowerRoutineResult(
+            /** @type {!RoutineType} */ (routine.type),
+            /** @type {!PowerRoutineResult} */
+            (routine.result.powerResult));
       }
 
       // Build the list of routines to run.
-      routineNames.push(routine.name);
+      routineTypes.push(routine.type);
 
       // Add the "running" callback to the list.
-      let status = new ResultStatusItem(routine.name);
+      let status = new ResultStatusItem(routine.type);
       status.progress = ExecutionProgress.kRunning;
       expectedCallbacks.push(status);
 
       // Add the "completed" callback to the list.
-      status = new ResultStatusItem(routine.name);
+      status = new ResultStatusItem(routine.type);
       status.progress = ExecutionProgress.kCompleted;
       status.result = routine.result;
       expectedCallbacks.push(status);
@@ -81,15 +83,21 @@ export function fakeRoutineListExecutorTestSuite() {
       if (status.progress === ExecutionProgress.kRunning) {
         assertEquals(null, status.result);
       } else {
-        assertEquals(
-            expectedCallbacks[upto].result.simpleResult,
-            status.result.simpleResult);
+        if (expectedCallbacks[upto].result.hasOwnProperty('simpleResult')) {
+          assertEquals(
+              expectedCallbacks[upto].result.simpleResult,
+              status.result.simpleResult);
+        } else {
+          assertEquals(
+              expectedCallbacks[upto].result.powerResult.simpleResult,
+              status.result.powerResult.simpleResult);
+        }
       }
 
       upto++;
     };
 
-    return executor.runRoutines(routineNames, statusCallback).then(() => {
+    return executor.runRoutines(routineTypes, statusCallback).then(() => {
       // Ensure that all the callbacks were sent.
       assertEquals(expectedCallbacks.length, upto);
     });
@@ -98,8 +106,11 @@ export function fakeRoutineListExecutorTestSuite() {
   test('SingleTest', () => {
     /** @type {!Array<!RoutineResultInfo>} */
     const routines = [{
-      name: RoutineName.kCpuStress,
-      result: {simpleResult: StandardRoutineResult.kTestFailed}
+      type: chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+      result: {
+        simpleResult:
+            chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
+      }
     }];
     return runRoutinesAndAssertResults(routines);
   });
@@ -108,26 +119,39 @@ export function fakeRoutineListExecutorTestSuite() {
     /** @type {!Array<!RoutineResultInfo>} */
     const routines = [
       {
-        name: RoutineName.kCpuStress,
-        result: {simpleResult: StandardRoutineResult.kTestPassed}
-      },
-      {
-        name: RoutineName.kCpuCache,
-        result: {simpleResult: StandardRoutineResult.kTestFailed}
-      },
-      {
-        name: RoutineName.kFloatingPoint,
-        result: {simpleResult: StandardRoutineResult.kTestPassed}
-      },
-      {
-        name: RoutineName.kPrimeSearch,
-        result: {simpleResult: StandardRoutineResult.kTestFailed}
-      },
-      {
-        name: RoutineName.kCharge,
+        type: chromeos.diagnostics.mojom.RoutineType.kCpuStress,
         result: {
-          batteryRateResult: {
-            result: StandardRoutineResult.kTestFailed,
+          simpleResult:
+              chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
+        }
+      },
+      {
+        type: chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+        result: {
+          simpleResult:
+              chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
+        }
+      },
+      {
+        type: chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
+        result: {
+          simpleResult:
+              chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
+        }
+      },
+      {
+        type: chromeos.diagnostics.mojom.RoutineType.kCpuPrime,
+        result: {
+          simpleResult:
+              chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
+        }
+      },
+      {
+        type: chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,
+        result: {
+          powerResult: {
+            simpleResult:
+                chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed,
             isCharging: true,
             percentDelta: 10,
             timeDeltaSeconds: 10

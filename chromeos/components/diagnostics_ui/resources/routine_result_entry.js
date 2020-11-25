@@ -9,30 +9,31 @@ import './text_badge.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {RoutineName, RoutineResult, StandardRoutineResult} from './diagnostics_types.js';
+
+import {RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
 import {BadgeType} from './text_badge.js';
 
 /**
  * Resolves a routine name to its corresponding localized string name.
- * @param {!RoutineName} routineName
+ * @param {!RoutineType} routineType
  * @return {string}
  */
-export function getRoutineName(routineName) {
-  switch (routineName) {
-    case RoutineName.kCharge:
+export function getRoutineType(routineType) {
+  switch (routineType) {
+    case chromeos.diagnostics.mojom.RoutineType.kBatteryCharge:
       return loadTimeData.getString('batteryChargeRoutineText');
-    case RoutineName.kDischarge:
+    case chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge:
       return loadTimeData.getString('batteryDischargeRoutineText');
-    case RoutineName.kCpuCache:
+    case chromeos.diagnostics.mojom.RoutineType.kCpuCache:
       return loadTimeData.getString('cpuCacheRoutineText');
-    case RoutineName.kCpuStress:
+    case chromeos.diagnostics.mojom.RoutineType.kCpuStress:
       return loadTimeData.getString('cpuStressRoutineText');
-    case RoutineName.kFloatingPoint:
+    case chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint:
       return loadTimeData.getString('cpuFloatingPointAccuracyRoutineText');
-    case RoutineName.kPrimeSearch:
+    case chromeos.diagnostics.mojom.RoutineType.kCpuPrime:
       return loadTimeData.getString('cpuPrimeSearchRoutineText');
-    case RoutineName.kMemory:
+    case chromeos.diagnostics.mojom.RoutineType.kMemory:
       return loadTimeData.getString('memoryRoutineText');
     default:
       // Values should always be found in the enum.
@@ -57,19 +58,21 @@ Polymer({
     },
 
     /** @private */
-    routineName_: {
+    routineType_: {
       type: String,
       computed: 'getRunningRoutineString_(item.routine)',
     },
   },
+
   /**
    * Get the localized string name for the routine.
-   * @param {!RoutineName} routine
+   * @param {!RoutineType} routine
    * @return {string}
    */
   getRunningRoutineString_(routine) {
-    return loadTimeData.getStringF('routineNameText', getRoutineName(routine));
+    return loadTimeData.getStringF('routineNameText', getRoutineType(routine));
   },
+
   /**
    * @param {!RoutineResult} result
    * @return {!StandardRoutineResult}
@@ -83,9 +86,9 @@ Polymer({
       return /** @type {!StandardRoutineResult} */ (result.simpleResult);
     }
 
-    if (result.hasOwnProperty('batteryRateResult')) {
+    if (result.hasOwnProperty('powerResult')) {
       return /** @type {!StandardRoutineResult} */ (
-          result.batteryRateResult.result);
+          result.powerResult.simpleResult);
     }
 
     assertNotReached();
@@ -102,7 +105,7 @@ Polymer({
 
     if (this.item.result &&
         this.getSimpleResult_(this.item.result) ===
-            StandardRoutineResult.kTestPassed) {
+            chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
       return 'SUCCESS';
     }
 
@@ -120,7 +123,7 @@ Polymer({
 
     if (this.item.result &&
         this.getSimpleResult_(this.item.result) ===
-            StandardRoutineResult.kTestPassed) {
+            chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
       return BadgeType.SUCCESS;
     }
     return BadgeType.ERROR;

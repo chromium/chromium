@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/cpu_card.js';
 
-import {CpuUsage, RoutineName, SystemDataProviderInterface, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import {CpuUsage, RoutineType, SystemDataProviderInterface, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCpuUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';

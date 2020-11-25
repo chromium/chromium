@@ -13,10 +13,10 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RoutineName, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
 import {ExecutionProgress, RoutineListExecutor} from './routine_list_executor.js';
-import {getRoutineName} from './routine_result_entry.js';
+import {getRoutineType} from './routine_result_entry.js';
 import {BadgeType} from './text_badge.js';
 
 /**
@@ -48,7 +48,7 @@ Polymer({
   systemRoutineController_: null,
 
   properties: {
-    /** @type {!Array<!RoutineName>} */
+    /** @type {!Array<!RoutineType>} */
     routines: {
       type: Array,
       value: () => [],
@@ -113,11 +113,12 @@ Polymer({
               filteredRoutines,
               (status) => {
                 this.currentTestName_ = loadTimeData.getStringF(
-                    'routineNameText', getRoutineName(status.routine));
+                    'routineNameText', getRoutineType(status.routine));
 
                 if (status.result &&
                     status.result.simpleResult !==
-                        StandardRoutineResult.kTestPassed) {
+                        chromeos.diagnostics.mojom.StandardRoutineResult
+                            .kTestPassed) {
                   this.hasTestFailure_ = true;
                 }
 
@@ -125,10 +126,19 @@ Polymer({
               })
           .then(() => {
             this.executionStatus_ = ExecutionProgress.kCompleted;
-            this.systemRoutineController_ = null;
             this.isTestRunning = false;
+            this.cleanUp_();
           });
     });
+  },
+
+  /** @private */
+  cleanUp_() {
+    if (this.executor_) {
+      this.executor_.close();
+      this.executor_ = null;
+    }
+    this.systemRoutineController_ = null;
   },
 
   /** @private */
@@ -180,6 +190,11 @@ Polymer({
       return this.currentTestName_;
     }
     return this.hasTestFailure_ ? 'Test failed' : 'Test succeeded';
+  },
+
+  /** @override */
+  detached() {
+    this.cleanUp_();
   },
 
   /** @override */

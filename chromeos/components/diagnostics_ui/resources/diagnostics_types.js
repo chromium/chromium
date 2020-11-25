@@ -102,83 +102,42 @@ export let CpuUsage;
 
 /**
  * Enumeration of routines.
- * @enum {number}
+ * @typedef {chromeos.diagnostics.mojom.RoutineType}
  */
-export let RoutineName = {
-  kCpuStress: 0,
-  kCpuCache: 1,
-  kFloatingPoint: 2,
-  kPrimeSearch: 3,
-  kMemory: 4,
-  kCharge: 5,
-  kDischarge: 6,
-};
+export let RoutineType;
 
 /**
  * Type alias for StandardRoutineResult.
- * @enum {number}
+ * @typedef {chromeos.diagnostics.mojom.StandardRoutineResult}
  */
-export let StandardRoutineResult = {
-  kTestPassed: 0,
-  kTestFailed: 1,
-  kErrorExecuting: 2,
-  kUnableToRun: 3,
-};
+export let StandardRoutineResult;
 
 /**
- * Type alias for BatteryRateRoutineResult.
- * @typedef {{
- *   result: !StandardRoutineResult,
- *   isCharging: boolean,
- *   percentDelta: number,
- *   timeDeltaSeconds: number,
- * }}
+ * Type alias for PowerRoutineResult.
+ * @typedef {chromeos.diagnostics.mojom.PowerRoutineResult}
  */
-export let BatteryRateRoutineResult;
+export let PowerRoutineResult;
 
 /**
  * Type alias for RoutineResult.
- * @typedef {{
- *   simpleResult: (!StandardRoutineResult|undefined),
- *   batteryRateResult: (!BatteryRateRoutineResult|undefined),
- * }}
+ * @typedef {chromeos.diagnostics.mojom.RoutineResult}
  */
 export let RoutineResult;
 
 /**
  * Type alias for RoutineResultInfo.
- * @typedef {{
- *   name: !RoutineName,
- *   result: !RoutineResult,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.RoutineResultInfo}
  */
 export let RoutineResultInfo;
 
 /**
- * Type of RoutineRunner.onRoutineResult function.
- * @typedef {!function(!RoutineResultInfo)}
- */
-export let RoutineResultFunction;
-
-/**
  * Type alias for RoutineRunner.
- * @typedef {{
- *   onRoutineResult: !RoutineResultFunction,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.RoutineRunnerInterface}
  */
 export let RoutineRunner;
 
 /**
- * Type of SystemRoutineController.RunRoutine function.
- * @typedef {!function(!RoutineName, !RoutineRunner): !Promise}
- */
-export let RunRoutineFunction;
-
-/**
  * Type alias for SystemRoutineControllerInterface.
- * TODO(zentaro): Replace with a real mojo type when implemented.
- * @typedef {{
- *   runRoutine: !RunRoutineFunction,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.SystemRoutineControllerInterface}
  */
 export let SystemRoutineControllerInterface;

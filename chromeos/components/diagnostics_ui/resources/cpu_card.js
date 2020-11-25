@@ -14,7 +14,7 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CpuUsage, RoutineName, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
+import {CpuUsage, RoutineType, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 /**
@@ -40,15 +40,15 @@ Polymer({
   cpuUsageObserverReceiver_: null,
 
   properties: {
-    /** @private {!Array<!RoutineName>} */
+    /** @private {!Array<!RoutineType>} */
     routines_: {
       type: Array,
       value: () => {
         return [
-          RoutineName.kCpuStress,
-          RoutineName.kCpuCache,
-          RoutineName.kFloatingPoint,
-          RoutineName.kPrimeSearch,
+          chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+          chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+          chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
+          chromeos.diagnostics.mojom.RoutineType.kCpuPrime,
         ];
       }
     },

@@ -8,7 +8,7 @@ import './routine_result_entry.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {RoutineName} from './diagnostics_types.js';
+import {RoutineType} from './diagnostics_types.js';
 import {ResultStatusItem} from './routine_list_executor.js'
 
 /**
@@ -38,7 +38,7 @@ Polymer({
    * Resets the list and creates a new list with all routines in the unstarted
    * state. Called by the parent RoutineResultSection when the user starts
    * a test run.
-   * @param {!Array<!RoutineName>} routines
+   * @param {!Array<!RoutineType>} routines
    */
   initializeTestRun(routines) {
     this.clearRoutines();
@@ -56,7 +56,7 @@ Polymer({
 
   /**
    * Add a new unstarted routine to the end of the list.
-   * @param {!RoutineName} routine
+   * @param {!RoutineType} routine
    * @private
    */
   addRoutine_(routine) {

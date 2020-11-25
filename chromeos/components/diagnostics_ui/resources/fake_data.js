@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryRateRoutineResult, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo } from './diagnostics_types.js'
-import { stringToMojoString16 } from './mojo_utils.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, ExternalPowerSource, MemoryUsage, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
+import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
 export const fakeBatteryChargeStatus = [
@@ -129,10 +129,10 @@ export const fakeSystemInfo = {
   cpuModelName: 'BestCpu SoFast 1000',
   cpuThreadsCount: 8,
   cpuMaxClockSpeedKhz: 1000,
-  deviceCapabilities: { hasBattery: true },
+  deviceCapabilities: {hasBattery: true},
   marketingName: 'Coolest Chromebook',
   totalMemoryKib: 128000,
-  versionInfo: { milestoneVersion: 'M99' },
+  versionInfo: {milestoneVersion: 'M99'},
 };
 
 /** @type {!SystemInfo} */
@@ -141,34 +141,49 @@ export const fakeSystemInfoWithoutBattery = {
   cpuModelName: 'BestCpu SoFast 1000',
   cpuThreadsCount: 8,
   cpuMaxClockSpeedKhz: 1000,
-  deviceCapabilities: { hasBattery: false },
+  deviceCapabilities: {hasBattery: false},
   marketingName: 'Coolest Chromebook',
   totalMemoryKib: 128000,
-  versionInfo: { milestoneVersion: 'M99' },
+  versionInfo: {milestoneVersion: 'M99'},
 };
 
-/** @type {!Map<!RoutineName, !StandardRoutineResult>} */
+/** @type {!Map<!RoutineType, !StandardRoutineResult>} */
 export const fakeRoutineResults = new Map([
-  [RoutineName.kCpuStress, StandardRoutineResult.kTestPassed],
-  [RoutineName.kCpuCache, StandardRoutineResult.kTestPassed],
-  [RoutineName.kFloatingPoint, StandardRoutineResult.kTestFailed],
-  [RoutineName.kPrimeSearch, StandardRoutineResult.kErrorExecuting],
-  [RoutineName.kMemory, StandardRoutineResult.kTestPassed],
+  [
+    chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+    chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
+  ],
+  [
+    chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+    chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
+  ],
+  [
+    chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
+    chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
+  ],
+  [
+    chromeos.diagnostics.mojom.RoutineType.kCpuPrime,
+    chromeos.diagnostics.mojom.StandardRoutineResult.kExecutionError
+  ],
+  [
+    chromeos.diagnostics.mojom.RoutineType.kMemory,
+    chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
+  ],
 ]);
 
-/** @type {!Map<!RoutineName, !BatteryRateRoutineResult>} */
-export const fakeBatteryRoutineResults = new Map([
+/** @type {!Map<!RoutineType, !PowerRoutineResult>} */
+export const fakePowerRoutineResults = new Map([
   [
-    RoutineName.kCharge, {
-      result: StandardRoutineResult.kTestPassed,
+    chromeos.diagnostics.mojom.RoutineType.kBatteryCharge, {
+      result: chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed,
       is_charging: true,
       percent_delta: 5,
       time_delta_seconds: 10
     }
   ],
   [
-    RoutineName.kDischarge, {
-      result: StandardRoutineResult.kUnableToRun,
+    chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge, {
+      result: chromeos.diagnostics.mojom.StandardRoutineResult.kUnableToRun,
       is_charging: false,
       percent_delta: 0,
       time_delta_seconds: 0

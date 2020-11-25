@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/routine_result_entry.js';
 
-import {RoutineName, RoutineResult, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -62,7 +62,7 @@ export function routineResultEntryTestSuite() {
 
   /**
    * Creates a result status item without a final result.
-   * @param {!RoutineName} routine
+   * @param {!RoutineType} routine
    * @param {!ExecutionProgress} progress
    * @return {!ResultStatusItem}
    */
@@ -74,7 +74,7 @@ export function routineResultEntryTestSuite() {
 
   /**
    * Creates a completed result status item with a result.
-   * @param {!RoutineName} routine
+   * @param {!RoutineType} routine
    * @param {!RoutineResult} result
    * @return {!ResultStatusItem}
    */
@@ -115,7 +115,8 @@ export function routineResultEntryTestSuite() {
 
   test('NotStartedTest', () => {
     const item = createIncompleteStatus(
-        RoutineName.kCpuStress, ExecutionProgress.kNotStarted);
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        ExecutionProgress.kNotStarted);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -131,7 +132,8 @@ export function routineResultEntryTestSuite() {
 
   test('RunningTest', () => {
     const item = createIncompleteStatus(
-        RoutineName.kCpuStress, ExecutionProgress.kRunning);
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        ExecutionProgress.kRunning);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -147,8 +149,10 @@ export function routineResultEntryTestSuite() {
 
   test('PassedTest', () => {
     const item = createCompletedStatus(
-        RoutineName.kCpuStress, /** @type {!RoutineResult} */ ({
-          simpleResult: StandardRoutineResult.kTestPassed
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        /** @type {!RoutineResult} */ ({
+          simpleResult:
+              chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
         }));
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
@@ -165,8 +169,10 @@ export function routineResultEntryTestSuite() {
 
   test('FailedTest', () => {
     const item = createCompletedStatus(
-        RoutineName.kCpuStress, /** @type {!RoutineResult} */ ({
-          simpleResult: StandardRoutineResult.kTestFailed
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        /** @type {!RoutineResult} */ ({
+          simpleResult:
+              chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
         }));
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
@@ -181,11 +187,13 @@ export function routineResultEntryTestSuite() {
     });
   });
 
-  test('BatteryTest', () => {
+  test('PowerTest', () => {
     const item = createCompletedStatus(
-        RoutineName.kCharge, /** @type {!RoutineResult} */ ({
-          batteryRateResult: {
-            result: StandardRoutineResult.kTestPassed,
+        chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,
+        /** @type {!RoutineResult} */ ({
+          powerResult: {
+            simpleResult:
+                chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed,
             isCharging: true,
             percentDelta: 10,
             timeDeltaSeconds: 10
