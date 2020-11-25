@@ -111,15 +111,15 @@ def GetResourceAllowlistFileList(file_list_path):
   paths = ar.ExpandThinArchives(paths)
 
   resource_ids = set()
-  prefix = 'AllowlistedResource<'
+  prefix = b'AllowlistedResource<'
   for p in paths:
-    with open(p) as f:
+    with open(p, 'rb') as f:
       data = f.read()
     start_idx = 0
     while start_idx != -1:
       start_idx = data.find(prefix, start_idx)
       if start_idx != -1:
-        end_idx = data.find('>', start_idx)
+        end_idx = data.find(b'>', start_idx)
         resource_ids.add(int(data[start_idx + len(prefix):end_idx]))
         start_idx = end_idx
   return resource_ids
