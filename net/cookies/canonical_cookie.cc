@@ -439,7 +439,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   // Get the port, this will get a default value if a port isn't provided.
   int source_port = url.EffectiveIntPort();
 
-  std::unique_ptr<CanonicalCookie> cc(std::make_unique<CanonicalCookie>(
+  std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
       parsed_cookie.Name(), parsed_cookie.Value(), cookie_domain, cookie_path,
       creation_time, cookie_expires, creation_time, parsed_cookie.IsSecure(),
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
@@ -520,7 +520,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   cookie_path = std::string(canon_path.data() + canon_path_component.begin,
                             canon_path_component.len);
 
-  std::unique_ptr<CanonicalCookie> cc(std::make_unique<CanonicalCookie>(
+  std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
       name, value, cookie_domain, cookie_path, creation_time, expiration_time,
       last_access_time, secure, http_only, same_site, priority, same_party,
       source_scheme, source_port));
@@ -545,7 +545,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     bool same_party,
     CookieSourceScheme source_scheme,
     int source_port) {
-  std::unique_ptr<CanonicalCookie> cc(std::make_unique<CanonicalCookie>(
+  std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
       name, value, domain, path, creation, expiration, last_access, secure,
       httponly, same_site, priority, same_party, source_scheme, source_port));
   if (!cc->IsCanonical())
