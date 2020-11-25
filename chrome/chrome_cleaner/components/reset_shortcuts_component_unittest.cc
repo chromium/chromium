@@ -277,7 +277,7 @@ TEST_F(ResetShortcutsComponentTest, ResetShortcutPreserveIconLocation) {
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir_with_icon_path.GetPath(),
                                              &icon_path));
 
-  properties.set_icon(icon_path, /*icon_index=*/0);
+  properties.set_icon(icon_path, /*icon_index=*/2);
   properties.set_target(fake_chrome_path_);
   ASSERT_TRUE(temp_dir_with_chrome_lnk_.CreateUniqueTempDir());
   base::win::ScopedHandle unused_lnk_handle = CreateAndOpenShortcutInTempDir(
@@ -294,5 +294,6 @@ TEST_F(ResetShortcutsComponentTest, ResetShortcutPreserveIconLocation) {
   ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
                         fake_chrome_path_));
   EXPECT_EQ(found_shortcuts[0].icon_location, icon_path.value());
+  EXPECT_EQ(found_shortcuts[0].icon_index, 2);
 }
 }  // namespace chrome_cleaner

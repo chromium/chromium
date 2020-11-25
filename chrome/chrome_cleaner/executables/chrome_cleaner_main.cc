@@ -32,6 +32,7 @@
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/components/recovery_component.h"
+#include "chrome/chrome_cleaner/components/reset_shortcuts_component.h"
 #include "chrome/chrome_cleaner/components/system_report_component.h"
 #include "chrome/chrome_cleaner/components/system_restore_point_component.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
@@ -126,6 +127,12 @@ void AddComponents(chrome_cleaner::MainController* main_controller,
   main_controller->AddComponent(
       std::make_unique<chrome_cleaner::SystemReportComponent>(json_parser,
                                                               shortcut_parser));
+
+  if (command_line->HasSwitch(chrome_cleaner::kResetShortcutsSwitch)) {
+    main_controller->AddComponent(
+        std::make_unique<chrome_cleaner::ResetShortcutsComponent>(
+            shortcut_parser));
+  }
 }
 
 void SendLogsToSafeBrowsing(chrome_cleaner::ResultCode exit_code,
