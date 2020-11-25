@@ -452,8 +452,9 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
       stream_context->buffer_dimension, *gfx_format,
       stream_context->buffer_usage, base::NullCallback());
   stream_context->free_buffers.push(vcd_buffer.id);
-  stream_context->buffers.insert(std::make_pair(
-      vcd_buffer.id, BufferPair(std::move(gmb), std::move(vcd_buffer))));
+  const int id = vcd_buffer.id;
+  stream_context->buffers.insert(
+      std::make_pair(id, BufferPair(std::move(gmb), std::move(vcd_buffer))));
 }
 
 void StreamBufferManager::DestroyCurrentStreamsAndBuffers() {
