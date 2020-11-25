@@ -15,6 +15,7 @@
 #import "base/numerics/safe_conversions.h"
 #include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #include "ios/chrome/browser/procedural_block_types.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -630,6 +631,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       self.blockingView.layer.zPosition = FLT_MAX;
       // No need to show tab switcher button when already in the tab switcher.
       self.blockingView.tabSwitcherButton.hidden = YES;
+
+      [self.blockingView.authenticateButton
+                 addTarget:self.handler
+                    action:@selector(authenticateIncognitoContent)
+          forControlEvents:UIControlEventTouchUpInside];
     }
 
     [self.view addSubview:self.blockingView];

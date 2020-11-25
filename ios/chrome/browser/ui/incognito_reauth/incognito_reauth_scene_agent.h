@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
+
 @class IncognitoReauthSceneAgent;
 class PrefRegistrySimple;
 class PrefService;
@@ -24,7 +26,8 @@ class PrefService;
 
 // A scene agent that tracks the incognito authentication status for the current
 // scene.
-@interface IncognitoReauthSceneAgent : NSObject <SceneAgent>
+@interface IncognitoReauthSceneAgent
+    : NSObject <IncognitoReauthCommands, SceneAgent>
 
 // Designated initializer.
 // The |reauthModule| is used for authentication.
@@ -47,11 +50,6 @@ class PrefService;
 // Local state pref service used by this object. Will default to the one from
 // ApplicationContext, but is settable for overriding.
 @property(nonatomic, assign) PrefService* localState;
-
-// Requests authentication and marks this scene as authenticated until the next
-// scene foregrounding. The callback will receive the result of the
-// authentication attempt. It will be called on main thread, asynchronously.
-- (void)authenticateWithCompletion:(void (^)(BOOL))completion;
 
 #pragma mark observation
 

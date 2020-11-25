@@ -4,6 +4,12 @@
 
 import("//ios/build/chrome_build.gni")
 
+source_set("incognito_reauth_commands") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "incognito_reauth_commands.h" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("incognito_reauth_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -24,6 +30,7 @@ source_set("incognito_reauth_scene_agent") {
     "incognito_reauth_scene_agent.mm",
   ]
   deps = [
+    ":incognito_reauth_commands",
     "//base",
     "//components/pref_registry",
     "//components/prefs",

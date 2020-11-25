@@ -166,9 +166,7 @@ TEST_F(IncognitoReauthSceneAgentTest, SuccessfulAuth) {
 
   EXPECT_TRUE(agent_.authenticationRequired);
 
-  [agent_ authenticateWithCompletion:^(BOOL result) {
-    EXPECT_TRUE(result);
-  }];
+  [agent_ authenticateIncognitoContent];
 
   // Auth not required
   EXPECT_FALSE(agent_.authenticationRequired);
@@ -190,16 +188,12 @@ TEST_F(IncognitoReauthSceneAgentTest, FailedSkippedAuth) {
 
   stub_reauth_module_.returnedResult = ReauthenticationResult::kFailure;
 
-  [agent_ authenticateWithCompletion:^(BOOL result) {
-    EXPECT_FALSE(result);
-  }];
+  [agent_ authenticateIncognitoContent];
   // Auth still required
   EXPECT_TRUE(agent_.authenticationRequired);
 
   stub_reauth_module_.returnedResult = ReauthenticationResult::kSkipped;
-  [agent_ authenticateWithCompletion:^(BOOL result) {
-    EXPECT_FALSE(result);
-  }];
+  [agent_ authenticateIncognitoContent];
   // Auth still required
   EXPECT_TRUE(agent_.authenticationRequired);
 }

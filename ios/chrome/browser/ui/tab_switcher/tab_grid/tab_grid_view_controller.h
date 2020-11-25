@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation_layout_providing.h"
 
 @protocol ApplicationCommands;
+@protocol IncognitoReauthCommands;
 @protocol GridConsumer;
 @protocol GridCommands;
 @protocol GridDragDropHandler;
@@ -37,6 +38,7 @@
                         ViewRevealingAnimatee>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
+@property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;

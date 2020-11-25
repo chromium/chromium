@@ -303,10 +303,24 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  IncognitoReauthSceneAgent* reauthAgent = nil;
+  for (id agent in SceneStateBrowserAgent::FromBrowser(_incognitoBrowser)
+           ->GetSceneState()
+           .connectedAgents) {
+    if ([agent isKindOfClass:[IncognitoReauthSceneAgent class]]) {
+      reauthAgent = agent;
+    }
+  }
+
+  [self.dispatcher startDispatchingToTarget:reauthAgent
+                                forProtocol:@protocol(IncognitoReauthCommands)];
+
   TabGridViewController* baseViewController =
       [[TabGridViewController alloc] init];
   baseViewController.handler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
+  baseViewController.reauthHandler =
+      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
   baseViewController.tabPresentationDelegate = self;
   _baseViewController = baseViewController;
 
@@ -324,15 +338,6 @@
     self.regularTabsMediator.tabRestoreService =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
             regularBrowserState);
-  }
-
-  IncognitoReauthSceneAgent* reauthAgent = nil;
-  for (id agent in SceneStateBrowserAgent::FromBrowser(_incognitoBrowser)
-           ->GetSceneState()
-           .connectedAgents) {
-    if ([agent isKindOfClass:[IncognitoReauthSceneAgent class]]) {
-      reauthAgent = agent;
-    }
   }
 
   self.incognitoTabsMediator = [[TabGridMediator alloc]

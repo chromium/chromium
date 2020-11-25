@@ -71,13 +71,11 @@
          !self.authenticatedSinceLastForeground;
 }
 
-- (void)authenticateWithCompletion:(void (^)(BOOL))completion {
+- (void)authenticateIncognitoContent {
   DCHECK(self.reauthModule);
 
   if (!self.isAuthenticationRequired) {
-    if (completion) {
-      completion(YES);
-    }
+    [self notifyObservers];
     return;
   }
 
@@ -93,9 +91,6 @@
                                       ReauthenticationResult::kSuccess);
                                  weakSelf.authenticatedSinceLastForeground =
                                      success;
-                                 if (completion) {
-                                   completion(success);
-                                 }
                                }];
 }
 

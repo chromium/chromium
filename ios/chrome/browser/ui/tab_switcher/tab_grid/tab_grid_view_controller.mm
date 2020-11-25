@@ -202,6 +202,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setInsetForGridViews];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  self.incognitoTabsViewController.handler = self.reauthHandler;
+}
+
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {

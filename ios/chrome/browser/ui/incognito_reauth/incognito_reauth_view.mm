@@ -89,6 +89,7 @@ const CGFloat kButtonSpacing = 16.0f;
   backgroundView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.2];
   backgroundView.layer.cornerRadius = kButtonHeight / 2;
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  backgroundView.userInteractionEnabled = NO;
   [button addSubview:backgroundView];
   AddSameConstraints(backgroundView, button);
 
