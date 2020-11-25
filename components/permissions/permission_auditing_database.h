@@ -47,7 +47,7 @@ class PermissionAuditingDatabase {
 
   // Appends a new permission usage `session` of the given permission `type` on
   // a given `origin`. The `session` must be valid according to IsValid().
-  // Operation will fail in case if a session with the same primary key, that
+  // Operation will fail if a session with the same primary key, that
   // is, origin, type, and usage start time, already exists in the database.
   // Returns if the operation was successful.
   bool StorePermissionUsage(const PermissionUsageSession& session);

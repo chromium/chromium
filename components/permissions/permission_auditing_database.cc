@@ -53,6 +53,7 @@ PermissionAuditingDatabase::PermissionAuditingDatabase() = default;
 PermissionAuditingDatabase::~PermissionAuditingDatabase() = default;
 
 bool PermissionAuditingDatabase::Init(const base::FilePath& path) {
+  db_.set_histogram_tag("Permission Auditing Logs");
   if (!db_.Open(path)) {
     return false;
   }

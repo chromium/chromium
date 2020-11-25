@@ -656,6 +656,11 @@ const base::Feature kPerAppTimeLimits{"PerAppTimeLimits",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// Keep a client-side log of when websites access permission-gated capabilities
+// to allow the user to audit usage.
+const base::Feature kPermissionAuditing{"PermissionAuditing",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables using the prediction service for permission prompts.
 const base::Feature kPermissionPredictions{"PermissionPredictions",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
