@@ -306,6 +306,10 @@ class CONTENT_EXPORT RenderFrameHostManager
   void ClearRFHsPendingShutdown();
   void ClearWebUIInstances();
 
+  // Returns true if the current, or speculative, RenderFrameHost has a commit
+  // pending for a cross-document navigation.
+  bool HasPendingCommitForCrossDocumentNavigation() const;
+
   // Returns the routing id for a RenderFrameHost or RenderFrameProxyHost
   // that has the given SiteInstance and is associated with this
   // RenderFrameHostManager. Returns MSG_ROUTING_NONE if none is found.

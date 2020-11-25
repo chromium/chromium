@@ -676,6 +676,16 @@ void RenderFrameHostManager::ClearWebUIInstances() {
     speculative_render_frame_host_->ClearWebUI();
 }
 
+bool RenderFrameHostManager::HasPendingCommitForCrossDocumentNavigation()
+    const {
+  if (render_frame_host_->HasPendingCommitForCrossDocumentNavigation())
+    return true;
+  // All speculative RenderFrameHosts load a fresh document.
+  if (speculative_render_frame_host_)
+    return speculative_render_frame_host_->HasPendingCommitNavigation();
+  return false;
+}
+
 void RenderFrameHostManager::DidCreateNavigationRequest(
     NavigationRequest* request) {
   if (request->IsServedFromBackForwardCache()) {

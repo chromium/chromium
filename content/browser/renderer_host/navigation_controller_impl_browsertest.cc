@@ -7325,16 +7325,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationRequest::SetCommitTimeoutForTesting(base::TimeDelta());
 }
 
-// This test simulates a same-document navigation, being restarted as a
-// cross-document one. It starts a network loader, but fails and an error page
-// is committed instead. The RenderFrameHost selected initially for the initial
-// navigation is not suitable for the error page. It needs to be reset when
-// restarting the navigation. See https://crbug.com/936962.
+// This test simulates a same-document navigation racing with a cross-document
+// one. Historically this would have been started as a same-document navigation
+// then restarted by the renderer as a cross-document navigation (see
+// https://crbug.com/936962).
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
-                       NavigationRestartedAsCrossDocumentFailToLoad) {
+                       SameDocumentNavigationRaceWithCrossDocumentNavigation) {
   net::test_server::ControllableHttpResponse response_success(
-      embedded_test_server(), "/title1.html");
-  net::test_server::ControllableHttpResponse response_error(
       embedded_test_server(), "/title1.html");
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -7359,10 +7356,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
     EXPECT_EQ(0, web_contents->GetController().GetLastCommittedEntryIndex());
   }
 
-  // The test below only makes sense for same-site same-RFH navigations, so we
-  // need to ensure that we won't trigger a same-site cross-RFH navigation.
-  DisableProactiveBrowsingInstanceSwapFor(root->current_frame_host());
-
   // 2. Perform a same-document navigation forward.
   {
     GURL same_document_url(
@@ -7372,38 +7365,53 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   }
 
   // 3. Create a HistoryNavigationBeforeCommitInjector, which will perform a
-  // same-document back navigation just before a cross-origin, same process
-  // navigation commits. This triggers a race condition and forces the
-  // same-document navigation to restart as a cross-document one.
-  TestNavigationManager error_page(shell()->web_contents(), start_url);
+  // same-document back navigation just before a cross-document navigation
+  // commits. This triggers a race condition and forces the
+  // same-document navigation to become a cross-document navigation.
   {
-    GURL cross_origin_url(
-        embedded_test_server()->GetURL("suborigin.a.com", "/title2.html"));
+    NavigationHandleCommitObserver back_navigation(web_contents, start_url);
+
+    GURL cross_document_url(
+        embedded_test_server()->GetURL("a.com", "/title2.html"));
     HistoryNavigationBeforeCommitInjector trigger(web_contents,
-                                                  cross_origin_url);
+                                                  cross_document_url);
 
-    // Navigate cross-origin, waiting for the commit to occur.
-    UrlCommitObserver cross_origin_commit_observer(root, cross_origin_url);
-    shell()->LoadURL(cross_origin_url);
-    cross_origin_commit_observer.Wait();
-    EXPECT_EQ(cross_origin_url, web_contents->GetLastCommittedURL());
+    // Navigate cross-document, waiting for the commit to occur.
+    UrlCommitObserver cross_doc_commit_observer(root, cross_document_url);
+    shell()->LoadURL(cross_document_url);
+    EXPECT_TRUE(web_contents->GetController().GetPendingEntry());
+    cross_doc_commit_observer.Wait();
+
+    // The cross-document navigation is done, and we're at history entry 2 (the
+    // third document in the list).
+    EXPECT_EQ(cross_document_url, web_contents->GetLastCommittedURL());
     EXPECT_EQ(2, web_contents->GetController().GetLastCommittedEntryIndex());
+    // Verify the same-document history navigation was started before this
+    // committed.
     EXPECT_TRUE(trigger.did_trigger_history_navigation());
-  }
 
-  // 4. The restarted navigation is now loading its content from the network,
-  // and the server produces invalid content. An error page is displayed.
-  {
-    response_error.WaitForRequest();
-    response_error.Send("The server doesn't support HTTP anymore");
-    response_error.Done();
-    error_page.WaitForNavigationFinished();
-    EXPECT_FALSE(error_page.was_successful());
-    WaitForLoadStop(shell()->web_contents());
+    // The same-document back navigation had to be converted to a cross-document
+    // navigation because it was racing with, and will complete after, the
+    // cross-document navigation. It is still waiting to complete.
+    EXPECT_TRUE(root->navigation_request());
+    // This is the history navigation.
+    EXPECT_EQ(root->navigation_request()->common_params().url.spec(),
+              start_url.spec());
+    // It was not same-document because of the race.
+    EXPECT_FALSE(root->navigation_request()->IsSameDocument());
+
+    UrlCommitObserver back_history_commit_observer(root, start_url);
+    back_history_commit_observer.Wait();
+    // The back navigation completes afterward. There is no more requests to
+    // run, and no pending commits left.
+    EXPECT_FALSE(root->navigation_request());
+    EXPECT_FALSE(root->current_frame_host()->HasPendingCommitNavigation());
+    // The back navigation was not same-document due to the race with a
+    // cross-document navigation committing first.
+    EXPECT_TRUE(back_navigation.has_committed());
+    EXPECT_FALSE(back_navigation.was_same_document());
+    // The back navigation took us back to the expected history entry.
     EXPECT_EQ(0, web_contents->GetController().GetLastCommittedEntryIndex());
-    EXPECT_EQ(
-        PAGE_TYPE_ERROR,
-        web_contents->GetController().GetLastCommittedEntry()->GetPageType());
   }
 }
 

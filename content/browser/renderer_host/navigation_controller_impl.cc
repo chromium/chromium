@@ -306,6 +306,7 @@ mojom::NavigationType GetNavigationType(const GURL& old_url,
                                         ReloadType reload_type,
                                         NavigationEntryImpl* entry,
                                         const FrameNavigationEntry& frame_entry,
+                                        bool has_pending_cross_document_commit,
                                         bool is_same_document_history_load) {
   // Reload navigations
   switch (reload_type) {
@@ -324,9 +325,14 @@ mojom::NavigationType GetNavigationType(const GURL& old_url,
                                    : mojom::NavigationType::RESTORE;
   }
 
+  // A pending cross-document commit means this navigation will not occur in
+  // the current document, as that document would end up being replaced in the
+  // meantime.
+  const bool can_be_same_document = !has_pending_cross_document_commit;
+
   // History navigations.
   if (frame_entry.page_state().IsValid()) {
-    return is_same_document_history_load
+    return can_be_same_document && is_same_document_history_load
                ? mojom::NavigationType::HISTORY_SAME_DOCUMENT
                : mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
   }
@@ -336,7 +342,7 @@ mojom::NavigationType GetNavigationType(const GURL& old_url,
   // that is modified is after the '#' character.
   //
   // When modifying this condition, please take a look at:
-  // FrameLoader::shouldPerformFragmentNavigation.
+  // FrameLoader::ShouldPerformFragmentNavigation().
   //
   // Note: this check is only valid for navigations that are not history
   // navigations. For instance, if the history is: 'A#bar' -> 'B' -> 'A#foo', a
@@ -345,8 +351,21 @@ mojom::NavigationType GetNavigationType(const GURL& old_url,
   // are classified before this check.
   bool is_same_doc = new_url.has_ref() && old_url.EqualsIgnoringRef(new_url) &&
                      frame_entry.method() == "GET";
-  return is_same_doc ? mojom::NavigationType::SAME_DOCUMENT
-                     : mojom::NavigationType::DIFFERENT_DOCUMENT;
+
+  // The one case where we do the wrong thing here and incorrectly choose
+  // SAME_DOCUMENT is if the navigation is browser-initiated but the document in
+  // the renderer is a frameset. All frameset navigations should be
+  // DIFFERENT_DOCUMENT, even if their URLs match. A renderer-initiated
+  // navigation would do the right thing, as it would send it to the browser and
+  // all renderer-initiated navigations are DIFFERENT_DOCUMENT (they don't get
+  // into this method). But since we can't tell that case here for browser-
+  // initiated navigations, we have to get the renderer involved. In that case
+  // the navigation would be restarted due to the renderer spending a reply of
+  // mojom::CommitResult::RestartCrossDocument.
+
+  return can_be_same_document && is_same_doc
+             ? mojom::NavigationType::SAME_DOCUMENT
+             : mojom::NavigationType::DIFFERENT_DOCUMENT;
 }
 
 // Adjusts the original input URL if needed, to get the URL to actually load and
@@ -3293,13 +3312,17 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   // will be updated when the BeforeUnload ack is received.
   base::TimeTicks navigation_start = base::TimeTicks::Now();
 
+  // Look for a pending commit that is to another document in this
+  // FrameTreeNode. If one exists, then the last committed URL will not be the
+  // current URL by the time this navigation commits.
+  bool has_pending_cross_document_commit =
+      node->render_manager()->HasPendingCommitForCrossDocumentNavigation();
+
   mojom::NavigationType navigation_type =
-      GetNavigationType(node->current_url(),  // old_url
-                        url_to_load,          // new_url
-                        reload_type,          // reload_type
-                        entry,                // entry
-                        *frame_entry,         // frame_entry
-                        false);               // is_same_document_history_load
+      GetNavigationType(/*old_url=*/node->current_url(),
+                        /*new_url=*/url_to_load, reload_type, entry,
+                        *frame_entry, has_pending_cross_document_commit,
+                        /*is_same_document_history_load=*/false);
 
   // Create the NavigationParams based on |params|.
 
@@ -3453,13 +3476,17 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   // will be updated when the BeforeUnload ack is received.
   base::TimeTicks navigation_start = base::TimeTicks::Now();
 
+  // Look for a pending commit that is to another document in this
+  // FrameTreeNode. If one exists, then the last committed URL will not be the
+  // current URL by the time this navigation commits.
+  bool has_pending_cross_document_commit =
+      frame_tree_node->render_manager()
+          ->HasPendingCommitForCrossDocumentNavigation();
+
   mojom::NavigationType navigation_type = GetNavigationType(
-      frame_tree_node->current_url(),  // old_url
-      dest_url,                        // new_url
-      reload_type,                     // reload_type
-      entry,                           // entry
-      *frame_entry,                    // frame_entry
-      is_same_document_history_load);  // is_same_document_history_load
+      /*old_url=*/frame_tree_node->current_url(),
+      /*new_url=*/dest_url, reload_type, entry, *frame_entry,
+      has_pending_cross_document_commit, is_same_document_history_load);
 
   // A form submission may happen here if the navigation is a
   // back/forward/reload navigation that does a form resubmission.

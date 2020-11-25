@@ -691,6 +691,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Return true if this contains at least one NavigationRequest waiting to
   // commit in this RenderFrameHost, excluding same-document navigations.
+  // NOTE: RenderFrameHostManager surfaces a similar method that will check
+  // all the RenderFrameHosts for that FrameTreeNode.
   bool HasPendingCommitForCrossDocumentNavigation() const;
 
   // Return true if Unload() was called on the frame or one of its ancestors.
