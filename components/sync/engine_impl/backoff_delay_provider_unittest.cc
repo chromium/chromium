@@ -30,10 +30,9 @@ TEST_F(BackoffDelayProviderTest, GetRecommendedDelay) {
             delay->GetDelay(TimeDelta::FromSeconds(50)));
   EXPECT_LE(TimeDelta::FromSeconds(10),
             delay->GetDelay(TimeDelta::FromSeconds(10)));
-  EXPECT_EQ(TimeDelta::FromSeconds(kMaxBackoffSeconds),
-            delay->GetDelay(TimeDelta::FromSeconds(kMaxBackoffSeconds)));
-  EXPECT_EQ(TimeDelta::FromSeconds(kMaxBackoffSeconds),
-            delay->GetDelay(TimeDelta::FromSeconds(kMaxBackoffSeconds + 1)));
+  EXPECT_EQ(kMaxBackoffTime, delay->GetDelay(kMaxBackoffTime));
+  EXPECT_EQ(kMaxBackoffTime,
+            delay->GetDelay(kMaxBackoffTime + TimeDelta::FromSeconds(1)));
 }
 
 TEST_F(BackoffDelayProviderTest, GetInitialDelay) {
@@ -42,48 +41,39 @@ TEST_F(BackoffDelayProviderTest, GetInitialDelay) {
   ModelNeutralState state;
   state.last_get_key_result =
       SyncerError::HttpError(net::HTTP_INTERNAL_SERVER_ERROR);
-  EXPECT_EQ(kInitialBackoffRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
   state.last_get_key_result = SyncerError();
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
-  EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
       SyncerError::NetworkConnectionUnavailable(net::ERR_FAILED);
-  EXPECT_EQ(kInitialBackoffRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR);
-  EXPECT_EQ(kInitialBackoffRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
-  EXPECT_EQ(kInitialBackoffRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
       SyncerError(SyncerError::DATATYPE_TRIGGERED_RETRY);
-  EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result = SyncerError(SyncerError::SYNCER_OK);
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
-  EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.commit_result =
       SyncerError::NetworkConnectionUnavailable(net::ERR_FAILED);
-  EXPECT_EQ(kInitialBackoffRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_CONFLICT);
-  EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 }
 
 TEST_F(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
@@ -92,38 +82,31 @@ TEST_F(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
   ModelNeutralState state;
   state.last_get_key_result =
       SyncerError::HttpError(net::HTTP_INTERNAL_SERVER_ERROR);
-  EXPECT_EQ(kInitialBackoffShortRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
 
   state.last_get_key_result = SyncerError();
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
-  EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR);
-  EXPECT_EQ(kInitialBackoffShortRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
-  EXPECT_EQ(kInitialBackoffShortRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
       SyncerError(SyncerError::DATATYPE_TRIGGERED_RETRY);
-  EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result = SyncerError(SyncerError::SYNCER_OK);
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
-  EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_CONFLICT);
-  EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
+  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 }
 
 }  // namespace syncer

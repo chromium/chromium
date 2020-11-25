@@ -829,8 +829,7 @@ void SyncSchedulerImpl::OnTypesThrottled(ModelTypeSet types,
 void SyncSchedulerImpl::OnTypesBackedOff(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (ModelType type : types) {
-    TimeDelta last_backoff_time =
-        TimeDelta::FromSeconds(kInitialBackoffRetrySeconds);
+    TimeDelta last_backoff_time = kInitialBackoffRetryTime;
     if (nudge_tracker_.GetTypeBlockingMode(type) ==
         WaitInterval::EXPONENTIAL_BACKOFF_RETRYING) {
       last_backoff_time = nudge_tracker_.GetTypeLastBackoffInterval(type);

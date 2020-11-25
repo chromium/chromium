@@ -7,15 +7,17 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
+
 namespace syncer {
 
 // Constants used by SyncScheduler when polling servers for updates.
-extern const int64_t kDefaultPollIntervalSeconds;
-extern const int64_t kMaxBackoffSeconds;
+extern const base::TimeDelta kDefaultPollInterval;
+extern const base::TimeDelta kMaxBackoffTime;
 extern const int kBackoffRandomizationFactor;
-extern const int kInitialBackoffRetrySeconds;
-extern const int kInitialBackoffShortRetrySeconds;
-extern const int kInitialBackoffImmediateRetrySeconds;
+extern const base::TimeDelta kInitialBackoffRetryTime;
+extern const base::TimeDelta kInitialBackoffShortRetryTime;
+extern const base::TimeDelta kInitialBackoffImmediateRetryTime;
 
 }  // namespace syncer
 

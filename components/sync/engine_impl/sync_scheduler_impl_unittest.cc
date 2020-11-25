@@ -241,9 +241,8 @@ class SyncSchedulerImplTest : public testing::Test {
   class MockDelayProvider : public BackoffDelayProvider {
    public:
     MockDelayProvider()
-        : BackoffDelayProvider(
-              TimeDelta::FromSeconds(kInitialBackoffRetrySeconds),
-              TimeDelta::FromSeconds(kInitialBackoffImmediateRetrySeconds)) {}
+        : BackoffDelayProvider(kInitialBackoffRetryTime,
+                               kInitialBackoffImmediateRetryTime) {}
     MOCK_METHOD(TimeDelta, GetDelay, (const TimeDelta&), (override));
   };
 
@@ -1499,7 +1498,7 @@ TEST_F(SyncSchedulerImplTest, BackoffElevation) {
           DoAll(Invoke(SimulateCommitFailed),
                 RecordSyncShareMultiple(&times, kMinNumSamples, false)));
 
-  const TimeDelta first = TimeDelta::FromSeconds(kInitialBackoffRetrySeconds);
+  const TimeDelta first = kInitialBackoffRetryTime;
   const TimeDelta second = TimeDelta::FromMilliseconds(20);
   const TimeDelta third = TimeDelta::FromMilliseconds(30);
   const TimeDelta fourth = TimeDelta::FromMilliseconds(40);

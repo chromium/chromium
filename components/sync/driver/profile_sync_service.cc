@@ -607,8 +607,7 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
   params.invalidation_versions = sync_prefs_.GetInvalidationVersions();
   params.poll_interval = sync_prefs_.GetPollInterval();
   if (params.poll_interval.is_zero()) {
-    params.poll_interval =
-        base::TimeDelta::FromSeconds(kDefaultPollIntervalSeconds);
+    params.poll_interval = kDefaultPollInterval;
   }
 
   if (!IsLocalSyncEnabled()) {

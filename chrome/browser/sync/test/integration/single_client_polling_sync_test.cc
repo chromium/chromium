@@ -49,8 +49,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
   // Execute a sync cycle and verify the client set up (and persisted) the
   // default value.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  EXPECT_THAT(sync_prefs.GetPollInterval().InSeconds(),
-              Eq(syncer::kDefaultPollIntervalSeconds));
+  EXPECT_THAT(sync_prefs.GetPollInterval(), Eq(syncer::kDefaultPollInterval));
 }
 
 // This test verifies that updates of the poll interval get persisted

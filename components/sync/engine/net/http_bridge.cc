@@ -34,7 +34,7 @@ namespace {
 // It's possible for an http request to be silently stalled. We set a time
 // limit for all http requests, beyond which the request is cancelled and
 // treated as a transient failure.
-const int kMaxHttpRequestTimeSeconds = 60 * 5;  // 5 minutes.
+constexpr base::TimeDelta kMaxHttpRequestTime = base::TimeDelta::FromMinutes(5);
 
 // Helper method for logging timeouts via UMA.
 void LogTimeout(bool timed_out) {
@@ -185,7 +185,7 @@ void HttpBridge::MakeAsynchronousPost() {
   fetch_state_.http_request_timeout_timer =
       std::make_unique<base::OneShotTimer>();
   fetch_state_.http_request_timeout_timer->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kMaxHttpRequestTimeSeconds),
+      FROM_HERE, kMaxHttpRequestTime,
       base::BindOnce(&HttpBridge::OnURLLoadTimedOut, this));
 
   // Some tests inject |url_loader_factory_| created to operated on the

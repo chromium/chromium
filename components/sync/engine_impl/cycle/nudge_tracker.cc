@@ -15,10 +15,14 @@ namespace syncer {
 namespace {
 
 // Delays for syncer nudges.
-const int kDefaultNudgeDelayMilliseconds = 200;
-const int kSlowNudgeDelayMilliseconds = 2000;
-const int kSyncRefreshDelayMilliseconds = 500;
-const int kSyncSchedulerDelayMilliseconds = 250;
+constexpr base::TimeDelta kDefaultNudgeDelay =
+    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kSlowNudgeDelay =
+    base::TimeDelta::FromMilliseconds(2000);
+constexpr base::TimeDelta kSyncRefreshDelay =
+    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kSyncSchedulerDelay =
+    base::TimeDelta::FromMilliseconds(250);
 
 base::TimeDelta GetSharingMessageDelay(base::TimeDelta default_delay) {
   if (!base::FeatureList::IsEnabled(
@@ -37,13 +41,13 @@ base::TimeDelta GetDefaultDelayForType(ModelType model_type,
     case USER_EVENTS:
       // Accompany types rely on nudges from other types, and hence have long
       // nudge delays.
-      return base::TimeDelta::FromSeconds(kDefaultPollIntervalSeconds);
+      return kDefaultPollInterval;
     case BOOKMARKS:
     case PREFERENCES:
     case SESSIONS:
       // Types with sometimes automatic changes get longer delays to allow more
       // coalescing.
-      return base::TimeDelta::FromMilliseconds(kSlowNudgeDelayMilliseconds);
+      return kSlowNudgeDelay;
     case SHARING_MESSAGE:
       return GetSharingMessageDelay(minimum_delay);
     default:
@@ -56,12 +60,9 @@ base::TimeDelta GetDefaultDelayForType(ModelType model_type,
 NudgeTracker::NudgeTracker()
     : invalidations_enabled_(false),
       invalidations_out_of_sync_(true),
-      minimum_local_nudge_delay_(
-          base::TimeDelta::FromMilliseconds(kDefaultNudgeDelayMilliseconds)),
-      local_refresh_nudge_delay_(
-          base::TimeDelta::FromMilliseconds(kSyncRefreshDelayMilliseconds)),
-      remote_invalidation_nudge_delay_(
-          base::TimeDelta::FromMilliseconds(kSyncSchedulerDelayMilliseconds)) {
+      minimum_local_nudge_delay_(kDefaultNudgeDelay),
+      local_refresh_nudge_delay_(kSyncRefreshDelay),
+      remote_invalidation_nudge_delay_(kSyncSchedulerDelay) {
   // Default initialize all the type trackers.
   for (ModelType type : ProtocolTypes()) {
     type_trackers_.emplace(
@@ -144,8 +145,7 @@ void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
 
 base::TimeDelta NudgeTracker::RecordLocalChange(ModelTypeSet types) {
   // Start with the longest delay.
-  base::TimeDelta delay =
-      base::TimeDelta::FromSeconds(kDefaultPollIntervalSeconds);
+  base::TimeDelta delay = kDefaultPollInterval;
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
     DCHECK(tracker_it != type_trackers_.end());

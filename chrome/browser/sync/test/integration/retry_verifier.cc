@@ -25,13 +25,13 @@ DelayInfo CalculateDelay(int64_t current_delay) {
                              syncer::kBackoffRandomizationFactor);
   delay_info.max_delay = backoff_s + current_delay/2;
 
-  delay_info.min_delay =
-      std::max(static_cast<int64_t>(1),
-               std::min(delay_info.min_delay, syncer::kMaxBackoffSeconds));
+  delay_info.min_delay = std::max(
+      static_cast<int64_t>(1),
+      std::min(delay_info.min_delay, syncer::kMaxBackoffTime.InSeconds()));
 
-  delay_info.max_delay =
-      std::max(static_cast<int64_t>(1),
-               std::min(delay_info.max_delay, syncer::kMaxBackoffSeconds));
+  delay_info.max_delay = std::max(
+      static_cast<int64_t>(1),
+      std::min(delay_info.max_delay, syncer::kMaxBackoffTime.InSeconds()));
 
   return delay_info;
 }
@@ -111,4 +111,3 @@ void RetryVerifier::VerifyRetryInterval(const syncer::SyncCycleSnapshot& snap) {
     return;
   }
 }
-

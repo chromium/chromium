@@ -30,7 +30,8 @@ namespace syncer {
 namespace {
 
 // Time to backoff syncing after receiving a throttled response.
-const int kSyncDelayAfterThrottled = 2 * 60 * 60;  // 2 hours
+constexpr base::TimeDelta kSyncDelayAfterThrottled =
+    base::TimeDelta::FromHours(2);
 
 void LogResponseProfilingData(const ClientToServerResponse& response) {
   if (response.has_profiling_data()) {
@@ -383,8 +384,7 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
 
 base::TimeDelta SyncerProtoUtil::GetThrottleDelay(
     const ClientToServerResponse& response) {
-  base::TimeDelta throttle_delay =
-      base::TimeDelta::FromSeconds(kSyncDelayAfterThrottled);
+  base::TimeDelta throttle_delay = kSyncDelayAfterThrottled;
   if (response.has_client_command()) {
     const sync_pb::ClientCommand& command = response.client_command();
     if (command.has_throttle_delay_seconds()) {
