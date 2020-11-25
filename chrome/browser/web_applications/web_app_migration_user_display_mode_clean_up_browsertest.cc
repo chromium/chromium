@@ -27,18 +27,6 @@ const char kAppId[] = "dofnemchnjfeendjmdhaldenaiabpiad";
 const char kAppName[] = "Test App";
 const char kStartUrl[] = "https://test.com";
 
-size_t GetTestPreCount() {
-  constexpr base::StringPiece kPreTestPrefix = "PRE_";
-  base::StringPiece test_name =
-      testing::UnitTest::GetInstance()->current_test_info()->name();
-  size_t count = 0;
-  while (test_name.find(kPreTestPrefix, kPreTestPrefix.size() * count) ==
-         kPreTestPrefix.size() * count) {
-    ++count;
-  }
-  return count;
-}
-
 }  // namespace
 
 namespace web_app {

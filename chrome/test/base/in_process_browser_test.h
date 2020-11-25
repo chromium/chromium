@@ -150,6 +150,11 @@ class InProcessBrowserTest : public content::BrowserTestBase {
     global_browser_set_up_function_ = set_up_function;
   }
 
+  // Counts the number of "PRE_" prefixes in the test name. This is used to
+  // differentiate between different PRE tests in browser test constructors
+  // and setup functions.
+  static size_t GetTestPreCount();
+
   // Returns the browser created by BrowserMain().
   // If no browser is created in BrowserMain(), this will return nullptr unless
   // another browser instance is created at a later time and
