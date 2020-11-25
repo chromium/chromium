@@ -28,8 +28,6 @@ function testOffsetFromPoint(element, name) {
     var isVertical = writingMode && writingMode[0] == "v";
     var results = [ name ];
     getOffsetFromPoint(element, isVertical, results);
-    if (isVertical) // The last character in vertical is flaky by win/mac/linux
-        results.splice(-1, 1);
     for (var result of results) {
         var div = document.createElement("div");
         div.innerText = result;

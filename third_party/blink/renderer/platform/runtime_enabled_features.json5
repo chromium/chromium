@@ -1081,6 +1081,7 @@
       // enabled, we'll typically fall back to legacy code for block children.
       name: "LayoutNGFullPositionForPoint",
       implied_by: ["LayoutNGBlockFragmentation", "LayoutNGFragmentTraversal"],
+      status: "stable",
     },
     {
       name: "LayoutNGGrid",

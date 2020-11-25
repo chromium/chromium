@@ -5932,6 +5932,8 @@ TEST_F(WebFrameTest, SmartClipData) {
   WebLocalFrame* frame = web_view_helper.LocalMainFrame();
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
+  web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
+      mojom::EditingBehavior::kEditingAndroidBehavior);
   WebRect crop_rect(300, 125, 152, 50);
   frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
   EXPECT_EQ(kExpectedClipText, clip_text);
@@ -5969,6 +5971,8 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
   WebLocalFrame* frame = web_view_helper.LocalMainFrame();
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
+  web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
+      mojom::EditingBehavior::kEditingAndroidBehavior);
   web_view_helper.GetWebView()->SetPageScaleFactor(1.5);
   web_view_helper.GetWebView()->SetVisualViewportOffset(gfx::PointF(167, 100));
   WebRect crop_rect(200, 38, 228, 75);
