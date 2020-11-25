@@ -16,7 +16,9 @@ def RunUnittests(input_api, output_api):
       output_api, [
           input_api.os_path.join('grit', 'test_suite_all.py'),
           input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                 'preprocess_grit_test.py')
+                                 'preprocess_grit_test.py'),
+          input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                 'preprocess_if_expr_test.py')
       ],
       run_on_python3=False)  # See https://crbug.com/1145395.
 
