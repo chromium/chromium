@@ -53,6 +53,21 @@ source_set("local_search_service") {
   ]
 }
 
+source_set("local_search_service_provider") {
+  sources = [
+    "local_search_service_provider_for_testing.cc",
+    "local_search_service_provider_for_testing.h",
+    "oop_local_search_service_provider.cc",
+    "oop_local_search_service_provider.h",
+  ]
+
+  deps = [
+    "//chromeos/components/local_search_service:local_search_service",
+    "//chromeos/components/local_search_service/public/cpp:cpp",
+    "//content/public/browser:browser",
+  ]
+}
+
 source_set("local_search_service_proxy") {
   sources = [
     "index_sync_proxy.cc",
@@ -99,6 +114,7 @@ source_set("unit_tests") {
     "inverted_index_search_unittest.cc",
     "inverted_index_unittest.cc",
     "linear_map_search_unittest.cc",
+    "local_search_service_provider_unittest.cc",
     "local_search_service_sync_proxy_unittest.cc",
     "local_search_service_sync_unittest.cc",
     "local_search_service_unittest.cc",
@@ -109,6 +125,7 @@ source_set("unit_tests") {
 
   deps = [
     ":local_search_service",
+    ":local_search_service_provider",
     ":local_search_service_proxy",
     ":test_support",
     "//base/test:test_support",

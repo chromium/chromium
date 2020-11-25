@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors.All rights reserved.
+# Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
@@ -2378,6 +2378,7 @@ static_library("browser") {
       "//chromeos/components/help_app_ui",
       "//chromeos/components/help_app_ui:mojo_bindings",
       "//chromeos/components/local_search_service",
+      "//chromeos/components/local_search_service/public/cpp:cpp",
       "//chromeos/components/local_search_service/public/mojom",
       "//chromeos/components/media_app_ui",
       "//chromeos/components/media_app_ui:mojo_bindings",
