@@ -47,7 +47,9 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   void Encode(scoped_refptr<VideoFrame> frame,
               bool key_frame,
               StatusCB done_cb) override;
-  void ChangeOptions(const Options& options, StatusCB done_cb) override;
+  void ChangeOptions(const Options& options,
+                     OutputCB output_cb,
+                     StatusCB done_cb) override;
   void Flush(StatusCB done_cb) override;
 
   // VideoEncodeAccelerator::Client implementation
@@ -93,6 +95,9 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
                                  bool key_frame,
                                  StatusCB done_cb);
   void FlushOnAcceleratorThread(StatusCB done_cb);
+  void ChangeOptionsOnAcceleratorThread(const Options options,
+                                        OutputCB output_cb,
+                                        StatusCB done_cb);
 
   template <class T>
   T WrapCallback(T cb);

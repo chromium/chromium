@@ -95,7 +95,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
                                  const Options& options,
                                  OutputCB output_cb,
                                  StatusCB done_cb) {
-  done_cb = media::BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindToCurrentLoop(std::move(done_cb));
   if (codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeTwice);
     return;
@@ -104,10 +104,9 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
   profile_ = profile;
 
   vpx_codec_iface_t* iface = nullptr;
-  if (profile == media::VP8PROFILE_ANY) {
+  if (profile == VP8PROFILE_ANY) {
     iface = vpx_codec_vp8_cx();
-  } else if (profile == media::VP9PROFILE_PROFILE0 ||
-             profile == media::VP9PROFILE_PROFILE2) {
+  } else if (profile == VP9PROFILE_PROFILE0 || profile == VP9PROFILE_PROFILE2) {
     // TODO(https://crbug.com/1116617): Consider support for profiles 1 and 3.
     is_vp9_ = true;
     iface = vpx_codec_vp9_cx();
@@ -130,17 +129,17 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
   vpx_img_fmt img_fmt = VPX_IMG_FMT_NONE;
   unsigned int bits_for_storage = 8;
   switch (profile) {
-    case media::VP9PROFILE_PROFILE1:
+    case VP9PROFILE_PROFILE1:
       codec_config_.g_profile = 1;
       break;
-    case media::VP9PROFILE_PROFILE2:
+    case VP9PROFILE_PROFILE2:
       codec_config_.g_profile = 2;
       img_fmt = VPX_IMG_FMT_I42016;
       bits_for_storage = 16;
       codec_config_.g_bit_depth = VPX_BITS_10;
       codec_config_.g_input_bit_depth = 10;
       break;
-    case media::VP9PROFILE_PROFILE3:
+    case VP9PROFILE_PROFILE3:
       codec_config_.g_profile = 3;
       break;
     default:
@@ -208,7 +207,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
   }
 
   options_ = options;
-  output_cb_ = media::BindToCurrentLoop(std::move(output_cb));
+  output_cb_ = BindToCurrentLoop(std::move(output_cb));
   codec_ = std::move(codec);
   std::move(done_cb).Run(Status());
 }
@@ -217,7 +216,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                              bool key_frame,
                              StatusCB done_cb) {
   Status status;
-  done_cb = media::BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
     return;
@@ -228,7 +227,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   "No frame provided for encoding."));
     return;
   }
-  if (!frame->IsMappable() || frame->format() != media::PIXEL_FORMAT_I420) {
+  if (!frame->IsMappable() || frame->format() != PIXEL_FORMAT_I420) {
     status =
         Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
             .WithData("IsMappable", frame->IsMappable())
@@ -238,17 +237,17 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   switch (profile_) {
-    case media::VP9PROFILE_PROFILE1:
+    case VP9PROFILE_PROFILE1:
       NOTREACHED();
       break;
-    case media::VP9PROFILE_PROFILE2:
+    case VP9PROFILE_PROFILE2:
       libyuv::I420ToI010(
-          frame->visible_data(media::VideoFrame::kYPlane),
-          frame->stride(media::VideoFrame::kYPlane),
-          frame->visible_data(media::VideoFrame::kUPlane),
-          frame->stride(media::VideoFrame::kUPlane),
-          frame->visible_data(media::VideoFrame::kVPlane),
-          frame->stride(media::VideoFrame::kVPlane),
+          frame->visible_data(VideoFrame::kYPlane),
+          frame->stride(VideoFrame::kYPlane),
+          frame->visible_data(VideoFrame::kUPlane),
+          frame->stride(VideoFrame::kUPlane),
+          frame->visible_data(VideoFrame::kVPlane),
+          frame->stride(VideoFrame::kVPlane),
           reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_Y]),
           vpx_image_.stride[VPX_PLANE_Y] / 2,
           reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_U]),
@@ -257,22 +256,19 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
           vpx_image_.stride[VPX_PLANE_V] / 2, frame->coded_size().width(),
           frame->coded_size().height());
       break;
-    case media::VP9PROFILE_PROFILE3:
+    case VP9PROFILE_PROFILE3:
       NOTREACHED();
       break;
     default:
       vpx_image_.planes[VPX_PLANE_Y] =
-          const_cast<uint8_t*>(frame->visible_data(media::VideoFrame::kYPlane));
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
       vpx_image_.planes[VPX_PLANE_U] =
-          const_cast<uint8_t*>(frame->visible_data(media::VideoFrame::kUPlane));
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUPlane));
       vpx_image_.planes[VPX_PLANE_V] =
-          const_cast<uint8_t*>(frame->visible_data(media::VideoFrame::kVPlane));
-      vpx_image_.stride[VPX_PLANE_Y] =
-          frame->stride(media::VideoFrame::kYPlane);
-      vpx_image_.stride[VPX_PLANE_U] =
-          frame->stride(media::VideoFrame::kUPlane);
-      vpx_image_.stride[VPX_PLANE_V] =
-          frame->stride(media::VideoFrame::kVPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kVPlane));
+      vpx_image_.stride[VPX_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
+      vpx_image_.stride[VPX_PLANE_U] = frame->stride(VideoFrame::kUPlane);
+      vpx_image_.stride[VPX_PLANE_V] = frame->stride(VideoFrame::kVPlane);
       break;
   }
 
@@ -298,8 +294,10 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   std::move(done_cb).Run(Status());
 }
 
-void VpxVideoEncoder::ChangeOptions(const Options& options, StatusCB done_cb) {
-  done_cb = media::BindToCurrentLoop(std::move(done_cb));
+void VpxVideoEncoder::ChangeOptions(const Options& options,
+                                    OutputCB output_cb,
+                                    StatusCB done_cb) {
+  done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
     return;
@@ -307,20 +305,39 @@ void VpxVideoEncoder::ChangeOptions(const Options& options, StatusCB done_cb) {
 
   vpx_codec_enc_cfg_t new_config = codec_config_;
   auto status = SetUpVpxConfig(options, &new_config);
-  if (status.is_ok()) {
-    auto vpx_error = vpx_codec_enc_config_set(codec_.get(), &new_config);
-    if (vpx_error == VPX_CODEC_OK) {
-      codec_config_ = new_config;
-      options_ = options;
-    } else {
-      status = Status(StatusCode::kEncoderUnsupportedConfig,
-                      "Failed to set new VPX config")
-                   .WithData("vpx_error", vpx_error);
+  if (!status.is_ok()) {
+    std::move(done_cb).Run(status);
+    return;
+  }
+
+  if (options_.width != options.width || options_.height != options.height) {
+    // Need to re-allocate |vpx_image_| because the size has changed.
+    auto img_fmt = vpx_image_.fmt;
+    auto bit_depth = vpx_image_.bit_depth;
+    vpx_img_free(&vpx_image_);
+    if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt, options.width,
+                                    options.height, 1, nullptr)) {
+      status = Status(StatusCode::kEncoderInitializationError,
+                      "Invalid format or frame size.");
+      std::move(done_cb).Run(status);
+      return;
     }
+    vpx_image_.bit_depth = bit_depth;
+  }
+
+  auto vpx_error = vpx_codec_enc_config_set(codec_.get(), &new_config);
+  if (vpx_error == VPX_CODEC_OK) {
+    codec_config_ = new_config;
+    options_ = options;
+    if (!output_cb.is_null())
+      output_cb_ = BindToCurrentLoop(std::move(output_cb));
+  } else {
+    status = Status(StatusCode::kEncoderUnsupportedConfig,
+                    "Failed to set new VPX config")
+                 .WithData("vpx_error", vpx_error);
   }
 
   std::move(done_cb).Run(std::move(status));
-  return;
 }
 
 base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
@@ -351,7 +368,7 @@ VpxVideoEncoder::~VpxVideoEncoder() {
 }
 
 void VpxVideoEncoder::Flush(StatusCB done_cb) {
-  done_cb = media::BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
     return;

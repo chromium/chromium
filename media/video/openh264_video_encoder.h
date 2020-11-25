@@ -30,7 +30,9 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
   void Encode(scoped_refptr<VideoFrame> frame,
               bool key_frame,
               StatusCB done_cb) override;
-  void ChangeOptions(const Options& options, StatusCB done_cb) override;
+  void ChangeOptions(const Options& options,
+                     OutputCB output_cb,
+                     StatusCB done_cb) override;
   void Flush(StatusCB done_cb) override;
 
  private:
