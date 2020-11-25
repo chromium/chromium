@@ -938,6 +938,8 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroyActionSet);
   } else if (strcmp(name, "xrDestroyInstance") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroyInstance);
+  } else if (strcmp(name, "xrDestroySession") == 0) {
+    *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroySession);
   } else if (strcmp(name, "xrDestroySpace") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroySpace);
   } else if (strcmp(name, "xrEndFrame") == 0) {
