@@ -1,0 +1,73 @@
+# Tab Search Benchmark
+
+## Overview
+
+Tab Search Benchmark is used to measure and monitor Tab Search Web UI performance.
+It captures important metrics such as
+
+* Initial load time
+* Subsequent load time
+* Fetch data time
+* Search user input time
+* Frame time when scrolling
+
+in different stories representing different scenarios
+* tab_search:top10:2020 - Test CUJs with 10 open tabs, after all tabs are loaded
+* tab_search:top50:2020 - Test CUJs with 50 open tabs, after all tabs are loaded
+* tab_search:top100:2020 - Test CUJs with 100 open tabs, after all tabs are loaded
+* tab_search:top10:loading:2020 - Test CUJs with 10 open tabs, before all tabs are loaded
+* tab_search:top50:loading:2020 - Test CUJs with 50 open tabs, before all tabs are loaded
+* tab_search:top100:loading:2020 - Test CUJs with 100 open tabs, before all tabs are loaded
+* tab_search:close_and_open:2020 - Test open, close and reopen Tab Search UI
+
+
+For more information please see this [doc](https://docs.google.com/document/d/1-1ijT7wt05hlBZmSKjX_DaTCzVqpxbfTM1y-j7kYHlc).
+
+## Run the benchmark on pinpoint
+
+In most cases, you only need to run the benchmark on [pinpoint](https://pinpoint-dot-chromeperf.appspot.com/) before/after a CL that may have performance impact. If you don't have platform requirement linux-perf is recommended since they are the most stable trybots for this benchmark.
+
+
+## Run the benchmark locally
+
+In some cases, if trybots cannot meet your requirement or you need to debug on your own machine, use the following command to run the benchmark locally. You need an @google account to be able to do that.
+
+```
+tools/perf/run_benchmark run tab_search --browser-executable=out/Default/chrome --story-filter=tab_search:top10:2020 --pageset-repeat=3
+```
+
+
+## Add new metrics
+
+There are 3 ways to add metrics to the benchmarking code
+
+1. Add UMA metrics to your code and include them in the [benchmark definition](../../../../tools/perf/benchmark/tab_search.py). The listed UMA metrics will show up on the result page automatically.
+2. Add C++ trace with name starts with "webui_metric:". Make sure your trace has category "browser" or add other categories that you use to the benchmark definition. For example:
+   ```c++
+   void Foo::DoWork() {
+     TRACE_EVENT0("browser", "webui_metric:Foo:DoWork");
+     ...
+   }
+   ```
+3. Add Javascript performance.mark() with names end with ":benchmark_begin" and ":benchmark_end". Time between performance.mark('YOUR_METRIC_NAME:benchmark_begin') and performance.mark('YOUR_METRIC_NAME:benchmark') will show up as YOUR_METRIC_NAME on the result page. For example:
+   ```javascript
+   function calc() {
+     performance.mark('calc_time:benchmark_begin');
+     ...
+     performance.mark('calc_time:benchmark_end');
+   }
+   ```
+
+## Record new stories
+
+Add new stories to [here](../../../../tools/perf/page_sets/tab_search/tab_search_stories.py).
+Generally we want to put most of the user journeys in the main story so we only need to run 1 story to verify a CL in most cases. However, if the user journey may affect metrics of other user journeys (e.g. close and reopen Tab Search UI), you should make it a separate story.
+
+Use the following command to record a story
+```
+tools/perf/record_wpr --browser-executable=out/Default/chrome tab_search --story-filter=<YOUR_STORY_NAME>
+```
+and the following command to upload to the cloud.
+```
+upload_to_google_storage.py --bucket chrome-partner-telemetry tools/perf/page_sets/data/tab_search_desktop_<YOUR_RECORDED_HASH>.wprgo
+```

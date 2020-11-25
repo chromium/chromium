@@ -29,10 +29,14 @@ TAB_SEARCH_BENCHMARK_UMA = [
 ]
 
 
-@benchmark.Info(emails=[
-    'yuhengh@chromium.org', 'tluk@chromium.org', 'romanarora@chromium.org'
-],
-                component='UI>Browser>TabSearch')
+@benchmark.Info(
+    emails=[
+        'yuhengh@chromium.org', 'tluk@chromium.org', 'romanarora@chromium.org'
+    ],
+    component='UI>Browser>TabSearch',
+    documentation_url=
+    'https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/tab_search.md'
+)
 class TabSearch(perf_benchmark.PerfBenchmark):
   """Tab Search Benchmark."""
   PLATFORM = 'desktop'
