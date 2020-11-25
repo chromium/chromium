@@ -11,7 +11,6 @@
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -24,6 +23,8 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/sct_status_flags.h"
+#include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -32,6 +33,54 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/test/test_url_loader_factory.h"
+
+namespace {
+
+// These LogId constants allow test cases to specify SCTs from both Google and
+// non-Google logs, allowing tests to vary how they meet (or don't meet) the
+// Chrome CT policy. To be compliant, the cert used by the embedded test server
+// currently requires three embedded SCTs, including at least one from a Google
+// log and one from a non-Google log.
+//
+// Google's "Argon2023" log ("6D7Q2j71BjUy51covIlryQPTy9ERa+zraeF3fW0GvW4="):
+const char kTestGoogleLogId[] = {
+    0xe8, 0x3e, 0xd0, 0xda, 0x3e, 0xf5, 0x06, 0x35, 0x32, 0xe7, 0x57,
+    0x28, 0xbc, 0x89, 0x6b, 0xc9, 0x03, 0xd3, 0xcb, 0xd1, 0x11, 0x6b,
+    0xec, 0xeb, 0x69, 0xe1, 0x77, 0x7d, 0x6d, 0x06, 0xbd, 0x6e};
+// Cloudflare's "Nimbus2023" log
+// ("ejKMVNi3LbYg6jjgUh7phBZwMhOFTTvSK8E6V6NS61I="):
+const char kTestNonGoogleLogId1[] = {
+    0x7a, 0x32, 0x8c, 0x54, 0xd8, 0xb7, 0x2d, 0xb6, 0x20, 0xea, 0x38,
+    0xe0, 0x52, 0x1e, 0xe9, 0x84, 0x16, 0x70, 0x32, 0x13, 0x85, 0x4d,
+    0x3b, 0xd2, 0x2b, 0xc1, 0x3a, 0x57, 0xa3, 0x52, 0xeb, 0x52};
+// DigiCert's "Yeti2023" log ("Nc8ZG7+xbFe/D61MbULLu7YnICZR6j/hKu+oA8M71kw="):
+const char kTestNonGoogleLogId2[] = {
+    0x35, 0xcf, 0x19, 0x1b, 0xbf, 0xb1, 0x6c, 0x57, 0xbf, 0x0f, 0xad,
+    0x4c, 0x6d, 0x42, 0xcb, 0xbb, 0xb6, 0x27, 0x20, 0x26, 0x51, 0xea,
+    0x3f, 0xe1, 0x2a, 0xef, 0xa8, 0x03, 0xc3, 0x3b, 0xd6, 0x4c};
+
+// Constructs a net::SignedCertificateTimestampAndStatus with the given
+// information and appends it to |sct_list|.
+void MakeTestSCTAndStatus(
+    net::ct::SignedCertificateTimestamp::Origin origin,
+    const std::string& extensions,
+    const std::string& signature_data,
+    const base::Time& timestamp,
+    const std::string& log_id,
+    net::ct::SCTVerifyStatus status,
+    net::SignedCertificateTimestampAndStatusList* sct_list) {
+  scoped_refptr<net::ct::SignedCertificateTimestamp> sct(
+      new net::ct::SignedCertificateTimestamp());
+  sct->version = net::ct::SignedCertificateTimestamp::V1;
+  sct->log_id = log_id;
+  sct->extensions = extensions;
+  sct->timestamp = timestamp;
+  sct->signature.signature_data = signature_data;
+  sct->origin = origin;
+  sct_list->push_back(net::SignedCertificateTimestampAndStatus(sct, status));
+}
+
+}  // namespace
 
 class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
  public:
@@ -68,10 +117,31 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     report_server()->StartAcceptingConnections();
     ASSERT_TRUE(https_server()->Start());
 
-    // Set up two test hosts as using publicly-issued certificates for testing.
+    // Mock the cert verify results so that it has valid CT verification
+    // results.
     net::CertVerifyResult verify_result;
-    verify_result.verified_cert = https_server_.GetCertificate().get();
+    verify_result.verified_cert = https_server()->GetCertificate().get();
     verify_result.is_issued_by_known_root = true;
+    // Add three "valid" SCTs and mark the certificate as compliant.
+    // The default test set up is embedded SCTs where one SCT is from a Google
+    // log and two are from non-Google logs (to meet the Chrome CT policy).
+    MakeTestSCTAndStatus(
+        net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
+        "signature1", base::Time::Now(),
+        std::string(kTestGoogleLogId, base::size(kTestGoogleLogId)),
+        net::ct::SCT_STATUS_OK, &verify_result.scts);
+    MakeTestSCTAndStatus(
+        net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
+        "signature2", base::Time::Now(),
+        std::string(kTestNonGoogleLogId1, base::size(kTestNonGoogleLogId1)),
+        net::ct::SCT_STATUS_OK, &verify_result.scts);
+    MakeTestSCTAndStatus(
+        net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
+        "signature3", base::Time::Now(),
+        std::string(kTestNonGoogleLogId2, base::size(kTestNonGoogleLogId2)),
+        net::ct::SCT_STATUS_OK, &verify_result.scts);
+
+    // Set up two test hosts as using publicly-issued certificates for testing.
     mock_cert_verifier()->AddResultForCertAndHost(
         https_server()->GetCertificate().get(), "a.test", verify_result,
         net::OK);
@@ -113,12 +183,11 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 
   size_t requests_seen() { return requests_seen_; }
 
-  std::string GetLastSeenHostname() {
-    if (!last_seen_request_.has_content)
-      return std::string();
+  sct_auditing::TLSConnectionReport GetLastSeenReport() {
     sct_auditing::TLSConnectionReport auditing_report;
-    auditing_report.ParseFromString(last_seen_request_.content);
-    return auditing_report.context().origin().hostname();
+    if (last_seen_request_.has_content)
+      auditing_report.ParseFromString(last_seen_request_.content);
+    return auditing_report;
   }
 
   // Checks that no reports have been sent. To do this, opt-in the profile,
@@ -133,7 +202,8 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
         https_server()->GetURL("flush-and-check-zero-reports.test", "/"));
     WaitForRequests(1);
     return (1u == requests_seen() &&
-            "flush-and-check-zero-reports.test" == GetLastSeenHostname());
+            "flush-and-check-zero-reports.test" ==
+                GetLastSeenReport().context().origin().hostname());
   }
 
  private:
@@ -188,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // Check that one report was sent and contains the expected details.
   EXPECT_EQ(1u, requests_seen());
-  EXPECT_EQ("a.test", GetLastSeenHostname());
+  EXPECT_EQ("a.test", GetLastSeenReport().context().origin().hostname());
 }
 
 // Tests that disabling Safe Browsing entirely should cause reports to not get
@@ -242,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // Check that one report was sent.
   EXPECT_EQ(1u, requests_seen());
-  EXPECT_EQ("a.test", GetLastSeenHostname());
+  EXPECT_EQ("a.test", GetLastSeenReport().context().origin().hostname());
 
   // Disable Extended Reporting which should clear the underlying cache.
   SetExtendedReportingEnabled(false);
@@ -254,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                                https_server()->GetURL("a.test", "/"));
   WaitForRequests(2);
   EXPECT_EQ(2u, requests_seen());
-  EXPECT_EQ("a.test", GetLastSeenHostname());
+  EXPECT_EQ("a.test", GetLastSeenReport().context().origin().hostname());
 }
 
 // Tests that reports are still sent for opted-in profiles after the network
@@ -282,6 +352,21 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   net::CertVerifyResult verify_result;
   verify_result.verified_cert = https_server()->GetCertificate().get();
   verify_result.is_issued_by_known_root = true;
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
+      "signature1", base::Time::Now(),
+      std::string(kTestGoogleLogId, base::size(kTestGoogleLogId)),
+      net::ct::SCT_STATUS_OK, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
+      "signature2", base::Time::Now(),
+      std::string(kTestNonGoogleLogId1, base::size(kTestNonGoogleLogId1)),
+      net::ct::SCT_STATUS_OK, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
+      "signature3", base::Time::Now(),
+      std::string(kTestNonGoogleLogId2, base::size(kTestNonGoogleLogId2)),
+      net::ct::SCT_STATUS_OK, &verify_result.scts);
   mock_cert_verifier()->AddResultForCertAndHost(
       https_server()->GetCertificate().get(), "a.test", verify_result, net::OK);
 
@@ -292,32 +377,124 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // Check that one report was enqueued.
   EXPECT_EQ(1u, requests_seen());
-  EXPECT_EQ("a.test", GetLastSeenHostname());
+  EXPECT_EQ("a.test", GetLastSeenReport().context().origin().hostname());
 }
 
-// Tests that certificates that aren't issued from publicly known roots don't
-// get reported.
+// Tests that invalid SCTs don't get reported when the overall result is
+// compliant with CT policy.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       PrivateCertsNotReported) {
-  // Set up a hostname that uses a non-publicly issued cert.
+                       CTCompliantInvalidSCTsNotReported) {
+  // Set up a mocked CertVerifyResult that includes both valid and invalid SCTs.
   net::CertVerifyResult verify_result;
   verify_result.verified_cert = https_server()->GetCertificate().get();
-  verify_result.is_issued_by_known_root = false;
+  verify_result.is_issued_by_known_root = true;
+  // Add three valid SCTs and one invalid SCT. The three valid SCTs meet the
+  // Chrome CT policy.
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions1", "signature1", base::Time::Now(),
+                       std::string(kTestGoogleLogId, sizeof(kTestGoogleLogId)),
+                       net::ct::SCT_STATUS_OK, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
+      "signature2", base::Time::Now(),
+      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      net::ct::SCT_STATUS_OK, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
+      "signature3", base::Time::Now(),
+      std::string(kTestNonGoogleLogId2, sizeof(kTestNonGoogleLogId2)),
+      net::ct::SCT_STATUS_OK, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions4",
+      "signature4", base::Time::Now(),
+      std::string(kTestNonGoogleLogId2, sizeof(kTestNonGoogleLogId2)),
+      net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
+
   mock_cert_verifier()->AddResultForCertAndHost(
-      https_server()->GetCertificate().get(), "private.test", verify_result,
+      https_server()->GetCertificate().get(), "mixed-scts.test", verify_result,
       net::OK);
 
   SetExtendedReportingEnabled(true);
   ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("private.test", "/"));
+                               https_server()->GetURL("mixed-scts.test", "/"));
+  WaitForRequests(1);
+  EXPECT_EQ(1u, requests_seen());
 
+  auto report = GetLastSeenReport();
+  EXPECT_EQ(3, report.included_scts_size());
+}
+
+// Tests that invalid SCTs don't get included when the overall result is
+// non-compliant with CT policy. Valid SCTs should still be reported.
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
+                       CTNonCompliantInvalidSCTsNotReported) {
+  // Set up a mocked CertVerifyResult that includes both valid and invalid SCTs.
+  net::CertVerifyResult verify_result;
+  verify_result.verified_cert = https_server()->GetCertificate().get();
+  verify_result.is_issued_by_known_root = true;
+  // Add one valid SCT and two invalid SCTs. These SCTs will not meet the Chrome
+  // CT policy requirements.
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
+      "signature1", base::Time::Now(),
+      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      net::ct::SCT_STATUS_OK, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
+      "signature2", base::Time::Now(),
+      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
+      "signature3", base::Time::Now(),
+      std::string(kTestNonGoogleLogId2, sizeof(kTestNonGoogleLogId2)),
+      net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
+
+  mock_cert_verifier()->AddResultForCertAndHost(
+      https_server()->GetCertificate().get(), "mixed-scts.test", verify_result,
+      net::OK);
+
+  SetExtendedReportingEnabled(true);
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server()->GetURL("mixed-scts.test", "/"));
+  WaitForRequests(1);
+  EXPECT_EQ(1u, requests_seen());
+
+  auto report = GetLastSeenReport();
+  EXPECT_EQ(1, report.included_scts_size());
+}
+
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, NoValidSCTsNoReport) {
+  // Set up a mocked CertVerifyResult with only invalid SCTs.
+  net::CertVerifyResult verify_result;
+  verify_result.verified_cert = https_server()->GetCertificate().get();
+  verify_result.is_issued_by_known_root = true;
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
+      "signature1", base::Time::Now(),
+      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      net::ct::SCT_STATUS_INVALID_TIMESTAMP, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
+      "signature2", base::Time::Now(),
+      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
+      "signature3", base::Time::Now(),
+      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
+
+  mock_cert_verifier()->AddResultForCertAndHost(
+      https_server()->GetCertificate().get(), "invalid-scts.test",
+      verify_result, net::OK);
+
+  SetExtendedReportingEnabled(true);
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("invalid-scts.test", "/"));
   EXPECT_EQ(0u, requests_seen());
   EXPECT_TRUE(FlushAndCheckZeroReports());
 }
-
-// TODO(crbug.com/1107975): Add test for "invalid SCTs should not get reported".
-// This is blocked on https://crrev.com/c/1188845 to allow us to use the
-// MockCertVerifier to mock CT results.
 
 class SCTReportingServiceZeroSamplingRateBrowserTest
     : public SCTReportingServiceBrowserTest {

@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "net/base/host_port_pair.h"
+#include "net/cert/ct_serialization.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -149,7 +150,7 @@ TEST_F(SCTAuditingCacheTest, NoReportsCachedWhenAuditingDisabled) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions1", "signature1", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
                            sct_list);
 
@@ -165,7 +166,7 @@ TEST_F(SCTAuditingCacheTest, InsertAndRetrieveReport) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions1", "signature1", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
                            sct_list);
 
@@ -185,7 +186,7 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions1", "signature1", base::Time::Now(),
-                         net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                         net::ct::SCT_STATUS_OK, &sct_list);
     cache.MaybeEnqueueReport(network_context_.get(), host_port_pair1,
                              chain_.get(), sct_list);
     ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
@@ -195,7 +196,7 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions1", "signature2", base::Time::Now(),
-                         net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                         net::ct::SCT_STATUS_OK, &sct_list);
     cache.MaybeEnqueueReport(network_context_.get(), host_port_pair2,
                              chain_.get(), sct_list);
     ASSERT_EQ(2u, cache.GetCacheForTesting()->size());
@@ -207,7 +208,7 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions1", "signature3", base::Time::Now(),
-                         net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                         net::ct::SCT_STATUS_OK, &sct_list);
     cache.MaybeEnqueueReport(network_context_.get(), host_port_pair3,
                              chain_.get(), sct_list);
     ASSERT_EQ(2u, cache.GetCacheForTesting()->size());
@@ -229,7 +230,7 @@ TEST_F(SCTAuditingCacheTest, ReportWithSameSCTsDeduplicated) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions1", "signature1", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair1,
                            chain_.get(), sct_list);
 
@@ -256,14 +257,14 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
   net::SignedCertificateTimestampAndStatusList sct_list1;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions1", "signature1", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list1);
+                       net::ct::SCT_STATUS_OK, &sct_list1);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair1,
                            chain_.get(), sct_list1);
 
   net::SignedCertificateTimestampAndStatusList sct_list2;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions2", "signature2", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list2);
+                       net::ct::SCT_STATUS_OK, &sct_list2);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair2,
                            chain_.get(), sct_list2);
 
@@ -280,7 +281,7 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
   net::SignedCertificateTimestampAndStatusList sct_list3;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions3", "signature3", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list3);
+                       net::ct::SCT_STATUS_OK, &sct_list3);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair3,
                            chain_.get(), sct_list3);
 
@@ -300,7 +301,7 @@ TEST_F(SCTAuditingCacheTest, NoReportsCachedWhenCacheDisabled) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
                            sct_list);
 
@@ -318,7 +319,7 @@ TEST_F(SCTAuditingCacheTest, ReportsCachedButNotSentWhenSamplingIsZero) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
                            sct_list);
 
@@ -342,7 +343,7 @@ TEST_F(SCTAuditingCacheTest, ReportsSentWithServerOK) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
                            sct_list);
 
@@ -375,7 +376,7 @@ TEST_F(SCTAuditingCacheTest, ReportSentWithServerError) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
                            sct_list);
 
@@ -412,14 +413,14 @@ TEST_F(SCTAuditingCacheTest, HighWaterMarkMetrics) {
     net::SignedCertificateTimestampAndStatusList sct_list1;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions1", "signature1", base::Time::Now(),
-                         net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list1);
+                         net::ct::SCT_STATUS_OK, &sct_list1);
     cache.MaybeEnqueueReport(network_context_.get(), host_port_pair1,
                              chain_.get(), sct_list1);
 
     net::SignedCertificateTimestampAndStatusList sct_list2;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions2", "signature2", base::Time::Now(),
-                         net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list2);
+                         net::ct::SCT_STATUS_OK, &sct_list2);
     cache.MaybeEnqueueReport(network_context_.get(), host_port_pair2,
                              chain_.get(), sct_list2);
 
@@ -444,7 +445,7 @@ TEST_F(SCTAuditingCacheTest, ReportSizeMetrics) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
                            sct_list);
 
@@ -478,7 +479,7 @@ TEST_F(SCTAuditingCacheTest, ReportSampleDroppedMetrics) {
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+                       net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
                            sct_list);
 
@@ -487,6 +488,58 @@ TEST_F(SCTAuditingCacheTest, ReportSampleDroppedMetrics) {
   histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSize", 0);
   histograms.ExpectBucketCount("Security.SCTAuditing.OptIn.ReportDeduplicated",
                                false, 1);
+}
+
+// If a report doesn't have any valid SCTs, it should not get added to the cache
+// at all.
+TEST_F(SCTAuditingCacheTest, ReportNotGeneratedIfNoValidSCTs) {
+  SCTAuditingCache cache(10);
+  InitSCTAuditing(&cache);
+
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions", "signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_INVALID_SIGNATURE, &sct_list);
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  EXPECT_EQ(0u, cache.GetCacheForTesting()->size());
+}
+
+// Connections that have a mix of valid and invalid SCTs should only include the
+// valid SCTs in the report.
+TEST_F(SCTAuditingCacheTest, ReportsOnlyIncludesValidSCTs) {
+  SCTAuditingCache cache(10);
+  InitSCTAuditing(&cache);
+
+  // Add a report with different types and validities of SCTs.
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions1", "valid_signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_OK, &sct_list);
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions2", "invalid_signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_INVALID_SIGNATURE, &sct_list);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+      "extensions3", "invalid_log", base::Time::Now(),
+      net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  // No invalid SCTs should be in any reports in the cache.
+  for (const auto& entry : *cache.GetCacheForTesting()) {
+    for (auto& sct_and_status : entry.second->included_scts()) {
+      // Decode the SCT and check that only the valid SCT was included.
+      base::StringPiece encoded_sct(sct_and_status.sct());
+      scoped_refptr<net::ct::SignedCertificateTimestamp> decoded_sct;
+      ASSERT_TRUE(net::ct::DecodeSignedCertificateTimestamp(&encoded_sct,
+                                                            &decoded_sct));
+      EXPECT_EQ("valid_signature", decoded_sct->signature.signature_data);
+    }
+  }
 }
 
 }  // namespace network

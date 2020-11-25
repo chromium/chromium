@@ -2434,8 +2434,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(int cert_verify_id,
             pending_cert_verify->network_isolation_key);
 
     if (url_request_context_->sct_auditing_delegate() &&
-        url_request_context_->sct_auditing_delegate()->IsSCTAuditingEnabled() &&
-        pending_cert_verify->result->is_issued_by_known_root) {
+        url_request_context_->sct_auditing_delegate()->IsSCTAuditingEnabled()) {
       url_request_context_->sct_auditing_delegate()->MaybeEnqueueReport(
           net::HostPortPair::FromURL(pending_cert_verify->url), verified_cert,
           pending_cert_verify->result->scts);
