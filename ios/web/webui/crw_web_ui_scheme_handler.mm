@@ -52,14 +52,14 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
   NSInteger errorCode = GetErrorCodeForUrl(
       net::GURLWithNSURL(urlSchemeTask.request.mainDocumentURL));
   if (errorCode != 0) {
-    NSError* error =
-        [NSError errorWithDomain:NSURLErrorDomain
-                            code:errorCode
-                        userInfo:@{
-                          NSURLErrorKey : urlSchemeTask.request.URL,
-                          NSURLErrorFailingURLStringErrorKey :
-                              urlSchemeTask.request.URL.absoluteString
-                        }];
+    NSError* error = [NSError
+        errorWithDomain:NSURLErrorDomain
+                   code:errorCode
+               userInfo:@{
+                 NSURLErrorFailingURLErrorKey : urlSchemeTask.request.URL,
+                 NSURLErrorFailingURLStringErrorKey :
+                     urlSchemeTask.request.URL.absoluteString
+               }];
     [urlSchemeTask didFailWithError:error];
     return;
   }

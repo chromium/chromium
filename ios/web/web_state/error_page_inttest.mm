@@ -30,7 +30,9 @@
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
+#include "ios/web/test/test_url_constants.h"
 #import "net/base/mac/url_conversions.h"
+#include "net/base/net_errors.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "url/gurl.h"
@@ -543,6 +545,58 @@ TEST_F(ErrorPageTest, ShouldAllowResponseCancelAndDisplayErrorBackNav) {
   // Go back to validate going back to error page.
   web_state()->GetNavigationManager()->GoBack();
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), error_text));
+}
+
+// Tests that restoring an invalid WebUI URL doesn't create a new navigation.
+TEST_F(ErrorPageTest, RestorationFromInvalidURL) {
+  server_responds_with_content_ = true;
+
+  std::string scheme = kTestWebUIScheme;
+  GURL invalid_webui = GURL(scheme + "://invalid");
+
+  NSError* error = testing::CreateErrorWithUnderlyingErrorChain(
+      {{@"NSURLErrorDomain", NSURLErrorUnsupportedURL},
+       {net::kNSErrorDomain, net::ERR_INVALID_URL}});
+
+  test::LoadUrl(web_state(), server_.GetURL("/echo-query?foo"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "foo"));
+  test::LoadUrl(web_state(), invalid_webui);
+  ASSERT_TRUE(test::WaitForWebViewContainingText(
+      web_state(), testing::GetErrorText(web_state(), invalid_webui, error,
+                                         /*is_post=*/false, /*is_otr=*/false,
+                                         /*cert_status=*/0)));
+
+  // Restore the session.
+  WebState::CreateParams params(GetBrowserState());
+  auto restored_web_state = WebState::CreateWithStorageSession(
+      params, web_state()->BuildSessionStorage());
+
+  restored_web_state->GetNavigationManager()->LoadIfNecessary();
+  ASSERT_TRUE(test::WaitForWebViewContainingText(
+      restored_web_state.get(),
+      testing::GetErrorText(restored_web_state.get(), invalid_webui, error,
+                            /*is_post=*/false, /*is_otr=*/false,
+                            /*cert_status=*/0)));
+
+  // Check that there is one item in the back list and no forward item.
+  EXPECT_EQ(
+      1UL,
+      restored_web_state->GetNavigationManager()->GetBackwardItems().size());
+  EXPECT_EQ(
+      0UL,
+      restored_web_state->GetNavigationManager()->GetForwardItems().size());
+
+  restored_web_state->GetNavigationManager()->GoBack();
+  ASSERT_TRUE(
+      test::WaitForWebViewContainingText(restored_web_state.get(), "foo"));
+
+  // Check that there is one item in the forward list and no back item.
+  EXPECT_EQ(
+      0UL,
+      restored_web_state->GetNavigationManager()->GetBackwardItems().size());
+  EXPECT_EQ(
+      1UL,
+      restored_web_state->GetNavigationManager()->GetForwardItems().size());
 }
 
 }  // namespace web
