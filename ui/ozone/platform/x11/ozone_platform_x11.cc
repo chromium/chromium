@@ -270,7 +270,7 @@ class OzonePlatformX11 : public OzonePlatform,
     // If opening the connection failed there is nothing we can do. Crash here
     // instead of crashing later. If you are crashing here, make sure there is
     // an X server running and $DISPLAY is set.
-    CHECK(x11::Connection::Get()) << "Missing X server or $DISPLAY";
+    CHECK(x11::Connection::Get()->Ready()) << "Missing X server or $DISPLAY";
 
     common_initialized_ = true;
   }
