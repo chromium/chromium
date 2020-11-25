@@ -31,7 +31,7 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
   const bool is_saving_google_account =
       password_bubble_experiment::IsSmartLockUser(
           ProfileSyncServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
+              Profile::FromBrowserContext(web_contents->GetBrowserContext())));
 
   // All the DisplaySavePasswordPrompt parameters are passed to CreateMessage to
   // avoid a call to MessageDispatcherBridge::EnqueueMessage from test while
