@@ -598,7 +598,8 @@ android_aar_prebuilt("androidx_preference_preference_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_recyclerview_recyclerview_java") {
-  aar_path = "libs/androidx_recyclerview_recyclerview/recyclerview-1.1.0.aar"
+  aar_path =
+      "libs/androidx_recyclerview_recyclerview/recyclerview-1.2.0-alpha06.aar"
   info_path = "libs/androidx_recyclerview_recyclerview/androidx_recyclerview_recyclerview.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -850,7 +851,7 @@ android_aar_prebuilt("androidx_vectordrawable_vectordrawable_animated_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_viewpager2_viewpager2_java") {
-  aar_path = "libs/androidx_viewpager2_viewpager2/viewpager2-1.0.0.aar"
+  aar_path = "libs/androidx_viewpager2_viewpager2/viewpager2-1.1.0-SNAPSHOT.aar"
   info_path =
       "libs/androidx_viewpager2_viewpager2/androidx_viewpager2_viewpager2.info"
   deps = [
@@ -865,7 +866,7 @@ android_aar_prebuilt("androidx_viewpager2_viewpager2_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_viewpager_viewpager_java") {
-  aar_path = "libs/androidx_viewpager_viewpager/viewpager-1.0.0.aar"
+  aar_path = "libs/androidx_viewpager_viewpager/viewpager-1.1.0-SNAPSHOT.aar"
   info_path =
       "libs/androidx_viewpager_viewpager/androidx_viewpager_viewpager.info"
   deps = [

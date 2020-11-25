@@ -1,13 +1,13 @@
-Name: Android Support RecyclerView v7
+Name: Android Support RecyclerView
 Short Name: recyclerview
-URL: https://developer.android.com/jetpack/androidx
-Version: 1.1.0
+URL: https://developer.android.com/jetpack/androidx/releases/recyclerview#1.2.0-alpha06
+Version: 1.2.0-alpha06
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: yes
 
 Description:
-Android Support RecyclerView v7
+Android Support RecyclerView
 
 Local Modifications:
 No modifications.

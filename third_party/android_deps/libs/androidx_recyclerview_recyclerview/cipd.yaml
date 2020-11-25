@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.1.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.2.0-alpha06-cr0
 package: chromium/third_party/android_deps/libs/androidx_recyclerview_recyclerview
-description: "Android Support RecyclerView v7"
+description: "Android Support RecyclerView"
 data:
-- file: recyclerview-1.1.0.aar
+- file: recyclerview-1.2.0-alpha06.aar
