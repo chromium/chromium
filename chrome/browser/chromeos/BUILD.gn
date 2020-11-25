@@ -648,6 +648,8 @@ source_set("chromeos") {
     "arc/fileapi/arc_documents_provider_file_stream_reader.h",
     "arc/fileapi/arc_documents_provider_file_stream_writer.cc",
     "arc/fileapi/arc_documents_provider_file_stream_writer.h",
+    "arc/fileapi/arc_documents_provider_file_system_url_util.cc",
+    "arc/fileapi/arc_documents_provider_file_system_url_util.h",
     "arc/fileapi/arc_documents_provider_root.cc",
     "arc/fileapi/arc_documents_provider_root.h",
     "arc/fileapi/arc_documents_provider_root_map.cc",

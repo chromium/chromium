@@ -9,9 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_file_stream_writer.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_file_system_url_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -20,42 +18,6 @@
 using content::BrowserThread;
 
 namespace arc {
-
-namespace {
-
-void OnResolveToContentUrlOnUIThread(
-    ArcDocumentsProviderRoot::ResolveToContentUrlCallback callback,
-    const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), url));
-}
-
-void ResolveToContentUrlOnUIThread(
-    const storage::FileSystemURL& url,
-    ArcDocumentsProviderRoot::ResolveToContentUrlCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  ArcDocumentsProviderRootMap* roots =
-      ArcDocumentsProviderRootMap::GetForArcBrowserContext();
-  if (!roots) {
-    OnResolveToContentUrlOnUIThread(std::move(callback), GURL());
-    return;
-  }
-
-  base::FilePath path;
-  ArcDocumentsProviderRoot* root = roots->ParseAndLookup(url, &path);
-  if (!root) {
-    OnResolveToContentUrlOnUIThread(std::move(callback), GURL());
-    return;
-  }
-
-  root->ResolveToContentUrl(
-      path,
-      base::BindOnce(&OnResolveToContentUrlOnUIThread, std::move(callback)));
-}
-
-}  // namespace
 
 ArcDocumentsProviderFileStreamWriter::ArcDocumentsProviderFileStreamWriter(
     const storage::FileSystemURL& url,
@@ -82,13 +44,11 @@ int ArcDocumentsProviderFileStreamWriter::Write(
 
     // Resolve the |arc_url_| to a Content URL to instantiate the underlying
     // writer.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
+    ResolveToContentUrlOnIOThread(
+        arc_url_,
         base::BindOnce(
-            &ResolveToContentUrlOnUIThread, arc_url_,
-            base::BindOnce(
-                &ArcDocumentsProviderFileStreamWriter::OnResolveToContentUrl,
-                weak_ptr_factory_.GetWeakPtr())));
+            &ArcDocumentsProviderFileStreamWriter::OnResolveToContentUrl,
+            weak_ptr_factory_.GetWeakPtr()));
 
     return net::ERR_IO_PENDING;
   }
