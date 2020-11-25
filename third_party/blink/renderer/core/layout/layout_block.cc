@@ -1416,6 +1416,13 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
 
+  if (IsAtomicInlineLevel()) {
+    PositionWithAffinity position =
+        PositionForPointIfOutsideAtomicInlineLevel(point);
+    if (!position.IsNull())
+      return position;
+  }
+
   if (IsLayoutNGObject() && PhysicalFragmentCount() &&
       RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
     // Layout engine boundary. Enter NG PositionForPoint(). Assert
@@ -1426,13 +1433,6 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
 
   if (IsTable())
     return LayoutBox::PositionForPoint(point);
-
-  if (IsAtomicInlineLevel()) {
-    PositionWithAffinity position =
-        PositionForPointIfOutsideAtomicInlineLevel(point);
-    if (!position.IsNull())
-      return position;
-  }
 
   PhysicalOffset point_in_contents = point;
   OffsetForContents(point_in_contents);

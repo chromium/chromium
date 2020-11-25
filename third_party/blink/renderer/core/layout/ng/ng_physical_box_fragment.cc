@@ -808,6 +808,14 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
     return layout_object_->PositionForPoint(point);
   }
 
+  // TODO(layout-dev): Handle situations where we're near (but not within)
+  // atomic inlines here, rather than relying on it being taken care of by the
+  // layout object. This is currently handled in LayoutBlock and
+  // LayoutNGBlockFlowMixin - look for
+  // PositionForPointIfOutsideAtomicInlineLevel().
+  DCHECK(!IsAtomicInline() ||
+         PhysicalRect(PhysicalOffset(), Size()).Contains(point));
+
   if (IsScrollContainer())
     point += PhysicalOffset(PixelSnappedScrolledContentOffset());
 

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<style>
+  body { margin:0; }
+  .container { margin:30px; line-height:20px; }
+  #inlineblock { display: inline-block; }
+  #inlinetable { display: inline-table; }
+  #inlineflex { display: inline-flex; }
+  #inlinegrid { display: inline-grid; }
+</style>
+<div class="container">
+  <div id="inlineblock"><div>asdfgh</div></div>
+</div>
+<div class="container">
+  <div id="inlinetable"><div>asdfgh</div></div>
+</div>
+<div class="container">
+  <div id="inlineflex"><div>asdfgh</div></div>
+</div>
+<div class="container">
+  <div id="inlinegrid"><div>asdfgh</div></div>
+</div>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script>
+  function test_outside(y, expected_node) {
+      range = document.caretRangeFromPoint(0, y);
+      assert_equals(range.startContainer, expected_node);
+      assert_equals(range.startOffset, 0);
+      range = document.caretRangeFromPoint(300, y);
+      assert_equals(range.startContainer, expected_node);
+      assert_equals(range.startOffset, 1);
+  }
+  test(()=> { test_outside(40, inlineblock); }, "inline-block");
+  test(()=> { test_outside(90, inlinetable); }, "inline-table");
+  test(()=> { test_outside(140, inlineflex); }, "inline-flex");
+  test(()=> { test_outside(190, inlinegrid); }, "inline-grid");
+</script>
