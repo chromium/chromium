@@ -7,5 +7,3 @@
 # https://sites.google.com/a/chromium.org/dev/developers/how-tos/enterprise/adding-new-policies
 per-file policy_templates.json=set noparent
 per-file policy_templates.json=file://components/policy/resources/ENTERPRISE_POLICY_OWNERS
-
-# COMPONENT: Enterprise
