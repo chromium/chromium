@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 
 class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
@@ -304,6 +305,35 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, ExemptAbusiveOriginTest) {
   QueryAndExpectDecisionForUrl(origin_to_revoke,
                                Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
+}
+
+TEST_F(AbusiveOriginPermissionRevocationRequestTest, SafeBrowsingDisabledTest) {
+  const GURL origin_to_revoke = GURL("https://origin.com/");
+
+  SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
+
+  AddToSafeBrowsingBlocklist(origin_to_revoke);
+  AddToPreloadDataBlocklist(origin_to_revoke, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+  QueryAndExpectDecisionForUrl(origin_to_revoke,
+                               Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
+
+  GetTestingProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                              false);
+
+  // Permission should not be revoked because Safe Browsing is disabled.
+  const GURL origin_to_not_revoke = GURL("https://origin-not_revoked.com/");
+
+  SetPermission(origin_to_not_revoke, CONTENT_SETTING_ALLOW);
+
+  AddToSafeBrowsingBlocklist(origin_to_not_revoke);
+  AddToPreloadDataBlocklist(origin_to_not_revoke,
+                            SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+
+  QueryAndExpectDecisionForUrl(origin_to_not_revoke,
+                               Outcome::PERMISSION_NOT_REVOKED);
+  VerifyNotificationsPermission(origin_to_not_revoke, CONTENT_SETTING_ALLOW);
 }
 
 class AbusiveOriginPermissionRevocationRequestDisabledTest
